@@ -1,0 +1,82 @@
+@page
+
+/*
+    ═══════════════════════════════════════════════════════════════════════════════
+    📄 DOCUMENTAÇÃO COMPLETA DISPONÍVEL
+    ═══════════════════════════════════════════════════════════════════════════════
+    
+    📍 Localização: Documentacao/Pages/Combustivel - Index.md
+    📅 Última Atualização: 08/01/2026
+    📋 Versão: 2.0 (Padrão FrotiX Simplificado)
+    
+    Este arquivo contém a View Razor da página de listagem de Combustíveis.
+    Para entender completamente a funcionalidade, consulte a documentação acima.
+    ═══════════════════════════════════════════════════════════════════════════════
+*/
+
+@model FrotiX.Models.Combustivel
+
+@{
+	ViewData["Title"] = "Tipos de Combustível";
+	ViewData["PageName"] = "combustivel_index";
+	ViewData["Heading"] = "<i class='fa-duotone fa-gas-pump'></i> Cadastros: <span class='fw-300'>Tipos de Combustível</span>";
+	ViewData["Category1"] = "Cadastros";
+	ViewData["PageIcon"] = "fa-duotone fa-chalkboard-user";
+}
+
+@section HeadBlock {
+	<style>
+		/* ======== OUTLINE BRANCO NO BOTÃO DO HEADER (Padrão FrotiX) ======== */
+		.ftx-card-header .btn-fundo-laranja {
+			outline: 2px solid rgba(255, 255, 255, 0.5) !important;
+			outline-offset: 1px;
+			transition: all 0.2s ease;
+		}
+
+		.ftx-card-header .btn-fundo-laranja:hover {
+			outline: 2px solid rgba(255, 255, 255, 0.8) !important;
+			outline-offset: 2px;
+		}
+	</style>
+}
+
+<div class="row">
+	<div class="col-xl-12">
+		<div id="panel-1" class="panel">
+			<!-- ===== HEADER FROTIX ===== -->
+			<div class="ftx-card-header">
+				<h2 class="titulo-paginas">
+					<i class="fa-duotone fa-gas-pump"></i>
+					Tipos de Combustível
+				</h2>
+				<div class="ftx-card-actions">
+					<a href="/Combustivel/Upsert" class="btn btn-fundo-laranja" data-ftx-loading>
+						<i class="fa-duotone fa-clone-plus icon-pulse me-1"></i> Adicionar Combustível
+					</a>
+				</div>
+			</div>
+
+			<div class="panel-container show">
+				<div class="panel-content">
+					<div class="box-body">
+						<table id="tblCombustivel" class="table table-bordered table-striped ftx-table" width="100%">
+							<thead>
+								<tr>
+									<th>Descrição do Combustível</th>
+									<th>Status</th>
+									<th>Ação</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section ScriptsBlock {
+	<script src="~/js/cadastros/combustivel.js" asp-append-version="true"></script>
+}

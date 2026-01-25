@@ -1,0 +1,90 @@
+{
+  "models": [
+    {
+      "title": "Claude Sonnet 3.5",
+      "provider": "anthropic",
+      "model": "claude-3-5-sonnet-20241022"
+    }
+  ],
+  "contextProviders": [
+    {
+      "name": "code",
+      "params": {}
+    },
+    {
+      "name": "diff",
+      "params": {}
+    },
+    {
+      "name": "terminal",
+      "params": {}
+    },
+    {
+      "name": "problems",
+      "params": {}
+    },
+    {
+      "name": "folder",
+      "params": {}
+    },
+    {
+      "name": "codebase",
+      "params": {}
+    }
+  ],
+  "systemMessage": "Você é um assistente AI especializado no projeto FrotiX.\n\n## PROTOCOLO OBRIGATÓRIO\n\n1. SEMPRE ler RegrasDesenvolvimentoFrotiX.md ANTES de qualquer resposta\n2. Se trabalhar com banco de dados: ler FrotiX.sql\n3. Seguir TODAS as regras técnicas do projeto\n\n## REGRAS CRÍTICAS\n\n### Try-Catch (OBRIGATÓRIO)\n- Toda função deve ter try-catch\n- Usar: Alerta.TratamentoErroComLinha(arquivo, metodo, erro)\n\n### UI/UX\n- Alertas: Usar Alerta.* (NUNCA alert/confirm)\n- Ícones: SEMPRE fa-duotone (NUNCA fa-solid/regular)\n- Loading: SEMPRE FtxSpin (NUNCA spinner Bootstrap)\n- Tooltips: SEMPRE data-ejtip (NUNCA Bootstrap)\n\n### Banco de Dados\n- Consultar FrotiX.sql antes de codificar\n- Verificar: colunas, tipos, nullable, FKs\n\n### Documentação\n- Atualizar Documentacao/ antes de commitar\n- Formato: Prosa + snippets + explicação\n\n### Git\n- Branch: main\n- Push: SEMPRE para main (nunca outras branches)\n- Commit: Automático IMEDIATO após código importante\n- Push: Automático IMEDIATO após commit (origin main)\n- Durante conversa: Commit automático ao fornecer código\n- Tipos: feat, fix, refactor, docs, style, chore\n\n## MEMÓRIA PERMANENTE\n\nQuando usuário disser 'memorize'/'guarde':\n1. Abrir RegrasDesenvolvimentoFrotiX.md\n2. Adicionar regra na seção apropriada\n3. Commitar: 'docs: Adiciona regra - [Nome]'\n4. Confirmar ao usuário\n\n## ARQUIVOS PRINCIPAIS\n\n- RegrasDesenvolvimentoFrotiX.md (FONTE OFICIAL)\n- FrotiX.sql (Estrutura do banco)\n- wwwroot/js/alerta.js (Sistema de alertas)\n- wwwroot/js/frotix.js (Utilitários globais)",
+  "slashCommands": [
+    {
+      "name": "edit",
+      "description": "Editar código destacado"
+    },
+    {
+      "name": "comment",
+      "description": "Escrever comentários para código destacado"
+    },
+    {
+      "name": "share",
+      "description": "Exportar esta sessão"
+    },
+    {
+      "name": "cmd",
+      "description": "Gerar comando shell"
+    },
+    {
+      "name": "commit",
+      "description": "Gerar mensagem de commit"
+    },
+    {
+      "name": "regras",
+      "description": "Ver resumo das regras do projeto",
+      "prompt": "Exiba um resumo das regras principais do projeto FrotiX baseado em RegrasDesenvolvimentoFrotiX.md"
+    },
+    {
+      "name": "memorizar",
+      "description": "Adicionar nova regra permanente",
+      "prompt": "O usuário quer adicionar uma nova regra permanente. Siga o protocolo: 1) Abrir RegrasDesenvolvimentoFrotiX.md, 2) Adicionar regra no formato padrão, 3) Commitar, 4) Confirmar"
+    },
+    {
+      "name": "banco",
+      "description": "Consultar estrutura do banco",
+      "prompt": "Consulte FrotiX.sql para verificar a estrutura do banco de dados antes de gerar código"
+    }
+  ],
+  "customCommands": [
+    {
+      "name": "test",
+      "prompt": "Escreva testes unitários para o código destacado usando xUnit e seguindo os padrões do projeto FrotiX",
+      "description": "Escrever testes"
+    },
+    {
+      "name": "check",
+      "prompt": "Revise o código destacado e verifique se segue as regras de RegrasDesenvolvimentoFrotiX.md. Liste problemas encontrados.",
+      "description": "Verificar conformidade com regras"
+    }
+  ],
+  "allowAnonymousTelemetry": false,
+  "embeddingsProvider": {
+    "provider": "openai",
+    "model": "text-embedding-3-small"
+  }
+}

@@ -1,0 +1,574 @@
+/* ========================================
+   CHECKLIST A/C - ESTILOS GLOBAIS
+   ======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 11px;
+    line-height: 1.4;
+    color: #333;
+    background: white;
+}
+
+.page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 12mm 15mm;
+    background: white;
+    page-break-after: always;
+}
+
+.page:last-child {
+    page-break-after: auto;
+}
+
+/* Páginas de continuação precisam de margem extra no topo */
+.page-continuation {
+    padding-top: 30mm;
+}
+
+/* ========================================
+   CABEÇALHO PRINCIPAL
+   ======================================== */
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header-icon {
+    width: 50px;
+    height: 50px;
+    color: #0d47a1;
+    margin-bottom: 8px;
+}
+
+.header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+}
+
+.header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ff6b35;
+    margin-bottom: 6px;
+}
+
+.header .vehicle-info {
+    font-size: 13px;
+    color: #555;
+}
+
+/* ========================================
+   SEÇÕES
+   ======================================== */
+
+.section {
+    margin-bottom: 16px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+}
+
+.section-header {
+    padding: 10px 14px;
+    color: white;
+    font-weight: 600;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-header svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+/* Cores dos headers */
+.section-header.orange {
+    background: linear-gradient(135deg, #e65100 0%, #ff6b35 100%);
+}
+
+.section-header.blue {
+    background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+}
+
+.section-header.purple {
+    background: linear-gradient(135deg, #6a1b9a 0%, #8e24aa 100%);
+}
+
+.section-header.green {
+    background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+}
+
+.section-header.teal {
+    background: linear-gradient(135deg, #00695c 0%, #00897b 100%);
+}
+
+.section-content {
+    padding: 12px 14px;
+    background: #fafafa;
+}
+
+/* ========================================
+   SUBSEÇÕES
+   ======================================== */
+
+.subsection {
+    margin-bottom: 14px;
+}
+
+.subsection:last-child {
+    margin-bottom: 0;
+}
+
+.subsection-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #1565c0;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #e3f2fd;
+}
+
+.subsection-title svg {
+    width: 14px;
+    height: 14px;
+}
+
+.subsection-title.green {
+    color: #2e7d32;
+    border-bottom-color: #e8f5e9;
+}
+
+.subsection-title.purple {
+    color: #6a1b9a;
+    border-bottom-color: #f3e5f5;
+}
+
+.subsection-title.orange {
+    color: #e65100;
+    border-bottom-color: #fff3e0;
+}
+
+.subsection-title.teal {
+    color: #00695c;
+    border-bottom-color: #e0f2f1;
+}
+
+/* ========================================
+   SINTOMAS (Grid com checkboxes preenchidos)
+   ======================================== */
+
+.symptoms-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 14px;
+    background: white;
+    border-radius: 6px;
+}
+
+.symptom-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.symptom-checkbox {
+    width: 16px;
+    height: 16px;
+    background: #1a1a1a;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.symptom-item svg {
+    width: 16px;
+    height: 16px;
+    color: #ff6b35;
+    flex-shrink: 0;
+}
+
+.symptom-item span {
+    font-size: 11px;
+    color: #333;
+}
+
+/* ========================================
+   TABELAS
+   ======================================== */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+    background: white;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+table th {
+    background: #f5f5f5;
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 600;
+    color: #555;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+table tr:last-child td {
+    border-bottom: none;
+}
+
+table tr:nth-child(even) {
+    background: #fafafa;
+}
+
+/* Células com ícones */
+td svg, th svg {
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+/* ========================================
+   INPUTS E CAMPOS
+   ======================================== */
+
+.input-field {
+    display: inline-block;
+    min-width: 60px;
+    border-bottom: 1px solid #666;
+    padding: 0 4px;
+    text-align: center;
+    background: transparent;
+    line-height: 1.2;
+}
+
+.input-field.wide {
+    min-width: 100px;
+}
+
+.input-field.extra-wide {
+    min-width: 150px;
+}
+
+/* Status inline para tabelas */
+.status-inline {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.status-inline .status-ok,
+.status-inline .status-ruim {
+    white-space: nowrap;
+}
+
+/* ========================================
+   CHECKBOXES E STATUS
+   ======================================== */
+
+.checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-right: 10px;
+}
+
+.checkbox-box {
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid #666;
+    border-radius: 2px;
+    display: inline-block;
+    background: white;
+}
+
+.checkbox-label {
+    font-size: 10px;
+}
+
+/* Status badges */
+.status-ok {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.status-ruim {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.status-ok .checkbox-box,
+.status-ruim .checkbox-box {
+    width: 12px;
+    height: 12px;
+    border-color: currentColor;
+}
+
+/* ========================================
+   INFO BOX
+   ======================================== */
+
+.info-box {
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    font-size: 10px;
+    color: #1565c0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-box svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.info-box strong {
+    font-weight: 600;
+}
+
+/* ========================================
+   TABELA DE DIAGNÓSTICO POR PRESSÃO
+   ======================================== */
+
+.pressure-table th {
+    text-align: center;
+}
+
+.pressure-table td {
+    text-align: center;
+}
+
+.pressure-table td:last-child {
+    text-align: left;
+}
+
+.pressure-low {
+    color: #1565c0;
+    font-weight: 600;
+}
+
+.pressure-high {
+    color: #c62828;
+    font-weight: 600;
+}
+
+.pressure-normal {
+    color: #2e7d32;
+    font-weight: 600;
+}
+
+/* ========================================
+   ÁREA DE TEXTO
+   ======================================== */
+
+.text-area {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-height: 60px;
+    padding: 8px;
+    margin-top: 4px;
+}
+
+.text-area.large {
+    min-height: 80px;
+}
+
+/* ========================================
+   ORÇAMENTO
+   ======================================== */
+
+.budget-table th,
+.budget-table td {
+    text-align: center;
+}
+
+.budget-table td:nth-child(2) {
+    text-align: left;
+}
+
+.budget-table .total-row {
+    background: #f5f5f5;
+    font-weight: 600;
+}
+
+.budget-table .total-row td {
+    border-top: 2px solid #ddd;
+}
+
+/* ========================================
+   ASSINATURAS
+   ======================================== */
+
+.signatures {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin: 30px 0;
+}
+
+.signature-block {
+    text-align: center;
+}
+
+.signature-line {
+    border-top: 1px solid #333;
+    padding-top: 8px;
+    margin-top: 40px;
+}
+
+.signature-title {
+    font-weight: 600;
+    font-size: 11px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.signature-title svg {
+    width: 14px;
+    height: 14px;
+}
+
+.signature-subtitle {
+    font-size: 10px;
+    color: #666;
+}
+
+/* ========================================
+   RODAPÉ TÉCNICO
+   ======================================== */
+
+.tech-footer {
+    background: linear-gradient(135deg, #37474f 0%, #455a64 100%);
+    color: white;
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.tech-footer-title {
+    font-weight: 600;
+    font-size: 12px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tech-footer-title svg {
+    width: 16px;
+    height: 16px;
+}
+
+.tech-footer-content {
+    font-size: 10px;
+    line-height: 1.6;
+    opacity: 0.95;
+}
+
+.tech-footer-content strong {
+    color: #ffcc80;
+}
+
+/* ========================================
+   ÍCONES INLINE - Cores
+   ======================================== */
+
+.icon-blue { color: #1565c0; }
+.icon-orange { color: #ff6b35; }
+.icon-green { color: #2e7d32; }
+.icon-purple { color: #8e24aa; }
+.icon-red { color: #c62828; }
+.icon-teal { color: #00897b; }
+.icon-gray { color: #666; }
+.icon-white { color: white; }
+
+/* ========================================
+   REFERÊNCIA DE VALORES
+   ======================================== */
+
+.reference {
+    color: #1565c0;
+    font-weight: 500;
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+
+@media print {
+    body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .page {
+        page-break-after: always;
+        margin: 0;
+        padding: 10mm 12mm;
+    }
+
+    .section {
+        page-break-inside: avoid;
+    }
+
+    table {
+        page-break-inside: avoid;
+    }
+}

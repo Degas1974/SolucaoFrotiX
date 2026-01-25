@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Índice Geral | FrotiX</title>
+  <style>
+    :root {
+      --vinho: #722F37;
+      --vinho-light: #8B3A44;
+      --azul: #325d88;
+      --azul-light: #3d6f9e;
+      --terracota: #A97B6E;
+      --terracota-light: #C08B7E;
+      --verde: #557570;
+      --verde-light: #6A8A85;
+      --cinza: #f5f7fb;
+      --card: #ffffff;
+      --texto: #1f1f1f;
+      --shadow: 0 20px 45px -18px rgba(0, 0, 0, .35);
+      --radius: 14px;
+      --header-bg: #b66a3d;
+      --code-bg: #33465c;
+    }
+    @page { size: A4; margin: 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Inter", system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 12% 20%, rgba(50,93,136,.08), transparent 26%), radial-gradient(circle at 90% 10%, rgba(114,47,55,.10), transparent 30%), var(--cinza);
+      color: var(--texto);
+      padding: 22px;
+      display: flex;
+      justify-content: center;
+    }
+    .page { width: 210mm; max-width: 100%; }
+    .hero {
+      background: var(--header-bg);
+      color: #fff;
+      padding: 22px 24px;
+      border-radius: var(--radius);
+      box-shadow: 0 0 0 1px #000, 0 0 0 4px #fff, var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .hero img { width: 50px; height: 50px; filter: drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+    h1 { margin: 0; font-size: 26px; letter-spacing: 0.2px; }
+    .subtitle { margin: 6px 0 0; font-size: 13px; opacity: 0.92; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 18px; }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px 18px;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    .section-title { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; font-size: 15px; font-weight: 800; color: var(--vinho); }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+      background: rgba(169,123,110,.12);
+      color: var(--terracota);
+      margin-right: 8px;
+      font-size: 12px;
+    }
+    .table-like { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .table-like th, .table-like td { text-align: left; padding: 6px 8px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+    .badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+    .ok { background: rgba(85,117,112,.18); color: var(--verde); }
+    .warn { background: rgba(169,123,110,.18); color: var(--terracota); }
+    .alert { background: rgba(114,47,55,.16); color: var(--vinho); }
+    .list-scroll { max-height: 360px; overflow: auto; padding-right: 6px; font-size: 12.5px; line-height: 1.45; }
+    ul { margin: 6px 0 0 18px; padding: 0; }
+    li { margin-bottom: 6px; }
+    .icon { width: 18px; height: 18px; vertical-align: middle; filter: drop-shadow(0 2px 4px rgba(0,0,0,.15)); }
+    .hero svg { width: 50px; height: 50px; filter: drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+  </style>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="fa-book-open-cover" viewBox="0 0 640 640"><path opacity=".4" fill="currentColor" d="M320 136L320 518C323.6 518 327.3 517.4 330.8 516.1L369.4 502.3C410.9 487.5 454.5 479.9 498.6 479.9L560.1 479.9C586.6 479.9 608.1 458.4 608.1 431.9L608.1 143.9C608.1 117.4 586.6 95.9 560.1 95.9L498.6 95.9C454.6 95.9 410.9 103.5 369.4 118.3L320 136z"/><path fill="currentColor" d="M270.6 118.4L320 136L320 518C316.4 518 312.7 517.4 309.2 516.1L270.6 502.3C229.2 487.6 185.5 480 141.5 480L80 480C53.5 480 32 458.5 32 432L32 144C32 117.5 53.5 96 80 96L141.5 96C185.5 96 229.2 103.6 270.7 118.4zM56 528L141.5 528C188.3 528 234.7 536 278.7 551.8L317.3 565.6C319 566.2 320.9 566.2 322.7 565.6L361.3 551.8C405.3 536.1 451.8 528 498.5 528L584 528C597.3 528 608 538.7 608 552C608 565.3 597.3 576 584 576L498.5 576C457.2 576 416.3 583.1 377.4 597L338.8 610.8C326.6 615.1 313.3 615.1 301.1 610.8L262.6 597C223.7 583.1 182.8 576 141.5 576L56 576C42.7 576 32 565.3 32 552C32 538.7 42.7 528 56 528z"/></symbol>
+    <symbol id="fa-link" viewBox="0 0 640 640"><path opacity=".4" fill="currentColor" d="M224 323.5C224 367.4 242.1 407.1 271.2 435.5C286.9 450.8 305.7 462.8 326.7 470.5C343.5 476.6 361.6 480 380.4 480C421.9 480 461.7 463.5 491 434.2L562.1 363.1C591.5 333.7 608 293.9 608 252.5C608 166 538 96 451.5 96C410.1 96 370.3 112.5 340.9 141.8L313.2 169.5C334.1 177.2 353 189.3 368.6 204.6L386.1 187.1C403.4 169.8 427 160 451.5 160C502.6 160 544 201.4 544 252.5C544 277 534.3 300.5 516.9 317.9L445.8 389C428.5 406.3 404.9 416.1 380.3 416.1C355.5 416.1 333 406.3 316.4 390.4C298.9 373.6 287.9 349.9 287.9 323.7C287.9 299.2 297.6 275.7 315 258.3L323.3 250C306.7 234.1 284.3 224.2 259.4 224.2C236.6 252.1 223.9 287.3 223.9 323.7z"/><path fill="currentColor" d="M194.2 251.1C211.5 233.8 235.1 224 259.6 224C310.5 224 352.1 265.7 352.1 316.9C352.1 341.1 342.5 364.4 325.5 381.4L316.6 390.3C333.2 406.2 355.7 416 380.4 416C403.4 388.3 416.1 353.1 416.1 316.9C416.1 230.6 346.2 160 259.6 160C218.1 160 178.3 176.5 149 205.8L77.8 276.9C48.5 306.3 32 346.1 32 387.5C32 474 102 544 188.5 544C229.9 544 269.7 527.5 299.1 498.2L326.7 470.6C305.7 462.9 286.9 450.9 271.2 435.6L253.8 453C236.5 470.3 212.9 480.1 188.4 480.1C137.3 480.1 95.9 438.7 95.9 387.6C95.9 363.1 105.6 339.6 123 322.2L194.1 251.1z"/></symbol>
+    <symbol id="fa-info" viewBox="0 0 640 640"><path opacity=".4" fill="currentColor" d="M272 112C272 138.5 293.5 160 320 160C346.5 160 368 138.5 368 112C368 85.5 346.5 64 320 64C293.5 64 272 85.5 272 112z"/><path fill="currentColor" d="M256 224C238.3 224 224 238.3 224 256C224 273.7 238.3 288 256 288L288 288L288 512L256 512C238.3 512 224 526.3 224 544C224 561.7 238.3 576 256 576L384 576C401.7 576 416 561.7 416 544C416 526.3 401.7 512 384 512L352 512L352 256C352 238.3 337.7 224 320 224L256 224z"/></symbol>
+    <symbol id="fa-clipboard-list" viewBox="0 0 640 640"><path opacity=".4" fill="currentColor" d="M128 160L128 512C128 547.3 156.7 576 192 576L448 576C483.3 576 512 547.3 512 512L512 160C512 124.7 483.3 96 448 96L439.4 96C428.4 76.9 407.7 64 384 64L256 64C232.3 64 211.6 76.9 200.6 96L192 96C156.7 96 128 124.7 128 160zM256 320C256 337.7 241.7 352 224 352C206.3 352 192 337.7 192 320C192 302.3 206.3 288 224 288C241.7 288 256 302.3 256 320zM256 448C256 465.7 241.7 480 224 480C206.3 480 192 465.7 192 448C192 430.3 206.3 416 224 416C241.7 416 256 430.3 256 448zM240 152C240 138.7 250.7 128 264 128L376 128C389.3 128 400 138.7 400 152C400 165.3 389.3 176 376 176L264 176C250.7 176 240 165.3 240 152zM288 320C288 306.7 298.7 296 312 296L424 296C437.3 296 448 306.7 448 320C448 333.3 437.3 344 424 344L312 344C298.7 344 288 333.3 288 320zM288 448C288 434.7 298.7 424 312 424L424 424C437.3 424 448 434.7 448 448C448 461.3 437.3 472 424 472L312 472C298.7 472 288 461.3 288 448z"/><path fill="currentColor" d="M224 352C241.7 352 256 337.7 256 320C256 302.3 241.7 288 224 288C206.3 288 192 302.3 192 320C192 337.7 206.3 352 224 352zM312 296C298.7 296 288 306.7 288 320C288 333.3 298.7 344 312 344L424 344C437.3 344 448 333.3 448 320C448 306.7 437.3 296 424 296L312 296zM312 424C298.7 424 288 434.7 288 448C288 461.3 298.7 472 312 472L424 472C437.3 472 448 461.3 448 448C448 434.7 437.3 424 424 424L312 424zM256 448C256 430.3 241.7 416 224 416C206.3 416 192 430.3 192 448C192 465.7 206.3 480 224 480C241.7 480 256 465.7 256 448z"/></symbol>
+    <symbol id="fa-arrows-rotate" viewBox="0 0 640 640"><path opacity=".4" fill="currentColor" d="M64 416.3L65 543.3C65.1 561 79.6 575.2 97.3 575C115 574.8 129.2 560.4 129 542.7L128.6 491.2L139.3 501.3C185.6 547.4 249.5 576 320 576C449 576 555.7 480.6 573.4 356.5C575.9 339 563.7 322.8 546.3 320.3C528.9 317.8 512.6 330 510.1 347.4C496.8 440.4 416.7 511.9 320 511.9C267 511.9 219 490.4 184.2 455.7C184 455.5 183.8 455.3 183.6 455.1L176 447.9L223.9 447.9C241.6 447.9 255.9 433.6 255.9 415.9C255.9 398.2 241.6 383.9 223.9 383.9L96 384C87.5 384 79.3 387.4 73.3 393.5C67.3 399.6 63.9 407.7 64 416.3z"/><path fill="currentColor" d="M320 128C223.3 128 143.3 199.5 129.9 292.5C127.4 310 111.2 322.1 93.7 319.6C76.2 317.1 64.1 301 66.6 283.5C84.3 159.4 191 64 320 64C390.5 64 454.5 92.6 500.7 138.7L512 149.4L512 96C512 78.3 526.3 64 544 64C561.7 64 576 78.3 576 96L576 224C576 241.7 561.7 256 544 256L416 256C398.3 256 384 241.7 384 224C384 206.3 398.3 192 416 192L463.9 192L456.3 184.8C456.1 184.6 455.9 184.4 455.7 184.2C420.9 149.4 373 128 319.9 128z"/></symbol>
+    <symbol id="fa-print" viewBox="0 0 640 640"><path opacity=".4" fill="currentColor" d="M128 128L128 256L512 256L512 170.5C512 153.5 505.3 137.2 493.3 125.2L450.7 82.7C438.7 70.7 422.5 64 405.5 64L192 64C156.7 64 128 92.7 128 128zM128 448L128 512C128 547.3 156.7 576 192 576L448 576C483.3 576 512 547.3 512 512L512 448L448 448L448 512L192 512L192 448L128 448z"/><path fill="currentColor" d="M64 320C64 284.7 92.7 256 128 256L512 256C547.3 256 576 284.7 576 320L576 416C576 433.7 561.7 448 544 448L448 448L448 416L192 416L192 448L96 448C78.3 448 64 433.7 64 416L64 320zM520 336C520 322.7 509.3 312 496 312C482.7 312 472 322.7 472 336C472 349.3 482.7 360 496 360C509.3 360 520 349.3 520 336z"/></symbol>
+    <symbol id="fa-list-check" viewBox="0 0 640 640"><path opacity=".4" fill="currentColor" d="M224 480C224 462.3 238.3 448 256 448L544 448C561.7 448 576 462.3 576 480C576 497.7 561.7 512 544 512L256 512C238.3 512 224 497.7 224 480zM288 160C288 142.3 302.3 128 320 128L544 128C561.7 128 576 142.3 576 160C576 177.7 561.7 192 544 192L320 192C302.3 192 288 177.7 288 160zM288 320C288 302.3 302.3 288 320 288L544 288C561.7 288 576 302.3 576 320C576 337.7 561.7 352 544 352L320 352C302.3 352 288 337.7 288 320z"/><path fill="currentColor" d="M203.7 133.8C211.3 122.9 208.7 108 197.8 100.4C186.9 92.8 172 95.4 164.4 106.3L124.7 162.8L105 143C95.6 133.7 80.4 133.7 71 143C61.6 152.3 61.7 167.6 71 177L111 217C116 222 123 224.6 130.1 223.9C137.2 223.2 143.6 219.6 147.7 213.8L203.7 133.8zM203.7 293.8C211.3 282.9 208.7 268 197.8 260.4C186.9 252.8 172 255.4 164.4 266.3L124.7 322.8L105 303C95.6 293.6 80.4 293.6 71.1 303C61.8 312.4 61.7 327.6 71 337L111 377C116 382 123 384.6 130.1 383.9C137.2 383.2 143.6 379.6 147.7 373.8L203.7 293.8zM128 520C150.1 520 168 502.1 168 480C168 457.9 150.1 440 128 440C105.9 440 88 457.9 88 480C88 502.1 105.9 520 128 520z"/></symbol>
+    <symbol id="fa-folder-tree" viewBox="0 0 640 640"><path opacity=".4" fill="currentColor" d="M32 88L32 456C32 486.9 57.1 512 88 512L272 512L272 464L88 464C83.6 464 80 460.4 80 456L80 224L272 224L272 176L80 176L80 88C80 74.7 69.3 64 56 64C42.7 64 32 74.7 32 88z"/><path fill="currentColor" d="M320 112L320 240C320 266.5 341.5 288 368 288L560 288C586.5 288 608 266.5 608 240L608 144C608 117.5 586.5 96 560 96L477.3 96C468.8 96 460.7 92.6 454.7 86.6L446.1 78C437.1 69 424.9 63.9 412.2 63.9L368 64C341.5 64 320 85.5 320 112zM320 400L320 528C320 554.5 341.5 576 368 576L560 576C586.5 576 608 554.5 608 528L608 432C608 405.5 586.5 384 560 384L477.3 384C468.8 384 460.7 380.6 454.7 374.6L446.1 366C437.1 357 424.9 351.9 412.2 351.9L368 352C341.5 352 320 373.5 320 400z"/></symbol>
+    <symbol id="fa-triangle-exclamation" viewBox="0 0 640 640"><path opacity=".4" fill="currentColor" d="M68.8 485C62.1 497.4 62.4 512.4 69.6 524.5C76.8 536.6 89.9 544 104 544L536 544C550.1 544 563.1 536.6 570.4 524.5C577.7 512.4 577.9 497.4 571.2 485L355.2 85C348.2 72.1 334.7 64 320 64C305.3 64 291.8 72.1 284.8 85L68.8 485zM352 448C352 465.7 337.7 480 320 480C302.3 480 288 465.7 288 448C288 430.3 302.3 416 320 416C337.7 416 352 430.3 352 448zM288.6 257.7C287.3 239.5 301.7 224 320 224C338.3 224 352.7 239.5 351.4 257.7L344 361.7C343 374.3 332.6 384 320 384C307.4 384 297 374.3 296.1 361.7L288.7 257.7z"/><path fill="currentColor" d="M320 480C302.3 480 288 465.7 288 448C288 430.3 302.3 416 320 416C337.7 416 352 430.3 352 448C352 465.7 337.7 480 320 480zM320 224C338.3 224 352.7 239.5 351.4 257.7L344 361.7C343 374.3 332.6 384 320 384C307.4 384 297 374.3 296.1 361.7L288.7 257.7C287.3 239.5 301.7 224 320 224z"/></symbol>
+    <symbol id="fa-route" viewBox="0 0 640 640"><path opacity=".4" fill="currentColor" d="M160 576L480 576C533 576 576 533 576 480C576 427 533 384 480 384L384 384C366.3 384 352 369.7 352 352C352 334.3 366.3 320 384 320L480 320C474.9 320 470.1 317.9 466.7 314C458 303.9 439.7 282 422.6 256C409.7 256 396.9 256 384 256C331 256 288 299 288 352C288 405 331 448 384 448L480 448C497.7 448 512 462.3 512 480C512 497.7 497.7 512 480 512L217.4 512C200.3 538 182 560 173.3 570C170 573.9 165.1 576 160 576z"/><path fill="currentColor" d="M384 160C384 214.5 447.8 292.1 466.7 314C470 317.9 474.9 320 480 320C485.1 320 489.9 317.9 493.3 314C512.3 292.1 576 214.4 576 160C576 107 533 64 480 64C427 64 384 107 384 160zM448 160C448 142.3 462.3 128 480 128C497.7 128 512 142.3 512 160C512 177.7 497.7 192 480 192C462.3 192 448 177.7 448 160zM64 416C64 470.5 127.8 548.1 146.7 570C150 573.9 154.9 576 160 576C165.1 576 169.9 573.9 173.3 570C192.3 548.1 256 470.4 256 416C256 363 213 320 160 320C107 320 64 363 64 416zM128 416C128 398.3 142.3 384 160 384C177.7 384 192 398.3 192 416C192 433.7 177.7 448 160 448C142.3 448 128 433.7 128 416z"/></symbol>
+  </svg>
+  <div class="page">
+    <header class="hero">
+      <svg aria-hidden="true"><use href="#fa-book-open-cover"></use></svg>
+      <div>
+        <h1>Índice Geral da Documentação</h1>
+        <p class="subtitle">Visão completa do acervo técnico FrotiX · Última atualização: 08/01/2026 · Versão: 1.0 · Status: Em progresso</p>
+      </div>
+    </header>
+
+    <main class="grid">
+
+      <section class="card">
+        <div class="section-title">
+          <svg class="icon" aria-hidden="true"><use href="#fa-link"></use></svg>
+          Quem usa este Ìndice e para qu
+        </div>
+        <ul>
+          <li><strong>Controllers</strong>: redatores usam para localizar caminho dos MD/HTML em <code>Documentacao/Controllers</code> ao documentar endpoints.</li>
+          <li><strong>Razor Pages</strong>: referenciado por <code>Documentacao/Pages</code> ao criar ajuda contextual e mapear PageModels/Controllers.</li>
+          <li><strong>JavaScript</strong>: scripts de valida‡Æo/listagem usam o Ìndice para checar cobertura de documenta‡Æo.</li>
+          <li><strong>QA/Neg¢cio</strong>: ponto de partida antes de testes e apresenta‡äes.</li>
+        </ul>
+      </section>
+      <section class="card">
+        <div class="section-title">
+          <svg class="icon" aria-hidden="true"><use href="#fa-info"></use></svg>
+          Resumo rápido
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;">
+          <span class="pill"><svg class="icon" aria-hidden="true"><use href="#fa-clipboard-list"></use></svg>Raiz e subpastas mapeadas</span>
+          <span class="pill"><svg class="icon" aria-hidden="true"><use href="#fa-arrows-rotate"></use></svg>Conversão MD→HTML obrigatória</span>
+          <span class="pill"><svg class="icon" aria-hidden="true"><use href="#fa-print"></use></svg>Formato A4 · pronto para PDF/print</span>
+        </div>
+        <p style="margin-top:10px;font-size:13px;">Use este índice para navegar pelas seções (Pages, Controllers, Services, Helpers, Middlewares, Models, Repository/IRepository, Data, JavaScript, CSS) e manter a documentação em sincronia com o código.</p>
+      </section>
+
+      <section class="card">
+        <div class="section-title">
+          <svg class="icon" aria-hidden="true"><use href="#fa-list-check"></use></svg>
+          Sumário e status por categoria
+        </div>
+        <table class="table-like">
+          <thead><tr><th>Categoria</th><th>Status</th><th>Notas</th></tr></thead>
+          <tbody>
+            <tr><td>Pages (Razor)</td><td><span class="warn badge">Parcial</span></td><td>~63 de ~290 páginas em MD; PageModels ausentes.</td></tr>
+            <tr><td>Controllers</td><td><span class="ok badge">Listados</span></td><td>Índice completo em MD; aguarda HTML.</td></tr>
+            <tr><td>Services</td><td><span class="ok badge">Listados</span></td><td>22/30 serviços documentados.</td></tr>
+            <tr><td>Helpers</td><td><span class="ok badge">Completo</span></td><td>6/6 em MD.</td></tr>
+            <tr><td>Middlewares</td><td><span class="ok badge">Completo</span></td><td>2/2 em MD.</td></tr>
+            <tr><td>Models</td><td><span class="ok badge">Listados</span></td><td>~135 modelos documentados.</td></tr>
+            <tr><td>Repository / IRepository</td><td><span class="warn badge">Parcial</span></td><td>Índices prontos; maioria em MD.</td></tr>
+            <tr><td>Data</td><td><span class="ok badge">Completo</span></td><td>5 DbContexts mapeados.</td></tr>
+            <tr><td>JavaScript</td><td><span class="warn badge">Parcial</span></td><td>6 arquivos raiz; cadastros/agenda/viagens pendentes.</td></tr>
+            <tr><td>CSS</td><td><span class="ok badge">Completo</span></td><td>`frotix.css` documentado.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <div class="section-title">
+          <svg class="icon" aria-hidden="true"><use href="#fa-folder-tree"></use></svg>
+          Escopo (listagem rápida)
+        </div>
+        <div class="list-scroll">
+          <p><strong>Pages</strong>: Abastecimento, Administracao, Agenda, AlertasFrotiX, AtaRegistroPrecos, Combustivel, Contrato, Empenho, Encarregado, Fornecedor, Frota, Intel, Lavador, Manutencao, MarcaVeiculo, ModeloVeiculo, Motorista, Multa, NotaFiscal, Ocorrencia, Operador, Page (genéricas), Patrimonio, PlacaBronze, Relatorio, Requisitante, SecaoPatrimonial, SetorPatrimonial, SetorSolicitante, TaxiLeg, Temp, Unidade, Uploads, Usuarios, Veiculo, Viagens, WhatsApp, Shared.</p>
+          <p><strong>Controllers</strong>: Abastecimento, Administracao, Agenda, AlertasFrotiX, Api (WhatsApp), AtaRegistroPrecos, Combustivel, Contrato, CustosViagem, Dashboards (Eventos/Lavagem/Motoristas/Veiculos/Viagens), Editor, Empenho, Encarregado, Fornecedor, Glosa, GridAta, GridContrato, Home, ItensContrato, Lavador, LogErros, Login, Manutencao, MarcaVeiculo, ModeloVeiculo, Motorista, Multa, Navigation, Normalize, NotaFiscal, OcorrenciaViagem, Operador, Patrimonio, PdfViewer(CNH), PlacaBronze, Recurso, Relatorios, RelatorioSetorSolicitante, Reports, Requisitante, Secao, Setor, SetorSolicitante, TaxiLeg, TestePdf, Unidade, Upload(CNH/CRLV), Usuario, Veiculo, VeiculosUnidade, Viagem, ViagemEvento, ViagemLimpeza.</p>
+          <p><strong>Services</strong>: AlertasBackground, CacheWarmup, CustomReportSourceResolver, Glosa, LogService, MailService, MotoristaFotoService, RazorRenderService, ReCaptchaService, Servicos/ServicosAsync, TelerikReportWarmup, ToastService, Validations, VeiculoEstatisticaService, ViagemEstatisticaService, Pdf (RelatorioEconomildo), WhatsApp (EvolutionApiWhatsAppService).</p>
+          <p><strong>Helpers</strong>: Alerta, AlertaBackend, ErroHelper, ImageHelper, ListasCompartilhadas, SfdtHelper.</p>
+          <p><strong>Middlewares</strong>: ErrorLoggingMiddleware, UiExceptionMiddleware.</p>
+          <p><strong>Models</strong>: Índice completo (cadastros, DTOs, estatísticas, navigation, viagens, veículos).</p>
+          <p><strong>Repository/IRepository</strong>: Índices completos + impls (Abastecimento, Contrato, ControleAcesso, Evento, Fornecedor, Manutencao, Marca/ModeloVeiculo, Motorista, Multa, NotaFiscal, OcorrenciaViagem, Patrimonio, Recurso, Requisitante, Unidade, Veiculo, VeiculoContrato, Viagem, UnitOfWork).</p>
+          <p><strong>Data</strong>: ApplicationDbContext, ControleAcessoDbContext, FrotiXDbContext (parciais OcorrenciaViagem, RepactuacaoVeiculo).</p>
+          <p><strong>JavaScript</strong>: raiz (alerta.js, frotix.js, global-toast.js, higienizarviagens_054.js, sweetalert_interop.js, syncfusion_tooltips.js); cadastros/agenda/viagens/dashboards a mapear.</p>
+          <p><strong>CSS</strong>: frotix.css.</p>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-title">
+          <svg class="icon" aria-hidden="true"><use href="#fa-triangle-exclamation"></use></svg>
+          Regras críticas
+        </div>
+        <ul>
+          <li>Não apagar os arquivos `.md`; criar `.html` correspondentes com sufixo A4 em ordem alfabética.</li>
+          <li>Atualizar documentação no mesmo ciclo de mudança de código (ver <code>REGRA-CRITICA-ATUALIZACAO-DOCUMENTACAO.md</code>).</li>
+          <li>Respeitar visual FrotiX: header laranja, borda preta + branca, fundo cinza-claro, cards brancos, snippets em azul petróleo.</li>
+          <li>Usar ícones duotone abundantes, mas sem poluição; cada card com ícone temático.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title">
+          <svg class="icon" aria-hidden="true"><use href="#fa-route"></use></svg>
+          Próximas etapas (para este nível)
+        </div>
+        <ul>
+          <li>Converter os demais arquivos da raiz: <code>Documentacao em Html.md</code>, <code>REGRA-CRITICA-ATUALIZACAO-DOCUMENTACAO.md</code>, <code>RELATORIO-FALTANTES.md</code>.</li>
+          <li>Prosseguir para diretórios em ordem alfabética: <code>Banco de Dados</code> → <code>Controllers</code> → <code>CSS</code> → <code>Data</code> → ...</li>
+          <li>Consultar <code>/Manual/manual-mockup.md</code> para diretrizes visuais, pipeline de SPs e padrões A4.</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+
+
+
+

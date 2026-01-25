@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="DeepSeekIDE.Api/DeepSeekIDE.Api.csproj" />
+  <Project Path="DeepSeekIDE.App/DeepSeekIDE.App.csproj" />
+  <Project Path="DeepSeekIDE.Core/DeepSeekIDE.Core.csproj" />
+  <Project Path="DeepSeekIDE.Tests/DeepSeekIDE.Tests.csproj" />
+</Solution>

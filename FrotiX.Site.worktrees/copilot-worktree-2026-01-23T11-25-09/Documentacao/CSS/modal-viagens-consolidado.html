@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>modal-viagens-consolidado.css | FrotiX</title>
+  <style>
+    :root {
+      --vinho: #722F37; --azul: #325d88; --terracota: #A97B6E; --cinza: #f5f7fb;
+      --card: #ffffff; --texto: #1f1f1f; --shadow: 0 20px 45px -18px rgba(0,0,0,.35);
+      --radius: 14px; --header-bg: #b66a3d; --code-bg: #33465c;
+    }
+    @page { size: A4; margin: 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: "Segoe UI","Inter",system-ui,-apple-system,sans-serif;
+      background: var(--cinza); color: var(--texto); padding: 22px; display: flex; justify-content: center;
+    }
+    .page { width: 210mm; max-width: 100%; }
+    .hero {
+      background: var(--header-bg); color: #fff; padding: 22px 24px; border-radius: var(--radius);
+      box-shadow: 0 0 0 1px #000, 0 0 0 4px #fff, var(--shadow);
+    }
+    h1 { margin: 0; font-size: 26px; letter-spacing: 0.2px; }
+    .subtitle { margin: 6px 0 0; font-size: 13px; opacity: 0.92; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 18px; }
+    .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 18px; }
+    .section-title { margin: 0 0 10px; font-size: 15px; font-weight: 800; color: var(--vinho); }
+    ul { margin: 6px 0 0 18px; padding: 0; }
+    li { margin-bottom: 6px; }
+    code, pre {
+      background: var(--code-bg); color: #e9edf5; padding: 10px 12px; border-radius: 10px;
+      display: block; white-space: pre-wrap; font-size: 12px; line-height: 1.45;
+    }
+    .badge { display: inline-flex; gap: 6px; padding: 6px 9px; border-radius: 14px; background: rgba(50,93,136,.12); color: var(--azul); font-weight: 700; font-size: 12px; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <h1>modal-viagens-consolidado.css</h1>
+      <p class="subtitle">Estilos do Modal de Viagens (Agenda) com ajustes de alinhamento e badges.</p>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <div class="section-title">Visão geral</div>
+        <ul>
+          <li>Centraliza estilos do Modal de Viagens em `#modalViagens`.</li>
+          <li>Garante altura uniforme (38px) e alinhamento de componentes Syncfusion.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title">Ajuste 21/01/2026</div>
+        <ul>
+          <li>Reposicionamento do badge `#badgeContadorDatas` para evitar sobreposição.</li>
+          <li>Novos offsets: <code>top: -40%</code> e <code>right: -60%</code>.</li>
+        </ul>
+        <span class="badge">status: concluído</span>
+      </section>
+
+      <section class="card">
+        <div class="section-title">Impacto esperado</div>
+        <ul>
+          <li>Badge ancorado no canto do container.</li>
+          <li>Melhor leitura em telas menores.</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

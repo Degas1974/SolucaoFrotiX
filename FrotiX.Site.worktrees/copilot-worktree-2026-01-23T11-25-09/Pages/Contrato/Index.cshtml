@@ -1,0 +1,360 @@
+@page
+
+@* ╔══════════════════════════════════════════════════════════════════════════╗
+   ║                                                                          ║
+   ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
+   ║                                                                          ║
+   ║  Este arquivo está completamente documentado em:                         ║
+   ║  📄 Documentacao/Pages/Contrato - Index.md                                ║
+   ║                                                                          ║
+   ║  A documentação inclui:                                                   ║
+   ║  • Visão geral completa da funcionalidade                                ║
+   ║  • Explicação detalhada do DataTable                                     ║
+   ║  • Sistema de validação de dependências explicado                        ║
+   ║  • Sistema de gestão de status com bloqueio de ações                    ║
+   ║  • Documentação completa de todos os endpoints API                       ║
+   ║  • Validações e troubleshooting                                         ║
+   ║                                                                          ║
+   ║  Última atualização: 08/01/2026                                          ║
+   ║                                                                          ║
+   ╚══════════════════════════════════════════════════════════════════════════╝ *@
+@model FrotiX.Pages.Contrato.IndexModel
+
+@{
+    ViewData["Title"] = "Contratos";
+    ViewData["PageName"] = "contrato_index";
+    ViewData["Heading"] = "";
+    ViewData["Category1"] = "Cadastros";
+    ViewData["PageIcon"] = "fa-duotone fa-file-contract";
+}
+
+@section HeadBlock {
+    <style>
+/* ======== OUTLINE BRANCO NO BOTÃO DO HEADER (Padrão FrotiX) ======== */
+		.ftx-card-header .btn-fundo-laranja {
+			outline: 2px solid rgba(255, 255, 255, 0.5) !important;
+			outline-offset: 1px;
+			transition: all 0.2s ease;
+		}
+
+		.ftx-card-header .btn-fundo-laranja:hover {
+			outline: 2px solid rgba(255, 255, 255, 0.8) !important;
+			outline-offset: 2px;
+		}
+
+        /* ===== CARD CONTAINER ===== */
+        .ftx-card-contrato {
+            border: none;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            background: #fff;
+            margin-bottom: 1.5rem;
+        }
+
+        .ftx-card-contrato .ftx-card-body {
+            padding: 1.5rem;
+            background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
+        }
+
+        /* ===== CORES DE FUNDO PARA BOTÕES ===== */
+        .fundo-cinza {
+            background-color: #2F4F4F !important;
+            color: #fff !important;
+            box-shadow: 0 2px 6px rgba(47, 79, 79, 0.35);
+        }
+
+        .fundo-cinza:hover {
+            background-color: #253A3A !important;
+            box-shadow: 0 4px 10px rgba(47, 79, 79, 0.45);
+        }
+
+        .fundo-chocolate {
+            background-color: #7B3F00 !important;
+            color: #fff !important;
+            box-shadow: 0 2px 6px rgba(123, 63, 0, 0.35);
+        }
+
+        .fundo-chocolate:hover {
+            background-color: #5a2e00 !important;
+            box-shadow: 0 4px 10px rgba(123, 63, 0, 0.45);
+        }
+
+        /* ===== BTN-INFO (PDF) COM GLOW ===== */
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+            border: none !important;
+            box-shadow: 0 2px 6px rgba(23, 162, 184, 0.4);
+        }
+
+        .btn-info:hover {
+            background: linear-gradient(135deg, #138496 0%, #117a8b 100%) !important;
+            box-shadow: 0 4px 10px rgba(23, 162, 184, 0.55);
+        }
+
+        /* ===== DATATABLE ESTILIZAÇÃO ===== */
+        #tblContrato {
+            font-size: 0.85rem;
+        }
+
+        #tblContrato thead th {
+            background: linear-gradient(135deg, #325d88 0%, #3d6f9e 100%);
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.75rem 0.5rem;
+            border: none;
+            white-space: nowrap;
+        }
+
+        #tblContrato tbody td {
+            padding: 0.6rem 0.5rem;
+            vertical-align: middle;
+            border-color: #e9ecef;
+        }
+
+        #tblContrato tbody tr:hover {
+            background-color: rgba(50, 93, 136, 0.05);
+        }
+
+        /* ===== BOTÕES DE AÇÃO NA TABELA ===== */
+        .ftx-actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .ftx-actions .btn,
+        .ftx-actions .btn-icon-28 {
+            width: 28px;
+            height: 28px;
+            padding: 0 !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            border: none;
+            color: #fff !important;
+        }
+
+        .ftx-actions .btn:hover,
+        .ftx-actions .btn-icon-28:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Glow por cor de botão */
+        .ftx-actions .btn-azul {
+            box-shadow: 0 2px 6px rgba(50, 93, 136, 0.35);
+        }
+        .ftx-actions .btn-azul:hover {
+            box-shadow: 0 4px 10px rgba(50, 93, 136, 0.5);
+        }
+
+        .ftx-actions .btn-vinho {
+            box-shadow: 0 2px 6px rgba(114, 47, 55, 0.35);
+        }
+        .ftx-actions .btn-vinho:hover {
+            box-shadow: 0 4px 10px rgba(114, 47, 55, 0.5);
+        }
+
+        .ftx-actions .btn-info {
+            box-shadow: 0 2px 6px rgba(23, 162, 184, 0.35);
+        }
+        .ftx-actions .btn-info:hover {
+            box-shadow: 0 4px 10px rgba(23, 162, 184, 0.5);
+        }
+
+        .ftx-actions .fundo-cinza {
+            box-shadow: 0 2px 6px rgba(47, 79, 79, 0.35);
+        }
+        .ftx-actions .fundo-cinza:hover {
+            box-shadow: 0 4px 10px rgba(47, 79, 79, 0.5);
+        }
+
+        .ftx-actions .fundo-chocolate {
+            box-shadow: 0 2px 6px rgba(123, 63, 0, 0.35);
+        }
+        .ftx-actions .fundo-chocolate:hover {
+            box-shadow: 0 4px 10px rgba(123, 63, 0, 0.5);
+        }
+
+        /* ===== BOTÕES DESABILITADOS (quando contrato inativo) ===== */
+        /* IMPORTANTE: Forçar pointer-events:auto para permitir tooltips */
+        .ftx-actions .btn.disabled,
+        .ftx-actions .btn.disabled:hover,
+        .ftx-actions .btn.disabled:focus {
+            pointer-events: auto !important;
+            opacity: 0.5;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* ===== TOOLTIP BOOTSTRAP ESTILO SYNCFUSION (para quebra de linha) ===== */
+        .tooltip-ftx-syncfusion .tooltip-inner {
+            background-color: #4a6b8a !important;
+            color: #ffffff !important;
+            border: 1px solid #7a8a9a !important;
+            border-radius: 8px !important;
+            padding: 8px 12px !important;
+            font-size: 13px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+            text-align: left !important;
+            white-space: normal !important;
+            line-height: 1.4 !important;
+            max-width: 300px !important;
+        }
+        .tooltip-ftx-syncfusion .tooltip-arrow {
+            display: none !important;
+        }
+
+        /* ===== BADGE DE STATUS (sem degradê - Padrão FrotiX) ===== */
+        .ftx-badge-status {
+            font-size: 0.65rem;
+            padding: 0.4rem 0.7rem;
+            border-radius: 5px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            min-width: 75px;
+            min-height: 26px;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .ftx-badge-status:hover {
+            transform: translateY(-1px);
+            cursor: pointer;
+        }
+
+        .ftx-badge-status i {
+            font-size: 0.6rem;
+        }
+
+        /* Ativo = Verde Militar */
+        .ftx-badge-status.btn-verde {
+            background-color: #4A5D23 !important;
+            color: #fff !important;
+            border: none;
+        }
+
+        .ftx-badge-status.btn-verde:hover {
+            background-color: #3d4d1c !important;
+        }
+
+        /* Inativo = Cinza Chumbo */
+        .ftx-badge-status.fundo-cinza {
+            background-color: #4A4A4A !important;
+            color: #fff !important;
+        }
+
+        .ftx-badge-status.fundo-cinza:hover {
+            background-color: #3a3a3a !important;
+        }
+
+        /* ===== WRAPPER DO DATATABLE ===== */
+        .dataTables_wrapper .dataTables_filter input {
+            border-radius: 6px;
+            border: 1px solid #cbd5e0;
+            padding: 0.4rem 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .dataTables_wrapper .dataTables_filter input:focus {
+            border-color: #325d88;
+            box-shadow: 0 0 0 3px rgba(50, 93, 136, 0.15);
+            outline: none;
+        }
+
+        .dataTables_wrapper .dataTables_length select {
+            border-radius: 6px;
+            border: 1px solid #cbd5e0;
+            padding: 0.3rem 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_length label,
+        .dataTables_wrapper .dataTables_filter label {
+            font-size: 0.85rem;
+            color: #4a5568;
+        }
+
+        /* ===== RESPONSIVIDADE ===== */
+        @@media (max-width: 768px) {
+            .ftx-card-contrato .ftx-card-body {
+                padding: 1rem;
+            }
+
+            #tblContrato {
+                font-size: 0.8rem;
+            }
+
+            .ftx-actions .btn {
+                width: 26px;
+                height: 26px;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+}
+
+<div class="row">
+    <div class="col-xl-12">
+        <!-- Card FrotiX -->
+        <div class="ftx-card-contrato">
+            <!-- Header do Card - Usa padrão global ftx-card-header -->
+            <div class="ftx-card-header">
+                <h2 class="titulo-paginas">
+                    <i class="fa-duotone fa-file-contract"></i>
+                    Contratos
+                </h2>
+                <div class="ftx-card-actions">
+                    <a href="/Contrato/Upsert" class="btn btn-fundo-laranja" data-ftx-loading>
+                        <i class="fa-duotone fa-clone-plus icon-pulse me-1"></i>
+                        Adicionar Contrato
+                    </a>
+                </div>
+            </div>
+
+            <!-- Body do Card -->
+            <div class="ftx-card-body">
+                <div class="table-responsive">
+                    <table id="tblContrato" class="table table-bordered table-striped ftx-table" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Contrato</th>
+                                <th>Processo</th>
+                                <th>Objeto</th>
+                                <th>Empresa</th>
+                                <th>Vigência</th>
+                                <th>(R$) Anual</th>
+                                <th>(R$) Mensal</th>
+                                <th>Prorrogação</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section ScriptsBlock {
+    <script src="~/js/cadastros/contrato.js" asp-append-version="true"></script>
+}

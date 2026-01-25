@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Índice Geral de Controllers | FrotiX</title>
+  <style>
+    :root {
+      --vinho: #722F37; --vinho-light: #8B3A44;
+      --azul: #325d88; --azul-light: #3d6f9e;
+      --terracota: #A97B6E; --terracota-light: #C08B7E;
+      --verde: #557570; --verde-light: #6A8A85;
+      --cinza: #f5f7fb; --card: #ffffff; --texto: #1f1f1f;
+      --shadow: 0 20px 45px -18px rgba(0,0,0,.35);
+      --radius: 14px; --header-bg: #b66a3d; --code-bg: #33465c;
+    }
+    @page { size: A4; margin: 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: "Segoe UI","Inter",system-ui,-apple-system,sans-serif;
+      background: radial-gradient(circle at 12% 20%, rgba(50,93,136,.08), transparent 26%), radial-gradient(circle at 90% 10%, rgba(114,47,55,.10), transparent 30%), var(--cinza);
+      color: var(--texto); padding: 22px; display: flex; justify-content: center;
+    }
+    .page { width: 210mm; max-width: 100%; }
+    .hero {
+      background: var(--header-bg); color: #fff; padding: 22px 24px;
+      border-radius: var(--radius); box-shadow: 0 0 0 1px #000, 0 0 0 4px #fff, var(--shadow);
+      display: flex; align-items: center; gap: 16px;
+    }
+     .hero .icon { width: 50px; height: 50px; filter: drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+    h1 { margin: 0; font-size: 26px; letter-spacing: 0.2px; }
+    .subtitle { margin: 6px 0 0; font-size: 13px; opacity: 0.92; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 18px; }
+    .card {
+      background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 16px 18px; border: 1px solid rgba(0,0,0,0.05);
+    }
+    .section-title { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; font-size: 15px; font-weight: 800; color: var(--vinho); }
+    .icon { width: 18px; height: 18px; vertical-align: middle; filter: drop-shadow(0 2px 4px rgba(0,0,0,.15)); }
+    .table-like { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .table-like th, .table-like td { text-align: left; padding: 6px 8px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+    .pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 999px; font-weight: 600; background: rgba(169,123,110,.12); color: var(--terracota); margin-right: 8px; font-size: 12px; }
+    .badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+    .ok { background: rgba(85,117,112,.18); color: var(--verde); }
+    .warn { background: rgba(169,123,110,.18); color: var(--terracota); }
+  </style>
+</head>
+
+  
+  <body>
+  <svg style="display:none" aria-hidden="true" focusable="false">
+  
+</svg>
+  <div class="page">
+    <header class="hero">
+      <svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-diagram-project"></use></svg>
+      <div>
+        <h1>Índice Geral de Controllers</h1>
+        <p class="subtitle">Total: 90 · Documentados: 61 (67,8%) · Última atualização MD: 08/01/2026 · Versão 1.0</p>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <div class="section-title">
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-info"></use></svg>
+          Status da documentação
+        </div>
+        <table class="table-like">
+          <thead><tr><th>Categoria</th><th>Doc</th><th>Pend.</th></tr></thead>
+          <tbody>
+            <tr><td>Principais</td><td>3</td><td>0</td></tr>
+            <tr><td>Abastecimento</td><td>1</td><td>4</td></tr>
+            <tr><td>Cadastros</td><td>19</td><td>5</td></tr>
+            <tr><td>Viagens</td><td>6</td><td>14</td></tr>
+            <tr><td>Dashboards</td><td>5</td><td>2</td></tr>
+            <tr><td>Administração</td><td>13</td><td>2</td></tr>
+            <tr><td>Relatórios</td><td>4</td><td>0</td></tr>
+            <tr><td>Upload/Visualização</td><td>4</td><td>0</td></tr>
+            <tr><td>Auxiliares</td><td>4</td><td>1</td></tr>
+            <tr><td>API Externa</td><td>1</td><td>0</td></tr>
+            <tr><td><strong>TOTAL</strong></td><td><strong>61</strong></td><td><strong>29</strong></td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:10px;font-size:12.5px;color:#555;">Documentados: 61/90 (67,8%). Pendentes concentram-se em parciais de Abastecimento/Cadastros/Viagens.</div>
+      </section>
+
+      <section class="card">
+        <div class="section-title">
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-link"></use></svg>
+          Quem usa este Ìndice e para qu
+        </div>
+        <ul>
+          <li><strong>Controllers</strong>: redatores usam para localizar rapidamente o MD/HTML em <code>Documentacao/Controllers</code> antes de atualizar endpoints e dependências.</li>
+          <li><strong>Razor Pages</strong>: referência para mapear quais controllers abastecem páginas em <code>Documentacao/Pages</code> (ajuda contextual e binding).</li>
+          <li><strong>JavaScript</strong>: scripts de build/QA consultam este arquivo para validar cobertura de documentação dos controllers chamados via AJAX.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title">
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-list-check"></use></svg>
+          Documentados (destaques)
+        </div>
+        <p style="font-size:13px;line-height:1.5;">
+          <strong>Principais:</strong> Home, Login, Navigation.<br>
+          <strong>Cadastros:</strong> Veiculo, Motorista, Contrato, Combustivel, Encarregado, Marca/ModeloVeiculo, Requisitante, Operador, Unidade, Agenda, Lavador, Fornecedor, Setor/Secao/SetorSolicitante, VeiculosUnidade, ItensContrato, Recurso, Usuario, Patrimonio.<br>
+          <strong>Viagens:</strong> Viagem, ViagemEvento, ViagemLimpeza, OcorrenciaViagem, Ocorrencia, CustosViagem.<br>
+          <strong>Dashboards:</strong> Viagens, Veiculos, Motoristas, Lavagem, Eventos.<br>
+          <strong>Administração:</strong> Administracao, AtaRegistroPrecos, GridAta/Contrato, Empenho, Glosa, NotaFiscal, Manutencao, Multa (+Uploads/PDF), PlacaBronze, TaxiLeg.<br>
+          <strong>Relatórios:</strong> Relatorios, RelatorioSetorSolicitante, Reports, TestePdf.<br>
+          <strong>Upload/Visualização:</strong> UploadCNH/CRLV, PdfViewer, PdfViewerCNH.<br>
+          <strong>Auxiliares:</strong> Editor, Normalize, LogErros, AlertasFrotiX.<br>
+          <strong>API Externa:</strong> Api/WhatsApp.
+        </p>
+      </section>
+
+      <section class="card">
+        <div class="section-title">
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-triangle-exclamation"></use></svg>
+          Pendentes (parciais)
+        </div>
+        <ul>
+          <li><strong>Abastecimento:</strong> DashboardAPI, Pendencias, Import, Import controller alternativo.</li>
+          <li><strong>Cadastros:</strong> Contrato (partials), SetorSolicitante (get/update), Usuario (usuários específicos).</li>
+          <li><strong>Viagens:</strong> AtualizarDados, CustosViagem*, Dashboards (Economildo/heatmap/eventos), listas, upserts, debug/gestão de ocorrências.</li>
+          <li><strong>Dashboards:</strong> Exportação PDF (viagens/eventos).</li>
+          <li><strong>Administração:</strong> AtaRegistroPrecos partial, NotaFiscal partial.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title">
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-route"></use></svg>
+          Próximos passos sugeridos
+        </div>
+        <ul>
+          <li>Priorizar parciais de Abastecimento e Viagens (maior impacto em dashboards/estatísticas).</li>
+          <li>Completar parciais de Cadastros (Contrato, SetorSolicitante, Usuario).</li>
+          <li>Documentar exportações PDF de dashboards (viagens/eventos).</li>
+          <li>Registrar novos achados no manual e atualizar datas/índices conforme avançar.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title">
+          <svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-list-check"></use></svg>
+          Metadados
+        </div>
+        <div class="pill"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-calendar"></use></svg>Última atualização MD: 08/01/2026</div>
+        <div class="pill"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-layer-group"></use></svg>Versão: 1.0</div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+
+
+

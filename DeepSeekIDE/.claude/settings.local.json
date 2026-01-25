@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet restore:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet new:*)",
+      "Bash(del \"d:\\\\FrotiX\\\\Solucao FrotiX 2026\\\\DeepSeekIDE\\\\DeepSeekIDE.Tests\\\\UnitTest1.cs\")"
+    ]
+  }
+}

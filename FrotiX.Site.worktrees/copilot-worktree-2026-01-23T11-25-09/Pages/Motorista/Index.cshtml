@@ -1,0 +1,420 @@
+@page
+
+@* ╔══════════════════════════════════════════════════════════════════════════╗
+   ║                                                                          ║
+   ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
+   ║                                                                          ║
+   ║  Este arquivo está completamente documentado em:                         ║
+   ║  📄 Documentacao/Pages/Motorista - Index.md                               ║
+   ║                                                                          ║
+   ║  A documentação inclui:                                                   ║
+   ║  • Visão geral completa da funcionalidade                                ║
+   ║  • Explicação detalhada do DataTable                                     ║
+   ║  • Modal de foto explicado                                               ║
+   ║  • Sistema de gestão de status                                           ║
+   ║  • Documentação completa de todos os endpoints API                      ║
+   ║  • Validações e troubleshooting                                         ║
+   ║                                                                          ║
+   ║  Última atualização: 08/01/2026                                          ║
+   ║                                                                          ║
+   ╚══════════════════════════════════════════════════════════════════════════╝ *@
+@model FrotiX.Pages.Motorista.IndexModel
+
+@{
+    ViewData["Title"] = "Motoristas";
+    ViewData["PageName"] = "motorista_index";
+    ViewData["Heading"] = "<i class='fa-duotone fa-user-tie'></i> Cadastros: <span class='fw-300'>Motoristas</span>";
+    ViewData["Category1"] = "Cadastros";
+    ViewData["PageIcon"] = "fa-duotone fa-user-tie";
+}
+
+@section HeadBlock {
+    <style>
+/* ======== OUTLINE BRANCO NO BOTÃO DO HEADER (Padrão FrotiX) ======== */
+		.ftx-card-header .btn-fundo-laranja {
+			outline: 2px solid rgba(255, 255, 255, 0.5) !important;
+			outline-offset: 1px;
+			transition: all 0.2s ease;
+		}
+
+		.ftx-card-header .btn-fundo-laranja:hover {
+			outline: 2px solid rgba(255, 255, 255, 0.8) !important;
+			outline-offset: 2px;
+		}
+
+        /* ====== HEADER AZUL PADRÃO FROTIX ====== */
+        .ftx-card-header {
+            background-color: #3D5771;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ftx-card-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @@keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .ftx-card-header .titulo-paginas {
+            color: #fff !important;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 1.75rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Ícone do header: cores definidas no frotix.css global */
+        .ftx-card-header .titulo-paginas i.fa-duotone {
+            font-size: 2rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .ftx-card-actions {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ====== BOTÃO ADICIONAR - USA btn-fundo-laranja ====== */
+        .ftx-card-header .btn-fundo-laranja {
+            border: 2px solid rgba(255, 255, 255, 0.7) !important;
+            outline: 1px solid rgba(255, 255, 255, 0.3) !important;
+            padding: 0.625rem 1.25rem !important;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ====== PANEL CONTENT ====== */
+        .panel-content {
+            padding: 1.25rem;
+            background: #fff;
+        }
+
+        /* ====== DATATABLE AJUSTES ====== */
+        #tblMotorista_wrapper .row {
+            margin-top: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        #tblMotorista thead {
+            background-color: #3D5771;
+        }
+
+        #tblMotorista thead th {
+            color: #fff !important;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.75rem 0.5rem;
+            border: none;
+            white-space: nowrap;
+        }
+
+        #tblMotorista tbody td {
+            vertical-align: middle;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        #tblMotorista tbody tr:hover {
+            background-color: rgba(61, 87, 113, 0.08) !important;
+        }
+
+        /* ====== CENTRALIZAR BOTÕES DE AÇÃO ====== */
+        .ftx-btn-acoes {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.375rem;
+        }
+
+        /* ====== MODAL PADRÃO FROTIX ====== */
+        .ftx-modal .modal-content {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .ftx-modal .modal-header {
+            background-color: #3D5771;
+            padding: 1rem 1.25rem;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ftx-modal .modal-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        .ftx-modal .modal-title {
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .ftx-modal .modal-title i {
+            --fa-primary-color: #fff;
+            --fa-secondary-color: rgba(255, 255, 255, 0.6);
+            --fa-secondary-opacity: 0.6;
+            font-size: 1.25rem;
+        }
+
+        .ftx-modal .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: 0.8;
+            position: relative;
+            z-index: 1;
+        }
+
+        .ftx-modal .btn-close:hover {
+            opacity: 1;
+        }
+
+        .ftx-modal .modal-body {
+            padding: 1.5rem;
+            background: #fafafa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .ftx-modal .modal-footer {
+            padding: 1rem 1.25rem;
+            background: #f8f9fa;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        /* ====== IMAGEM NO MODAL ====== */
+        .ftx-foto-container {
+            padding: 0.5rem;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .ftx-foto-img {
+            max-width: 100%;
+            height: auto;
+            max-height: 400px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        /* ====== RESPONSIVO ====== */
+        @@media (max-width: 768px) {
+            .ftx-card-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .ftx-card-header .titulo-paginas {
+                font-size: 1.25rem;
+            }
+
+            .ftx-btn-acoes {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+}
+
+<div class="row">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-container show">
+
+                <!-- HEADER AZUL PADRÃO FROTIX -->
+                <div class="ftx-card-header">
+                    <h2 class="titulo-paginas">
+                        <i class="fa-duotone fa-user-tie"></i>
+                        Listagem de Motoristas
+                    </h2>
+                    <div class="ftx-card-actions">
+                        <a href="/Motorista/Upsert"
+                           class="btn btn-fundo-laranja" data-ftx-loading>
+                            <i class="fa-duotone fa-clone-plus icon-pulse me-1"></i>
+                            Adicionar Motorista
+                        </a>
+                    </div>
+                </div>
+
+                <!-- CONTEÚDO -->
+                <div class="panel-content">
+                    <div class="box-body">
+                        <table id="tblMotorista" class="table table-bordered table-striped" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Ponto</th>
+                                    <th>CNH</th>
+                                    <th>Categoria</th>
+                                    <th>Celular</th>
+                                    <th>Unidade</th>
+                                    <th>Contrato</th>
+                                    <th>Tipo</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @* Preenchido via JS *@
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL FOTO DO MOTORISTA - PADRÃO FROTIX -->
+<div class="modal fade ftx-modal" id="modalFoto" tabindex="-1" aria-labelledby="modalFotoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalFotoLabel">
+                    <i class="fa-duotone fa-camera-retro"></i>
+                    <span id="tituloFotoMotorista">Foto do Motorista</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="ftx-foto-container">
+                    <img id="imgViewer"
+                         src="/Images/barbudo.jpg"
+                         alt="Foto do motorista"
+                         class="ftx-foto-img" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-vinho" data-bs-dismiss="modal">
+                    <i class="fa-duotone fa-xmark me-1"></i> Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section ScriptsBlock {
+    <script src="~/js/cadastros/motorista.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function () {
+            try {
+                const modalFotoElement = document.getElementById('modalFoto');
+
+                // Verifica se o elemento existe
+                if (!modalFotoElement) {
+                    console.error("Modal #modalFoto não encontrado!");
+                    return;
+                }
+
+                // Handler para clique no botão de foto (delegação de eventos)
+                $(document).on('click', '.btn-foto', function (e) {
+                    try {
+                        e.preventDefault();
+                        const motoristaId = $(this).data('id');
+                        const button = this;
+
+                        // Reset
+                        $("#tituloFotoMotorista").text("Carregando...");
+                        $("#imgViewer").attr("src", "/Images/barbudo.jpg");
+
+                        // Abre o modal
+                        var modal = new bootstrap.Modal(modalFotoElement);
+                        modal.show();
+
+                        // Busca a foto
+                        $.ajax({
+                            type: "GET",
+                            url: "/api/Motorista/PegaFotoModal",
+                            data: { id: motoristaId },
+                            success: function (res) {
+                                try {
+                                    const motoristaNome = $(button).closest("tr").find("td:eq(0)").text().trim();
+                                    const possuiFoto = (res === false || res === "false" || res === null || res === "" || typeof res === "undefined") ? false : true;
+
+                                    if (!possuiFoto) {
+                                        $("#tituloFotoMotorista").html("Sem foto: <strong>" + motoristaNome + "</strong>");
+                                        $("#imgViewer").attr("src", "/Images/barbudo.jpg").attr("alt", "Sem foto");
+                                    } else {
+                                        $("#tituloFotoMotorista").html("<strong>" + motoristaNome + "</strong>");
+                                        $("#imgViewer").attr("src", "data:image/jpg;base64," + res).attr("alt", "Foto de " + motoristaNome);
+                                    }
+                                } catch (error) {
+                                    Alerta.TratamentoErroComLinha("Index.cshtml", "modalFoto.ajax.success", error);
+                                }
+                            },
+                            error: function (xhr) {
+                                try {
+                                    console.error("Erro ao recuperar foto:", xhr);
+                                    const motoristaNome = $(button).closest("tr").find("td:eq(0)").text().trim();
+                                    $("#tituloFotoMotorista").html("Erro ao carregar: <strong>" + motoristaNome + "</strong>");
+                                    $("#imgViewer").attr("src", "/Images/barbudo.jpg");
+                                } catch (error) {
+                                    Alerta.TratamentoErroComLinha("Index.cshtml", "modalFoto.ajax.error", error);
+                                }
+                            }
+                        });
+                    } catch (error) {
+                        Alerta.TratamentoErroComLinha("Index.cshtml", "btn-foto.click", error);
+                    }
+                });
+
+                // Limpa ao fechar
+                modalFotoElement.addEventListener('hidden.bs.modal', function () {
+                    try {
+                        $("#imgViewer").attr("src", "/Images/barbudo.jpg");
+                        $("#tituloFotoMotorista").text("Foto do Motorista");
+                    } catch (error) {
+                        Alerta.TratamentoErroComLinha("Index.cshtml", "modalFoto.hidden.bs.modal", error);
+                    }
+                });
+
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("Index.cshtml", "document.ready", error);
+            }
+        });
+    </script>
+}

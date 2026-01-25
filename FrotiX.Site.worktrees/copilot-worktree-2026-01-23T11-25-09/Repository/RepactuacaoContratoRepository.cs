@@ -1,0 +1,53 @@
+// ╔═══════════════════════════════════════════════════════════════════════════════════════════════════╗
+// ║   📝 RepactuacaoContratoRepository.cs | Repository/ | 2026-01-20                                  ║
+// ║   Repactuação Contrato. ⚠️ Código morto + quebra Unit of Work                                    ║
+// ╚═══════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using FrotiX.Data;
+using FrotiX.Models;
+using FrotiX.Repository.IRepository;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace FrotiX.Repository
+{
+    public class RepactuacaoContratoRepository : Repository<RepactuacaoContrato>, IRepactuacaoContratoRepository
+    {
+        private new readonly FrotiXDbContext _db;
+
+        public RepactuacaoContratoRepository(FrotiXDbContext db) : base(db)
+        {
+            _db = db;
+        }
+
+        // [ETAPA] Dropdown - OrderBy: Descricao
+        public IEnumerable<SelectListItem> GetRepactuacaoContratoListForDropDown()
+        {
+            return _db.RepactuacaoContrato
+                .OrderBy(o => o.Descricao)
+                .Select(i => new SelectListItem()
+                {
+                    Text = i.Descricao,
+                    Value = i.RepactuacaoContratoId.ToString()
+                });
+        }
+
+        // [ETAPA] Update - ⚠️ Código morto + quebra Unit of Work
+        public new void Update(RepactuacaoContrato RepactuacaoContrato)
+        {
+            var objFromDb = _db.RepactuacaoContrato.AsTracking().FirstOrDefault(s => s.RepactuacaoContratoId == RepactuacaoContrato.RepactuacaoContratoId);
+
+            _db.Update(RepactuacaoContrato);
+            _db.SaveChanges();
+
+        }
+
+
+    }
+}
+
+

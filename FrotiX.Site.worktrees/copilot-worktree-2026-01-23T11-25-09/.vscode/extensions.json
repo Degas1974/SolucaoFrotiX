@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "claude.code",
+        "google.geminicodeassist",
+        "openai.chatgpt",
+        "ms-dotnettools.csharp"
+    ]
+}
