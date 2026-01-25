@@ -1,0 +1,1775 @@
+@page "/vistoriainicial"
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Data
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Popups
+@using Microsoft.Maui.Media
+@using System.Text.Json
+@using System.IO
+@using System.Text
+@using FrotiX.Mobile.Shared.Services
+@using FrotiX.Mobile.Shared.Helpers
+@using System.Diagnostics
+@using FrotiX.Mobile.Vistorias
+@using FrotiX.Mobile.Shared.Models
+@using SixLabors.ImageSharp
+@using SixLabors.ImageSharp.Processing
+@using SixLabors.ImageSharp.Formats.Jpeg
+@using Microsoft.Maui.ApplicationModel
+@using Microsoft.Maui.Storage
+@using FrotiX.Mobile.Shared.Services.IServices
+
+@inject IViagemService vistoriaService
+@inject IVeiculoService veiculoService
+@inject IVistoriadorService vistoriadorService
+@inject IOcorrenciaService OcorrenciaService
+@inject HttpClient httpClient
+@inject IJSRuntime JSRuntime
+@inject AlertaJs Alerta
+@inject ILogService Logger
+@inject NavigationManager Navigation
+
+<PageTitle>Vistoria Inicial - FrotiX</PageTitle>
+
+<!-- Botão Voltar Laranja Redondo -->
+<button type="button" class="btn-voltar-laranja" @onclick="VoltarParaHome">
+    <i class="fa-solid fa-arrow-left"></i>
+</button>
+
+@if (carregando)
+{
+    <div class="loading-container">
+        <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+        <p style="font-size: 1.4rem; margin-top: 20px;">Carregando...</p>
+    </div>
+}
+else
+{
+    <div class="vistoria-container">
+        <!-- Header com Vistoriador -->
+        <div class="page-header">
+            <div class="header-left">
+                <i class="fa-solid fa-clipboard-list"></i>
+                <div>
+                    <h2>Vistoria Inicial</h2>
+                    <p>Abertura de nova vistoria</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="vistoriador-header-group">
+                    <label class="vistoriador-label"><i class="fa-solid fa-user-shield"></i> Vistoriador</label>
+                    <SfDropDownList TValue="string" TItem="VistoriadorViewModel"
+                                    CssClass="sf-input-header"
+                                    Placeholder="Selecione..."
+                                    DataSource="@vistoriadores"
+                                    Value="@vistoriadorSelecionadoId"
+                                    FloatLabelType="FloatLabelType.Never"
+                                    ShowClearButton="true"
+                                    PopupHeight="250px"
+                                    Width="220px">
+                        <DropDownListFieldSettings Value="VistoriadorId" Text="NomeCompleto" />
+                        <DropDownListEvents TValue="string" TItem="VistoriadorViewModel" ValueChange="OnVistoriadorChange" />
+                    </SfDropDownList>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aviso quando não há vistoriador selecionado -->
+        @if (string.IsNullOrEmpty(vistoriadorSelecionadoId))
+        {
+            <div class="aviso-vistoriador">
+                <i class="fa-solid fa-exclamation-triangle"></i>
+                <span>Selecione um vistoriador para habilitar o formulário</span>
+            </div>
+        }
+
+        <!-- Formulário bloqueável -->
+        <!-- Formulário -->
+        <!-- Card: Data/Hora/Motorista -->
+        <div class="card">
+            <div class="form-row row-data-hora-motorista">
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-calendar"></i> Data Inicial</label>
+                    <SfDatePicker TValue="DateTime ?" CssClass="sf-input"
+                                  @bind-Value="viagemAtual.DataInicial"
+                                  Placeholder="Data Inicial" Format="dd/MM/yyyy"
+                                  FloatLabelType="FloatLabelType.Never"
+                                  Min="@min" Max="@max" Enabled="@TemVistoriadorSelecionado" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-clock"></i> Hora</label>
+                    <SfTimePicker TValue="DateTime ?" CssClass="sf-input"
+                                  @bind-Value="viagemAtual.HoraInicio"
+                                  Placeholder="Hora" Format="HH:mm" Step="10"
+                                  FloatLabelType="FloatLabelType.Never" Enabled="@TemVistoriadorSelecionado" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-id-card"></i> Motorista</label>
+                    <SfComboBox TValue="Guid ?" TItem="MotoristaViewModel" @ref="comboMotorista"
+                                CssClass="sf-input"
+                                Placeholder="Digite o nome..."
+                                DataSource="@motoristaListFiltrado"
+                                @bind-Value="viagemAtual.MotoristaId"
+                                FloatLabelType="FloatLabelType.Never"
+                                Enabled="@TemVistoriadorSelecionado" AllowFiltering="true"
+                                FilterType="@Syncfusion.Blazor.DropDowns.FilterType.Contains"
+                                ShowClearButton="true"
+                                PopupHeight="250px">
+                        <ComboBoxFieldSettings Value="MotoristaId" Text="Nome" />
+                        <ComboBoxEvents TValue="Guid ?" TItem="MotoristaViewModel" Filtering="OnMotoristaFiltering" />
+                    </SfComboBox>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Veículo/KM/Combustível -->
+        <div class="card">
+            <div class="form-row row-veiculo-km">
+                <div class="form-group form-group-veiculo">
+                    <label class="form-label"><i class="fa-solid fa-truck"></i> Veículo</label>
+                    <div class="veiculo-container">
+                        <SfComboBox TValue="Guid ?" TItem="VeiculoViewModel" @ref="comboVeiculo"
+                                    CssClass="sf-input"
+                                    Placeholder="Digite placa ou modelo..."
+                                    DataSource="@veiculoListFiltrado"
+                                    @bind-Value="viagemAtual.VeiculoId"
+                                    FloatLabelType="FloatLabelType.Never"
+                                    Enabled="@TemVistoriadorSelecionado" AllowFiltering="true"
+                                    FilterType="@Syncfusion.Blazor.DropDowns.FilterType.Contains"
+                                    ShowClearButton="true"
+                                    PopupHeight="280px">
+                            <ComboBoxFieldSettings Value="VeiculoId" Text="VeiculoCompleto" />
+                            <ComboBoxEvents TValue="Guid ?" TItem="VeiculoViewModel"
+                                            ValueChange="OnVeiculoValueChange"
+                                            Filtering="OnVeiculoFiltering" />
+                        </SfComboBox>
+                        <!-- Botão Ocorrências do Veículo -->
+                        <button type="button"
+                                class="btn-ocorrencias-veiculo @(QtdOcorrenciasVeiculo > 0 ? "" : "sem-ocorrencias")"
+                                disabled="@(!TemVistoriadorSelecionado || !viagemAtual.VeiculoId.HasValue)"
+                                title="@(QtdOcorrenciasVeiculo > 0 ? $"{QtdOcorrenciasVeiculo} ocorrência(s) em aberto" : "Ver ocorrências")"
+                                @onclick="AbrirModalOcorrencias">
+                            <i class="fa-solid fa-car-burst"></i>
+                            @if (QtdOcorrenciasVeiculo > 0)
+                            {
+                                <span class="badge-ocorrencias">@QtdOcorrenciasVeiculo</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-gauge"></i> KM Atual</label>
+                    <SfNumericTextBox TValue="int?" CssClass="sf-input sf-readonly sf-no-spin"
+                                      FloatLabelType="FloatLabelType.Never"
+                                      @bind-Value="viagemAtual.KmAtual"
+                                      Enabled="false"
+                                      ShowSpinButton="false" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-gauge-high"></i> KM Inicial</label>
+                    <SfNumericTextBox TValue="int?" CssClass="sf-input sf-no-spin"
+                                      FloatLabelType="FloatLabelType.Never"
+                                      @bind-Value="viagemAtual.KmInicial"
+                                      Enabled="@TemVistoriadorSelecionado" ShowSpinButton="false" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-gas-pump"></i> Comb.</label>
+                    <SfDropDownList TValue="string" TItem="string" CssClass="sf-input"
+                                    @bind-Value="viagemAtual.NivelCombustivelInicial"
+                                    DataSource="@combustivelOptions"
+                                    Enabled="@TemVistoriadorSelecionado"
+                                    FloatLabelType="FloatLabelType.Never" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Finalidade, Origem e Destino -->
+        <div class="card">
+            <div class="form-row cols-3">
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-bullseye"></i> Finalidade</label>
+                    <SfDropDownList TValue="string" TItem="FinalidadeData" CssClass="sf-input"
+                                    Placeholder="Selecione..."
+                                    DataSource="@listaFinalidades"
+                                    @bind-Value="viagemAtual.Finalidade"
+                                    FloatLabelType="FloatLabelType.Never"
+                                    Enabled="@TemVistoriadorSelecionado"
+                                    PopupHeight="300px">
+                        <DropDownListFieldSettings Value="Descricao" Text="Descricao" />
+                    </SfDropDownList>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-location-dot"></i> Origem</label>
+                    <SfComboBox TValue="string" TItem="Origem" @ref="comboOrigem"
+                                CssClass="sf-input"
+                                Placeholder="Digite a origem..."
+                                DataSource="@origensFiltrado"
+                                @bind-Value="viagemAtual.Origem"
+                                FloatLabelType="FloatLabelType.Never"
+                                Enabled="@TemVistoriadorSelecionado" AllowFiltering="true"
+                                FilterType="@Syncfusion.Blazor.DropDowns.FilterType.Contains"
+                                ShowClearButton="true"
+                                PopupHeight="250px">
+                        <ComboBoxFieldSettings Value="Origens" Text="Origens" />
+                        <ComboBoxEvents TValue="string" TItem="Origem" Filtering="OnOrigemFiltering" />
+                    </SfComboBox>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-flag-checkered"></i> Destino</label>
+                    <SfComboBox TValue="string" TItem="Destino" @ref="comboDestino"
+                                CssClass="sf-input"
+                                Placeholder="Digite o destino..."
+                                DataSource="@destinosFiltrado"
+                                @bind-Value="viagemAtual.Destino"
+                                FloatLabelType="FloatLabelType.Never"
+                                Enabled="@TemVistoriadorSelecionado" AllowFiltering="true"
+                                FilterType="@Syncfusion.Blazor.DropDowns.FilterType.Contains"
+                                ShowClearButton="true"
+                                PopupHeight="250px">
+                        <ComboBoxFieldSettings Value="Destinos" Text="Destinos" />
+                        <ComboBoxEvents TValue="string" TItem="Destino" Filtering="OnDestinoFiltering" />
+                    </SfComboBox>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Requisitante/Ramal/Setor -->
+        <div class="card">
+            <div class="form-row row-requisitante">
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-user"></i> Requisitante</label>
+                    <SfComboBox TValue="Guid ?" TItem="Requisitante" @ref="comboRequisitante"
+                                CssClass="sf-input"
+                                DataSource="@requisitantesFiltrado"
+                                @bind-Value="viagemAtual.RequisitanteId"
+                                Placeholder="Digite o nome..."
+                                FloatLabelType="FloatLabelType.Never"
+                                Enabled="@TemVistoriadorSelecionado" AllowFiltering="true"
+                                FilterType="@Syncfusion.Blazor.DropDowns.FilterType.Contains"
+                                ShowClearButton="true"
+                                PopupHeight="250px">
+                        <ComboBoxFieldSettings Value="RequisitanteId" Text="Nome" />
+                        <ComboBoxEvents TValue="Guid ?" TItem="Requisitante"
+                                        Filtering="OnRequisitanteFiltering"
+                                        OnValueSelect="OnRequisitanteSelect" />
+                    </SfComboBox>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-phone"></i> Ramal</label>
+                    <SfTextBox CssClass="sf-input"
+                               FloatLabelType="FloatLabelType.Never"
+                               @bind-Value="viagemAtual.RamalRequisitante" Enabled="@TemVistoriadorSelecionado" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-building"></i> Setor Solicitante</label>
+                    <SfComboBox TValue="Guid ?" TItem="SetorSolicitante" @ref="comboSetor"
+                                CssClass="sf-input"
+                                DataSource="@setoresFiltrado"
+                                @bind-Value="viagemAtual.SetorSolicitanteId"
+                                Placeholder="Digite o setor..."
+                                FloatLabelType="FloatLabelType.Never"
+                                Enabled="@TemVistoriadorSelecionado" AllowFiltering="true"
+                                FilterType="@Syncfusion.Blazor.DropDowns.FilterType.Contains"
+                                ShowClearButton="true"
+                                PopupHeight="250px">
+                        <ComboBoxFieldSettings Value="SetorSolicitanteId" Text="Nome" />
+                        <ComboBoxEvents TValue="Guid ?" TItem="SetorSolicitante" Filtering="OnSetorFiltering" />
+                    </SfComboBox>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Entregas de Itens/Documentos -->
+        <div class="card">
+            <div class="card-title"><i class="fa-solid fa-file-lines"></i> Entregas de Itens/Documentos</div>
+            <div class="checkbox-row checkbox-row-documentos">
+                <SfCheckBox Label="CRLV entregue" @bind-Checked="CrvlEntregue" CssClass="sf-checkbox" Disabled="@(!TemVistoriadorSelecionado)" />
+                <SfCheckBox Label="Cartão Abastecimento" @bind-Checked="CartaoAbastecimentoEntregue" CssClass="sf-checkbox" Disabled="@(!TemVistoriadorSelecionado)" />
+                <SfCheckBox Label="Cinta Entregue" @bind-Checked="CintaEntregueCheck" CssClass="sf-checkbox" Disabled="@(!TemVistoriadorSelecionado)" />
+                <SfCheckBox Label="Tablet Entregue (Economildos)" @bind-Checked="TabletEntregueCheck" CssClass="sf-checkbox" Disabled="@(!TemVistoriadorSelecionado)" />
+            </div>
+        </div>
+
+        <!-- Card: Rubrica Inicial -->
+        <div class="card">
+            <div class="card-title"><i class="fa-solid fa-pen"></i> Rubrica Inicial</div>
+            <div class="signature-box">
+                <div class="signature-container">
+                    <SfSignature @ref="signaturePad" Disabled="@(!TemVistoriadorSelecionado)"
+                                 LineColor="#374151" BackgroundColor="#ffffff" LineWidth="2" />
+                </div>
+            </div>
+            <button type="button" class="btn-limpar" disabled="@(!TemVistoriadorSelecionado)" @onclick="LimparRubrica">
+                <i class="fa-solid fa-eraser"></i> Limpar
+            </button>
+        </div>
+        <!-- Fim Formulário -->
+        <!-- Espaço para o footer -->
+        <div style="height: 30px;"></div>
+    </div>
+
+    <!-- Footer Fixo -->
+    <div class="footer-fixed">
+        <button type="button" class="btn-salvar" disabled="@(!TemVistoriadorSelecionado)" @onclick="@SalvarVistoriaInicial">
+            <i class="fa-solid fa-floppy-disk"></i>
+            Abrir Vistoria
+        </button>
+    </div>
+
+    <!-- Dialog para Visualizar Foto -->
+    <SfDialog @bind-Visible="@imageOpen"
+              Header="Visualizar Foto"
+              IsModal="true"
+              ShowCloseIcon="true"
+              Width="95%" MinHeight="200px">
+        <DialogEvents Closed="@(_ => imageOpen = false)"
+                      OnOverlayModalClick="@(_ => imageOpen = false)" />
+        <img src="@imageSrc" style="width:100%; height:auto; display:block;" />
+    </SfDialog>
+
+    <!-- Modal Ocorrências do Veículo -->
+    <ModalOcorrenciasVeiculo @bind-Visivel="MostrarModalOcorrencias"
+                             VeiculoId="@(viagemAtual.VeiculoId ?? Guid.Empty)"
+                             ViagemId="@Guid.Empty"
+                             MotoristaId="@viagemAtual.MotoristaId"
+                             @bind-OcorrenciasLocais="OcorrenciasLocaisVeiculo"
+                             OnOcorrenciaAlterada="OnOcorrenciaAlterada" />
+}
+
+<style>
+    /* ============================================ */
+    /* VISTORIA INICIAL - TABLET 10" PORTRAIT      */
+    /* Largura útil: ~800px                        */
+    /* ============================================ */
+
+    /* Botão Voltar Laranja Redondo */
+    .btn-voltar-laranja {
+        position: fixed;
+        top: 30px;
+        left: 12px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+        border: none;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(234, 88, 12, 0.4);
+        z-index: 10000;
+    }
+
+        .btn-voltar-laranja:hover {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px rgba(234, 88, 12, 0.6);
+        }
+
+        .btn-voltar-laranja:active {
+            transform: scale(0.95);
+        }
+
+        .btn-voltar-laranja i {
+            font-size: 1rem;
+        }
+
+    /* Loading */
+    .loading-container {
+        text-align: center;
+        padding: 80px 20px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    /* Container Principal - Portrait */
+    .vistoria-container {
+        padding: 80px 16px 150px 16px;
+        max-width: 800px;
+        margin: 0 auto;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Header com Vistoriador */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-bottom: 20px;
+        padding: 16px;
+        background: linear-gradient(135deg, #553c9a 0%, #7b68ee 100%);
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(85, 60, 154, 0.3);
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+    }
+
+    .vistoriador-header-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .vistoriador-label {
+        color: white;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .vistoriador-label i {
+            color: #fbbf24;
+        }
+
+    .sf-input-header {
+        background: white !important;
+        border-radius: 8px !important;
+    }
+
+        .sf-input-header .e-input-group,
+        .sf-input-header.e-input-group {
+            min-height: 40px !important;
+            height: 40px !important;
+        }
+
+        .sf-input-header .e-input {
+            min-height: 38px !important;
+            height: 38px !important;
+            font-size: 0.9rem !important;
+        }
+
+    /* Aviso Vistoriador */
+    .aviso-vistoriador {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        color: #78350f;
+        padding: 12px 16px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+    }
+
+        .aviso-vistoriador i {
+            font-size: 1.1rem;
+        }
+
+    /* Fieldset reset e bloqueio */
+    fieldset {
+        border: none;
+        margin: 0;
+        padding: 0;
+        min-width: 0;
+    }
+
+        fieldset:disabled .card {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+    .header-left i,
+    .page-header > i {
+        font-size: 2.2rem;
+        color: white;
+    }
+
+    .header-left h2,
+    .page-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+    }
+
+    .header-left p,
+    .page-header p {
+        margin: 2px 0 0 0;
+        font-size: 0.95rem;
+        color: rgba(255,255,255,0.85);
+    }
+
+    /* Cards */
+    .card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        padding: 18px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #374151;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .card-title i {
+            color: #553c9a;
+            font-size: 1.1rem;
+        }
+
+    /* Form */
+    .form-row {
+        display: grid;
+        gap: 12px;
+    }
+
+    .row-data-hora-motorista {
+        grid-template-columns: 1fr 1fr 2fr;
+    }
+
+    .row-veiculo-km {
+        grid-template-columns: 1fr 80px 80px 100px;
+    }
+
+    .cols-2 {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .cols-3 {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .row-requisitante {
+        grid-template-columns: 2fr 1fr 2fr;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #4b5563;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .form-label i {
+            color: #553c9a;
+            font-size: 0.9rem;
+        }
+
+    /* Two Column Section */
+    .two-column-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .column-box {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Checkbox */
+    .checkbox-row {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    /* Signature */
+    .signature-box {
+        border: 2px dashed #d1d5db;
+        border-radius: 12px;
+        overflow: hidden;
+        background: white;
+        position: relative;
+        width: 100%;
+        height: 144px;
+    }
+
+    .signature-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+        /* Força o canvas do Syncfusion a ocupar todo o espaço */
+        .signature-container .e-signature {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .signature-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block !important;
+        }
+
+    .btn-limpar {
+        margin-top: 10px;
+        padding: 10px 16px;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+
+        .btn-limpar:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+    /* Media Section */
+    .media-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .media-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #374151;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .media-title i {
+            color: #553c9a;
+        }
+
+    .media-badges {
+        display: flex;
+        gap: 8px;
+    }
+
+    .badge {
+        background: #553c9a;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .media-actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .btn-foto, .btn-video {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-foto {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+    }
+
+    .btn-video {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        color: white;
+    }
+
+        .btn-foto:hover, .btn-video:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+    .media-gallery {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        min-height: 80px;
+        padding: 10px;
+        background: #f3f4f6;
+        border-radius: 10px;
+    }
+
+    .media-thumb {
+        position: relative;
+        width: 70px;
+        height: 70px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+        .media-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .media-thumb .delete-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 22px;
+            height: 22px;
+            background: rgba(239, 68, 68, 0.9);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 0.7rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+    .play-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 1.5rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        pointer-events: none;
+    }
+
+    .video-placeholder {
+        width: 100%;
+        height: 100%;
+        background: #374151;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+
+    .media-empty {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #9ca3af;
+        gap: 6px;
+        padding: 16px;
+    }
+
+        .media-empty i {
+            font-size: 1.8rem;
+        }
+
+    /* Footer */
+    .footer-fixed {
+        position: fixed;
+        bottom: 50px;
+        left: 0;
+        right: 0;
+        padding: 16px;
+        background: linear-gradient(180deg, rgba(245,247,250,0.9) 0%, rgba(195,207,226,0.98) 100%);
+        backdrop-filter: blur(8px);
+        border-top: 1px solid rgba(0,0,0,0.08);
+        z-index: 1000;
+    }
+
+    .btn-salvar {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        display: flex;
+        height: 58px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: none;
+        border-radius: 14px;
+        color: white;
+        font-size: 1.15rem;
+        font-weight: 700;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+        transition: all 0.2s ease;
+    }
+
+        .btn-salvar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+        }
+
+    /* Toast */
+    .e-toast-success {
+        background: #10b981 !important;
+    }
+
+    .e-toast-error {
+        background: #ef4444 !important;
+    }
+
+    /* Syncfusion Input Styles */
+    .sf-input {
+        font-size: 1rem !important;
+    }
+
+        .sf-input .e-input-group,
+        .sf-input.e-input-group {
+            border-radius: 10px !important;
+            min-height: 48px !important;
+            height: 48px !important;
+        }
+
+        .sf-input .e-input,
+        .sf-input input.e-input,
+        .sf-input .e-control {
+            min-height: 46px !important;
+            height: 46px !important;
+            padding: 8px 12px !important;
+            font-size: 1rem !important;
+        }
+
+        /* ComboBox e DropDown altura */
+        .sf-input.e-ddl.e-input-group,
+        .sf-input.e-combobox.e-input-group {
+            min-height: 48px !important;
+            height: 48px !important;
+        }
+
+        .sf-input.e-ddl .e-input,
+        .sf-input.e-combobox .e-input {
+            min-height: 46px !important;
+            height: 46px !important;
+            line-height: 46px !important;
+        }
+
+        /* DatePicker e TimePicker altura */
+        .sf-input.e-date-wrapper,
+        .sf-input.e-time-wrapper {
+            min-height: 48px !important;
+            height: 48px !important;
+        }
+
+            .sf-input.e-date-wrapper .e-input,
+            .sf-input.e-time-wrapper .e-input {
+                min-height: 46px !important;
+                height: 46px !important;
+            }
+
+        /* NumericTextBox altura */
+        .sf-input.e-numeric.e-input-group {
+            min-height: 48px !important;
+            height: 48px !important;
+        }
+
+        .sf-input.e-numeric .e-input {
+            min-height: 46px !important;
+            height: 46px !important;
+        }
+
+        /* TextBox altura */
+        .sf-input.e-textbox {
+            min-height: 48px !important;
+            height: 48px !important;
+        }
+
+    .sf-textarea textarea {
+        min-height: 80px;
+        resize: none;
+    }
+
+    .sf-readonly .e-input-group {
+        background: #f3f4f6 !important;
+    }
+
+    .sf-no-spin .e-spin-down, .sf-no-spin .e-spin-up {
+        display: none !important;
+    }
+
+    /* Syncfusion Popup Performance */
+    .e-popup {
+        will-change: transform;
+    }
+
+    .e-dropdownbase .e-list-item {
+        padding: 10px 12px !important;
+    }
+
+    /* ======== ESTILOS OCORRÊNCIAS ======== */
+
+    /* Container do Veículo com botão */
+    .veiculo-container {
+        display: flex;
+        gap: 8px;
+        align-items: stretch;
+    }
+
+        .veiculo-container .e-control-wrapper {
+            flex: 1;
+        }
+
+    .form-group-veiculo {
+        flex: 2 !important;
+    }
+
+    /* Botão Ocorrências do Veículo */
+    .btn-ocorrencias-veiculo {
+        width: 48px;
+        min-width: 48px;
+        height: 42px;
+        border: none;
+        background: linear-gradient(135deg, #dc6027 0%, #c45020 100%);
+        color: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        transition: all 0.2s;
+        flex-shrink: 0;
+    }
+
+        .btn-ocorrencias-veiculo:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 96, 39, 0.4);
+        }
+
+        .btn-ocorrencias-veiculo:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-ocorrencias-veiculo.sem-ocorrencias {
+            background: #6b7280;
+        }
+
+        .btn-ocorrencias-veiculo i {
+            font-size: 1.1rem;
+        }
+
+    .badge-ocorrencias {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        background: #ef4444;
+        color: #fff;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 10px;
+        min-width: 18px;
+        text-align: center;
+        box-shadow: 0 0 0 2px #fff;
+    }
+
+    /* Checkbox row para documentos (3 checkboxes lado a lado) */
+    .checkbox-row-documentos {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        gap: 20px;
+        align-items: center;
+    }
+
+        .checkbox-row-documentos .e-checkbox-wrapper {
+            flex: 0 0 auto;
+            white-space: nowrap;
+            display: inline-flex !important;
+        }
+</style>
+
+@code {
+    private bool carregando = true;
+
+    // Vistoriador
+    private List<VistoriadorViewModel> vistoriadores = new();
+    private string? vistoriadorSelecionadoId;
+    private bool TemVistoriadorSelecionado => !string.IsNullOrEmpty(vistoriadorSelecionadoId);
+
+    private SfComboBox<Guid? , VeiculoViewModel> comboVeiculo;
+    private SfComboBox<Guid? , MotoristaViewModel> comboMotorista;
+    private SfComboBox<string , Origem> comboOrigem;
+    private SfComboBox<string , Destino> comboDestino;
+    private SfComboBox<Guid? , Requisitante> comboRequisitante;
+    private SfComboBox<Guid? , SetorSolicitante> comboSetor;
+
+    private List<VeiculoViewModel> veiculoList = new();
+    private List<VeiculoViewModel> veiculoListFiltrado = new();
+    private List<MotoristaViewModel> Motoristas = new();
+    private List<MotoristaViewModel> motoristaListFiltrado = new();
+    private List<Origem> Origens = new();
+    private List<Origem> origensFiltrado = new();
+    private List<Destino> Destinos = new();
+    private List<Destino> destinosFiltrado = new();
+    private List<Requisitante> Requisitantes = new();
+    private List<Requisitante> requisitantesFiltrado = new();
+    private List<SetorSolicitante> SetoresSolicitantes = new();
+    private List<SetorSolicitante> setoresFiltrado = new();
+
+    private Viagem viagemAtual = new();
+    private List<string> combustivelOptions = new() { "Cheio" , "3/4" , "2/4" , "1/4" };
+    private List<FinalidadeData> listaFinalidades = new();
+
+    private string fotosJsonInicial = "[]";
+    private string videosJsonInicial = "[]";
+
+    public DateTime min { get; set; } = DateTime.Now.AddYears(-5);
+    public DateTime max { get; set; } = DateTime.Now.AddYears(5);
+
+    private SfSignature signaturePad;
+
+    private bool imageOpen;
+    private string? imageSrc;
+
+    // Ocorrências
+    private bool MostrarModalOcorrencias = false;
+    private List<OcorrenciaViagem> OcorrenciasLocaisVeiculo = new();
+    private int QtdOcorrenciasVeiculo = 0;
+
+    // Propriedade Cinta Entregue (BIT no banco)
+    private bool CintaEntregueCheck
+    {
+        get => viagemAtual?.CintaEntregue ?? false;
+        set { if (viagemAtual != null) viagemAtual.CintaEntregue = value; }
+    }
+
+    // Propriedade Tablet Entregue (BIT no banco)
+    private bool TabletEntregueCheck
+    {
+        get => viagemAtual?.TabletEntregue ?? false;
+        set { if (viagemAtual != null) viagemAtual.TabletEntregue = value; }
+    }
+
+    private void OpenImage(string src) { imageSrc = src; imageOpen = true; }
+
+    private async Task OpenVideo(string path)
+    {
+        try
+        {
+            await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(path) });
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Não foi possível abrir o vídeo" , ex);
+        }
+    }
+
+    private static List<string> SafeList(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+            return new();
+        try
+        { return JsonSerializer.Deserialize<List<string>>(json) ?? new(); }
+        catch { return new(); }
+    }
+
+    private static string ToJson(List<string> list) => JsonSerializer.Serialize(list);
+
+    private readonly Dictionary<string , string> _videoThumbCache = new();
+
+    private string? GetVideoThumb(string path)
+    {
+        if (_videoThumbCache.TryGetValue(path , out var dataUrl))
+            return dataUrl;
+        _ = GenerateThumbAsync(path);
+        return null;
+    }
+
+    private async Task GenerateThumbAsync(string path)
+    {
+#if ANDROID
+        try
+        {
+            using var retriever = new Android.Media.MediaMetadataRetriever();
+            retriever.SetDataSource(path);
+            using var bmp = retriever.GetFrameAtTime(0, Android.Media.Option.ClosestSync);
+            if (bmp is not null)
+            {
+                using var ms = new MemoryStream();
+                bmp.Compress(Android.Graphics.Bitmap.CompressFormat.Jpeg, 70, ms);
+                _videoThumbCache[path] = "data:image/jpeg;base64," + Convert.ToBase64String(ms.ToArray());
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch { }
+#endif
+    }
+
+    private bool CrvlEntregue
+    {
+        get => string.Equals(viagemAtual?.StatusDocumento , "Entregue" , StringComparison.OrdinalIgnoreCase);
+        set { if (viagemAtual != null) viagemAtual.StatusDocumento = value ? "Entregue" : "Não Entregue"; }
+    }
+
+    private bool CartaoAbastecimentoEntregue
+    {
+        get => string.Equals(viagemAtual?.StatusCartaoAbastecimento , "Entregue" , StringComparison.OrdinalIgnoreCase);
+        set { if (viagemAtual != null) viagemAtual.StatusCartaoAbastecimento = value ? "Entregue" : "Não Entregue"; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Preenche lista de finalidades
+            PreencheListaFinalidade();
+
+            // Carrega todas as listas em paralelo para melhor performance
+            var veiculosTask = vistoriaService.ObterVeiculoCompletoDropdownAsync();
+            var motoristasTask = vistoriaService.ObterMotoristasAsync();
+            var setoresTask = vistoriaService.ObterSetoresSolicitantesAsync();
+            var requisitantesTask = vistoriaService.ObterRequisitantesAsync();
+            var origensTask = vistoriaService.ObterOrigensAsync();
+            var destinosTask = vistoriaService.ObterDestinosAsync();
+            var vistoriadoresTask = vistoriadorService.GetVistoriadoresAsync();
+
+            await Task.WhenAll(veiculosTask , motoristasTask , setoresTask , requisitantesTask , origensTask , destinosTask , vistoriadoresTask);
+
+            veiculoList = await veiculosTask;
+            Motoristas = await motoristasTask;
+            SetoresSolicitantes = await setoresTask;
+            Requisitantes = await requisitantesTask;
+            Origens = await origensTask;
+            Destinos = await destinosTask;
+            vistoriadores = await vistoriadoresTask;
+
+            // Listas filtradas começam vazias - só preenchem ao digitar
+            veiculoListFiltrado = new List<VeiculoViewModel>();
+            motoristaListFiltrado = new List<MotoristaViewModel>();
+            origensFiltrado = new List<Origem>();
+            destinosFiltrado = new List<Destino>();
+            requisitantesFiltrado = new List<Requisitante>();
+            setoresFiltrado = new List<SetorSolicitante>();
+
+            viagemAtual.DataInicial = DateTime.Now;
+            viagemAtual.HoraInicio = DateTime.Now;
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Erro ao carregar dados" , ex);
+        }
+        finally
+        {
+            carregando = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task VoltarParaHome()
+    {
+        try
+        { Navigation.NavigateTo("/"); }
+        catch (Exception ex) { await Alerta.TratamentoErroComLinha("Erro ao voltar" , ex); }
+    }
+
+    private void LimparRubrica() => _ = signaturePad?.ClearAsync();
+
+    private async Task CapturePhoto()
+    {
+        try
+        {
+            await EnsureCameraAndMediaPermissionsAsync();
+            var photo = await MediaPicker.CapturePhotoAsync();
+            if (photo == null)
+                return;
+#if ANDROID
+            var base64 = await AndroidDownsampleToBase64Async(photo, 1280, 80);
+#else
+            await using var stream = await photo.OpenReadAsync();
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            var base64 = $"data:image/jpeg;base64,{Convert.ToBase64String(ms.ToArray())}";
+#endif
+            var fotos = SafeList(fotosJsonInicial);
+            fotos.Add(base64);
+            fotosJsonInicial = ToJson(fotos);
+        }
+        catch (Exception ex) { await Alerta.TratamentoErroComLinha("Erro ao capturar foto" , ex); }
+    }
+
+    private async Task CaptureVideo()
+    {
+        try
+        {
+            await EnsureCameraAndMediaPermissionsAsync();
+            var video = await MediaPicker.CaptureVideoAsync();
+            if (video is null)
+                return;
+            var path = await SaveToCacheAsync(video);
+            var videos = SafeList(videosJsonInicial);
+            videos.Add(path);
+            videosJsonInicial = ToJson(videos);
+        }
+        catch (Exception ex) { await Alerta.TratamentoErroComLinha("Erro ao gravar vídeo" , ex); }
+    }
+
+    private void RemoveFotoInicial(int index)
+    {
+        try
+        { var fotos = SafeList(fotosJsonInicial); if (index >= 0 && index < fotos.Count) fotos.RemoveAt(index); fotosJsonInicial = ToJson(fotos); }
+        catch (Exception ex) { _ = Alerta.TratamentoErroComLinha("Erro ao remover foto" , ex); }
+    }
+
+    private void RemoveVideoInicial(int index)
+    {
+        try
+        { var videos = SafeList(videosJsonInicial); if (index >= 0 && index < videos.Count) videos.RemoveAt(index); videosJsonInicial = ToJson(videos); }
+        catch (Exception ex) { _ = Alerta.TratamentoErroComLinha("Erro ao remover vídeo" , ex); }
+    }
+
+    private async Task OnVeiculoFiltering(FilteringEventArgs args)
+    {
+        try
+        {
+            args.PreventDefaultAction = true;
+            var texto = args.Text?.ToLower() ?? "";
+
+            if (texto.Length < 2)
+            {
+                veiculoListFiltrado = new List<VeiculoViewModel>();
+            }
+            else
+            {
+                veiculoListFiltrado = veiculoList
+                    .Where(v => v.VeiculoCompleto != null && v.VeiculoCompleto.ToLower().Contains(texto))
+                    .Take(20)
+                    .ToList();
+            }
+
+            await comboVeiculo.FilterAsync(veiculoListFiltrado);
+        }
+        catch (Exception ex) { await Alerta.TratamentoErroComLinha("Erro ao filtrar veículos" , ex); }
+    }
+
+    private async Task OnMotoristaFiltering(FilteringEventArgs args)
+    {
+        try
+        {
+            args.PreventDefaultAction = true;
+            var texto = args.Text?.ToLower() ?? "";
+
+            if (texto.Length < 2)
+            {
+                motoristaListFiltrado = new List<MotoristaViewModel>();
+            }
+            else
+            {
+                motoristaListFiltrado = Motoristas
+                    .Where(m => m.Nome != null && m.Nome.ToLower().Contains(texto))
+                    .Take(20)
+                    .ToList();
+            }
+
+            await comboMotorista.FilterAsync(motoristaListFiltrado);
+        }
+        catch (Exception ex) { await Alerta.TratamentoErroComLinha("Erro ao filtrar motoristas" , ex); }
+    }
+
+    private async Task OnOrigemFiltering(FilteringEventArgs args)
+    {
+        try
+        {
+            args.PreventDefaultAction = true;
+            var texto = args.Text?.ToLower() ?? "";
+
+            if (texto.Length < 2)
+            {
+                origensFiltrado = new List<Origem>();
+            }
+            else
+            {
+                origensFiltrado = Origens
+                    .Where(o => o.Origens != null && o.Origens.ToLower().Contains(texto))
+                    .Take(20)
+                    .ToList();
+            }
+
+            await comboOrigem.FilterAsync(origensFiltrado);
+        }
+        catch (Exception ex) { await Alerta.TratamentoErroComLinha("Erro ao filtrar origens" , ex); }
+    }
+
+    private async Task OnDestinoFiltering(FilteringEventArgs args)
+    {
+        try
+        {
+            args.PreventDefaultAction = true;
+            var texto = args.Text?.ToLower() ?? "";
+
+            if (texto.Length < 2)
+            {
+                destinosFiltrado = new List<Destino>();
+            }
+            else
+            {
+                destinosFiltrado = Destinos
+                    .Where(d => d.Destinos != null && d.Destinos.ToLower().Contains(texto))
+                    .Take(20)
+                    .ToList();
+            }
+
+            await comboDestino.FilterAsync(destinosFiltrado);
+        }
+        catch (Exception ex) { await Alerta.TratamentoErroComLinha("Erro ao filtrar destinos" , ex); }
+    }
+
+    private async Task OnRequisitanteFiltering(FilteringEventArgs args)
+    {
+        try
+        {
+            args.PreventDefaultAction = true;
+            var texto = args.Text?.ToLower() ?? "";
+
+            if (texto.Length < 2)
+            {
+                requisitantesFiltrado = new List<Requisitante>();
+            }
+            else
+            {
+                requisitantesFiltrado = Requisitantes
+                    .Where(r => r.Nome != null && r.Nome.ToLower().Contains(texto))
+                    .Take(20)
+                    .ToList();
+            }
+
+            await comboRequisitante.FilterAsync(requisitantesFiltrado);
+        }
+        catch (Exception ex) { await Alerta.TratamentoErroComLinha("Erro ao filtrar requisitantes" , ex); }
+    }
+
+    private async Task OnSetorFiltering(FilteringEventArgs args)
+    {
+        try
+        {
+            args.PreventDefaultAction = true;
+            var texto = args.Text?.ToLower() ?? "";
+
+            if (texto.Length < 2)
+            {
+                setoresFiltrado = new List<SetorSolicitante>();
+            }
+            else
+            {
+                setoresFiltrado = SetoresSolicitantes
+                    .Where(s => s.Nome != null && s.Nome.ToLower().Contains(texto))
+                    .Take(20)
+                    .ToList();
+            }
+
+            await comboSetor.FilterAsync(setoresFiltrado);
+        }
+        catch (Exception ex) { await Alerta.TratamentoErroComLinha("Erro ao filtrar setores" , ex); }
+    }
+
+    private async Task OnVeiculoValueChange(ChangeEventArgs<Guid? , VeiculoViewModel> args)
+    {
+        try
+        {
+            if (args?.ItemData != null)
+            {
+                // Usa direto do dropdown - a API /api/veiculos/economildo já retorna Quilometragem
+                var km = args.ItemData.Quilometragem ?? 0;
+                viagemAtual.KmInicial = km;
+                viagemAtual.KmAtual = km;
+
+                // Verificar ocorrências do veículo
+                if (args.Value.HasValue && args.Value != Guid.Empty)
+                {
+                    await VerificarOcorrenciasVeiculo(args.Value.Value);
+                }
+                StateHasChanged();
+            }
+            else
+            {
+                QtdOcorrenciasVeiculo = 0;
+            }
+        }
+        catch (Exception ex) { await Alerta.TratamentoErroComLinha("Erro ao carregar veículo" , ex); }
+    }
+
+    private void OnVistoriadorChange(ChangeEventArgs<string , VistoriadorViewModel> args)
+    {
+        try
+        {
+            vistoriadorSelecionadoId = args.Value;
+            StateHasChanged();
+        }
+        catch (Exception ex) { _ = Alerta.TratamentoErroComLinha("Erro ao selecionar vistoriador" , ex); }
+    }
+
+    private Task OnRequisitanteSelect(SelectEventArgs<Requisitante> args)
+    {
+        try
+        {
+            var req = args.ItemData;
+            if (req != null)
+            {
+                viagemAtual.SetorSolicitanteId = req.SetorSolicitanteId;
+                var setor = SetoresSolicitantes.FirstOrDefault(s => s.SetorSolicitanteId == req.SetorSolicitanteId);
+                if (setor != null)
+                {
+                    viagemAtual.RamalRequisitante = setor.Ramal?.ToString();
+                    // Adiciona o setor à lista filtrada para o ComboBox mostrar o nome
+                    setoresFiltrado = new List<SetorSolicitante> { setor };
+                }
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex) { _ = Alerta.TratamentoErroComLinha("Erro ao selecionar requisitante" , ex); }
+        return Task.CompletedTask;
+    }
+
+    // ======== MÉTODOS DE OCORRÊNCIAS ========
+    private async Task VerificarOcorrenciasVeiculo(Guid veiculoId)
+    {
+        try
+        {
+            var result = await OcorrenciaService.ContarOcorrenciasAbertasVeiculoAsync(veiculoId);
+            if (result.Success)
+            {
+                QtdOcorrenciasVeiculo = result.Data;
+            }
+            else
+            {
+                QtdOcorrenciasVeiculo = 0;
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Erro ao verificar ocorrências" , ex);
+            QtdOcorrenciasVeiculo = 0;
+        }
+    }
+
+    private void AbrirModalOcorrencias()
+    {
+        if (viagemAtual.VeiculoId.HasValue && viagemAtual.VeiculoId != Guid.Empty)
+        {
+            MostrarModalOcorrencias = true;
+        }
+    }
+
+    private async Task OnOcorrenciaAlterada()
+    {
+        try
+        {
+            if (viagemAtual.VeiculoId.HasValue)
+            {
+                await VerificarOcorrenciasVeiculo(viagemAtual.VeiculoId.Value);
+            }
+            // Adiciona as ocorrências locais ao contador
+            QtdOcorrenciasVeiculo += OcorrenciasLocaisVeiculo.Count;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Erro ao atualizar ocorrências" , ex);
+        }
+    }
+
+    private async Task SalvarVistoriaInicial()
+    {
+        try
+        {
+            // === VALIDAÇÃO DOS CAMPOS OBRIGATÓRIOS ===
+            var erros = new List<string>();
+
+            // Data/Hora/Motorista
+            if (!viagemAtual.DataInicial.HasValue)
+                erros.Add("Data Inicial");
+
+            if (!viagemAtual.HoraInicio.HasValue)
+                erros.Add("Hora");
+
+            if (!viagemAtual.MotoristaId.HasValue || viagemAtual.MotoristaId == Guid.Empty)
+                erros.Add("Motorista");
+
+            // Veículo/KM/Combustível
+            if (!viagemAtual.VeiculoId.HasValue || viagemAtual.VeiculoId == Guid.Empty)
+                erros.Add("Veículo");
+
+            if (!viagemAtual.KmInicial.HasValue || viagemAtual.KmInicial <= 0)
+                erros.Add("KM Inicial");
+
+            if (string.IsNullOrEmpty(viagemAtual.NivelCombustivelInicial))
+                erros.Add("Combustível");
+
+            // Finalidade
+            if (string.IsNullOrEmpty(viagemAtual.Finalidade))
+                erros.Add("Finalidade");
+
+            // Origem/Destino
+            if (string.IsNullOrEmpty(viagemAtual.Origem))
+                erros.Add("Origem");
+
+            if (string.IsNullOrEmpty(viagemAtual.Destino))
+                erros.Add("Destino");
+
+            // Requisitante/Ramal/Setor
+            if (!viagemAtual.RequisitanteId.HasValue || viagemAtual.RequisitanteId == Guid.Empty)
+                erros.Add("Requisitante");
+
+            if (string.IsNullOrEmpty(viagemAtual.RamalRequisitante))
+                erros.Add("Ramal");
+
+            if (!viagemAtual.SetorSolicitanteId.HasValue || viagemAtual.SetorSolicitanteId == Guid.Empty)
+                erros.Add("Setor Solicitante");
+
+            // Rubrica
+            bool rubricaVazia = signaturePad == null || await signaturePad.IsEmptyAsync();
+            if (rubricaVazia)
+                erros.Add("Rubrica Inicial");
+
+            if (erros.Any())
+            {
+                await Alerta.Erro("Campos obrigatórios" , $"Preencha: {string.Join(", " , erros)}");
+                return;
+            }
+
+            // === PREPARA DADOS ===
+            // Gera novo ID se não existir
+            if (viagemAtual.ViagemId == Guid.Empty)
+                viagemAtual.ViagemId = Guid.NewGuid();
+
+            // Rubrica
+            if (signaturePad != null && !(await signaturePad.IsEmptyAsync()))
+                viagemAtual.Rubrica = await signaturePad.GetSignatureAsync();
+
+            // KM Atual = KM Inicial se não definido
+            if (viagemAtual.KmAtual == null)
+                viagemAtual.KmAtual = viagemAtual.KmInicial ?? 0;
+
+            // Mídia
+            fotosJsonInicial = string.IsNullOrWhiteSpace(fotosJsonInicial) ? "[]" : fotosJsonInicial;
+            videosJsonInicial = string.IsNullOrWhiteSpace(videosJsonInicial) ? "[]" : videosJsonInicial;
+            viagemAtual.FotosBase64 = Encoding.UTF8.GetBytes(fotosJsonInicial);
+            viagemAtual.VideosBase64 = Encoding.UTF8.GetBytes(videosJsonInicial);
+
+            // Status e Vistoriador
+            viagemAtual.Status = "Aberta";
+            viagemAtual.StatusAgendamento = false;
+            viagemAtual.FoiAgendamento = false;
+            viagemAtual.NoFichaVistoria = null;
+            viagemAtual.VistoriadorInicialId = vistoriadorSelecionadoId;
+            viagemAtual.VistoriadorFinalId = null;
+
+            // Campos de recorrência (não é agendamento recorrente)
+            viagemAtual.Monday = false;
+            viagemAtual.Tuesday = false;
+            viagemAtual.Wednesday = false;
+            viagemAtual.Thursday = false;
+            viagemAtual.Friday = false;
+            viagemAtual.Saturday = false;
+            viagemAtual.Sunday = false;
+
+            // Usuário e Data de Criação
+            viagemAtual.UsuarioIdCriacao = vistoriadorSelecionadoId;
+            viagemAtual.DataCriacao = DateTime.Now;
+
+            // === SALVA ===
+            bool sucesso = await vistoriaService.SalvarVistoria(viagemAtual);
+
+            if (sucesso)
+            {
+                // Limpa variáveis pesadas para liberar memória antes de navegar
+                LimparMemoria();
+
+                await Alerta.Sucesso("Sucesso" , "Vistoria aberta com sucesso!");
+
+                // Navega para home após breve delay
+                await Task.Delay(800);
+                
+                // Força GC antes de navegar
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    Navigation.NavigateTo("/" , forceLoad: true);
+                });
+            }
+            else
+            {
+                await Alerta.Erro("Erro" , "Falha ao salvar vistoria. Verifique a conexão com o servidor.");
+            }
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Erro ao salvar vistoria inicial" , ex);
+        }
+    }
+
+    private void LimparMemoria()
+    {
+        // Limpa variáveis de mídia para liberar memória
+        fotosJsonInicial = "[]";
+        videosJsonInicial = "[]";
+        viagemAtual.FotosBase64 = null;
+        viagemAtual.VideosBase64 = null;
+        viagemAtual.Rubrica = null;
+        
+        // Limpa listas
+        veiculoList.Clear();
+        veiculoListFiltrado.Clear();
+        Motoristas.Clear();
+        motoristaListFiltrado.Clear();
+        Origens.Clear();
+        origensFiltrado.Clear();
+        Destinos.Clear();
+        destinosFiltrado.Clear();
+        Requisitantes.Clear();
+        requisitantesFiltrado.Clear();
+        SetoresSolicitantes.Clear();
+        setoresFiltrado.Clear();
+    }
+
+    private static async Task EnsureCameraAndMediaPermissionsAsync()
+    {
+        await Permissions.RequestAsync<Permissions.Camera>();
+#if ANDROID
+        await Permissions.RequestAsync<Permissions.StorageRead>();
+#endif
+    }
+
+#if ANDROID
+    private static int CalcInSampleSize(Android.Graphics.BitmapFactory.Options opt, int reqW, int reqH)
+    {
+        var h = opt.OutHeight; var w = opt.OutWidth; int inSample = 1;
+        if (h > reqH || w > reqW)
+        {
+            var halfH = h / 2; var halfW = w / 2;
+            while ((halfH / inSample) >= reqH && (halfW / inSample) >= reqW) inSample *= 2;
+        }
+        return inSample;
+    }
+
+    private static async Task<string> AndroidDownsampleToBase64Async(FileResult file, int maxDim = 1280, int quality = 80)
+    {
+        var tmp = Path.Combine(FileSystem.CacheDirectory, $"cap_{Guid.NewGuid():N}.jpg");
+        await using (var src = await file.OpenReadAsync())
+        await using (var dst = File.OpenWrite(tmp))
+            await src.CopyToAsync(dst);
+
+        var opt = new Android.Graphics.BitmapFactory.Options { InJustDecodeBounds = true };
+        Android.Graphics.BitmapFactory.DecodeFile(tmp, opt);
+        opt.InSampleSize = CalcInSampleSize(opt, maxDim, maxDim);
+        opt.InJustDecodeBounds = false;
+        opt.InPreferredConfig = Android.Graphics.Bitmap.Config.Rgb565;
+        using var bmp = Android.Graphics.BitmapFactory.DecodeFile(tmp, opt);
+
+        using var ms = new MemoryStream();
+        bmp.Compress(Android.Graphics.Bitmap.CompressFormat.Jpeg, quality, ms);
+        try { File.Delete(tmp); } catch { }
+
+        return $"data:image/jpeg;base64,{Convert.ToBase64String(ms.ToArray())}";
+    }
+#endif
+
+    private static async Task<string> SaveToCacheAsync(FileResult file)
+    {
+        var ext = Path.GetExtension(file.FileName);
+        if (string.IsNullOrWhiteSpace(ext))
+            ext = ".mp4";
+        var name = $"vid_{DateTime.UtcNow:yyyyMMddHHmmssfff}{ext}";
+        var dest = Path.Combine(FileSystem.CacheDirectory , name);
+
+        await using var src = await file.OpenReadAsync();
+        await using var dst = File.Open(dest , FileMode.Create , FileAccess.Write , FileShare.None);
+        await src.CopyToAsync(dst);
+
+        return dest;
+    }
+
+    // Classe para o dropdown de Finalidade
+    public class FinalidadeData
+    {
+        public int FinalidadeId { get; set; }
+        public string Descricao { get; set; } = string.Empty;
+    }
+
+    // Método para preencher a lista de Finalidades
+    private void PreencheListaFinalidade()
+    {
+        listaFinalidades = new List<FinalidadeData>
+        {
+            new FinalidadeData { FinalidadeId = 1, Descricao = "Transporte de Funcionários" },
+            new FinalidadeData { FinalidadeId = 2, Descricao = "Transporte de Convidados" },
+            new FinalidadeData { FinalidadeId = 3, Descricao = "Transporte de Materiais/Cargas" },
+            new FinalidadeData { FinalidadeId = 4, Descricao = "Economildo Norte(Cefor)" },
+            new FinalidadeData { FinalidadeId = 5, Descricao = "Economildo Sul(PGR)" },
+            new FinalidadeData { FinalidadeId = 6, Descricao = "Economildo Rodoviária" },
+            new FinalidadeData { FinalidadeId = 7, Descricao = "Mesa (carros pretos)" },
+            new FinalidadeData { FinalidadeId = 8, Descricao = "TV/Rádio Câmara" },
+            new FinalidadeData { FinalidadeId = 9, Descricao = "Aeroporto" },
+            new FinalidadeData { FinalidadeId = 10, Descricao = "Saída para Manutenção" },
+            new FinalidadeData { FinalidadeId = 11, Descricao = "Chegada da Manutenção" },
+            new FinalidadeData { FinalidadeId = 12, Descricao = "Abastecimento" },
+            new FinalidadeData { FinalidadeId = 13, Descricao = "Recebimento da Locadora" },
+            new FinalidadeData { FinalidadeId = 14, Descricao = "Devolução à Locadora" },
+            new FinalidadeData { FinalidadeId = 15, Descricao = "Saída Programada" },
+            new FinalidadeData { FinalidadeId = 16, Descricao = "Evento" },
+            new FinalidadeData { FinalidadeId = 17, Descricao = "Ambulância" },
+            new FinalidadeData { FinalidadeId = 18, Descricao = "Enviado Depol" },
+            new FinalidadeData { FinalidadeId = 19, Descricao = "Recebido Depol" },
+            new FinalidadeData { FinalidadeId = 20, Descricao = "Demanda Política" },
+            new FinalidadeData { FinalidadeId = 21, Descricao = "Passaporte" },
+            new FinalidadeData { FinalidadeId = 22, Descricao = "Cursos Depol" }
+        };
+    }
+}

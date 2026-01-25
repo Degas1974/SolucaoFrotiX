@@ -1,0 +1,799 @@
+﻿/* === app.css (compacto & limpo) ===
+   Tema grafite + Syncfusion + layout essencial
+*/
+
+/* ---------- Tokens ---------- */
+:root {
+    font-size: 14px; /* ajuste global: 14/15/16… */
+    --bg: #f7f7f9;
+    --fg: #1f2328;
+    --muted: #6b7280;
+    /* brand neutro */
+    --brand: #374151; /* grafite (slate-700) */
+    --brand-contrast: #fff;
+    /* superfícies/bordas/sombra */
+    --topbar-bg: #fff;
+    --main-bg: var(--bg);
+    --footer-bg: #fff;
+    --border: #e6e7ea;
+    --shadow: 0 1px 2px rgba(0,0,0,.05), 0 6px 16px rgba(0,0,0,.04);
+    /* Font Awesome duotone helpers */
+    --fx-icon-primary: var(--brand);
+    --fx-icon-secondary: #6b7280; /* slate-600 */
+    --fx-icon-secondary-opacity: .85;
+}
+
+@media (prefers-color-scheme:dark) {
+    :root {
+        --bg: #0f172a;
+        --fg: #e5e7eb;
+        --muted: #a1a1aa;
+        --brand: #9ca3af; /* mais claro p/ contraste no dark */
+        --brand-contrast: #0b1020;
+        --topbar-bg: #0b1220;
+        --main-bg: #0f172a;
+        --footer-bg: #0b1220;
+        --border: #2b2f36;
+        --fx-icon-secondary: #6b7280;
+        --fx-icon-secondary-opacity: .95;
+    }
+}
+
+/* ---------- Reset / Global ---------- */
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font: 1rem/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial,"Apple Color Emoji","Segoe UI Emoji";
+    color: var(--fg);
+    background: var(--main-bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Syncfusion: tipografia consistente */
+.e-control, [class^="e-"] *:not([class*="e-icon"]) {
+    font-size: 1rem !important;
+}
+
+/* links */
+a, .btn-link, .btn.link {
+    color: var(--brand);
+    text-decoration: none;
+}
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+/* ---------- Botões utilitários ---------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .5rem .9rem;
+    border-radius: .5rem;
+    border: 1px solid var(--border);
+    background: var(--topbar-bg);
+    color: var(--fg);
+    cursor: pointer;
+}
+
+    .btn.primary, .btn-primary {
+        background: var(--brand);
+        color: var(--brand-contrast);
+        border-color: transparent;
+    }
+
+    /* foco acessível */
+    .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+        box-shadow: 0 0 0 .1rem #fff, 0 0 0 .25rem rgba(55,65,81,.6);
+    }
+
+/* ---------- Layout ---------- */
+.page {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--main-bg);
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .75rem 1rem;
+    background: var(--topbar-bg);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+    .topbar h1 {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+    }
+
+.main {
+    flex: 1 1 auto;
+    display: block;
+    background: var(--main-bg);
+}
+
+.content {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+@media (min-width:768px) {
+    .content {
+        padding: 1.25rem 1.5rem;
+    }
+}
+
+/* contêineres do app */
+#app, .main-container {
+    min-height: 100vh;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: row;
+}
+
+/* rodapé */
+.footer {
+    margin-top: auto;
+    background: var(--footer-bg);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    padding: .75rem 1rem;
+    color: var(--muted);
+    font-size: .9rem;
+}
+
+/* ---------- Validação / Erros ---------- */
+h1:focus {
+    outline: none;
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid #e50000;
+}
+
+.validation-message {
+    color: #e50000;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0,0,0,.2);
+    display: none;
+    left: 0;
+    padding: .6rem 1.25rem .7rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: .75rem;
+        top: .5rem;
+    }
+
+.blazor-error-boundary {
+    background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjIzNSIgeT0iNTEiIHdpZHRoPSI1NiIgaGVpZ2h0PSI0OSIvPjwvY2xpcFBhdGg+PC9kZWZzPjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMzUgLTUxKSI+PHBhdGggZD0iTTI2My41MDYgNTFDMjY0LjcxNyA1MSAyNjUuODEzIDUxLjQ4MzcgMjY2LjYwNiA1Mi4yNjU4TDI2Ny4wNTIgNTIuNzk4NyAyNjcuNTM5IDUzLjYyODMgMjkwLjE4NSA5Mi4xODMxIDI5MC41NDUgOTIuNzk1IDI5MC42NTYgOTIuOTk2QzI5MC44NzcgOTMuNTEzIDI5MSA5NC4wODE1IDI5MSA5NC42NzgyIDI5MSA5Ny4wNjUxIDI4OS4wMzggOTkgMjg2LjYxNyA5OUwyNDAuMzgzIDk5QzIzNy45NjMgOTkgMjM2IDk3LjA2NTEgMjM2IDk0LjY3ODIgMjM2IDk0LjM3OTkgMjM2LjAzMSA5NC4wODg2IDIzNi4wODkgOTMuODA3MkwyMzYuMzM4IDkzLjAxNjIgMjM2Ljg1OCA5Mi4xMzE0IDI1OS40NzMgNTMuNjI5NCAyNTkuOTYxIDUyLjc5ODUgMjYwLjQwNyA1Mi4yNjU4QzI2MS4yIDUxLjQ4MzcgMjYyLjI5NiA1MSAyNjMuNTA2IDUxWk0yNjMuNTg2IDY2LjAxODNDMjYwLjczNyA2Ni4wMTgzIDI1OS4zMTMgNjcuMTI0NSAyNTkuMzEzIDY5LjMzNyAyNTkuMzEzIDY5LjYxMDIgMjU5LjMzMiA2OS44NjA4IDI1OS4zNzEgNzAuMDg4N0wyNjEuNzk1IDg0LjAxNjEgMjY1LjM4IDg0LjAxNjEgMjY3LjgyMSA2OS43NDc1QzI2Ny44NiA2OS43MzA5IDI2Ny44NzkgNjkuNTg3NyAyNjcuODc5IDY5LjMxNzkgMjY3Ljg3OSA2Ny4xMTgyIDI2Ni40NDggNjYuMDE4MyAyNjMuNTg2IDY2LjAxODNaTTI2My41NzYgODYuMDU0N0MyNjEuMDQ5IDg2LjA1NDcgMjU5Ljc4NiA4Ny4zMDA1IDI1OS43ODYgODkuNzkyMSAyNTkuNzg2IDkyLjI4MzcgMjYxLjA0OSA5My41Mjk1IDI2My41NzYgOTMuNTI5NSAyNjYuMTE2IDkzLjUyOTUgMjY3LjM4NyA5Mi4yODM3IDI2Ny4zODcgODkuNzkyMSAyNjcuMzg3IDg3LjMwMDUgMjY2LjExNiA4Ni4wNTQ3IDI2My41NzYgODYuMDU0N1oiIGZpbGw9IiNGRkU1MDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=) no-repeat 1rem/1.8rem,#b32121;
+    padding: 1rem 1rem 1rem 3.7rem;
+    color: #fff;
+}
+
+    .blazor-error-boundary::after {
+        content: "An error has occurred.";
+    }
+
+/* ---------- Utilitários ---------- */
+.alert {
+    border: 1px solid var(--border);
+    padding: .75rem 1rem;
+    border-radius: .5rem;
+    background: rgba(220,38,38,.08);
+}
+
+    .alert.alert-danger {
+        border-color: rgba(220,38,38,.35);
+    }
+
+.container-vistorias, .grid-container {
+    max-width: none !important;
+    width: 100% !important;
+}
+
+.grid-card {
+    width: 100%;
+}
+
+.e-tooltip-wrap {
+    z-index: 3000 !important;
+}
+
+/* ---------- Grid Syncfusion (compacto opt-in) ---------- */
+.e-grid.grid-compact, .grid-compact .e-grid {
+    font-size: 10px !important;
+}
+
+    .e-grid.grid-compact .e-headercell,
+    .e-grid.grid-compact .e-rowcell,
+    .grid-compact .e-grid .e-headercell,
+    .grid-compact .e-grid .e-rowcell {
+        padding: 4px 6px !important;
+        line-height: 16px !important;
+    }
+
+    .e-grid.grid-compact .e-headercelldiv,
+    .grid-compact .e-grid .e-headercelldiv {
+        font-size: 11px !important;
+        line-height: 16px !important;
+    }
+
+    .e-grid.grid-compact .e-toolbar,
+    .e-grid.grid-compact .e-toolbar .e-btn,
+    .e-grid.grid-compact .e-toolbar .e-tbar-btn,
+    .grid-compact .e-grid .e-toolbar,
+    .grid-compact .e-grid .e-toolbar .e-btn,
+    .grid-compact .e-grid .e-toolbar .e-tbar-btn {
+        min-height: 28px !important;
+        height: 28px !important;
+        font-size: 10px !important;
+    }
+
+    .e-grid.grid-compact .e-pager, .grid-compact .e-grid .e-pager {
+        font-size: 10px !important;
+        padding: 2px 6px !important;
+    }
+
+    .e-grid.grid-compact .e-input-group,
+    .e-grid.grid-compact .e-input,
+    .e-grid.grid-compact .e-ddl.e-input-group,
+    .grid-compact .e-grid .e-input-group,
+    .grid-compact .e-grid .e-input,
+    .grid-compact .e-grid .e-ddl.e-input-group {
+        height: 26px !important;
+        min-height: 26px !important;
+        font-size: 10px !important;
+    }
+
+.e-bigger .e-grid.grid-compact, .e-bigger .grid-compact .e-grid {
+    font-size: 10px !important;
+}
+
+/* ---------- Headings + ícones (FA) ---------- */
+.fx-h3 {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    line-height: 1.2;
+    margin: 0 0 .75rem 0;
+}
+
+    .fx-h3 > .fa-duotone, .fx-h3 > .fa-solid {
+        font-size: 1.15em;
+        --fa-primary-color: var(--fx-icon-primary);
+        --fa-secondary-color: var(--fx-icon-secondary);
+        --fa-secondary-opacity: var(--fx-icon-secondary-opacity,.9);
+    }
+
+    .fx-h3 > .fa-solid {
+        color: var(--fx-icon-primary);
+    }
+
+/* títulos de seção */
+.inspection .section-title.fx-h3 {
+    font-size: clamp(1.25rem,1.2vw + .9rem,1.6rem);
+    font-weight: 700;
+    margin: 1.25rem 0 .5rem;
+}
+
+    .inspection .section-title.fx-h3 > .fa-duotone,
+    .inspection .section-title.fx-h3 > .fa-solid {
+        font-size: 1.2em;
+    }
+
+/* ---------- Cards / Fields / Chips / Galeria / Footer sticky ---------- */
+.card.tight {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: .75rem;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.field-label {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    margin-bottom: .25rem;
+    color: var(--fg);
+}
+
+    .field-label i {
+        color: var(--fx-icon-secondary);
+    }
+
+.count-chip {
+    display: inline-flex;
+    align-items: center;
+    background: #4b5563;
+    color: #fff;
+    padding: .25rem .5rem;
+    border-radius: 1rem;
+    font-size: .875rem;
+    margin-left: .5rem;
+}
+
+    .count-chip.alt {
+        background: #9ca3af;
+        color: #111827;
+    }
+
+.media-gallery {
+    display: grid;
+    gap: .75rem;
+    grid-template-columns: repeat(auto-fill,minmax(80px,1fr));
+}
+
+    .media-gallery .thumb {
+        position: relative;
+        border-radius: .5rem;
+        overflow: hidden;
+    }
+
+        .media-gallery .thumb img, .media-gallery .thumb video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .media-gallery .thumb .e-button {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+        }
+
+.sticky-actions {
+    position: sticky;
+    bottom: 0;
+    background: var(--footer-bg);
+    padding: 1rem;
+    box-shadow: 0 -1px 6px rgba(0,0,0,.06);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+}
+
+    .sticky-actions .e-button {
+        font-size: 1rem;
+        padding: .75rem 1.5rem;
+    }
+
+/* ---------- Responsivo (Tablet 11") ---------- */
+@media (min-width:800px) and (max-width:1200px) {
+    .grid.two.spacious, .grid.three.spacious {
+        grid-template-columns: repeat(2,1fr);
+        gap: 1rem;
+    }
+
+    .signature-wrap.full {
+        width: 100%;
+        overflow-x: auto;
+    }
+}
+
+.thumb {
+    position: relative;
+}
+
+    .thumb img {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 6px;
+        display: block;
+    }
+
+.delete-btn {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #dc3545;
+    color: #fff;
+    border: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    z-index: 5;
+}
+
+    .delete-btn i {
+        pointer-events: none;
+        font-size: 1rem;
+    }
+
+.open-video {
+    width: 100%;
+    margin-top: .5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: .35rem .5rem;
+    border-radius: 6px;
+    border: 1px solid #d0d0d5;
+    background: #fff;
+    color: #333;
+}
+
+.thumb.placeholder {
+    width: 100%;
+    height: 120px;
+    display: grid;
+    place-items: center;
+    background: #f1f1f4;
+    border-radius: 6px;
+    color: #666;
+    font-size: .9rem;
+}
+
+/* Logos no topo (expande/recolhe) */
+.sidebar.expanded .navbar-brand .logo-adjust {
+    height: 250px !important;
+    max-height: none !important;
+    width: auto;
+}
+
+.sidebar.collapsed .navbar-brand .logo-adjust {
+    height: 80px !important;
+    max-height: none !important;
+    width: auto;
+}
+
+/* a thumb já é position:relative no seu CSS; mantemos */
+.video-thumb {
+    cursor: pointer;
+}
+
+/* overlay central com ícone de play – fica acima da imagem, abaixo da lixeira */
+.play-overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    z-index: 4; /* delete-btn usa z-index:5 */
+}
+
+    .play-overlay i {
+        font-size: 2.2rem;
+        color: rgba(255,255,255,0.95);
+        text-shadow: 0 2px 10px rgba(0,0,0,.35);
+    }
+
+/* 1) A cadeia raiz do WebView precisa ter 100% de altura */
+html, body, #app {
+    height: 100%;
+}
+
+/* faz a sidebar ocupar a tela inteira, independente do conteúdo */
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    /* se precisar, defina sua largura explícita */
+    width: 260px; /* ajuste ao seu layout */
+}
+    /* Cabeçalho (logo) não cresce */
+    .sidebar .top-row {
+        flex: 0 0 auto;
+    }
+
+    /* 3) O conteúdo do menu rola dentro da barra */
+    .sidebar .nav-scrollable {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+/* Overlay ocupa a tela toda e centraliza o conteúdo */
+.loading-overlay {
+    position: fixed;
+    inset: 0; /* top/right/bottom/left: 0 */
+    background: rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999; /* acima de tudo */
+}
+
+/* Cartão do aviso */
+.loading-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 28px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 8px 30px rgba(0,0,0,.15);
+}
+
+    .loading-card p {
+        margin: 0;
+        font-size: 1rem;
+        color: #333;
+    }
+
+/* Spinner CSS puro */
+.spinner {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 4px solid rgba(0,0,0,0.12);
+    border-top-color: #7c3aed; /* cor de destaque (roxo) */
+    animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* (opcional) fade-in suave quando aparece */
+.fade-in {
+    animation: fadeIn .2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* ---------- Home (entrada FrotiX.Economildo) ---------- */
+
+.home-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 3rem);
+    gap: 1.25rem;
+}
+
+.home-header {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.home-logo {
+    max-height: 96px;
+    width: auto;
+    object-fit: contain;
+}
+
+@media (min-width: 768px) {
+    .home-logo {
+        max-height: 120px;
+    }
+}
+
+.home-main {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.home-card {
+    width: 100%;
+    border-radius: 1.25rem;
+    border: 1px solid var(--border);
+    background: #fdfdfd;
+    box-shadow: var(--shadow);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-align: left;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition:
+        transform 120ms ease-out,
+        box-shadow 120ms ease-out,
+        background-color 120ms ease-out;
+}
+
+@media (min-width: 768px) {
+    .home-card {
+        padding: 1.1rem 1.5rem;
+    }
+}
+
+.home-card-primary {
+    background: #f9fafb;
+}
+
+.home-card-secondary {
+    opacity: 0.96;
+}
+
+.home-card-icon {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-card-icon i {
+    font-size: 1.8rem;
+    --fa-primary-color: var(--fx-icon-primary);
+    --fa-secondary-color: var(--fx-icon-secondary);
+    --fa-secondary-opacity: var(--fx-icon-secondary-opacity);
+}
+
+.home-card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.home-card-title {
+    font-weight: 600;
+}
+
+.home-card-subtitle {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.home-secondary-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.home-footer {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.home-card-compact {
+    max-width: 260px;
+    padding: 0.75rem 1rem;
+}
+
+.home-exit-button {
+    border-radius: 999px;
+    border: 1px solid transparent;
+    padding: 0.6rem 1.4rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: #7f1d1d;
+    color: #fef2f2;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    touch-action: manipulation;
+    transition:
+        transform 120ms ease-out,
+        box-shadow 120ms ease-out,
+        background-color 120ms ease-out;
+}
+
+.home-exit-button i {
+    font-size: 1.3rem;
+    --fa-primary-color: #fee2e2;
+    --fa-secondary-color: #fecaca;
+    --fa-secondary-opacity: 0.9;
+}
+
+.home-card:active,
+.home-exit-button:active {
+    transform: translateY(1px) scale(0.99);
+    box-shadow: none;
+}
+
+.home-card:focus-visible,
+.home-exit-button:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+    .home-card-title {
+        font-size: 1.05rem;
+    }
+
+    .home-card-icon i {
+        font-size: 1.6rem;
+    }
+}
+
+/* =============================================== */
+
+/* ===============================================
+   SYNCFUSION POPUP/DROPDOWN - Altura adequada
+   Corrige problema de apenas 2 itens visíveis
+   =============================================== */
+.e-popup.e-ddl,
+.e-popup.e-popup-open,
+.e-ddl.e-popup,
+.e-dropdownbase.e-popup,
+.e-combobox.e-popup,
+.e-dropdownlist.e-popup {
+    max-height: 400px !important;
+    height: auto !important;
+    overflow: visible !important;
+}
+
+.e-ddl.e-popup .e-dropdownbase,
+.e-popup .e-dropdownbase,
+.e-ddl .e-dropdownbase {
+    max-height: 380px !important;
+    overflow-y: auto !important;
+}
+
+.e-ddl.e-popup .e-list-parent,
+.e-dropdownbase .e-list-parent,
+.e-popup .e-ul,
+.e-ddl .e-ul,
+.e-dropdownbase .e-ul {
+    max-height: 360px !important;
+    overflow-y: auto !important;
+}
+
+/* Garante que o popup não fique cortado pelo container pai */
+.e-popup-holder,
+.e-ddl-popup {
+    overflow: visible !important;
+}
+
+/* Altura mínima para mostrar pelo menos 8-10 itens */
+.e-ddl.e-popup .e-content,
+.e-popup .e-content {
+    max-height: 360px !important;
+    min-height: 200px !important;
+}
+/* =============================================== */

@@ -1,0 +1,454 @@
+@* ===============================================================================
+   SEÇÃO OCORRÊNCIAS NA FINALIZAÇÃO - FrotiX Vistorias
+   Permite inserir N ocorrências durante a finalização da viagem
+   =============================================================================== *@
+
+@using FrotiX.Mobile.Shared.Models
+@using Microsoft.Maui.Media
+@using Microsoft.Maui.Storage
+
+<div class="card ocorrencias-finalizacao-card @(!Habilitado ? "disabled" : "")">
+    <div class="card-title">
+        <i class="fa-solid fa-car-burst"></i> 
+        Ocorrências / Avarias na Devolução
+        @if (Ocorrencias.Count > 0)
+        {
+            <span class="badge-count">@Ocorrencias.Count</span>
+        }
+    </div>
+
+    @if (Ocorrencias.Count > 0)
+    {
+        <div class="ocorrencias-lista">
+            @for (int i = 0; i < Ocorrencias.Count; i++)
+            {
+                var idx = i;
+                var oc = Ocorrencias[idx];
+                <div class="ocorrencia-item">
+                    <div class="ocorrencia-content">
+                        <div class="ocorrencia-resumo">@oc.Resumo</div>
+                        @if (!string.IsNullOrEmpty(oc.Descricao))
+                        {
+                            <div class="ocorrencia-descricao">@oc.Descricao</div>
+                        }
+                        @if (!string.IsNullOrEmpty(oc.ImagemOcorrencia))
+                        {
+                            <div class="ocorrencia-thumb">
+                                <img src="@oc.ImagemOcorrencia" alt="Foto" @onclick="() => VisualizarImagem(oc.ImagemOcorrencia)" />
+                            </div>
+                        }
+                    </div>
+                    <button type="button" class="btn-remover" @onclick="() => RemoverOcorrencia(idx)" disabled="@(!Habilitado)">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Formulário para adicionar -->
+    <div class="adicionar-ocorrencia">
+        <div class="form-row-oc">
+            <div class="form-group-oc flex-grow">
+                <input type="text" class="input-resumo" placeholder="Resumo da ocorrência *"
+                       @bind="NovoResumo" maxlength="200" disabled="@(!Habilitado)" />
+            </div>
+            <button type="button" class="btn-foto-oc" @onclick="CapturarFoto" disabled="@(!Habilitado)" title="Adicionar foto">
+                <i class="fa-solid fa-camera"></i>
+            </button>
+            <button type="button" class="btn-adicionar" @onclick="AdicionarOcorrencia" disabled="@(!Habilitado || string.IsNullOrWhiteSpace(NovoResumo))">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+        </div>
+        @if (!string.IsNullOrEmpty(NovaImagem))
+        {
+            <div class="preview-foto">
+                <img src="@NovaImagem" alt="Preview" />
+                <button type="button" class="btn-remover-foto" @onclick="RemoverFotoPreview">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+        }
+        <div class="form-group-oc">
+            <textarea class="input-descricao" placeholder="Descrição detalhada (opcional)"
+                      @bind="NovaDescricao" rows="2" disabled="@(!Habilitado)"></textarea>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Visualização de Imagem -->
+@if (MostrarImagemAmpliada)
+{
+    <div class="modal-imagem-overlay" @onclick="FecharImagemAmpliada">
+        <div class="modal-imagem-content">
+            <button type="button" class="btn-fechar-imagem" @onclick="FecharImagemAmpliada">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <img src="@ImagemAmpliada" alt="Imagem da Ocorrência" />
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Habilitado { get; set; } = true;
+    [Parameter] public List<OcorrenciaItemDTO> Ocorrencias { get; set; } = new();
+    [Parameter] public EventCallback<List<OcorrenciaItemDTO>> OcorrenciasChanged { get; set; }
+
+    private string NovoResumo = "";
+    private string NovaDescricao = "";
+    private string NovaImagem = "";
+
+    private bool MostrarImagemAmpliada = false;
+    private string ImagemAmpliada = "";
+
+    private async Task AdicionarOcorrencia()
+    {
+        if (string.IsNullOrWhiteSpace(NovoResumo)) return;
+
+        Ocorrencias.Add(new OcorrenciaItemDTO
+        {
+            Resumo = NovoResumo.Trim(),
+            Descricao = NovaDescricao?.Trim(),
+            ImagemOcorrencia = NovaImagem
+        });
+
+        await OcorrenciasChanged.InvokeAsync(Ocorrencias);
+
+        // Limpar campos
+        NovoResumo = "";
+        NovaDescricao = "";
+        NovaImagem = "";
+    }
+
+    private async Task RemoverOcorrencia(int index)
+    {
+        if (index >= 0 && index < Ocorrencias.Count)
+        {
+            Ocorrencias.RemoveAt(index);
+            await OcorrenciasChanged.InvokeAsync(Ocorrencias);
+        }
+    }
+
+    private async Task CapturarFoto()
+    {
+        try
+        {
+            await Permissions.RequestAsync<Permissions.Camera>();
+#if ANDROID
+            await Permissions.RequestAsync<Permissions.StorageRead>();
+#endif
+            var photo = await MediaPicker.CapturePhotoAsync();
+            if (photo != null)
+            {
+#if ANDROID
+                NovaImagem = await AndroidDownsampleToBase64Async(photo, 1280, 80);
+#else
+                await using var stream = await photo.OpenReadAsync();
+                using var ms = new MemoryStream();
+                await stream.CopyToAsync(ms);
+                NovaImagem = $"data:image/jpeg;base64,{Convert.ToBase64String(ms.ToArray())}";
+#endif
+                StateHasChanged();
+            }
+        }
+        catch (Exception)
+        {
+            // Silently ignore camera errors
+        }
+    }
+
+    private void RemoverFotoPreview()
+    {
+        NovaImagem = "";
+    }
+
+    private void VisualizarImagem(string url)
+    {
+        if (!string.IsNullOrEmpty(url))
+        {
+            ImagemAmpliada = url;
+            MostrarImagemAmpliada = true;
+        }
+    }
+
+    private void FecharImagemAmpliada()
+    {
+        MostrarImagemAmpliada = false;
+        ImagemAmpliada = "";
+    }
+
+#if ANDROID
+    private static int CalcInSampleSize(Android.Graphics.BitmapFactory.Options opt, int reqW, int reqH)
+    {
+        var h = opt.OutHeight; var w = opt.OutWidth; int inSample = 1;
+        if (h > reqH || w > reqW)
+        {
+            var halfH = h / 2; var halfW = w / 2;
+            while ((halfH / inSample) >= reqH && (halfW / inSample) >= reqW) inSample *= 2;
+        }
+        return inSample;
+    }
+
+    private static async Task<string> AndroidDownsampleToBase64Async(FileResult file, int maxDim = 1280, int quality = 80)
+    {
+        var tmp = Path.Combine(FileSystem.CacheDirectory, $"cap_{Guid.NewGuid():N}.jpg");
+        await using (var src = await file.OpenReadAsync())
+        await using (var dst = File.OpenWrite(tmp))
+            await src.CopyToAsync(dst);
+
+        var opt = new Android.Graphics.BitmapFactory.Options { InJustDecodeBounds = true };
+        Android.Graphics.BitmapFactory.DecodeFile(tmp, opt);
+        opt.InSampleSize = CalcInSampleSize(opt, maxDim, maxDim);
+        opt.InJustDecodeBounds = false;
+        opt.InPreferredConfig = Android.Graphics.Bitmap.Config.Rgb565;
+        using var bmp = Android.Graphics.BitmapFactory.DecodeFile(tmp, opt);
+
+        using var ms = new MemoryStream();
+        bmp.Compress(Android.Graphics.Bitmap.CompressFormat.Jpeg, quality, ms);
+        try { File.Delete(tmp); } catch { }
+
+        return $"data:image/jpeg;base64,{Convert.ToBase64String(ms.ToArray())}";
+    }
+#endif
+}
+
+<style>
+    /* Card Ocorrências Finalização */
+    .ocorrencias-finalizacao-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border-left: 4px solid #dc6027;
+    }
+
+    .ocorrencias-finalizacao-card.disabled {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    .ocorrencias-finalizacao-card .card-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 14px;
+    }
+
+    .ocorrencias-finalizacao-card .card-title i {
+        color: #dc6027;
+    }
+
+    .badge-count {
+        background: #dc6027;
+        color: #fff;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-left: auto;
+    }
+
+    /* Lista de Ocorrências */
+    .ocorrencias-lista {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 14px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .ocorrencia-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    .ocorrencia-content {
+        flex: 1;
+    }
+
+    .ocorrencia-resumo {
+        font-weight: 500;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+
+    .ocorrencia-descricao {
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+
+    .ocorrencia-thumb {
+        margin-top: 8px;
+    }
+
+    .ocorrencia-thumb img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .btn-remover {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: #ef4444;
+        color: #fff;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    /* Formulário Adicionar */
+    .adicionar-ocorrencia {
+        border-top: 1px dashed #e5e7eb;
+        padding-top: 14px;
+    }
+
+    .form-row-oc {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .form-group-oc {
+        flex: 1;
+    }
+
+    .form-group-oc.flex-grow {
+        flex: 1;
+    }
+
+    .input-resumo,
+    .input-descricao {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+
+    .input-resumo:focus,
+    .input-descricao:focus {
+        outline: none;
+        border-color: #dc6027;
+        box-shadow: 0 0 0 3px rgba(220, 96, 39, 0.1);
+    }
+
+    .input-descricao {
+        resize: none;
+    }
+
+    .btn-foto-oc {
+        width: 44px;
+        height: 44px;
+        border: none;
+        background: #3b82f6;
+        color: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .btn-adicionar {
+        width: 44px;
+        height: 44px;
+        border: none;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .btn-adicionar:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .preview-foto {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+
+    .preview-foto img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .btn-remover-foto {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: none;
+        background: #ef4444;
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+    }
+
+    /* Modal Imagem Ampliada */
+    .modal-imagem-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+    }
+
+    .modal-imagem-content {
+        position: relative;
+        max-width: 95%;
+        max-height: 95%;
+    }
+
+    .modal-imagem-content img {
+        max-width: 100%;
+        max-height: 90vh;
+        border-radius: 8px;
+    }
+
+    .btn-fechar-imagem {
+        position: absolute;
+        top: -40px;
+        right: 0;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+</style>

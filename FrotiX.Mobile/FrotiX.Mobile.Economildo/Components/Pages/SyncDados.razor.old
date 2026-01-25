@@ -1,0 +1,724 @@
+@page "/syncdados"
+@using FrotiX.Economildo.Services.IServices
+@using FrotiX.Economildo.Models
+@implements IDisposable
+@inject ISyncService SyncService
+@inject AlertaJs Alerta
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+<PageTitle>Sincronização de Dados - FrotiX</PageTitle>
+
+<!-- Botão Voltar Roxo Redondo -->
+<button type="button" class="btn-voltar-roxo" @onclick="VoltarParaHome">
+    <i class="fa-duotone fa-arrow-left"></i>
+</button>
+
+<div class="sync-dados-container">
+    <div class="page-header">
+        <div class="header-content">
+            <i class="fa-duotone fa-sync-alt header-icon"></i>
+            <div>
+                <h3>Sincronização de Dados</h3>
+                <p class="header-subtitle">Carga inicial para trabalho offline</p>
+            </div>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loading-container">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p>Carregando status...</p>
+        </div>
+    }
+    else
+    {
+        <!-- Status Atual -->
+        <div class="status-card">
+            <div class="status-header">
+                <h5><i class="fa-duotone fa-info-circle"></i> Status Atual</h5>
+                <span class="status-badge @GetStatusClass()">@syncStatus?.MensagemStatus</span>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-icon veiculos">
+                        <i class="fa-duotone fa-bus fa-lg"></i>
+                    </div>
+                    <div class="stat-details">
+                        <div class="stat-value">@syncStatus?.TotalVeiculos</div>
+                        <div class="stat-label">Veículos</div>
+                        @if (syncStatus?.UltimaSyncVeiculos.HasValue == true)
+                        {
+                            <div class="stat-date">Última sync: @syncStatus.UltimaSyncVeiculos.Value.ToString("dd/MM/yyyy HH:mm")</div>
+                        }
+                    </div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-icon motoristas">
+                        <i class="fa-duotone fa-user-tie fa-lg"></i>
+                    </div>
+                    <div class="stat-details">
+                        <div class="stat-value">@syncStatus?.TotalMotoristas</div>
+                        <div class="stat-label">Motoristas</div>
+                        @if (syncStatus?.UltimaSyncMotoristas.HasValue == true)
+                        {
+                            <div class="stat-date">Última sync: @syncStatus.UltimaSyncMotoristas.Value.ToString("dd/MM/yyyy HH:mm")</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ações de Sincronização -->
+        <div class="actions-card">
+            <h5><i class="fa-duotone fa-cloud-download-alt"></i> Ações de Sincronização</h5>
+            
+            <div class="actions-grid">
+                <!-- Sincronizar Tudo -->
+                <div class="action-item">
+                    <div class="action-icon">
+                        <i class="fa-duotone fa-sync fa-3x"></i>
+                    </div>
+                    <h6>Sincronizar Todos os Dados</h6>
+                    <p>Baixa veículos e motoristas do banco de dados</p>
+                    <button class="btn-action btn-success" 
+                            disabled="@isSyncing"
+                            @onclick="SincronizarTodos">
+                        @if (isSyncing)
+                        {
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                            <span> Sincronizando...</span>
+                        }
+                        else
+                        {
+                            <i class="fa-solid fa-cloud-download-alt"></i>
+                            <span> Sincronizar Agora</span>
+                        }
+                    </button>
+                </div>
+
+                <!-- Sincronizar Apenas Veículos -->
+                <div class="action-item">
+                    <div class="action-icon veiculos-icon">
+                        <i class="fa-duotone fa-bus fa-3x"></i>
+                    </div>
+                    <h6>Sincronizar Veículos</h6>
+                    <p>Baixa apenas lista de veículos</p>
+                    <button class="btn-action btn-info" 
+                            disabled="@isSyncing"
+                            @onclick="SincronizarVeiculos">
+                        <i class="fa-solid fa-bus"></i> Sincronizar Veículos
+                    </button>
+                </div>
+
+                <!-- Sincronizar Apenas Motoristas -->
+                <div class="action-item">
+                    <div class="action-icon motoristas-icon">
+                        <i class="fa-duotone fa-user-tie fa-3x"></i>
+                    </div>
+                    <h6>Sincronizar Motoristas</h6>
+                    <p>Baixa apenas lista de motoristas</p>
+                    <button class="btn-action btn-info" 
+                            disabled="@isSyncing"
+                            @onclick="SincronizarMotoristas">
+                        <i class="fa-solid fa-user-tie"></i> Sincronizar Motoristas
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informações Importantes -->
+        <div class="info-card">
+            <h5><i class="fa-duotone fa-lightbulb"></i> Informações Importantes</h5>
+            
+            <div class="info-list">
+                <div class="info-item">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <div>
+                        <strong>Sincronização Inicial:</strong>
+                        <span>Execute esta sincronização no início do dia, quando estiver conectado à rede.</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <i class="fa-solid fa-wifi"></i>
+                    <div>
+                        <strong>Conexão Necessária:</strong>
+                        <span>A sincronização requer conexão com o servidor FrotiX.</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <i class="fa-solid fa-clock"></i>
+                    <div>
+                        <strong>Frequência:</strong>
+                        <span>Recomendamos sincronizar diariamente antes de iniciar as viagens.</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <i class="fa-solid fa-database"></i>
+                    <div>
+                        <strong>Armazenamento:</strong>
+                        <span>Os dados ficam salvos localmente e podem ser usados offline.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ações Perigosas -->
+        <div class="danger-zone">
+            <h5><i class="fa-duotone fa-exclamation-triangle"></i> Zona de Perigo</h5>
+            <p>Use estas ações apenas se necessário:</p>
+            
+            <button class="btn-action btn-danger" 
+                    disabled="@isSyncing"
+                    @onclick="LimparDadosLocais">
+                <i class="fa-solid fa-trash"></i> Limpar Todos os Dados Locais
+            </button>
+        </div>
+    }
+</div>
+
+<style>
+/* Botão Voltar Roxo Redondo */
+.btn-voltar-roxo {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #553c9a 0%, #7b68ee 100%);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(85, 60, 154, 0.4);
+    z-index: 10000;
+}
+
+.btn-voltar-roxo:hover {
+    background: linear-gradient(135deg, #7b68ee 0%, #553c9a 100%);
+    transform: scale(1.08);
+    box-shadow: 0 6px 20px rgba(85, 60, 154, 0.6);
+}
+
+.btn-voltar-roxo:active {
+    transform: scale(0.95);
+}
+
+.btn-voltar-roxo i {
+    font-size: 1.3rem;
+}
+
+.sync-dados-container {
+    padding: 70px 15px 15px 15px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.page-header {
+    background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%);
+    padding: 20px;
+    border-radius: 12px;
+    color: white;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 25px rgba(44, 82, 130, 0.4);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-icon {
+    font-size: 2.5rem;
+}
+
+.header-subtitle {
+    margin: 5px 0 0 0;
+    opacity: 0.9;
+    font-size: 1rem;
+}
+
+.loading-container {
+    text-align: center;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.status-card, .actions-card, .info-card, .danger-zone {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.status-header h5 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.status-badge.status-ok {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.status-badge.status-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+}
+
+.status-badge.status-error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Forçar 2 colunas lado a lado */
+    gap: 15px; /* Reduzir gap de 20px para 15px */
+}
+
+.stat-item {
+    background: #f8f9fa;
+    padding: 15px; /* Reduzido de 20px para 15px */
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Reduzido de 15px para 12px */
+}
+
+.stat-icon {
+    width: 50px; /* Reduzido de 60px para 50px */
+    height: 50px; /* Reduzido de 60px para 50px */
+    border-radius: 10px; /* Reduzido de 12px para 10px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.stat-icon.veiculos {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.stat-icon.motoristas {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.stat-details {
+    flex: 1;
+}
+
+.stat-value {
+    font-size: 1.6rem; /* Reduzido de 2rem para 1.6rem */
+    font-weight: 700;
+    color: #333;
+}
+
+.stat-label {
+    font-size: 0.85rem; /* Reduzido de 0.95rem para 0.85rem */
+    color: #666;
+    margin-top: 2px; /* Reduzido de 3px para 2px */
+}
+
+.stat-date {
+    font-size: 0.7rem; /* Reduzido de 0.8rem para 0.7rem */
+    color: #999;
+    margin-top: 4px; /* Reduzido de 5px para 4px */
+}
+
+.actions-card h5, .info-card h5, .danger-zone h5 {
+    margin: 0 0 20px 0;
+    font-size: 1.3rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.action-item {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.action-icon {
+    color: #667eea;
+    margin-bottom: 15px;
+}
+
+.action-icon.veiculos-icon {
+    color: #3b82f6;
+}
+
+.action-icon.motoristas-icon {
+    color: #8b5cf6;
+}
+
+.action-item h6 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+    margin: 10px 0;
+}
+
+.action-item p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.btn-action {
+    width: 100%;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-action.btn-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.btn-action.btn-info {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+}
+
+.btn-action.btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+}
+
+.btn-action:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+.btn-action:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-action:disabled {
+    background: #cbd5e0;
+    cursor: not-allowed;
+}
+
+.info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.info-item i {
+    color: #10b981;
+    font-size: 1.3rem;
+    margin-top: 2px;
+}
+
+.info-item strong {
+    color: #333;
+}
+
+.info-item span {
+    color: #666;
+}
+
+.danger-zone {
+    border: 2px solid #fecaca;
+    background: #fef2f2;
+}
+
+.danger-zone h5 {
+    color: #dc2626;
+}
+
+.danger-zone p {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+@@media (max-width: 768px) {
+    .sync-dados-container {
+        padding: 70px 10px 10px 10px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr; /* Empilhar em mobile */
+    }
+    
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Otimização para Tablet 8" (portrait: ~600px-900px width) */
+@media (min-width: 600px) and (max-width: 900px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr); /* Manter 2 colunas em tablets */
+        gap: 12px;
+    }
+    
+    .stat-item {
+        padding: 12px;
+    }
+    
+    .stat-icon {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+    }
+    
+    .stat-date {
+        font-size: 0.65rem;
+    }
+}
+</style>
+
+@code {
+    private bool isLoading = true;
+    private bool isSyncing = false;
+    private SyncStatusViewModel? syncStatus;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            isLoading = true;
+            await CarregarStatus();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task CarregarStatus()
+    {
+        try
+        {
+            syncStatus = await SyncService.ObterStatusSincronizacaoAsync();
+        }
+        catch (Exception ex)
+        {
+                        // Logger?.Error("Erro ao carregar status de sincronização", ex);
+            await Alerta.Erro("Erro", $"Erro ao carregar status: {ex.Message}");
+        }
+    }
+
+    private async Task SincronizarTodos()
+    {
+        if (isSyncing) return;
+
+        try
+        {
+            isSyncing = true;
+            StateHasChanged();
+
+                        // Logger?.UserAction("SyncDados -> Sincronizar Todos");
+
+            var resultado = await SyncService.SincronizarTodosOsDadosAsync();
+
+            if (resultado.sucesso)
+            {
+                await Alerta.Sucesso("Sucesso", resultado.mensagem ?? "Sincronização concluída com sucesso!");
+                await CarregarStatus();
+            }
+            else
+            {
+                await Alerta.Erro("Erro", resultado.mensagem ?? "Erro ao sincronizar dados");
+            }
+        }
+        catch (Exception ex)
+        {
+                        // Logger?.Error("Erro ao sincronizar todos os dados", ex);
+            await Alerta.Erro("Erro", $"Erro ao sincronizar: {ex.Message}");
+        }
+        finally
+        {
+            isSyncing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SincronizarVeiculos()
+    {
+        if (isSyncing) return;
+
+        try
+        {
+            isSyncing = true;
+            StateHasChanged();
+
+                        // Logger?.UserAction("SyncDados -> Sincronizar Veículos");
+
+            var resultado = await SyncService.SincronizarVeiculosAsync();
+
+            if (resultado.sucesso)
+            {
+                await Alerta.Sucesso("Sucesso", resultado.mensagem ?? "Veículos sincronizados com sucesso!");
+                await CarregarStatus();
+            }
+            else
+            {
+                await Alerta.Erro("Erro", resultado.mensagem ?? "Erro ao sincronizar veículos");
+            }
+        }
+        catch (Exception ex)
+        {
+                        // Logger?.Error("Erro ao sincronizar veículos", ex);
+            await Alerta.Erro("Erro", $"Erro ao sincronizar veículos: {ex.Message}");
+        }
+        finally
+        {
+            isSyncing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SincronizarMotoristas()
+    {
+        if (isSyncing) return;
+
+        try
+        {
+            isSyncing = true;
+            StateHasChanged();
+
+                        // Logger?.UserAction("SyncDados -> Sincronizar Motoristas");
+
+            var resultado = await SyncService.SincronizarMotoristasAsync();
+
+            if (resultado.sucesso)
+            {
+                await Alerta.Sucesso("Sucesso", resultado.mensagem ?? "Motoristas sincronizados com sucesso!");
+                await CarregarStatus();
+            }
+            else
+            {
+                await Alerta.Erro("Erro", resultado.mensagem ?? "Erro ao sincronizar motoristas");
+            }
+        }
+        catch (Exception ex)
+        {
+                        // Logger?.Error("Erro ao sincronizar motoristas", ex);
+            await Alerta.Erro("Erro", $"Erro ao sincronizar motoristas: {ex.Message}");
+        }
+        finally
+        {
+            isSyncing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LimparDadosLocais()
+    {
+        try
+        {
+            var confirmado = await JS.InvokeAsync<bool>("confirm", 
+                "ATENÇÃO: Esta ação irá apagar TODOS os dados locais. Tem certeza?");
+
+            if (!confirmado) return;
+
+                        // Logger?.UserAction("SyncDados -> Limpar Dados Locais");
+
+            await SyncService.LimparTodosDadosLocaisAsync();
+            await Alerta.Sucesso("Sucesso", "Dados locais limpos com sucesso!");
+            await CarregarStatus();
+        }
+        catch (Exception ex)
+        {
+                        // Logger?.Error("Erro ao limpar dados locais", ex);
+            await Alerta.Erro("Erro", $"Erro ao limpar dados: {ex.Message}");
+        }
+    }
+
+    private string GetStatusClass()
+    {
+        if (syncStatus == null) return "status-warning";
+        
+        if (!syncStatus.DadosDisponiveis)
+            return "status-error";
+        
+        if (syncStatus.TotalVeiculos > 0 && syncStatus.TotalMotoristas > 0)
+            return "status-ok";
+        
+        return "status-warning";
+    }
+
+    private void VoltarParaHome()
+    {
+                    // Logger?.UserAction("SyncDados -> Voltar para Home");
+        Navigation.NavigateTo("/");
+    }
+
+    public void Dispose()
+    {
+        // Cleanup se necessário
+    }
+}

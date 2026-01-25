@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(find:*)",
+      "Bash(copy \"D:\\FrotiX\\_FrotiXCompleto 2025 (valendo)\\FrotiX.Mobile\\FrotiX.Mobile.Economildo\\wwwroot\\Images\\info_sorridente_transparente.png\" \"D:\\FrotiX\\_FrotiXCompleto 2025 (valendo)\\FrotiX.Mobile\\FrotiX.Mobile.Vistorias\\wwwroot\\Images\"\")",
+      "Bash(copy:*)",
+      "Bash(powershell:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

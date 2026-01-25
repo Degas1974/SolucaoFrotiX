@@ -1,0 +1,448 @@
+@page "/vistoriasabertas"
+@using FrotiX.Mobile.Shared.Models
+@using FrotiX.Mobile.Shared.Services.IServices
+@inject IViagemService ViagemService
+@inject ILogService Logger
+@inject NavigationManager Navigation
+@inject AlertaJs Alerta
+
+<PageTitle>Vistorias Abertas - FrotiX</PageTitle>
+
+<!-- Botão Voltar Laranja Redondo -->
+<button type="button" class="btn-voltar-laranja" @onclick="VoltarParaHome">
+    <i class="fa-solid fa-arrow-left"></i>
+</button>
+
+@if (carregando)
+{
+    <div class="loading-container">
+        <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+        <p style="font-size: 1.4rem; margin-top: 20px;">Carregando vistorias...</p>
+    </div>
+}
+else
+{
+    <div class="lista-container">
+        <!-- Header -->
+        <div class="page-header">
+            <div class="header-left">
+                <i class="fa-solid fa-folder-open"></i>
+                <div>
+                    <h2>Vistorias Abertas</h2>
+                    <p>Selecione para visualizar ou editar</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button type="button" class="btn-atualizar" @onclick="CarregarVistorias">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                    Atualizar
+                </button>
+            </div>
+        </div>
+
+        @if (vistorias == null || vistorias.Count == 0)
+        {
+            <div class="empty-state">
+                <i class="fa-duotone fa-folder-open"></i>
+                <h3>Nenhuma vistoria aberta</h3>
+                <p>Não há vistorias em andamento no momento.</p>
+            </div>
+        }
+        else
+        {
+            <div class="lista-vistorias">
+                @foreach (var vistoria in vistorias)
+                {
+                    <div class="card-vistoria" @onclick="() => AbrirEdicao(vistoria.ViagemId)">
+                        <div class="card-icon">
+                            <i class="fa-solid fa-car"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-header-row">
+                                <div class="card-title">@vistoria.VeiculoCompleto</div>
+                                @if (vistoria.NoFichaVistoria.HasValue)
+                                {
+                                    <div class="card-ficha">
+                                        <i class="fa-solid fa-hashtag"></i> @vistoria.NoFichaVistoria.Value
+                                    </div>
+                                }
+                            </div>
+                            <div class="card-info">
+                                <span><i class="fa-solid fa-user"></i> @vistoria.MotoristaCondutor</span>
+                                <span><i class="fa-solid fa-calendar"></i> @(vistoria.DataInicial?.ToString("dd/MM/yyyy") ?? "-")</span>
+                                <span><i class="fa-solid fa-clock"></i> @(vistoria.HoraInicio?.ToString("HH:mm") ?? "-")</span>
+                            </div>
+                            <div class="card-finalidade">
+                                <i class="fa-solid fa-bullseye"></i> @(vistoria.Finalidade ?? "-")
+                            </div>
+                        </div>
+                        <div class="card-arrow">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+
+<style>
+    /* Loading */
+    .loading-container {
+        text-align: center;
+        padding: 80px 20px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    /* Container Principal */
+    .lista-container {
+        padding: 80px 16px 30px 16px;
+        max-width: 800px;
+        margin: 0 auto;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    /* Botão Voltar Laranja Redondo */
+    .btn-voltar-laranja {
+        position: fixed;
+        top: 30px;
+        left: 12px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+        border: none;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(234, 88, 12, 0.4);
+        z-index: 10000;
+    }
+
+    .btn-voltar-laranja:hover {
+        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        transform: scale(1.08);
+    }
+
+    .btn-voltar-laranja:active {
+        transform: scale(0.95);
+    }
+
+    .btn-voltar-laranja i {
+        font-size: 1rem;
+    }
+
+    /* Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-bottom: 20px;
+        padding: 16px;
+        background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(217, 119, 6, 0.3);
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .header-left i {
+        font-size: 2rem;
+        color: white;
+    }
+
+    .header-left h2 {
+        margin: 0;
+        color: white;
+        font-size: 1.4rem;
+        font-weight: 700;
+    }
+
+    .header-left p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.9rem;
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+    }
+
+    .btn-atualizar {
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        padding: 10px 16px;
+        color: white;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-atualizar:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: white;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: #d97706;
+        margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+        color: #374151;
+        margin: 0 0 10px 0;
+        font-size: 1.4rem;
+    }
+
+    .empty-state p {
+        color: #6b7280;
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    /* Lista de Vistorias */
+    .lista-vistorias {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    /* Card Vistoria */
+    .card-vistoria {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px;
+        background: white;
+        border-radius: 14px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-left: 4px solid #d97706;
+    }
+
+    .card-vistoria:hover {
+        transform: translateX(5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        border-left-color: #b45309;
+    }
+
+    .card-vistoria:active {
+        transform: translateX(2px);
+    }
+
+    .card-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .card-icon i {
+        font-size: 1.4rem;
+        color: white;
+    }
+
+    .card-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .card-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 6px;
+    }
+
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1f2937;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .card-ficha {
+        background: #d97706;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .card-ficha i {
+        font-size: 0.65rem;
+    }
+
+    .card-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+
+    .card-info span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .card-info i {
+        color: #9ca3af;
+        font-size: 0.8rem;
+    }
+
+    .card-finalidade {
+        margin-top: 8px;
+        font-size: 0.8rem;
+        color: #d97706;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .card-finalidade i {
+        font-size: 0.75rem;
+    }
+
+    .card-arrow {
+        color: #9ca3af;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .card-vistoria:hover .card-arrow {
+        color: #d97706;
+    }
+
+    /* Responsivo */
+    @@media (max-width: 600px) {
+        .lista-container {
+            padding: 70px 12px 20px 12px;
+        }
+
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .card-info {
+            flex-direction: column;
+            gap: 4px;
+        }
+    }
+</style>
+
+@code {
+    private bool carregando = true;
+    private List<ViewViagemVistoria> vistorias = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await CarregarVistorias();
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Erro ao inicializar página", ex);
+        }
+    }
+
+    private async Task CarregarVistorias()
+    {
+        try
+        {
+            carregando = true;
+            StateHasChanged();
+
+            vistorias = await ViagemService.ObterVistoriasAbertasAsync();
+
+            // Ordena por data mais recente
+            vistorias = vistorias
+                .OrderByDescending(v => v.DataInicial)
+                .ThenByDescending(v => v.HoraInicio)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Erro ao carregar vistorias", ex);
+        }
+        finally
+        {
+            carregando = false;
+            StateHasChanged();
+        }
+    }
+
+    private void AbrirEdicao(Guid viagemId)
+    {
+        try
+        {
+            Navigation.NavigateTo($"/editarvistoria/{viagemId}");
+        }
+        catch (Exception ex)
+        {
+            Logger?.Error($"Erro ao navegar para edição da vistoria {viagemId}", ex);
+        }
+    }
+
+    private void VoltarParaHome()
+    {
+        try
+        {
+            Navigation.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            Logger?.Error("Erro ao voltar para Home", ex);
+        }
+    }
+}

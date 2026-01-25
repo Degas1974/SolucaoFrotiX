@@ -1,0 +1,844 @@
+@* ===============================================================================
+   MODAL OCORRÊNCIAS DO VEÍCULO - FrotiX Vistorias
+   Versão com armazenamento LOCAL (independente de API)
+   =============================================================================== *@
+
+@using FrotiX.Mobile.Shared.Models
+@using FrotiX.Mobile.Shared.Services.IServices
+@inject IOcorrenciaService OcorrenciaService
+@inject AlertaJs Alerta
+
+<div class="modal-ocorrencias-overlay @(Visivel ? "show" : "")" @onclick="FecharModal">
+    <div class="modal-ocorrencias-content" @onclick:stopPropagation>
+        <!-- Header -->
+        <div class="modal-ocorrencias-header">
+            <div class="modal-ocorrencias-title">
+                <i class="fa-solid fa-car-burst"></i>
+                <span>Ocorrências do Veículo</span>
+                @if (TotalOcorrencias > 0)
+                {
+                    <span class="badge-count">@TotalOcorrencias</span>
+                }
+            </div>
+            <button type="button" class="btn-fechar" @onclick="FecharModal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-ocorrencias-body">
+            @if (Carregando)
+            {
+                <div class="loading-container">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <span>Carregando ocorrências...</span>
+                </div>
+            }
+            else if (TodasOcorrencias.Count == 0)
+            {
+                <div class="empty-container">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>Nenhuma ocorrência em aberto</span>
+                </div>
+            }
+            else
+            {
+                <div class="ocorrencias-list">
+                    @foreach (var oc in TodasOcorrencias)
+                    {
+                        var diasEmAberto = (DateTime.Now - oc.DataCriacao).Days;
+                        var isLocal = OcorrenciasLocais.Any(x => x.OcorrenciaViagemId == oc.OcorrenciaViagemId);
+                        <div class="ocorrencia-card @(isLocal ? "ocorrencia-local" : "")">
+                            <div class="ocorrencia-header">
+                                <div class="ocorrencia-info">
+                                    <span class="ocorrencia-data">
+                                        <i class="fa-solid fa-calendar"></i>
+                                        @oc.DataCriacao.ToString("dd/MM/yyyy HH:mm")
+                                        @if (isLocal)
+                                        {
+                                            <span class="badge-local">NOVA</span>
+                                        }
+                                    </span>
+                                    @if (diasEmAberto > 0 && !isLocal)
+                                    {
+                                        <span class="ocorrencia-dias @(diasEmAberto > 30 ? "urgente" : diasEmAberto > 7 ? "atencao" : "")">
+                                            @diasEmAberto dia(s)
+                                        </span>
+                                    }
+                                </div>
+                                <div class="ocorrencia-acoes">
+                                    @if (!string.IsNullOrEmpty(oc.ImagemOcorrencia))
+                                    {
+                                        <button type="button" class="btn-acao btn-imagem" title="Ver imagem"
+                                                @onclick="() => VisualizarImagem(oc.ImagemOcorrencia)">
+                                            <i class="fa-solid fa-image"></i>
+                                        </button>
+                                    }
+                                    @if (isLocal)
+                                    {
+                                        <button type="button" class="btn-acao btn-excluir" title="Remover"
+                                                @onclick="() => RemoverOcorrenciaLocal(oc)">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                            <div class="ocorrencia-resumo">@oc.Resumo</div>
+                            @if (!string.IsNullOrEmpty(oc.Descricao))
+                            {
+                                <div class="ocorrencia-descricao">@oc.Descricao</div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+
+            <!-- Formulário para Nova Ocorrência -->
+            <div class="nova-ocorrencia-section">
+                <div class="section-header" @onclick="ToggleNovaOcorrencia">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <span>Cadastrar Nova Ocorrência</span>
+                    <i class="fa-solid @(MostrarNovaOcorrencia ? "fa-chevron-up" : "fa-chevron-down")"></i>
+                </div>
+                
+                @if (MostrarNovaOcorrencia)
+                {
+                    <div class="nova-ocorrencia-form">
+                        <div class="form-group">
+                            <label>Resumo *</label>
+                            <input type="text" class="form-input" placeholder="Ex: Arranhão na porta dianteira"
+                                   @bind="NovaOcorrencia.Resumo" maxlength="200" />
+                        </div>
+                        <div class="form-group">
+                            <label>Descrição</label>
+                            <textarea class="form-textarea" placeholder="Descreva a ocorrência em detalhes..."
+                                      @bind="NovaOcorrencia.Descricao" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Foto (opcional)</label>
+                            <div class="media-upload">
+                                @if (!string.IsNullOrEmpty(NovaOcorrencia.ImagemOcorrencia))
+                                {
+                                    <div class="media-preview">
+                                        <img src="@NovaOcorrencia.ImagemOcorrencia" alt="Preview" />
+                                        <button type="button" class="btn-remover-media" @onclick="RemoverImagemNovaOcorrencia">
+                                            <i class="fa-solid fa-times"></i>
+                                        </button>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn-capturar" @onclick="CapturarFotoOcorrencia">
+                                        <i class="fa-solid fa-camera"></i>
+                                        <span>Capturar Foto</span>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-cancelar" @onclick="LimparNovaOcorrencia">
+                                <i class="fa-solid fa-times"></i>
+                                Cancelar
+                            </button>
+                            <button type="button" class="btn-salvar" @onclick="AdicionarOcorrenciaLocal" disabled="@SalvandoOcorrencia">
+                                @if (SalvandoOcorrencia)
+                                {
+                                    <i class="fa-solid fa-spinner fa-spin"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa-solid fa-plus"></i>
+                                }
+                                Adicionar
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-ocorrencias-footer">
+            <button type="button" class="btn-fechar-footer" @onclick="FecharModal">
+                <i class="fa-solid fa-arrow-left"></i>
+                Voltar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Visualização de Imagem -->
+@if (MostrarImagemAmpliada)
+{
+    <div class="modal-imagem-overlay" @onclick="FecharImagemAmpliada">
+        <div class="modal-imagem-content">
+            <button type="button" class="btn-fechar-imagem" @onclick="FecharImagemAmpliada">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <img src="@ImagemAmpliada" alt="Imagem da Ocorrência" />
+        </div>
+    </div>
+}
+
+<!-- Modal de Loading - Processando Mídia -->
+@if (ProcessandoMidia)
+{
+    <div class="modal-loading-overlay">
+        <div class="modal-loading-content">
+            <div class="spinner-container">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+            </div>
+            <div class="loading-text">Processando mídia...</div>
+            <div class="loading-subtext">Aguarde</div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Visivel { get; set; }
+    [Parameter] public EventCallback<bool> VisivelChanged { get; set; }
+    [Parameter] public Guid VeiculoId { get; set; }
+    [Parameter] public Guid? ViagemId { get; set; }
+    [Parameter] public Guid? MotoristaId { get; set; }
+    [Parameter] public EventCallback OnOcorrenciaAlterada { get; set; }
+    
+    /// <summary>
+    /// Lista de ocorrências criadas localmente (armazenadas até salvar a ficha)
+    /// </summary>
+    [Parameter] public List<OcorrenciaViagem> OcorrenciasLocais { get; set; } = new();
+    [Parameter] public EventCallback<List<OcorrenciaViagem>> OcorrenciasLocaisChanged { get; set; }
+
+    private List<OcorrenciaViagem> OcorrenciasAPI = new();
+    private List<OcorrenciaViagem> TodasOcorrencias => OcorrenciasAPI.Concat(OcorrenciasLocais).OrderByDescending(x => x.DataCriacao).ToList();
+    private int TotalOcorrencias => TodasOcorrencias.Count;
+    
+    private bool Carregando = false;
+    private bool MostrarNovaOcorrencia = false;
+    private bool SalvandoOcorrencia = false;
+    private OcorrenciaViagem NovaOcorrencia = new();
+
+    private bool MostrarImagemAmpliada = false;
+    private string ImagemAmpliada = "";
+    
+    // Para resolver tela preta - flag para reabrir após foto
+    private bool DeveReabrirAposFoto = false;
+    private string FotoCapturadaTemp = "";
+    
+    // Loading durante processamento de mídia
+    private bool ProcessandoMidia = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            if (Visivel && VeiculoId != Guid.Empty)
+            {
+                // Se não estiver no fluxo de captura de foto, carrega as ocorrências da API
+                if (!DeveReabrirAposFoto)
+                {
+                    await CarregarOcorrenciasAPI();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Erro ao inicializar modal", ex);
+        }
+    }
+
+    private async Task CarregarOcorrenciasAPI()
+    {
+        try
+        {
+            Carregando = true;
+            StateHasChanged();
+
+            // Tenta carregar da API (se disponível)
+            var result = await OcorrenciaService.GetOcorrenciasAbertasByVeiculoAsync(VeiculoId);
+            if (result.Success && result.Data != null)
+            {
+                OcorrenciasAPI = result.Data;
+            }
+            else
+            {
+                OcorrenciasAPI = new List<OcorrenciaViagem>();
+            }
+        }
+        catch
+        {
+            // Se API falhar, continua só com as locais
+            OcorrenciasAPI = new List<OcorrenciaViagem>();
+        }
+        finally
+        {
+            Carregando = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task FecharModal()
+    {
+        try
+        {
+            Visivel = false;
+            await VisivelChanged.InvokeAsync(false);
+            
+            // Não limpa o formulário se estiver no meio de uma captura
+            if (!DeveReabrirAposFoto)
+            {
+                MostrarNovaOcorrencia = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Erro ao fechar modal", ex);
+        }
+    }
+
+    private void ToggleNovaOcorrencia()
+    {
+        MostrarNovaOcorrencia = !MostrarNovaOcorrencia;
+        if (!MostrarNovaOcorrencia)
+        {
+            LimparNovaOcorrencia();
+        }
+    }
+
+    private void LimparNovaOcorrencia()
+    {
+        NovaOcorrencia = new OcorrenciaViagem();
+        MostrarNovaOcorrencia = false;
+    }
+
+    private void RemoverImagemNovaOcorrencia()
+    {
+        NovaOcorrencia.ImagemOcorrencia = "";
+    }
+
+    private async Task CapturarFotoOcorrencia()
+    {
+        try
+        {
+#if ANDROID || IOS
+            // Salva o resumo atual antes de fechar
+            var resumoAtual = NovaOcorrencia.Resumo;
+            var descricaoAtual = NovaOcorrencia.Descricao;
+            
+            // Fecha o modal para evitar tela preta
+            DeveReabrirAposFoto = true;
+            Visivel = false;
+            await VisivelChanged.InvokeAsync(false);
+            StateHasChanged();
+            
+            await Task.Delay(150); // Pequeno delay para UI atualizar
+            
+            var photo = await MediaPicker.Default.CapturePhotoAsync();
+            
+            if (photo != null)
+            {
+                // PRIMEIRO: Reabre o modal
+                Visivel = true;
+                await VisivelChanged.InvokeAsync(true);
+                await InvokeAsync(StateHasChanged);
+                
+                // Aguarda o modal reabrir visualmente
+                await Task.Delay(300);
+                
+                // AGORA SIM: Ativa o loading (modal já está aberto)
+                ProcessandoMidia = true;
+                MostrarNovaOcorrencia = true;
+                await InvokeAsync(StateHasChanged);
+                
+                // Processa a foto
+                using var stream = await photo.OpenReadAsync();
+                using var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                var bytes = memoryStream.ToArray();
+                var fotoBase64 = $"data:image/jpeg;base64,{Convert.ToBase64String(bytes)}";
+                
+                // Aplica a foto na ocorrência
+                NovaOcorrencia.ImagemOcorrencia = fotoBase64;
+                NovaOcorrencia.Resumo = resumoAtual;
+                NovaOcorrencia.Descricao = descricaoAtual;
+                
+                // Se tiver resumo, salva automaticamente
+                if (!string.IsNullOrWhiteSpace(resumoAtual))
+                {
+                    await Task.Delay(200);
+                    await AdicionarOcorrenciaLocal();
+                }
+                else
+                {
+                    // Se não tiver resumo, apenas desativa o loading
+                    ProcessandoMidia = false;
+                    await InvokeAsync(StateHasChanged);
+                }
+                
+                // Limpa flags temporárias
+                DeveReabrirAposFoto = false;
+                FotoCapturadaTemp = "";
+            }
+            else
+            {
+                // Cancelou a foto - reabre modal sem loading
+                DeveReabrirAposFoto = false;
+                FotoCapturadaTemp = "";
+                Visivel = true;
+                await VisivelChanged.InvokeAsync(true);
+                await InvokeAsync(StateHasChanged);
+            }
+#endif
+        }
+        catch (Exception ex)
+        {
+            DeveReabrirAposFoto = false;
+            FotoCapturadaTemp = "";
+            ProcessandoMidia = false;
+            await Alerta.TratamentoErroComLinha("Erro ao capturar foto", ex);
+            
+            // Reabre o modal em caso de erro
+            Visivel = true;
+            await VisivelChanged.InvokeAsync(true);
+        }
+    }
+
+    private async Task AdicionarOcorrenciaLocal()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(NovaOcorrencia.Resumo))
+            {
+                await Alerta.Alerta("Atenção", "Informe o resumo da ocorrência");
+                return;
+            }
+
+            SalvandoOcorrencia = true;
+            StateHasChanged();
+
+            // Cria a ocorrência localmente
+            var novaOcorrencia = new OcorrenciaViagem
+            {
+                OcorrenciaViagemId = Guid.NewGuid(),
+                VeiculoId = VeiculoId,
+                ViagemId = ViagemId ?? Guid.Empty,
+                MotoristaId = MotoristaId,
+                Resumo = NovaOcorrencia.Resumo,
+                Descricao = NovaOcorrencia.Descricao ?? "",
+                ImagemOcorrencia = NovaOcorrencia.ImagemOcorrencia ?? "",
+                DataCriacao = DateTime.Now,
+                StatusOcorrencia = true,
+                Status = "Aberta"
+            };
+
+            // Adiciona à lista local
+            OcorrenciasLocais.Add(novaOcorrencia);
+            await OcorrenciasLocaisChanged.InvokeAsync(OcorrenciasLocais);
+            
+            await Alerta.Sucesso("Sucesso", "Ocorrência adicionada! Será salva junto com a ficha.");
+            
+            // Aguarda um pouco para o alerta ser visível antes de desativar o loading
+            await Task.Delay(500);
+            ProcessandoMidia = false;
+            
+            LimparNovaOcorrencia();
+            await OnOcorrenciaAlterada.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Erro ao adicionar ocorrência", ex);
+            ProcessandoMidia = false;
+        }
+        finally
+        {
+            SalvandoOcorrencia = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RemoverOcorrenciaLocal(OcorrenciaViagem oc)
+    {
+        try
+        {
+            var confirma = await Alerta.Confirmar("Remover Ocorrência", $"Deseja remover a ocorrência \"{oc.Resumo}\"?");
+            if (!confirma) return;
+
+            OcorrenciasLocais.Remove(oc);
+            await OcorrenciasLocaisChanged.InvokeAsync(OcorrenciasLocais);
+            
+            await Alerta.Sucesso("Sucesso", "Ocorrência removida!");
+            await OnOcorrenciaAlterada.InvokeAsync();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Erro ao remover ocorrência", ex);
+        }
+    }
+
+    private void VisualizarImagem(string? url)
+    {
+        if (!string.IsNullOrEmpty(url))
+        {
+            ImagemAmpliada = url;
+            MostrarImagemAmpliada = true;
+        }
+    }
+
+    private void FecharImagemAmpliada()
+    {
+        MostrarImagemAmpliada = false;
+        ImagemAmpliada = "";
+    }
+}
+
+<style>
+    .modal-ocorrencias-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .modal-ocorrencias-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal-ocorrencias-content {
+        width: 95%;
+        max-width: 600px;
+        max-height: 90vh;
+        background: #fff;
+        border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+    }
+
+    .modal-ocorrencias-overlay.show .modal-ocorrencias-content {
+        transform: translateY(0);
+    }
+
+    .modal-ocorrencias-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        background: linear-gradient(135deg, #dc6027 0%, #c45020 100%);
+        color: #fff;
+    }
+
+    .modal-ocorrencias-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .modal-ocorrencias-title .badge-count {
+        background: #fff;
+        color: #dc6027;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .btn-fechar {
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: rgba(255,255,255,0.2);
+        color: #fff;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .modal-ocorrencias-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .loading-container, .empty-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        color: #6b7280;
+        gap: 12px;
+    }
+
+    .loading-container i, .empty-container i { font-size: 2.5rem; }
+    .empty-container i { color: #10b981; }
+
+    .ocorrencias-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .ocorrencia-card {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 14px;
+        border-left: 4px solid #dc6027;
+    }
+    
+    /* Ocorrência criada localmente (ainda não salva) */
+    .ocorrencia-card.ocorrencia-local {
+        border-left-color: #10b981;
+        background: #f0fdf4;
+    }
+    
+    .badge-local {
+        background: #10b981;
+        color: #fff;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        margin-left: 8px;
+    }
+
+    .ocorrencia-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+
+    .ocorrencia-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .ocorrencia-data {
+        font-size: 0.8rem;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .ocorrencia-dias {
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 10px;
+        background: #e5e7eb;
+        color: #374151;
+        width: fit-content;
+    }
+
+    .ocorrencia-dias.atencao { background: #fef3c7; color: #92400e; }
+    .ocorrencia-dias.urgente { background: #fee2e2; color: #dc2626; }
+
+    .ocorrencia-acoes { display: flex; gap: 6px; }
+
+    .btn-acao {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-acao.btn-imagem { background: #3b82f6; color: #fff; }
+    .btn-acao.btn-baixar { background: #10b981; color: #fff; }
+    .btn-acao.btn-excluir { background: #ef4444; color: #fff; }
+
+    .ocorrencia-resumo { font-weight: 600; color: #1f2937; margin-bottom: 4px; }
+    .ocorrencia-descricao { font-size: 0.85rem; color: #6b7280; line-height: 1.4; }
+
+    .nova-ocorrencia-section {
+        border: 2px dashed #d1d5db;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px;
+        background: #f3f4f6;
+        cursor: pointer;
+    }
+
+    .section-header i:first-child { color: #dc6027; }
+    .section-header span { flex: 1; font-weight: 500; color: #374151; }
+
+    .nova-ocorrencia-form { padding: 16px; background: #fff; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 500; color: #374151; margin-bottom: 6px; }
+
+    .form-input, .form-textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+
+    .form-textarea { resize: vertical; min-height: 80px; }
+    .media-upload { display: flex; gap: 10px; }
+    .media-preview { position: relative; width: 100px; height: 100px; }
+    .media-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+
+    .btn-remover-media {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: none;
+        background: #ef4444;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    .btn-capturar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        background: #f3f4f6;
+        border: 2px dashed #d1d5db;
+        border-radius: 8px;
+        color: #6b7280;
+        cursor: pointer;
+    }
+
+    .form-actions { display: flex; gap: 10px; margin-top: 16px; }
+
+    .btn-cancelar, .btn-salvar {
+        flex: 1;
+        padding: 12px 16px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-cancelar { background: #f3f4f6; color: #6b7280; }
+    .btn-salvar { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; }
+    .btn-salvar:disabled { opacity: 0.7; cursor: not-allowed; }
+
+    .modal-ocorrencias-footer { padding: 14px 20px; border-top: 1px solid #e5e7eb; }
+
+    .btn-fechar-footer {
+        width: 100%;
+        padding: 12px;
+        background: #f3f4f6;
+        border: none;
+        border-radius: 8px;
+        color: #374151;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .modal-imagem-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+    }
+
+    .modal-imagem-content { position: relative; max-width: 95%; max-height: 95%; }
+    .modal-imagem-content img { max-width: 100%; max-height: 90vh; border-radius: 8px; }
+
+    .btn-fechar-imagem {
+        position: absolute;
+        top: -40px;
+        right: 0;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    /* Modal de Loading - Processando Mídia */
+    .modal-loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.85);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10001; /* Acima do modal de ocorrências */
+        backdrop-filter: blur(4px);
+    }
+
+    .modal-loading-content {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        padding: 40px 50px;
+        border-radius: 16px;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    .spinner-container {
+        margin-bottom: 20px;
+    }
+
+    .spinner-container i {
+        font-size: 3rem;
+        color: #3b82f6;
+        animation: spin 1s linear infinite;
+    }
+
+    .loading-text {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 8px;
+    }
+
+    .loading-subtext {
+        font-size: 0.95rem;
+        color: #6b7280;
+    }
+
+    @@keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+</style>

@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0-android</TargetFramework>
+        <UseMaui>true</UseMaui>
+        <SingleProject>true</SingleProject>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>FrotiX.Mobile.Shared</RootNamespace>
+
+        <!-- Android -->
+        <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
+        
+        <!-- CRÍTICO: Prevenir conflito de static web assets -->
+        <GenerateStaticWebAssetsManifest>false</GenerateStaticWebAssetsManifest>
+        <ResolveStaticWebAssetsInputsDependsOn></ResolveStaticWebAssetsInputsDependsOn>
+        <StaticWebAssetBasePath>_content/$(PackageId)</StaticWebAssetBasePath>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="_INSTRUCOES_DI.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Pacotes MAUI - .NET 10 (necessário para SecureStorage) -->
+        <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.11" />
+        <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.11" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="10.0.11" />
+        
+        <!-- AutoMapper -->
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+        
+        <!-- Entity Framework - .NET 10 -->
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
+        
+        <!-- Extensions - .NET 10 -->
+        <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+        <PackageReference Include="Microsoft.JSInterop" Version="10.0.0" />
+        
+        <!-- Azure Relay - Comunicação com servidor -->
+        <PackageReference Include="Microsoft.Azure.Relay" Version="3.1.0" />
+    </ItemGroup>
+
+</Project>

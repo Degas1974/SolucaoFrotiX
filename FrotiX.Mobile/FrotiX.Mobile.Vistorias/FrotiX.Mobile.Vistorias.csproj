@@ -1,0 +1,118 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0-android</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <RootNamespace>FrotiX.Mobile.Vistorias</RootNamespace>
+        <UseMaui>true</UseMaui>
+        <SingleProject>true</SingleProject>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <!-- Display name -->
+        <ApplicationTitle>FrotiX Vistorias</ApplicationTitle>
+
+        <!-- App Identifier -->
+        <ApplicationId>com.camara.frotix.vistorias</ApplicationId>
+
+        <!-- Versions -->
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationVersion>1</ApplicationVersion>
+
+        <!-- Android -->
+        <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
+        <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
+        <TargetFrameworks>net10.0-android</TargetFrameworks>
+        
+        <!-- Arquiteturas suportadas: ARM 32-bit (tablet SM-P550) e ARM 64-bit -->
+        <RuntimeIdentifiers>android-arm;android-arm64</RuntimeIdentifiers>
+        
+        <!-- Desabilita Fast Deployment (necessário para dispositivos antigos) -->
+        <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+        
+        <!-- ⭐ CORREÇÃO AZURE RELAY: Desabilitar trimming para preservar assemblies necessários -->
+        <PublishTrimmed>false</PublishTrimmed>
+        
+        <!-- ⭐ CORREÇÃO AZURE RELAY: Usar interpreter para compatibilidade total -->
+        <UseInterpreter>true</UseInterpreter>
+        <RunAOTCompilation>false</RunAOTCompilation>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+        <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+        <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <AndroidPackageFormat>apk</AndroidPackageFormat>
+        <DebugSymbols>True</DebugSymbols>
+        <!-- ⭐ CORREÇÃO: Desabilitar AOT em Release para Azure Relay -->
+        <RunAOTCompilation>false</RunAOTCompilation>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Splash Screen -->
+        <MauiSplashScreen Include="Resources\Splash\splash.png" Color="#373F4A" />
+
+        <!-- Images -->
+        <MauiImage Include="Resources\Images\*" />
+
+        <!-- Custom Fonts -->
+        <MauiFont Include="Resources\Fonts\*" />
+
+        <!-- Raw Assets -->
+        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="Components\Pages\DiagnosticoRelay.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="appsettings.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="appsettings.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <MauiIcon Include="Resources\AppIcon\appicon.png" ForegroundFile="Resources\AppIcon\appiconfg.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Pacotes MAUI - .NET 10 -->
+        <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.11" />
+        <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.11" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="10.0.11" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.*" />
+        <PackageReference Include="Radzen.Blazor" Version="8.3.5" />
+        
+        <!-- ⚡ SYNCFUSION - PACOTES INDIVIDUAIS (muito mais leve!) -->
+        <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="31.2.15" />
+        <PackageReference Include="Syncfusion.Blazor.Inputs" Version="31.2.15" />
+        <PackageReference Include="Syncfusion.Blazor.Calendars" Version="31.2.15" />
+        <PackageReference Include="Syncfusion.Blazor.Buttons" Version="31.2.15" />
+        <PackageReference Include="Syncfusion.Blazor.Navigations" Version="31.2.15" />
+        <PackageReference Include="Syncfusion.Blazor.Popups" Version="31.2.15" />
+        <PackageReference Include="Syncfusion.Blazor.Notifications" Version="31.2.15" />
+        <PackageReference Include="Syncfusion.Blazor.Themes" Version="31.2.15" />
+        
+        <!-- Imagem -->
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\FrotiX.Mobile.Shared\FrotiX.Mobile.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <MauiXaml Update="Resources\Styles\Colors.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+      <MauiXaml Update="Resources\Styles\Styles.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+    </ItemGroup>
+
+</Project>

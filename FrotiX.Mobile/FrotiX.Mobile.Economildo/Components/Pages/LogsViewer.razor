@@ -1,0 +1,620 @@
+@page "/logs-viewer"
+@using FrotiX.Mobile.Shared.Services.IServices
+@using FrotiX.Mobile.Shared.Models
+@implements IDisposable
+@inject ILogService LogService
+@inject AlertaJs Alerta
+@inject NavigationManager Navigation
+
+<PageTitle>Log de Erros - FrotiX</PageTitle>
+
+<!-- Botão Voltar Roxo Redondo -->
+<button type="button" class="btn-voltar-roxo" @onclick="VoltarParaHome">
+    <i class="fa-duotone fa-arrow-left"></i>
+</button>
+
+<div class="logs-container">
+    <div class="page-header">
+        <div class="header-content">
+            <i class="fa-duotone fa-bug header-icon"></i>
+            <div>
+                <h3>Log de Erros</h3>
+                <p class="header-subtitle">Visualização de ocorrências e detalhes técnicos</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filtros-card">
+        <div class="filtros-grid">
+            <div class="filtro-item filtro-busca">
+                <label>Buscar</label>
+                <input type="text" 
+                       class="form-control" 
+                       placeholder="Buscar na mensagem..." 
+                       @bind="buscaTexto"
+                       @onkeydown="@(async (e) => { if (e.Key == "Enter") await FiltrarPorTexto(); })" />
+            </div>
+
+            <div class="filtro-item filtro-actions">
+                <button class="btn-filtro btn-filtrar" @onclick="FiltrarPorTexto">
+                    <i class="fa-solid fa-filter"></i> Filtrar
+                </button>
+                <button class="btn-filtro btn-limpar" @onclick="LimparFiltros">
+                    <i class="fa-solid fa-times"></i> Limpar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status e Estatísticas -->
+    <div class="stats-card">
+        <div class="stats-row">
+            <button type="button" 
+                    class="stat-box stat-total @(filtroAtivo == TipoFiltroLog.Todos ? "filtro-ativo" : "")"
+                    @onclick="() => SelecionarFiltro(TipoFiltroLog.Todos)">
+                <div class="stat-icon">
+                    <i class="fa-duotone fa-list"></i>
+                </div>
+                <div class="stat-details">
+                    <div class="stat-value">@linhasLogs.Count</div>
+                    <div class="stat-label">Total de Logs</div>
+                </div>
+            </button>
+
+            <button type="button"
+                    class="stat-box stat-erros @(filtroAtivo == TipoFiltroLog.Erros ? "filtro-ativo" : "")"
+                    @onclick="() => SelecionarFiltro(TipoFiltroLog.Erros)">
+                <div class="stat-icon">
+                    <i class="fa-duotone fa-circle-xmark"></i>
+                </div>
+                <div class="stat-details">
+                    <div class="stat-value">@linhasLogs.Count(l => l.Contains("[ERROR"))</div>
+                    <div class="stat-label">Erros</div>
+                </div>
+            </button>
+
+            <button type="button"
+                    class="stat-box stat-avisos @(filtroAtivo == TipoFiltroLog.Avisos ? "filtro-ativo" : "")"
+                    @onclick="() => SelecionarFiltro(TipoFiltroLog.Avisos)">
+                <div class="stat-icon">
+                    <i class="fa-duotone fa-triangle-exclamation"></i>
+                </div>
+                <div class="stat-details">
+                    <div class="stat-value">@linhasLogs.Count(l => l.Contains("[WARN"))</div>
+                    <div class="stat-label">Avisos</div>
+                </div>
+            </button>
+
+            <button type="button"
+                    class="stat-box stat-info @(filtroAtivo == TipoFiltroLog.Informacoes ? "filtro-ativo" : "")"
+                    @onclick="() => SelecionarFiltro(TipoFiltroLog.Informacoes)">
+                <div class="stat-icon">
+                    <i class="fa-duotone fa-circle-info"></i>
+                </div>
+                <div class="stat-details">
+                    <div class="stat-value">@linhasLogs.Count(l => l.Contains("[INFO") || l.Contains("[USER"))</div>
+                    <div class="stat-label">Informações</div>
+                </div>
+            </button>
+        </div>
+
+        @if (linhasLogs.Any())
+        {
+            <button class="btn-limpar-logs" @onclick="LimparTodosOsLogs">
+                <i class="fa-solid fa-trash"></i> Limpar Todos os Logs
+            </button>
+        }
+    </div>
+
+    <!-- Lista de Logs -->
+    @if (isLoading)
+    {
+        <div class="loading-container">
+            <div class="spinner-border text-danger" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p>Carregando logs...</p>
+        </div>
+    }
+    else if (!linhasFiltradas.Any())
+    {
+        <div class="empty-state">
+            <i class="fa-duotone fa-check-circle fa-4x"></i>
+            <h4>Nenhum Log Encontrado</h4>
+            <p>@(linhasLogs.Any() ? "Nenhum log corresponde aos filtros aplicados." : "Não há logs registrados no momento.")</p>
+        </div>
+    }
+    else
+    {
+        <div class="logs-list">
+            @foreach (var log in linhasFiltradas)
+            {
+                var isError = log.Contains("[ERROR");
+                var isWarn = log.Contains("[WARN");
+                var isUser = log.Contains("[USER");
+                var tipoLog = isError ? "error" : isWarn ? "warning" : isUser ? "useraction" : "info";
+                
+                <div class="log-item log-@tipoLog">
+                    <div class="log-content">
+                        <pre>@log</pre>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+/* Container Principal */
+.logs-container {
+    padding: 70px 20px 20px 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header */
+.page-header {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    color: white;
+    padding: 20px 25px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-icon {
+    font-size: 2.5rem;
+}
+
+.page-header h3 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.header-subtitle {
+    margin: 5px 0 0 0;
+    opacity: 0.95;
+    font-size: 0.95rem;
+}
+
+/* Botão Voltar Roxo */
+.btn-voltar-roxo {
+        /* Ajustado: 20% menor e abaixado */
+    position: fixed;
+    top: 30px;
+    left: 15px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.btn-voltar-roxo:hover {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(124, 58, 237, 0.5);
+}
+
+.btn-voltar-roxo:active {
+    transform: translateY(0);
+}
+
+/* Filtros */
+.filtros-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.filtros-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 15px;
+    align-items: end;
+}
+
+.filtro-item label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.filtro-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-filtro {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.btn-limpar {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-limpar:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+.btn-filtrar {
+    background: #10b981;
+    color: white;
+}
+
+.btn-filtrar:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.btn-atualizar {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-atualizar:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+/* Stats */
+.stats-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.stat-box {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border-radius: 10px;
+    background: #f9fafb;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.stat-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.stat-box:active {
+    transform: translateY(-1px);
+}
+
+.stat-box.filtro-ativo {
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.4);
+    background: #d1fae5;
+}
+
+.stat-box.filtro-ativo::after {
+    content: "✓";
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: #10b981;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.stat-icon {
+    font-size: 2rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.stat-total .stat-icon {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+}
+
+.stat-erros .stat-icon {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    color: white;
+}
+
+.stat-avisos .stat-icon {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+}
+
+.stat-info .stat-icon {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.btn-limpar-logs {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-limpar-logs:hover {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+/* Loading */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.loading-container p {
+    margin-top: 30px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state i {
+    color: #10b981;
+    margin-bottom: 20px;
+}
+
+.empty-state h4 {
+    color: #111827;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.empty-state p {
+    color: #6b7280;
+}
+
+/* Logs List */
+.logs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.log-item {
+    background: white;
+    border-radius: 10px;
+    border-left: 4px solid;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.log-item.log-error {
+    border-left-color: #dc2626;
+}
+
+.log-item.log-warning {
+    border-left-color: #f59e0b;
+}
+
+.log-item.log-useraction {
+    border-left-color: #3b82f6;
+}
+
+.log-item.log-info {
+    border-left-color: #10b981;
+}
+
+.log-content {
+    padding: 15px 20px;
+}
+
+.log-content pre {
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: #374151;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.5;
+}
+
+/* Responsivo */
+@@media (max-width: 768px) {
+    .logs-container {
+        padding: 70px 10px 10px 10px;
+    }
+
+    .filtros-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-row {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+@code {
+    private enum TipoFiltroLog { Todos, Erros, Avisos, Informacoes }
+    
+    private bool isLoading = true;
+    private string logsTextoCompleto = "";
+    private List<string> linhasLogs = new();
+    private List<string> linhasFiltradas = new();
+
+    // Filtros
+    private TipoFiltroLog filtroAtivo = TipoFiltroLog.Todos;
+    private string tipoFiltro = "";
+    private string buscaTexto = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            isLoading = true;
+            await CarregarLogs();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task CarregarLogs()
+    {
+        try
+        {
+            isLoading = true;
+            StateHasChanged();
+
+            logsTextoCompleto = LogService.GetAllLogs();
+            linhasLogs = logsTextoCompleto.Split('\n', StringSplitOptions.RemoveEmptyEntries).ToList();
+            AplicarFiltros();
+        }
+        catch (Exception ex)
+        {
+            await Alerta.Erro("Erro", $"Erro ao carregar logs: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void SelecionarFiltro(TipoFiltroLog novoFiltro)
+    {
+        filtroAtivo = novoFiltro;
+        buscaTexto = ""; // Limpa busca de texto ao trocar filtro de tipo
+        AplicarFiltros();
+    }
+
+    private async Task FiltrarPorTexto()
+    {
+        await Task.Run(() => AplicarFiltros());
+        StateHasChanged();
+    }
+
+    private void AplicarFiltros()
+    {
+        // Primeiro aplica filtro de tipo
+        linhasFiltradas = filtroAtivo switch
+        {
+            TipoFiltroLog.Erros => linhasLogs.Where(l => l.Contains("[ERROR")).ToList(),
+            TipoFiltroLog.Avisos => linhasLogs.Where(l => l.Contains("[WARN")).ToList(),
+            TipoFiltroLog.Informacoes => linhasLogs.Where(l => l.Contains("[INFO") || l.Contains("[USER")).ToList(),
+            _ => linhasLogs.ToList()
+        };
+
+        // Depois aplica filtro de texto, se houver
+        if (!string.IsNullOrEmpty(buscaTexto))
+        {
+            linhasFiltradas = linhasFiltradas.Where(linha => 
+                linha.Contains(buscaTexto, StringComparison.OrdinalIgnoreCase)
+            ).ToList();
+        }
+        
+        StateHasChanged();
+    }
+
+    private void LimparFiltros()
+    {
+        filtroAtivo = TipoFiltroLog.Todos;
+        tipoFiltro = "";
+        buscaTexto = "";
+        AplicarFiltros();
+    }
+
+    private async Task LimparTodosOsLogs()
+    {
+        try
+        {
+            LogService.ClearLogs();
+            await Alerta.Sucesso("Sucesso", "Todos os logs foram limpos!");
+            await CarregarLogs();
+        }
+        catch (Exception ex)
+        {
+            await Alerta.Erro("Erro", $"Erro ao limpar logs: {ex.Message}");
+        }
+    }
+
+    private void VoltarParaHome()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    public void Dispose()
+    {
+    }
+}

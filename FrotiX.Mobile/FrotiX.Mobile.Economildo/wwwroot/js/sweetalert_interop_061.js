@@ -1,0 +1,356 @@
+﻿window.SweetAlertInterop = {
+    // ==== TOASTS FontAwesome Duotone, já com contraste destacado ====
+    SweetToast: function ({ iconClass, iconStyle = '', message, bgColor, textColor = "white", duration = 5000 })
+    {
+        let notify = document.getElementById("sweet-alert-notify");
+        if (!notify)
+        {
+            notify = document.createElement("div");
+            notify.id = "sweet-alert-notify";
+            notify.style.position = "fixed";
+            notify.style.top = "20px";
+            notify.style.right = "20px";
+            notify.style.zIndex = "10000";
+            notify.style.minWidth = "280px";
+            notify.style.maxWidth = "410px";
+            notify.style.padding = "16px 32px 16px 20px";
+            notify.style.borderRadius = "12px";
+            notify.style.fontSize = "18px";
+            notify.style.fontFamily = "'Segoe UI', sans-serif";
+            notify.style.display = "none";
+            notify.style.boxShadow = "0 8px 24px rgba(0,0,0,0.17)";
+            notify.style.alignItems = "center";
+            notify.style.gap = "10px";
+        }
+        notify.style.backgroundColor = bgColor;
+        notify.style.color = textColor;
+        notify.innerHTML = `<span style="vertical-align:middle;display:inline-block;width:64px;height:64px;text-align:center;line-height:64px;">
+            <i class="${iconClass}" style="font-size: 56px; line-height:64px; ${iconStyle}"></i>
+        </span>
+        <span style="margin-left:18px; vertical-align:middle;display:inline-block;line-height:1.3;">
+            ${message}
+        </span>`;
+        notify.style.display = "flex";
+        setTimeout(() =>
+        {
+            notify.style.display = "none";
+        }, duration);
+        document.body.appendChild(notify);
+    },
+
+    ShowToastError: function (message)
+    {
+        this.SweetToast({
+            iconClass: "fa-duotone fa-circle-xmark",
+            iconStyle: "--fa-primary-color: #e53935; --fa-secondary-color: #fff; color: #e53935;",
+            message,
+            bgColor: "#e53935",
+            textColor: "white",
+            duration: 2500
+        });
+    },
+
+    ShowToastWarning: function (message)
+    {
+        this.SweetToast({
+            iconClass: "fa-duotone fa-triangle-exclamation",
+            iconStyle: "--fa-primary-color: #FFC107; --fa-secondary-color: #fff; color: #FFC107;",
+            message,
+            bgColor: "#C49000",
+            textColor: "white",
+            duration: 2500
+        });
+    },
+
+    ShowToastConfirm: function (message)
+    {
+        this.SweetToast({
+            iconClass: "fa-duotone fa-circle-question",
+            iconStyle: "--fa-primary-color: #43D673; --fa-secondary-color: #fff; color: #43D673;",
+            message,
+            bgColor: "#7B1FA2",
+            textColor: "white",
+            duration: 2500
+        });
+    },
+
+    ShowToastSuccess: function (message)
+    {
+        this.SweetToast({
+            iconClass: "fa-duotone fa-circle-check",
+            iconStyle: "--fa-primary-color: #43D673; --fa-secondary-color: #fff; color: #43D673;",
+            message,
+            bgColor: "#00695c",
+            textColor: "white",
+            duration: 2500
+        });
+    },
+
+    ShowToastInfo: function (message)
+    {
+        this.SweetToast({
+            iconClass: "fa-duotone fa-circle-info",
+            iconStyle: "--fa-primary-color: #6A4E19; --fa-secondary-color: #fff; color: #6A4E19;",
+            message,
+            bgColor: "#FF6F00",
+            textColor: "white",
+            duration: 2500
+        });
+    },
+
+    ShowToastErrorUnexpected: function (message)
+    {
+        this.SweetToast({
+            iconClass: "fa-duotone fa-circle-radiation",
+            iconStyle: "--fa-primary-color: #FFD600; --fa-secondary-color: #fff; color: #FFD600;",
+            message,
+            bgColor: "#111",
+            textColor: "white",
+            duration: 4000
+        });
+    },
+
+    // ==== MODAIS PERSONALIZADOS: Usa seus PNGs ====
+    ShowCustomAlert: async function (icon, iconHtml, title, message, confirmButtonText, cancelButtonText = null)
+    {
+        const msg = `
+        <div style="background:#1e1e2f; border-radius: 8px; overflow: hidden; font-family: 'Segoe UI', sans-serif; color: #e0e0e0;">
+          <div style="background:#2d2d4d; padding: 20px; text-align: center;">
+            <div style="margin-bottom: 10px;">
+              <div style="display: inline-block; max-width: 200px; width: 100%;">${iconHtml}</div>
+            </div>
+            <div style="font-size: 20px; color: #c9a8ff; font-weight: bold;">${title}</div>
+          </div>
+          <div style="padding: 20px; font-size: 15px; line-height: 1.6; text-align: center; background:#1e1e2f">
+            <p>${message}</p>
+          </div>
+          <div style="background:#3b3b5c; padding: 15px; text-align: center;">
+            ${cancelButtonText ? `<button id="btnCancel" style="
+              background: #555; border: none; color: #fff; padding: 10px 20px; margin-right: 10px;
+              font-size: 14px; border-radius: 5px; cursor: pointer;">${cancelButtonText}</button>` : ''}
+            <button id="btnConfirm" style="
+              background: #7b5ae0; border: none; color: #fff; padding: 10px 20px;
+              font-size: 14px; border-radius: 5px; cursor: pointer;">${confirmButtonText}</button>
+          </div>
+        </div>`;
+
+        return new Promise((resolve) =>
+        {
+            if (typeof Swal === "undefined")
+            {
+                console.error("SweetAlert2 não está carregado.");
+                return resolve(false);
+            }
+            Swal.fire({
+                showConfirmButton: false,
+                html: msg,
+                backdrop: true,
+                heightAuto: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                customClass: { popup: 'swal2-popup swal2-no-border swal2-no-shadow' },
+                didOpen: () =>
+                {
+                    const popup = document.querySelector('.swal2-popup');
+                    if (popup)
+                    {
+                        popup.style.border = 'none';
+                        popup.style.boxShadow = 'none';
+                        popup.style.background = 'transparent';
+                    }
+                    const confirmBtn = document.getElementById('btnConfirm');
+                    if (confirmBtn) confirmBtn.onclick = () => { Swal.close(); resolve(true); };
+                    const cancelBtn = document.getElementById('btnCancel');
+                    if (cancelBtn) cancelBtn.onclick = () => { Swal.close(); resolve(false); };
+                },
+                didClose: () => { }
+            });
+        });
+    },
+
+    ShowInfo: async function (title, text, confirmButtonText = "OK")
+    {
+        this.ShowToastInfo(text || "Informação");
+        const iconHtml = '<img src="Images/info_sorridente_transparente.png" style="max-width: 110px; width: 100%; height: auto; margin-bottom: 10px;">';
+        return await this.ShowCustomAlert('info', iconHtml, title, text, confirmButtonText);
+    },
+
+    ShowSuccess: async function (title, text, confirmButtonText = "OK")
+    {
+        this.ShowToastSuccess(text || "Sucesso!");
+        const iconHtml = '<img src="Images/success_oculos_transparente.png" style="max-width: 110px; width: 100%; height: auto; margin-bottom: 10px;">';
+        return await this.ShowCustomAlert('success', iconHtml, title, text, confirmButtonText);
+    },
+
+    ShowWarning: async function (title, text, confirmButtonText = "OK")
+    {
+        this.ShowToastWarning(text || "Atenção!");
+        const iconHtml = '<img src="Images/alerta_transparente.png" style="max-width: 110px; width: 100%; height: auto; margin-bottom: 10px;">';
+        return await this.ShowCustomAlert('warning', iconHtml, title, text, confirmButtonText);
+    },
+
+    ShowError: async function (title, text, confirmButtonText = "OK")
+    {
+        this.ShowToastError(text || "Erro não identificado");
+        const iconHtml = '<img src="Images/erro_transparente.png" style="max-width: 110px; width: 100%; height: auto; margin-bottom: 10px;">';
+        return await this.ShowCustomAlert('error', iconHtml, title, text, confirmButtonText);
+    },
+
+    ShowConfirm: async function (title, text, confirmButtonText, cancelButtonText)
+    {
+        this.ShowToastConfirm(text || "Confirmação?");
+        const iconHtml = '<img src="Images/confirmar_transparente.png" style="max-width: 110px; width: 100%; height: auto; margin-bottom: 10px;">';
+        return await this.ShowCustomAlert('question', iconHtml, title, text, confirmButtonText, cancelButtonText);
+    },
+
+    // ==== ERRO NÃO TRATADO (corrigido para .NET/MAUI e fallback JS) ====
+    ShowErrorUnexpected: async function (classe, metodo, erro)
+    {
+        this.ShowToastErrorUnexpected(erro && erro.message ? erro.message : "Erro inesperado");
+
+        // Extrai arquivo/linha do stack: .NET (" in C:\...\Home.razor:line 15") e fallback JS ("/x.js:123:45")
+        const obterInfoLinha = async (stack) =>
+        {
+            try
+            {
+                if (!stack) return { linha: "desconhecida", trecho: null, arquivo: null };
+
+                // 1) Formato .NET (Blazor MAUI)
+                const mNet = stack.match(/ in (.*?):line (\d+)/);
+                if (mNet)
+                {
+                    const [, arquivo, linha] = mNet;
+                    // Caminhos locais (C:\...) não são acessíveis via fetch; portanto sem 'trecho'
+                    return { linha, trecho: null, arquivo };
+                }
+
+                // 2) Formato JS (WASM/navegador)
+                const mJs = stack.match(/(\/[^:]+\.js):(\d+):(\d+)/);
+                if (mJs)
+                {
+                    const [, arquivo, linha] = mJs;
+                    try
+                    {
+                        const resp = await fetch(arquivo);
+                        const texto = await resp.text();
+                        const linhas = texto.split('\n');
+                        return {
+                            linha,
+                            trecho: linhas[parseInt(linha, 10) - 1]?.trim() || null,
+                            arquivo
+                        };
+                    } catch {
+                        return { linha, trecho: null, arquivo };
+                    }
+                }
+
+                return { linha: "desconhecida", trecho: null, arquivo: null };
+            } catch {
+                return { linha: "desconhecida", trecho: null, arquivo: null };
+            }
+        };
+
+        const { linha, trecho, arquivo } = await obterInfoLinha(erro && erro.stack ? erro.stack : '');
+
+        const iconHtml = '<img src="Images/assustado_radioativo_3D.png" style="max-width: 110px; width: 100%; height: auto; margin-bottom: 10px;">';
+        const title = 'Erro Sem Tratamento';
+        const message = `
+            <p><b>📚 Classe:</b> ${classe}</p>
+            <p><b>🖋️ Método:</b> ${metodo}</p>
+            <p><img src="Images/erro_transparente.png" style="width:16px;vertical-align:middle;margin-right:6px;">
+               <b style="color:#ff6f6f;">Erro:</b> ${erro && erro.message ? erro.message : '(sem mensagem)'}</p>
+            <p><img src="Images/Arquivos.png" style="width:16px;vertical-align:middle;margin-right:6px;">
+               <b style="color:#64b5f6;">Arquivo:</b> ${arquivo || '(não identificado)'}</p>
+            <p><b>🔢 Linha:</b> <span style="color:#f76c6c; font-weight:bold;">${linha}</span></p>
+            ${trecho ? `<pre style="
+              background: #2b2b40; border: 1px solid #444; padding: 10px;
+              white-space: pre-wrap; word-break: break-word; font-family: monospace;
+              max-height: 300px; overflow-y: auto; color: #e0e0e0;">${trecho}</pre>` : ''}`;
+
+        return await this.ShowCustomAlert('error', iconHtml, title, message, "OK");
+    },
+
+    ShowPreventionAlert: async function (message)
+    {
+        this.ShowToastWarning(message || "Atenção!");
+        const iconHtml = '<img src="Images/confirmar_transparente.png" style="max-width: 110px; width: 100%; height: auto; margin-bottom: 10px;">';
+        const title = 'Atenção ao Preenchimento dos Dados';
+        const confirmText = 'Tenho certeza! 💪🏼';
+        const cancelText = 'Me enganei! 😟';
+        const confirmado = await this.ShowCustomAlert('warning', iconHtml, title, message, confirmText, cancelText);
+        return confirmado;
+    },
+
+    // Notificação genérica antiga, mantém para compatibilidade
+    ShowNotification: function (message, color = "#28a745")
+    {
+        let notify = document.getElementById("sweet-alert-notify");
+        if (!notify)
+        {
+            notify = document.createElement("div");
+            notify.id = "sweet-alert-notify";
+            notify.style.position = "fixed";
+            notify.style.top = "20px";
+            notify.style.right = "20px";
+            notify.style.zIndex = "10000";
+            notify.style.minWidth = "200px";
+            notify.style.padding = "12px 20px";
+            notify.style.borderRadius = "8px";
+            notify.style.fontSize = "16px";
+            notify.style.fontFamily = "'Segoe UI', sans-serif";
+            notify.style.color = "white";
+            notify.style.display = "none";
+            document.body.appendChild(notify);
+        }
+
+        notify.textContent = message;
+        notify.style.backgroundColor = color;
+        notify.style.display = "block";
+
+        setTimeout(() =>
+        {
+            notify.style.display = "none";
+        }, 3000);
+    },
+};
+
+/** Tipagem para intellisense (opcional)
+ * @typedef {{
+ *   ShowConfirm: (titulo: string, texto: string, confirm?: string, cancel?: string) => Promise<boolean>,
+ *   ShowError: Function,
+ *   ShowInfo: Function,
+ *   ShowSuccess: Function,
+ *   ShowWarning: Function
+ * }} SweetAlertInteropAPI
+ */
+/** @type {SweetAlertInteropAPI} */
+window.SweetAlertInterop;
+
+// Limpa a ^ Tela ^ depois do fechamento de um Modal
+function limparResiduosModalVanilla()
+{
+    document.querySelectorAll('.swal2-container, .swal2-backdrop-show').forEach(e => e.remove());
+
+    document.querySelectorAll('div').forEach(div =>
+    {
+        const style = getComputedStyle(div);
+        if (
+            (style.position === 'fixed' || style.position === 'absolute') &&
+            parseInt(style.zIndex || 0) >= 2000 &&
+            (parseInt(style.width) === window.innerWidth || style.width === '100vw' || style.left === '0px') &&
+            (parseInt(style.height) === window.innerHeight || style.height === '100vh' || style.top === '0px')
+        )
+        {
+            if (
+                !div.classList.contains('fc') &&
+                !div.classList.contains('fc-view-harness') &&
+                !div.classList.contains('modal-backdrop') &&
+                !div.closest('.modal')
+            )
+            {
+                div.remove();
+            }
+        }
+    });
+}

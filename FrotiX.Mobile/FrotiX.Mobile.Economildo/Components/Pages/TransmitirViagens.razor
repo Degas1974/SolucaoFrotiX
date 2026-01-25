@@ -1,0 +1,1203 @@
+@page "/transmitirviagens"
+@using FrotiX.Mobile.Shared.Services.IServices
+@using FrotiX.Mobile.Shared.Models
+@implements IDisposable
+@inject IViagensEconomildoService ViagensService
+@inject AlertaJs Alerta
+@inject NavigationManager Navigation
+
+<PageTitle>Transmitir Viagens - FrotiX</PageTitle>
+
+<!-- MODAL DE PROGRESSO DA TRANSMISSÃO -->
+@if (mostrarModalProgresso)
+{
+    <div class="modal-progresso-overlay">
+        <div class="modal-progresso-content">
+            <div class="modal-progresso-header">
+                <i class="fa-duotone fa-cloud-arrow-up fa-beat-fade"></i>
+                <h4>Transmitindo Trajetos</h4>
+            </div>
+            
+            <div class="modal-progresso-body">
+                <!-- Contador Visual -->
+                <div class="contador-transmissao">
+                    <span class="numero-atual">@progressoAtual</span>
+                    <span class="separador">/</span>
+                    <span class="numero-total">@progressoTotal</span>
+                </div>
+                
+                <!-- Barra de Progresso -->
+                <div class="barra-progresso-container">
+                    <div class="barra-progresso-fill" style="width: @(percentualProgresso)%"></div>
+                </div>
+                
+                <!-- Percentual -->
+                <div class="percentual-texto">@percentualProgresso.ToString("0")%</div>
+                
+                <!-- Mensagem de Status -->
+                <div class="status-transmissao">
+                    @if (progressoAtual < progressoTotal)
+                    {
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <span>@mensagemProgresso</span>
+                    }
+                    else
+                    {
+                        <i class="fa-solid fa-check-circle text-success"></i>
+                        <span>Transmissão concluída!</span>
+                    }
+                </div>
+                
+                <!-- Detalhes do Trajeto Atual -->
+                @if (!string.IsNullOrEmpty(trajetoAtualInfo))
+                {
+                    <div class="trajeto-atual-info">
+                        <small>@trajetoAtualInfo</small>
+                    </div>
+                }
+            </div>
+            
+            <!-- Resultados (após finalizar) -->
+            @if (transmissaoFinalizada)
+            {
+                <div class="modal-progresso-resultado">
+                    @if (errosTransmissao.Any())
+                    {
+                        <div class="resultado-erros">
+                            <i class="fa-solid fa-exclamation-triangle"></i>
+                            <span>@errosTransmissao.Count erro(s) durante a transmissão</span>
+                        </div>
+                    }
+                    <button class="btn-fechar-modal" @onclick="FecharModalProgresso">
+                        <i class="fa-solid fa-check"></i> Concluir
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<!-- Botão Voltar Roxo Redondo -->
+<button type="button" class="btn-voltar-roxo" @onclick="VoltarParaHome">
+    <i class="fa-duotone fa-arrow-left"></i>
+</button>
+
+<div class="transmitir-container">
+    <div class="page-header">
+        <div class="header-content">
+            <i class="fa-duotone fa-paper-plane-top header-icon"></i>
+            <div>
+                <h3>Transmitir Trajetos</h3>
+                <p class="header-subtitle">Enviar trajetos registrados para o servidor</p>
+            </div>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loading-container">
+            <div class="spinner-border text-success" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p>Carregando trajetos...</p>
+        </div>
+    }
+    else
+    {
+        <!-- Status -->
+        <div class="status-card">
+            <div class="status-row">
+                <button type="button" 
+                        class="status-item total @(filtroAtivo == FiltroViagens.Todas ? "filtro-ativo" : "")"
+                        @onclick="() => SelecionarFiltro(FiltroViagens.Todas)">
+                    <div class="status-icon">
+                        <i class="fa-duotone fa-list"></i>
+                    </div>
+                    <div class="status-details">
+                        <div class="status-value">@viagensLocais.Count</div>
+                        <div class="status-label">Total de Trajetos@(ObterTextoViagensUnicas())</div>
+                    </div>
+                </button>
+
+                <button type="button"
+                        class="status-item pendentes @(filtroAtivo == FiltroViagens.Pendentes ? "filtro-ativo" : "")"
+                        @onclick="() => SelecionarFiltro(FiltroViagens.Pendentes)">
+                    <div class="status-icon">
+                        <i class="fa-duotone fa-clock"></i>
+                    </div>
+                    <div class="status-details">
+                        <div class="status-value">@viagensLocais.Count(v => !v.Transmitido)</div>
+                        <div class="status-label">Pendentes</div>
+                    </div>
+                </button>
+
+                <button type="button"
+                        class="status-item transmitidas @(filtroAtivo == FiltroViagens.Transmitidas ? "filtro-ativo" : "")"
+                        @onclick="() => SelecionarFiltro(FiltroViagens.Transmitidas)">
+                    <div class="status-icon">
+                        <i class="fa-duotone fa-check-circle"></i>
+                    </div>
+                    <div class="status-details">
+                        <div class="status-value">@viagensLocais.Count(v => v.Transmitido)</div>
+                        <div class="status-label">Transmitidas</div>
+                    </div>
+                </button>
+            </div>
+
+            @if (viagensLocais.Any(v => !v.Transmitido))
+            {
+                <button class="btn-transmitir-todas"
+                        disabled="@isTransmitting"
+                        @onclick="TransmitirTodas">
+                    @if (isTransmitting)
+                    {
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <span> Transmitindo...</span>
+                    }
+                    else
+                    {
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span> Transmitir Todos os Trajetos Pendentes</span>
+                    }
+                </button>
+            }
+        </div>
+
+        <!-- Lista de Viagens -->
+        @if (viagensFiltradas.Any())
+        {
+            <div class="viagens-card">
+                <h5><i class="fa-duotone fa-list-check"></i> Trajetos Registrados</h5>
+
+                <div class="viagens-list">
+                    @foreach (var viagem in viagensFiltradas.OrderByDescending(v => v.Data).ThenByDescending(v => v.HoraInicio))
+                    {
+                        <div class="viagem-item @(viagem.Transmitido ? "transmitida" : "pendente")">
+                            <div class="viagem-status-badge">
+                                @if (viagem.Transmitido)
+                                {
+                                    <i class="fa-solid fa-check-circle"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa-solid fa-clock"></i>
+                                }
+                            </div>
+
+                            <div class="viagem-info">
+                                <div class="viagem-header">
+                                    <strong>@viagem.VeiculoPlaca</strong>
+                                    <span class="viagem-date">@viagem.Data.ToString("dd/MM/yyyy")</span>
+                                </div>
+                                <div class="viagem-details">
+                                    <span><i class="fa-solid fa-route"></i> @viagem.MOB</span>
+                                    <span><i class="fa-solid fa-exchange-alt"></i> @viagem.IdaVolta</span>
+                                    <span><i class="fa-solid fa-clock"></i> @viagem.HoraInicio - @viagem.HoraFim</span>
+                                    <span><i class="fa-solid fa-users"></i> @viagem.QtdPassageiros passageiros</span>
+                                </div>
+                                <div class="viagem-motorista">
+                                    <i class="fa-solid fa-user-tie"></i> @viagem.MotoristaNome
+                                </div>
+                            </div>
+
+                            @if (!viagem.Transmitido)
+                            {
+                                <button class="btn-transmitir-single"
+                                        disabled="@isTransmitting"
+                                        @onclick="() => TransmitirViagem(viagem)">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="fa-duotone fa-inbox fa-4x"></i>
+                <h4>Nenhum Trajeto Registrado</h4>
+                <p>Vá para a Ficha de Viagem para registrar seus trajetos.</p>
+            </div>
+        }
+
+        <!-- Zona de Perigo -->
+        @if (viagensLocais.Any())
+        {
+            <div class="zona-perigo">
+                <div class="zona-perigo-header">
+                    <i class="fa-duotone fa-triangle-exclamation"></i>
+                    <h5>Zona de Perigo</h5>
+                </div>
+                <p class="zona-perigo-text">
+                    Esta ação é irreversível! Apaga <strong>TODOS</strong> os trajetos armazenados localmente (transmitidos ou não).
+                </p>
+                <button class="btn-zona-perigo" 
+                        @onclick="ApagarTodasViagens">
+                    <i class="fa-duotone fa-trash-can"></i>
+                    Apagar Todos os Trajetos Locais
+                </button>
+            </div>
+        }
+    }
+</div>
+
+<style>
+/* Botão Voltar Roxo Redondo */
+.btn-voltar-roxo {
+        /* Ajustado: 20% menor e abaixado */
+    position: fixed;
+    top: 30px;
+    left: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #553c9a 0%, #7b68ee 100%);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(85, 60, 154, 0.4);
+    z-index: 10000;
+}
+
+.btn-voltar-roxo:hover {
+    background: linear-gradient(135deg, #7b68ee 0%, #553c9a 100%);
+    transform: scale(1.08);
+    box-shadow: 0 6px 20px rgba(85, 60, 154, 0.6);
+}
+
+.btn-voltar-roxo:active {
+    transform: scale(0.95);
+}
+
+.btn-voltar-roxo i {
+    font-size: 1rem;
+}
+
+.transmitir-container {
+    padding: 70px 15px 15px 15px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.page-header {
+    background: linear-gradient(135deg, #2f855a 0%, #276749 100%);
+    padding: 20px;
+    border-radius: 12px;
+    color: white;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 25px rgba(47, 133, 90, 0.4);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-icon {
+    font-size: 2.5rem;
+}
+
+.header-subtitle {
+    margin: 5px 0 0 0;
+    opacity: 0.9;
+    font-size: 1rem;
+}
+
+.loading-container {
+    text-align: center;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.status-card, .viagens-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.status-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.status-item {
+    background: #f8f9fa;
+    padding: 18px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.status-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.status-item:active {
+    transform: translateY(-1px);
+}
+
+.status-item.filtro-ativo {
+    box-shadow: 0 0 0 3px rgba(47, 133, 90, 0.4);
+    background: #e8f5e9;
+}
+
+.status-item.filtro-ativo::after {
+    content: "✓";
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: #2f855a;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.status-item.total .status-icon {
+    background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+}
+
+.status-item.pendentes .status-icon {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.status-item.transmitidas .status-icon {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.status-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.status-details {
+    flex: 1;
+}
+
+.status-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.status-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 2px;
+}
+
+.btn-transmitir-todas {
+    width: 100%;
+    padding: 15px 25px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-transmitir-todas:hover:not(:disabled) {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-transmitir-todas:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-transmitir-todas:disabled {
+    background: #cbd5e0;
+    cursor: not-allowed;
+}
+
+.viagens-card h5 {
+    margin: 0 0 20px 0;
+    font-size: 1.3rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.viagens-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.viagem-item {
+    background: #f8f9fa;
+    padding: 18px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+    border-left: 5px solid #f59e0b;
+}
+
+.viagem-item.transmitida {
+    border-left-color: #10b981;
+    opacity: 0.7;
+}
+
+.viagem-item.pendente {
+    border-left-color: #f59e0b;
+}
+
+.viagem-item:hover {
+    background: #e9ecef;
+}
+
+.viagem-status-badge {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.viagem-item.transmitida .viagem-status-badge {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.viagem-item.pendente .viagem-status-badge {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+}
+
+.viagem-info {
+    flex: 1;
+}
+
+.viagem-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.viagem-header strong {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.viagem-date {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 600;
+}
+
+.viagem-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.viagem-details span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.viagem-details i {
+    color: #3b82f6;
+}
+
+.viagem-motorista {
+    font-size: 0.9rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.viagem-motorista i {
+    color: #8b5cf6;
+}
+
+.btn-transmitir-single {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
+}
+
+.btn-transmitir-single:hover:not(:disabled) {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: scale(1.08);
+    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+}
+
+.btn-transmitir-single:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.btn-transmitir-single:disabled {
+    background: #cbd5e0;
+    cursor: not-allowed;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.empty-state i {
+    color: #cbd5e0;
+    margin-bottom: 20px;
+}
+
+.empty-state h4 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: #666;
+}
+
+/* Zona de Perigo */
+.zona-perigo {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border: 3px solid #dc2626;
+    border-radius: 12px;
+    padding: 25px;
+    margin-top: 30px;
+}
+
+.zona-perigo-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #991b1b;
+    margin-bottom: 15px;
+}
+
+.zona-perigo-header i {
+    font-size: 2rem;
+}
+
+.zona-perigo-header h5 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.zona-perigo-text {
+    color: #7f1d1d;
+    margin-bottom: 20px;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+.zona-perigo-text strong {
+    color: #991b1b;
+    font-weight: 700;
+}
+
+.btn-zona-perigo {
+    width: 100%;
+    padding: 15px 25px;
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+}
+
+.btn-zona-perigo:hover {
+    background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+}
+
+.btn-zona-perigo:active {
+    transform: translateY(0);
+}
+
+.btn-zona-perigo i {
+    font-size: 1.2rem;
+}
+
+
+@@media (max-width: 768px) {
+    .transmitir-container {
+        padding: 70px 10px 10px 10px;
+    }
+
+    .status-row {
+        grid-template-columns: 1fr;
+    }
+
+    .viagem-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .viagem-details {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* ============================================ */
+/* MODAL DE PROGRESSO DA TRANSMISSÃO           */
+/* ============================================ */
+.modal-progresso-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    animation: fadeIn 0.3s ease;
+}
+
+@@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-progresso-content {
+    background: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.4s ease;
+}
+
+@@keyframes slideUp {
+    from { 
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-progresso-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.modal-progresso-header i {
+    font-size: 3.5rem;
+    color: #2f855a;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.modal-progresso-header h4 {
+    margin: 0;
+    color: #333;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.modal-progresso-body {
+    text-align: center;
+}
+
+.contador-transmissao {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.contador-transmissao .numero-atual {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #2f855a;
+    line-height: 1;
+}
+
+.contador-transmissao .separador {
+    font-size: 2rem;
+    color: #999;
+    font-weight: 300;
+}
+
+.contador-transmissao .numero-total {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #666;
+    line-height: 1;
+}
+
+.barra-progresso-container {
+    width: 100%;
+    height: 20px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.barra-progresso-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2f855a 0%, #48bb78 100%);
+    border-radius: 10px;
+    transition: width 0.5s ease-out;
+    box-shadow: 0 2px 10px rgba(47, 133, 90, 0.4);
+}
+
+.percentual-texto {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2f855a;
+    margin-bottom: 15px;
+}
+
+.status-transmissao {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #555;
+    font-size: 1rem;
+    padding: 12px;
+    background: #f7fafc;
+    border-radius: 10px;
+}
+
+.status-transmissao i.fa-spin {
+    color: #2f855a;
+}
+
+.status-transmissao .text-success {
+    color: #2f855a !important;
+}
+
+.trajeto-atual-info {
+    margin-top: 15px;
+    padding: 10px;
+    background: #edf2f7;
+    border-radius: 8px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.modal-progresso-resultado {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.resultado-erros {
+    background: #fff5f5;
+    border: 1px solid #feb2b2;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #c53030;
+}
+
+.resultado-erros i {
+    color: #e53e3e;
+}
+
+.btn-fechar-modal {
+    width: 100%;
+    padding: 15px 25px;
+    background: linear-gradient(135deg, #2f855a 0%, #276749 100%);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(47, 133, 90, 0.4);
+}
+
+.btn-fechar-modal:hover {
+    background: linear-gradient(135deg, #276749 0%, #22543d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(47, 133, 90, 0.5);
+}
+
+.btn-fechar-modal:active {
+    transform: translateY(0);
+}
+</style>
+
+@code {
+    private enum FiltroViagens { Todas, Pendentes, Transmitidas }
+    
+    private bool isLoading = true;
+    private bool isTransmitting = false;
+    private List<ViagemEconomildoLocal> viagensLocais = new();
+    private List<ViagemEconomildoLocal> viagensFiltradas = new();
+    private FiltroViagens filtroAtivo = FiltroViagens.Todas;
+
+    // ========== VARIÁVEIS DO MODAL DE PROGRESSO ==========
+    private bool mostrarModalProgresso = false;
+    private bool transmissaoFinalizada = false;
+    private int progressoAtual = 0;
+    private int progressoTotal = 0;
+    private double percentualProgresso => progressoTotal > 0 ? (progressoAtual * 100.0 / progressoTotal) : 0;
+    private string mensagemProgresso = "";
+    private string trajetoAtualInfo = "";
+    private List<string> errosTransmissao = new();
+    private int transmissoesSucesso = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            isLoading = true;
+            await CarregarViagens();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task CarregarViagens()
+    {
+        try
+        {
+            viagensLocais = (await ViagensService.ObterViagensLocaisAsync()).ToList();
+            AplicarFiltro();
+        }
+        catch (Exception ex)
+        {
+                        // Logger?.Error("Erro ao carregar viagens locais", ex);
+            await Alerta.Erro("Erro", $"Erro ao carregar trajetos: {ex.Message}");
+        }
+    }
+
+    private void AplicarFiltro()
+    {
+        viagensFiltradas = filtroAtivo switch
+        {
+            FiltroViagens.Pendentes => viagensLocais.Where(v => !v.Transmitido).ToList(),
+            FiltroViagens.Transmitidas => viagensLocais.Where(v => v.Transmitido).ToList(),
+            _ => viagensLocais.ToList()
+        };
+        StateHasChanged();
+    }
+
+    private int ObterContagemViagensUnicas()
+    {
+        try
+        {
+            // Agrupa trajetos por Data, Veículo e Motorista para contar viagens únicas
+            var viagensUnicas = viagensLocais
+                .GroupBy(v => new { 
+                    v.Data.Date, 
+                    v.VeiculoId, 
+                    v.MotoristaId,
+                    v.Responsavel 
+                })
+                .Count();
+            
+            return viagensUnicas;
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
+    private string ObterTextoViagensUnicas()
+    {
+        var contagem = ObterContagemViagensUnicas();
+        if (contagem > 0)
+        {
+            var textoViagem = contagem == 1 ? "viagem" : "viagens";
+            return $" ({contagem} {textoViagem})";
+        }
+        return "";
+    }
+
+    private void SelecionarFiltro(FiltroViagens novoFiltro)
+    {
+        filtroAtivo = novoFiltro;
+        AplicarFiltro();
+    }
+
+    // ========== MÉTODOS DO MODAL DE PROGRESSO ==========
+    private void InicializarModalProgresso(int total)
+    {
+        progressoAtual = 0;
+        progressoTotal = total;
+        mensagemProgresso = "Preparando transmissão...";
+        trajetoAtualInfo = "";
+        errosTransmissao.Clear();
+        transmissoesSucesso = 0;
+        transmissaoFinalizada = false;
+        mostrarModalProgresso = true;
+    }
+
+    private void AtualizarProgresso(int atual, string trajeto, string mensagem)
+    {
+        progressoAtual = atual;
+        trajetoAtualInfo = trajeto;
+        mensagemProgresso = mensagem;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void FinalizarModalProgresso()
+    {
+        transmissaoFinalizada = true;
+        mensagemProgresso = "Transmissão concluída!";
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task FecharModalProgresso()
+    {
+        mostrarModalProgresso = false;
+        await CarregarViagens();
+        filtroAtivo = FiltroViagens.Todas;
+        AplicarFiltro();
+    }
+
+    private async Task TransmitirTodas()
+    {
+        if (isTransmitting) return;
+
+        try
+        {
+            isTransmitting = true;
+            StateHasChanged();
+
+            var pendentes = viagensLocais.Where(v => !v.Transmitido).ToList();
+            
+            if (pendentes.Count == 0)
+            {
+                await Alerta.Info("Informação", "Não há trajetos pendentes para transmitir.");
+                return;
+            }
+
+            // ✅ Inicializa o modal de progresso
+            InicializarModalProgresso(pendentes.Count);
+            StateHasChanged();
+
+            // ✅ Pequeno delay para garantir que o modal seja renderizado
+            await Task.Delay(100);
+
+            // ✅ Transmite trajetos UM A UM para mostrar progresso
+            for (int i = 0; i < pendentes.Count; i++)
+            {
+                var viagem = pendentes[i];
+                
+                // Atualiza informação do trajeto atual
+                var infoTrajeto = $"{viagem.VeiculoPlaca} - {viagem.MOB} ({viagem.IdaVolta})";
+                AtualizarProgresso(i, infoTrajeto, $"Transmitindo trajeto {i + 1} de {pendentes.Count}...");
+                
+                try
+                {
+                    var resultado = await ViagensService.TransmitirViagensAsync(new List<ViagemEconomildoLocal> { viagem });
+                    
+                    if (resultado.sucesso)
+                    {
+                        transmissoesSucesso++;
+                    }
+                    else
+                    {
+                        errosTransmissao.Add($"Trajeto {i + 1}: {resultado.mensagem ?? "Erro desconhecido"}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    errosTransmissao.Add($"Trajeto {i + 1}: {ex.Message}");
+                }
+
+                // Atualiza progresso após cada transmissão
+                AtualizarProgresso(i + 1, infoTrajeto, $"Transmitido {i + 1} de {pendentes.Count}");
+                
+                // Pequeno delay para visualização do progresso
+                await Task.Delay(50);
+            }
+
+            // ✅ Finaliza o modal
+            FinalizarModalProgresso();
+        }
+        catch (Exception ex)
+        {
+            mostrarModalProgresso = false;
+            await Alerta.Erro("Erro", $"Erro ao transmitir trajetos: {ex.Message}");
+        }
+        finally
+        {
+            isTransmitting = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task TransmitirViagem(ViagemEconomildoLocal viagem)
+    {
+        if (isTransmitting) return;
+
+        try
+        {
+            isTransmitting = true;
+            StateHasChanged();
+
+                        // Logger?.UserAction($"TransmitirViagens -> Transmitir Viagem Individual: {viagem.ViagemEconomildoId}");
+
+            var resultado = await ViagensService.TransmitirViagensAsync(new List<ViagemEconomildoLocal> { viagem });
+
+            if (resultado.sucesso)
+            {
+                await Alerta.Sucesso("Sucesso", "Trajeto transmitido com sucesso!");
+                await CarregarViagens();
+            }
+            else
+            {
+                await Alerta.Erro("Erro", resultado.mensagem ?? "Erro ao transmitir trajeto");
+            }
+        }
+        catch (Exception ex)
+        {
+                        // Logger?.Error($"Erro ao transmitir viagem {viagem.ViagemEconomildoId}", ex);
+            await Alerta.Erro("Erro", $"Erro ao transmitir trajeto: {ex.Message}");
+        }
+        finally
+        {
+            isTransmitting = false;
+            StateHasChanged();
+        }
+    }
+
+    private void VoltarParaHome()
+    {
+                    // Logger?.UserAction("TransmitirViagens -> Voltar para Home");
+        Navigation.NavigateTo("/");
+    }
+
+    private async Task ApagarTodasViagens()
+    {
+        try
+        {
+            var confirmado = await Alerta.Confirmar(
+                "⚠️ ATENÇÃO - AÇÃO IRREVERSÍVEL!",
+                $"Você está prestes a APAGAR TODOS os {viagensLocais.Count} trajetos armazenados localmente.<br><br>" +
+                "<strong>Esta ação é PERMANENTE e NÃO pode ser desfeita!</strong><br><br>" +
+                "Tem certeza absoluta que deseja continuar?"
+            );
+
+            if (!confirmado) return;
+
+            // Segunda confirmação para segurança extra
+            var superConfirmado = await Alerta.Confirmar(
+                "🔴 ÚLTIMA CONFIRMAÇÃO",
+                "Você realmente deseja APAGAR TODOS os trajetos locais?<br><br>" +
+                "<strong>ÚLTIMA CHANCE DE CANCELAR!</strong>"
+            );
+
+            if (!superConfirmado) return;
+
+                        // Logger?.UserAction($"TransmitirViagens -> Apagar TODOS os trajetos locais ({viagensLocais.Count} trajetos)");
+
+            // Limpa todas as viagens do armazenamento local
+            await SecureStorage.SetAsync("viagens_economildo", "[]");
+
+            await Alerta.Sucesso("Sucesso", $"{viagensLocais.Count} trajetos foram apagados do armazenamento local!");
+
+            // ✅ Seleciona o filtro Total de Trajetos após apagar
+            filtroAtivo = FiltroViagens.Todas;
+            
+            // Recarrega a lista
+            await CarregarViagens();
+        }
+        catch (Exception ex)
+        {
+                        // Logger?.Error("Erro ao apagar todas as viagens locais", ex);
+            await Alerta.Erro("Erro", $"Erro ao apagar trajetos: {ex.Message}");
+        }
+    }
+
+    public void Dispose()
+    {
+        // Cleanup se necessário
+    }
+}

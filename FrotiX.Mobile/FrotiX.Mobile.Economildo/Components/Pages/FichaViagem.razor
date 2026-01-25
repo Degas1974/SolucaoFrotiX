@@ -1,0 +1,2080 @@
+@page "/fichaviagem"
+@using FrotiX.Mobile.Shared.Models
+@using FrotiX.Mobile.Shared.Services.IServices
+@using Syncfusion.Blazor.DropDowns
+@using MudBlazor
+@using System.Timers
+@implements IDisposable
+@inject ISyncService SyncService
+@inject IViagensEconomildoService ViagensService
+@inject AlertaJs Alerta
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<PageTitle>Ficha de Viagem - FrotiX</PageTitle>
+
+<!-- Botão Voltar Roxo Redondo (canto superior esquerdo) -->
+<button type="button" class="btn-voltar-roxo" @onclick="VoltarParaHome">
+    <i class="fa-duotone fa-arrow-left"></i>
+</button>
+
+<div class="ficha-viagem-container-8in @(viagemIniciada ? "viagem-iniciada" : "")">
+
+    @if (isLoading)
+    {
+        <div class="loading-container-8in">
+            <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p style="font-size: 1.4rem; margin-top: 30px;">Carregando...</p>
+        </div>
+    }
+    else
+    {
+        <!-- HEADER COMPLETO - Só aparece quando viagem NÃO iniciada -->
+        @if (!viagemIniciada)
+        {
+            <div class="page-header-8in">
+                <div class="header-content-8in">
+                    <i class="fa-duotone fa-bus" style="font-size: 2.5rem;"></i>
+                    <div style="flex: 1;">
+                        <h2 style="margin: 0; font-size: 1.6rem;">Ficha de Viagem</h2>
+                        <p style="margin: 3px 0 0 0; opacity: 0.9; font-size: 1rem;">Registro - Economildo</p>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- HEADER COMPACTO - Só aparece quando viagem iniciada -->
+        @if (viagemIniciada)
+        {
+            <div class="compact-header-8in">
+                <div class="info-row">
+                    <div class="info-badge info-badge-compact @(dataAtualRegistro.Date != dataViagem?.Date ? "data-alterada" : "")">
+                        <i class="fa-duotone fa-calendar"></i>
+                        <span>@dataAtualRegistro.ToString("dd/MM")</span>
+                    </div>
+                    <div class="info-badge info-badge-compact info-badge-hora @(dataAtualRegistro.Date != dataViagem?.Date ? "data-alterada" : "")">
+                        <i class="fa-duotone fa-clock"></i>
+                        <span>@(horaAtual ?? "--:--")</span>
+                    </div>
+                    <div class="info-badge info-badge-compact">
+                        <i class="fa-duotone fa-bus"></i>
+                        <span>@(veiculosEconomildo.FirstOrDefault(v => v.Value == veiculoSelecionadoId)?.Text?.Split(' ').FirstOrDefault() ?? "")</span>
+                    </div>
+                    <div class="info-badge info-badge-compact">
+                        <i class="fa-duotone fa-route"></i>
+                        <span>@(linhaSelecionada?.Replace("Economildo " , "").Replace("Linha " , ""))</span>
+                    </div>
+                    <div class="info-badge info-badge-compact">
+                        <i class="fa-duotone fa-user-tie"></i>
+                        <span>@ObterNomeCurtoMotorista()</span>
+                    </div>
+                </div>
+                @if (dataAtualRegistro.Date != dataViagem?.Date)
+                {
+                    <div class="aviso-virou-dia-header">
+                        <i class="fa-duotone fa-triangle-exclamation"></i> Virou o dia!
+                    </div>
+                }
+                <div class="trajeto-badge-large">
+                    @trajetoAtual
+                </div>
+            </div>
+        }
+
+        <!-- SEÇÃO FIXA (não rola com a página) -->
+        <div class="form-card-8in">
+
+            <!-- INFORMAÇÕES INICIAIS - Só aparece quando viagem NÃO iniciada -->
+            @if (!viagemIniciada)
+            {
+                <div class="form-section-8in">
+                    <h4 class="section-title-8in"><i class="fa-duotone fa-info-circle"></i> Informações da Viagem</h4>
+
+                    <!-- Data com MudDatePicker -->
+                    <div class="form-group-8in">
+                        <MudDatePicker @bind-Date="dataViagem"
+                                       Label="Data da Viagem"
+                                       DateFormat="dd/MM/yyyy"
+                                       Editable="true"
+                                       Variant="Variant.Outlined"
+                                       Disabled="@viagemIniciada"
+                                       Class="mud-input-compact"
+                                       Style="height: 54px; min-height: 54px; max-height: 54px;"
+                                       FirstDayOfWeek="DayOfWeek.Sunday"
+                                       Culture="@ptBrCulture"
+                                       AdornmentIcon="fa-duotone fa-calendar-days"
+                                       Adornment="Adornment.End"
+                                       AdornmentColor="Color.Primary" />
+                    </div>
+
+                    <!-- Veículo com Filtro MudBlazor -->
+                    <div class="form-group-8in">
+                        <MudAutocomplete T="SelectListItemModel"
+                                         Label="Veículo"
+                                         Value="@veiculoSelecionadoObj"
+                                         ValueChanged="@OnVeiculoChanged"
+                                         SearchFunc="@PesquisarVeiculos"
+                                         ToStringFunc="@(e => e?.Text ?? "")"
+                                         Variant="Variant.Outlined"
+                                         Disabled="@viagemIniciada"
+                                         ResetValueOnEmptyText="true"
+                                         CoerceText="false"
+                                         MaxItems="null"
+                                         AnchorOrigin="Origin.BottomLeft"
+                                         Class="mud-input-compact"
+                                         AdornmentIcon="fa-duotone fa-car"
+                                         Adornment="Adornment.End"
+                                         AdornmentColor="Color.Primary" />
+                    </div>
+
+                    <!-- Motorista -->
+                    <div class="form-group-8in">
+                        <MudAutocomplete T="MotoristaViewModel"
+                                         Label="Motorista"
+                                         Value="@motoristaSelecionadoObj"
+                                         ValueChanged="@OnMotoristaChanged"
+                                         SearchFunc="@PesquisarMotoristas"
+                                         ToStringFunc="@(e => e?.Nome ?? "")"
+                                         Variant="Variant.Outlined"
+                                         Disabled="@viagemIniciada"
+                                         ResetValueOnEmptyText="true"
+                                         CoerceText="false"
+                                         MaxItems="null"
+                                         AnchorOrigin="Origin.BottomLeft"
+                                         Class="mud-input-compact"
+                                         AdornmentIcon="fa-duotone fa-user-tie"
+                                         Adornment="Adornment.End"
+                                         AdornmentColor="Color.Primary" />
+                    </div>
+
+                    <!-- Linha -->
+                    <div class="form-group-8in">
+                        <MudSelect T="string"
+                                   Label="Linha"
+                                   Value="@linhaSelecionada"
+                                   ValueChanged="OnLinhaMudChanged"
+                                   Variant="Variant.Outlined"
+                                   Disabled="@viagemIniciada"
+                                   AnchorOrigin="Origin.BottomLeft"
+                                   TransformOrigin="Origin.TopLeft"
+                                   Class="mud-input-compact"
+                                   AdornmentIcon="fa-duotone fa-route"
+                                   Adornment="Adornment.End"
+                                   AdornmentColor="Color.Primary">
+                            @foreach (var linha in linhas)
+                            {
+                                <MudSelectItem Value="@linha">@linha</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </div>
+
+                    <!-- Trajeto -->
+                    <div class="form-group-8in">
+                        <MudSelect T="string"
+                                   Label="Trajeto Inicial"
+                                   @bind-Value="trajetoAtual"
+                                   Variant="Variant.Outlined"
+                                   Disabled="@(viagemIniciada || !trajetosDisponiveis.Any())"
+                                   AnchorOrigin="Origin.BottomLeft"
+                                   TransformOrigin="Origin.TopLeft"
+                                   Class="mud-input-compact"
+                                   AdornmentIcon="fa-duotone fa-arrows-alt-h"
+                                   Adornment="Adornment.End"
+                                   AdornmentColor="Color.Primary">
+                            @foreach (var trajeto in trajetosDisponiveis)
+                            {
+                                <MudSelectItem Value="@trajeto">@trajeto</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </div>
+
+                    <button class="btn-iniciar-8in"
+                            disabled="@(!PodeIniciarViagem())"
+                            @onclick="IniciarViagem">
+                        <i class="fa-duotone fa-play"></i> Iniciar Viagem
+                    </button>
+                </div>
+            }
+
+            <!-- REGISTRO DE PASSAGEIROS - Só aparece quando viagem iniciada -->
+            @if (viagemIniciada)
+            {
+                <div class="registro-section-8in">
+                    <h4 class="section-title-8in" style="margin-bottom: 20px;">
+                        <i class="fa-duotone fa-users"></i> Registrar Passageiros
+                    </h4>
+
+                    <!-- Quantidade de Passageiros com Botões +/- (COM LONG PRESS) -->
+                    <div class="form-group-8in">
+                        <label class="form-label-8in">Quantidade de Passageiros</label>
+                        
+                        <!-- Grid de Controle: Linha 1 = Botões +/-, Linha 2 = Mudar Trajeto / Confirmar -->
+                        <div class="passageiros-grid-8in">
+                            <!-- Linha 1: Controle de Quantidade -->
+                            <div class="passageiros-row-8in">
+                                <!-- Botão DIMINUIR -->
+                                <button type="button"
+                                        class="btn-passageiro-minus-8in @(longPressAtivo && longPressDirecao == -1 ? "long-press-ativo" : "")"
+                                        @onmousedown="() => OnPressStart(-1)"
+                                        @onmouseup="OnPressEnd"
+                                        @onmouseleave="OnPressEnd"
+                                        @ontouchstart="() => OnTouchStart(-1)"
+                                        @ontouchstart:preventDefault
+                                        @ontouchend="OnTouchEnd"
+                                        @ontouchcancel="OnTouchEnd"
+                                        disabled="@(qtdPassageiros <= 0 && !longPressAtivo)">
+                                    <i class="fa-duotone fa-arrow-down-to-bracket"></i>
+                                </button>
+                                
+                                <!-- Input com indicador de aceleração centralizado -->
+                                <div class="input-passageiros-wrapper">
+                                    <input type="text"
+                                           class="input-passageiros-8in @(longPressAtivo ? "contagem-rapida" : "")"
+                                           value="@qtdPassageiros"
+                                           readonly />
+                                    @if (longPressAtivo)
+                                    {
+                                        <div class="indicador-aceleracao-central @(longPressDirecao == -1 ? "decremento" : "incremento")">
+                                            <i class="fa-duotone @(longPressDirecao == 1 ? "fa-forward" : "fa-backward")"></i>
+                                        </div>
+                                    }
+                                </div>
+                                
+                                <!-- Botão AUMENTAR -->
+                                <button type="button"
+                                        class="btn-passageiro-plus-8in @(longPressAtivo && longPressDirecao == 1 ? "long-press-ativo" : "")"
+                                        @onmousedown="() => OnPressStart(1)"
+                                        @onmouseup="OnPressEnd"
+                                        @onmouseleave="OnPressEnd"
+                                        @ontouchstart="() => OnTouchStart(1)"
+                                        @ontouchstart:preventDefault
+                                        @ontouchend="OnTouchEnd"
+                                        @ontouchcancel="OnTouchEnd">
+                                    <i class="fa-duotone fa-arrow-up-from-bracket"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Linha 2: Botões Mudar Trajeto/Finaliza Trecho e Confirmar Registro de Passageiros -->
+                            <div class="separador-acoes"></div>
+                            <div class="acoes-row-8in">
+                                <button type="button" 
+                                        class="btn-mudar-trajeto-quadrado" 
+                                        @onclick="MudarTrajetoFinalizaTrecho">
+                                    <i class="fa-duotone fa-flag-checkered"></i>
+                                    <span class="btn-texto-multiline">
+                                        <span>Finaliza Trecho</span>
+                                        <small>e</small>
+                                        <span>Muda Trajeto</span>
+                                    </span>
+                                </button>
+                                <div class="espacador-central"></div>
+                                <button type="button"
+                                        class="btn-confirmar-quadrado"
+                                        disabled="@(!PodeRegistrarPassageiros())"
+                                        @onclick="RegistrarPassageiros">
+                                    <i class="fa-duotone fa-user-plus"></i>
+                                    <span>Confirmar Registro<br/>de Passageiros</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- GRID DE REGISTROS COM SCROLL INDEPENDENTE -->
+        @if (viagemIniciada && registrosViagem.Any())
+        {
+            <div class="registros-container-scrollable">
+                <h4 class="section-title-8in">
+                    <i class="fa-duotone fa-list"></i> Registros (@registrosViagem.Count)
+                </h4>
+
+                <div class="registros-list-8in">
+                    @foreach (var registro in registrosViagem.OrderByDescending(r => r.DataRegistro).ThenByDescending(r => r.HoraInicio))
+                    {
+                        <div class="registro-item-8in @(registro.DataRegistro.Date != dataViagem?.Date ? "registro-outro-dia" : "")">
+                            <span class="registro-trajeto-compact">
+                                @(registro.IdaVolta?.Replace("Destino " , ""))
+                            </span>
+                            <span class="registro-hora registro-hora-inicio">
+                                <i class="fa-duotone fa-play"></i> 
+                                @if (registro.DataRegistro.Date != dataViagem?.Date)
+                                {
+                                    <span class="data-registro">@registro.DataRegistro.ToString("dd/MM")</span>
+                                }
+                                @registro.HoraInicio
+                            </span>
+                            <span class="registro-hora registro-hora-fim @(registro.HoraFimPendente ? "hora-pendente" : "")">
+                                <i class="fa-duotone fa-stop"></i>
+                                @if (registro.HoraFimPendente)
+                                {
+                                    <span class="hora-aguardando">--:--</span>
+                                }
+                                else
+                                {
+                                    @registro.HoraFim
+                                }
+                            </span>
+                            <span class="registro-passageiros">
+                                <i class="fa-duotone fa-users"></i> @registro.QtdPassageiros
+                            </span>
+                            <button class="btn-remover-8in" @onclick="() => RemoverRegistro(registro)">
+                                <i class="fa-duotone fa-trash"></i>
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<!-- RODAPÉ FIXO - Só aparece quando viagem iniciada -->
+@if (viagemIniciada)
+{
+    <div class="footer-stats-8in">
+        <div class="stat-item-8in">
+            <i class="fa-duotone fa-list-check"></i>
+            <div>
+                <div class="stat-label-8in">Registros</div>
+                <div class="stat-value-8in">@registrosViagem.Count</div>
+            </div>
+        </div>
+        <div class="stat-item-8in">
+            <i class="fa-duotone fa-users"></i>
+            <div>
+                <div class="stat-label-8in">Total</div>
+                <div class="stat-value-8in">@registrosViagem.Sum(r => r.QtdPassageiros)</div>
+            </div>
+        </div>
+        <button class="btn-finalizar-8in" @onclick="EncerrarTurno">
+            <i class="fa-duotone fa-door-open"></i> Encerramento de Turno
+        </button>
+    </div>
+}
+
+<style>
+
+    /* ============================================ */
+    /* FICHA DE VIAGEM - TABLET 8" (PORTRAIT)     */
+    /* Layout otimizado com grid scrollável       */
+    /* ============================================ */
+
+    /* Botão Voltar Roxo Redondo */
+    .btn-voltar-roxo {
+        /* Ajustado: 20% menor e abaixado */
+        position: fixed;
+        top: 30px;
+        left: 12px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #553c9a 0%, #7b68ee 100%);
+        border: none;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(85, 60, 154, 0.4);
+        z-index: 10000;
+    }
+
+        .btn-voltar-roxo:hover {
+            background: linear-gradient(135deg, #7b68ee 0%, #553c9a 100%);
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px rgba(85, 60, 154, 0.6);
+        }
+
+        .btn-voltar-roxo:active {
+            transform: scale(0.95);
+        }
+
+        .btn-voltar-roxo i {
+            font-size: 1rem;
+        }
+
+    /* Container Principal - COMPACTO */
+    .ficha-viagem-container-8in {
+        padding: 70px 12px 12px 12px;
+        max-width: 800px;
+        margin: 0 auto;
+        min-height: calc(100vh - 70px);
+    }
+
+        /* Menos espaço no topo quando viagem iniciada */
+        .ficha-viagem-container-8in.viagem-iniciada {
+            padding-top: 70px;
+            padding-bottom: 90px; /* Espaço para rodapé fixo */
+        }
+
+    /* Loading */
+    .loading-container-8in {
+        text-align: center;
+        padding: 80px 20px;
+        min-height: 60vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Header Completo - COMPACTO */
+    .page-header-8in {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 18px;
+        border-radius: 15px;
+        color: white;
+        margin-bottom: 12px;
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .header-content-8in {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    /* Header Compacto (quando viagem iniciada) */
+    .compact-header-8in {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 18px;
+        border-radius: 15px;
+        color: white;
+        margin-bottom: 15px;
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+    }
+
+    .info-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 12px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        flex: 1;
+        min-width: 110px;
+    }
+
+    .info-badge-compact {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+        min-width: 90px;
+        gap: 5px;
+    }
+
+        .info-badge-compact i {
+            font-size: 0.95rem;
+            --fa-primary-color: #ffffff;
+            --fa-secondary-color: #c4b5fd;
+            --fa-primary-opacity: 1;
+            --fa-secondary-opacity: 0.7;
+        }
+
+    /* Data alterada (virou o dia) */
+    .info-badge-compact.data-alterada {
+        background: rgba(251, 191, 36, 0.4);
+        animation: pulseData 2s infinite;
+    }
+
+    /* Badge de Hora - destaque especial */
+    .info-badge-hora {
+        background: rgba(255, 255, 255, 0.3);
+        font-weight: 700;
+    }
+
+        .info-badge-hora i {
+            --fa-primary-color: #ffffff;
+            --fa-secondary-color: #fbbf24;
+            --fa-primary-opacity: 1;
+            --fa-secondary-opacity: 0.9;
+        }
+
+    /* Aviso virou o dia no header */
+    .aviso-virou-dia-header {
+        background: rgba(251, 191, 36, 0.9);
+        color: #78350f;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-align: center;
+        margin-top: 10px;
+        animation: blink 1.5s infinite;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+        .aviso-virou-dia-header i {
+            --fa-primary-color: #78350f;
+            --fa-secondary-color: #fbbf24;
+        }
+
+    @@keyframes pulseData {
+        0%, 100% { background: rgba(251, 191, 36, 0.4); }
+        50% { background: rgba(251, 191, 36, 0.6); }
+    }
+
+    .aviso-virou-dia {
+        color: #f59e0b;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-left: 8px;
+        animation: blink 1.5s infinite;
+    }
+
+    @@keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    .hora-display-8in.data-alterada {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border: 2px solid #f59e0b;
+    }
+
+    .hora-display-8in.data-alterada i {
+        color: #d97706;
+    }
+
+    .hora-display-8in.data-alterada span {
+        color: #92400e;
+        font-weight: 700;
+    }
+
+    .info-badge i {
+        font-size: 1.1rem;
+    }
+
+    /* Trajeto Badge - COR FIXA CINZA AZULADO */
+    .trajeto-badge-large {
+        padding: 15px 22px;
+        border-radius: 15px;
+        font-size: 1.4rem;
+        font-weight: 700;
+        text-align: center;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+    }
+
+    /* Card do Formulário */
+    .form-card-8in {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 6px 25px rgba(0,0,0,0.1);
+        overflow: visible;
+    }
+
+    /* Seções do Formulário - COMPACTO */
+    .form-section-8in {
+        padding: 18px;
+    }
+
+    .registro-section-8in {
+        padding: 18px;
+        overflow: visible;
+    }
+
+    .section-title-8in {
+        font-size: 1.1rem;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 12px 0;
+    }
+
+        .section-title-8in i {
+            color: #667eea;
+            font-size: 1.3rem;
+        }
+
+    /* Grupos de Formulário */
+    .form-group-8in {
+        margin-bottom: 12px;
+        overflow: visible;
+    }
+
+    .form-label-8in {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #444;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Display de Hora */
+    .hora-display-8in {
+        background: #f8f9fa;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+        .hora-display-8in i {
+            color: #667eea;
+            font-size: 1.6rem;
+            --fa-primary-color: #667eea;
+            --fa-secondary-color: #a5b4fc;
+            --fa-primary-opacity: 1;
+            --fa-secondary-opacity: 0.7;
+        }
+
+    /* ============================================ */
+    /* GRID COMPACTO - PASSAGEIROS + AÇÕES        */
+    /* ============================================ */
+
+    .passageiros-grid-8in {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        overflow: visible;
+    }
+
+    /* Linha 1: Controles de Quantidade */
+    .passageiros-row-8in {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        overflow: visible;
+        position: relative;
+    }
+
+    .btn-passageiro-minus-8in,
+    .btn-passageiro-plus-8in {
+        width: 105px;
+        min-width: 105px;
+        height: 120px;
+        border: none;
+        border-radius: 18px;
+        font-size: 3.3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+    }
+
+    .btn-passageiro-minus-8in {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    }
+
+        .btn-passageiro-minus-8in i {
+            --fa-primary-color: #ffffff;
+            --fa-secondary-color: #fecaca;
+            --fa-primary-opacity: 1;
+            --fa-secondary-opacity: 0.7;
+        }
+
+        .btn-passageiro-minus-8in:hover:not(:disabled) {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+        }
+
+        .btn-passageiro-minus-8in:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .btn-passageiro-minus-8in:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+    .btn-passageiro-plus-8in {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    }
+
+        .btn-passageiro-plus-8in i {
+            --fa-primary-color: #ffffff;
+            --fa-secondary-color: #a7f3d0;
+            --fa-primary-opacity: 1;
+            --fa-secondary-opacity: 0.7;
+        }
+
+        .btn-passageiro-plus-8in:hover:not(:disabled) {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+        }
+
+        .btn-passageiro-plus-8in:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+    /* Long Press Ativo - Visual feedback */
+    .btn-passageiro-minus-8in.long-press-ativo,
+    .btn-passageiro-plus-8in.long-press-ativo {
+        animation: pulseButton 0.3s infinite alternate;
+        transform: scale(1.05);
+    }
+
+    @@keyframes pulseButton {
+        0% { opacity: 1; }
+        100% { opacity: 0.8; }
+    }
+
+    /* Input de Passageiros com Wrapper */
+    .input-passageiros-wrapper {
+        flex: 1;
+        position: relative;
+        max-width: calc(100% - 226px);
+        overflow: visible;
+    }
+
+    .input-passageiros-8in {
+        width: 100%;
+        height: 120px;
+        border: 3px solid #e0e0e0;
+        border-radius: 18px;
+        font-size: 5rem;
+        font-weight: 700;
+        text-align: center;
+        color: #333;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+
+        .input-passageiros-8in:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Contagem Rápida - visual durante long press */
+        .input-passageiros-8in.contagem-rapida {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            animation: numeroPulsando 0.15s infinite alternate;
+        }
+
+    @@keyframes numeroPulsando {
+        0% { transform: scale(1); }
+        100% { transform: scale(1.02); }
+    }
+
+    /* Indicador de Aceleração - CENTRALIZADO */
+    .indicador-aceleracao-central {
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 3.5rem;
+        z-index: 10;
+        animation: slideDown 0.2s ease;
+        filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+    }
+
+    @@keyframes slideDown {
+        from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    .indicador-aceleracao-central.incremento i {
+        --fa-primary-color: #ffffff;
+        --fa-secondary-color: #10b981;
+        --fa-primary-opacity: 1;
+        --fa-secondary-opacity: 1;
+        animation: bounceUp 0.4s infinite alternate;
+    }
+
+    .indicador-aceleracao-central.decremento i {
+        --fa-primary-color: #ffffff;
+        --fa-secondary-color: #ef4444;
+        --fa-primary-opacity: 1;
+        --fa-secondary-opacity: 1;
+        animation: bounceDown 0.4s infinite alternate;
+    }
+
+    @@keyframes bounceUp {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-8px); }
+    }
+
+    @@keyframes bounceDown {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(8px); }
+    }
+
+    /* Linha 2: Botões Mudar Trajeto e Confirmar Registro */
+    .acoes-row-8in {
+        display: flex;
+        align-items: stretch;
+        gap: 8px;
+        width: 100%;
+    }
+
+    /* Barra Separadora entre Passageiros e Ações */
+    .separador-acoes {
+        width: 100%;
+        height: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 6px;
+        margin: 8px 0;
+    }
+
+    .espacador-central {
+        flex: 1;
+        max-width: calc(100% - 440px); /* Ajustado para botões maiores */
+        min-width: 20px;
+    }
+
+    /* Botão Mudar Trajeto / Finaliza Trecho - Quadrado Laranja */
+    .btn-mudar-trajeto-quadrado {
+        width: 210px;
+        min-width: 210px;
+        height: 105px;
+        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        border: none;
+        border-radius: 15px;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        flex-shrink: 0;
+        text-align: left;
+        line-height: 1.15;
+    }
+
+    .btn-mudar-trajeto-quadrado i {
+        font-size: 2rem;
+        --fa-primary-color: #ffffff;
+        --fa-secondary-color: #fed7aa;
+        --fa-primary-opacity: 1;
+        --fa-secondary-opacity: 0.8;
+    }
+
+    .btn-mudar-trajeto-quadrado .btn-texto-multiline {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+
+    .btn-mudar-trajeto-quadrado .btn-texto-multiline small {
+        font-size: 1.5rem;
+        font-weight: 400;
+        opacity: 0.8;
+        margin: 4px 0;
+        align-self: center;
+    }
+
+    .btn-mudar-trajeto-quadrado:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 20px rgba(249, 115, 22, 0.5);
+        background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+    }
+
+    .btn-mudar-trajeto-quadrado:active {
+        transform: translateY(-1px);
+    }
+
+    /* Botão Confirmar Registro de Passageiros - Quadrado Vinho */
+    .btn-confirmar-quadrado {
+        width: 210px;
+        min-width: 210px;
+        height: 105px;
+        background: linear-gradient(135deg, #9f1239 0%, #881337 100%);
+        border: none;
+        border-radius: 15px;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(159, 18, 57, 0.4);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        flex-shrink: 0;
+        text-align: left;
+        line-height: 1.3;
+    }
+
+    .btn-confirmar-quadrado i {
+        font-size: 2rem;
+        --fa-primary-color: #ffffff;
+        --fa-secondary-color: #fecdd3;
+        --fa-primary-opacity: 1;
+        --fa-secondary-opacity: 0.8;
+    }
+
+    .btn-confirmar-quadrado:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 20px rgba(159, 18, 57, 0.5);
+        background: linear-gradient(135deg, #881337 0%, #701a75 100%);
+    }
+
+    .btn-confirmar-quadrado:active:not(:disabled) {
+        transform: translateY(-1px);
+    }
+
+    .btn-confirmar-quadrado:disabled {
+        background: #cbd5e0;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    /* Ajustes para telas pequenas */
+    @@media (max-width: 400px) {
+        .passageiros-row-8in,
+        .acoes-row-8in {
+            gap: 6px;
+        }
+
+        .btn-passageiro-minus-8in,
+        .btn-passageiro-plus-8in {
+            width: 80px;
+            min-width: 80px;
+            height: 100px;
+            font-size: 2.5rem;
+        }
+
+        .btn-mudar-trajeto-quadrado,
+        .btn-confirmar-quadrado {
+            width: 160px;
+            min-width: 160px;
+            height: 95px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            gap: 8px;
+        }
+
+        .btn-mudar-trajeto-quadrado i,
+        .btn-confirmar-quadrado i {
+            font-size: 1.6rem;
+        }
+
+        .input-passageiros-wrapper {
+            max-width: calc(100% - 172px);
+        }
+        
+        .input-passageiros-8in {
+            height: 100px !important;
+            font-size: 4rem !important;
+        }
+
+        .espacador-central {
+            max-width: calc(100% - 332px);
+        }
+
+        .separador-acoes {
+            height: 16px;
+        }
+
+        .indicador-aceleracao-central {
+            font-size: 2.5rem;
+            top: -20px;
+        }
+    }
+
+    /* Botão Confirmar Registro ANTIGO (manter para compatibilidade) */
+    .actions-grid-8in {
+        margin-top: 15px;
+    }
+
+    .btn-confirmar-8in {
+        width: 100%;
+        height: 55px;
+        background: linear-gradient(135deg, #b8390a 0%, #8b2f0f 100%);
+        border: none;
+        border-radius: 15px;
+        color: white;
+        font-size: 1.3rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(184, 57, 10, 0.4);
+    }
+
+        .btn-confirmar-8in:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(184, 57, 10, 0.5);
+        }
+
+        .btn-confirmar-8in:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .btn-confirmar-8in:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+    /* ============================================ */
+    /* GRID DE REGISTROS COM SCROLL INDEPENDENTE  */
+    /* Altura fixa: 320px (mínimo 5 linhas)       */
+    /* ============================================ */
+
+    .registros-container-scrollable {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 6px 25px rgba(0,0,0,0.1);
+        padding: 18px;
+        margin-top: 15px;
+        height: 320px; /* ALTURA FIXA aumentada para acomodar fontes maiores */
+        display: flex;
+        flex-direction: column;
+    }
+
+        .registros-container-scrollable .section-title-8in {
+            flex-shrink: 0;
+            margin-bottom: 12px;
+        }
+
+    .registros-list-8in {
+        flex: 1;
+        overflow-y: auto; /* SCROLL INDEPENDENTE */
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+        /* Scrollbar customizada - roxo */
+        .registros-list-8in::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .registros-list-8in::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .registros-list-8in::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+            .registros-list-8in::-webkit-scrollbar-thumb:hover {
+                background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            }
+
+    /* Items dos Registros - Layout com Hora Início e Hora Fim */
+    .registro-item-8in {
+        background: #f8f9fa;
+        border-left: 5px solid #667eea;
+        padding: 14px 16px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+        .registro-item-8in:hover {
+            background: #e9ecef;
+            transform: translateX(3px);
+        }
+
+    /* Trajeto Badge Compacto - COR FIXA CINZA AZULADO */
+    .registro-trajeto-compact {
+        background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        min-width: 90px;
+        text-align: center;
+    }
+
+    .registro-hora {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 85px;
+    }
+
+    .registro-hora-inicio i {
+        color: #059669;
+        font-size: 1.1rem;
+        --fa-primary-color: #059669;
+        --fa-secondary-color: #10b981;
+        --fa-primary-opacity: 1;
+        --fa-secondary-opacity: 1;
+    }
+
+    .registro-hora-fim i {
+        color: #dc2626;
+        font-size: 1.1rem;
+        --fa-primary-color: #dc2626;
+        --fa-secondary-color: #ef4444;
+        --fa-primary-opacity: 1;
+        --fa-secondary-opacity: 1;
+    }
+
+    .registro-hora-fim.hora-pendente {
+        opacity: 0.6;
+    }
+
+    .hora-aguardando {
+        color: #9ca3af;
+        font-style: italic;
+        font-size: 1.25rem;
+    }
+
+    .registro-passageiros {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 60px;
+    }
+
+    /* Registro de outro dia (virou o dia) */
+    .registro-item-8in.registro-outro-dia {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border-left-color: #f59e0b;
+    }
+
+    .registro-item-8in.registro-outro-dia:hover {
+        background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+    }
+
+    .data-registro {
+        background: #f59e0b;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-right: 4px;
+    }
+
+    .registro-passageiros i {
+        color: #1d4ed8;
+        font-size: 1.1rem;
+        --fa-primary-color: #1d4ed8;
+        --fa-secondary-color: #3b82f6;
+        --fa-primary-opacity: 1;
+        --fa-secondary-opacity: 1;
+    }
+
+    /* Botão Remover Registro */
+    .btn-remover-8in {
+        width: 46px;
+        height: 46px;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 10px rgba(239, 68, 68, 0.3);
+        flex-shrink: 0;
+        margin-left: auto;
+    }
+
+        .btn-remover-8in i {
+            --fa-primary-color: #ffffff;
+            --fa-secondary-color: #fecaca;
+            --fa-primary-opacity: 1;
+            --fa-secondary-opacity: 0.7;
+        }
+
+        .btn-remover-8in:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: scale(1.08);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-remover-8in:active {
+            transform: scale(0.95);
+        }
+
+    /* ============================================ */
+    /* RODAPÉ FIXO COM ESTATÍSTICAS               */
+    /* ============================================ */
+
+    .footer-stats-8in {
+        position: fixed;
+        bottom: 53px;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        height: 70px;
+    }
+
+    .stat-item-8in {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: white;
+    }
+
+        .stat-item-8in i {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            --fa-primary-color: #ffffff;
+            --fa-secondary-color: #c4b5fd;
+            --fa-primary-opacity: 1;
+            --fa-secondary-opacity: 0.7;
+        }
+
+    .stat-label-8in {
+        font-size: 0.75rem;
+        opacity: 0.85;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-value-8in {
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+
+    /* Botão Encerrar Turno */
+    .btn-finalizar-8in {
+        margin-left: auto;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        border: none;
+        border-radius: 12px;
+        padding: 12px 20px;
+        color: white;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .btn-finalizar-8in:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+        }
+
+        .btn-finalizar-8in:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-finalizar-8in i {
+            --fa-primary-color: #ffffff;
+            --fa-secondary-color: #fecaca;
+            --fa-primary-opacity: 1;
+            --fa-secondary-opacity: 0.7;
+        }
+
+    /* Botão Iniciar Viagem */
+    .btn-iniciar-8in {
+        width: 100%;
+        height: 55px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: none;
+        border-radius: 15px;
+        color: white;
+        font-size: 1.3rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        margin-top: 15px;
+    }
+
+        .btn-iniciar-8in:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.5);
+        }
+
+        .btn-iniciar-8in:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .btn-iniciar-8in:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-iniciar-8in i {
+            --fa-primary-color: #ffffff;
+            --fa-secondary-color: #a7f3d0;
+            --fa-primary-opacity: 1;
+            --fa-secondary-opacity: 0.7;
+        }
+
+    /* ============================================ */
+    /* MUDBLAZOR - INPUTS COMPACTOS               */
+    /* ============================================ */
+
+    .mud-input-compact {
+        margin-bottom: 0 !important;
+    }
+
+        .mud-input-compact .mud-input-control {
+            margin-top: 0 !important;
+        }
+
+        .mud-input-compact .mud-input-outlined-border {
+            border-width: 2px !important;
+        }
+
+        .mud-input-compact .mud-input-slot {
+            padding: 0 14px !important;
+        }
+
+        .mud-input-compact .mud-input {
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+        }
+
+        .mud-input-compact .mud-input-label {
+            font-size: 0.9rem !important;
+            font-weight: 500 !important;
+        }
+
+        /* Altura fixa para inputs MudBlazor */
+        .mud-input-compact .mud-input-control-input-container {
+            height: 54px !important;
+            min-height: 54px !important;
+            max-height: 54px !important;
+        }
+
+    /* Forçar altura do DatePicker em todos os níveis */
+    .form-group-8in .mud-input-compact .mud-picker-input-text,
+    .form-group-8in .mud-input-compact .mud-input-slot,
+    .form-group-8in .mud-input-compact input[type="text"] {
+        height: 54px !important;
+        min-height: 54px !important;
+        line-height: 54px !important;
+    }
+
+</style>
+
+@code {
+    // ============================================
+    // VARIÁVEIS DE ESTADO - LONG PRESS
+    // ============================================
+    private System.Timers.Timer? longPressTimer;
+    private System.Timers.Timer? repeticaoTimer;
+    private bool longPressAtivo = false;
+    private int longPressDirecao = 0; // 1 = aumentar, -1 = diminuir
+    private int repeticaoCount = 0;
+    private bool pressionado = false;  // Flag para evitar eventos duplicados
+    private bool foiTouch = false;     // Flag para distinguir touch de mouse
+    
+    // Configurações de velocidade (ajustáveis)
+    private const int DELAY_INICIAL_MS = 1200;       // Tempo antes de iniciar repetição (1.2 segundos)
+    private const int INTERVALO_INICIAL_MS = 180;    // Intervalo inicial entre incrementos
+    private const int INTERVALO_RAPIDO_MS = 60;      // Intervalo após aceleração
+    private const int REPETICOES_PARA_ACELERAR = 8;  // Após X repetições, acelera
+    private const int REPETICOES_PARA_TURBO = 25;    // Após X repetições, incrementa de 5 em 5
+
+    // ============================================
+    // VARIÁVEIS EXISTENTES
+    // ============================================
+    private bool isLoading = true;
+    private bool viagemIniciada = false;
+
+    private DateTime? dataViagem = DateTime.Today;
+    private DateTime dataAtualRegistro = DateTime.Today;
+    private string? veiculoSelecionadoId;
+    private Guid? motoristaSelecionadoId;
+    private SelectListItemModel? veiculoSelecionadoObj;
+    private MotoristaViewModel? motoristaSelecionadoObj;
+    private string? linhaSelecionada;
+    private string? trajetoAtual;
+    private string? horaAtual;
+    private DateTime? horaDateTime;
+    private int qtdPassageiros = 0;
+    private string? responsavel;
+
+    private List<SelectListItemModel> veiculosEconomildo = new();
+    private List<MotoristaViewModel> motoristas = new();
+    private List<string> linhas = new() { "Economildo Cefor" , "Economildo PGR" , "Economildo Rodoviária" };
+    private List<string> trajetosDisponiveis = new();
+    private List<RegistroViagem> registrosViagem = new();
+
+    private System.Globalization.CultureInfo ptBrCulture = new System.Globalization.CultureInfo("pt-BR");
+
+    private Dictionary<string , object> htmlAttrDropdown = new Dictionary<string , object>
+    {
+        { "style", "height: 50px !important; border: 3px solid #e0e0e0 !important; font-size: 1.1rem !important; font-weight: 600 !important;" }
+    };
+
+    private System.Timers.Timer? timerHora;
+
+    // ============================================
+    // MÉTODOS LONG PRESS - NOVOS
+    // ============================================
+    
+    // Chamado pelo @ontouchstart - marca que é touch e inicia
+    private void OnTouchStart(int direcao)
+    {
+        foiTouch = true;
+        IniciarPressionamento(direcao);
+    }
+    
+    // Chamado pelo @ontouchend
+    private void OnTouchEnd()
+    {
+        FinalizarPressionamento();
+        // Mantém foiTouch = true por um tempo para bloquear o mouse event que vem depois
+    }
+    
+    // Chamado pelo @onmousedown - só executa se não foi touch
+    private void OnPressStart(int direcao)
+    {
+        if (foiTouch)
+        {
+            foiTouch = false; // Reset para próxima interação
+            return; // Ignora pois já foi tratado pelo touch
+        }
+        IniciarPressionamento(direcao);
+    }
+    
+    // Chamado pelo @onmouseup/@onmouseleave
+    private void OnPressEnd()
+    {
+        if (!foiTouch) // Só processa se não foi touch
+        {
+            FinalizarPressionamento();
+        }
+    }
+    
+    // Lógica principal de início do pressionamento
+    private void IniciarPressionamento(int direcao)
+    {
+        try
+        {
+            // Se já está pressionado, ignora
+            if (pressionado)
+                return;
+            
+            pressionado = true;
+            longPressDirecao = direcao;
+            repeticaoCount = 0;
+            
+            // Executa ação imediata (toque simples) - apenas 1 incremento
+            if (direcao == 1)
+                AumentarPassageiros();
+            else if (direcao == -1 && qtdPassageiros > 0)
+                DiminuirPassageiros();
+            
+            // Timer para detectar long press (aguarda DELAY_INICIAL_MS)
+            longPressTimer?.Stop();
+            longPressTimer?.Dispose();
+            longPressTimer = new System.Timers.Timer(DELAY_INICIAL_MS);
+            longPressTimer.Elapsed += OnLongPressDetectado;
+            longPressTimer.AutoReset = false;
+            longPressTimer.Start();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro IniciarPressionamento: {ex.Message}");
+        }
+    }
+    
+    // Lógica de finalização do pressionamento
+    private void FinalizarPressionamento()
+    {
+        try
+        {
+            longPressTimer?.Stop();
+            longPressTimer?.Dispose();
+            longPressTimer = null;
+            
+            repeticaoTimer?.Stop();
+            repeticaoTimer?.Dispose();
+            repeticaoTimer = null;
+            
+            longPressAtivo = false;
+            longPressDirecao = 0;
+            repeticaoCount = 0;
+            pressionado = false;
+            
+            InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro FinalizarPressionamento: {ex.Message}");
+        }
+    }
+    
+    private void OnLongPressDetectado(object? sender , ElapsedEventArgs e)
+    {
+        try
+        {
+            // Inicia modo de repetição contínua
+            longPressAtivo = true;
+            
+            // Timer de repetição
+            repeticaoTimer?.Stop();
+            repeticaoTimer?.Dispose();
+            repeticaoTimer = new System.Timers.Timer(INTERVALO_INICIAL_MS);
+            repeticaoTimer.Elapsed += OnRepeticaoTick;
+            repeticaoTimer.AutoReset = true;
+            repeticaoTimer.Start();
+            
+            InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro OnLongPressDetectado: {ex.Message}");
+        }
+    }
+    
+    private void OnRepeticaoTick(object? sender , ElapsedEventArgs e)
+    {
+        try
+        {
+            repeticaoCount++;
+            
+            // Acelera após X repetições
+            if (repeticaoCount == REPETICOES_PARA_ACELERAR && repeticaoTimer != null)
+            {
+                repeticaoTimer.Interval = INTERVALO_RAPIDO_MS;
+            }
+            
+            // Incremento progressivo: após REPETICOES_PARA_TURBO, incrementa de 5 em 5
+            int incremento = repeticaoCount >= REPETICOES_PARA_TURBO ? 5 : 1;
+            
+            if (longPressDirecao == 1)
+            {
+                for (int i = 0; i < incremento; i++)
+                    AumentarPassageiros();
+            }
+            else if (longPressDirecao == -1)
+            {
+                for (int i = 0; i < incremento && qtdPassageiros > 0; i++)
+                    DiminuirPassageiros();
+            }
+            
+            InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro OnRepeticaoTick: {ex.Message}");
+        }
+    }
+
+    // ============================================
+    // CICLO DE VIDA
+    // ============================================
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await CarregarDadosAsync();
+            IniciarTimerHora();
+        }
+        catch (Exception ex)
+        {
+            await Alerta.Erro("Erro" , $"Erro ao inicializar: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void IniciarTimerHora()
+    {
+        try
+        {
+            timerHora = new System.Timers.Timer(1000);
+            timerHora.Elapsed += (s , e) =>
+            {
+                var agora = DateTime.Now;
+                horaAtual = agora.ToString("HH:mm");
+                horaDateTime = agora;
+                dataAtualRegistro = agora;
+                InvokeAsync(StateHasChanged);
+            };
+            timerHora.AutoReset = true;
+            timerHora.Start();
+
+            // Inicializa com hora atual
+            var agoraInicial = DateTime.Now;
+            horaAtual = agoraInicial.ToString("HH:mm");
+            horaDateTime = agoraInicial;
+            dataAtualRegistro = agoraInicial;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao iniciar timer: {ex.Message}");
+        }
+    }
+
+    private void PararTimerHora()
+    {
+        try
+        {
+            timerHora?.Stop();
+            timerHora?.Dispose();
+            timerHora = null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao parar timer: {ex.Message}");
+        }
+    }
+
+    private async Task CarregarDadosAsync()
+    {
+        try
+        {
+            if (veiculosEconomildo == null || !veiculosEconomildo.Any())
+            {
+                var veiculos = await SyncService.ObterVeiculosLocaisAsync();
+                veiculosEconomildo = veiculos
+                    .Where(v => !string.IsNullOrEmpty(v.Placa))
+                    .Select(v => new SelectListItemModel
+                    {
+                        Value = v.VeiculoId.ToString() ,
+                        Text = v.VeiculoCompleto ?? v.Placa ?? "Sem identificação"
+                    })
+                    .OrderBy(v => v.Text)
+                    .ToList();
+            }
+
+            if (motoristas == null || !motoristas.Any())
+            {
+                motoristas = await SyncService.ObterMotoristasLocaisAsync();
+                motoristas = motoristas.OrderBy(m => m.Nome).ToList();
+            }
+
+            responsavel = "Usuario";
+        }
+        catch (Exception ex)
+        {
+            await Alerta.Erro("Erro" , $"Erro ao carregar dados: {ex.Message}");
+        }
+    }
+
+    private void OnLinhaChanged(ChangeEventArgs args)
+    {
+        linhaSelecionada = args.Value?.ToString();
+        trajetoAtual = null;
+
+        trajetosDisponiveis = linhaSelecionada switch
+        {
+            "Economildo Rodoviária" => new List<string> { "Destino Câmara" , "Destino Rodoviária" },
+            "Economildo Cefor" => new List<string> { "Destino Cefor" , "Destino Chapelaria" },
+            "Economildo PGR" => new List<string> { "Destino PGR" , "Destino Anexo II" },
+            _ => new List<string>()
+        };
+    }
+
+    private void OnLinhaMudChanged(string? novaLinha)
+    {
+        linhaSelecionada = novaLinha;
+        trajetoAtual = null;
+
+        trajetosDisponiveis = linhaSelecionada switch
+        {
+            "Economildo Rodoviária" => new List<string> { "Destino Câmara" , "Destino Rodoviária" },
+            "Economildo Cefor" => new List<string> { "Destino Cefor" , "Destino Chapelaria" },
+            "Economildo PGR" => new List<string> { "Destino PGR" , "Destino Anexo II" },
+            _ => new List<string>()
+        };
+        StateHasChanged();
+    }
+
+    private void OnVeiculoChanged(SelectListItemModel? veiculo)
+    {
+        veiculoSelecionadoObj = veiculo;
+        veiculoSelecionadoId = veiculo?.Value;
+        StateHasChanged();
+    }
+
+    private void OnMotoristaChanged(MotoristaViewModel? motorista)
+    {
+        motoristaSelecionadoObj = motorista;
+        motoristaSelecionadoId = motorista?.MotoristaId;
+        StateHasChanged();
+    }
+
+    private async Task<IEnumerable<SelectListItemModel>> PesquisarVeiculos(string value , CancellationToken token)
+    {
+        await Task.Delay(50 , token);
+
+        if (string.IsNullOrEmpty(value))
+            return veiculosEconomildo;
+
+        return veiculosEconomildo
+            .Where(x => x.Text.Contains(value , StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task<IEnumerable<MotoristaViewModel>> PesquisarMotoristas(string value , CancellationToken token)
+    {
+        await Task.Delay(50 , token);
+
+        if (string.IsNullOrEmpty(value))
+            return motoristas;
+
+        return motoristas
+            .Where(x => x.Nome.Contains(value , StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private bool PodeIniciarViagem()
+    {
+        return dataViagem.HasValue
+            && !string.IsNullOrEmpty(veiculoSelecionadoId)
+            && motoristaSelecionadoId.HasValue
+            && !string.IsNullOrEmpty(linhaSelecionada)
+            && !string.IsNullOrEmpty(trajetoAtual);
+    }
+
+    private void IniciarViagem()
+    {
+        viagemIniciada = true;
+    }
+
+    private bool PodeRegistrarPassageiros()
+    {
+        return !string.IsNullOrEmpty(horaAtual);
+    }
+
+    private void AumentarPassageiros()
+    {
+        qtdPassageiros++;
+    }
+
+    private void DiminuirPassageiros()
+    {
+        if (qtdPassageiros > 0)
+        {
+            qtdPassageiros--;
+        }
+    }
+
+    private async Task RegistrarPassageiros()
+    {
+        if (!PodeRegistrarPassageiros())
+            return;
+
+        try
+        {
+            var veiculoId = Guid.Parse(veiculoSelecionadoId!);
+            var veiculoTexto = veiculosEconomildo.First(v => v.Value == veiculoSelecionadoId).Text;
+            var motoristaId = motoristaSelecionadoId!.Value;
+            var motoristaNome = motoristas.First(m => m.MotoristaId == motoristaId).Nome;
+            
+            var data = dataAtualRegistro;
+            
+            var linha = linhaSelecionada;
+            var resp = responsavel;
+            var trajeto = trajetoAtual;
+            var hora = horaAtual;
+            var passageiros = qtdPassageiros;
+
+            var viagemId = Guid.NewGuid();
+
+            // HoraFim recebe HoraInicio como fallback (para caso de crash)
+            var viagemLocal = new ViagemEconomildoLocal
+            {
+                ViagemEconomildoId = viagemId,
+                Data = data,
+                VeiculoId = veiculoId,
+                VeiculoPlaca = veiculoTexto,
+                MotoristaId = motoristaId,
+                MotoristaNome = motoristaNome,
+                MOB = linha,
+                Responsavel = resp,
+                IdaVolta = trajeto,
+                HoraInicio = hora,
+                HoraFim = hora, // Fallback: HoraFim = HoraInicio até ser sobrescrito
+                QtdPassageiros = passageiros,
+                Transmitido = false,
+                DataCadastro = DateTime.Now
+            };
+
+            await ViagensService.SalvarViagemLocalAsync(viagemLocal);
+
+            var registro = new RegistroViagem
+            {
+                ViagemEconomildoId = viagemId,
+                IdaVolta = trajeto,
+                HoraInicio = hora,
+                HoraFim = null, // Na UI, mostrar como pendente até finalizar trecho
+                QtdPassageiros = passageiros,
+                DataRegistro = data
+            };
+
+            registrosViagem.Add(registro);
+            qtdPassageiros = 0;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await Alerta.Erro("Erro" , $"Erro ao salvar registro: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Mudar Trajeto / Finaliza Trecho
+    /// 1. Preenche HoraFim de TODOS os registros pendentes com hora atual
+    /// 2. Alterna o trajeto para o próximo destino
+    /// </summary>
+    private async Task MudarTrajetoFinalizaTrecho()
+    {
+        try
+        {
+            // 1. Finaliza TODOS os trechos pendentes (preenche HoraFim)
+            await FinalizarTrechosPendentes();
+            
+            // 2. Alterna o trajeto
+            if (trajetosDisponiveis.Count == 2)
+            {
+                trajetoAtual = trajetoAtual == trajetosDisponiveis[0]
+                    ? trajetosDisponiveis[1]
+                    : trajetosDisponiveis[0];
+            }
+            
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await Alerta.Erro("Erro" , $"Erro ao mudar trajeto: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Finaliza TODOS os trechos pendentes preenchendo HoraFim com hora atual
+    /// </summary>
+    private async Task FinalizarTrechosPendentes()
+    {
+        try
+        {
+            // Encontra TODOS os registros que têm HoraFim pendente (null)
+            var registrosPendentes = registrosViagem
+                .Where(r => r.HoraFim == null)
+                .ToList();
+
+            if (!registrosPendentes.Any())
+                return;
+
+            var horaFimAtual = DateTime.Now.ToString("HH:mm");
+            
+            // Carrega todas as viagens do storage uma única vez
+            var viagens = await ViagensService.ObterViagensLocaisAsync();
+            
+            // Atualiza cada registro pendente
+            foreach (var registro in registrosPendentes)
+            {
+                // Atualiza na lista local (UI)
+                registro.HoraFim = horaFimAtual;
+                
+                // Atualiza no storage local
+                var viagemParaAtualizar = viagens.FirstOrDefault(v => v.ViagemEconomildoId == registro.ViagemEconomildoId);
+                
+                if (viagemParaAtualizar != null)
+                {
+                    viagemParaAtualizar.HoraFim = horaFimAtual;
+                    await ViagensService.SalvarViagemLocalAsync(viagemParaAtualizar);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao finalizar trechos pendentes: {ex.Message}");
+            throw;
+        }
+    }
+
+    private async Task RemoverRegistro(RegistroViagem registro)
+    {
+        try
+        {
+            var confirmado = await Alerta.Confirmar(
+                "Confirmar Exclusão",
+                $"Deseja realmente excluir este registro?<br><br>" +
+                $"<strong>Trajeto:</strong> {registro.IdaVolta}<br>" +
+                $"<strong>Horário:</strong> {registro.HoraInicio}<br>" +
+                $"<strong>Passageiros:</strong> {registro.QtdPassageiros}"
+            );
+
+            if (!confirmado)
+                return;
+
+            await ViagensService.ExcluirViagemLocalAsync(registro.ViagemEconomildoId);
+
+            registrosViagem.Remove(registro);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await Alerta.Erro("Erro" , $"Erro ao remover registro: {ex.Message}");
+        }
+    }
+
+    private async Task EncerrarTurno()
+    {
+        try
+        {
+            // Finaliza TODOS os trechos pendentes antes de encerrar
+            await FinalizarTrechosPendentes();
+            
+            var totalRegistros = registrosViagem.Count;
+            
+            if (totalRegistros > 0)
+            {
+                await Alerta.Sucesso("Turno Encerrado" , $"{totalRegistros} trajeto(s) registrado(s) neste turno.");
+            }
+            
+            LimparFormulario();
+            Navigation.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            await Alerta.Erro("Erro" , $"Erro ao encerrar turno: {ex.Message}");
+        }
+    }
+
+    private void LimparFormulario()
+    {
+        viagemIniciada = false;
+        dataViagem = DateTime.Today;
+        dataAtualRegistro = DateTime.Today;
+        veiculoSelecionadoId = null;
+        veiculoSelecionadoObj = null;
+        motoristaSelecionadoId = null;
+        motoristaSelecionadoObj = null;
+        linhaSelecionada = null;
+        trajetoAtual = null;
+        trajetosDisponiveis.Clear();
+        horaAtual = null;
+        horaDateTime = null;
+        qtdPassageiros = 0;
+        registrosViagem.Clear();
+    }
+
+    private void VoltarParaHome()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    public void Dispose()
+    {
+        PararTimerHora();
+        FinalizarPressionamento(); // Limpa timers do long press também
+    }
+
+    private string ObterNomeCurtoMotorista()
+    {
+        try
+        {
+            if (!motoristaSelecionadoId.HasValue || !motoristas.Any())
+                return "";
+
+            var motorista = motoristas.FirstOrDefault(m => m.MotoristaId == motoristaSelecionadoId.Value);
+            if (motorista == null || string.IsNullOrWhiteSpace(motorista.Nome))
+                return "";
+
+            var palavras = motorista.Nome.Split(new[] { ' ' } , StringSplitOptions.RemoveEmptyEntries)
+                                         .Where(p => !string.IsNullOrWhiteSpace(p))
+                                         .ToList();
+
+            if (palavras.Count == 0)
+                return "";
+
+            if (palavras.Count == 1)
+                return palavras[0];
+
+            var primeiraPalavra = palavras[0];
+
+            string? segundaPalavra = null;
+            for (int i = 1 ; i < palavras.Count ; i++)
+            {
+                if (palavras[i].Length > 3)
+                {
+                    segundaPalavra = palavras[i];
+                    break;
+                }
+            }
+
+            if (segundaPalavra == null && palavras.Count > 1)
+                segundaPalavra = palavras[1];
+
+            return segundaPalavra != null
+                ? $"{primeiraPalavra} {segundaPalavra}"
+                : primeiraPalavra;
+        }
+        catch
+        {
+            return "";
+        }
+    }
+
+    /// <summary>
+    /// Classe interna para registros de viagem com suporte a HoraFim
+    /// </summary>
+    private class RegistroViagem
+    {
+        public Guid ViagemEconomildoId { get; set; }
+        public string? IdaVolta { get; set; }
+        public string? HoraInicio { get; set; }
+        public string? HoraFim { get; set; }
+        public int QtdPassageiros { get; set; }
+        public DateTime DataRegistro { get; set; } = DateTime.Today;
+        
+        /// <summary>
+        /// Indica se a HoraFim ainda está pendente (não foi finalizado o trecho)
+        /// </summary>
+        public bool HoraFimPendente => string.IsNullOrEmpty(HoraFim);
+    }
+}

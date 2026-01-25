@@ -1,0 +1,26 @@
+﻿@inherits LayoutComponentBase
+@using FrotiX.Mobile.Economildo.Components
+
+<MudThemeProvider/>
+<MudPopoverProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<SweetAlertErrorBoundary>
+    <ChildContent>
+        <div class="page inspection lilac e-bigger">
+            <main class="main">
+                <div class="content">
+                    @Body
+                </div>
+            </main>
+        </div>
+    </ChildContent>
+
+    <ErrorContent>
+        <div class="alert alert-danger" role="alert" style="margin:1rem 0">
+            Ocorreu um erro inesperado. Já exibimos os detalhes no alerta.
+            <button class="btn btn-link" onclick="location.reload()">Recarregar</button>
+        </div>
+    </ErrorContent>
+</SweetAlertErrorBoundary>

@@ -1,0 +1,77 @@
+@using FrotiX.Mobile.Shared.Services
+@inject ErrorMonitorService ErrorMonitor
+@inject NavigationManager Navigation
+@implements IDisposable
+
+<div class="error-badge-container" @onclick="NavigateToLogs">
+    <div class="error-icon-wrapper">
+        <i class="fa-duotone fa-triangle-exclamation error-icon @GetPulseClass()"></i>
+        @if (errorCount > 0)
+        {
+            <span class="error-badge @GetBadgeAnimationClass()">@GetErrorCountText()</span>
+        }
+    </div>
+</div>
+
+@code {
+    private int errorCount = 0;
+    private bool justUpdated = false;
+
+    protected override void OnInitialized()
+    {
+        errorCount = ErrorMonitor.ErrorCount;
+        ErrorMonitor.OnErrorCountChanged += HandleErrorCountChanged;
+    }
+
+    private void HandleErrorCountChanged()
+    {
+        var oldCount = errorCount;
+        errorCount = ErrorMonitor.ErrorCount;
+
+        // Anima quando há novos erros
+        if (errorCount > oldCount)
+        {
+            justUpdated = true;
+            InvokeAsync(StateHasChanged);
+
+            // Remove animação após 1 segundo
+            Task.Delay(1000).ContinueWith(_ =>
+            {
+                justUpdated = false;
+                InvokeAsync(StateHasChanged);
+            });
+        }
+        else
+        {
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private string GetErrorCountText()
+    {
+        return errorCount > 99 ? "99+" : errorCount.ToString();
+    }
+
+    private string GetPulseClass()
+    {
+        return errorCount > 0 ? "pulse-animation" : "";
+    }
+
+    private string GetBadgeAnimationClass()
+    {
+        return justUpdated ? "badge-pop" : "";
+    }
+
+    private void NavigateToLogs()
+    {
+        if (errorCount > 0)
+        {
+            Navigation.NavigateTo("/logs-viewer?filter=errors");
+        }
+    }
+
+    public void Dispose()
+    {
+        ErrorMonitor.OnErrorCountChanged -= HandleErrorCountChanged;
+    }
+}

@@ -1,0 +1,17 @@
+﻿@using System.Reflection
+
+<Router AppAssembly="@typeof(MauiProgram).Assembly"
+        AdditionalAssemblies="@AdditionalAssemblies">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+</Router>
+
+@code {
+    // Garante que o Router também procure páginas no assembly Shared
+    private static readonly Assembly[] AdditionalAssemblies = new[]
+    {
+        typeof(Routes).Assembly // FrotiX.Mobile.Shared (onde estão Home, FichaViagem etc.)
+    };
+}

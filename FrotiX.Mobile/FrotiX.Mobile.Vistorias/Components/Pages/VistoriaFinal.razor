@@ -1,0 +1,1874 @@
+@page "/vistoriafinal"
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Data
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Popups
+@using Microsoft.Maui.Media
+@using System.Text.Json
+@using System.IO
+@using System.Text
+@using FrotiX.Mobile.Shared.Services
+@using FrotiX.Mobile.Shared.Helpers
+@using System.Diagnostics
+@using FrotiX.Mobile.Vistorias
+@using FrotiX.Mobile.Shared.Models
+@using SixLabors.ImageSharp
+@using SixLabors.ImageSharp.Processing
+@using SixLabors.ImageSharp.Formats.Jpeg
+@using Microsoft.Maui.ApplicationModel
+@using Microsoft.Maui.Storage
+@using FrotiX.Mobile.Shared.Services.IServices
+
+@inject IViagemService vistoriaService
+@inject IVeiculoService veiculoService
+@inject IVistoriadorService vistoriadorService
+@inject IOcorrenciaService OcorrenciaService
+@inject HttpClient httpClient
+@inject IJSRuntime JSRuntime
+@inject AlertaJs Alerta
+@inject ILogService Logger
+@inject NavigationManager Navigation
+
+<PageTitle>Vistoria Final - FrotiX</PageTitle>
+
+<!-- Botão Voltar Laranja Redondo -->
+<button type="button" class="btn-voltar-laranja" @onclick="VoltarParaHome">
+    <i class="fa-duotone fa-arrow-left"></i>
+</button>
+
+@if (carregando)
+{
+    <div class="loading-container">
+        <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+        <p style="font-size: 1.4rem; margin-top: 20px;">Carregando...</p>
+    </div>
+}
+else
+{
+    <div class="vistoria-container">
+        <!-- Header com Vistoriador -->
+        <div class="page-header">
+            <div class="header-left">
+                <i class="fa-duotone fa-clipboard-check"></i>
+                <div>
+                    <h2>Vistoria Final</h2>
+                    <p>Fechamento de vistoria</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="vistoriador-header-group">
+                    <label class="vistoriador-label"><i class="fa-duotone fa-user-shield"></i> Vistoriador</label>
+                    <SfDropDownList TValue="string" TItem="VistoriadorViewModel"
+                                CssClass="sf-input-header"
+                                Placeholder="Selecione..."
+                                DataSource="@vistoriadores"
+                                Value="@vistoriadorSelecionadoId"
+                                FloatLabelType="FloatLabelType.Never"
+                                ShowClearButton="true"
+                                PopupHeight="250px"
+                                Width="220px">
+                        <DropDownListFieldSettings Value="VistoriadorId" Text="NomeCompleto" />
+                        <DropDownListEvents TValue="string" TItem="VistoriadorViewModel" ValueChange="OnVistoriadorChange" />
+                    </SfDropDownList>
+                </div>
+            </div>
+        </div>
+
+        @if (!vistoriaSelecionada)
+        {
+            <!-- ====== LISTA DE VISTORIAS ABERTAS ====== -->
+            <div class="section-title lista">
+                <i class="fa-duotone fa-list-check"></i>
+                Vistorias Abertas (@vistoriasAbertas.Count)
+            </div>
+
+            <!-- Aviso para selecionar vistoriador antes de escolher vistoria -->
+            @if (!TemVistoriadorSelecionado)
+            {
+                <div class="aviso-vistoriador">
+                    <i class="fa-duotone fa-exclamation-triangle"></i>
+                    <span>Selecione um vistoriador antes de escolher uma vistoria</span>
+                </div>
+            }
+
+            @if (vistoriasAbertas.Count == 0)
+            {
+                <div class="card empty-state">
+                    <i class="fa-duotone fa-inbox"></i>
+                    <h3>Nenhuma vistoria aberta</h3>
+                    <p>Não há vistorias pendentes de fechamento.</p>
+                    <button type="button" class="btn-nova" @onclick="IrParaVistoriaInicial">
+                        <i class="fa-duotone fa-plus"></i> Abrir Nova Vistoria
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="lista-vistorias @(!TemVistoriadorSelecionado ? "lista-bloqueada" : "")">
+                    @foreach (var v in vistoriasAbertas)
+                    {
+                        <div class="vistoria-item @(!TemVistoriadorSelecionado ? "item-bloqueado" : "")" 
+                             @onclick="() => TentarSelecionarVistoria(v)">
+                            <div class="vistoria-icon">
+                                <i class="fa-duotone fa-car"></i>
+                            </div>
+                            <div class="vistoria-info">
+                                <!-- Nº Ficha Vistoria - Primeiro campo -->
+                                @if (v.NoFichaVistoria.HasValue && v.NoFichaVistoria > 0)
+                                {
+                                    <div class="vistoria-ficha">
+                                        <i class="fa-duotone fa-hashtag"></i> Ficha: @v.NoFichaVistoria
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="vistoria-ficha sem-ficha">
+                                        <i class="fa-duotone fa-hashtag"></i> Sem Ficha
+                                    </div>
+                                }
+                                <div class="vistoria-placa">@v.VeiculoCompleto</div>
+                                <div class="vistoria-detalhes">
+                                    <span><i class="fa-duotone fa-user"></i> @v.MotoristaCondutor</span>
+                                    <span><i class="fa-duotone fa-calendar"></i> @v.DataInicial?.ToString("dd/MM/yyyy")</span>
+                                    <span><i class="fa-duotone fa-clock"></i> @v.HoraInicio?.ToString("HH:mm")</span>
+                                </div>
+                                <div class="vistoria-rota">
+                                    <i class="fa-duotone fa-route"></i> @v.Origem → @v.Destino
+                                </div>
+                                <div class="vistoria-finalidade">
+                                    <i class="fa-duotone fa-bullseye"></i> @(v.Finalidade ?? "-")
+                                </div>
+                            </div>
+                            <div class="vistoria-arrow">
+                                <i class="fa-duotone fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <!-- ====== FORMULÁRIO DE FECHAMENTO ====== -->
+            
+            <!-- Resumo da Vistoria Selecionada -->
+            <div class="card resumo-card">
+                <div class="resumo-header">
+                    <div class="resumo-icon">
+                        <i class="fa-duotone fa-car"></i>
+                    </div>
+                    <div class="resumo-info">
+                        <!-- Nº Ficha Vistoria - Primeiro campo no resumo -->
+                        @if (viagemAtual.NoFichaVistoria.HasValue && viagemAtual.NoFichaVistoria > 0)
+                        {
+                            <div class="resumo-ficha">
+                                <i class="fa-duotone fa-hashtag"></i> Ficha: @viagemAtual.NoFichaVistoria
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="resumo-ficha sem-ficha">
+                                <i class="fa-duotone fa-hashtag"></i> Sem Ficha
+                            </div>
+                        }
+                        <div class="resumo-placa">@vistoriaResumo?.VeiculoCompleto</div>
+                        <div class="resumo-detalhes">
+                            <span><i class="fa-duotone fa-user"></i> @vistoriaResumo?.MotoristaCondutor</span>
+                            <span><i class="fa-duotone fa-calendar"></i> @viagemAtual.DataInicial?.ToString("dd/MM/yyyy")</span>
+                            <span><i class="fa-duotone fa-gauge"></i> KM: @viagemAtual.KmInicial</span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(viagemAtual?.Finalidade))
+                        {
+                            <div class="resumo-finalidade">
+                                <i class="fa-duotone fa-bullseye"></i> @viagemAtual.Finalidade
+                            </div>
+                        }
+                    </div>
+                    <button type="button" class="btn-trocar" @onclick="ConfirmarVoltarParaLista">
+                        <i class="fa-duotone fa-exchange-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Aviso quando não há vistoriador selecionado -->
+            @if (string.IsNullOrEmpty(vistoriadorSelecionadoId))
+            {
+                <div class="aviso-vistoriador">
+                    <i class="fa-duotone fa-exclamation-triangle"></i>
+                    <span>Selecione um vistoriador para habilitar o formulário</span>
+                </div>
+            }
+
+            <div class="section-title final">
+                <i class="fa-duotone fa-clipboard-check"></i>
+                Dados de Fechamento
+            </div>
+
+            <!-- Card: Data/Hora/KM/Combustível Final -->
+            <div class="card">
+                <div class="form-row cols-4">
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-duotone fa-calendar-check"></i> Data Final</label>
+                        <SfDatePicker TValue="DateTime?" CssClass="sf-input"
+                                      @bind-Value="viagemAtual.DataFinal"
+                                      Placeholder="Data Final" Format="dd/MM/yyyy"
+                                      FloatLabelType="FloatLabelType.Never"
+                                      Min="@min" Max="@max" Enabled="@TemVistoriadorSelecionado" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-duotone fa-clock"></i> Hora Final</label>
+                        <SfTimePicker TValue="DateTime?" CssClass="sf-input"
+                                      @bind-Value="viagemAtual.HoraFim"
+                                      Placeholder="Hora" Format="HH:mm" Step="10"
+                                      FloatLabelType="FloatLabelType.Never" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-duotone fa-gauge-high"></i> KM Final</label>
+                        <SfNumericTextBox TValue="int?" CssClass="sf-input sf-input-no-spin"
+                                          Placeholder="KM Final" FloatLabelType="FloatLabelType.Never"
+                                          ShowSpinButton="false"
+                                          @bind-Value="viagemAtual.KmFinal" Enabled="@TemVistoriadorSelecionado" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-duotone fa-gas-pump"></i> Combustível</label>
+                        <SfDropDownList TValue="string" TItem="string" CssClass="sf-input"
+                                        @bind-Value="viagemAtual.NivelCombustivelFinal"
+                                        Placeholder="Selecione"
+                                        DataSource="@combustivelOptions" Enabled="@TemVistoriadorSelecionado"
+                                        FloatLabelType="FloatLabelType.Never" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Devoluções de Itens/Documentos -->
+            <div class="card">
+                <div class="card-title"><i class="fa-duotone fa-file-lines"></i> Devoluções de Itens/Documentos</div>
+                <div class="checkbox-row checkbox-row-documentos">
+                    <SfCheckBox Label="CRLV devolvido" @bind-Checked="CrvlDevolvido" CssClass="sf-checkbox" Disabled="@(!TemVistoriadorSelecionado)" />
+                    <SfCheckBox Label="Cartão Abastecimento" @bind-Checked="CartaoAbastecimentoDevolvido" CssClass="sf-checkbox" Disabled="@(!TemVistoriadorSelecionado)" />
+                    <SfCheckBox Label="Cinta Devolvida" @bind-Checked="CintaDevolvidaCheck" CssClass="sf-checkbox" Disabled="@(!TemVistoriadorSelecionado)" />
+                    <SfCheckBox Label="Tablet Devolvido (Economildos)" @bind-Checked="TabletDevolvidoCheck" CssClass="sf-checkbox" Disabled="@(!TemVistoriadorSelecionado)" />
+                </div>
+            </div>
+
+            <!-- Card: Rubrica Final -->
+            <div class="card card-rubrica-final">
+                <div class="card-title"><i class="fa-duotone fa-pen-fancy"></i> Rubrica Final</div>
+                <div class="signature-box">
+                    <div class="signature-container">
+                        <SfSignature @ref="signaturePadFinal" Disabled="@(!TemVistoriadorSelecionado)"
+                                     LineColor="#374151" BackgroundColor="#ffffff" LineWidth="2" />
+                    </div>
+                </div>
+                <button type="button" class="btn-limpar" disabled="@(!TemVistoriadorSelecionado)" @onclick="LimparRubricaFinal">
+                    <i class="fa-duotone fa-eraser"></i> Limpar
+                </button>
+            </div>
+
+            <!-- Card: Ocorrências na Finalização -->
+            <div class="card card-ocorrencias">
+                <div class="card-title"><i class="fa-duotone fa-triangle-exclamation"></i> Ocorrências</div>
+                
+                @if (!mostrarFormOcorrencia)
+                {
+                    <!-- Estado inicial: apenas botão de adicionar -->
+                    <div class="ocorrencia-add-container">
+                        <button type="button" class="btn-add-ocorrencia" disabled="@(!TemVistoriadorSelecionado)" @onclick="MostrarFormularioOcorrencia">
+                            <i class="fa-duotone fa-circle-plus"></i>
+                            <span>Adicionar Ocorrência</span>
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <!-- Formulário de nova ocorrência -->
+                    <div class="ocorrencia-form">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-duotone fa-tag"></i> Resumo</label>
+                            <SfTextBox CssClass="sf-input" @bind-Value="novaOcorrenciaResumo" Placeholder="Resumo da ocorrência" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-duotone fa-align-left"></i> Descrição</label>
+                            <SfTextBox CssClass="sf-textarea" @bind-Value="novaOcorrenciaDescricao" Placeholder="Descrição detalhada" Multiline="true" />
+                        </div>
+                        
+                        <button type="button" class="btn-foto-ocorrencia" @onclick="CapturePhotoOcorrencia">
+                            <i class="fa-duotone fa-camera"></i>
+                            <span>Tirar Foto da Ocorrência</span>
+                        </button>
+                        
+                        @if (!string.IsNullOrEmpty(novaOcorrenciaFoto))
+                        {
+                            <div class="ocorrencia-foto-preview">
+                                <img src="@novaOcorrenciaFoto" alt="Foto da ocorrência" />
+                                <button type="button" class="btn-remove-foto" @onclick="RemoverFotoOcorrencia">
+                                    <i class="fa-duotone fa-trash"></i>
+                                </button>
+                            </div>
+                        }
+                        
+                        <div class="ocorrencia-form-actions">
+                            <button type="button" class="btn-cancelar-ocorrencia" @onclick="CancelarOcorrencia">
+                                <i class="fa-duotone fa-xmark"></i> Cancelar
+                            </button>
+                            <button type="button" class="btn-confirmar-ocorrencia" @onclick="ConfirmarOcorrencia">
+                                <i class="fa-duotone fa-check"></i> Confirmar
+                            </button>
+                        </div>
+                    </div>
+                }
+                
+                <!-- Lista de ocorrências inseridas -->
+                @if (OcorrenciasLocais.Count > 0)
+                {
+                    <div class="ocorrencias-lista">
+                        @for (int i = 0; i < OcorrenciasLocais.Count; i++)
+                        {
+                            var idx = i;
+                            var oc = OcorrenciasLocais[idx];
+                            <div class="ocorrencia-item-inserida" @onclick="() => AbrirModalOcorrencia(idx)">
+                                <div class="ocorrencia-item-info">
+                                    <div class="ocorrencia-item-resumo">
+                                        <i class="fa-duotone fa-circle-exclamation"></i>
+                                        @oc.Resumo
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(oc.Descricao))
+                                    {
+                                        <div class="ocorrencia-item-descricao">@oc.Descricao</div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(oc.FotoBase64))
+                                    {
+                                        <div class="ocorrencia-item-foto-badge">
+                                            <i class="fa-duotone fa-image"></i> Foto anexada
+                                        </div>
+                                    }
+                                </div>
+                                <button type="button" class="btn-excluir-ocorrencia" @onclick="() => ExcluirOcorrencia(idx)" @onclick:stopPropagation="true">
+                                    <i class="fa-duotone fa-trash"></i>
+                                </button>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Info de Criação/Agendamento -->
+            <div class="info-criacao-container">
+                @if (!string.IsNullOrEmpty(viagemAtual?.UsuarioIdAgendamento))
+                {
+                    <div class="info-criacao-item">
+                        <i class="fa-duotone fa-calendar-check"></i>
+                        <span>Agendado por: <strong>@nomeUsuarioAgendamento</strong></span>
+                        @if (viagemAtual.DataAgendamento.HasValue)
+                        {
+                            <span class="info-data">@viagemAtual.DataAgendamento.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                        }
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(viagemAtual?.UsuarioIdCriacao))
+                {
+                    <div class="info-criacao-item">
+                        <i class="fa-duotone fa-user-plus"></i>
+                        <span>Criado por: <strong>@nomeUsuarioCriacao</strong></span>
+                        @if (viagemAtual.DataCriacao.HasValue)
+                        {
+                            <span class="info-data">@viagemAtual.DataCriacao.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Espaço para o footer -->
+            <div style="height: 30px;"></div>
+        }
+    </div>
+
+    @if (vistoriaSelecionada)
+    {
+        <!-- Footer Fixo -->
+        <div class="footer-fixed">
+            <button type="button" class="btn-salvar" disabled="@(!TemVistoriadorSelecionado)" @onclick="@SalvarVistoriaFinal">
+                <i class="fa-duotone fa-check-circle"></i>
+                Fechar Vistoria
+            </button>
+        </div>
+    }
+
+    <!-- Dialog para Visualizar Foto -->
+    <SfDialog @bind-Visible="@imageOpen"
+              Header="Visualizar Foto"
+              IsModal="true"
+              ShowCloseIcon="true"
+              Width="95%" MinHeight="200px">
+        <DialogEvents Closed="@(_ => imageOpen = false)"
+                      OnOverlayModalClick="@(_ => imageOpen = false)" />
+        <img src="@imageSrc" style="width:100%; height:auto; display:block;" />
+    </SfDialog>
+
+    <!-- Modal para Visualizar Ocorrência -->
+    <SfDialog @bind-Visible="@modalOcorrenciaVisivel"
+              Header="Detalhes da Ocorrência"
+              IsModal="true"
+              ShowCloseIcon="true"
+              Width="90%"
+              CssClass="modal-ocorrencia-detalhe">
+        <DialogEvents Closed="@(_ => FecharModalOcorrencia())"
+                      OnOverlayModalClick="@(_ => FecharModalOcorrencia())" />
+        <ContentTemplate>
+            @if (ocorrenciaSelecionada != null)
+            {
+                <div class="modal-ocorrencia-content">
+                    <div class="modal-ocorrencia-campo">
+                        <label><i class="fa-duotone fa-tag"></i> Resumo</label>
+                        <div class="modal-ocorrencia-valor">@ocorrenciaSelecionada.Resumo</div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(ocorrenciaSelecionada.Descricao))
+                    {
+                        <div class="modal-ocorrencia-campo">
+                            <label><i class="fa-duotone fa-align-left"></i> Descrição</label>
+                            <div class="modal-ocorrencia-valor">@ocorrenciaSelecionada.Descricao</div>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(ocorrenciaSelecionada.FotoBase64))
+                    {
+                        <div class="modal-ocorrencia-foto">
+                            <img src="@ocorrenciaSelecionada.FotoBase64" alt="Foto da ocorrência" />
+                        </div>
+                    }
+                </div>
+            }
+        </ContentTemplate>
+        <FooterTemplate>
+            <button type="button" class="btn-modal-fechar" @onclick="FecharModalOcorrencia">
+                <i class="fa-duotone fa-xmark"></i> Fechar
+            </button>
+        </FooterTemplate>
+    </SfDialog>
+}
+
+<style>
+/* ============================================ */
+/* VISTORIA FINAL - TABLET 10" PORTRAIT        */
+/* ============================================ */
+
+/* === DUOTONE ICON COLORS === */
+.fa-duotone {
+    --fa-primary-color: currentColor;
+    --fa-secondary-color: currentColor;
+    --fa-secondary-opacity: 0.4;
+}
+
+.page-header .fa-duotone {
+    --fa-primary-color: #ffffff;
+    --fa-secondary-color: #fbbf24;
+    --fa-secondary-opacity: 1;
+}
+
+.form-label .fa-duotone,
+.card-title .fa-duotone {
+    --fa-primary-color: #4b5320;
+    --fa-secondary-color: #6b7a2e;
+    --fa-secondary-opacity: 0.7;
+}
+
+.btn-salvar .fa-duotone,
+.btn-nova .fa-duotone {
+    --fa-primary-color: #ffffff;
+    --fa-secondary-color: #fbbf24;
+    --fa-secondary-opacity: 1;
+}
+
+/* Botão Voltar */
+.btn-voltar-laranja {
+    position: fixed;
+    top: 30px;
+    left: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(234, 88, 12, 0.4);
+    z-index: 10000;
+}
+
+.btn-voltar-laranja:hover {
+    transform: scale(1.08);
+}
+
+.btn-voltar-laranja i {
+    font-size: 1rem;
+}
+
+/* Loading */
+.loading-container {
+    text-align: center;
+    padding: 80px 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+/* Container */
+.vistoria-container {
+    padding: 80px 16px 200px 16px;
+    max-width: 800px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+/* Header - Verde Militar */
+.page-header {
+    background: linear-gradient(135deg, #4b5320 0%, #3d4318 100%);
+    padding: 20px;
+    border-radius: 16px;
+    color: white;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    box-shadow: 0 6px 20px rgba(75, 83, 32, 0.4);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-left > i {
+    font-size: 2.4rem;
+}
+
+.header-left h2 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.header-left p {
+    margin: 4px 0 0 0;
+    opacity: 0.9;
+    font-size: 1rem;
+}
+
+.vistoriador-header-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.vistoriador-label {
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.vistoriador-label i {
+    color: #fbbf24;
+}
+
+.sf-input-header {
+    background: white !important;
+    border-radius: 8px !important;
+}
+
+.sf-input-header .e-input-group {
+    min-height: 40px !important;
+    height: 40px !important;
+}
+
+/* Aviso Vistoriador */
+.aviso-vistoriador {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: #78350f;
+    padding: 12px 16px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+/* Títulos de Seção */
+.section-title {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 14px 20px;
+    border-radius: 14px;
+    margin: 24px 0 14px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.section-title i {
+    font-size: 1.3rem;
+}
+
+.section-title.lista {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.section-title.final {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+/* Cards */
+.card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    padding: 18px;
+    margin-bottom: 14px;
+}
+
+.card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-title i {
+    color: #4b5320;
+    font-size: 1.15rem;
+}
+
+/* Lista de Vistorias */
+.lista-vistorias {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.vistoria-item {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.vistoria-item:hover {
+    border-color: #4b5320;
+    transform: translateY(-2px);
+}
+
+.vistoria-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.vistoria-info {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Nº Ficha Vistoria - Lista */
+.vistoria-ficha {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #4b5320;
+    background: linear-gradient(135deg, #d9f99d 0%, #bef264 100%);
+    padding: 4px 10px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.vistoria-ficha.sem-ficha {
+    color: #6b7280;
+    background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+}
+
+.vistoria-ficha i {
+    font-size: 0.8rem;
+}
+
+.vistoria-placa {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.vistoria-detalhes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.vistoria-detalhes span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.vistoria-rota {
+    font-size: 0.85rem;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.vistoria-finalidade {
+    margin-top: 6px;
+    font-size: 0.85rem;
+    color: #4b5320;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.vistoria-finalidade i {
+    color: #6b7a28;
+}
+
+.vistoria-arrow {
+    color: #4b5320;
+    font-size: 1.3rem;
+}
+
+/* Lista bloqueada */
+.lista-bloqueada {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.item-bloqueado {
+    cursor: not-allowed !important;
+}
+
+/* Resumo Card */
+.resumo-card {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+}
+
+.resumo-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.resumo-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #4b5320 0%, #3d4318 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.resumo-info {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Nº Ficha Vistoria - Resumo */
+.resumo-ficha {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #4b5320;
+    background: linear-gradient(135deg, #d9f99d 0%, #bef264 100%);
+    padding: 5px 12px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.resumo-ficha.sem-ficha {
+    color: #6b7280;
+    background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+}
+
+.resumo-ficha i {
+    font-size: 0.85rem;
+}
+
+.resumo-placa {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+.resumo-detalhes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.resumo-detalhes span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.resumo-finalidade {
+    font-size: 0.85rem;
+    color: #4b5320;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+}
+
+.btn-trocar {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* Form Layout */
+.form-row {
+    display: grid;
+    gap: 14px;
+}
+
+.form-row.cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.form-row.cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.form-row.cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #4b5320;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Syncfusion Inputs */
+.sf-input {
+    width: 100% !important;
+}
+
+.sf-input .e-input-group {
+    border-radius: 10px !important;
+    border: 2px solid #e5e7eb !important;
+    min-height: 44px !important;
+}
+
+.sf-input .e-input-group:focus-within {
+    border-color: #4b5320 !important;
+    box-shadow: 0 0 0 3px rgba(75, 83, 32, 0.15) !important;
+}
+
+.sf-input-no-spin input::-webkit-outer-spin-button,
+.sf-input-no-spin input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.sf-textarea .e-input-group {
+    min-height: 80px !important;
+}
+
+/* Checkboxes */
+.checkbox-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.checkbox-row-documentos {
+    gap: 20px;
+}
+
+.sf-checkbox {
+    font-size: 0.95rem;
+}
+
+/* Ocorrências */
+.card-ocorrencias {
+    border: 2px dashed #fbbf24;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    padding: 14px;
+}
+
+.ocorrencia-add-container {
+    text-align: center;
+    padding: 10px 0;
+}
+
+.btn-add-ocorrencia {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: #78350f;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-add-ocorrencia:hover:not(:disabled) {
+    transform: scale(1.02);
+}
+
+.btn-add-ocorrencia:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.ocorrencia-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.btn-foto-ocorrencia {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.ocorrencia-foto-preview {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    max-width: 200px;
+}
+
+.ocorrencia-foto-preview img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.btn-remove-foto {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.9);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.ocorrencia-form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.btn-cancelar-ocorrencia {
+    background: #e5e7eb;
+    color: #374151;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.btn-confirmar-ocorrencia {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.ocorrencias-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.ocorrencia-item-inserida {
+    background: white;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.ocorrencia-item-info {
+    flex: 1;
+}
+
+.ocorrencia-item-resumo {
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ocorrencia-item-resumo i {
+    color: #f59e0b;
+}
+
+.ocorrencia-item-descricao {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 4px;
+}
+
+.ocorrencia-item-foto-badge {
+    font-size: 0.8rem;
+    color: #667eea;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-excluir-ocorrencia {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* Rubrica */
+.card-rubrica-final {
+    /* sem borda */
+}
+
+.signature-box {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+.signature-container {
+    background: white;
+    border-radius: 10px;
+    border: 2px solid #e5e7eb;
+    overflow: hidden;
+    height: 130px;
+}
+
+.signature-container .e-signature {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.signature-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.btn-limpar {
+    background: #e5e7eb;
+    color: #374151;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.btn-limpar:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Info Criação */
+.info-criacao-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 12px;
+}
+
+.info-criacao-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: #64748b;
+    flex-wrap: wrap;
+}
+
+.info-criacao-item i {
+    font-size: 1rem;
+    --fa-primary-color: #64748b;
+    --fa-secondary-color: #94a3b8;
+    --fa-secondary-opacity: 0.7;
+}
+
+.info-criacao-item strong {
+    color: #334155;
+    font-weight: 600;
+}
+
+.info-criacao-item .info-data {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin-left: auto;
+}
+
+/* Footer Fixo */
+.footer-fixed {
+    position: fixed;
+    bottom: 40px;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 16px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.btn-salvar {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #4b5320 0%, #3d4318 100%);
+    color: white;
+    border: none;
+    padding: 18px;
+    border-radius: 14px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 6px 20px rgba(75, 83, 32, 0.4);
+}
+
+.btn-salvar:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+.btn-salvar:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #9ca3af;
+    margin-bottom: 16px;
+}
+
+.empty-state h3 {
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    color: #6b7280;
+    margin-bottom: 20px;
+}
+
+.btn-nova {
+    background: linear-gradient(135deg, #4b5320 0%, #3d4318 100%);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+/* Modal Ocorrência */
+.modal-ocorrencia-detalhe .e-dlg-content {
+    padding: 20px !important;
+}
+
+.modal-ocorrencia-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.modal-ocorrencia-campo label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #4b5320;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.modal-ocorrencia-valor {
+    background: #f9fafb;
+    padding: 12px;
+    border-radius: 10px;
+    color: #333;
+}
+
+.modal-ocorrencia-foto img {
+    width: 100%;
+    border-radius: 12px;
+}
+
+.btn-modal-fechar {
+    background: #e5e7eb;
+    color: #374151;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+/* Responsive */
+@@media (max-width: 600px) {
+    .form-row.cols-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .checkbox-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+</style>
+
+@code {
+    private bool carregando = true;
+    private bool vistoriaSelecionada = false;
+
+    // Vistoriador
+    private List<VistoriadorViewModel> vistoriadores = new();
+    private string? vistoriadorSelecionadoId;
+    private bool TemVistoriadorSelecionado => !string.IsNullOrEmpty(vistoriadorSelecionadoId);
+
+    private List<ViewViagemVistoria> vistoriasAbertas = new();
+    private ViewViagemVistoria? vistoriaResumo;
+    private Viagem viagemAtual = new();
+    private List<string> combustivelOptions = new() { "Cheio", "3/4", "2/4", "1/4" };
+
+    public DateTime min { get; set; } = DateTime.Now.AddYears(-5);
+    public DateTime max { get; set; } = DateTime.Now.AddYears(5);
+
+    private SfSignature signaturePadFinal;
+
+    private bool imageOpen;
+    private string? imageSrc;
+
+    // Ocorrências - usando classe local com FotoBase64
+    private List<OcorrenciaLocal> OcorrenciasLocais = new();
+    private bool mostrarFormOcorrencia = false;
+    private string novaOcorrenciaResumo = "";
+    private string novaOcorrenciaDescricao = "";
+    private string? novaOcorrenciaFoto = null;
+
+    // Modal de visualização de ocorrência
+    private bool modalOcorrenciaVisivel = false;
+    private OcorrenciaLocal? ocorrenciaSelecionada = null;
+
+    // Info de criação/agendamento
+    private string nomeUsuarioCriacao = "";
+    private string nomeUsuarioAgendamento = "";
+
+    // Classe local para armazenar ocorrências com foto
+    private class OcorrenciaLocal
+    {
+        public string Resumo { get; set; } = "";
+        public string Descricao { get; set; } = "";
+        public string? FotoBase64 { get; set; }
+    }
+
+    // Propriedade Cinta Devolvida
+    private bool CintaDevolvidaCheck
+    {
+        get => viagemAtual?.CintaDevolvida ?? false;
+        set { if (viagemAtual != null) viagemAtual.CintaDevolvida = value; }
+    }
+
+    // Propriedade Tablet Devolvido
+    private bool TabletDevolvidoCheck
+    {
+        get => viagemAtual?.TabletDevolvido ?? false;
+        set { if (viagemAtual != null) viagemAtual.TabletDevolvido = value; }
+    }
+
+    private void OpenImage(string src) { imageSrc = src; imageOpen = true; }
+
+    private bool CrvlDevolvido
+    {
+        get => string.Equals(viagemAtual?.StatusDocumentoFinal, "Devolvido", StringComparison.OrdinalIgnoreCase);
+        set { if (viagemAtual != null) viagemAtual.StatusDocumentoFinal = value ? "Devolvido" : "Não Devolvido"; }
+    }
+
+    private bool CartaoAbastecimentoDevolvido
+    {
+        get => string.Equals(viagemAtual?.StatusCartaoAbastecimentoFinal, "Devolvido", StringComparison.OrdinalIgnoreCase);
+        set { if (viagemAtual != null) viagemAtual.StatusCartaoAbastecimentoFinal = value ? "Devolvido" : "Não Devolvido"; }
+    }
+
+    // === MÉTODOS DE OCORRÊNCIAS ===
+    private void MostrarFormularioOcorrencia()
+    {
+        novaOcorrenciaResumo = "";
+        novaOcorrenciaDescricao = "";
+        novaOcorrenciaFoto = null;
+        mostrarFormOcorrencia = true;
+    }
+
+    private void CancelarOcorrencia()
+    {
+        novaOcorrenciaResumo = "";
+        novaOcorrenciaDescricao = "";
+        novaOcorrenciaFoto = null;
+        mostrarFormOcorrencia = false;
+    }
+
+    private async Task ConfirmarOcorrencia()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(novaOcorrenciaResumo))
+            {
+                await Alerta.Erro("Atenção", "Informe o resumo da ocorrência");
+                return;
+            }
+
+            OcorrenciasLocais.Add(new OcorrenciaLocal
+            {
+                Resumo = novaOcorrenciaResumo,
+                Descricao = novaOcorrenciaDescricao,
+                FotoBase64 = novaOcorrenciaFoto
+            });
+
+            novaOcorrenciaResumo = "";
+            novaOcorrenciaDescricao = "";
+            novaOcorrenciaFoto = null;
+            mostrarFormOcorrencia = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Erro ao confirmar ocorrência", ex);
+        }
+    }
+
+    private void ExcluirOcorrencia(int index)
+    {
+        try
+        {
+            if (index >= 0 && index < OcorrenciasLocais.Count)
+            {
+                OcorrenciasLocais.RemoveAt(index);
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            _ = Alerta.TratamentoErroComLinha("Erro ao excluir ocorrência", ex);
+        }
+    }
+
+    private async Task CapturePhotoOcorrencia()
+    {
+        try
+        {
+            await EnsureCameraAndMediaPermissionsAsync();
+            var photo = await MediaPicker.CapturePhotoAsync();
+            if (photo == null) return;
+#if ANDROID
+            novaOcorrenciaFoto = await AndroidDownsampleToBase64Async(photo, 1280, 80);
+#else
+            await using var stream = await photo.OpenReadAsync();
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            novaOcorrenciaFoto = $"data:image/jpeg;base64,{Convert.ToBase64String(ms.ToArray())}";
+#endif
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Erro ao capturar foto da ocorrência", ex);
+        }
+    }
+
+    private void RemoverFotoOcorrencia()
+    {
+        novaOcorrenciaFoto = null;
+        StateHasChanged();
+    }
+
+    private void AbrirModalOcorrencia(int index)
+    {
+        if (index >= 0 && index < OcorrenciasLocais.Count)
+        {
+            ocorrenciaSelecionada = OcorrenciasLocais[index];
+            modalOcorrenciaVisivel = true;
+        }
+    }
+
+    private void FecharModalOcorrencia()
+    {
+        modalOcorrenciaVisivel = false;
+        ocorrenciaSelecionada = null;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var vistoriasTask = CarregarVistoriasAbertas();
+            var vistoriadoresTask = vistoriadorService.GetVistoriadoresAsync();
+
+            await Task.WhenAll(vistoriasTask, vistoriadoresTask);
+            
+            vistoriadores = await vistoriadoresTask;
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Erro ao carregar dados", ex);
+        }
+        finally
+        {
+            carregando = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CarregarVistoriasAbertas()
+    {
+        try
+        {
+            // Usa o mesmo endpoint que VistoriasAbertas para consistência
+            vistoriasAbertas = await vistoriaService.ObterVistoriasAbertasAsync();
+            
+            // Ordenação: por data/hora descendente
+            vistoriasAbertas = vistoriasAbertas
+                .OrderByDescending(v => v.DataInicial)
+                .ThenByDescending(v => v.HoraInicio)
+                .ThenByDescending(v => v.NoFichaVistoria ?? 0)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Erro ao carregar vistorias abertas", ex);
+            vistoriasAbertas = new();
+        }
+    }
+
+    private async Task SelecionarVistoria(ViewViagemVistoria vistoria)
+    {
+        try
+        {
+            carregando = true;
+            StateHasChanged();
+
+            var viagem = await vistoriaService.ObterVistoriaPorIdAsync(vistoria.ViagemId);
+            if (viagem != null)
+            {
+                viagemAtual = viagem;
+                vistoriaResumo = vistoria;
+                
+                // CORREÇÃO: Normalizar hora para formato HH:mm (zerar segundos e milissegundos)
+                var agora = DateTime.Now;
+                viagemAtual.DataFinal ??= agora.Date;
+                viagemAtual.HoraFim ??= new DateTime(agora.Year, agora.Month, agora.Day, agora.Hour, agora.Minute, 0);
+                
+                // Garantir que checkboxes de devolução comecem desmarcados
+                viagemAtual.StatusDocumentoFinal = null;
+                viagemAtual.StatusCartaoAbastecimentoFinal = null;
+                viagemAtual.CintaDevolvida = false;
+                viagemAtual.TabletDevolvido = false;
+                
+                // Nomes de usuário - usar campos da viagem se disponíveis
+                nomeUsuarioCriacao = viagemAtual.NomeUsuarioCriacao ?? "";
+                nomeUsuarioAgendamento = viagemAtual.NomeUsuarioAgendamento ?? "";
+                
+                vistoriaSelecionada = true;
+            }
+            else
+            {
+                await Alerta.Erro("Erro", "Erro ao carregar vistoria");
+            }
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Erro ao selecionar vistoria", ex);
+        }
+        finally
+        {
+            carregando = false;
+            StateHasChanged();
+        }
+    }
+
+    private void VoltarParaLista()
+    {
+        vistoriaSelecionada = false;
+        viagemAtual = new();
+        vistoriaResumo = null;
+        OcorrenciasLocais = new();
+        mostrarFormOcorrencia = false;
+        novaOcorrenciaResumo = "";
+        novaOcorrenciaDescricao = "";
+        novaOcorrenciaFoto = null;
+        nomeUsuarioCriacao = "";
+        nomeUsuarioAgendamento = "";
+        StateHasChanged();
+    }
+
+    private async Task TentarSelecionarVistoria(ViewViagemVistoria vistoria)
+    {
+        try
+        {
+            if (!TemVistoriadorSelecionado)
+            {
+                await Alerta.Erro("Atenção", "Selecione um vistoriador antes de escolher uma vistoria");
+                return;
+            }
+            await SelecionarVistoria(vistoria);
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Erro ao selecionar vistoria", ex);
+        }
+    }
+
+    private async Task ConfirmarVoltarParaLista()
+    {
+        try
+        {
+            var confirmado = await Alerta.Confirmar("Cancelar Vistoria", "Deseja realmente cancelar o preenchimento da vistoria final?");
+            if (confirmado)
+            {
+                VoltarParaLista();
+            }
+        }
+        catch (Exception ex)
+        {
+            await Alerta.TratamentoErroComLinha("Erro ao confirmar", ex);
+        }
+    }
+
+    private void OnVistoriadorChange(ChangeEventArgs<string, VistoriadorViewModel> args)
+    {
+        try
+        {
+            vistoriadorSelecionadoId = args.Value;
+            StateHasChanged();
+        }
+        catch (Exception ex) { _ = Alerta.TratamentoErroComLinha("Erro ao selecionar vistoriador", ex); }
+    }
+
+    private async Task VoltarParaHome()
+    {
+        try { Navigation.NavigateTo("/"); }
+        catch (Exception ex) { await Alerta.TratamentoErroComLinha("Erro ao voltar", ex); }
+    }
+
+    private void IrParaVistoriaInicial()
+    {
+        Navigation.NavigateTo("/vistoriainicial");
+    }
+
+    private void LimparRubricaFinal() => _ = signaturePadFinal?.ClearAsync();
+
+    private async Task SalvarVistoriaFinal()
+    {
+        try
+        {
+            Logger.OperationStart("SalvarVistoriaFinal");
+            Logger.Info($"Iniciando fechamento da vistoria {viagemAtual.ViagemId}");
+
+            // Validação dos campos obrigatórios
+            var camposFaltando = new List<string>();
+
+            if (!viagemAtual.DataFinal.HasValue)
+                camposFaltando.Add("Data Final");
+
+            if (!viagemAtual.HoraFim.HasValue)
+                camposFaltando.Add("Hora Final");
+
+            if (!viagemAtual.KmFinal.HasValue || viagemAtual.KmFinal <= 0)
+                camposFaltando.Add("KM Final");
+
+            if (string.IsNullOrEmpty(viagemAtual.NivelCombustivelFinal))
+                camposFaltando.Add("Combustível");
+
+            // Verifica se a rubrica foi preenchida
+            bool rubricaVazia = signaturePadFinal == null || await signaturePadFinal.IsEmptyAsync();
+            if (rubricaVazia)
+                camposFaltando.Add("Rubrica Final");
+
+            if (camposFaltando.Count > 0)
+            {
+                Logger.Warning($"Validação falhou - campos faltando: {string.Join(", ", camposFaltando)}");
+                await Alerta.Erro("Campos Obrigatórios", $"Preencha os campos: {string.Join(", ", camposFaltando)}");
+                return;
+            }
+
+            Logger.Info("Validação OK - capturando rubrica...");
+
+            // Captura a rubrica
+            viagemAtual.RubricaFinal = await signaturePadFinal.GetSignatureAsync();
+
+            // CORREÇÃO: Normalizar hora para formato HH:mm (zerar segundos e milissegundos) antes de gravar
+            if (viagemAtual.HoraFim.HasValue)
+            {
+                var h = viagemAtual.HoraFim.Value;
+                viagemAtual.HoraFim = new DateTime(h.Year, h.Month, h.Day, h.Hour, h.Minute, 0);
+            }
+
+            viagemAtual.Status = "Realizada";
+            viagemAtual.StatusAgendamento = false;
+            viagemAtual.VistoriadorFinalId = vistoriadorSelecionadoId;
+            viagemAtual.UsuarioIdFinalizacao = vistoriadorSelecionadoId;
+            viagemAtual.DataFinalizacao = DateTime.Now;
+
+            Logger.Info($"Dados preparados - ViagemId: {viagemAtual.ViagemId}, Status: {viagemAtual.Status}");
+            Logger.Info($"DataFinal: {viagemAtual.DataFinal}, HoraFim: {viagemAtual.HoraFim}, KmFinal: {viagemAtual.KmFinal}");
+
+            Logger.Info("Chamando API para atualizar vistoria...");
+            bool sucesso = await vistoriaService.AtualizarVistoriaAsync(viagemAtual);
+
+            if (sucesso)
+            {
+                Logger.OperationSuccess("SalvarVistoriaFinal", "Vistoria atualizada com sucesso");
+
+                // Gravar ocorrências na tabela OcorrenciaViagem (após viagem salva com sucesso)
+                if (OcorrenciasLocais.Count > 0 && viagemAtual.VeiculoId.HasValue)
+                {
+                    Logger.Info($"Salvando {OcorrenciasLocais.Count} ocorrências...");
+                    foreach (var ocorrencia in OcorrenciasLocais)
+                    {
+                        var ocorrenciaDto = new CriarOcorrenciasDTO
+                        {
+                            ViagemId = viagemAtual.ViagemId,
+                            VeiculoId = viagemAtual.VeiculoId.Value,
+                            MotoristaId = viagemAtual.MotoristaId,
+                            Ocorrencias = new List<OcorrenciaItemDTO>
+                            {
+                                new OcorrenciaItemDTO
+                                {
+                                    Resumo = ocorrencia.Resumo,
+                                    Descricao = ocorrencia.Descricao
+                                }
+                            }
+                        };
+
+                        var resultOc = await OcorrenciaService.CriarOcorrenciasMultiplasAsync(ocorrenciaDto);
+                        if (resultOc.Success)
+                        {
+                            Logger.Info($"Ocorrência '{ocorrencia.Resumo}' criada");
+                        }
+                        else
+                        {
+                            Logger.Warning($"Falha ao criar ocorrência '{ocorrencia.Resumo}'");
+                        }
+                    }
+                }
+
+                LimparMemoria();
+                await Alerta.Sucesso("Sucesso", "Vistoria fechada com sucesso!");
+                
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
+                OcorrenciasLocais = new();
+                vistoriadorSelecionadoId = null;
+                VoltarParaLista();
+                await CarregarVistoriasAbertas();
+            }
+            else
+            {
+                // Captura detalhes do erro da API
+                var erroApi = RelayApiService.UltimoErro ?? "Erro desconhecido";
+                var respostaApi = RelayApiService.UltimaRespostaErro ?? "Sem detalhes";
+                
+                Logger.Error($"Falha ao fechar vistoria: {erroApi}");
+                Logger.Error($"Resposta da API: {respostaApi}");
+                
+                await Alerta.Erro("Erro ao Fechar Vistoria", $"{erroApi}\n\nDetalhes: {respostaApi}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.OperationFailed("SalvarVistoriaFinal", ex);
+            await Alerta.TratamentoErroComLinha("Erro ao salvar vistoria final", ex);
+        }
+    }
+
+    private void LimparMemoria()
+    {
+        viagemAtual.RubricaFinal = null;
+        OcorrenciasLocais = new();
+    }
+
+    private static async Task EnsureCameraAndMediaPermissionsAsync()
+    {
+        await Permissions.RequestAsync<Permissions.Camera>();
+#if ANDROID
+        await Permissions.RequestAsync<Permissions.StorageRead>();
+#endif
+    }
+
+#if ANDROID
+    private static int CalcInSampleSize(Android.Graphics.BitmapFactory.Options opt, int reqW, int reqH)
+    {
+        var h = opt.OutHeight; var w = opt.OutWidth; int inSample = 1;
+        if (h > reqH || w > reqW)
+        {
+            var halfH = h / 2; var halfW = w / 2;
+            while ((halfH / inSample) >= reqH && (halfW / inSample) >= reqW) inSample *= 2;
+        }
+        return inSample;
+    }
+
+    private static async Task<string> AndroidDownsampleToBase64Async(FileResult file, int maxDim = 1280, int quality = 80)
+    {
+        var tmp = Path.Combine(FileSystem.CacheDirectory, $"cap_{Guid.NewGuid():N}.jpg");
+        await using (var src = await file.OpenReadAsync())
+        await using (var dst = File.OpenWrite(tmp))
+            await src.CopyToAsync(dst);
+
+        var opt = new Android.Graphics.BitmapFactory.Options { InJustDecodeBounds = true };
+        Android.Graphics.BitmapFactory.DecodeFile(tmp, opt);
+        opt.InSampleSize = CalcInSampleSize(opt, maxDim, maxDim);
+        opt.InJustDecodeBounds = false;
+        opt.InPreferredConfig = Android.Graphics.Bitmap.Config.Rgb565;
+        using var bmp = Android.Graphics.BitmapFactory.DecodeFile(tmp, opt);
+
+        using var ms = new MemoryStream();
+        bmp.Compress(Android.Graphics.Bitmap.CompressFormat.Jpeg, quality, ms);
+        try { File.Delete(tmp); } catch { }
+
+        return $"data:image/jpeg;base64,{Convert.ToBase64String(ms.ToArray())}";
+    }
+#endif
+}

@@ -1,0 +1,335 @@
+@page "/home"
+@using FrotiX.Mobile.Shared.Services.IServices
+@using Microsoft.Maui.Controls
+@inject ILogService Logger
+@inject NavigationManager Navigation
+
+<div class="home-shell">
+    <header class="home-header">
+        <img class="home-logo" src="Images/logotipo_frotix_economildos.png" alt="FrotiX Economildos" />
+    </header>
+
+    <main class="home-main">
+        <!-- Card PRINCIPAL - Ficha da Viagem -->
+        <button type="button" class="home-card home-card-primary" @onclick="GoToFichaViagem">
+            <div class="home-card-icon">
+                <i class="fa-duotone fa-clipboard-list-check"></i>
+            </div>
+            <div class="home-card-text">
+                <span class="home-card-title">Ficha da Viagem</span>
+                <span class="home-card-subtitle">
+                    Registrar passageiros, horários e paradas durante o trajeto.
+                </span>
+            </div>
+        </button>
+
+        <!-- Linha dos 2 cards secundários -->
+        <div class="home-secondary-grid">
+            <button type="button" class="home-card home-card-secondary" @onclick="GoToSyncDados">
+                <div class="home-card-icon">
+                    <i class="fa-duotone fa-cloud-arrow-down"></i>
+                </div>
+                <div class="home-card-text">
+                    <span class="home-card-title">Sincronizar Dados</span>
+                    <span class="home-card-subtitle">
+                        Buscar configurações, escalas e dados atualizados do servidor.
+                    </span>
+                </div>
+            </button>
+
+            <button type="button" class="home-card home-card-secondary" @onclick="GoToTransmitirViagens">
+                <div class="home-card-icon">
+                    <i class="fa-duotone fa-paper-plane-top"></i>
+                </div>
+                <div class="home-card-text">
+                    <span class="home-card-title">Transmitir Viagens</span>
+                    <span class="home-card-subtitle">
+                        Enviar as viagens registradas para o servidor.
+                    </span>
+                </div>
+            </button>
+        </div>
+
+        <!-- Botões de baixo - DENTRO DO MAIN agora -->
+        <div class="home-footer">
+            <button type="button" class="home-card home-card-compact" @onclick="GoToLogErros">
+                <div class="home-card-icon">
+                    <i class="fa-duotone fa-bug"></i>
+                </div>
+                <div class="home-card-text">
+                    <span class="home-card-title">Log de Erros</span>
+                    <span class="home-card-subtitle">
+                        Visualizar ocorrências e detalhes técnicos.
+                    </span>
+                </div>
+            </button>
+
+            <button type="button" class="home-exit-button" @onclick="OnSair">
+                <i class="fa-duotone fa-door-open"></i>
+                <span>Sair</span>
+            </button>
+        </div>
+    </main>
+</div>
+
+<style>
+/* ============================================ */
+/* HOME - CORES CORPORATIVAS SÓBRIAS          */
+/* Paleta profissional para Câmara           */
+/* ============================================ */
+
+.home-shell {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    display: flex;
+    flex-direction: column;
+    padding: 5px 12px 5px 12px;
+}
+
+.home-header {
+    text-align: center;
+    margin-bottom: 8px;
+    padding: 0;
+}
+
+.home-logo {
+    display: block;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    max-height: 140px;
+    margin: 0 auto;
+}
+
+.home-main {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 60px;
+    margin-bottom: 0;
+}
+
+/* Cards Base */
+.home-card {
+    border: none;
+    border-radius: 16px;
+    padding: 20px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-align: left;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+    background: white;
+    width: 100%;
+}
+
+.home-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+
+.home-card:active {
+    transform: translateY(-2px);
+}
+
+/* Card PRINCIPAL - Azul Corporativo */
+.home-card-primary {
+    background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%);
+    min-height: 100px;
+}
+
+.home-card-primary:hover {
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+}
+
+/* Cards SECUNDÁRIOS - Cinza Azulado */
+.home-card-secondary {
+    background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+    min-height: 90px;
+}
+
+.home-card-secondary:hover {
+    background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+}
+
+/* Card COMPACTO - Verde Escuro */
+.home-card-compact {
+    background: linear-gradient(135deg, #2f855a 0%, #276749 100%);
+    min-height: 70px;
+    padding: 15px 20px;
+    flex: 1;
+}
+
+.home-card-compact:hover {
+    background: linear-gradient(135deg, #276749 0%, #2f855a 100%);
+}
+
+/* Ícones dos Cards */
+.home-card-icon {
+    font-size: 2.5rem;
+    color: #ffffff;
+    min-width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.home-card-compact .home-card-icon {
+    font-size: 2rem;
+    min-width: 40px;
+}
+
+/* Textos dos Cards */
+.home-card-text {
+    flex: 1;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.home-card-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #ffffff;
+}
+
+.home-card-subtitle {
+    font-size: 0.85rem;
+    line-height: 1.3;
+    color: #f0f0f0;
+    opacity: 1;
+}
+
+/* Grid dos Cards Secundários */
+.home-secondary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* Footer - agora dentro do main */
+.home-footer {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+    margin-top: 100px;
+}
+
+/* Botão Sair - Laranja Terroso */
+.home-exit-button {
+    background: linear-gradient(135deg, #c2410c 0%, #9a3412 100%);
+    border: none;
+    border-radius: 16px;
+    padding: 15px 25px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(194, 65, 12, 0.3);
+    min-width: 120px;
+}
+
+.home-exit-button:hover {
+    background: linear-gradient(135deg, #9a3412 0%, #c2410c 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(194, 65, 12, 0.4);
+}
+
+.home-exit-button:active {
+    transform: translateY(-1px);
+}
+
+/* Responsivo para Tablets menores */
+@@media (max-width: 768px) {
+    .home-logo {
+        max-width: 100%;
+        max-height: 380px;
+    }
+    
+    .home-secondary-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .home-card-icon {
+        font-size: 3rem;
+        min-width: 60px;
+    }
+    
+    .home-card-title {
+        font-size: 1.3rem;
+    }
+    
+    .home-card-subtitle {
+        font-size: 0.85rem;
+    }
+}
+
+/* Responsivo para telas muito pequenas */
+@@media (max-width: 600px) {
+    .home-logo {
+        max-width: 100%;
+        max-height: 320px;
+    }
+}
+</style>
+
+@code {
+    protected override void OnInitialized()
+    {
+        try
+        {
+            base.OnInitialized();
+        }
+        catch (Exception ex)
+        {
+            Logger?.Error("Erro ao inicializar Home", ex);
+        }
+    }
+
+    private void GoToFichaViagem()
+        => SafeNavigate("/fichaviagem", "Home -> Ficha de Viagem");
+
+    private void GoToSyncDados()
+        => SafeNavigate("/syncdados", "Home -> Sincronizar Dados");
+
+    private void GoToTransmitirViagens()
+        => SafeNavigate("/transmitirviagens", "Home -> Transmitir Viagens");
+
+    private void GoToLogErros()
+        => SafeNavigate("/logs-viewer", "Home -> Log de Erros");
+
+    private void OnSair()
+    {
+        try
+        {
+            Application.Current?.Quit();
+        }
+        catch (Exception ex)
+        {
+            Logger?.Error("Erro ao executar ação de Sair na Home", ex);
+        }
+    }
+
+    private void SafeNavigate(string url, string description)
+    {
+        try
+        {
+            Navigation.NavigateTo(url);
+        }
+        catch (Exception ex)
+        {
+            Logger?.Error($"Erro ao navegar para {url} a partir da Home", ex);
+        }
+    }
+}
