@@ -204,48 +204,6 @@
     #tblViagensModal thead .sorting_desc:after {
         color: #fff !important;
     }
-
-    /* ======== PAGINAÇÃO CORRETIVA (Padrão Laranja FrotiX - ESPECIFICIDADE MÁXIMA) ======== */
-    /* Target via ID #tblEventos_wrapper para garantir override */
-    #tblEventos_wrapper .dataTables_paginate .pagination .page-item .page-link,
-    #tblEventos_wrapper .dataTables_paginate .paginate_button {
-        color: #ffffff !important; /* TEXTO BRANCO FORÇADO */
-        background: linear-gradient(135deg, #cc5200 0%, #b34700 100%) !important;
-        border: none !important;
-        box-shadow: 0 2px 4px rgba(204, 82, 0, 0.3) !important;
-    }
-    
-    /* Hover */
-    #tblEventos_wrapper .dataTables_paginate .pagination .page-item .page-link:hover,
-    #tblEventos_wrapper .dataTables_paginate .paginate_button:hover {
-        color: #ffffff !important;
-        background: linear-gradient(135deg, #b34700 0%, #a03d00 100%) !important;
-        transform: translateY(-1px) !important;
-    }
-
-    /* Ativo */
-    #tblEventos_wrapper .dataTables_paginate .pagination .page-item.active .page-link,
-    #tblEventos_wrapper .dataTables_paginate .paginate_button.current {
-        background: linear-gradient(135deg, #a03d00 0%, #8a3300 100%) !important;
-        color: #ffffff !important;
-        font-weight: bold !important;
-        border: 1px solid rgba(255,255,255,0.2) !important;
-    }
-    
-    /* Desabilitado */
-    #tblEventos_wrapper .dataTables_paginate .pagination .page-item.disabled .page-link,
-    #tblEventos_wrapper .dataTables_paginate .paginate_button.disabled {
-        background: #e9ecef !important;
-        color: #6c757d !important;
-        opacity: 0.8 !important;
-        box-shadow: none !important;
-    }
-
-    /* Override em filhos diretos para garantir que o <a> não sobrescreva a cor */
-    #tblEventos_wrapper .dataTables_paginate .page-link *,
-    #tblEventos_wrapper .dataTables_paginate a {
-        color: #ffffff !important;
-    }
 </style>
 
 <form>
