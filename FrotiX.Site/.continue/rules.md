@@ -1,0 +1,7 @@
+# ⚠️ REDIRECIONAMENTO → ../RegrasDesenvolvimentoFrotiX.md
+
+**IMPORTANTE:** Leia `../RegrasDesenvolvimentoFrotiX.md` antes de gerar qualquer código.
+
+Todas as regras de desenvolvimento do projeto FrotiX estão centralizadas nesse arquivo.
+
+**NUNCA modifique este arquivo.** Adicione novas regras APENAS em `RegrasDesenvolvimentoFrotiX.md`.

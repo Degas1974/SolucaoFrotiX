@@ -1,10 +1,36 @@
-﻿@{
+﻿@*****************************************************************************************
+ * ⚡ PARTIAL: _PageHeader
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Renderiza o cabeçalho das páginas da área Identity com logo e links
+ *                   contextuais (Login ou Register) dependendo da página atual.
+ *
+ * 📥 ENTRADAS     : ViewBag.PageName (string) - Nome da página atual para lógica condicional.
+ *
+ * 📤 SAÍDAS       : HTML - Cabeçalho com logo e link apropriado (Login ou Register).
+ *
+ * 🔗 CHAMADA POR  : Layouts que incluem este partial (ex: _Layout.cshtml).
+ *
+ * 🔄 CHAMA        : Partial _Logo, páginas /account/login e /account/register.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Tag Helpers (asp-area, asp-page), Bootstrap 4+.
+ *
+ * 📝 OBSERVAÇÕES  : Lógica condicional: se página está em lista ["register", "forgotpassword",
+ *                   "lockout", "logout"], mostra link "Secure Login". Caso contrário, mostra
+ *                   "Register account".
+ *****************************************************************************************@
+@{
+    // [DOC] Captura nome da página atual do ViewBag para determinar contexto
     var pageName = ViewBag.PageName ?? string.Empty;
+
+    // [DOC] Define se deve exibir link de Login (páginas register, forgotpassword, lockout, logout)
     var canLogin = new string[] { "register", "forgotpassword", "lockout", "logout" }.ToList().Contains(pageName);
 }
+@* [DOC] Container do cabeçalho com gradiente da marca, sombra e altura fixa (height-10) *@
 <div class="height-10 w-100 shadow-lg px-4 bg-brand-gradient">
     <div class="d-flex align-items-center container p-0">
+        @* [DOC] Renderiza logo do sistema (partial _Logo) *@
         <partial name="_Logo" />
+        @* [DOC] Lógica condicional: se página permite login, mostra link "Secure Login" *@
         @if (canLogin)
         {
             <span class="text-white opacity-50 ml-auto mr-2 hidden-sm-down">
@@ -16,6 +42,7 @@
         }
         else
         {
+            @* [DOC] Caso contrário, mostra link "Register account" *@
             <a class="btn-link text-white ml-auto" asp-area="Identity" asp-page="/account/register">
                 Register account
             </a>

@@ -1,9 +1,35 @@
+/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: ContratoController.VerificarDependencias.cs                    ║
+ ║  Caminho: /Controllers/ContratoController.VerificarDependencias.cs       ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ║  Partial Class: Verificação de dependências de Contrato                 ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ PARTIAL CLASS: ContratoController (VerificarDependencias)
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Verificar dependências antes de excluir Contrato
+     * 📥 ENTRADAS     : [Guid] id - ID do Contrato a ser verificado
+     * 📤 SAÍDAS       : JSON com contagens de dependências (veículos, pessoas, empenhos, NFs)
+     * 🔗 CHAMADA POR  : Frontend antes de exclusão de Contrato
+     * 🔄 CHAMA        : VeiculoContrato, Encarregado, Operador, Lavador, Motorista, etc.
+     * 📦 DEPENDÊNCIAS : IUnitOfWork, Multiple Repositories
+     * --------------------------------------------------------------------------------------
+     * [DOC] Classe parcial dedicada a verificação de dependências de Contrato
+     * [DOC] Verifica 7 tipos de dependências: VeiculosContrato, Encarregados, Operadores,
+     *       Lavadores, Motoristas, Empenhos, NotasFiscais
+     * [DOC] Cada verificação em try/catch separado para não falhar se tabela não existir
+     * [DOC] Retorna contadores individuais e flag possuiDependencias
+     ****************************************************************************************/
     public partial class ContratoController
     {
         /// <summary>

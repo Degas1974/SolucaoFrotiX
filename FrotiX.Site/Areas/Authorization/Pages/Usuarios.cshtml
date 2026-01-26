@@ -1,4 +1,18 @@
-﻿
+@*
+/****************************************************************************************
+ * ⚡ PÁGINA: Usuários (Gerenciamento de Usuários do Sistema)
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de gerenciamento de usuários com DataTable, permitindo
+ *                   visualizar, adicionar, editar e deletar usuários do sistema.
+ *                   A lógica JavaScript está no arquivo externo usuarios.js.
+ * 📥 ENTRADAS     : Nenhuma (página Razor sem parâmetros).
+ * 📤 SAÍDAS       : Renderização da interface de gerenciamento de usuários com DataTable.
+ * 🔗 CHAMADA POR  : Usuários autenticados via rota /Authorization/Usuarios.
+ * 🔄 CHAMA        : usuarios.js (script externo com lógica de DataTable e CRUD).
+ * 📦 DEPENDÊNCIAS : jQuery, DataTables, usuarios.js, Bootstrap.
+ ****************************************************************************************
+*@
+
 @page
 @model UsuariosModel
 @{
@@ -15,6 +29,7 @@
 }
 
 <style>
+    /* [DOC] Estilo customizado para destaque de linhas/cabeçalhos da tabela */
     .fundo-cinza {
         background-color: #2F4F4F;
         color: aliceblue;
@@ -43,6 +58,7 @@
                                         <div class="box-body">
                                             <span id="message"></span>
 
+                                            <!-- [DOC] Tabela de listagem de usuários populada via DataTable (usuarios.js) -->
                                             <table id="tblUser" class="table table-bordered table-striped style="width:100%"">
                                                 <thead>
                                                     <tr>

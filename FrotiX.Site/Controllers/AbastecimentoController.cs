@@ -1,3 +1,13 @@
+/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: AbastecimentoController.cs                                     ║
+ ║  Caminho: /Controllers/AbastecimentoController.cs                        ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ║  Partial Class Principal: Gestão de abastecimentos                       ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Data;
 using FrotiX.Hubs;
 using FrotiX.Models;
@@ -20,6 +30,20 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ PARTIAL CLASS: AbastecimentoController (Principal)
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Controller principal de gestão de abastecimentos
+     * 📥 ENTRADAS     : Requisições HTTP GET/POST para CRUD de abastecimentos
+     * 📤 SAÍDAS       : JSON com dados de abastecimentos e views
+     * 🔗 CHAMADA POR  : Frontend de cadastros e relatórios
+     * 🔄 CHAMA        : UnitOfWork, ViewAbastecimentos, SignalR
+     * 📦 DEPENDÊNCIAS : Entity Framework, Logger, IHubContext, FrotiXDbContext
+     * --------------------------------------------------------------------------------------
+     * [DOC] Classe parcial principal com construtores e métodos básicos (Index, Get)
+     * [DOC] Possui classes parciais: .Import.cs, .Pendencias.cs, .DashboardAPI.cs
+     * [DOC] BindProperty REMOVIDO para evitar validação global indesejada em endpoints API
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public partial class AbastecimentoController :ControllerBase

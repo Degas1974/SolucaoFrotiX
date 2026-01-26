@@ -1,3 +1,12 @@
+/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: DashboardMotoristasController.cs                               ║
+ ║  Caminho: /Controllers/DashboardMotoristasController.cs                  ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +18,21 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: DashboardMotoristasController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Fornecer estatísticas e análises de desempenho de motoristas
+     * 📥 ENTRADAS     : Filtros de data (dataInicio, dataFim) ou ano/mês
+     * 📤 SAÍDAS       : JSON com estatísticas agregadas de motoristas
+     * 🔗 CHAMADA POR  : Frontend do Dashboard de Motoristas
+     * 🔄 CHAMA        : Motorista, Viagem (via DbContext async)
+     * 📦 DEPENDÊNCIAS : Entity Framework Core, FrotiXDbContext
+     * --------------------------------------------------------------------------------------
+     * [DOC] Dashboard específico para análise de desempenho de motoristas
+     * [DOC] Estatísticas: viagens realizadas, KM rodado, custos, ranking de eficiência
+     * [DOC] Método helper ObterPeriodo: converte ano/mês OU datas em período de busca
+     * [DOC] Fallback: últimos 30 dias se não houver filtro especificado
+     ****************************************************************************************/
     [Authorize]
     public class DashboardMotoristasController : Controller
     {

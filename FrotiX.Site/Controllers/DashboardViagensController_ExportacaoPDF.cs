@@ -1,3 +1,13 @@
+/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: DashboardViagensController_ExportacaoPDF.cs                    ║
+ ║  Caminho: /Controllers/DashboardViagensController_ExportacaoPDF.cs       ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ║  Partial Class: Exportação PDF do Dashboard de Viagens                  ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Data;
 using FrotiX.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -16,6 +26,20 @@ using Syncfusion.Pdf.Grid;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ PARTIAL CLASS: DashboardViagensController (ExportacaoPDF)
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Exportar Dashboard de Viagens para PDF com múltiplas páginas
+     * 📥 ENTRADAS     : Filtros de data (dataInicio, dataFim)
+     * 📤 SAÍDAS       : Arquivo PDF para download
+     * 🔗 CHAMADA POR  : Frontend (botão Exportar PDF)
+     * 🔄 CHAMA        : Syncfusion PDF, métodos privados de criação de páginas
+     * 📦 DEPENDÊNCIAS : Syncfusion.Pdf, Syncfusion.Drawing, Entity Framework
+     * --------------------------------------------------------------------------------------
+     * [DOC] Classe parcial dedicada à exportação PDF do Dashboard de Viagens
+     * [DOC] Gera PDF com 3+ páginas: Estatísticas Gerais, Rankings, Top 10 Viagens Mais Caras
+     * [DOC] Usa Syncfusion.Pdf para criação de documento A4 com margens de 40px
+     ****************************************************************************************/
     [Authorize]
     public partial class DashboardViagensController : Controller
     {

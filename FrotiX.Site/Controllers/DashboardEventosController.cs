@@ -1,3 +1,13 @@
+/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: DashboardEventosController.cs                                  ║
+ ║  Caminho: /Controllers/DashboardEventosController.cs                     ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ║  Partial Class Principal: Dashboard de Eventos                          ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Data;
 using FrotiX.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +22,21 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ PARTIAL CLASS: DashboardEventosController (Principal)
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Fornecer estatísticas e análises de eventos (viagens corporativas)
+     * 📥 ENTRADAS     : Filtros de data (DataInicial, dataFim)
+     * 📤 SAÍDAS       : JSON com estatísticas agregadas de eventos
+     * 🔗 CHAMADA POR  : Frontend do Dashboard de Eventos
+     * 🔄 CHAMA        : Viagem, Motorista, Veiculo, SetorSolicitante (via DbContext async)
+     * 📦 DEPENDÊNCIAS : Entity Framework Core, UserManager, FrotiXDbContext
+     * --------------------------------------------------------------------------------------
+     * [DOC] Dashboard específico para análise de eventos (viagens corporativas)
+     * [DOC] Estatísticas: total de eventos, KM rodado, custos, setores requisitantes
+     * [DOC] Período padrão: últimos 30 dias se não especificado
+     * [DOC] Possui classe parcial _ExportacaoPDF.cs para geração de relatórios PDF
+     ****************************************************************************************/
     [Authorize]
     public partial class DashboardEventosController : Controller
     {

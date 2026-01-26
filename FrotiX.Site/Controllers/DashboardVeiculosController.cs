@@ -1,3 +1,12 @@
+/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: DashboardVeiculosController.cs                                 ║
+ ║  Caminho: /Controllers/DashboardVeiculosController.cs                    ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +16,22 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: DashboardVeiculosController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Fornecer estatísticas e análises da frota de veículos
+     * 📥 ENTRADAS     : Nenhuma (dados gerais da frota, sem filtro de data)
+     * 📤 SAÍDAS       : JSON com estatísticas agregadas de veículos
+     * 🔗 CHAMADA POR  : Frontend do Dashboard de Veículos
+     * 🔄 CHAMA        : ViewVeiculos, Veiculo (via UnitOfWork)
+     * 📦 DEPENDÊNCIAS : IUnitOfWork, Repository Pattern
+     * --------------------------------------------------------------------------------------
+     * [DOC] Dashboard específico para análise da frota de veículos
+     * [DOC] Estatísticas: total, ativos/inativos, próprios/locados, reserva/efetivos
+     * [DOC] Calcula idade média da frota (baseado em AnoFabricacao)
+     * [DOC] Tema visual: Verde Sage/Oliva
+     * [DOC] Usa ViewVeiculos para dados agregados otimizados
+     ****************************************************************************************/
     /// <summary>
     /// Controller com endpoints da API para o Dashboard de Veículos
     /// Tema: Verde Sage/Oliva

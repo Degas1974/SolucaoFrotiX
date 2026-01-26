@@ -1,4 +1,25 @@
-﻿<div class="page-logo width-mobile-auto m-0 align-items-center justify-content-center p-0 bg-transparent bg-img-none shadow-0 height-9">
+﻿@*****************************************************************************************
+ * ⚡ PARTIAL: _Logo
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Renderiza o logotipo do sistema no cabeçalho de páginas da área
+ *                   Identity, incluindo imagem e texto identificador do sistema.
+ *
+ * 📥 ENTRADAS     : Nenhuma.
+ *
+ * 📤 SAÍDAS       : HTML - Div contendo logo clicável com imagem e texto.
+ *
+ * 🔗 CHAMADA POR  : Páginas que incluem este partial (ex: _PageHeader.cshtml).
+ *
+ * 🔄 CHAMA        : Nenhum.
+ *
+ * 📦 DEPENDÊNCIAS : Imagem ~/img/logo.png, classes CSS do tema SmartAdmin.
+ *
+ * 📝 OBSERVAÇÕES  : Link javascript:void(0) evita navegação (logo não é clicável).
+ *                   Classes responsivas para mobile (width-mobile-auto).
+ *****************************************************************************************@
+@* [DOC] Container do logo com classes responsivas e sem background/shadow *@
+<div class="page-logo width-mobile-auto m-0 align-items-center justify-content-center p-0 bg-transparent bg-img-none shadow-0 height-9">
+    @* [DOC] Link do logo com efeito press-scale-down (animação ao clicar) *@
     <a href="javascript:void(0)" class="page-logo-link press-scale-down d-flex align-items-center">
         <img src="~/img/logo.png" alt="SmartAdmin WebApp" aria-roledescription="logo">
         <span class="page-logo-text mr-1">SmartAdmin WebApp</span>

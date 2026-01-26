@@ -1,3 +1,12 @@
+/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: CustosViagemController.cs                                      ║
+ ║  Caminho: /Controllers/CustosViagemController.cs                         ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +17,21 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: CustosViagemController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Fornecer dados de custos detalhados de viagens
+     * 📥 ENTRADAS     : [string] Id - ID da viagem (opcional)
+     * 📤 SAÍDAS       : JSON com custos agregados de viagens (ViewCustosViagem)
+     * 🔗 CHAMADA POR  : Frontend de relatórios e dashboards de custos
+     * 🔄 CHAMA        : ViewCustosViagem.GetAllReduced() (view otimizada)
+     * 📦 DEPENDÊNCIAS : IUnitOfWork, IWebHostEnvironment, ViewCustosViagem
+     * --------------------------------------------------------------------------------------
+     * [DOC] Usa ViewCustosViagem (view do banco) para dados pré-calculados
+     * [DOC] Método GetAllReduced retorna apenas campos necessários para performance
+     * [DOC] Inclui custos de combustível, pedágio, manutenção, motorista, etc.
+     * [DOC] IgnoreAntiforgeryToken para chamadas de APIs externas
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     [IgnoreAntiforgeryToken]

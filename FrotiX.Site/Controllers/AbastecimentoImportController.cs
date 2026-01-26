@@ -1,3 +1,12 @@
+/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: AbastecimentoImportController.cs                               ║
+ ║  Caminho: /Controllers/AbastecimentoImportController.cs                  ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Data;
 using FrotiX.Hubs;
 using FrotiX.Models;
@@ -12,6 +21,20 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: AbastecimentoImportController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Controller dedicado exclusivamente para importação de abastecimentos
+     * 📥 ENTRADAS     : Arquivos Excel/CSV via FormData
+     * 📤 SAÍDAS       : JSON com resultado da importação
+     * 🔗 CHAMADA POR  : Frontend de importação de abastecimentos
+     * 🔄 CHAMA        : AbastecimentoController (métodos internos de importação)
+     * 📦 DEPENDÊNCIAS : IUnitOfWork, IHubContext, FrotiXDbContext, Logger
+     * --------------------------------------------------------------------------------------
+     * [DOC] NÃO usa [ApiController] para evitar validação automática antes do processamento
+     * [DOC] Validação ocorre dentro da lógica de importação, não antes
+     * [DOC] Delega processamento para AbastecimentoController via instância interna
+     ****************************************************************************************/
     /// <summary>
     /// Controller dedicado para importação de abastecimentos.
     /// NÃO usa [ApiController] para evitar validação automática antes do processamento.

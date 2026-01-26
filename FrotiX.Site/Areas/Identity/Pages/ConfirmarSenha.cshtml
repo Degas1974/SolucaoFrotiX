@@ -1,3 +1,26 @@
+@*****************************************************************************************
+ * ⚡ PÁGINA: ConfirmarSenha
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página para confirmação de senha do usuário após cadastro via
+ *                   Redecamara. Solicita senha e confirmação para validar credenciais
+ *                   antes de permitir acesso ao sistema.
+ *
+ * 📥 ENTRADAS     : Model.Password (string) - Senha do usuário
+ *                   Model.ConfirmacaoPassword (string) - Confirmação da senha
+ *
+ * 📤 SAÍDAS       : POST para backend - Valida e autentica usuário se senhas coincidirem
+ *
+ * 🔗 CHAMADA POR  : Fluxo de autenticação inicial (após registro via Redecamara)
+ *
+ * 🔄 CHAMA        : ConfirmarSenhaModel.OnPost() (backend), _ConfirmacaoLayout
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, Tag Helpers, Bootstrap, Entypo Icons,
+ *                   jQuery Validate
+ *
+ * 📝 OBSERVAÇÕES  : Usa layout _ConfirmacaoLayout (tema Neon). Validação client-side
+ *                   via data-validate="required". Mensagem de erro renderizada em
+ *                   #error_msg (manipulado via JS).
+ *****************************************************************************************@
 @page
 @model FrotiX.Areas.Identity.Pages.ConfirmarSenha.ConfirmarSenhaModel
 @{
@@ -6,13 +29,16 @@
 }
 <div class="login-content">
 
+    @* [DOC] Container de erro (exibido via JS quando login falha) *@
     <div class="form-login-error">
         <h3>Login Inválido</h3>
         <p id="error_msg"></p>
     </div>
 
+    @* [DOC] Formulário de confirmação de senha com proteção CSRF *@
     <form method="post" autocomplete="off">
         @Html.AntiForgeryToken()
+        @* [DOC] Campo de senha com validação obrigatória *@
         <div class="form-group">
 
             <div class="input-group">
@@ -23,6 +49,7 @@
             </div>
         </div>
 
+        @* [DOC] Campo de confirmação de senha com validação obrigatória *@
         <div class="form-group">
             <div class="input-group">
                 <div class="input-group-addon">
@@ -33,6 +60,7 @@
 
         </div>
 
+        @* [DOC] Botão de submissão do formulário *@
         <div class="form-group">
             <button class="btn btn-azul btn-block btn-login">
                 <i class="entypo-login"></i>

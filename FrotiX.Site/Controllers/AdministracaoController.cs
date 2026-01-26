@@ -1,3 +1,12 @@
+/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: AdministracaoController.cs                                     ║
+ ║  Caminho: /Controllers/AdministracaoController.cs                        ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +19,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: AdministracaoController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Fornecer dados de resumo geral da frota para administração
+     * 📥 ENTRADAS     : Filtros de data (dataInicio, dataFim)
+     * 📤 SAÍDAS       : JSON com estatísticas da frota (veículos, motoristas, viagens)
+     * 🔗 CHAMADA POR  : Frontend de dashboards administrativos
+     * 🔄 CHAMA        : Veiculo, Motorista, Viagem (via DbContext assíncrono)
+     * 📦 DEPENDÊNCIAS : Entity Framework, IUnitOfWork, FrotiXDbContext
+     * --------------------------------------------------------------------------------------
+     * [DOC] Usa queries assíncronas para melhor performance
+     * [DOC] Calcula estatísticas como KM rodado, custos, viagens por veículo/motorista
+     * [DOC] Padrão de 30 dias retroativos se não houver filtro de data
+     * [DOC] Limita viagens a KM_MAXIMO_POR_VIAGEM (2000 km) para evitar distorções
+     ****************************************************************************************/
     [Authorize]
     [ApiController]
     public class AdministracaoController : Controller

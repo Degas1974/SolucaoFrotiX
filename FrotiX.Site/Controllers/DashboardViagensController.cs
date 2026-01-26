@@ -1,3 +1,13 @@
+/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: DashboardViagensController.cs                                  ║
+ ║  Caminho: /Controllers/DashboardViagensController.cs                     ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ║  Partial Class Principal: Dashboard de Viagens                          ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Data;
 using FrotiX.Models;
 using FrotiX.ViewModels;
@@ -18,6 +28,22 @@ using System.Text.Json;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ PARTIAL CLASS: DashboardViagensController (Principal)
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Fornecer estatísticas e análises de viagens (todas as viagens)
+     * 📥 ENTRADAS     : Filtros de data (dataInicio, dataFim)
+     * 📤 SAÍDAS       : JSON com estatísticas agregadas de viagens
+     * 🔗 CHAMADA POR  : Frontend do Dashboard de Viagens
+     * 🔄 CHAMA        : Viagem, ViewCustosViagem (via DbContext async)
+     * 📦 DEPENDÊNCIAS : Entity Framework Core, UserManager, FrotiXDbContext
+     * --------------------------------------------------------------------------------------
+     * [DOC] Dashboard principal de viagens (todas as viagens, não apenas eventos)
+     * [DOC] Filtra outliers: viagens com mais de 2000 km são consideradas erro (KM_MAXIMO_POR_VIAGEM)
+     * [DOC] Estatísticas: total de viagens, KM rodado, custos, veículos/motoristas mais usados
+     * [DOC] Período padrão: últimos 30 dias se não especificado
+     * [DOC] Possui classe parcial _ExportacaoPDF.cs para geração de relatórios PDF
+     ****************************************************************************************/
     [Authorize]
     public partial class DashboardViagensController : Controller
     {

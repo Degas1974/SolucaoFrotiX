@@ -1,3 +1,25 @@
+@*****************************************************************************************
+ * ⚡ PÁGINA: LoginFrotiX
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de login customizada do FrotiX com design próprio. Interface
+ *                   modernizada com SVG icons, efeitos visuais (brushed-effect) e validação.
+ *                   Versão personalizada da página de login padrão.
+ *
+ * 📥 ENTRADAS     : Input.Ponto (string) - Username/Ponto do usuário
+ *                   Input.Password (string) - Senha
+ *
+ * 📤 SAÍDAS       : HTML - Formulário de login com design customizado + mensagem de erro
+ *
+ * 🔗 CHAMADA POR  : Usuário não autenticado (página de login principal do FrotiX)
+ *
+ * 🔄 CHAMA        : LoginFrotiX (POST), _LoginLayout
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, jQuery Validation, _LoginLayout
+ *
+ * 📝 OBSERVAÇÕES  : Layout customizado (_LoginLayout) diferente do Login.cshtml padrão.
+ *                   Usa ícones SVG inline. Link "Esqueceu senha" aponta para página HTML
+ *                   estática (extra-forgot-password.html) ao invés de Razor Page.
+ *****************************************************************************************@
 @page
 @model FrotiX.Areas.Identity.Pages.Account.LoginFrotiX
 @{
@@ -5,23 +27,28 @@
     Layout = Layout = "_LoginLayout";
 }
 
+@* [DOC] Estilo customizado para posicionamento do link de recuperação de senha *@
 <style>
     .forgot-password-link {
         margin-top: 200px; /* Ajuste o valor conforme necessário */
     }
 </style>
 
+@* [DOC] Container principal do conteúdo de login *@
 <div class="login-content">
 
+    @* [DOC] Div de mensagem de erro (exibida via JavaScript quando login falha) *@
     <div class="form-login-error">
         <h3>Login Inválido</h3>
         <p id="error_msg"></p>
     </div>
 
+    @* [DOC] Formulário de login com desabilita autocomplete (segurança) *@
     <form method="post" id="form_login" autocomplete="off">
         @Html.AntiForgeryToken()
-        <div class="form-group">
 
+        @* [DOC] Campo de Ponto (username) com ícone de usuário *@
+        <div class="form-group">
             <div class="input-group">
                 <div class="input-group-addon">
                     <i class="entypo-user"></i>
@@ -29,11 +56,10 @@
                 <input name="Ponto" asp-for="Input.Ponto" class="form-control" placeholder="Insira seu ponto" autocomplete="off" data-validate="required"/>
                 @*<input type="text" class="form-control" name="Ponto" id="Ponto" placeholder="Insira seu ponto" autocomplete="off" />*@
             </div>
-
         </div>
 
+        @* [DOC] Campo de senha com ícone de chave *@
         <div class="form-group">
-
             <div class="input-group">
                 <div class="input-group-addon">
                     <i class="entypo-key"></i>
@@ -41,12 +67,13 @@
                 <input name="Password" asp-for="Input.Password" type="password" class="form-control" placeholder="Senha" autocomplete="off" data-validate="required"/>
                 @*<input type="password" class="form-control" name="Password" id="Password" placeholder="Senha" autocomplete="off" />*@
             </div>
-
         </div>
 
+        @* [DOC] Botão de login customizado com efeito visual (brushed-effect) e ícone SVG *@
         <button class="login-button">
             <div class="brushed-effect"></div>
             <div class="button-text">
+                @* [DOC] Ícone SVG customizado representando usuário entrando *@
                 <svg class="login-icon" viewBox="0 0 24 24">
                     <circle cx="12" cy="6" r="3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                     <path d="M8 14c0-2.21 1.79-4 4-4s4 1.79 4 4v6H8v-6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -56,15 +83,15 @@
                 Entrar no Sistema
             </div>
         </button>
-
-
     </form>
 
 
+    @* [DOC] Links inferiores (recuperação de senha) *@
     <div class="login-bottom-links">
-
+        @* [DOC] ATENÇÃO: Link aponta para HTML estático ao invés de Razor Page (revisar) *@
         <a href="extra-forgot-password.html" class="forgot-password-link">
             <div class="link-text">
+                @* [DOC] Ícone SVG customizado representando piloto (uniforme com quepe) *@
                 <svg class="pilot-icon" viewBox="0 0 24 24">
                     <!-- Quepe/Chapéu -->
                     <path d="M6 8c0-1 2-3 6-3s6 2 6 3l-1 1H7l-1-1z" fill="currentColor" opacity="0.3" />
@@ -82,8 +109,8 @@
                 </svg>
                 Esqueceu sua senha?
             </div>
-        </a>        @*<a href="/Register/Index" class="link">Registrar</a>*@
-
+        </a>
+        @*<a href="/Register/Index" class="link">Registrar</a>*@
         <br />
     </div>
 

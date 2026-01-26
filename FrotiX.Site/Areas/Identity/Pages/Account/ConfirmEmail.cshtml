@@ -1,8 +1,29 @@
-﻿@page
+﻿@*****************************************************************************************
+ * ⚡ PÁGINA: ConfirmEmail
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de confirmação de email após registro. Exibe resultado da
+ *                   confirmação através de mensagem de status (sucesso ou erro).
+ *
+ * 📥 ENTRADAS     : Model.StatusMessage (string) - Mensagem de status da confirmação
+ *
+ * 📤 SAÍDAS       : HTML - Página com título e mensagem de status
+ *
+ * 🔗 CHAMADA POR  : Link de confirmação enviado por email ao usuário
+ *
+ * 🔄 CHAMA        : Partial _StatusMessage
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, Razor Pages
+ *
+ * 📝 OBSERVAÇÕES  : Página simples que apenas exibe resultado da confirmação processada
+ *                   no backend (ConfirmEmailModel.OnGetAsync).
+ *****************************************************************************************@
+@page
 @model FrotiX.Identity.Pages.Account.ConfirmEmailModel
 @{
     ViewData["Title"] = "Confirm email";
 }
 
+@* [DOC] Título da página *@
 <h1>@ViewData["Title"]</h1>
+@* [DOC] Renderiza mensagem de status (sucesso/erro) processada no backend *@
 <partial name="_StatusMessage" model="Model.StatusMessage" />

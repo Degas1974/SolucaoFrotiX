@@ -1,12 +1,3 @@
-/*
- ╔══════════════════════════════════════════════════════════════════════════╗
- ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
- ║  Arquivo: AlertasFrotiXController.cs                                     ║
- ║  Caminho: /Controllers/AlertasFrotiXController.cs                        ║
- ║  Documentado em: 2026-01-26                                              ║
- ╚══════════════════════════════════════════════════════════════════════════╝
- */
-
 using FrotiX.Hubs;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -20,21 +11,6 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ CONTROLLER: AlertasFrotiXController
-     * --------------------------------------------------------------------------------------
-     * 🎯 OBJETIVO     : Gerenciar alertas do sistema FrotiX em tempo real
-     * 📥 ENTRADAS     : AlertasFrotiX (model com dados do alerta)
-     * 📤 SAÍDAS       : JSON com status das operações, notificações via SignalR
-     * 🔗 CHAMADA POR  : Sistema de alertas frontend, notificações automáticas
-     * 🔄 CHAMA        : IAlertasFrotiXRepository, AlertasHub (SignalR)
-     * 📦 DEPENDÊNCIAS : SignalR (AlertasHub), IUnitOfWork, Repository
-     * --------------------------------------------------------------------------------------
-     * [DOC] Usa SignalR para enviar alertas em tempo real para usuários conectados
-     * [DOC] Armazena alertas no banco para histórico e posterior consulta
-     * [DOC] IgnoreAntiforgeryToken para permitir chamadas de APIs externas
-     * [DOC] Marca alertas como lidos/não lidos por usuário
-     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     [IgnoreAntiforgeryToken]
@@ -540,50 +516,43 @@ namespace FrotiX.Controllers
                 }
 
                 // ============================================================
-                // TIPO 8: DIAS VARIADOS - Criar um alerta para cada data
+                // TIPOS RECORRENTES (4-8): Criar um alerta para cada data
                 // ============================================================
-                if (dto.TipoExibicao == 8 && !string.IsNullOrWhiteSpace(dto.DatasSelecionadas))
+                if (dto.TipoExibicao >= 4 && dto.TipoExibicao <= 8)
                 {
-                    var datasStr = dto.DatasSelecionadas.Split(',' , StringSplitOptions.RemoveEmptyEntries);
-                    var alertasCriados = new List<Guid>();
+                    var datasRecorrencia = GerarDatasRecorrencia(dto);
 
-                    foreach (var dataStr in datasStr)
+                    if (datasRecorrencia == null || datasRecorrencia.Count == 0)
                     {
-                        if (DateTime.TryParse(dataStr.Trim() , out DateTime dataExibicao))
+                        return BadRequest(new
                         {
-                            var alerta = new AlertasFrotiX
-                            {
-                                AlertasFrotiXId = Guid.NewGuid() ,
-                                Titulo = dto.Titulo ,
-                                Descricao = dto.Descricao ,
-                                TipoAlerta = (TipoAlerta)dto.TipoAlerta ,
-                                Prioridade = (PrioridadeAlerta)dto.Prioridade ,
-                                TipoExibicao = (TipoExibicaoAlerta)dto.TipoExibicao ,
-                                DataExibicao = dataExibicao ,
-                                HorarioExibicao = dto.HorarioExibicao ,
-                                DataInsercao = DateTime.Now ,
-                                UsuarioCriadorId = usuarioId ,
-                                Ativo = true ,
-                                ViagemId = dto.ViagemId ,
-                                ManutencaoId = dto.ManutencaoId ,
-                                MotoristaId = dto.MotoristaId ,
-                                VeiculoId = dto.VeiculoId
-                            };
+                            success = false ,
+                            message = "Não foi possível gerar datas para a recorrência informada"
+                        });
+                    }
 
-                            var usuariosParaNotificar = dto.UsuariosIds ?? new List<string>();
-                            await _alertasRepo.CriarAlertaAsync(alerta , usuariosParaNotificar);
+                    var alertasCriados = new List<Guid>();
+                    var recorrenciaId = Guid.NewGuid();
+                    var usuariosParaNotificar = dto.UsuariosIds ?? new List<string>();
 
-                            alertasCriados.Add(alerta.AlertasFrotiXId);
+                    foreach (var dataExibicao in datasRecorrencia)
+                    {
+                        var alerta = CriarAlertaBase(dto , usuarioId);
+                        alerta.AlertasFrotiXId = alertasCriados.Count == 0 ? recorrenciaId : Guid.NewGuid();
+                        alerta.RecorrenciaAlertaId = recorrenciaId;
+                        alerta.DataExibicao = dataExibicao;
 
-                            // Notificar usuários para cada alerta criado
-                            await NotificarUsuariosNovoAlerta(alerta , dto.UsuariosIds);
-                        }
+                        await _alertasRepo.CriarAlertaAsync(alerta , usuariosParaNotificar);
+                        alertasCriados.Add(alerta.AlertasFrotiXId);
+
+                        // Notificar usuários para cada alerta criado
+                        await NotificarUsuariosNovoAlerta(alerta , dto.UsuariosIds);
                     }
 
                     return Ok(new
                     {
                         success = true ,
-                        message = $"{alertasCriados.Count} alertas criados com sucesso (um para cada data selecionada)" ,
+                        message = $"{alertasCriados.Count} alertas criados com sucesso (recorrência)" ,
                         alertasIds = alertasCriados ,
                         quantidadeAlertas = alertasCriados.Count
                     });
@@ -619,12 +588,14 @@ namespace FrotiX.Controllers
                     alertaUnico.DataExibicao = dto.DataExibicao;
                     alertaUnico.HorarioExibicao = dto.HorarioExibicao;
                     alertaUnico.DataExpiracao = dto.DataExpiracao;
-                    alertaUnico.DiasSemana = dto.DiasSemana;
+                    alertaUnico.DiasSemana = ConverterDiasSemanaTexto(dto.DiasSemana);
                     alertaUnico.DiaMesRecorrencia = dto.DiaMesRecorrencia;
                     alertaUnico.ViagemId = dto.ViagemId;
                     alertaUnico.ManutencaoId = dto.ManutencaoId;
                     alertaUnico.MotoristaId = dto.MotoristaId;
                     alertaUnico.VeiculoId = dto.VeiculoId;
+
+                    AplicarDiasSemana(alertaUnico , dto);
 
                     _unitOfWork.AlertasFrotiX.Update(alertaUnico);
 
@@ -670,7 +641,7 @@ namespace FrotiX.Controllers
                         DataExibicao = dto.DataExibicao ,
                         HorarioExibicao = dto.HorarioExibicao ,
                         DataExpiracao = dto.DataExpiracao ,
-                        DiasSemana = dto.DiasSemana ,
+                        DiasSemana = ConverterDiasSemanaTexto(dto.DiasSemana) ,
                         DiaMesRecorrencia = dto.DiaMesRecorrencia ,
                         DataInsercao = DateTime.Now ,
                         UsuarioCriadorId = usuarioId ,
@@ -680,6 +651,8 @@ namespace FrotiX.Controllers
                         MotoristaId = dto.MotoristaId ,
                         VeiculoId = dto.VeiculoId
                     };
+
+                    AplicarDiasSemana(alertaUnico , dto);
 
                     var usuariosParaNotificar = dto.UsuariosIds ?? new List<string>();
                     await _alertasRepo.CriarAlertaAsync(alertaUnico , usuariosParaNotificar);
@@ -721,7 +694,7 @@ namespace FrotiX.Controllers
             public DateTime? DataExpiracao { get; set; }
 
             // Campos de Recorrência
-            public string DiasSemana { get; set; }           // Ex: "1,2,3,4,5" (seg-sex)
+            public List<int> DiasSemana { get; set; }           // Ex: [1,2,3,4,5] (seg-sex)
 
             public int? DiaMesRecorrencia { get; set; }      // Ex: 15 (dia 15 do mês)
             public string DatasSelecionadas { get; set; }    // Ex: "2025-11-20,2025-11-25,2025-12-01"
@@ -735,6 +708,235 @@ namespace FrotiX.Controllers
 
             // Usuários
             public List<string> UsuariosIds { get; set; }
+        }
+
+        private AlertasFrotiX CriarAlertaBase(AlertaDto dto , string usuarioId)
+        {
+            var alerta = new AlertasFrotiX
+            {
+                AlertasFrotiXId = Guid.NewGuid() ,
+                Titulo = dto.Titulo ,
+                Descricao = dto.Descricao ,
+                TipoAlerta = (TipoAlerta)dto.TipoAlerta ,
+                Prioridade = (PrioridadeAlerta)dto.Prioridade ,
+                TipoExibicao = (TipoExibicaoAlerta)dto.TipoExibicao ,
+                DataExibicao = dto.DataExibicao ,
+                HorarioExibicao = dto.HorarioExibicao ,
+                DataExpiracao = dto.DataExpiracao ,
+                DiasSemana = ConverterDiasSemanaTexto(dto.DiasSemana) ,
+                DiaMesRecorrencia = dto.DiaMesRecorrencia ,
+                DatasSelecionadas = dto.DatasSelecionadas ,
+                DataInsercao = DateTime.Now ,
+                UsuarioCriadorId = usuarioId ,
+                Ativo = true ,
+                ViagemId = dto.ViagemId ,
+                ManutencaoId = dto.ManutencaoId ,
+                MotoristaId = dto.MotoristaId ,
+                VeiculoId = dto.VeiculoId
+            };
+
+            AplicarDiasSemana(alerta , dto);
+
+            return alerta;
+        }
+
+        private string ConverterDiasSemanaTexto(List<int> diasSemana)
+        {
+            if (diasSemana == null || diasSemana.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            return string.Join("," , diasSemana.OrderBy(d => d));
+        }
+
+        private void AplicarDiasSemana(AlertasFrotiX alerta , AlertaDto dto)
+        {
+            alerta.Monday = false;
+            alerta.Tuesday = false;
+            alerta.Wednesday = false;
+            alerta.Thursday = false;
+            alerta.Friday = false;
+            alerta.Saturday = false;
+            alerta.Sunday = false;
+
+            if (dto.TipoExibicao == 4)
+            {
+                alerta.Monday = true;
+                alerta.Tuesday = true;
+                alerta.Wednesday = true;
+                alerta.Thursday = true;
+                alerta.Friday = true;
+                return;
+            }
+
+            if (dto.TipoExibicao == 5 || dto.TipoExibicao == 6)
+            {
+                if (dto.DiasSemana == null || dto.DiasSemana.Count == 0)
+                {
+                    return;
+                }
+
+                foreach (var dia in dto.DiasSemana)
+                {
+                    switch (dia)
+                    {
+                        case 0:
+                            alerta.Sunday = true;
+                            break;
+                        case 1:
+                            alerta.Monday = true;
+                            break;
+                        case 2:
+                            alerta.Tuesday = true;
+                            break;
+                        case 3:
+                            alerta.Wednesday = true;
+                            break;
+                        case 4:
+                            alerta.Thursday = true;
+                            break;
+                        case 5:
+                            alerta.Friday = true;
+                            break;
+                        case 6:
+                            alerta.Saturday = true;
+                            break;
+                    }
+                }
+            }
+        }
+
+        private List<DateTime> GerarDatasRecorrencia(AlertaDto dto)
+        {
+            if (!dto.DataExibicao.HasValue && dto.TipoExibicao != 8)
+            {
+                return new List<DateTime>();
+            }
+
+            var dataInicial = (dto.DataExibicao ?? DateTime.Today).Date;
+            var dataFinal = (dto.DataExpiracao ?? dto.DataExibicao ?? DateTime.Today).Date;
+
+            if (dataFinal < dataInicial)
+            {
+                return new List<DateTime>();
+            }
+
+            switch (dto.TipoExibicao)
+            {
+                case 4:
+                    return GerarDatasDiarias(dataInicial , dataFinal);
+                case 5:
+                    return GerarDatasSemanais(dataInicial , dataFinal , dto.DiasSemana , 1);
+                case 6:
+                    return GerarDatasSemanais(dataInicial , dataFinal , dto.DiasSemana , 2);
+                case 7:
+                    return GerarDatasMensais(dataInicial , dataFinal , dto.DiaMesRecorrencia ?? dataInicial.Day);
+                case 8:
+                    return GerarDatasVariadas(dto.DatasSelecionadas);
+                default:
+                    return new List<DateTime>();
+            }
+        }
+
+        private List<DateTime> GerarDatasDiarias(DateTime dataInicial , DateTime dataFinal)
+        {
+            var datas = new List<DateTime>();
+
+            for (var data = dataInicial; data <= dataFinal; data = data.AddDays(1))
+            {
+                if (data.DayOfWeek != DayOfWeek.Saturday && data.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    datas.Add(data);
+                }
+            }
+
+            return datas;
+        }
+
+        private List<DateTime> GerarDatasSemanais(DateTime dataInicial , DateTime dataFinal , List<int> diasSemana , int intervaloSemanas)
+        {
+            if (diasSemana == null || diasSemana.Count == 0)
+            {
+                return new List<DateTime>();
+            }
+
+            var datas = new HashSet<DateTime>();
+            var dataAtual = dataInicial;
+
+            while (dataAtual <= dataFinal)
+            {
+                foreach (var dia in diasSemana)
+                {
+                    var dataDia = ProximoDiaSemana(dataAtual , (DayOfWeek)dia);
+                    if (dataDia >= dataInicial && dataDia <= dataFinal)
+                    {
+                        datas.Add(dataDia);
+                    }
+                }
+
+                dataAtual = dataAtual.AddDays(7 * intervaloSemanas);
+            }
+
+            return datas.OrderBy(d => d).ToList();
+        }
+
+        private List<DateTime> GerarDatasMensais(DateTime dataInicial , DateTime dataFinal , int diaMes)
+        {
+            var datas = new List<DateTime>();
+            var ano = dataInicial.Year;
+            var mes = dataInicial.Month;
+
+            while (new DateTime(ano , mes , 1) <= dataFinal)
+            {
+                var ultimoDiaMes = DateTime.DaysInMonth(ano , mes);
+                var dia = Math.Min(diaMes , ultimoDiaMes);
+                var data = new DateTime(ano , mes , dia);
+
+                if (data >= dataInicial && data <= dataFinal)
+                {
+                    datas.Add(data);
+                }
+
+                if (mes == 12)
+                {
+                    mes = 1;
+                    ano++;
+                }
+                else
+                {
+                    mes++;
+                }
+            }
+
+            return datas;
+        }
+
+        private List<DateTime> GerarDatasVariadas(string datasSelecionadas)
+        {
+            if (string.IsNullOrWhiteSpace(datasSelecionadas))
+            {
+                return new List<DateTime>();
+            }
+
+            var datas = new List<DateTime>();
+            var datasStr = datasSelecionadas.Split(',' , StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var dataStr in datasStr)
+            {
+                if (DateTime.TryParse(dataStr.Trim() , out DateTime data))
+                {
+                    datas.Add(data.Date);
+                }
+            }
+
+            return datas.OrderBy(d => d).ToList();
+        }
+
+        private DateTime ProximoDiaSemana(DateTime dataBase , DayOfWeek diaSemana)
+        {
+            var diff = ((int)diaSemana - (int)dataBase.DayOfWeek + 7) % 7;
+            return dataBase.AddDays(diff);
         }
 
         private async Task NotificarUsuariosNovoAlerta(AlertasFrotiX alerta , List<string> usuariosIds)

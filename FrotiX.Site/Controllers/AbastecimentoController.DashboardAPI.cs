@@ -1,3 +1,13 @@
+/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: AbastecimentoController.DashboardAPI.cs                        ║
+ ║  Caminho: /Controllers/AbastecimentoController.DashboardAPI.cs           ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ║  Partial Class: API para Dashboard de Abastecimentos                    ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using FrotiX.Models.Estatisticas;
 using FrotiX.Repository.IRepository;
@@ -9,6 +19,21 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ PARTIAL CLASS: AbastecimentoController (DashboardAPI)
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Fornecer dados para Dashboard de Abastecimentos com alta performance
+     * 📥 ENTRADAS     : Filtros de ano e mês (opcionais)
+     * 📤 SAÍDAS       : JSON com estatísticas agregadas de abastecimentos
+     * 🔗 CHAMADA POR  : Frontend do Dashboard de Abastecimentos
+     * 🔄 CHAMA        : EstatisticaAbastecimentoMensal, EstatisticaAbastecimentoDiaria
+     * 📦 DEPENDÊNCIAS : Entity Framework, DbContext, Tabelas de Estatísticas
+     * --------------------------------------------------------------------------------------
+     * [DOC] OTIMIZADO: Usa tabelas estatísticas pré-calculadas para carregamento rápido
+     * [DOC] Fallback para consulta original se não houver dados estatísticos
+     * [DOC] Se nenhum filtro especificado, busca apenas o último mês com dados
+     * [DOC] Agrupa dados por mês, dia, veículo, combustível para análises
+     ****************************************************************************************/
     /// <summary>
     /// Partial class com endpoints da API para o Dashboard de Abastecimentos
     /// OTIMIZADO: Usa tabelas estatísticas pré-calculadas para melhor performance

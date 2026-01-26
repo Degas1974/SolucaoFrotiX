@@ -1,8 +1,29 @@
-﻿@page
+﻿@*****************************************************************************************
+ * ⚡ PÁGINA: ConfirmEmailChange
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de confirmação de alteração de email. Exibe resultado da
+ *                   confirmação através de mensagem de status após usuário clicar em
+ *                   link enviado para novo email.
+ *
+ * 📥 ENTRADAS     : Model.StatusMessage (string) - Mensagem de status da confirmação
+ *
+ * 📤 SAÍDAS       : HTML - Página com título e mensagem de status
+ *
+ * 🔗 CHAMADA POR  : Link de confirmação enviado para novo email do usuário
+ *
+ * 🔄 CHAMA        : Partial _StatusMessage
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, Razor Pages
+ *
+ * 📝 OBSERVAÇÕES  : Similar a ConfirmEmail, mas específico para mudança de email.
+ *****************************************************************************************@
+@page
 @model ConfirmEmailChangeModel
 @{
     ViewData["Title"] = "Confirm email change";
 }
 
+@* [DOC] Título da página *@
 <h1>@ViewData["Title"]</h1>
+@* [DOC] Renderiza mensagem de status (sucesso/erro) processada no backend *@
 <partial name="_StatusMessage" model="Model.StatusMessage" />

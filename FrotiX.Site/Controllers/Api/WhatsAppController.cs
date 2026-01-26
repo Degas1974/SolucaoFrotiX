@@ -1,3 +1,12 @@
+/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: WhatsAppController.cs                                          ║
+ ║  Caminho: /Controllers/Api/WhatsAppController.cs                         ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Services.WhatsApp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +16,21 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers.Api
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: WhatsAppController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Gerenciar integração com WhatsApp Web para envio de mensagens
+     * 📥 ENTRADAS     : StartSessionRequest (sessão), Mensagens (destinatário, texto)
+     * 📤 SAÍDAS       : JSON com status da sessão, QR Code, confirmação de envio
+     * 🔗 CHAMADA POR  : Frontend de notificações e comunicações
+     * 🔄 CHAMA        : IWhatsAppService (serviço de integração WhatsApp)
+     * 📦 DEPENDÊNCIAS : IWhatsAppService, CancellationToken (async)
+     * --------------------------------------------------------------------------------------
+     * [DOC] API REST para controle de sessões WhatsApp Web
+     * [DOC] Endpoints: Start (iniciar sessão), Status (verificar status), Send (enviar msg)
+     * [DOC] Usa CancellationToken para operações assíncronas que podem ser canceladas
+     * [DOC] Requer autorização para todos os endpoints
+     ****************************************************************************************/
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]

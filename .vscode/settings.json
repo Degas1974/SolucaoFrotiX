@@ -1,0 +1,48 @@
+{
+    "genieai.enableConversationHistory": true,
+  
+  // Ordem das views na sidebar
+  "workbench.view.alwaysShowHeaderActions": true,
+  
+  // Prevenir fechamento acidental
+  "workbench.editor.enablePreview": false,
+  "workbench.editor.closeEmptyGroups": false,
+  
+  // Manter abas visíveis
+  "workbench.editor.showTabs": "multiple",
+  "workbench.editor.tabCloseButton": "off",
+  
+  // Layout das abas
+  "workbench.editor.tabSizing": "fixed",
+  "workbench.editor.pinnedTabSizing": "normal",
+  
+  // Customizar Activity Bar (ordem das IAs)
+  "workbench.activityBar.iconClickBehavior": "toggle",
+  
+  // ===== CONFIGURAÇÕES ESPECÍFICAS DAS IAs =====
+  
+  // Claude Code
+  "claude.autoShowPanel": false,
+  "claude.keepPanelOpen": true,
+  
+  // Continue
+  "continue.enableTabAutocomplete": true,
+  "continue.showInlineEdits": true,
+  
+  // Copilot
+  "github.copilot.enable": {
+    "*": true
+  },
+  "github.copilot.editor.enableAutoCompletions": true,
+  
+  // Genie AI
+  "chatgpt.view.keepOpen": true,
+  
+  // ===== OUTRAS CONFIGURAÇÕES ÚTEIS =====
+  
+  // Restaurar abas ao reabrir
+  "window.restoreWindows": "all",
+  "workbench.editor.restoreViewState": true,
+  "workbench.editor.tabActionCloseVisibility": false,
+  "terminal.integrated.hideOnStartup": "always"
+}

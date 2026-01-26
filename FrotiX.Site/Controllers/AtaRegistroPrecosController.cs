@@ -1,3 +1,13 @@
+/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: AtaRegistroPrecosController.cs                                 ║
+ ║  Caminho: /Controllers/AtaRegistroPrecosController.cs                    ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ║  Partial Class Principal: CRUD de Atas de Registro de Preços            ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +17,21 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ PARTIAL CLASS: AtaRegistroPrecosController (Principal)
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Gerenciar CRUD de Atas de Registro de Preços
+     * 📥 ENTRADAS     : AtaRegistroPrecos (model), filtros de busca
+     * 📤 SAÍDAS       : JSON com lista de Atas e dados relacionados (Fornecedor)
+     * 🔗 CHAMADA POR  : Frontend de cadastro de Atas
+     * 🔄 CHAMA        : AtaRegistroPrecos, Fornecedor (via LINQ join)
+     * 📦 DEPENDÊNCIAS : IUnitOfWork, Entity Framework LINQ
+     * --------------------------------------------------------------------------------------
+     * [DOC] Classe parcial principal com CRUD básico de Atas de Registro de Preços
+     * [DOC] Join com Fornecedor para exibir descrição completa
+     * [DOC] Formata campos: AtaCompleta (Ano/Numero), ProcessoCompleto, Periodo (datas)
+     * [DOC] Possui classe parcial .Partial.cs para verificação de dependências
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public partial class AtaRegistroPrecosController :ControllerBase

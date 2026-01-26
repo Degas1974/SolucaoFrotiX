@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Completo - 4 IAs no VS Code Insiders | FrotiX</title>
+
+    <!-- Font Awesome Duotone Pro 7 -->
+    <script src="https://kit.fontawesome.com/afeb78ad1f.js" crossorigin="anonymous"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin: 10px 5px 0;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+        }
+
+        .section h2 {
+            color: #1e3c72;
+            font-size: 2em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section h3 {
+            color: #2a5298;
+            font-size: 1.5em;
+            margin: 25px 0 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .step {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .keyboard-shortcut {
+            display: inline-block;
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9em;
+            margin: 0 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th,
+        table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .ai-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .ai-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .ai-card h4 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .layout-visual {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            margin: 20px 0;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        footer {
+            background: #1e3c72;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .btn-download {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-download:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fa-duotone fa-robot"></i> Guia Completo - 4 IAs no VS Code Insiders</h1>
+            <p>Configuração definitiva para o Projeto FrotiX</p>
+            <div class="badge"><i class="fa-brands fa-github"></i> @Degas1974/SolucaoFrotiX</div>
+            <div class="badge"><i class="fa-brands fa-windows"></i> Windows (WSL)</div>
+            <div class="badge"><i class="fa-solid fa-code"></i> VS Code Insiders</div>
+        </header>
+
+        <div class="content">
+            <!-- ÍNDICE -->
+            <div class="section">
+                <h2><i class="fa-duotone fa-list"></i> Índice</h2>
+                <ol>
+                    <li><a href="#prerequisitos">Pré-requisitos</a></li>
+                    <li><a href="#extensoes">Instalação das Extensões</a></li>
+                    <li><a href="#settings">Configuração do settings.json</a></li>
+                    <li><a href="#keybindings">Configuração do keybindings.json</a></li>
+                    <li><a href="#arquivos-ias">Criação dos Arquivos de Configuração das IAs</a></li>
+                    <li><a href="#layout">Layout Final e Atalhos</a></li>
+                    <li><a href="#troubleshooting">Solução de Problemas</a></li>
+                </ol>
+            </div>
+
+            <!-- 1. PRÉ-REQUISITOS -->
+            <div class="section" id="prerequisitos">
+                <h2><i class="fa-duotone fa-list-check"></i> 1. Pré-requisitos</h2>
+
+                <div class="info-box">
+                    <strong><i class="fa-duotone fa-circle-info"></i> Importante:</strong> Este guia é específico para
+                    <strong>Windows com WSL (Ubuntu)</strong> e <strong>VS Code Insiders</strong>.
+                </div>
+
+                <h3><i class="fa-duotone fa-check-circle"></i> Requisitos Obrigatórios</h3>
+
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>VS Code Insiders instalado</strong>
+                    <p>Download: <a href="https://code.visualstudio.com/insiders/"
+                            target="_blank">https://code.visualstudio.com/insiders/</a></p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>WSL (Ubuntu) configurado</strong>
+                    <p>Verificar instalação:</p>
+                    <div class="code-block" data-lang="bash">
+                        <pre>wsl --list --verbose</pre>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Repositório clonado</strong>
+                    <div class="code-block" data-lang="bash">
+                        <pre>cd /mnt/d/FrotiX
+git clone https://github.com/Degas1974/SolucaoFrotiX.git
+cd SolucaoFrotiX</pre>
+                    </div>
+                </div>
+
+                <h3><i class="fa-duotone fa-key"></i> Credenciais Necessárias</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Serviço</th>
+                            <th>Requisito</th>
+                            <th>Como Obter</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><i class="fa-brands fa-github"></i> GitHub Copilot</td>
+                            <td>Assinatura ativa</td>
+                            <td><a href="https://github.com/features/copilot"
+                                    target="_blank">github.com/features/copilot</a></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa-duotone fa-robot"></i> Claude Code</td>
+                            <td>API Key Anthropic</td>
+                            <td><a href="https://console.anthropic.com/" target="_blank">console.anthropic.com</a></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa-brands fa-google"></i> Gemini Code Assist</td>
+                            <td>Projeto Google Cloud</td>
+                            <td><a href="https://console.cloud.google.com/" target="_blank">console.cloud.google.com</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa-duotone fa-terminal"></i> Continue</td>
+                            <td>DeepSeek API Key</td>
+                            <td><a href="https://platform.deepseek.com/" target="_blank">platform.deepseek.com</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 2. EXTENSÕES -->
+            <div class="section" id="extensoes">
+                <h2><i class="fa-duotone fa-puzzle-piece"></i> 2. Instalação das Extensões</h2>
+
+                <div class="warning-box">
+                    <strong><i class="fa-duotone fa-triangle-exclamation"></i> Atenção:</strong> Instale as extensões
+                    <strong>DENTRO DO WSL</strong>, não no Windows.
+                </div>
+
+                <h3><i class="fa-duotone fa-download"></i> Script Automático de Instalação</h3>
+
+                <p>Execute no terminal do WSL (Ubuntu):</p>
+
+                <div class="code-block" data-lang="bash">
+                    <pre>#!/bin/bash
+
+# ========================================
+# INSTALAÇÃO DAS 4 EXTENSÕES DE IA
+# ========================================
+
+echo "🚀 Instalando extensões das 4 IAs no VS Code Insiders..."
+
+# 1. GitHub Copilot
+code-insiders --install-extension GitHub.copilot
+code-insiders --install-extension GitHub.copilot-chat
+
+# 2. Claude Code (Anthropic)
+code-insiders --install-extension Anthropic.claude-code
+
+# 3. Gemini Code Assist
+code-insiders --install-extension GoogleCloudTools.gemini-code-assist
+
+# 4. Continue (DeepSeek)
+code-insiders --install-extension Continue.continue
+
+echo ""
+echo "✅ Extensões instaladas com sucesso!"
+echo ""
+echo "📋 Verificando instalação:"
+code-insiders --list-extensions | grep -E "(copilot|claude|gemini|continue)"</pre>
+                </div>
+
+                <h3><i class="fa-duotone fa-list-ul"></i> As 4 IAs Configuradas</h3>
+
+                <div class="ai-card">
+                    <h4><i class="fa-brands fa-github"></i> 1. GitHub Copilot</h4>
+                    <p><strong>Localização:</strong> Chat (direita)</p>
+                    <p><strong>Atalho:</strong> <span class="keyboard-shortcut">Ctrl+Shift+4</span></p>
+                    <p><strong>Função:</strong> IA nativa do GitHub, sugestões inline, chat integrado</p>
+                </div>
+
+                <div class="ai-card">
+                    <h4><i class="fa-duotone fa-robot"></i> 2. Claude Code (Anthropic)</h4>
+                    <p><strong>Localização:</strong> Coluna 1 (esquerda)</p>
+                    <p><strong>Atalho:</strong> <span class="keyboard-shortcut">Ctrl+Shift+1</span></p>
+                    <p><strong>Função:</strong> Tarefas complexas, edição de múltiplos arquivos, Sonnet 4.5</p>
+                </div>
+
+                <div class="ai-card">
+                    <h4><i class="fa-brands fa-google"></i> 3. Gemini Code Assist</h4>
+                    <p><strong>Localização:</strong> Panel (embaixo)</p>
+                    <p><strong>Atalho:</strong> <span class="keyboard-shortcut">Ctrl+Shift+5</span></p>
+                    <p><strong>Função:</strong> Google AI, análise de código, sugestões contextuais</p>
+                </div>
+
+                <div class="ai-card">
+                    <h4><i class="fa-duotone fa-terminal"></i> 4. Continue (DeepSeek)</h4>
+                    <p><strong>Localização:</strong> Coluna 2</p>
+                    <p><strong>Atalho:</strong> <span class="keyboard-shortcut">Ctrl+Shift+2</span> ou <span
+                            class="keyboard-shortcut">Ctrl+L</span></p>
+                    <p><strong>Função:</strong> IA local rápida, autocompletar, edição inline</p>
+                </div>
+            </div>
+
+            <!-- 3. SETTINGS.JSON -->
+            <div class="section" id="settings">
+                <h2><i class="fa-duotone fa-gears"></i> 3. Configuração do settings.json</h2>
+
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Abrir settings.json</strong>
+                    <p>Pressione: <span class="keyboard-shortcut">Ctrl+Shift+P</span></p>
+                    <p>Digite: <code>Preferences: Open User Settings (JSON)</code></p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Substituir TODO o conteúdo pelo código abaixo</strong>
+                </div>
+
+                <div class="code-block" data-lang="json">
+                    <pre>{
+  "workbench.activityBar.visible": true,
+  "workbench.activityBar.location": "bottom",
+  "workbench.activityBar.iconClickBehavior": "toggle",
+  "workbench.sideBar.visible": true,
+  "workbench.statusBar.visible": true,
+  "workbench.panel.defaultLocation": "bottom",
+  "workbench.panel.opensMaximized": "never",
+  "workbench.view.alwaysShowHeaderActions": true,
+  "workbench.secondarySideBar.defaultVisibility": "visible",
+  "window.menuBarVisibility": "classic",
+  
+  "workbench.colorTheme": "GitHub Dark Default",
+  
+  "editor.fontFamily": "'Cascadia Code', 'Fira Code', Consolas, monospace",
+  "editor.fontLigatures": true,
+  "editor.fontSize": 14,
+  "terminal.integrated.fontSize": 13,
+  
+  "workbench.editor.enablePreview": false,
+  "workbench.editor.closeEmptyGroups": false,
+  "workbench.editor.showTabs": "multiple",
+  "workbench.editor.openPositioning": "last",
+  "workbench.editor.revealIfOpen": true,
+  "workbench.editor.tabCloseButton": "off",
+  "workbench.editor.restoreViewState": true,
+  
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  
+  "window.restoreWindows": "all",
+  "window.restoreFullscreen": true,
+  
+  "security.workspace.trust.enabled": false,
+  "security.workspace.trust.startupPrompt": "never",
+  "security.workspace.trust.banner": "never",
+  
+  "claude.viewLocation": "editor",
+  "claude.showInSidebar": false,
+  "claude.autoApproveEdits": true,
+  "claude.autoExecuteCommands": true,
+  "claude.confirmBeforeRunningCode": false,
+  "claude.alwaysAllowReadFiles": true,
+  "claude.alwaysAllowWriteFiles": true,
+  "claude.customInstructions": "Leia RegrasDesenvolvimentoFrotiX.md no início de cada sessão.",
+  
+  "continue.viewLocation": "editor",
+  "continue.showInSidebar": false,
+  "continue.enableTabAutocomplete": true,
+  "continue.showInlineEdits": true,
+  "continue.systemMessage": "Leia RegrasDesenvolvimentoFrotiX.md antes de gerar código.",
+  
+  "github.copilot.enable": {"*": true},
+  "editor.inlineSuggest.enabled": true,
+  "github.copilot.editor.enableAutoCompletions": true,
+  "github.copilot.chat.enabled": true,
+  "github.copilot.chat.instructionsFile": ".github/copilot-instructions.md",
+  "github.copilot.chat.terminalExecute": "always",
+  "github.copilot.chat.editorExecute": "always",
+  
+  "gemini.viewLocation": "panel",
+  "gemini.openInPanel": true,
+  "geminicodeassist.viewLocation": "panel",
+  "geminicodeassist.project": "smart-maxim-7s1vl",
+  "geminicodeassist.agentYoloMode": true,
+  "geminicodeassist.autoApply": true,
+  
+  "editor.quickSuggestions": {"other": true, "comments": true, "strings": true},
+  "editor.tabCompletion": "on",
+  
+  "files.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/bin": true,
+    "**/obj": true
+  },
+  
+  "telemetry.telemetryLevel": "all"
+}</pre>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Salvar</strong>
+                    <p>Pressione: <span class="keyboard-shortcut">Ctrl+S</span></p>
+                </div>
+
+                <div class="success-box">
+                    <strong><i class="fa-duotone fa-circle-check"></i> Configuração concluída!</strong> O VS Code
+                    Insiders agora está otimizado para as 4 IAs.
+                </div>
+            </div>
+
+            <!-- 4. KEYBINDINGS.JSON -->
+            <div class="section" id="keybindings">
+                <h2><i class="fa-duotone fa-keyboard"></i> 4. Configuração do keybindings.json</h2>
+
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Abrir keybindings.json</strong>
+                    <p>Pressione: <span class="keyboard-shortcut">Ctrl+Shift+P</span></p>
+                    <p>Digite: <code>Preferences: Open Keyboard Shortcuts (JSON)</code></p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Substituir TODO o conteúdo pelo código abaixo</strong>
+                </div>
+
+                <div class="code-block" data-lang="json">
+                    <pre>[
+  {
+    "key": "ctrl+alt+3",
+    "command": "workbench.action.editorLayoutThreeColumns"
+  },
+  {
+    "key": "ctrl+shift+1",
+    "command": "workbench.action.focusFirstEditorGroup",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "ctrl+shift+2",
+    "command": "workbench.action.focusSecondEditorGroup",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "ctrl+shift+3",
+    "command": "workbench.action.focusThirdEditorGroup",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "ctrl+shift+4",
+    "command": "workbench.action.chat.open",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "ctrl+shift+5",
+    "command": "workbench.panel.chat.view.gemini.focus",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "ctrl+alt+1",
+    "command": "workbench.view.extension.claude-sidebar"
+  },
+  {
+    "key": "ctrl+l",
+    "command": "continue.focusContinueInput"
+  },
+  {
+    "key": "ctrl+shift+i",
+    "command": "workbench.action.chat.open"
+  },
+  {
+    "key": "ctrl+i",
+    "command": "github.copilot.inlineChat.trigger"
+  },
+  {
+    "key": "ctrl+alt+5",
+    "command": "geminicodeassist.openChat"
+  },
+  {
+    "key": "ctrl+pageup",
+    "command": "workbench.action.focusPreviousGroup"
+  },
+  {
+    "key": "ctrl+pagedown",
+    "command": "workbench.action.focusNextGroup"
+  },
+  {
+    "key": "ctrl+j",
+    "command": "workbench.action.togglePanel"
+  },
+  {
+    "key": "ctrl+b",
+    "command": "workbench.action.toggleSidebarVisibility"
+  },
+  {
+    "key": "ctrl+shift+e",
+    "command": "workbench.view.explorer"
+  }
+]</pre>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Salvar e Recarregar</strong>
+                    <p>Salvar: <span class="keyboard-shortcut">Ctrl+S</span></p>
+                    <p>Recarregar: <span class="keyboard-shortcut">Ctrl+Shift+P</span> → <code>reload</code></p>
+                </div>
+            </div>
+
+            <!-- 5. ARQUIVOS DAS IAs -->
+            <div class="section" id="arquivos-ias">
+                <h2><i class="fa-duotone fa-folder-tree"></i> 5. Criação dos Arquivos de Configuração das IAs</h2>
+
+                <div class="info-box">
+                    <strong><i class="fa-duotone fa-circle-info"></i> Importante:</strong> Todos os arquivos
+                    redirecionam para <code>RegrasDesenvolvimentoFrotiX.md</code>, centralizando as regras de
+                    desenvolvimento.
+                </div>
+
+                <p>Execute no terminal do WSL (Ubuntu):</p>
+
+                <div class="code-block" data-lang="bash">
+                    <pre>#!/bin/bash
+
+cd /mnt/d/FrotiX/SolucaoFrotiX
+
+echo "🚀 Criando arquivos de configuração das 4 IAs..."
+
+# 1. Claude Code
+mkdir -p .claude
+cat > .claude/project-rules.md << 'EOF'
+# ⚠️ REDIRECIONAMENTO → ../RegrasDesenvolvimentoFrotiX.md
+
+**IMPORTANTE:** Leia `../RegrasDesenvolvimentoFrotiX.md` no início de cada sessão.
+
+Todas as regras de desenvolvimento do projeto FrotiX estão centralizadas nesse arquivo.
+
+**NUNCA modifique este arquivo.** Adicione novas regras APENAS em `RegrasDesenvolvimentoFrotiX.md`.
+EOF
+
+# 2. Continue
+mkdir -p .continue
+cat > .continue/rules.md << 'EOF'
+# ⚠️ REDIRECIONAMENTO → ../RegrasDesenvolvimentoFrotiX.md
+
+**IMPORTANTE:** Leia `../RegrasDesenvolvimentoFrotiX.md` antes de gerar qualquer código.
+
+Todas as regras de desenvolvimento do projeto FrotiX estão centralizadas nesse arquivo.
+
+**NUNCA modifique este arquivo.** Adicione novas regras APENAS em `RegrasDesenvolvimentoFrotiX.md`.
+EOF
+
+# 3. Copilot
+mkdir -p .github
+cat > .github/copilot-instructions.md << 'EOF'
+# ⚠️ REDIRECIONAMENTO → ../RegrasDesenvolvimentoFrotiX.md
+
+**IMPORTANTE:** Leia `../RegrasDesenvolvimentoFrotiX.md` antes de gerar código.
+
+Todas as regras de desenvolvimento do projeto FrotiX estão centralizadas nesse arquivo.
+
+**NUNCA modifique este arquivo.** Adicione novas regras APENAS em `RegrasDesenvolvimentoFrotiX.md`.
+EOF
+
+# 4. Gemini
+mkdir -p .gemini
+cat > .gemini/instructions.md << 'EOF'
+# ⚠️ REDIRECIONAMENTO → ../RegrasDesenvolvimentoFrotiX.md
+
+**IMPORTANTE:** Leia `../RegrasDesenvolvimentoFrotiX.md` antes de gerar código.
+
+Todas as regras de desenvolvimento do projeto FrotiX estão centralizadas nesse arquivo.
+
+**NUNCA modifique este arquivo.** Adicione novas regras APENAS em `RegrasDesenvolvimentoFrotiX.md`.
+EOF
+
+echo ""
+echo "✅ Arquivos criados com sucesso!"
+echo ""
+echo "📂 Estrutura criada:"
+ls -la .claude/ .continue/ .github/ .gemini/</pre>
+                </div>
+            </div>
+
+            <!-- 6. LAYOUT FINAL -->
+            <div class="section" id="layout">
+                <h2><i class="fa-duotone fa-grid-2"></i> 6. Layout Final e Atalhos</h2>
+
+                <h3><i class="fa-duotone fa-rectangle-wide"></i> Layout de 3 Colunas + Chat + Panel</h3>
+
+                <div class="layout-visual">┌─────────────┬─────────────┬─────────────┬──────────┐
+                    │ │ │ │ │
+                    │ 🤖 Claude │ 🤖 Continue │ CÓDIGO │ 🤖 Copil │
+                    │ Coluna 1 │ Coluna 2 │ Coluna 3 │ (Chat) │
+                    │ │ │ │ │
+                    ├─────────────┴─────────────┴─────────────┴──────────┤
+                    │ PANEL (embaixo) │
+                    │ ├─ TERMINAL │
+                    │ └─ 🤖 GEMINI │
+                    └────────────────────────────────────────────────────┘</div>
+
+                <h3><i class="fa-duotone fa-list-check"></i> Passo a Passo para Abrir o Layout</h3>
+
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Criar 3 colunas</strong>
+                    <p>Pressione: <span class="keyboard-shortcut">Ctrl+Alt+3</span></p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Abrir Claude na Coluna 1</strong>
+                    <p>Pressione: <span class="keyboard-shortcut">Ctrl+Alt+1</span></p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Abrir Continue na Coluna 2</strong>
+                    <p>Pressione: <span class="keyboard-shortcut">Ctrl+L</span></p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Abrir código na Coluna 3</strong>
+                    <p>Pressione: <span class="keyboard-shortcut">Ctrl+Shift+E</span> (Explorer)</p>
+                    <p>Clique em qualquer arquivo .cs</p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">5</span>
+                    <strong>Abrir Copilot no Chat (direita)</strong>
+                    <p>Pressione: <span class="keyboard-shortcut">Ctrl+Shift+I</span></p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">6</span>
+                    <strong>Abrir Gemini no Panel (embaixo)</strong>
+                    <p>Pressione: <span class="keyboard-shortcut">Ctrl+Alt+5</span></p>
+                </div>
+
+                <h3><i class="fa-duotone fa-keyboard"></i> Tabela Completa de Atalhos</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Atalho</th>
+                            <th>Ação</th>
+                            <th>IA / Função</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="keyboard-shortcut">Ctrl+Alt+3</span></td>
+                            <td>Criar 3 colunas</td>
+                            <td>Layout inicial</td>
+                        </tr>
+                        <tr>
+                            <td><span class="keyboard-shortcut">Ctrl+Shift+1</span></td>
+                            <td>Focar Coluna 1</td>
+                            <td>Claude</td>
+                        </tr>
+                        <tr>
+                            <td><span class="keyboard-shortcut">Ctrl+Shift+2</span></td>
+                            <td>Focar Coluna 2</td>
+                            <td>Continue</td>
+                        </tr>
+                        <tr>
+                            <td><span class="keyboard-shortcut">Ctrl+Shift+3</span></td>
+                            <td>Focar Coluna 3</td>
+                            <td>Código</td>
+                        </tr>
+                        <tr>
+                            <td><span class="keyboard-shortcut">Ctrl+Shift+4</span></td>
+                            <td>Abrir Copilot</td>
+                            <td>GitHub Copilot Chat</td>
+                        </tr>
+                        <tr>
+                            <td><span class="keyboard-shortcut">Ctrl+Shift+5</span></td>
+                            <td>Focar Gemini</td>
+                            <td>Gemini Code Assist</td>
+                        </tr>
+                        <tr>
+                            <td><span class="keyboard-shortcut">Ctrl+Alt+1</span></td>
+                            <td>Abrir Claude</td>
+                            <td>Claude Code</td>
+                        </tr>
+                        <tr>
+                            <td><span class="keyboard-shortcut">Ctrl+L</span></td>
+                            <td>Abrir Continue</td>
+                            <td>Continue</td>
+                        </tr>
+                        <tr>
+                            <td><span class="keyboard-shortcut">Ctrl+I</span></td>
+                            <td>Copilot Inline</td>
+                            <td>Sugestões no código</td>
+                        </tr>
+                        <tr>
+                            <td><span class="keyboard-shortcut">Ctrl+J</span></td>
+                            <td>Toggle Panel</td>
+                            <td>Mostrar/ocultar embaixo</td>
+                        </tr>
+                        <tr>
+                            <td><span class="keyboard-shortcut">Ctrl+B</span></td>
+                            <td>Toggle Sidebar</td>
+                            <td>Mostrar/ocultar lateral</td>
+                        </tr>
+                        <tr>
+                            <td><span class="keyboard-shortcut">Ctrl+PageUp</span></td>
+                            <td>Grupo anterior</td>
+                            <td>Navegação</td>
+                        </tr>
+                        <tr>
+                            <td><span class="keyboard-shortcut">Ctrl+PageDown</span></td>
+                            <td>Próximo grupo</td>
+                            <td>Navegação</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 7. TROUBLESHOOTING -->
+            <div class="section" id="troubleshooting">
+                <h2><i class="fa-duotone fa-wrench"></i> 7. Solução de Problemas</h2>
+
+                <h3><i class="fa-duotone fa-eye-slash"></i> Os ícones da Activity Bar sumiram</h3>
+                <div class="warning-box">
+                    <p><strong>Solução:</strong></p>
+                    <p>1. Pressione: <span class="keyboard-shortcut">Ctrl+Shift+P</span></p>
+                    <p>2. Digite: <code>View: Toggle Activity Bar Visibility</code></p>
+                    <p>3. Pressione: <span class="keyboard-shortcut">Enter</span></p>
+                </div>
+
+                <h3><i class="fa-duotone fa-puzzle-piece"></i> Extensão não aparece</h3>
+                <div class="warning-box">
+                    <p><strong>Verificar instalação no WSL:</strong></p>
+                    <div class="code-block" data-lang="bash">
+                        <pre>code-insiders --list-extensions | grep -E "(copilot|claude|gemini|continue)"</pre>
+                    </div>
+                    <p><strong>Reinstalar se necessário:</strong></p>
+                    <div class="code-block" data-lang="bash">
+                        <pre>code-insiders --install-extension GitHub.copilot</pre>
+                    </div>
+                </div>
+
+                <h3><i class="fa-duotone fa-terminal"></i> Comando não encontrado</h3>
+                <div class="warning-box">
+                    <p><strong>Causa:</strong> VS Code Insiders não está no PATH do WSL</p>
+                    <p><strong>Solução:</strong></p>
+                    <div class="code-block" data-lang="bash">
+                        <pre>echo 'export PATH="$PATH:/mnt/c/Users/SEU_USUARIO/AppData/Local/Programs/Microsoft VS Code Insiders/bin"' >> ~/.bashrc
+source ~/.bashrc</pre>
+                    </div>
+                </div>
+
+                <h3><i class="fa-duotone fa-rotate"></i> Resetar configurações</h3>
+                <div class="warning-box">
+                    <p><strong>Se nada funcionar, resetar:</strong></p>
+                    <div class="code-block" data-lang="bash">
+                        <pre>cd ~
+rm -rf .config/Code\ -\ Insiders/User/
+code-insiders</pre>
+                    </div>
+                    <p>Depois, reconfigure tudo novamente seguindo este guia.</p>
+                </div>
+
+                <h3><i class="fa-duotone fa-circle-question"></i> IAs não reconhecem RegrasDesenvolvimentoFrotiX.md</h3>
+                <div class="warning-box">
+                    <p><strong>Verificar se os arquivos foram criados:</strong></p>
+                    <div class="code-block" data-lang="bash">
+                        <pre>cd /mnt/d/FrotiX/SolucaoFrotiX
+ls -la .claude/ .continue/ .github/ .gemini/</pre>
+                    </div>
+                    <p>Se não existirem, execute novamente o script da seção 5.</p>
+                </div>
+            </div>
+
+            <!-- DOWNLOADS -->
+            <div class="section">
+                <h2><i class="fa-duotone fa-download"></i> Downloads</h2>
+
+                <div class="success-box">
+                    <p><strong><i class="fa-duotone fa-box-archive"></i> Pacote Completo:</strong></p>
+                    <p>Todos os scripts e arquivos de configuração prontos para uso.</p>
+                    <a href="#" class="btn-download"><i class="fa-duotone fa-file-zipper"></i> Baixar
+                        FrotiX-Setup-4IAs.zip</a>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p><i class="fa-duotone fa-copyright"></i> 2026 Projeto FrotiX | <i class="fa-brands fa-github"></i>
+                @Degas1974/SolucaoFrotiX</p>
+            <p>Guia criado para configuração das 4 IAs no VS Code Insiders (Windows + WSL)</p>
+        </footer>
+    </div>
+</body>
+
+</html>

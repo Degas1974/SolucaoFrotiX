@@ -1,3 +1,13 @@
+/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: AbastecimentoController.Pendencias.cs                          ║
+ ║  Caminho: /Controllers/AbastecimentoController.Pendencias.cs             ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ║  Partial Class: Gerenciamento de pendências de importação               ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +19,20 @@ using System.Text.Json.Serialization;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ PARTIAL CLASS: AbastecimentoController (Pendências)
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Gerenciar pendências de importação de abastecimentos
+     * 📥 ENTRADAS     : DTOs de pendências (PendenciaDTO, EditarPendenciaRequest)
+     * 📤 SAÍDAS       : JSON com listas de pendências e status de operações
+     * 🔗 CHAMADA POR  : Frontend de gestão de pendências de importação
+     * 🔄 CHAMA        : Repository AbastecimentoPendente, Abastecimento, Veiculo, Motorista
+     * 📦 DEPENDÊNCIAS : Entity Framework, Unit of Work, Alerta
+     * --------------------------------------------------------------------------------------
+     * [DOC] Partial class responsável por listar, editar, resolver e excluir pendências
+     * [DOC] Pendências são abastecimentos que não puderam ser importados automaticamente
+     * [DOC] Sistema oferece sugestões automáticas de correção quando possível
+     ****************************************************************************************/
     public partial class AbastecimentoController : ControllerBase
     {
         // DTO para listagem de pendências

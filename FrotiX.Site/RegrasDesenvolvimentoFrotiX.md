@@ -337,6 +337,16 @@ drawCallback: function() {
 4. Confirmar ao usuário: "✅ Código commitado e enviado para main"
 ```
 
+### 5.1.2 Comando explícito do usuário
+
+Quando o usuário disser **"Faça comit e push para o Main"**, executar **imediatamente**:
+
+```bash
+git add -A
+git commit -m "chore: commit solicitado pelo usuário"
+git push origin main
+```
+
 **Tipos de commit:**
 - `feat:` - Nova funcionalidade
 - `fix:` - Correção de bug

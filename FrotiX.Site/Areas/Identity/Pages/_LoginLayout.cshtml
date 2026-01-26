@@ -1,3 +1,27 @@
+@*****************************************************************************************
+ * ⚡ LAYOUT: _LoginLayout
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Layout principal para a página de login do FrotiX. Fornece estrutura
+ *                   visual com logo dinâmico (trim de transparência + redimensionamento),
+ *                   mensagem de boas-vindas e barra de progresso visual.
+ *
+ * 📥 ENTRADAS     : @RenderBody() - Conteúdo do formulário de login.
+ *
+ * 📤 SAÍDAS       : HTML - Renderiza página de login completa com processamento de imagem
+ *                   via Canvas API.
+ *
+ * 🔗 CHAMADA POR  : Páginas que usam Layout = "_LoginLayout" (ex: LoginFrotiX.cshtml)
+ *
+ * 🔄 CHAMA        : Scripts JS: trimTransparentPNG(), neon-login.js, neon-register.js,
+ *                   neon-custom.js, neon-demo.js
+ *
+ * 📦 DEPENDÊNCIAS : Bootstrap 3, jQuery 1.11.3, jQuery UI, GSAP/TweenMax, Neon Theme,
+ *                   FontAwesome Pro, Canvas API (HTML5)
+ *
+ * 📝 OBSERVAÇÕES  : Layout com processamento de imagem do logo (remove transparências
+ *                   e redimensiona para 800px de largura mantendo proporção), barra de
+ *                   progresso fixa em 3%, tema escuro (login-form-fall).
+ *****************************************************************************************@
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,6 +69,7 @@
     <script type="text/javascript">var baseurl = '';</script>
 
 
+    @* [DOC] Cabeçalho do login com logo processado dinamicamente via Canvas API *@
     <div class="login-header login-caret">
 
         <div class="container-fluid">
@@ -52,14 +77,14 @@
                 <div class="col">
 
                     <a href="#" class="logo">
-                        <!-- Sua imagem original -->
+                        @* [DOC] Logo original será substituído por canvas processado (trim + resize) *@
                         <img id="logoOriginal" src="~/Images/LogotipoCompletoFrotiXRoxoFundoTransparenteEstreita.png" alt="Logo FrotiX" />
                         <h4 style="color:#ffffff !important;"></h4>
                     </a>
                     <br />
                     <p class="description">Prezado usuário, logue-se para acessar a área de administração!</p>
 
-                    <!-- progress bar indicator -->
+                    @* [DOC] Indicador fixo de progresso em 3% - visual estático para UX durante carregamento *@
                     <div class="login-progressbar-indicator">
                         <h3>3%</h3>
                         <span>logando...</span>
@@ -70,10 +95,12 @@
 
     </div>
 
+    @* [DOC] Barra de progresso visual (elemento gráfico) *@
     <div class="login-progressbar">
         <div></div>
     </div>
 
+    @* [DOC] Container principal onde é renderizado o formulário de login via @RenderBody() *@
     <div class="login-form">
 
         @RenderBody()
@@ -81,6 +108,24 @@
     </div>
 
     <script>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: trimTransparentPNG
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remove pixels transparentes das bordas de uma imagem PNG, retornando
+         *                   um canvas contendo apenas a área visível da imagem (crop automático
+         *                   de transparência).
+         *
+         * 📥 ENTRADAS     : [HTMLImageElement] img - Elemento de imagem carregado.
+         *
+         * 📤 SAÍDAS       : [HTMLCanvasElement] - Canvas contendo a imagem recortada sem bordas
+         *                   transparentes.
+         *
+         * 🔗 CHAMADA POR  : Função anônima no evento window.load (linha ~133).
+         *
+         * 🔄 CHAMA        : Canvas API nativa (getImageData, putImageData, drawImage).
+         *
+         * 📦 DEPENDÊNCIAS : Canvas API (HTML5).
+         ****************************************************************************************/
         function trimTransparentPNG(img) {
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
@@ -95,9 +140,10 @@
 
           let top = null, bottom = null, left = null, right = null;
 
+          // [DOC] Varre todos os pixels da imagem para encontrar bordas não-transparentes
           for (let y = 0; y < h; y++) {
             for (let x = 0; x < w; x++) {
-              const alpha = pixels[(y * w + x) * 4 + 3];
+              const alpha = pixels[(y * w + x) * 4 + 3]; // Canal alpha (transparência)
               if (alpha > 0) {
                 if (top === null) top = y;
                 bottom = y;
@@ -107,10 +153,12 @@
             }
           }
 
+          // [DOC] Calcula dimensões da área visível (sem bordas transparentes)
           const trimmedWidth = right - left + 1;
           const trimmedHeight = bottom - top + 1;
           const trimmedData = ctx.getImageData(left, top, trimmedWidth, trimmedHeight);
 
+          // [DOC] Cria novo canvas com dimensões exatas da área visível
           const resultCanvas = document.createElement('canvas');
           resultCanvas.width = trimmedWidth;
           resultCanvas.height = trimmedHeight;
@@ -121,26 +169,43 @@
     </script>
 
     <script>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: window.load Event Listener (Processamento de Logo)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Processar o logo FrotiX removendo transparências e redimensionando
+         *                   para 800px de largura (mantendo proporção), garantindo visual
+         *                   limpo e consistente na tela de login.
+         *
+         * 📥 ENTRADAS     : Nenhuma (captura elemento #logoOriginal do DOM).
+         *
+         * 📤 SAÍDAS       : Substitui elemento <img> original por <canvas> processado.
+         *
+         * 🔗 CHAMADA POR  : Evento 'load' do navegador (window.addEventListener).
+         *
+         * 🔄 CHAMA        : trimTransparentPNG(), Canvas API (drawImage, replaceWith).
+         *
+         * 📦 DEPENDÊNCIAS : Canvas API (HTML5), trimTransparentPNG().
+         ****************************************************************************************/
         window.addEventListener('load', () => {
             const img = document.getElementById('logoOriginal');
             const proxyImg = new Image();
 
             proxyImg.onload = () => {
-            // Largura base desejada
+            // [DOC] Largura alvo de 800px para padronização visual
             const targetWidth = 800;
 
-            // Calcular altura proporcional após o trim
-            const trimmed = trimTransparentPNG(proxyImg); // retorna canvas já cortado sem redimensionar
+            // [DOC] Remove bordas transparentes primeiro, depois calcula proporção
+            const trimmed = trimTransparentPNG(proxyImg);
             const aspectRatio = trimmed.height / trimmed.width;
             const targetHeight = Math.round(targetWidth * aspectRatio);
 
-            // Agora redimensiona com proporção correta
+            // [DOC] Redimensiona canvas cortado para dimensões finais (800px width, altura proporcional)
             const finalCanvas = document.createElement('canvas');
             finalCanvas.width = targetWidth;
             finalCanvas.height = targetHeight;
             finalCanvas.getContext('2d').drawImage(trimmed, 0, 0, targetWidth, targetHeight);
 
-            // Substituir imagem original pelo canvas
+            // [DOC] Substitui <img> original pelo <canvas> processado no DOM
             img.replaceWith(finalCanvas);
             };
 

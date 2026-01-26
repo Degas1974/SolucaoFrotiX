@@ -1,4 +1,25 @@
-﻿<!DOCTYPE html>
+﻿@*****************************************************************************************
+ * ⚡ LAYOUT: _ConfirmacaoLayout
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Layout específico para a página de confirmação de senha da Redecamara.
+ *                   Fornece estrutura visual com logo, mensagem de boas-vindas e barra
+ *                   de progresso para o processo de autenticação.
+ *
+ * 📥 ENTRADAS     : @RenderBody() - Conteúdo da página que utiliza este layout.
+ *
+ * 📤 SAÍDAS       : HTML - Renderiza página completa com cabeçalho, corpo e scripts.
+ *
+ * 🔗 CHAMADA POR  : Pages que usam Layout = "_ConfirmacaoLayout" (ex: ConfirmarSenha.cshtml)
+ *
+ * 🔄 CHAMA        : Scripts JS: neon-confirmaemail.js, neon-custom.js, neon-demo.js
+ *
+ * 📦 DEPENDÊNCIAS : Bootstrap 3, jQuery 1.11.3, jQuery UI, GSAP/TweenMax, Neon Theme,
+ *                   FontAwesome Pro
+ *
+ * 📝 OBSERVAÇÕES  : Layout com tema escuro (login-form-fall), barra de progresso fixa
+ *                   em 3%, mensagem específica para confirmação de senha Redecamara.
+ *****************************************************************************************@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -32,6 +53,8 @@
     <script type="text/javascript">var baseurl = '';</script>
 
 
+    @* [DOC] Cabeçalho do login com logo centralizado e mensagem de boas-vindas específica
+            para confirmação de senha da Redecamara *@
     <div class="login-header login-caret">
 
         <div class="container-fluid">
@@ -45,7 +68,7 @@
                     <br />
                     <p class="description">Prezado usuário, confirme sua senha da Redecamara para acesso ao FrotiX!</p>
 
-                    <!-- progress bar indicator -->
+                    @* [DOC] Indicador fixo de progresso em 3% - visual estático para UX durante carregamento *@
                     <div class="login-progressbar-indicator">
                         <h3>3%</h3>
                         <span>logando...</span>
@@ -56,10 +79,12 @@
 
     </div>
 
+    @* [DOC] Barra de progresso visual (elemento gráfico) *@
     <div class="login-progressbar">
         <div></div>
     </div>
 
+    @* [DOC] Container principal onde é renderizado o formulário de confirmação via @RenderBody() *@
     <div class="login-form">
 
         @RenderBody()

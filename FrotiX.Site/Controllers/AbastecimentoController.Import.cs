@@ -1,3 +1,13 @@
+/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: AbastecimentoController.Import.cs                              ║
+ ║  Caminho: /Controllers/AbastecimentoController.Import.cs                 ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ║  Partial Class: Importação de planilhas de abastecimento                ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Hubs;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -21,6 +31,22 @@ using System.Transactions;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ PARTIAL CLASS: AbastecimentoController (Import)
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Importar planilhas Excel/CSV de abastecimentos QCard
+     * 📥 ENTRADAS     : Arquivos Excel (.xlsx, .xls) ou CSV com dados de abastecimento
+     * 📤 SAÍDAS       : ResultadoImportacao com linhas importadas, erros e pendências
+     * 🔗 CHAMADA POR  : Frontend de importação de abastecimentos
+     * 🔄 CHAMA        : NPOI (leitura Excel), CsvHelper, SignalR (progresso tempo real)
+     * 📦 DEPENDÊNCIAS : NPOI, CsvHelper, SignalR, UnitOfWork, ImportacaoHub
+     * --------------------------------------------------------------------------------------
+     * [DOC] Processa importação de abastecimentos do QCard com validação inteligente
+     * [DOC] Gera pendências para linhas com erro (veículo/motorista não cadastrado)
+     * [DOC] Oferece sugestões automáticas de correção de KM baseado em média de consumo
+     * [DOC] Usa SignalR para enviar progresso em tempo real ao frontend
+     * [DOC] Valida duplicação de autorizações, KM negativo, consumo fora do padrão
+     ****************************************************************************************/
     public partial class AbastecimentoController : ControllerBase
     {
         // DTOs para importação

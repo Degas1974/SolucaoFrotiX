@@ -1,15 +1,41 @@
+@*****************************************************************************************
+ * ⚡ PÁGINA: Login
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de login do sistema. Permite autenticação via Ponto (username)
+ *                   e senha da Redecamara. Exibe formulário com validação, opção de
+ *                   "Lembrar-me" e link para recuperação de senha.
+ *
+ * 📥 ENTRADAS     : Input.Ponto (string) - Username/Ponto do usuário
+ *                   Input.Password (string) - Senha da Redecamara
+ *                   Input.RememberMe (bool) - Manter logado por 30 dias
+ *
+ * 📤 SAÍDAS       : HTML - Formulário de login + seção de marketing com links sociais
+ *
+ * 🔗 CHAMADA POR  : Usuário não autenticado tentando acessar sistema
+ *
+ * 🔄 CHAMA        : LoginModel (POST), ForgotPassword (link), _ValidationScriptsPartial
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, jQuery, Bootstrap Validation, Font Awesome Brands
+ *
+ * 📝 OBSERVAÇÕES  : Página personalizada para integração com Redecamara. Contém seção de
+ *                   marketing e links sociais (possivelmente template padrão não customizado).
+ *                   BUG: Linha 82 usa "#js-logsin-btn" (typo) ao invés de "#js-login-btn".
+ *****************************************************************************************@
 @page
 @model LoginModel
 @{
     ViewData["PageName"] = "login";
 }
 
+@* [DOC] Importa CSS de ícones Font Awesome Brands (redes sociais) *@
 @section Header {
     <link rel="stylesheet" media="screen, print" href="~/css/fa-brands.css">
 }
 
+@* [DOC] Seção de cabeçalho com texto de marketing e links sociais (visível apenas em telas médias+) *@
 @section PageHeading {
     <div class="col col-md-6 col-lg-7 hidden-sm-down">
+        @* [DOC] Texto de marketing (provavelmente template padrão não customizado) *@
         <h2 class="fs-xxl fw-500 text-white">
             The simplest UI toolkit for developers &amp; programmers
             <small class="h3 fw-300 mt-3 mb-5 text-white opacity-60">
@@ -17,6 +43,7 @@
             </small>
         </h2>
         <a href="#" class="fs-lg fw-500 text-white opacity-70">Learn more &gt;&gt;</a>
+        @* [DOC] Links para redes sociais (possivelmente não utilizados no FrotiX) *@
         <div class="d-sm-flex flex-column align-items-center justify-content-center d-md-block">
             <div class="px-0 py-1 mt-5 text-white fs-nano opacity-50">
                 Find us on social media
@@ -39,36 +66,49 @@
     </div>
 }
 
+@* [DOC] Card de login responsivo (lado direito em telas grandes) *@
 <div class="col-sm-12 col-md-6 col-lg-5 col-xl-4 ml-auto">
+    @* [DOC] Título visível apenas em telas pequenas *@
     <h1 class="text-white fw-300 mb-3 d-sm-block d-md-none">
         Secure login
     </h1>
     <div class="card p-4 rounded-plus bg-faded">
         <form id="js-login" method="post">
+            @* [DOC] Sumário de erros de validação *@
             <div asp-validation-summary="All" class="alert alert-primary text-dark"></div>
+
+            @* [DOC] Campo de Ponto (username customizado para integração Redecamara) *@
             <div class="form-group">
                 <label class="form-label" asp-for="Input.Ponto">Username</label>
                 <input type="text" asp-for="Input.Ponto" class="form-control" placeholder="Insira seu ponto" value="" required="required" />
                 <span class="invalid-feedback" asp-validation-for="Input.Ponto">Sorry, you missed this one.</span>
                 <div class="help-block">The email address you registered with</div>
             </div>
+
+            @* [DOC] Campo de senha da Redecamara *@
             <div class="form-group">
                 <label class="form-label" asp-for="Input.Password">Password</label>
                 <input type="password" asp-for="Input.Password" class="form-control" placeholder="Insira sua senha da Redecamara" value="" required="required" />
                 <span class="invalid-feedback" asp-validation-for="Input.Password">Sorry, you missed this one.</span>
                 <div class="help-block">Insira a senha da Redecamara para acesso aos seus emails</div>
             </div>
+
+            @* [DOC] Checkbox "Lembrar-me por 30 dias" *@
             <div class="form-group text-left">
                 <div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input" asp-for="Input.RememberMe" />
                     <label class="custom-control-label" asp-for="Input.RememberMe">Remember me for the next 30 days</label>
                 </div>
             </div>
+
+            @* [DOC] Botão de submit do formulário *@
             <div class="row no-gutters">
                 <div class="col-lg-6 pl-lg-1 my-2">
                     <button id="js-login-btn" type="submit" class="btn btn-primary btn-block btn-lg">Secure login</button>
                 </div>
             </div>
+
+            @* [DOC] Link para recuperação de senha *@
             <div class="text-center">
                 <a asp-page="ForgotPassword" class="opacity-90">Esqueceu sua senha?</a>
             </div>
@@ -79,15 +119,37 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: click #js-logsin-btn (BUG: seletor incorreto)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Validar formulário de login antes do submit usando API de
+         *                   validação HTML5 + classes Bootstrap.
+         *
+         * 📥 ENTRADAS     : [Event] event - Evento de clique do botão
+         *
+         * 📤 SAÍDAS       : Form validado visualmente (classe 'was-validated')
+         *
+         * 🔗 CHAMADA POR  : Evento click do botão #js-logsin-btn
+         *
+         * 🔄 CHAMA        : form.checkValidity(), form.addClass()
+         *
+         * 📦 DEPENDÊNCIAS : jQuery, Bootstrap Validation
+         *
+         * 📝 OBSERVAÇÕES  : BUG: Seletor é "#js-logsin-btn" mas botão tem id="js-login-btn"
+         *                   (falta 'n'). Validação JavaScript NÃO está funcionando por este typo.
+         ****************************************************************************************/
+        // [DOC] BUG: Seletor incorreto "#js-logsin-btn" - deveria ser "#js-login-btn"
         $("#js-logsin-btn").click(function (event) {
-            // Fetch form to apply custom Bootstrap validation
+            // [DOC] Seleciona formulário para aplicar validação customizada do Bootstrap
             var form = $("#js-login");
 
+            // [DOC] Se formulário inválido, impede submit
             if (form[0].checkValidity() === false) {
                 event.preventDefault();
                 event.stopPropagation();
             }
 
+            // [DOC] Adiciona classe Bootstrap para exibir feedback visual de validação
             form.addClass('was-validated');
             // Perform ajax submit here...
         });

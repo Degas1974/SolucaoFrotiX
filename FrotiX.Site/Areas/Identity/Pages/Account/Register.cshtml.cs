@@ -1,4 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: Register.cshtml.cs                                             ║
+ ║  Caminho: /Areas/Identity/Pages/Account/Register.cshtml.cs              ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -34,43 +44,97 @@ namespace FrotiX.Areas.Identity.Pages.Account
 
         public string ReturnUrl { get; set; }
 
-        public void OnGet(string returnUrl = null) => ReturnUrl = returnUrl;
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnGet
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar página de registro e capturar URL de retorno
+         * 📥 ENTRADAS     : [string] returnUrl - URL para redirecionar após registro (opcional)
+         * 📤 SAÍDAS       : void - Armazena ReturnUrl para uso posterior
+         * 🔗 CHAMADA POR  : Framework ASP.NET Core quando a página é acessada via GET
+         * 🔄 CHAMA        : Nenhuma função
+         * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages
+         ****************************************************************************************/
+        public void OnGet(string returnUrl = null)
+            {
+            try
+                {
+                // [DOC] Armazena URL de retorno para redirecionamento após registro bem-sucedido
+                ReturnUrl = returnUrl;
+                }
+            catch (Exception ex)
+                {
+                _logger.LogError(ex, "Erro ao inicializar página de registro");
+                TempData["Erro"] = "Erro ao carregar página de registro. Tente novamente.";
+                }
+            }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnPostAsync
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Processar registro de novo usuário no sistema FrotiX
+         * 📥 ENTRADAS     : [string] returnUrl - URL de retorno após registro
+         *                   [InputModel] Input - Dados do formulário (Ponto, Email, Nome, Senha)
+         * 📤 SAÍDAS       : [IActionResult] - Redirect para LoginFrotiX ou Page() com erros
+         * 🔗 CHAMADA POR  : Formulário de registro (POST)
+         * 🔄 CHAMA        : UserManager.CreateAsync(), SignInManager.SignInAsync()
+         * 📦 DEPENDÊNCIAS : ASP.NET Identity, Logger, AspNetUsers Model
+         * --------------------------------------------------------------------------------------
+         * [DOC] Valida domínio @camara.leg.br via atributo ValidateDomainAtEnd
+         * [DOC] Cria usuário AspNetUsers com Ponto como username
+         * [DOC] Faz login automático após registro bem-sucedido
+         * [DOC] Email confirmation desabilitado (código comentado)
+         ****************************************************************************************/
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
             {
-            returnUrl = returnUrl ?? Url.Content("~/");
-            if (ModelState.IsValid)
+            try
                 {
-                var user = new AspNetUsers
+                returnUrl = returnUrl ?? Url.Content("~/");
+
+                if (ModelState.IsValid)
                     {
-                    UserName = Input.Ponto,
-                    Email = Input.Email,
-                    NomeCompleto = Input.NomeCompleto,
-                    Ponto = Input.Ponto
-                    };
-                var result = await _userManager.CreateAsync(user, Input.Senha);
-                if (result.Succeeded)
-                    {
-                    _logger.LogInformation("User created a new account with password.");
+                    // [DOC] Cria objeto AspNetUsers com dados do formulário
+                    var user = new AspNetUsers
+                        {
+                        UserName = Input.Ponto,
+                        Email = Input.Email,
+                        NomeCompleto = Input.NomeCompleto,
+                        Ponto = Input.Ponto
+                        };
 
-                    // var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    // var callbackUrl = Url.Page("/Account/ConfirmEmail", null, new {userId = user.Id, code}, Request.Scheme);
+                    // [DOC] Cria usuário no Identity com senha criptografada
+                    var result = await _userManager.CreateAsync(user, Input.Senha);
 
-                    //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                    //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    if (result.Succeeded)
+                        {
+                        _logger.LogInformation("User created a new account with password.");
 
-                    await _signInManager.SignInAsync(user, false);
-                    return LocalRedirect("/Identity/Account/LoginFrotiX");
+                        // [DOC] Confirmação de email desabilitada - seria necessário configurar IEmailSender
+                        // var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        // var callbackUrl = Url.Page("/Account/ConfirmEmail", null, new {userId = user.Id, code}, Request.Scheme);
+                        //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                        //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                        // [DOC] Faz login automático sem persistir cookie (isPersistent: false)
+                        await _signInManager.SignInAsync(user, false);
+                        return LocalRedirect("/Identity/Account/LoginFrotiX");
+                        }
+
+                    // [DOC] Se criação falhar, adiciona erros ao ModelState para exibir no form
+                    foreach (var error in result.Errors)
+                        {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                        }
                     }
 
-                foreach (var error in result.Errors)
-                    {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                    }
+                // [DOC] Se chegou aqui, houve erro de validação ou falha na criação
+                return Page();
                 }
-
-            // If we got this far, something failed, redisplay form
-            return Page();
+            catch (Exception ex)
+                {
+                _logger.LogError(ex, "Erro ao registrar novo usuário");
+                TempData["Erro"] = "Erro ao processar registro. Verifique os dados e tente novamente.";
+                return Page();
+                }
             }
 
         public class InputModel

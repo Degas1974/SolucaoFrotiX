@@ -1,3 +1,12 @@
+/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: DashboardLavagemController.cs                                  ║
+ ║  Caminho: /Controllers/DashboardLavagemController.cs                     ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Data;
 using FrotiX.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -11,6 +20,21 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: DashboardLavagemController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Fornecer estatísticas e análises de lavagens de veículos
+     * 📥 ENTRADAS     : Filtros de data (dataInicio, dataFim)
+     * 📤 SAÍDAS       : JSON com estatísticas agregadas de lavagens
+     * 🔗 CHAMADA POR  : Frontend do Dashboard de Lavagem
+     * 🔄 CHAMA        : Lavagem, LavadoresLavagem, Veiculo, Motorista, Lavador (EF Include)
+     * 📦 DEPENDÊNCIAS : Entity Framework Core (Include/ThenInclude), UserManager
+     * --------------------------------------------------------------------------------------
+     * [DOC] Dashboard específico para análise de lavagens de veículos
+     * [DOC] Estatísticas: total de lavagens, custos, lavadores, veículos mais lavados
+     * [DOC] Período padrão: últimos 30 dias se não especificado
+     * [DOC] Usa Include/ThenInclude para eager loading de relacionamentos
+     ****************************************************************************************/
     [Authorize]
     public class DashboardLavagemController : Controller
     {

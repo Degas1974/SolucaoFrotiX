@@ -1,4 +1,27 @@
-﻿@page
+﻿@*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: RegisterConfirmation.cshtml                                    ║
+ ║  Caminho: /Areas/Identity/Pages/Account/RegisterConfirmation.cshtml     ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+*@
+
+@*****************************************************************************************
+ * ⚡ PÁGINA: Confirmação de Registro
+ * ---------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Exibir página de confirmação após registro de novo usuário
+ * 📥 ENTRADAS     : Email do usuário registrado (via query string)
+ * 📤 SAÍDAS       : Instruções para confirmar email (quando sender configurado)
+ * 🔗 CHAMADA POR  : Register.cshtml.cs após registro bem-sucedido
+ * 🔄 CHAMA        : RegisterConfirmationModel.OnGetAsync() (code-behind)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, Identity
+ * ---------------------------------------------------------------------------------------
+ * [DOC] Exibe link de confirmação quando IEmailSender não está configurado
+ * [DOC] Em produção, mostra mensagem para verificar email
+ *****************************************************************************************@
+
+@page
 @model RegisterConfirmationModel
 @{
     ViewData["Title"] = "Register confirmation";

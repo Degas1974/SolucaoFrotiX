@@ -1,28 +1,56 @@
+@*****************************************************************************************
+ * ⚡ PÁGINA: Logout
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de confirmação de logout. Exibe mensagem de sucesso após
+ *                   logout e oferece opções de navegação (Login, Register, Retornar).
+ *
+ * 📥 ENTRADAS     : returnUrl (query string) - URL de retorno codificada (opcional)
+ *
+ * 📤 SAÍDAS       : HTML - Mensagem de sucesso + botões de ação
+ *
+ * 🔗 CHAMADA POR  : LogoutModel (após SignOut bem-sucedido)
+ *
+ * 🔄 CHAMA        : /account/login, /account/register, returnUrl (links)
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, System.Web (HttpUtility)
+ *
+ * 📝 OBSERVAÇÕES  : Usa HttpUtility.UrlDecode para processar returnUrl da query string.
+ *                   Botões com cores customizadas (btn-azul, btn-verde, btn-vinho).
+ *****************************************************************************************@
 @page
 @using System.Web
 @model LogoutModel
 @{
     ViewData["PageName"] = "logout";
     ViewData["Title"] = "Log out";
+    // [DOC] Decodifica returnUrl da query string (padrão "/" se não fornecido)
     var action = HttpUtility.UrlDecode(Request.Query["returnUrl"].FirstOrDefault()) ?? "/";
 }
 
+@* [DOC] Card centralizado com mensagem de sucesso de logout *@
 <div class="col-xl-6 ml-auto mr-auto">
     <div class="p-4 text-center text-white">
         <h3>You have successfully logged out of the application.</h3>
         <p>You are advised to close your browser for security purposes.</p>
     </div>
+
+    @* [DOC] Botões de ação pós-logout (Login, Register, Retornar) *@
     <div class="row no-gutters">
+        @* [DOC] Botão de Login (btn-azul) *@
         <div class="col-md-4 ml-auto text-left pr-1">
             <a class="btn btn-block btn-azul mt-3 btn-link text-white ml-auto border-0" asp-area="Identity" asp-page="/account/login">
                 <i class="fal fa-shield-check fs-lg mr-1"></i> Secure Login
             </a>
         </div>
+
+        @* [DOC] Botão de Registro (btn-verde) *@
         <div class="col-md-4 ml-auto text-right pl-1 pr-1">
             <a class="btn btn-block btn-verde bg-success-700 mt-3 btn-link text-white ml-auto border-0" asp-area="Identity" asp-page="/account/register">
                 <i class="fal fa-user fs-lg mr-1"></i> Register account
             </a>
         </div>
+
+        @* [DOC] Botão de Retornar à página anterior (btn-vinho) *@
         <div class="col-md-4 ml-auto text-right pl-1">
             <a class="btn btn-block btn-vinho bg-danger-700 mt-3 btn-link text-white ml-auto border-0" href="@action">
                 <i class="fal fa-arrow-alt-left fs-lg mr-1"></i> Return to Previous
