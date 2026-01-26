@@ -1,3 +1,14 @@
+/****************************************************************************************
+ * ⚡ CONTROLLER: ItensContratoController (Partial Class)
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar itens de contratos (veículos, serviços, valores)
+ *                   Fornece listas para dropdowns, CRUD de itens vinculados a contratos/atas
+ * 📥 ENTRADAS     : IDs de contratos/atas, filtros de status
+ * 📤 SAÍDAS       : JSON com itens de contrato formatados para dropdowns e grids
+ * 🔗 CHAMADA POR  : JavaScript (AJAX) das páginas de Contratos e Atas
+ * 🔄 CHAMA        : IUnitOfWork (Contrato, Ata, Fornecedor), Alerta
+ * 📦 DEPENDÊNCIAS : ASP.NET Core, Entity Framework, IUnitOfWork
+ ****************************************************************************************/
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;
@@ -14,6 +25,11 @@ namespace FrotiX.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ItensContratoController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependências do Unit of Work
+         ****************************************************************************************/
         public ItensContratoController(IUnitOfWork unitOfWork)
         {
             try

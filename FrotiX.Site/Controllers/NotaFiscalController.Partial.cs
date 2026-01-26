@@ -8,6 +8,19 @@ namespace FrotiX.Controllers
 {
     public partial class NotaFiscalController : Controller
     {
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Insere
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inserir nova Nota Fiscal e atualizar saldo do empenho
+         * 📥 ENTRADAS     : [NotaFiscal] model - Dados da NF a inserir
+         * 📤 SAÍDAS       : [JSON] { success, message, notaFiscalId }
+         * 🔗 CHAMADA POR  : Tela de cadastro de Notas Fiscais
+         * 🔄 CHAMA        : _unitOfWork.NotaFiscal.Add, _unitOfWork.Empenho.Update
+         * 📦 DEPENDÊNCIAS : Tabelas NotaFiscal e Empenho
+         *
+         * [DOC] REGRA DE NEGÓCIO: Ao inserir NF, DEBITA ValorLíquido (ValorNF - ValorGlosa) do SaldoFinal do Empenho
+         * [DOC] Validações: NumeroNF, EmpenhoId e ValorNF são obrigatórios
+         ****************************************************************************************/
         [Route("Insere")]
         [HttpPost]
         [Consumes("application/json")]
@@ -20,7 +33,7 @@ namespace FrotiX.Controllers
                     return Json(new { success = false, message = "Dados inválidos" });
                 }
 
-                // Validações básicas
+                // [DOC] Validações básicas: campos obrigatórios
                 if (model.NumeroNF == null || model.NumeroNF == 0)
                 {
                     return Json(new { success = false, message = "O número da Nota Fiscal é obrigatório" });
@@ -36,16 +49,16 @@ namespace FrotiX.Controllers
                     return Json(new { success = false, message = "O valor da Nota Fiscal é obrigatório" });
                 }
 
-                // Gerar novo ID
+                // [DOC] Gerar novo ID único
                 model.NotaFiscalId = Guid.NewGuid();
 
-                // Inicializar ValorGlosa se null
+                // [DOC] Inicializar ValorGlosa como 0 se nulo
                 if (model.ValorGlosa == null)
                 {
                     model.ValorGlosa = 0;
                 }
 
-                // Atualizar saldo do empenho
+                // [DOC] Atualizar saldo do empenho: DEBITAR ValorLíquido (NF - Glosa)
                 var empenho = _unitOfWork.Empenho.GetFirstOrDefault(e => e.EmpenhoId == model.EmpenhoId);
                 if (empenho != null)
                 {
@@ -74,6 +87,21 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Edita
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Editar Nota Fiscal e ajustar saldo do(s) empenho(s)
+         * 📥 ENTRADAS     : [NotaFiscal] model - Dados atualizados da NF
+         * 📤 SAÍDAS       : [JSON] { success, message }
+         * 🔗 CHAMADA POR  : Tela de edição de Notas Fiscais
+         * 🔄 CHAMA        : _unitOfWork.NotaFiscal.Update, _unitOfWork.Empenho.Update
+         * 📦 DEPENDÊNCIAS : Tabelas NotaFiscal e Empenho
+         *
+         * [DOC] REGRA DE NEGÓCIO COMPLEXA:
+         * - Se mudou VALOR: Ajusta diferença no empenho
+         * - Se mudou EMPENHO: Reverte no antigo, debita no novo
+         * - Se mudou AMBOS: Combina as duas operações
+         ****************************************************************************************/
         [Route("Edita")]
         [HttpPost]
         [Consumes("application/json")]
@@ -86,7 +114,7 @@ namespace FrotiX.Controllers
                     return Json(new { success = false, message = "Dados inválidos" });
                 }
 
-                // Validações básicas
+                // [DOC] Validações básicas
                 if (model.NumeroNF == null || model.NumeroNF == 0)
                 {
                     return Json(new { success = false, message = "O número da Nota Fiscal é obrigatório" });
@@ -102,7 +130,7 @@ namespace FrotiX.Controllers
                     return Json(new { success = false, message = "O valor da Nota Fiscal é obrigatório" });
                 }
 
-                // Buscar nota fiscal existente
+                // [DOC] Buscar nota fiscal existente no banco
                 var objFromDb = _unitOfWork.NotaFiscal.GetFirstOrDefault(u =>
                     u.NotaFiscalId == model.NotaFiscalId
                 );
@@ -112,18 +140,18 @@ namespace FrotiX.Controllers
                     return Json(new { success = false, message = "Nota Fiscal não encontrada" });
                 }
 
-                // Calcular diferença de valor para ajustar saldo do empenho
+                // [DOC] Calcular diferença de valor líquido para ajustar saldo do empenho
                 var valorAntigoLiquido = (objFromDb.ValorNF ?? 0) - (objFromDb.ValorGlosa ?? 0);
                 var valorNovoLiquido = (model.ValorNF ?? 0) - (model.ValorGlosa ?? 0);
                 var diferencaValor = valorNovoLiquido - valorAntigoLiquido;
 
-                // Atualizar saldo do empenho (se mudou)
+                // [DOC] Atualizar saldo do empenho (se mudou valor ou empenho)
                 if (diferencaValor != 0)
                 {
-                    // Se mudou o empenho, reverter no antigo e aplicar no novo
+                    // [DOC] CASO 1: Mudou o empenho E o valor
                     if (objFromDb.EmpenhoId != model.EmpenhoId)
                     {
-                        // Reverter no empenho antigo
+                        // Reverter valor antigo no empenho antigo (CREDITAR)
                         var empenhoAntigo = _unitOfWork.Empenho.GetFirstOrDefault(e => e.EmpenhoId == objFromDb.EmpenhoId);
                         if (empenhoAntigo != null)
                         {
@@ -131,7 +159,7 @@ namespace FrotiX.Controllers
                             _unitOfWork.Empenho.Update(empenhoAntigo);
                         }
 
-                        // Aplicar no novo empenho
+                        // Aplicar valor novo no novo empenho (DEBITAR)
                         var empenhoNovo = _unitOfWork.Empenho.GetFirstOrDefault(e => e.EmpenhoId == model.EmpenhoId);
                         if (empenhoNovo != null)
                         {
@@ -141,7 +169,7 @@ namespace FrotiX.Controllers
                     }
                     else
                     {
-                        // Mesmo empenho, só ajustar a diferença
+                        // [DOC] CASO 2: Mesmo empenho, só ajustar a diferença
                         var empenho = _unitOfWork.Empenho.GetFirstOrDefault(e => e.EmpenhoId == model.EmpenhoId);
                         if (empenho != null)
                         {
@@ -152,7 +180,7 @@ namespace FrotiX.Controllers
                 }
                 else if (objFromDb.EmpenhoId != model.EmpenhoId)
                 {
-                    // Valor não mudou mas empenho mudou
+                    // [DOC] CASO 3: Valor não mudou mas empenho mudou
                     var empenhoAntigo = _unitOfWork.Empenho.GetFirstOrDefault(e => e.EmpenhoId == objFromDb.EmpenhoId);
                     if (empenhoAntigo != null)
                     {

@@ -1,9 +1,29 @@
-/*
- * REFATORAÇÕES APLICADAS:
- * - Adicionado try-catch com Alerta.TratamentoErroComLinha em todos os endpoints
- * - Mantida toda estrutura e lógica original
- */
-
+/****************************************************************************************
+ * ⚡ CONTROLLER: GlosaController
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar glosas de notas fiscais (descontos por descumprimento contratual)
+ *                   Endpoints API para grids Syncfusion EJ2 com paginação server-side
+ *                   Exportação de relatórios em Excel (ClosedXML)
+ * 📥 ENTRADAS     : DataManagerRequest (Syncfusion), Filtros (contratoId, ano, mês)
+ * 📤 SAÍDAS       : JSON formato DataResult (Syncfusion), Arquivos Excel (.xlsx)
+ * 🔗 CHAMADA POR  : JavaScript (Syncfusion Grid) das páginas de Glosas via AJAX
+ * 🔄 CHAMA        : IGlosaService (lógica de negócio), ClosedXML (exportação Excel)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core, Syncfusion EJ2, ClosedXML, IGlosaService
+ *
+ * 📊 ENDPOINTS:
+ *    - GET /glosa/resumo: Lista resumo de glosas (agregadas)
+ *    - GET /glosa/detalhes: Lista detalhada de glosas (linha a linha)
+ *    - POST /glosa/exportar-excel: Exporta dados para Excel
+ *
+ * ⚡ PERFORMANCE:
+ *    - DataOperations (Syncfusion): Paginação, filtro e ordenação no servidor
+ *    - IQueryable: Evita carregar dados desnecessários na memória
+ *
+ * 💡 CONCEITOS:
+ *    - Glosa: Desconto aplicado em nota fiscal por descumprimento de contrato
+ *    - Resumo: Totalizadores por período/contrato
+ *    - Detalhes: Glosas individualizadas por nota fiscal
+ ****************************************************************************************/
 using ClosedXML.Excel;
 using FrotiX.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +41,14 @@ public class GlosaController :ControllerBase
 {
     private readonly IGlosaService _service;
 
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: GlosaController (Construtor)
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Injetar serviço de glosas (lógica de negócio)
+     * 📥 ENTRADAS     : [IGlosaService] service
+     * 📤 SAÍDAS       : Instância configurada
+     * 🔗 CHAMADA POR  : ASP.NET Core DI
+     ****************************************************************************************/
     public GlosaController(IGlosaService service)
     {
         try
@@ -33,8 +61,23 @@ public class GlosaController :ControllerBase
         }
     }
 
-    // ===================== DADOS P/ GRID (Syncfusion EJ2) =====================
-
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: Resumo
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Endpoint Syncfusion EJ2 Grid - Resumo de glosas agregadas
+     *                   Suporta paginação, filtros e ordenação server-side
+     * 📥 ENTRADAS     : [DataManagerRequest] dm - Parâmetros Syncfusion (filtro, ordenação, paginação)
+     *                   [Guid] contratoId, [int] ano, [int] mes - Filtros de período
+     * 📤 SAÍDAS       : [IActionResult] JSON formato DataResult (Result, Count)
+     * 🔗 CHAMADA POR  : Syncfusion Grid JavaScript via AJAX GET
+     * 🔄 CHAMA        : IGlosaService.ListarResumo(), DataOperations (Syncfusion)
+     *
+     * 📊 OPERAÇÕES SYNCFUSION:
+     *    - PerformSearching: Busca textual
+     *    - PerformFiltering: Filtros por coluna
+     *    - PerformSorting: Ordenação
+     *    - PerformSkip/Take: Paginação
+     ****************************************************************************************/
     // aceita /glosa/resumo e /glosa/resumo/
     [HttpGet("resumo")]
     [HttpGet("resumo/")]
@@ -47,16 +90,17 @@ public class GlosaController :ControllerBase
     {
         try
         {
+            // [DOC] Busca dados do serviço e converte para IQueryable (performance)
             var data = _service.ListarResumo(contratoId , mes , ano).AsQueryable();
 
             var ops = new DataOperations();
             IEnumerable result = data;
 
-            // search (opcional)
+            // [DOC] Search opcional (busca textual em múltiplas colunas)
             if (dm.Search != null && dm.Search.Count > 0)
                 result = ops.PerformSearching(result , dm.Search);
 
-            // where
+            // [DOC] Where - Filtros por coluna
             var whereOperator = (dm.Where != null && dm.Where.Count > 0) ? dm.Where[0].Operator : "and";
             result = ops.PerformFiltering(result , dm.Where , whereOperator);
 

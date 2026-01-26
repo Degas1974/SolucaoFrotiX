@@ -1,17 +1,22 @@
-/*
-    ═══════════════════════════════════════════════════════════════════════════════
-    📄 DOCUMENTAÇÃO COMPLETA DISPONÍVEL
-    ═══════════════════════════════════════════════════════════════════════════════
-    
-    📍 Localização: Documentacao/Pages/Encarregado - Index.md
-    📅 Última Atualização: 08/01/2026
-    📋 Versão: 2.0 (Padrão FrotiX Simplificado)
-    
-    Este arquivo contém os endpoints API REST para gerenciamento de Encarregados.
-    Para entender completamente a funcionalidade, consulte a documentação acima.
-    ═══════════════════════════════════════════════════════════════════════════════
-*/
-
+/****************************************************************************************
+ * ⚡ CONTROLLER: EncarregadoController
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar encarregados de contratos (supervisores de serviços terceirizados)
+ *                   CRUD completo, controle de status, upload de fotos, vínculos com contratos
+ * 📥 ENTRADAS     : Encarregados, IDs, Filtros (via API REST)
+ * 📤 SAÍDAS       : JSON com dados de encarregados, status, fotos em Base64
+ * 🔗 CHAMADA POR  : Pages/Encarregados/Index, Pages/Contratos (modal de vínculo)
+ * 🔄 CHAMA        : IUnitOfWork (Repositories), Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework, System.Convert (Base64)
+ *
+ * 📄 DOCUMENTAÇÃO COMPLETA: Documentacao/Pages/Encarregado - Index.md
+ *
+ * 💡 CONCEITOS:
+ *    - Encarregado: Supervisor responsável por fiscalizar serviços de um contrato
+ *    - ContratoId: Contrato principal do encarregado
+ *    - EncarregadoContrato: Permite que um encarregado atue em múltiplos contratos
+ *    - Foto: Armazenada como byte[] no banco, convertida para Base64 para exibição
+ ****************************************************************************************/
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +32,14 @@ namespace FrotiX.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: EncarregadoController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependências do Unit of Work
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork
+         * 📤 SAÍDAS       : Instância configurada
+         * 🔗 CHAMADA POR  : ASP.NET Core DI
+         ****************************************************************************************/
         public EncarregadoController(IUnitOfWork unitOfWork)
         {
             try
@@ -39,11 +52,29 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar todos os encarregados com dados de contrato e fornecedor
+         *                   Utiliza LEFT JOIN para incluir encarregados sem contrato
+         * 📥 ENTRADAS     : Nenhuma
+         * 📤 SAÍDAS       : [IActionResult] JSON com lista de encarregados formatados
+         * 🔗 CHAMADA POR  : JavaScript (DataTables) da página Encarregados/Index
+         * 🔄 CHAMA        : Encarregado.GetAll(), Contrato, Fornecedor, AspNetUsers
+         *
+         * 🔍 QUERY SQL:
+         *    SELECT e.*, ct.*, f.*, us.*
+         *    FROM Encarregado e
+         *    LEFT JOIN Contrato ct ON e.ContratoId = ct.ContratoId
+         *    LEFT JOIN Fornecedor f ON ct.FornecedorId = f.FornecedorId
+         *    INNER JOIN AspNetUsers us ON e.UsuarioIdAlteracao = us.Id
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
             try
             {
+                // [DOC] LINQ com LEFT JOIN para incluir encarregados sem contrato
                 var result = (
                     from e in _unitOfWork.Encarregado.GetAll()
 
@@ -215,6 +246,16 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaFoto
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Buscar foto do encarregado e converter para Base64 para exibição
+         * 📥 ENTRADAS     : [Guid] id - EncarregadoId
+         * 📤 SAÍDAS       : [JsonResult] Objeto encarregado com foto em Base64 ou false
+         * 🔗 CHAMADA POR  : JavaScript (AJAX) ao exibir foto no formulário
+         * 🔄 CHAMA        : Encarregado.GetFirstOrDefault(), GetImage()
+         * ⚠️  CONVERSÃO   : byte[] → Base64 String → byte[] (para compatibilidade)
+         ****************************************************************************************/
         [HttpGet]
         [Route("PegaFoto")]
         public JsonResult PegaFoto(Guid id)
@@ -228,6 +269,7 @@ namespace FrotiX.Controllers
                     );
                     if (objFromDb.Foto != null)
                     {
+                        // [DOC] Converte byte[] → Base64 → byte[] para exibição no frontend
                         objFromDb.Foto = this.GetImage(Convert.ToBase64String(objFromDb.Foto));
                         return Json(objFromDb);
                     }

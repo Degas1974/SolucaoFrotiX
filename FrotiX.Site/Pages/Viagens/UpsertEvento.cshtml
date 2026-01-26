@@ -306,6 +306,14 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
         gap: 0.35rem;
     }
 
+    /* Asterisco vermelho itálico para campos obrigatórios */
+    .form-label .required-asterisk {
+        color: #dc3545 !important;
+        font-style: italic;
+        margin-right: -2px;
+        margin-left: 2px;
+    }
+
         /* Labels com classe small */
         .form-label.small {
             font-size: 0.8125rem !important;
@@ -494,6 +502,58 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
         overflow-x: auto;
     }
 
+    /* === PAGINAÇÃO DO DATATABLE === */
+
+    /* Botões de paginação - PADRÃO ESCURO/BRANCO */
+    .dataTables_wrapper .dataTables_paginate .paginate_button,
+    .dataTables_wrapper .page-item .page-link {
+        color: #ffffff !important;
+        background-color: #343a40 !important;
+        border-color: #454d55 !important;
+        border-radius: 0.25rem !important;
+        padding: 0.25rem 0.5rem !important;
+        margin: 0 2px !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover,
+    .dataTables_wrapper .page-item .page-link:hover {
+        color: #ffffff !important;
+        background: #23272b !important;
+        border-color: #1d2124 !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.active, 
+    .dataTables_wrapper .page-item.active .page-link {
+        color: #fff !important;
+        background: #0d6efd !important;
+        border-color: #0d6efd !important;
+        font-weight: bold !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+    .dataTables_wrapper .page-item.disabled .page-link {
+        color: #ced4da !important;
+        background: #6c757d !important;
+        border-color: #6c757d !important;
+        cursor: not-allowed !important;
+        opacity: 0.6 !important;
+    }
+
+    /* Info de paginação (ex: "Mostrando 1 a 10 de 25 registros") */
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_length label,
+    .dataTables_wrapper .dataTables_filter label {
+        color: #495057 !important;
+        padding-top: 0.75rem !important;
+        font-size: 0.875rem !important;
+    }
+
+    /* Container da paginação */
+    .dataTables_wrapper .dataTables_paginate {
+        padding-top: 0.75rem !important;
+    }
+
     /* === ALINHAMENTO VERTICAL === */
 
     /* Flex para colunas - garante alinhamento */
@@ -651,11 +711,12 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
                         <!-- Nome do Evento -->
                         <div class="col-12 col-md-4">
                             <label class="form-label mb-1 small fw-bold">
-                                <i class="fa-duotone fa-input-text"></i> Nome do Evento
+                                <i class="fa-duotone fa-input-text"></i> Nome do Evento <span class="required-asterisk">*</span>
                             </label>
                             <input id="txtNomeEvento"
                                    class="form-control"
                                    asp-for="EventoObj.Evento.Nome"
+                                   maxlength="200"
                                    placeholder="Digite o nome do evento" />
                             <span class="text-danger small"
                                   asp-validation-for="EventoObj.Evento.Nome"></span>
@@ -664,11 +725,12 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
                         <!-- Descrição -->
                         <div class="col-12 col-md-8">
                             <label class="form-label mb-1 small fw-bold">
-                                <i class="fa-duotone fa-align-left"></i> Descrição
+                                <i class="fa-duotone fa-align-left"></i> Descrição <span class="required-asterisk">*</span>
                             </label>
                             <input id="txtDescricaoEvento"
                                    class="form-control"
                                    asp-for="EventoObj.Evento.Descricao"
+                                   maxlength="300"
                                    placeholder="Descreva o evento" />
                             <span class="text-danger small"
                                   asp-validation-for="EventoObj.Evento.Descricao"></span>
@@ -685,7 +747,7 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
                         <!-- Data Inicial -->
                         <div class="col-12 col-md-3">
                             <label class="form-label mb-1 small fw-bold">
-                                <i class="fa-duotone fa-calendar-day"></i> Data Inicial
+                                <i class="fa-duotone fa-calendar-day"></i> Data Inicial <span class="required-asterisk">*</span>
                             </label>
                             <input id="txtDataInicialEvento"
                                    class="form-control"
@@ -698,7 +760,7 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
                         <!-- Data Final -->
                         <div class="col-12 col-md-3">
                             <label class="form-label mb-1 small fw-bold">
-                                <i class="fa-duotone fa-calendar-check"></i> Data Final
+                                <i class="fa-duotone fa-calendar-check"></i> Data Final <span class="required-asterisk">*</span>
                             </label>
                             <input id="txtDataFinalEvento"
                                    class="form-control"
@@ -711,7 +773,7 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
                         <!-- Quantidade de Participantes -->
                         <div class="col-12 col-md-3">
                             <label class="form-label mb-1 small fw-bold">
-                                <i class="fa-duotone fa-users"></i> Qtd. Participantes
+                                <i class="fa-duotone fa-users"></i> Qtd. Participantes <span class="required-asterisk">*</span>
                             </label>
                             <input id="txtQtdParticipantes"
                                    class="form-control"
@@ -727,7 +789,7 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
                         <!-- Status -->
                         <div class="col-12 col-md-3">
                             <label class="form-label mb-1 small fw-bold">
-                                <i class="fa-duotone fa-toggle-on"></i> Status
+                                <i class="fa-duotone fa-toggle-on"></i> Status <span class="required-asterisk">*</span>
                             </label>
                             <select id="lstStatus"
                                     class="form-select"
@@ -750,7 +812,7 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
                         <!-- Requisitante do Evento -->
                         <div class="col-12 col-md-6">
                             <label class="form-label mb-1 small fw-bold">
-                                <i class="fa-duotone fa-user"></i> Requisitante do Evento
+                                <i class="fa-duotone fa-user"></i> Requisitante do Evento <span class="required-asterisk">*</span>
                             </label>
                             <ejs-dropdowntree id="lstRequisitanteEvento"
                                               class="form-select"
@@ -761,6 +823,7 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
                                               filterType="Contains"
                                               filterBarPlaceholder="Procurar..."
                                               popupHeight="200px"
+                                              select="RequisitanteEventoValueChange"
                                               change="RequisitanteEventoValueChange"
                                               ejs-for="@Model.EventoObj.Evento.RequisitanteId">
                                 <e-dropdowntree-fields dataSource="@ViewData["dataRequisitante"]"
@@ -775,7 +838,7 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
                         <!-- Setor do Requisitante -->
                         <div class="col-12 col-md-6">
                             <label class="form-label mb-1 small fw-bold">
-                                <i class="fa-duotone fa-building"></i> Setor do Requisitante
+                                <i class="fa-duotone fa-building"></i> Setor do Requisitante <span class="required-asterisk">*</span>
                             </label>
 
                             <!-- Campo de texto visível (readonly) -->
@@ -1313,80 +1376,115 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
 
     window.eventoId = eventoId;
 
-	
-    // FUNÇÃO QUE ESTAVA FALTANDO - ATUALIZADA
-function RequisitanteEventoValueChange() {
-    try {
-        const ddTreeObj = document.getElementById("lstRequisitanteEvento")?.ej2_instances?.[0];
-        
-        if (!ddTreeObj || !ddTreeObj.value || ddTreeObj.value.length === 0) {
-            // Limpar seleção de setor
-            const ddlSetor = document.getElementById('ddlSetorRequisitanteEvento');
-            const txtSetor = document.getElementById('txtSetorRequisitante');
-            
-            if (ddlSetor) ddlSetor.value = '';
-            if (txtSetor) txtSetor.value = '';
-            return;
-        }
 
-        const requisitanteId = String(ddTreeObj.value[0] || ddTreeObj.value);
-        const txtSetor = document.getElementById('txtSetorRequisitante');
-        
-        // Mostra loading
-        if (txtSetor) {
-            txtSetor.value = 'Carregando...';
-        }
+    // FUNÇÃO PARA PREENCHER SETOR AO SELECIONAR REQUISITANTE
+    window.RequisitanteEventoValueChange = function (args) {
+        try {
+            console.log('Event Triggered: RequisitanteEventoValueChange', args);
 
-        // Busca o setor do requisitante
-        $.ajax({
-            url: "/Viagens/UpsertEvento?handler=PegaSetor",
-            method: "GET",
-            dataType: "json",
-            data: { id: requisitanteId },
-            success: function (res) {
-                if (res.success && res.data) {
-                    // Atualiza o DropDownList
-                    const ddlSetor = document.getElementById('ddlSetorRequisitanteEvento');
-                    if (ddlSetor) {
-                        ddlSetor.value = res.data;
-                        
-                        // Trigger change event para validação
-                        ddlSetor.dispatchEvent(new Event('change'));
-                        
-                        // Pega o texto da opção selecionada (sem a indentação)
-                        const opcaoSelecionada = ddlSetor.options[ddlSetor.selectedIndex];
-                        let textoSetor = opcaoSelecionada ? opcaoSelecionada.text : res.setorNome;
-                        
-                        // Remove caracteres de indentação (–, ├, └, │, espaços extras)
-                        textoSetor = textoSetor
-                            .replace(/^[–\s├└│]+/g, '') // Remove prefixos de hierarquia
-                            .trim();
-                        
-                        // Atualiza o campo de texto
-                        if (txtSetor) {
-                            txtSetor.value = textoSetor;
-                        }
-                        
-                        console.log('✓ Setor selecionado:', textoSetor);
-                    }
-                } else {
-                    if (txtSetor) {
-                        txtSetor.value = '';
-                    }
-                    console.warn('Setor não encontrado:', res.message);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('Erro ao buscar setor:', error);
-                if (txtSetor) {
-                    txtSetor.value = 'Erro ao carregar';
+            let requisitanteId = null;
+
+            // TENTATIVA 1: Pega do evento DIRETO (mais confiável no Select)
+            if (args) {
+                if (args.nodeData && args.nodeData.id) {
+                    requisitanteId = args.nodeData.id;
+                } else if (args.itemData && (args.itemData.value || args.itemData.RequisitanteId)) {
+                    requisitanteId = args.itemData.value || args.itemData.RequisitanteId;
+                } else if (args.value) {
+                    // Se for array (multiselect), pega o primeiro
+                    requisitanteId = Array.isArray(args.value) ? args.value[0] : args.value;
+                } else if (args.item && args.item.dataset && args.item.dataset.uid) {
+                    // Fallback para dataset do item HTML
+                    requisitanteId = args.item.dataset.uid; // Cuidado: uid pode não ser o ID do banco
                 }
             }
-        });
 
-    } catch (error) {
-        console.error('Erro em RequisitanteEventoValueChange:', error);
-    }
-}
+            // TENTATIVA 2: Pega do Componente (se o evento falhou ou veio vazio)
+            if (!requisitanteId) {
+                const ddTreeObj = document.getElementById("lstRequisitanteEvento")?.ej2_instances?.[0];
+                if (ddTreeObj && ddTreeObj.value) {
+                    requisitanteId = Array.isArray(ddTreeObj.value) ? ddTreeObj.value[0] : ddTreeObj.value;
+                }
+            }
+
+            console.log('ID Identificado:', requisitanteId);
+
+            // Validação de segurança: se o ID for nulo ou vazio, aborta SUAVEMENTE
+            if (!requisitanteId) {
+                console.warn('Nenhum ID de requisitante válido encontrado. Aguardando interação...');
+                return;
+            }
+
+            const txtSetor = document.getElementById('txtSetorRequisitante');
+            
+            // Só muda o texto para "Carregando" se realmente temos um ID novo
+            if (txtSetor) {
+                txtSetor.value = 'Carregando Setor...';
+                txtSetor.classList.add('pulse-input'); // Feedback visual opcional
+            }
+
+            // Busca o setor do requisitante
+            $.ajax({
+                url: "/Viagens/UpsertEvento?handler=PegaSetor",
+                method: "GET",
+                dataType: "json",
+                data: { id: requisitanteId },
+                success: function (res) {
+                    if (res.success && res.data) {
+                        // Atualiza o DropDownList oculto
+                        const ddlSetor = document.getElementById('ddlSetorRequisitanteEvento');
+                        if (ddlSetor) {
+                            ddlSetor.value = res.data;
+                            
+                            // DISPARA CHANGE MANUALMENTE para garantir que validações ou binds ocorram
+                            const event = new Event('change', { bubbles: true });
+                            ddlSetor.dispatchEvent(event);
+
+                            // Atualiza o Input Visual
+                            const opcaoSelecionada = ddlSetor.options[ddlSetor.selectedIndex];
+                            let textoSetor = opcaoSelecionada ? opcaoSelecionada.text : res.setorNome;
+
+                            // Limpa formatação visual da hierarquia (dashes, pipes)
+                            if (textoSetor) {
+                                textoSetor = textoSetor.replace(/^[–\s├└│]+/g, '').trim();
+                            }
+
+                            if (txtSetor) {
+                                txtSetor.value = textoSetor;
+                                txtSetor.classList.remove('pulse-input');
+                                txtSetor.classList.add('is-valid'); // Feedback positivo
+                                setTimeout(() => txtSetor.classList.remove('is-valid'), 1000);
+                            }
+
+                            console.log('✓ Setor Atualizado com Sucesso:', textoSetor);
+                        }
+                    } else {
+                        if (txtSetor) txtSetor.value = '';
+                        console.warn('Setor não encontrado na resposta:', res);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Erro AJAX ao buscar setor:', error);
+                    if (txtSetor) txtSetor.value = 'Erro ao buscar setor';
+                }
+            });
+
+        } catch (error) {
+            console.error('Erro Crítico em RequisitanteEventoValueChange:', error);
+        }
+    };
+
+    // Garante bind dos eventos do DropDownTree
+    $(document).ready(function () {
+        try {
+            const ddtReq = document.getElementById("lstRequisitanteEvento")?.ej2_instances?.[0];
+            if (ddtReq) {
+                ddtReq.select = window.RequisitanteEventoValueChange;
+                ddtReq.change = window.RequisitanteEventoValueChange;
+            }
+        } catch (error) {
+            console.error('Erro ao bindar eventos do requisitante:', error);
+        }
+    });
 </script>
 }

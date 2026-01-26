@@ -1,3 +1,19 @@
+/****************************************************************************************
+ * ⚡ CONTROLLER: GridContratoController
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Fornecer dados para grids de itens de Contratos
+ *                   Gerencia lista de veículos/serviços incluídos nos contratos
+ * 📥 ENTRADAS     : Nenhuma (utiliza dados estáticos/sessão)
+ * 📤 SAÍDAS       : JSON com lista de ItensVeiculo
+ * 🔗 CHAMADA POR  : JavaScript (grids Syncfusion) das páginas de Contratos via AJAX
+ * 🔄 CHAMA        : ItensVeiculo.GetAllRecords(), IUnitOfWork
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, IUnitOfWork
+ *
+ * 💡 CONCEITOS:
+ *    - Itens de Contrato: Veículos/serviços contratados com quantidade e valores
+ *    - Lista estática: Armazena itens temporariamente durante edição de contrato
+ *    - Repactuação: Ajuste de valores contratuais ao longo do tempo
+ ****************************************************************************************/
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,8 +28,15 @@ namespace FrotiX.Controllers
     public class GridContratoController :Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+
+        // [DOC] Lista estática para armazenar itens temporariamente durante edição de contrato
         public static List<ItensVeiculo> veiculo = new List<ItensVeiculo>();
 
+        /****************************************************************************************
+         * ⚡ CLASSE: objItem (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Wrapper para RepactuacaoContratoId (usado em operações de grid)
+         ****************************************************************************************/
         public class objItem
         {
             Guid RepactuacaoContratoId
@@ -22,6 +45,14 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GridContratoController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependências do Unit of Work
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork
+         * 📤 SAÍDAS       : Instância configurada
+         * 🔗 CHAMADA POR  : ASP.NET Core DI
+         ****************************************************************************************/
         public GridContratoController(IUnitOfWork unitOfWork)
         {
             try

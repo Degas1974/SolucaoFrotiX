@@ -1,11 +1,20 @@
-/*
- * REFATORAÇÃO APLICADA:
- * - Padronizado tratamento de erros com Alerta.TratamentoErroComLinha
- * - Adicionado using FrotiX.Services já existente
- * - Todos os try-catch padronizados
- * - Mantida estrutura completa do código
- */
-
+/****************************************************************************************
+ * ⚡ CONTROLLER: MultaController
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar multas de trânsito (infrações dos veículos)
+ *                   CRUD, upload de PDFs, filtros avançados, empenhos de multas
+ * 📥 ENTRADAS     : Multa, MovimentacaoEmpenhoMulta, Filtros (Fase, Veículo, Órgão, etc)
+ * 📤 SAÍDAS       : JSON com multas formatadas, saldos, movimentações de empenho
+ * 🔗 CHAMADA POR  : Pages/Multas/Index, JavaScript (AJAX), Modais de upload
+ * 🔄 CHAMA        : IUnitOfWork (Multa, Veiculo, Motorista, EmpenhoMulta, Orgao)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework, FrotiX.Services
+ *
+ * 💡 CONCEITOS:
+ *    - Fase: Estágio da multa (Notificação, Penalidade, Recurso, etc)
+ *    - Empenho de Multa: Reserva orçamentária para pagamento de multas
+ *    - Órgão: Entidade que emitiu a multa (DETRAN, PRF, etc)
+ *    - Infração: Código/descrição da infração cometida
+ ****************************************************************************************/
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;
@@ -30,6 +39,11 @@ namespace FrotiX.Controllers
 
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: MultaController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependências do Unit of Work
+         ****************************************************************************************/
         public MultaController(IUnitOfWork unitOfWork)
         {
             try

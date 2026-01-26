@@ -86,7 +86,7 @@ namespace FrotiX.Controllers
                 var eventoIds = eventos.Select(e => e.EventoId).ToList();
 
                 var viagensDict = _context.Viagem
-                    .Where(v => v.EventoId != null && eventoIds.Contains(v.EventoId.Value))
+                    .Where(v => v.EventoId != null && eventoIds.Contains(v.EventoId.Value) && v.Status == "Realizada")
                     .AsNoTracking()
                     .GroupBy(v => v.EventoId)
                     .Select(g => new

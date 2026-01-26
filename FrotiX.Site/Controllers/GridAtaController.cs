@@ -1,3 +1,19 @@
+/****************************************************************************************
+ * ⚡ CONTROLLER: GridAtaController
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Fornecer dados para grids de itens de Atas de Registro de Preços
+ *                   Gerencia lista de veículos/serviços incluídos nas atas
+ * 📥 ENTRADAS     : Nenhuma (utiliza dados estáticos/sessão)
+ * 📤 SAÍDAS       : JSON com lista de ItensVeiculoAta
+ * 🔗 CHAMADA POR  : JavaScript (grids Syncfusion) das páginas de Atas via AJAX
+ * 🔄 CHAMA        : ItensVeiculoAta.GetAllRecords(), IUnitOfWork
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, IUnitOfWork
+ *
+ * 💡 CONCEITOS:
+ *    - Ata de Registro de Preços: Documento que registra preços de itens/serviços
+ *    - ItensVeiculoAta: Classe auxiliar que representa itens da ata
+ *    - Lista estática: Armazena itens temporariamente em memória (sessão)
+ ****************************************************************************************/
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,8 +28,15 @@ namespace FrotiX.Controllers
     public class GridAtaController :Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+
+        // [DOC] Lista estática para armazenar itens temporariamente durante edição de ata
         public static List<ItensVeiculoAta> veiculo = new List<ItensVeiculoAta>();
 
+        /****************************************************************************************
+         * ⚡ CLASSE: objItem (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Wrapper para RepactuacaoAtaId (usado em operações de grid)
+         ****************************************************************************************/
         public class objItem
         {
             Guid RepactuacaoAtaId
@@ -22,6 +45,14 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GridAtaController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependências do Unit of Work
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork
+         * 📤 SAÍDAS       : Instância configurada
+         * 🔗 CHAMADA POR  : ASP.NET Core DI
+         ****************************************************************************************/
         public GridAtaController(IUnitOfWork unitOfWork)
         {
             try

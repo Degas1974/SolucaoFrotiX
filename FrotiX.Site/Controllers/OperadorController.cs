@@ -7,12 +7,33 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: OperadorController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : API CRUD para operadores e associação com contratos
+     * 📥 ENTRADAS     : IDs, ViewModels de operador, dados de contrato
+     * 📤 SAÍDAS       : JsonResult com listas, status de operação, fotos
+     * 🔗 CHAMADA POR  : Grids de operadores, modais de gestão, associações de contratos
+     * 🔄 CHAMA        : Repository (Operador, Contrato, Fornecedor, OperadorContrato, AspNetUsers)
+     * 📦 DEPENDÊNCIAS : Repository Pattern, Alerta.TratamentoErroComLinha
+     ****************************************************************************************/
+
     [Route("api/[controller]")]
     [ApiController]
     public class OperadorController :Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ CONSTRUTOR: OperadorController
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializa controller com injeção de dependência do UnitOfWork
+         * 📥 ENTRADAS     : IUnitOfWork
+         * 📤 SAÍDAS       : Instância do controller
+         * 🔗 CHAMADA POR  : ASP.NET Core DI Container
+         * 🔄 CHAMA        : Alerta.TratamentoErroComLinha (se erro)
+         * 📦 DEPENDÊNCIAS : IUnitOfWork, Alerta.js
+         ****************************************************************************************/
         public OperadorController(IUnitOfWork unitOfWork)
         {
             try
@@ -25,6 +46,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Lista todos operadores com dados de contrato, fornecedor e usuário alteração
+         * 📥 ENTRADAS     : Nenhuma
+         * 📤 SAÍDAS       : JSON com data (array de operadores enriquecidos)
+         * 🔗 CHAMADA POR  : Grid de operadores via GET /api/Operador
+         * 🔄 CHAMA        : _unitOfWork (Operador, Contrato, Fornecedor, AspNetUsers)
+         * 📦 DEPENDÊNCIAS : LINQ joins, Alerta.TratamentoErroComLinha
+         * 📝 OBSERVAÇÃO   : [DOC] Usa LEFT JOINs para incluir operadores sem contrato
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
@@ -89,6 +121,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remove operador se não estiver associado a contratos
+         * 📥 ENTRADAS     : OperadorViewModel (OperadorId)
+         * 📤 SAÍDAS       : JSON com success e message
+         * 🔗 CHAMADA POR  : Botão "Excluir" na grid via POST /api/Operador/Delete
+         * 🔄 CHAMA        : _unitOfWork (Operador, OperadorContrato)
+         * 📦 DEPENDÊNCIAS : Alerta.TratamentoErroComLinha
+         * 📝 OBSERVAÇÃO   : [DOC] Valida se operador está vinculado a contratos antes de excluir
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(OperadorViewModel model)
@@ -144,6 +187,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateStatusOperador
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Alterna status Ativo/Inativo do operador
+         * 📥 ENTRADAS     : Id (Guid do operador)
+         * 📤 SAÍDAS       : JSON com success, message, type (0=ativo, 1=inativo)
+         * 🔗 CHAMADA POR  : Toggle de status na grid via GET /api/Operador/UpdateStatusOperador
+         * 🔄 CHAMA        : _unitOfWork.Operador (GetFirstOrDefault, Update)
+         * 📦 DEPENDÊNCIAS : Alerta.TratamentoErroComLinha
+         * 📝 OBSERVAÇÃO   : [DOC] Não salva automaticamente (_unitOfWork.Save não é chamado)
+         ****************************************************************************************/
         [Route("UpdateStatusOperador")]
         public JsonResult UpdateStatusOperador(Guid Id)
         {
@@ -201,6 +255,16 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaFoto
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retorna foto do operador convertida de Base64
+         * 📥 ENTRADAS     : id (Guid do operador)
+         * 📤 SAÍDAS       : JSON com objeto Operador (Foto convertida) ou false
+         * 🔗 CHAMADA POR  : Exibição de perfil via GET /api/Operador/PegaFoto
+         * 🔄 CHAMA        : _unitOfWork.Operador.GetFirstOrDefault, GetImage()
+         * 📦 DEPENDÊNCIAS : GetImage (método interno), Alerta.TratamentoErroComLinha
+         ****************************************************************************************/
         [HttpGet]
         [Route("PegaFoto")]
         public JsonResult PegaFoto(Guid id)
@@ -234,6 +298,16 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaFotoModal
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retorna apenas foto convertida (sem objeto completo) para modals
+         * 📥 ENTRADAS     : id (Guid do operador)
+         * 📤 SAÍDAS       : JSON com byte[] da foto ou false
+         * 🔗 CHAMADA POR  : Modais de visualização via GET /api/Operador/PegaFotoModal
+         * 🔄 CHAMA        : _unitOfWork.Operador.GetFirstOrDefault, GetImage()
+         * 📦 DEPENDÊNCIAS : GetImage (método interno), Alerta.TratamentoErroComLinha
+         ****************************************************************************************/
         [HttpGet]
         [Route("PegaFotoModal")]
         public JsonResult PegaFotoModal(Guid id)
@@ -258,6 +332,16 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetImage (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Converte string Base64 em byte array
+         * 📥 ENTRADAS     : sBase64String (string)
+         * 📤 SAÍDAS       : byte[] da imagem ou null
+         * 🔗 CHAMADA POR  : PegaFoto, PegaFotoModal
+         * 🔄 CHAMA        : Convert.FromBase64String
+         * 📦 DEPENDÊNCIAS : System.Convert, Alerta.TratamentoErroComLinha
+         ****************************************************************************************/
         public byte[] GetImage(string sBase64String)
         {
             try
@@ -276,6 +360,16 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OperadorContratos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Lista operadores associados a um contrato específico
+         * 📥 ENTRADAS     : Id (Guid do contrato)
+         * 📤 SAÍDAS       : JSON com data (array de operadores vinculados)
+         * 🔗 CHAMADA POR  : Grid de operadores por contrato via GET /api/Operador/OperadorContratos
+         * 🔄 CHAMA        : _unitOfWork (Operador, OperadorContrato)
+         * 📦 DEPENDÊNCIAS : LINQ join, Alerta.TratamentoErroComLinha
+         ****************************************************************************************/
         [HttpGet]
         [Route("OperadorContratos")]
         public IActionResult OperadorContratos(Guid Id)
@@ -315,6 +409,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DeleteContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remove associação entre operador e contrato
+         * 📥 ENTRADAS     : OperadorViewModel (OperadorId, ContratoId)
+         * 📤 SAÍDAS       : JSON com success e message
+         * 🔗 CHAMADA POR  : Botão "Remover Contrato" via POST /api/Operador/DeleteContrato
+         * 🔄 CHAMA        : _unitOfWork (Operador, OperadorContrato)
+         * 📦 DEPENDÊNCIAS : Alerta.TratamentoErroComLinha
+         * 📝 OBSERVAÇÃO   : [DOC] Limpa ContratoId do operador se for o contrato principal
+         ****************************************************************************************/
         [Route("DeleteContrato")]
         [HttpPost]
         public IActionResult DeleteContrato(OperadorViewModel model)

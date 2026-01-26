@@ -7,6 +7,17 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: OcorrenciaViagemController.Upsert
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Método de baixa de ocorrência específico para tela de Nova Viagem
+     * 📥 ENTRADAS     : BaixarOcorrenciaUpsertDTO (OcorrenciaViagemId, SolucaoOcorrencia)
+     * 📤 SAÍDAS       : JSON com success e message
+     * 🔗 CHAMADA POR  : Tela Upsert de Viagem (botão baixar ocorrência)
+     * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem, TextNormalizationHelper
+     * 📦 DEPENDÊNCIAS : TextNormalizationHelper.NormalizeAsync, Alerta.TratamentoErroComLinha
+     ****************************************************************************************/
+
     /// <summary>
     /// Partial class para adicionar métodos de baixa na tela Upsert
     /// </summary>
@@ -14,10 +25,18 @@ namespace FrotiX.Controllers
     {
         #region Métodos para Tela Upsert (Nova Viagem)
 
-        /// <summary>
-        /// Baixa uma ocorrência a partir da tela de Nova Viagem (Upsert)
-        /// Permite baixar com ou sem solução
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: BaixarOcorrenciaUpsert
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Baixa ocorrência durante criação/edição de viagem (com/sem solução)
+         * 📥 ENTRADAS     : BaixarOcorrenciaUpsertDTO (OcorrenciaViagemId, SolucaoOcorrencia opcional)
+         * 📤 SAÍDAS       : JSON com success e message
+         * 🔗 CHAMADA POR  : Modal de baixa em tela Upsert via POST /BaixarOcorrenciaUpsert
+         * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem, TextNormalizationHelper.NormalizeAsync
+         * 📦 DEPENDÊNCIAS : TextNormalizationHelper, Alerta.TratamentoErroComLinha
+         * 📝 OBSERVAÇÃO   : [DOC] Impede baixar ocorrência já baixada (StatusOcorrencia=false)
+         *                   [DOC] Atualiza Status(string) e StatusOcorrencia(bool) simultaneamente
+         ****************************************************************************************/
         [Route("BaixarOcorrenciaUpsert")]
         [HttpPost]
         public async Task<IActionResult> BaixarOcorrenciaUpsert([FromBody] BaixarOcorrenciaUpsertDTO dto)

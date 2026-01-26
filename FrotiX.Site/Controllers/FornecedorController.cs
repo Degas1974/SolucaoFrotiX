@@ -1,3 +1,18 @@
+/****************************************************************************************
+ * ⚡ CONTROLLER: FornecedorController
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar fornecedores (empresas contratadas)
+ *                   CRUD básico com validação de integridade (contratos vinculados)
+ * 📥 ENTRADAS     : FornecedorViewModel, IDs (via API REST)
+ * 📤 SAÍDAS       : JSON com fornecedores, status de operações
+ * 🔗 CHAMADA POR  : Pages/Fornecedores/Index, Pages/Contratos (seleção de fornecedor)
+ * 🔄 CHAMA        : IUnitOfWork (Fornecedor, Contrato), Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework
+ *
+ * ⚠️  INTEGRIDADE:
+ *    - Bloqueia exclusão se houver contratos vinculados ao fornecedor
+ *    - Permite ativar/desativar fornecedor sem excluir (soft delete)
+ ****************************************************************************************/
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +26,14 @@ namespace FrotiX.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: FornecedorController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependências do Unit of Work
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork
+         * 📤 SAÍDAS       : Instância configurada
+         * 🔗 CHAMADA POR  : ASP.NET Core DI
+         ****************************************************************************************/
         public FornecedorController(IUnitOfWork unitOfWork)
         {
             try
@@ -44,6 +67,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Excluir fornecedor do banco validando integridade referencial
+         * 📥 ENTRADAS     : [FornecedorViewModel] model - contém FornecedorId
+         * 📤 SAÍDAS       : [IActionResult] JSON success/message
+         * 🔄 CHAMA        : Fornecedor.GetFirstOrDefault(), Contrato, Remove(), Save()
+         * ⚠️  VALIDAÇÃO   : Bloqueia exclusão se houver contratos associados ao fornecedor
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(FornecedorViewModel model)
@@ -57,6 +89,7 @@ namespace FrotiX.Controllers
                     );
                     if (objFromDb != null)
                     {
+                        // [DOC] Verifica integridade referencial - bloqueia se houver contratos vinculados
                         var contrato = _unitOfWork.Contrato.GetFirstOrDefault(u =>
                             u.FornecedorId == model.FornecedorId
                         );

@@ -1,3 +1,13 @@
+/****************************************************************************************
+ * ⚡ CONTROLLER: ModeloVeiculoController
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar modelos de veículos vinculados a marcas - CRUD básico
+ * 📥 ENTRADAS     : ModeloVeiculoViewModel, IDs
+ * 📤 SAÍDAS       : JSON com modelos incluindo MarcaVeiculo (JOIN)
+ * 🔗 CHAMADA POR  : Pages/ModelosVeiculos/Index, Dropdowns de cadastro de veículos
+ * 🔄 CHAMA        : IUnitOfWork (ModeloVeiculo, MarcaVeiculo)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, IUnitOfWork
+ ****************************************************************************************/
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;

@@ -12749,7 +12749,8 @@ END
 GO
 
 SET NOEXEC OFF
-GO/*
+GO
+/*
 â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
 â•‘                                                                          â•‘
 â•‘  ðŸ“š SISTEMA DE CONTROLE DE CACHE - DOCGENERATOR                         â•‘
@@ -12836,6 +12837,7 @@ CREATE INDEX IX_FileTracking_LastModified ON DocGenerator.FileTracking (LastModi
 CREATE INDEX IX_FileChangeHistory_FilePath_DetectedAt ON DocGenerator.FileChangeHistory (FilePath, DetectedAt DESC);
 
 -- View para arquivos que precisam de atualizaÃ§Ã£o
+GO
 CREATE VIEW DocGenerator.vw_FilesNeedingUpdate AS
 SELECT 
     ft.FilePath,
@@ -12855,6 +12857,8 @@ LEFT JOIN DocGenerator.DocumentationAlerts da
 WHERE ft.NeedsUpdate = 1 
     OR (ft.LastDocumented IS NULL) 
     OR (DATEDIFF(DAY, ft.LastDocumented, GETDATE()) > 30);
+
+GO
 
 -- Stored Procedure para detectar mudanÃ§as
 CREATE PROCEDURE DocGenerator.sp_DetectFileChanges

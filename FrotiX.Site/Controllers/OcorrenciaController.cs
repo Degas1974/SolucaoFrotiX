@@ -22,6 +22,16 @@ namespace FrotiX.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private IWebHostEnvironment hostingEnv;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OcorrenciaController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar dependências do controller (UnitOfWork e Ambiente)
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork, [IWebHostEnvironment] env
+         * 📤 SAÍDAS       : Instância inicializada do OcorrenciaController
+         * 🔗 CHAMADA POR  : ASP.NET Core Dependency Injection
+         * 🔄 CHAMA        : Alerta.TratamentoErroComLinha (em caso de erro)
+         * 📦 DEPENDÊNCIAS : IUnitOfWork, IWebHostEnvironment
+         ****************************************************************************************/
         public OcorrenciaController(IUnitOfWork unitOfWork , IWebHostEnvironment env)
         {
             try
@@ -35,6 +45,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar ocorrências de viagens com filtros múltiplos
+         * 📥 ENTRADAS     : [string] veiculoId, motoristaId, statusId, data, dataInicial, dataFinal, debug
+         * 📤 SAÍDAS       : [JSON] { data } - Lista de ocorrências filtradas
+         * 🔗 CHAMADA POR  : Tela de consulta de ocorrências
+         * 🔄 CHAMA        : _unitOfWork.ViewViagens.GetAllReducedIQueryable
+         * 📦 DEPENDÊNCIAS : ViewViagens (view do banco)
+         *
+         * [DOC] Aceita múltiplos formatos de data: dd/MM/yyyy, yyyy-MM-dd, ISO 8601
+         * [DOC] Filtros: VeículoId, MotoristaId, StatusOcorrencia, Data única ou período
+         * [DOC] Debug=1 retorna echo dos parâmetros recebidos
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get(
             string veiculoId = null ,

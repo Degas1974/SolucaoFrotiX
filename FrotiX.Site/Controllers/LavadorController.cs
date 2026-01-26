@@ -1,9 +1,14 @@
-/*
- * REFATORAÇÕES APLICADAS:
- * - Removido try-catch duplicado no método Get()
- * - Mantida toda estrutura e lógica original
- */
-
+/****************************************************************************************
+ * ⚡ CONTROLLER: LavadorController
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar lavadores (funcionários responsáveis por limpeza de veículos)
+ *                   CRUD completo com vínculos a contratos e fornecedores
+ * 📥 ENTRADAS     : LavadorViewModel, IDs, Filtros
+ * 📤 SAÍDAS       : JSON com lavadores, contratos e dados formatados
+ * 🔗 CHAMADA POR  : Pages/Lavadores/Index, JavaScript (AJAX)
+ * 🔄 CHAMA        : IUnitOfWork (Lavador, Contrato, Fornecedor, AspNetUsers)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework
+ ****************************************************************************************/
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +24,11 @@ namespace FrotiX.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: LavadorController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependências
+         ****************************************************************************************/
         public LavadorController(IUnitOfWork unitOfWork)
         {
             try

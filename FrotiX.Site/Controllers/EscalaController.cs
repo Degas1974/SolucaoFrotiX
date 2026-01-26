@@ -1,3 +1,28 @@
+/****************************************************************************************
+ * ⚡ CONTROLLER: EscalaController (Partial Class)
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar escalas diárias de motoristas (plantões, turnos, disponibilidade)
+ *                   Sistema tempo real com SignalR, controle de conflitos, férias, folgas
+ *                   Gestão de lotação, serviços, indisponibilidades e coberturas
+ * 📥 ENTRADAS     : EscalaDiariaViewModel, FiltroEscalaViewModel, IDs, Datas
+ * 📤 SAÍDAS       : Views (Index, Create, Edit), JSON (API), Notificações SignalR
+ * 🔗 CHAMADA POR  : Pages/Escala/Index, JavaScript (AJAX), SignalR Hub
+ * 🔄 CHAMA        : IUnitOfWork, ILogger, IHubContext<EscalaHub>, EscalaController_Api
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, SignalR, Entity Framework, Async/Await
+ *
+ * 🌐 ARQUITETURA:
+ *    - Partial Class: Dividida em EscalaController.cs e EscalaController_Api.cs
+ *    - SignalR: Notificações em tempo real de atualizações de escala
+ *    - Async/Await: Operações assíncronas para melhor performance
+ *
+ * 💡 CONCEITOS:
+ *    - Escala Diária: Plantão de motorista em data/horário específico
+ *    - Lotação: Local de trabalho (Aeroporto, PGR, Rodoviária, etc)
+ *    - Status: Disponível, Em Viagem, Indisponível, Economildo, Reservado
+ *    - Associação: Vínculo Motorista ↔ Veículo (VAssociado)
+ *    - Conflito: Sobreposição de horários para o mesmo motorista
+ *    - Cobertura: Motorista substituto durante folgas/férias
+ ****************************************************************************************/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +51,14 @@ namespace FrotiX.Controllers
         private readonly ILogger<EscalaController> _logger;
         private readonly IHubContext<EscalaHub> _hubContext;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: EscalaController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependências (UnitOfWork, Logger, SignalR Hub)
+         * 📥 ENTRADAS     : IUnitOfWork, ILogger<EscalaController>, IHubContext<EscalaHub>
+         * 📤 SAÍDAS       : Instância configurada
+         * 🔗 CHAMADA POR  : ASP.NET Core DI
+         ****************************************************************************************/
         public EscalaController(IUnitOfWork unitOfWork, ILogger<EscalaController> logger, IHubContext<EscalaHub> hubContext)
         {
             _unitOfWork = unitOfWork;
@@ -70,6 +103,26 @@ namespace FrotiX.Controllers
             return View(model);
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Create (POST)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Criar nova escala diária validando conflitos de horário
+         *                   Cria/atualiza associação motorista-veículo automaticamente
+         *                   Registra indisponibilidades (férias/folgas) se necessário
+         * 📥 ENTRADAS     : [EscalaDiariaViewModel] model - Dados da escala
+         * 📤 SAÍDAS       : [IActionResult] RedirectToAction ou View com erros
+         * 🔗 CHAMADA POR  : Formulário POST da view Create
+         * 🔄 CHAMA        : ExisteEscalaConflitanteAsync(), VAssociado, EscalaDiaria.Add(),
+         *                   CriarIndisponibilidade(), NotificarAtualizacaoEscalas()
+         *
+         * ⚠️  VALIDAÇÕES:
+         *    - Verifica conflitos de horário para o motorista
+         *    - Valida se motorista foi selecionado
+         *    - Cria associação veículo-motorista se não existir
+         *
+         * 🔔 NOTIFICAÇÃO:
+         *    - Envia notificação SignalR para todos os clientes após criar escala
+         ****************************************************************************************/
         // POST: Escala/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -79,12 +132,13 @@ namespace FrotiX.Controllers
             {
                 try
                 {
-                    // Verificar conflitos
+                    // [DOC] Converte strings de hora para TimeSpan para validação
                     var horaInicio = TimeSpan.Parse(model.HoraInicio);
                     var horaFim = TimeSpan.Parse(model.HoraFim);
 
                     if (model.MotoristaId.HasValue)
                     {
+                        // [DOC] Verifica se motorista já tem escala neste horário (evita conflitos)
                         var conflito = await _unitOfWork.EscalaDiaria.ExisteEscalaConflitanteAsync(
                             model.MotoristaId.Value, model.DataEscala, horaInicio, horaFim, null);
 
@@ -94,11 +148,12 @@ namespace FrotiX.Controllers
                             return RedirectToAction(nameof(Create));
                         }
 
-                        // Obter ou criar associação veículo-motorista
+                        // [DOC] Obter ou criar associação veículo-motorista (vínculo necessário para escala)
                         var associacao = await _unitOfWork.VAssociado.GetAssociacaoAtivaAsync(model.MotoristaId.Value);
 
                         if (associacao == null && model.VeiculoId.HasValue)
                         {
+                            // [DOC] Cria nova associação se não existir
                             associacao = new VAssociado
                             {
                                 MotoristaId = model.MotoristaId.Value,
@@ -539,14 +594,28 @@ namespace FrotiX.Controllers
                 .ContinueWith(t => t.Result.Count());
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: NotificarAtualizacaoEscalas (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Notificar todos os clientes conectados via SignalR sobre mudanças
+         *                   Atualiza grid de escalas e lista de "motoristas da vez" em tempo real
+         * 📥 ENTRADAS     : Nenhuma
+         * 📤 SAÍDAS       : [Task] Notificações enviadas via SignalR
+         * 🔗 CHAMADA POR  : Create(), Edit(), Delete(), AtualizarStatus()
+         * 🔄 CHAMA        : _hubContext.Clients.All.SendAsync(), GetMotoristasVezAsync()
+         *
+         * 🔔 EVENTOS SIGNALR:
+         *    - "AtualizarEscalas": Recarrega grid de escalas em todos os clientes
+         *    - "AtualizarMotoristasVez": Atualiza lista de próximos motoristas disponíveis
+         ****************************************************************************************/
         private async Task NotificarAtualizacaoEscalas()
         {
             try
             {
-                // Notificar todos os clientes sobre a atualização
+                // [DOC] Notificar todos os clientes sobre a atualização (recarrega grid)
                 await _hubContext.Clients.All.SendAsync("AtualizarEscalas");
 
-                // Atualizar motoristas da vez
+                // [DOC] Atualizar motoristas da vez (próximos 5 disponíveis)
                 var motoristasVez = await _unitOfWork.EscalaDiaria.GetMotoristasVezAsync(5);
                 await _hubContext.Clients.All.SendAsync("AtualizarMotoristasVez", motoristasVez);
             }

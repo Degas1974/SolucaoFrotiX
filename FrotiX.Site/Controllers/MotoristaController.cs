@@ -1,22 +1,15 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║                                                                          ║
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║                                                                          ║
- * ║  Este arquivo está completamente documentado em:                         ║
- * ║  📄 Documentacao/Pages/Motorista - Index.md                               ║
- * ║                                                                          ║
- * ║  A documentação inclui:                                                   ║
- * ║  • Explicação detalhada de cada endpoint API                             ║
- * ║  • Validações e verificações de dependências                            ║
- * ║  • Lógica de processamento                                               ║
- * ║  • Interconexões com outros componentes                                 ║
- * ║                                                                          ║
- * ║  Última atualização: 08/01/2026                                          ║
- * ║                                                                          ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
-
+/****************************************************************************************
+ * ⚡ CONTROLLER: MotoristaController
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar motoristas (funcionários que conduzem veículos)
+ *                   CRUD completo, upload de CNH, fotos, controle de escalas/viagens
+ * 📥 ENTRADAS     : MotoristaViewModel, IDs, Filtros, Arquivos (CNH, Fotos)
+ * 📤 SAÍDAS       : JSON com motoristas, contratos, CNHs, fotos (Base64)
+ * 🔗 CHAMADA POR  : Pages/Motoristas/Index, Escalas, Viagens, JavaScript (AJAX)
+ * 🔄 CHAMA        : IUnitOfWork (Motorista, Contrato, Fornecedor, CNH, VAssociado)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework, File System
+ * 📄 DOCUMENTAÇÃO : Documentacao/Pages/Motorista - Index.md
+ ****************************************************************************************/
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;

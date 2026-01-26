@@ -36,6 +36,18 @@ namespace FrotiX.Controllers
         private const string CacheKeyFontAwesomeIcons = "FontAwesomeIcons";
         private static readonly TimeSpan CacheDuration = TimeSpan.FromHours(24);
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: NavigationController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar dependências do controller (UnitOfWork, Ambiente, Cache)
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork - Acesso ao banco
+         *                  [IWebHostEnvironment] env - Acesso ao sistema de arquivos
+         *                  [IMemoryCache] cache - Cache em memória
+         * 📤 SAÍDAS       : Instância inicializada do NavigationController
+         * 🔗 CHAMADA POR  : ASP.NET Core Dependency Injection
+         * 🔄 CHAMA        : Alerta.TratamentoErroComLinha (em caso de erro)
+         * 📦 DEPENDÊNCIAS : IUnitOfWork, IWebHostEnvironment, IMemoryCache
+         ****************************************************************************************/
         public NavigationController(IUnitOfWork unitOfWork, IWebHostEnvironment env, IMemoryCache cache)
         {
             try
@@ -50,18 +62,29 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Retorna a estrutura completa do nav.json para a TreeView
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetTree
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Carregar estrutura completa do menu de navegação do arquivo nav.json
+         * 📥 ENTRADAS     : Nenhuma (HTTP GET)
+         * 📤 SAÍDAS       : [JSON] { success, data } - Árvore hierárquica do menu
+         * 🔗 CHAMADA POR  : Tela de administração de navegação (TreeView Syncfusion)
+         * 🔄 CHAMA        : NavigationBuilder.FromJson, TransformToTreeData
+         * 📦 DEPENDÊNCIAS : nav.json (arquivo no ContentRootPath)
+         *
+         * [DOC] Carrega nav.json e transforma em estrutura TreeView para edição visual
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetTree")]
         public IActionResult GetTree()
         {
             try
             {
+                // [DOC] Lê arquivo nav.json da raiz do projeto
                 var jsonText = System.IO.File.ReadAllText(NavJsonPath);
                 var navigation = NavigationBuilder.FromJson(jsonText);
 
+                // [DOC] Transforma estrutura JSON em formato compatível com TreeView
                 var treeData = TransformToTreeData(navigation.Lists, null);
 
                 return Json(new
@@ -81,9 +104,18 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Salva a estrutura completa e sincroniza com o BD
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SaveTree
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Salvar estrutura completa do menu editado e sincronizar com banco
+         * 📥 ENTRADAS     : [List<NavigationTreeItem>] items - Árvore editada
+         * 📤 SAÍDAS       : [JSON] { success, message } - Resultado da operação
+         * 🔗 CHAMADA POR  : Tela de administração de navegação (ao salvar alterações)
+         * 🔄 CHAMA        : SincronizarRecursos, JsonSerializer.Serialize
+         * 📦 DEPENDÊNCIAS : nav.json (arquivo backup e original)
+         *
+         * [DOC] Faz backup, salva nav.json e sincroniza com tabela Recurso no banco
+         ****************************************************************************************/
         [HttpPost]
         [Route("SaveTree")]
         public IActionResult SaveTree([FromBody] List<NavigationTreeItem> items)
@@ -133,9 +165,19 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Adiciona novo item e cria Recurso correspondente no BD
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AddItem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Adicionar novo item ao menu e criar Recurso no banco
+         * 📥 ENTRADAS     : [NavigationItemDTO] item - Dados do novo item
+         * 📤 SAÍDAS       : [JSON] { success, recursoId, message }
+         * 🔗 CHAMADA POR  : Tela de administração (ao adicionar novo item ao menu)
+         * 🔄 CHAMA        : CriarControleAcessoParaTodosUsuarios, _unitOfWork.Recurso.Add
+         * 📦 DEPENDÊNCIAS : Tabelas Recurso e ControleAcesso
+         *
+         * [DOC] IMPORTANTE: Cria Recurso PRIMEIRO (Save), depois ControleAcesso
+         * Isso garante que RecursoId existe antes da FK em ControleAcesso
+         ****************************************************************************************/
         [HttpPost]
         [Route("AddItem")]
         public IActionResult AddItem([FromBody] NavigationItemDTO item)
@@ -281,9 +323,18 @@ namespace FrotiX.Controllers
 
         #region Endpoints para Navegação via Banco de Dados (Syncfusion)
 
-        /// <summary>
-        /// Retorna árvore de navegação do banco filtrada por usuário logado
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetTreeFromDb
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Carregar menu de navegação do banco filtrado por permissões do usuário
+         * 📥 ENTRADAS     : Nenhuma (usuário logado via Claims)
+         * 📤 SAÍDAS       : [JSON] { success, data } - Árvore de recursos com permissão
+         * 🔗 CHAMADA POR  : Layout do sistema (carregamento do menu lateral)
+         * 🔄 CHAMA        : MontarArvoreRecursiva, _unitOfWork.Recurso.GetAll
+         * 📦 DEPENDÊNCIAS : Tabelas Recurso e ControleAcesso, ClaimTypes.NameIdentifier
+         *
+         * [DOC] Filtra recursos onde ControleAcesso.Acesso = true para o usuário logado
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetTreeFromDb")]
         public IActionResult GetTreeFromDb()
@@ -400,13 +451,21 @@ namespace FrotiX.Controllers
             public string Nome { get; set; }
         }
 
-        /// <summary>
-        /// Salva alterações na árvore (reordenação, hierarquia) no banco de dados
-        /// Usa estratégia de duas fases para evitar violação de UNIQUE INDEX em Ordem
-        /// </summary>
-        /// <remarks>
-        /// Lê o body diretamente como string para evitar validação automática do [ApiController]
-        /// </remarks>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SaveTreeToDb
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Salvar reordenação/hierarquia da árvore diretamente no banco
+         * 📥 ENTRADAS     : [JSON Body] Lista de RecursoTreeDTO (estrutura da árvore)
+         * 📤 SAÍDAS       : [JSON] { success, message } - Resultado da operação
+         * 🔗 CHAMADA POR  : Tela de administração (ao arrastar/soltar itens na TreeView)
+         * 🔄 CHAMA        : ColetarAtualizacoes, DbContext.SaveChanges (2 fases)
+         * 📦 DEPENDÊNCIAS : Entity Framework, tabela Recurso
+         *
+         * [DOC] ESTRATÉGIA DE DUAS FASES para evitar violação de UNIQUE INDEX:
+         * FASE 1: Aplica ordens temporárias NEGATIVAS (-1, -2, -3...)
+         * FASE 2: Aplica valores finais corretos (1, 2, 3...)
+         * Isso evita conflito com constraint UNIQUE em Ordem
+         ****************************************************************************************/
         [HttpPost]
         [Route("SaveTreeToDb")]
         public async Task<IActionResult> SaveTreeToDb()
@@ -677,9 +736,18 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Migra dados do nav.json para a tabela Recurso no banco de dados
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: MigrateFromJson
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Migrar estrutura do nav.json para tabela Recurso (banco de dados)
+         * 📥 ENTRADAS     : Nenhuma (lê nav.json do ContentRootPath)
+         * 📤 SAÍDAS       : [JSON] { success, message, criados, atualizados }
+         * 🔗 CHAMADA POR  : Administrador (migração manual uma vez)
+         * 🔄 CHAMA        : ProcessarItensParaMigracao, NavigationBuilder.FromJson
+         * 📦 DEPENDÊNCIAS : nav.json, tabelas Recurso e ControleAcesso
+         *
+         * [DOC] ORDENAÇÃO HIERÁRQUICA: Nível 0: 1,2,3... | Nível 1: 101,102,201,202...
+         ****************************************************************************************/
         [HttpPost]
         [Route("MigrateFromJson")]
         public IActionResult MigrateFromJson()

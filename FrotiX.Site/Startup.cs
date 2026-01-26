@@ -199,6 +199,9 @@ namespace FrotiX
                 );
                 services.AddSingleton(s => s.GetRequiredService<IOptions<SmartSettings>>().Value);
 
+                services.Configure<FrotiX.Settings.RecorrenciaToggleSettings>(Configuration.GetSection("RecorrenciaToggle"));
+                services.AddSingleton(sp => sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<FrotiX.Settings.RecorrenciaToggleSettings>>().Value);
+
                 services.Configure<CookiePolicyOptions>(options =>
                 {
                     options.CheckConsentNeeded = context => true;

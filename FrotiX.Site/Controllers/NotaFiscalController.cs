@@ -15,6 +15,16 @@ namespace FrotiX.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: NotaFiscalController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar dependência do UnitOfWork para acesso ao banco
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork - Acesso aos repositórios
+         * 📤 SAÍDAS       : Instância inicializada do NotaFiscalController
+         * 🔗 CHAMADA POR  : ASP.NET Core Dependency Injection
+         * 🔄 CHAMA        : Alerta.TratamentoErroComLinha (em caso de erro)
+         * 📦 DEPENDÊNCIAS : IUnitOfWork
+         ****************************************************************************************/
         public NotaFiscalController(IUnitOfWork unitOfWork)
         {
             try
@@ -39,6 +49,18 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Excluir Nota Fiscal e devolver saldo líquido ao empenho
+         * 📥 ENTRADAS     : [NotaFiscalViewModel] model - Dados da NF a excluir
+         * 📤 SAÍDAS       : [JSON] { success, message }
+         * 🔗 CHAMADA POR  : Tela de gerenciamento de Notas Fiscais
+         * 🔄 CHAMA        : _unitOfWork.NotaFiscal.Remove, _unitOfWork.Empenho.Update
+         * 📦 DEPENDÊNCIAS : Tabelas NotaFiscal e Empenho
+         *
+         * [DOC] REGRA DE NEGÓCIO: Ao excluir NF, devolve ValorLíquido (ValorNF - ValorGlosa) ao SaldoFinal do Empenho
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(NotaFiscalViewModel model)
@@ -57,7 +79,7 @@ namespace FrotiX.Controllers
                         );
                         if (empenho != null)
                         {
-                            // Ao excluir NF, devolver o valor líquido ao empenho
+                            // [DOC] Ao excluir NF, devolver o valor líquido (NF - Glosa) ao saldo do empenho
                             empenho.SaldoFinal = empenho.SaldoFinal + ((objFromDb.ValorNF ?? 0) - (objFromDb.ValorGlosa ?? 0));
                             _unitOfWork.Empenho.Update(empenho);
                         }
@@ -130,6 +152,21 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Glosa
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Aplicar ou atualizar glosa em Nota Fiscal e ajustar saldo do empenho
+         * 📥 ENTRADAS     : [GlosaNota] glosanota - NotaFiscalId, ValorGlosa, MotivoGlosa, ModoGlosa
+         * 📤 SAÍDAS       : [JSON] { success, message, novaGlosa, novaGlosaFormatada }
+         * 🔗 CHAMADA POR  : Tela de gerenciamento de Notas Fiscais (modal de glosa)
+         * 🔄 CHAMA        : _unitOfWork.NotaFiscal.Update, _unitOfWork.Empenho.Update
+         * 📦 DEPENDÊNCIAS : Tabelas NotaFiscal e Empenho
+         *
+         * [DOC] REGRA DE NEGÓCIO: Glosa DEVOLVE dinheiro ao empenho (aumenta SaldoFinal)
+         * [DOC] ModoGlosa: "somar" = soma à glosa existente | "substituir" = substitui valor
+         * [DOC] Validação: Glosa não pode exceder ValorNF
+         * [DOC] Conversão automática: Se valor parece estar em centavos, divide por 100
+         ****************************************************************************************/
         [Route("Glosa")]
         [HttpPost]
         [Consumes("application/json")]
@@ -137,7 +174,7 @@ namespace FrotiX.Controllers
         {
             try
             {
-                // Buscar nota fiscal
+                // [DOC] Buscar nota fiscal
                 var notaFiscal = _unitOfWork.NotaFiscal.GetFirstOrDefault(u =>
                     u.NotaFiscalId == glosanota.NotaFiscalId
                 );
@@ -151,19 +188,19 @@ namespace FrotiX.Controllers
                     });
                 }
 
-                // Valor da glosa informada (converter de centavos se necessário)
+                // [DOC] Valor da glosa informada (converter de centavos se necessário)
                 var valorGlosaInformada = glosanota.ValorGlosa ?? 0;
-                
-                // Se o valor parece estar em centavos (muito maior que o valor da NF), dividir por 100
+
+                // [DOC] Se o valor parece estar em centavos (muito maior que o valor da NF), dividir por 100
                 if (valorGlosaInformada > 100 && valorGlosaInformada > (notaFiscal.ValorNF ?? 0) * 1.5)
                 {
                     valorGlosaInformada = valorGlosaInformada / 100;
                 }
 
-                // Glosa antiga
+                // [DOC] Glosa antiga (para calcular diferença)
                 var glosaAntiga = notaFiscal.ValorGlosa ?? 0;
 
-                // Calcular nova glosa baseado no modo
+                // [DOC] Calcular nova glosa baseado no modo
                 double novaGlosa;
                 if (glosanota.ModoGlosa == "somar")
                 {
@@ -174,7 +211,7 @@ namespace FrotiX.Controllers
                     novaGlosa = valorGlosaInformada;
                 }
 
-                // Validar se glosa não excede o valor da NF
+                // [DOC] Validar se glosa não excede o valor da NF
                 if (novaGlosa > (notaFiscal.ValorNF ?? 0))
                 {
                     return Json(new
@@ -184,23 +221,23 @@ namespace FrotiX.Controllers
                     });
                 }
 
-                // Calcular diferença para ajustar o saldo do empenho
+                // [DOC] Calcular diferença para ajustar o saldo do empenho
                 // A glosa AUMENTA o saldo (devolve dinheiro ao empenho)
                 var diferencaGlosa = novaGlosa - glosaAntiga;
 
-                // Atualizar nota fiscal
+                // [DOC] Atualizar nota fiscal
                 notaFiscal.ValorGlosa = novaGlosa;
                 notaFiscal.MotivoGlosa = glosanota.MotivoGlosa;
                 _unitOfWork.NotaFiscal.Update(notaFiscal);
 
-                // Atualizar saldo do empenho
+                // [DOC] Atualizar saldo do empenho
                 var empenho = _unitOfWork.Empenho.GetFirstOrDefault(u =>
                     u.EmpenhoId == notaFiscal.EmpenhoId
                 );
 
                 if (empenho != null)
                 {
-                    // Glosa aumenta o saldo (devolve o valor ao empenho)
+                    // [DOC] Glosa aumenta o saldo (devolve o valor ao empenho)
                     empenho.SaldoFinal = empenho.SaldoFinal + diferencaGlosa;
                     _unitOfWork.Empenho.Update(empenho);
                 }

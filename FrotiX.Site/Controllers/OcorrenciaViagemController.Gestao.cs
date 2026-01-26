@@ -10,6 +10,17 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: OcorrenciaViagemController.Gestao
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Métodos para gestão de ocorrências (listar, editar, baixar)
+     * 📥 ENTRADAS     : Filtros (veículo, motorista, status, datas), DTOs de edição/baixa
+     * 📤 SAÍDAS       : JsonResult com lista de ocorrências ou status de operação
+     * 🔗 CHAMADA POR  : Páginas de gestão de ocorrências, modals de edição
+     * 🔄 CHAMA        : Repository (OcorrenciaViagem, Viagem, ViewVeiculos, ViewMotoristas)
+     * 📦 DEPENDÊNCIAS : TextNormalizationHelper, Alerta.js, Repository Pattern
+     ****************************************************************************************/
+
     /// <summary>
     /// Métodos para a página de Gestão de Ocorrências
     /// </summary>
@@ -17,9 +28,19 @@ namespace FrotiX.Controllers
     {
         #region LISTAR PARA GESTÃO
 
-        /// <summary>
-        /// Lista todas as ocorrências para a página de gestão com filtros
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListarGestao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Lista ocorrências com filtros avançados (veículo, motorista, status, data)
+         * 📥 ENTRADAS     : veiculoId, motoristaId, statusId, data, dataInicial, dataFinal (query params)
+         * 📤 SAÍDAS       : JSON com data (array de ocorrências enriquecidas)
+         * 🔗 CHAMADA POR  : Grid de gestão de ocorrências via GET /ListarGestao
+         * 🔄 CHAMA        : _unitOfWork (OcorrenciaViagem, Viagem, ViewVeiculos, ViewMotoristas)
+         * 📦 DEPENDÊNCIAS : LINQ, Repository Pattern, Alerta.TratamentoErroComLinha
+         * 📝 OBSERVAÇÃO   : [DOC] Tratamento especial de Status: NULL/true=Aberta, false=Baixada
+         *                   [DOC] Filtros de status: Aberta, Baixada, Pendente, Manutenção
+         *                   [DOC] Limite de 500 registros por consulta
+         ****************************************************************************************/
         [HttpGet]
         [Route("ListarGestao")]
         public IActionResult ListarGestao(
@@ -238,10 +259,17 @@ namespace FrotiX.Controllers
 
         #region EDITAR OCORRÊNCIA
 
-        /// <summary>
-        /// Edita uma ocorrência existente (chamado pelo modal de edição)
-        /// Suporta alteração da ImagemOcorrencia
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: EditarOcorrencia
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Atualiza dados de ocorrência existente (resumo, descrição, solução, status, imagem)
+         * 📥 ENTRADAS     : EditarOcorrenciaDTO (OcorrenciaViagemId, Resumo, Descricao, Solucao, Status, Imagem)
+         * 📤 SAÍDAS       : JSON com success e message
+         * 🔗 CHAMADA POR  : Modal de edição de ocorrência via POST /EditarOcorrencia
+         * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem (GetFirstOrDefault, Update), TextNormalizationHelper
+         * 📦 DEPENDÊNCIAS : TextNormalizationHelper.NormalizeAsync, Alerta.TratamentoErroComLinha
+         * 📝 OBSERVAÇÃO   : [DOC] Atualiza DataBaixa/UsuarioBaixa ao mudar status para Baixada
+         ****************************************************************************************/
         [HttpPost]
         [Route("EditarOcorrencia")]
         public async Task<IActionResult> EditarOcorrencia([FromBody] EditarOcorrenciaDTO dto)
@@ -324,9 +352,17 @@ namespace FrotiX.Controllers
 
         #region BAIXAR OCORRÊNCIA
 
-        /// <summary>
-        /// Dá baixa em uma ocorrência (botão finalizar na grid ou no modal)
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: BaixarOcorrenciaGestao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Finaliza ocorrência (muda status para Baixada sem adicionar solução)
+         * 📥 ENTRADAS     : BaixarOcorrenciaDTO (OcorrenciaViagemId)
+         * 📤 SAÍDAS       : JSON com success e message
+         * 🔗 CHAMADA POR  : Botão "Finalizar" na grid de gestão via POST /BaixarOcorrenciaGestao
+         * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem (GetFirstOrDefault, Update)
+         * 📦 DEPENDÊNCIAS : Alerta.TratamentoErroComLinha
+         * 📝 OBSERVAÇÃO   : [DOC] Impede baixar ocorrência já baixada
+         ****************************************************************************************/
         [HttpPost]
         [Route("BaixarOcorrenciaGestao")]
         public IActionResult BaixarOcorrenciaGestao([FromBody] BaixarOcorrenciaDTO dto)
@@ -395,9 +431,17 @@ namespace FrotiX.Controllers
 
         #region BAIXAR COM SOLUÇÃO
 
-        /// <summary>
-        /// Dá baixa em uma ocorrência com solução (modal de baixa rápida)
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: BaixarOcorrenciaComSolucao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Finaliza ocorrência incluindo descrição da solução aplicada
+         * 📥 ENTRADAS     : BaixarComSolucaoDTO (OcorrenciaViagemId, SolucaoOcorrencia)
+         * 📤 SAÍDAS       : JSON com success e message
+         * 🔗 CHAMADA POR  : Modal "Baixar com Solução" via POST /BaixarOcorrenciaComSolucao
+         * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem, TextNormalizationHelper.NormalizeAsync
+         * 📦 DEPENDÊNCIAS : TextNormalizationHelper, Alerta.TratamentoErroComLinha
+         * 📝 OBSERVAÇÃO   : [DOC] Grava solução normalizada no campo Observacoes
+         ****************************************************************************************/
         [HttpPost]
         [Route("BaixarOcorrenciaComSolucao")]
         public async Task<IActionResult> BaixarOcorrenciaComSolucao([FromBody] BaixarComSolucaoDTO dto)
@@ -470,9 +514,16 @@ namespace FrotiX.Controllers
 
         #endregion BAIXAR COM SOLUÇÃO
 
-        /// <summary>
-        /// Retorna contagem de ocorrências para debug
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ContarOcorrencias
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retorna estatísticas de ocorrências (total, abertas, baixadas)
+         * 📥 ENTRADAS     : Nenhuma
+         * 📤 SAÍDAS       : JSON com success, total, abertas, baixadas
+         * 🔗 CHAMADA POR  : Debug ou dashboard via GET /ContarOcorrencias
+         * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem.GetAll()
+         * 📦 DEPENDÊNCIAS : Alerta.TratamentoErroComLinha
+         ****************************************************************************************/
         [HttpGet]
         [Route("ContarOcorrencias")]
         public IActionResult ContarOcorrencias()

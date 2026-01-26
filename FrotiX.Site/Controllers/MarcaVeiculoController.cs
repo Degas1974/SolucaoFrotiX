@@ -1,17 +1,14 @@
-/*
-    ═══════════════════════════════════════════════════════════════════════════════
-    📄 DOCUMENTAÇÃO COMPLETA DISPONÍVEL
-    ═══════════════════════════════════════════════════════════════════════════════
-    
-    📍 Localização: Documentacao/Pages/MarcaVeiculo - Index.md
-    📅 Última Atualização: 08/01/2026
-    📋 Versão: 2.0 (Padrão FrotiX Simplificado)
-    
-    Este arquivo contém os endpoints API REST para gerenciamento de Marcas de Veículos.
-    Para entender completamente a funcionalidade, consulte a documentação acima.
-    ═══════════════════════════════════════════════════════════════════════════════
-*/
-
+/****************************************************************************************
+ * ⚡ CONTROLLER: MarcaVeiculoController
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar marcas de veículos (FIAT, VW, GM, etc) - CRUD básico
+ * 📥 ENTRADAS     : MarcaVeiculoViewModel, IDs
+ * 📤 SAÍDAS       : JSON com marcas
+ * 🔗 CHAMADA POR  : Pages/MarcasVeiculos/Index, Dropdowns de cadastro de veículos
+ * 🔄 CHAMA        : IUnitOfWork (MarcaVeiculo)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, IUnitOfWork
+ * 📄 DOCUMENTAÇÃO : Documentacao/Pages/MarcaVeiculo - Index.md
+ ****************************************************************************************/
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;

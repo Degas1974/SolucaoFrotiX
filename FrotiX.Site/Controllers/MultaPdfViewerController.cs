@@ -1,10 +1,18 @@
-/*
- * REFATORAÇÃO APLICADA:
- * - Padronizado tratamento de erros com Alerta.TratamentoErroComLinha
- * - Mantida estrutura completa do código
- * - Corrigido retornos em catch para manter consistência
- */
-
+/****************************************************************************************
+ * ⚡ CONTROLLER: MultaPdfViewerController
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Visualizar PDFs de multas usando componente Syncfusion PDF Viewer
+ *                   Carrega PDFs de wwwroot/DadosEditaveis/Multas com cache otimizado
+ * 📥 ENTRADAS     : JsonFileName (nome do arquivo PDF a visualizar)
+ * 📤 SAÍDAS       : Content (PDF), JSON (operações Syncfusion)
+ * 🔗 CHAMADA POR  : Syncfusion PDF Viewer (JavaScript) das páginas de multas
+ * 🔄 CHAMA        : Syncfusion.EJ2.PdfViewer, IWebHostEnvironment, IMemoryCache
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 PDF Viewer, IMemoryCache, File System
+ *
+ * ⚡ PERFORMANCE:
+ *    - IMemoryCache: Cache de PDFs para melhorar performance
+ *    - Carregamento de arquivos do disco apenas quando necessário
+ ****************************************************************************************/
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -23,6 +31,11 @@ namespace FrotiX.Controllers
         private readonly IWebHostEnvironment _env;
         private readonly IMemoryCache _cache;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: MultaPdfViewerController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependências (Hosting, Cache)
+         ****************************************************************************************/
         public MultaPdfViewerController(
             IWebHostEnvironment env ,
             IMemoryCache cache)

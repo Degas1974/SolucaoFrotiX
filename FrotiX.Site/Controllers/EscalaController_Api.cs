@@ -1,3 +1,23 @@
+/****************************************************************************************
+ * ⚡ CONTROLLER: EscalaController_Api (Partial Class)
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Endpoints API para DataTables Server-Side e operações AJAX
+ *                   Separado do EscalaController principal para organização
+ * 📥 ENTRADAS     : DataManagerRequest (DataTables), Filtros de busca
+ * 📤 SAÍDAS       : JSON com dados paginados, formatados para DataTables
+ * 🔗 CHAMADA POR  : JavaScript (DataTables) da página Escalas/Index via AJAX
+ * 🔄 CHAMA        : ViewEscalasCompletas (View do banco), IUnitOfWork
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, DataTables Server-Side, ViewEscalasCompletas
+ *
+ * ⚡ PERFORMANCE:
+ *    - Server-Side Processing: Paginação no banco de dados (não carrega tudo)
+ *    - ViewEscalasCompletas: View otimizada com JOIN de todas as tabelas relacionadas
+ *    - IQueryable: Permite composição de filtros antes de executar query
+ *
+ * 🔗 RELACIONAMENTO:
+ *    - Partial Class de EscalaController.cs (não substituir, complementar)
+ *    - Removido [ApiController] para não conflitar com rotas MVC
+ ****************************************************************************************/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,27 +31,41 @@ using Microsoft.Extensions.Logging;
 
 namespace FrotiX.Controllers
 {
-    /// <summary>
-    /// Partial class do EscalaController focada em endpoints API para consumo via JavaScript
-    /// ✅ CORREÇÃO: Removido [Route("api/[controller]")] e [ApiController] da classe
-    /// para não afetar os métodos MVC do EscalaController principal
-    /// </summary>
     public partial class EscalaController : Controller
     {
         // ===================================================================
         // API ENDPOINTS PARA DATATABLES SERVER-SIDE
         // ===================================================================
 
-        /// <summary>
-        /// Endpoint server-side para DataTables - PADRÃO VIAGENS
-        /// Rota: POST /api/Escala/ListaEscalasServerSide
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaEscalasServerSide
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Endpoint DataTables Server-Side para grid de escalas
+         *                   Paginação, ordenação e filtros executados no banco de dados
+         * 📥 ENTRADAS     : Request.Form (DataTables padrão: draw, start, length, search)
+         *                   Filtros customizados: dataFiltro, tipoServicoId, turnoId, etc
+         * 📤 SAÍDAS       : [IActionResult] JSON formato DataTables (data, recordsTotal, draw)
+         * 🔗 CHAMADA POR  : JavaScript (DataTables) via AJAX POST
+         * 🔄 CHAMA        : ViewEscalasCompletas.GetAll()
+         *
+         * 📊 FILTROS SUPORTADOS:
+         *    - dataFiltro: Data da escala (date)
+         *    - tipoServicoId, turnoId: Guids de serviço/turno
+         *    - statusMotorista, lotacao: Strings exatas
+         *    - motoristaId, veiculoId: Guids de motorista/veículo
+         *    - textoPesquisa: Busca textual em múltiplos campos
+         *
+         * ⚡ PERFORMANCE:
+         *    - IQueryable: Query só executa após todos os filtros aplicados
+         *    - Skip/Take: Paginação no banco (não carrega tudo na memória)
+         ****************************************************************************************/
         [HttpPost]
         [Route("api/Escala/ListaEscalasServerSide")]
         public IActionResult ListaEscalasServerSide()
         {
             try
             {
+                // [DOC] Parâmetros padrão DataTables
                 var draw = Request.Form["draw"].FirstOrDefault();
                 var startStr = Request.Form["start"].FirstOrDefault();
                 var lengthStr = Request.Form["length"].FirstOrDefault();
@@ -40,7 +74,7 @@ namespace FrotiX.Controllers
                 int pageSize = lengthStr != null ? Convert.ToInt32(lengthStr) : 10;
                 int skip = startStr != null ? Convert.ToInt32(startStr) : 0;
 
-                // Capturar filtros customizados
+                // [DOC] Capturar filtros customizados enviados pelo frontend
                 var dataFiltroStr = Request.Form["dataFiltro"].FirstOrDefault();
                 var tipoServicoIdStr = Request.Form["tipoServicoId"].FirstOrDefault();
                 var turnoIdStr = Request.Form["turnoId"].FirstOrDefault();

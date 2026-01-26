@@ -1,3 +1,17 @@
+/****************************************************************************************
+ * ⚡ CONTROLLER: LogErrosController (Partial Class)
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Receber e gerenciar logs de erro (JavaScript client-side e C# server-side)
+ *                   Centraliza tratamento de erros para monitoramento e debug
+ * 📥 ENTRADAS     : LogJavaScriptRequest (erros do frontend), Filtros de visualização
+ * 📤 SAÍDAS       : JSON com confirmação de log salvo, listas de erros
+ * 🔗 CHAMADA POR  : JavaScript (window.onerror), Alerta.TratamentoErroComLinha, Pages/LogErros
+ * 🔄 CHAMA        : ILogService (salva logs no banco/arquivo), ILogger
+ * 📦 DEPENDÊNCIAS : ASP.NET Core, ILogService, Microsoft.Extensions.Logging
+ *
+ * 🔓 SEGURANÇA:
+ *    - [AllowAnonymous]: Permite logs mesmo sem autenticação (para capturar todos os erros)
+ ****************************************************************************************/
 using System;
 using System.Linq;
 using FrotiX.Services;
@@ -7,10 +21,6 @@ using Microsoft.Extensions.Logging;
 
 namespace FrotiX.Controllers;
 
-/// <summary>
-/// Controller API para gerenciamento de logs de erro
-/// Recebe logs do JavaScript e fornece dados para a página de visualização
-/// </summary>
 [Route("api/[controller]")]
 [ApiController]
 [AllowAnonymous]
@@ -19,6 +29,11 @@ public partial class LogErrosController : ControllerBase
     private readonly ILogService _logService;
     private readonly ILogger<LogErrosController> _logger;
 
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: LogErrosController (Construtor)
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Injetar serviços de log
+     ****************************************************************************************/
     public LogErrosController(ILogService logService, ILogger<LogErrosController> logger)
     {
         _logService = logService;

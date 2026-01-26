@@ -1,12 +1,22 @@
-/*
- * REFATORAÇÃO APLICADA:
- * - Adaptado para o padrío Syncfusion EJ2 Uploader
- * - Suporte completo aos eventos do componente ejs-uploader
- * - Mantida validação de PDF e normalização de nomes
- * - Tratamento de erros padronizado
- * - Suporte a upload múltiplo
- */
-
+/****************************************************************************************
+ * ⚡ CONTROLLER: MultaUploadController
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar upload de PDFs de multas usando Syncfusion EJ2 Uploader
+ *                   Validação de formato, normalização de nomes, salvamento em disco
+ * 📥 ENTRADAS     : IList<IFormFile> UploadFiles - Arquivos PDF de multas
+ * 📤 SAÍDAS       : JSON formato Syncfusion (success/error), nomes de arquivos salvos
+ * 🔗 CHAMADA POR  : Syncfusion Uploader (JavaScript) das páginas de multas
+ * 🔄 CHAMA        : FrotiX.Services (normalização de nomes), File System
+ * 📦 DEPENDÊNCIAS : ASP.NET Core, Syncfusion EJ2 Uploader, FrotiX.Services, File System
+ *
+ * ⚠️  VALIDAÇÕES:
+ *    - Apenas PDFs são aceitos (.pdf)
+ *    - Normalização de nomes de arquivo (remove caracteres especiais)
+ *    - Verifica se pasta de destino existe (cria se não existir)
+ *
+ * 📂 DESTINO:
+ *    - Arquivos salvos em: wwwroot/DadosEditaveis/Multas/
+ ****************************************************************************************/
 using FrotiX.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -24,6 +34,11 @@ namespace FrotiX.Controllers
     {
         private readonly IWebHostEnvironment _hostingEnvironment;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: MultaUploadController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependências do hosting environment
+         ****************************************************************************************/
         public MultaUploadController(IWebHostEnvironment hostingEnvironment)
         {
             try

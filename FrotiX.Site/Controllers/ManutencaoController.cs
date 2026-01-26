@@ -1,3 +1,19 @@
+/****************************************************************************************
+ * ⚡ CONTROLLER: ManutencaoController
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar manutenções de veículos (preventivas, corretivas)
+ *                   Upload de documentos, controle de custos, histórico de manutenções
+ *                   Utiliza cache para otimizar consultas frequentes
+ * 📥 ENTRADAS     : Manutencao, IDs, Filtros de data/veículo, Arquivos (uploads)
+ * 📤 SAÍDAS       : JSON com manutenções, documentos, custos agregados
+ * 🔗 CHAMADA POR  : Pages/Manutencoes/Index, JavaScript (AJAX), Modais de upload
+ * 🔄 CHAMA        : IUnitOfWork, IMemoryCache (otimização), IWebHostEnvironment (upload)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework, IMemoryCache, File System
+ *
+ * ⚡ PERFORMANCE:
+ *    - IMemoryCache: Cache de listas frequentes (veículos, tipos, etc)
+ *    - Helper GetCachedAsync<T>: Abstração para cache com TTL configurável
+ ****************************************************************************************/
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;
@@ -26,6 +42,11 @@ namespace FrotiX.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMemoryCache _cache;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ManutencaoController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependências (UnitOfWork, Hosting, Cache)
+         ****************************************************************************************/
         public ManutencaoController(
             IUnitOfWork unitOfWork ,
             IWebHostEnvironment hostingEnvironment ,

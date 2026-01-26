@@ -6,11 +6,29 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: OcorrenciaViagemController.Listar
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Métodos para listagem e verificação de ocorrências (modal, veículo, exclusão)
+     * 📥 ENTRADAS     : IDs de viagem/veículo/ocorrência
+     * 📤 SAÍDAS       : JsonResult com lista de ocorrências ou status de operação
+     * 🔗 CHAMADA POR  : Modais de viagem, verificações de veículo, exclusões
+     * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem
+     * 📦 DEPENDÊNCIAS : Repository Pattern, Alerta.TratamentoErroComLinha
+     ****************************************************************************************/
+
     public partial class OcorrenciaViagemController
     {
-        /// <summary>
-        /// Lista todas as ocorrências de uma viagem específica para o modal
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListarOcorrenciasModal
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Lista todas ocorrências de uma viagem para exibição em modal
+         * 📥 ENTRADAS     : viagemId (Guid)
+         * 📤 SAÍDAS       : JSON com success, data (array de ocorrências), total
+         * 🔗 CHAMADA POR  : Modal de detalhes de viagem via GET /ListarOcorrenciasModal?viagemId=X
+         * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem.GetAll()
+         * 📦 DEPENDÊNCIAS : LINQ, Alerta.TratamentoErroComLinha
+         ****************************************************************************************/
         [HttpGet]
         [Route("ListarOcorrenciasModal")]
         public IActionResult ListarOcorrenciasModal(Guid viagemId)
@@ -60,9 +78,17 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Lista ocorrências em aberto de um veículo específico
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListarOcorrenciasVeiculo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Lista ocorrências abertas/pendentes de um veículo específico
+         * 📥 ENTRADAS     : veiculoId (Guid)
+         * 📤 SAÍDAS       : JSON com success, data (array de ocorrências), total, temOcorrencias
+         * 🔗 CHAMADA POR  : Verificação de disponibilidade de veículo via GET /ListarOcorrenciasVeiculo
+         * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem.GetAll()
+         * 📦 DEPENDÊNCIAS : LINQ, Alerta.TratamentoErroComLinha
+         * 📝 OBSERVAÇÃO   : [DOC] Filtra apenas ocorrências com StatusOcorrencia=true e Status=Aberta/Pendente
+         ****************************************************************************************/
         [HttpGet]
         [Route("ListarOcorrenciasVeiculo")]
         public IActionResult ListarOcorrenciasVeiculo(Guid veiculoId)
@@ -116,9 +142,16 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Verifica se um veículo possui ocorrências em aberto
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: VerificarOcorrenciasVeiculo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Verifica se veículo possui ocorrências abertas/pendentes (sem retornar lista)
+         * 📥 ENTRADAS     : veiculoId (Guid)
+         * 📤 SAÍDAS       : JSON com success, quantidade, temOcorrencias (boolean)
+         * 🔗 CHAMADA POR  : Validação rápida antes de alocar veículo via GET /VerificarOcorrenciasVeiculo
+         * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem.GetAll().Count()
+         * 📦 DEPENDÊNCIAS : LINQ, Alerta.TratamentoErroComLinha
+         ****************************************************************************************/
         [HttpGet]
         [Route("VerificarOcorrenciasVeiculo")]
         public IActionResult VerificarOcorrenciasVeiculo(Guid veiculoId)
@@ -157,9 +190,17 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Exclui uma ocorrência específica
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ExcluirOcorrencia
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remove permanentemente uma ocorrência do banco de dados
+         * 📥 ENTRADAS     : ExcluirOcorrenciaDTO (OcorrenciaViagemId)
+         * 📤 SAÍDAS       : JSON com success e message
+         * 🔗 CHAMADA POR  : Botão "Excluir" em modais/grids via POST /ExcluirOcorrencia
+         * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem (GetFirstOrDefault, Remove)
+         * 📦 DEPENDÊNCIAS : Alerta.TratamentoErroComLinha
+         * ⚠️  ATENÇÃO     : Exclusão permanente, sem soft delete
+         ****************************************************************************************/
         [HttpPost]
         [Route("ExcluirOcorrencia")]
         public IActionResult ExcluirOcorrencia([FromBody] ExcluirOcorrenciaDTO dto)

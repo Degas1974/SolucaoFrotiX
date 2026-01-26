@@ -1,3 +1,17 @@
+/****************************************************************************************
+ * ⚡ CONTROLLER: HomeController
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Controller da página inicial (Home/Dashboard)
+ *                   Fornece dados para grids de demonstração/testes (OrdersDetails)
+ * 📥 ENTRADAS     : DataManagerRequest (paginação), CRUDModel (operações CRUD)
+ * 📤 SAÍDAS       : Views (Index), JSON com dados de orders
+ * 🔗 CHAMADA POR  : Navegação principal do sistema, JavaScript (grids de teste)
+ * 🔄 CHAMA        : OrdersDetails.GetAllRecords() (classe auxiliar)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC
+ *
+ * ⚠️  NOTA: Este controller parece conter código de exemplo/demonstração
+ *           OrdersDetails não é um modelo de negócio real do FrotiX
+ ****************************************************************************************/
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,8 +24,17 @@ namespace FrotiX.Controllers
     [IgnoreAntiforgeryToken]
     public class HomeController :Controller
     {
+        // [DOC] Lista estática para exemplo/demonstração (não utilizada em produção)
         public static List<OrdersDetails> order = new List<OrdersDetails>();
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Index
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Renderizar página inicial (Home/Dashboard)
+         * 📥 ENTRADAS     : Nenhuma
+         * 📤 SAÍDAS       : [IActionResult] View Index.cshtml
+         * 🔗 CHAMADA POR  : Navegação padrão (/)
+         ****************************************************************************************/
         public IActionResult Index()
         {
             try

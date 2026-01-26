@@ -1,3 +1,16 @@
+/****************************************************************************************
+ * ⚡ CONTROLLER: LoginController
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Controller de login (provavelmente legado, Identity é usado para autenticação)
+ * 📥 ENTRADAS     : Nenhuma (retorna views)
+ * 📤 SAÍDAS       : Views
+ * 🔗 CHAMADA POR  : Navegação direta (provavelmente não utilizado)
+ * 🔄 CHAMA        : IUnitOfWork, ILogger
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, ILogger, IWebHostEnvironment
+ *
+ * ⚠️  NOTA: Este controller parece ser legado. O sistema utiliza Identity para login
+ *           (ver Areas/Identity/Pages/Account/Login.cshtml.cs)
+ ****************************************************************************************/
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +28,11 @@ namespace FrotiX.Controllers
         private IWebHostEnvironment _hostingEnvironment;
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: LoginController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependências
+         ****************************************************************************************/
         public LoginController(
             ILogger<AbastecimentoController> logger ,
             IWebHostEnvironment hostingEnvironment ,

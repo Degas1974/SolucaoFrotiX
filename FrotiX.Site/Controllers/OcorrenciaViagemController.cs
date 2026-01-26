@@ -16,6 +16,18 @@ namespace FrotiX.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OcorrenciaViagemController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar dependência do UnitOfWork para gestão de ocorrências
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork - Acesso aos repositórios
+         * 📤 SAÍDAS       : Instância inicializada do OcorrenciaViagemController
+         * 🔗 CHAMADA POR  : ASP.NET Core Dependency Injection
+         * 🔄 CHAMA        : Nenhuma função (construtor simples)
+         * 📦 DEPENDÊNCIAS : IUnitOfWork
+         *
+         * [DOC] ATENÇÃO: Este construtor NÃO tem try-catch pois é muito simples
+         ****************************************************************************************/
         public OcorrenciaViagemController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -23,9 +35,18 @@ namespace FrotiX.Controllers
 
         #region LISTAR
 
-        /// <summary>
-        /// Lista todas as ocorrências de uma viagem específica
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListarPorViagem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar todas as ocorrências de uma viagem específica
+         * 📥 ENTRADAS     : [Guid] viagemId - ID da viagem
+         * 📤 SAÍDAS       : [JSON] { success, data } - Lista de ocorrências
+         * 🔗 CHAMADA POR  : Tela de detalhes da viagem
+         * 🔄 CHAMA        : _unitOfWork.ViewOcorrenciasViagem.GetAll
+         * 📦 DEPENDÊNCIAS : ViewOcorrenciasViagem (view do banco)
+         *
+         * [DOC] Retorna ocorrências ordenadas por DataCriacao (mais recentes primeiro)
+         ****************************************************************************************/
         [HttpGet]
         [Route("ListarPorViagem")]
         public IActionResult ListarPorViagem(Guid viagemId)
@@ -129,9 +150,19 @@ namespace FrotiX.Controllers
 
         #region CRIAR
 
-        /// <summary>
-        /// Cria uma nova ocorrência
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Criar
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Criar nova ocorrência de viagem
+         * 📥 ENTRADAS     : [OcorrenciaViagemDTO] dto - Dados da ocorrência
+         * 📤 SAÍDAS       : [JSON] { success, message, id }
+         * 🔗 CHAMADA POR  : Tela de finalização de viagem ou gestão de ocorrências
+         * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem.Add
+         * 📦 DEPENDÊNCIAS : Tabela OcorrenciaViagem
+         *
+         * [DOC] Status inicial: "Aberta"
+         * [DOC] UsuarioCriacao: User.Identity.Name ou "Sistema" se não autenticado
+         ****************************************************************************************/
         [HttpPost]
         [Route("Criar")]
         public IActionResult Criar([FromBody] OcorrenciaViagemDTO dto)
@@ -207,9 +238,18 @@ namespace FrotiX.Controllers
 
         #region ATUALIZAR STATUS
 
-        /// <summary>
-        /// Dá baixa em uma ocorrência (marca como resolvida)
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DarBaixa
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Dar baixa em ocorrência (marcar como resolvida)
+         * 📥 ENTRADAS     : [Guid] ocorrenciaId - ID da ocorrência
+         * 📤 SAÍDAS       : [JSON] { success, message }
+         * 🔗 CHAMADA POR  : Tela de gestão de ocorrências
+         * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem.Update
+         * 📦 DEPENDÊNCIAS : Tabela OcorrenciaViagem
+         *
+         * [DOC] Atualiza Status para "Baixada", registra DataBaixa e UsuarioBaixa
+         ****************************************************************************************/
         [HttpPost]
         [Route("DarBaixa")]
         public IActionResult DarBaixa(Guid ocorrenciaId)

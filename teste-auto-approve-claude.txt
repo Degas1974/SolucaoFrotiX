@@ -1,0 +1,3 @@
+Teste de auto-approve do Claude Code
+Data: 2026-01-26
+Status: Se você está vendo este arquivo, o auto-approve está funcionando!

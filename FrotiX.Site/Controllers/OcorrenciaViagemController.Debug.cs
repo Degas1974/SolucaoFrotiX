@@ -7,6 +7,18 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: OcorrenciaViagemController.Debug
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Métodos DEBUG para diagnosticar problemas de filtros e status
+     * 📥 ENTRADAS     : N/A (métodos GET sem parâmetros ou com IDs)
+     * 📤 SAÍDAS       : JsonResult com dados brutos e estatísticas
+     * 🔗 CHAMADA POR  : Debug manual via URL (endpoints /DebugListar, /DebugAbertas, etc)
+     * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem, _unitOfWork.Viagem, ViewVeiculos, ViewMotoristas
+     * 📦 DEPENDÊNCIAS : Repository Pattern, Models, Alerta.js
+     * ⚠️  ATENÇÃO     : ARQUIVO TEMPORÁRIO - Remover após resolver problemas de status
+     ****************************************************************************************/
+
     /// <summary>
     /// Métodos de DEBUG para a página de Gestão de Ocorrências
     /// REMOVER APÓS RESOLVER O PROBLEMA
@@ -15,9 +27,16 @@ namespace FrotiX.Controllers
     {
         #region DEBUG - REMOVER DEPOIS
 
-        /// <summary>
-        /// DEBUG: Lista os primeiros 10 registros SEM FILTRO para verificar estrutura
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DebugListar
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Lista primeiros 10 registros SEM filtros para verificar estrutura
+         * 📥 ENTRADAS     : Nenhuma
+         * 📤 SAÍDAS       : JSON com totalRegistros, primeiros10, contagemPorStatus, contagemPorStatusBool
+         * 🔗 CHAMADA POR  : Debug manual via GET /DebugListar
+         * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem.GetAll()
+         * 📦 DEPENDÊNCIAS : Repository Pattern
+         ****************************************************************************************/
         [HttpGet]
         [Route("DebugListar")]
         public IActionResult DebugListar()
@@ -72,9 +91,16 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// DEBUG: Testa o filtro de Abertas
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DebugAbertas
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Testa múltiplas variações de filtro para ocorrências abertas
+         * 📥 ENTRADAS     : Nenhuma
+         * 📤 SAÍDAS       : JSON com contadores de cada tipo de filtro testado
+         * 🔗 CHAMADA POR  : Debug manual via GET /DebugAbertas
+         * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem.GetAll()
+         * 📦 DEPENDÊNCIAS : LINQ
+         ****************************************************************************************/
         [HttpGet]
         [Route("DebugAbertas")]
         public IActionResult DebugAbertas()
@@ -126,9 +152,17 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// DEBUG: Lista SEM nenhum filtro, apenas ordenação
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DebugListarTodos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Lista últimas 50 ocorrências SEM filtros, com dados relacionados
+         * 📥 ENTRADAS     : Nenhuma
+         * 📤 SAÍDAS       : JSON com data (array de ocorrências) incluindo campos de debug
+         * 🔗 CHAMADA POR  : Debug manual via GET /DebugListarTodos
+         * 🔄 CHAMA        : _unitOfWork (OcorrenciaViagem, Viagem, ViewVeiculos, ViewMotoristas)
+         * 📦 DEPENDÊNCIAS : LINQ, Repository Pattern
+         * 📝 OBSERVAÇÃO   : [DOC] Inclui campos _debug_status_original e _debug_statusBool_original
+         ****************************************************************************************/
         [HttpGet]
         [Route("DebugListarTodos")]
         public IActionResult DebugListarTodos()

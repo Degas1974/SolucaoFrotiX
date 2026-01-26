@@ -1,3 +1,25 @@
+/****************************************************************************************
+ * ⚡ CONTROLLER: EmpenhoController
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar empenhos orçamentários (contratos e atas de registro de preços)
+ *                   Controla saldos, movimentações (aportes/anulações), notas fiscais
+ *                   Vincula empenhos a contratos, atas e notas fiscais
+ * 📥 ENTRADAS     : Empenhos, Movimentações, Filtros de Busca (via API REST)
+ * 📤 SAÍDAS       : JSON com dados de empenhos, movimentações e saldos formatados
+ * 🔗 CHAMADA POR  : Pages/Empenhos (frontend), Pages/Contratos, Pages/AtasRegistroPrecos
+ * 🔄 CHAMA        : IUnitOfWork (Repositories), Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework, IUnitOfWork
+ *
+ * 🔐 SEGURANÇA    : [IgnoreAntiforgeryToken] para chamadas AJAX
+ *
+ * 💡 CONCEITOS:
+ *    - Empenho: Reserva de verba orçamentária para pagamento futuro
+ *    - Aporte: Adição de valor ao saldo do empenho (tipo "A")
+ *    - Anulação: Redução do saldo do empenho (tipo "G" - Glosa)
+ *    - SaldoInicial: Valor original do empenho
+ *    - SaldoFinal: Saldo atual (após aportes e anulações)
+ *    - SaldoNotas: Total de notas fiscais vinculadas ao empenho
+ ****************************************************************************************/
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +35,14 @@ namespace FrotiX.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: EmpenhoController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependências do Unit of Work
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork - Repositório unificado
+         * 📤 SAÍDAS       : Instância do controller configurada
+         * 🔗 CHAMADA POR  : ASP.NET Core Dependency Injection
+         ****************************************************************************************/
         public EmpenhoController(IUnitOfWork unitOfWork)
         {
             try
@@ -25,11 +55,27 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar empenhos vinculados a um contrato ou ata de registro de preços
+         *                   Formata valores monetários e datas para exibição em grid
+         * 📥 ENTRADAS     : [Guid] Id - ID do Contrato ou Ata
+         *                   [string] instrumento - "contrato" ou outro (ata)
+         * 📤 SAÍDAS       : [IActionResult] JSON com lista de empenhos formatados
+         * 🔗 CHAMADA POR  : JavaScript (DataTables) das páginas de Contratos/Atas
+         * 🔄 CHAMA        : ViewEmpenhos.GetAll() - View do banco com cálculos de saldo
+         *
+         * 📊 CÁLCULO DE SALDO NF:
+         *    - Se Movimentacoes > 0: SaldoNotas / Movimentacoes (média por movimentação)
+         *    - Se não: SaldoNotas (total)
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get(Guid Id, string instrumento)
         {
             try
             {
+                // [DOC] Verifica se é contrato ou ata e filtra empenhos correspondentes
                 if (instrumento == "contrato")
                 {
                     var result = (
@@ -85,6 +131,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Excluir empenho do banco (soft delete com validações de integridade)
+         * 📥 ENTRADAS     : [EmpenhoViewModel] model - contém EmpenhoId
+         * 📤 SAÍDAS       : [IActionResult] JSON success/message
+         * 🔄 CHAMA        : Empenho.GetFirstOrDefault(), NotaFiscal, MovimentacaoEmpenho, Remove()
+         * ⚠️  VALIDAÇÕES  : Bloqueia exclusão se houver notas fiscais ou movimentações vinculadas
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(EmpenhoViewModel model)
@@ -98,6 +153,7 @@ namespace FrotiX.Controllers
                     );
                     if (objFromDb != null)
                     {
+                        // [DOC] Verifica se há notas fiscais vinculadas (integridade referencial)
                         var notas = _unitOfWork.NotaFiscal.GetFirstOrDefault(u =>
                             u.EmpenhoId == model.EmpenhoId
                         );
@@ -112,6 +168,7 @@ namespace FrotiX.Controllers
                             );
                         }
 
+                        // [DOC] Verifica se há movimentações (aportes/anulações) vinculadas
                         var movimentacao = _unitOfWork.MovimentacaoEmpenho.GetFirstOrDefault(u =>
                             u.EmpenhoId == model.EmpenhoId
                         );
@@ -150,6 +207,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Aporte
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Adicionar valor ao saldo de um empenho (reforço orçamentário)
+         * 📥 ENTRADAS     : [MovimentacaoEmpenho] movimentacao - TipoMovimentacao="A"
+         * 📤 SAÍDAS       : [IActionResult] JSON success/message
+         * 🔄 CHAMA        : MovimentacaoEmpenho.Add(), Empenho.Update(), Save()
+         * ⚠️  IMPORTANTE  : Valor vem formatado do frontend, atualiza SaldoFinal do empenho
+         ****************************************************************************************/
         [Route("Aporte")]
         [HttpPost]
         [Consumes("application/json")]
@@ -157,7 +223,7 @@ namespace FrotiX.Controllers
         {
             try
             {
-                // Valor já vem correto do frontend (sem divisão por 100)
+                // [DOC] Valor já vem correto do frontend (sem divisão por 100)
                 _unitOfWork.MovimentacaoEmpenho.Add(movimentacao);
 
                 var empenho = _unitOfWork.Empenho.GetFirstOrDefault(u =>
@@ -350,6 +416,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Anulacao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Reduzir valor do saldo de um empenho (anulação/glosa orçamentária)
+         * 📥 ENTRADAS     : [MovimentacaoEmpenho] movimentacao - TipoMovimentacao="G"
+         * 📤 SAÍDAS       : [IActionResult] JSON success/message
+         * 🔄 CHAMA        : MovimentacaoEmpenho.Add(), Empenho.Update(), Save()
+         * ⚠️  IMPORTANTE  : Multiplica valor por -1 antes de adicionar, reduz SaldoFinal
+         ****************************************************************************************/
         [Route("Anulacao")]
         [HttpPost]
         [Consumes("application/json")]
@@ -357,8 +432,8 @@ namespace FrotiX.Controllers
         {
             try
             {
-                // Valor já vem correto do frontend (sem divisão por 100)
-                // Multiplica por -1 para tornar negativo (é uma anulação/redução)
+                // [DOC] Valor já vem correto do frontend (sem divisão por 100)
+                // [DOC] Multiplica por -1 para tornar negativo (é uma anulação/redução)
                 movimentacao.Valor = movimentacao.Valor * -1;
                 _unitOfWork.MovimentacaoEmpenho.Add(movimentacao);
 
@@ -478,6 +553,22 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: InsereEmpenho
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Criar novo empenho orçamentário no banco de dados
+         *                   Valida duplicidade, limpa GUIDs vazios e gera ID
+         * 📥 ENTRADAS     : [Empenho] empenho - Objeto com dados do empenho
+         * 📤 SAÍDAS       : [JsonResult] success, message, empenhoId
+         * 🔗 CHAMADA POR  : JavaScript das páginas de Contratos/Atas via AJAX POST
+         * 🔄 CHAMA        : Empenho.GetFirstOrDefault(), Empenho.Add(), Save()
+         *
+         * ⚠️  VALIDAÇÕES:
+         *    - Verifica se empenho não é null
+         *    - Verifica duplicidade por NotaEmpenho (número único)
+         *    - Converte Guid.Empty para null em AtaId e ContratoId
+         *    - Gera novo EmpenhoId se vier vazio
+         ****************************************************************************************/
         [Route("InsereEmpenho")]
         [HttpPost]
         [Consumes("application/json")]
@@ -485,7 +576,7 @@ namespace FrotiX.Controllers
         {
             try
             {
-                // Validação básica
+                // [DOC] Validação básica - empenho deve existir
                 if (empenho == null)
                 {
                     return new JsonResult(new
@@ -495,7 +586,7 @@ namespace FrotiX.Controllers
                     });
                 }
 
-                // Verifica duplicidade
+                // [DOC] Verifica duplicidade - NotaEmpenho deve ser única no sistema
                 var existeEmpenho = _unitOfWork.Empenho.GetFirstOrDefault(u =>
                     u.NotaEmpenho == empenho.NotaEmpenho
                 );
@@ -510,7 +601,7 @@ namespace FrotiX.Controllers
                     );
                 }
 
-                // Limpa GUIDs vazios para null
+                // [DOC] Limpa GUIDs vazios para null (evita erros de FK no banco)
                 if (empenho.AtaId == Guid.Empty)
                 {
                     empenho.AtaId = null;
