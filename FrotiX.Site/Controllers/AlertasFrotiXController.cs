@@ -1,3 +1,12 @@
+/*
+ ╔══════════════════════════════════════════════════════════════════════════╗
+ ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
+ ║  Arquivo: AlertasFrotiXController.cs                                     ║
+ ║  Caminho: /Controllers/AlertasFrotiXController.cs                        ║
+ ║  Documentado em: 2026-01-26                                              ║
+ ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Hubs;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -11,6 +20,21 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: AlertasFrotiXController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Gerenciar alertas do sistema FrotiX em tempo real
+     * 📥 ENTRADAS     : AlertasFrotiX (model com dados do alerta)
+     * 📤 SAÍDAS       : JSON com status das operações, notificações via SignalR
+     * 🔗 CHAMADA POR  : Sistema de alertas frontend, notificações automáticas
+     * 🔄 CHAMA        : IAlertasFrotiXRepository, AlertasHub (SignalR)
+     * 📦 DEPENDÊNCIAS : SignalR (AlertasHub), IUnitOfWork, Repository
+     * --------------------------------------------------------------------------------------
+     * [DOC] Usa SignalR para enviar alertas em tempo real para usuários conectados
+     * [DOC] Armazena alertas no banco para histórico e posterior consulta
+     * [DOC] IgnoreAntiforgeryToken para permitir chamadas de APIs externas
+     * [DOC] Marca alertas como lidos/não lidos por usuário
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     [IgnoreAntiforgeryToken]

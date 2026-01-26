@@ -194,7 +194,7 @@ function validarFormulario()
 
 ## Lógica de Backend (Controller)
 
-O método `Salvar` no `AlertasFrotiXController.cs` processa os dados. Ele trata casos especiais, como a criação de múltiplos alertas para o tipo "Dias Variados".
+O método `Salvar` no `AlertasFrotiXController.cs` processa os dados. Para tipos recorrentes (4–8), **gera um alerta por data**, seguindo o padrão da Agenda.
 
 ```csharp
 [HttpPost("Salvar")]
@@ -202,14 +202,15 @@ public async Task<IActionResult> Salvar([FromBody] AlertaDto dto)
 {
     // ... Validações básicas ...
 
-    // CASO ESPECIAL: Tipo 8 (Dias Variados)
-    // Cria N alertas, um para cada data selecionada
-    if (dto.TipoExibicao == 8 && !string.IsNullOrWhiteSpace(dto.DatasSelecionadas))
+    // TIPOS RECORRENTES (4-8)
+    // Gera uma lista de datas e cria um alerta por data
+    if (dto.TipoExibicao >= 4 && dto.TipoExibicao <= 8)
     {
-        var datasStr = dto.DatasSelecionadas.Split(',');
-        foreach (var dataStr in datasStr)
+        var datas = GerarDatasRecorrencia(dto);
+        foreach (var data in datas)
         {
-            var alerta = new AlertasFrotiX { ... };
+            var alerta = CriarAlertaBase(dto, usuarioId);
+            alerta.DataExibicao = data;
             await _alertasRepo.CriarAlertaAsync(alerta, dto.UsuariosIds);
         }
         return Ok(...);
@@ -217,12 +218,13 @@ public async Task<IActionResult> Salvar([FromBody] AlertaDto dto)
 
     // CASO PADRÃO: Cria ou Atualiza um único alerta
     AlertasFrotiX alertaUnico;
-
-    if (dto.AlertasFrotiXId != Guid.Empty) {
+    if (dto.AlertasFrotiXId != Guid.Empty)
+    {
         // Update logic...
         alertaUnico = await _unitOfWork.AlertasFrotiX.Get...;
-        // Atualiza campos e refaz vínculos de usuários
-    } else {
+    }
+    else
+    {
         // Create logic...
         alertaUnico = new AlertasFrotiX { ... };
         await _alertasRepo.CriarAlertaAsync(alertaUnico, dto.UsuariosIds);
@@ -259,6 +261,20 @@ public async Task<IActionResult> Salvar([FromBody] AlertaDto dto)
 
 ---
 
+
+## [23/01/2026 18:20] - Recorrência via API (Tipos 4-8)
+
+**Descrição**:
+Padronizada a criação de alertas recorrentes via API para os tipos 4–8, gerando um alerta por data e alinhando a lógica com o padrão da Agenda.
+
+**Arquivos Afetados**:
+- Controllers/AlertasFrotiXController.cs
+
+**Status**: ✅ **Concluído**
+
+**Responsável**: GitHub Copilot
+
+---
 
 ## [13/01/2026 15:30] - Padronização: Substituição de btn-ftx-fechar por btn-vinho
 

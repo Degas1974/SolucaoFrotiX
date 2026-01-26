@@ -23,6 +23,18 @@ Uma das funcionalidades mais poderosas deste controller é o endpoint \GetDetalh
 
 O sistema diferencia entre **Notificado** (o alerta apareceu no browser), **Lido** (o usuário clicou para detalhes) e **Apagado** (o usuário removeu da sua lista pessoal).
 
+## 2.1 Recorrência (Tipos 4-8)
+
+O endpoint \Salvar\ gera automaticamente **um alerta por data** quando o \TipoExibicao\ é recorrente. A lógica segue o padrão da Agenda:
+
+- **Tipo 4 (Diário)**: segunda a sexta entre Data Inicial e Data Final.
+- **Tipo 5 (Semanal)**: datas semanais com base nos dias selecionados.
+- **Tipo 6 (Quinzenal)**: igual ao semanal, mas com intervalo de 2 semanas.
+- **Tipo 7 (Mensal)**: datas no dia fixo do mês.
+- **Tipo 8 (Dias Variados)**: lista de datas selecionadas no calendário.
+
+O DTO aceita \DiasSemana\ como **lista de inteiros** (0=Dom, 1=Seg, ... 6=Sáb), enquanto o modelo armazena o texto em CSV e os flags booleanos (Monday...Sunday).
+
 ## 3. Identidade Visual e Semântica
 
 O controller automatiza a atribuição de ícones e cores (**FontAwesome Duotone**) baseada no tipo de alerta (\TipoAlerta\) e prioridade. Isso garante consistência visual em todo o sistema, onde uma manutenção sempre será representada por uma chave de fenda laranja (\a-wrench\) e um anúncio crítico por um megafone vermelho (\a-bullhorn\).
@@ -40,4 +52,4 @@ O sistema utiliza o \ClaimTypes.NameIdentifier\ para filtrar rigorosamente o que
 *   **DTOs Otimizados:** O controller utiliza classes de transferência específicas (\AlertaExportDto\) para evitar o envio de objetos de modelo pesados para o frontend.
 
 ---
-*Documentação atualizada em 2026.01.14 conforme novo padrão de Prosa Leve.*
+*Documentação atualizada em 2026.01.23 conforme novo padrão de Prosa Leve.*
