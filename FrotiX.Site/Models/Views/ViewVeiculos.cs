@@ -1,3 +1,48 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViewVeiculos.cs                                                    ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ View model completo para listagem de veículos da frota com dados de         ║
+// ║ contrato, consumo e fornecedor. Mapeado da view SQL ViewVeiculos.           ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ Identificadores:                                                             ║
+// ║ • VeiculoId - Identificador único (UNIQUEIDENTIFIER NOT NULL)               ║
+// ║ • ContratoId, AtaId - Referências de contrato/ata                           ║
+// ║ • ItemVeiculoAtaId, ItemVeiculoId - Itens de contrato                       ║
+// ║ • CombustivelId - Tipo de combustível                                       ║
+// ║                                                                              ║
+// ║ Dados do Veículo:                                                            ║
+// ║ • Placa - Placa do veículo (VARCHAR 10)                                     ║
+// ║ • VeiculoCompleto - Placa(Marca/Modelo) concatenado                         ║
+// ║ • MarcaModelo - Marca/Modelo concatenado                                    ║
+// ║ • Quilometragem - Km atual                                                  ║
+// ║ • Descricao - Descrição do combustível                                      ║
+// ║ • Categoria - Categoria do veículo                                          ║
+// ║                                                                              ║
+// ║ Classificação:                                                               ║
+// ║ • Economildo - Flag de veículo Economildo (transporte coletivo)             ║
+// ║ • VeiculoReserva - "Efetivo" ou "Reserva"                                   ║
+// ║ • VeiculoProprio - Flag de veículo próprio da instituição                   ║
+// ║ • OrigemVeiculo - Origem (Contratado, Próprio, etc)                         ║
+// ║                                                                              ║
+// ║ Dados Financeiros:                                                           ║
+// ║ • ValorMensal (double/FLOAT) - Valor mensal do aluguel                      ║
+// ║ • Consumo (decimal 10,2) - Média de consumo calculada                       ║
+// ║                                                                              ║
+// ║ Dados de Contrato:                                                           ║
+// ║ • ContratoVeiculo, AtaVeiculo - Descrições de contrato                      ║
+// ║ • Sigla - Sigla da unidade                                                  ║
+// ║                                                                              ║
+// ║ Metadados:                                                                    ║
+// ║ • Status - Ativo/Inativo                                                    ║
+// ║ • DataAlteracao - Última alteração (formatada)                              ║
+// ║ • NomeCompleto - Usuário que alterou                                        ║
+// ║ • RowNum - Número de linha para paginação (ROW_NUMBER)                      ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 
 namespace FrotiX.Models

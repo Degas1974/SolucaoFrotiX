@@ -1,4 +1,27 @@
-﻿using System;
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: RolesEndpoint.cs                                                    ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ API REST para gerenciamento de Roles (perfis de usuário).                    ║
+// ║ Endpoints CRUD completo para administração de papéis no sistema.             ║
+// ║                                                                              ║
+// ║ ROTAS DISPONÍVEIS:                                                           ║
+// ║ - GET    /api/roles      → Lista todas as roles (formato DataTables)         ║
+// ║ - GET    /api/roles/{id} → Obtém role por ID                                 ║
+// ║ - POST   /api/roles      → Cria nova role                                    ║
+// ║ - PUT    /api/roles      → Atualiza role existente                           ║
+// ║ - DELETE /api/roles      → Remove role (exceto role padrão do sistema)       ║
+// ║                                                                              ║
+// ║ REGRAS DE NEGÓCIO:                                                           ║
+// ║ - Role padrão (_settings.Theme.Role) não pode ser deletada                   ║
+// ║ - IDs gerados automaticamente via Guid.NewGuid()                             ║
+// ║ - ConcurrencyStamp gerado para controle de concorrência                      ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 11                                        ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +32,10 @@ using FrotiX.Models;
 
 namespace FrotiX.EndPoints
     {
+    /// <summary>
+    /// API REST para CRUD de Roles (perfis de usuário).
+    /// Rota base: /api/roles
+    /// </summary>
     [ApiController]
     [Route("api/roles")]
     public class RolesEndpoint : ControllerBase

@@ -1,7 +1,37 @@
-﻿using System;
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ErroHelper.cs                                                       ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Helper para geração de scripts JavaScript de alertas SweetAlert.             ║
+// ║ Usado para injetar alertas no frontend via ViewBag/TempData.                 ║
+// ║                                                                              ║
+// ║ MÉTODOS DISPONÍVEIS:                                                         ║
+// ║ - MontarScriptErro()        → Script de erro com stack trace                 ║
+// ║ - MontarScriptAviso()       → Script de warning amarelo                      ║
+// ║ - MontarScriptInfo()        → Script de informação azul                      ║
+// ║ - MontarScriptConfirmacao() → Script com Sim/Cancelar                        ║
+// ║                                                                              ║
+// ║ SANITIZAÇÃO:                                                                 ║
+// ║ - Escapa aspas simples (\')                                                  ║
+// ║ - Remove quebras de linha (\r\n)                                             ║
+// ║                                                                              ║
+// ║ INTEGRAÇÃO:                                                                  ║
+// ║ - SweetAlertInterop.ShowTratamentoErroComLinha()                             ║
+// ║ - SweetAlertInterop.ShowWarning()                                            ║
+// ║ - SweetAlertInterop.ShowInfo()                                               ║
+// ║ - SweetAlertInterop.ShowConfirm()                                            ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 12                                        ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
+using System;
 
 namespace FrotiX.Helpers
     {
+    /// <summary>
+    /// Helper para geração de scripts JavaScript de alertas SweetAlert.
+    /// </summary>
     public static class ErroHelper
         {
         public static string MontarScriptErro(string classe, string metodo, Exception ex)

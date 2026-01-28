@@ -1,3 +1,24 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: NavigationItemDTO.cs                                               ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ DTOs para transferência de dados de navegação entre API e frontend.         ║
+// ║ Usado pelo NavigationController para gerenciar menu dinâmico.               ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                     ║
+// ║ - NavigationItemDTO: Item de menu básico                                    ║
+// ║ - NavigationTreeItem: Estrutura para TreeView Syncfusion EJ2                ║
+// ║ - SaveNavigationRequest: Request para salvar árvore completa                ║
+// ║ - DeleteNavigationItemRequest: Request para deletar item por NomeMenu       ║
+// ║ - DeleteRecursoRequest: Request para deletar recurso por ID                 ║
+// ║ - UpdateAcessoRequest: Request para atualizar acesso usuário/recurso        ║
+// ║                                                                              ║
+// ║ USO: Integração com Syncfusion TreeView para gestão de menus                ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System.Collections.Generic;
 
 namespace FrotiX.Models

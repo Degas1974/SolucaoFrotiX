@@ -1,3 +1,41 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViewMotoristas.cs                                                  ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ View model completo para listagem de motoristas com dados de contrato.      ║
+// ║ Usado em grids e cadastros de motoristas com informações denormalizadas.    ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ Identificadores:                                                             ║
+// ║ • MotoristaId - Identificador único do motorista                            ║
+// ║ • ContratoId - Contrato do motorista                                        ║
+// ║                                                                              ║
+// ║ Dados Pessoais:                                                              ║
+// ║ • Nome - Nome curto para exibição                                           ║
+// ║ • NomeCompleto - Nome completo do motorista                                 ║
+// ║ • Ponto - Número do ponto funcional                                         ║
+// ║ • Celular01 - Telefone de contato                                           ║
+// ║ • Foto - Foto do motorista (byte array)                                     ║
+// ║                                                                              ║
+// ║ Dados de CNH:                                                                ║
+// ║ • CNH - Número da CNH                                                       ║
+// ║ • CategoriaCNH - Categoria da habilitação (A, B, D, E)                      ║
+// ║                                                                              ║
+// ║ Dados de Contrato:                                                           ║
+// ║ • AnoContrato, NumeroContrato - Identificação do contrato                   ║
+// ║ • DescricaoFornecedor - Empresa fornecedora                                 ║
+// ║ • Sigla - Sigla da unidade                                                  ║
+// ║                                                                              ║
+// ║ Classificação:                                                               ║
+// ║ • MotoristaCondutor - Nome concatenado para display                         ║
+// ║ • TipoCondutor - Tipo (Titular, Reserva, Terceiro)                          ║
+// ║ • EfetivoFerista - Classificação funcional                                  ║
+// ║ • Status - Ativo/Inativo                                                    ║
+// ║ • DataAlteracao - Última atualização                                        ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

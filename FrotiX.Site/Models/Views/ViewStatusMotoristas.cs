@@ -1,3 +1,28 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViewStatusMotoristas.cs                                            ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ View model para dashboard de status em tempo real dos motoristas.           ║
+// ║ Usado em painéis de controle para visualização rápida da situação.          ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ • MotoristaId - Identificador único do motorista                            ║
+// ║ • Nome - Nome do motorista                                                  ║
+// ║ • Ponto - Número do ponto funcional                                         ║
+// ║ • StatusAtual - Status atual (Disponível, Em Viagem, Indisponível)          ║
+// ║ • DataEscala - Data da escala atual                                         ║
+// ║ • NumeroSaidas - Quantidade de saídas realizadas no dia                     ║
+// ║ • Placa - Placa do veículo atual                                            ║
+// ║ • Veiculo - Descrição do veículo                                            ║
+// ║                                                                              ║
+// ║ USO:                                                                          ║
+// ║ • Dashboard de status de motoristas em tempo real                           ║
+// ║ • Painel de controle para despachadores                                     ║
+// ║ • Indicadores visuais de disponibilidade                                    ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

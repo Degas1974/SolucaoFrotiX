@@ -1,3 +1,37 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: EscalaHub.cs                                                        ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Hub SignalR para atualização em tempo real da escala de motoristas.          ║
+// ║ Inclui BackgroundService para monitoramento contínuo de viagens.             ║
+// ║                                                                              ║
+// ║ CLASSES INCLUÍDAS:                                                           ║
+// ║ - EscalaHub: Hub principal para comunicação com clientes                     ║
+// ║ - EscalaMonitorService: BackgroundService que monitora viagens               ║
+// ║                                                                              ║
+// ║ MÉTODOS DO HUB:                                                              ║
+// ║ - GetMotoristasVez()        → Busca top 5 motoristas da vez                  ║
+// ║ - GetEscalasDia()           → Busca escalas completas de uma data            ║
+// ║ - NotificarAlteracaoStatus()→ Notifica mudança de status de motorista        ║
+// ║ - NotificarNovaViagem()     → Notifica nova viagem registrada                ║
+// ║                                                                              ║
+// ║ EVENTOS ENVIADOS AO CLIENTE:                                                 ║
+// ║ - Connected                 → Confirmação de conexão                         ║
+// ║ - AtualizarMotoristasVez    → Lista atualizada de motoristas                 ║
+// ║ - AtualizarEscalasDia       → Escalas completas do dia                       ║
+// ║ - StatusMotoristaAlterado   → Mudança de status individual                   ║
+// ║ - NovaViagemRegistrada      → Nova viagem criada                             ║
+// ║ - ViagemAtualizada          → Viagem modificada                              ║
+// ║                                                                              ║
+// ║ BACKGROUND SERVICE:                                                          ║
+// ║ - Polling a cada 30 segundos                                                 ║
+// ║ - Detecta viagens criadas/finalizadas/canceladas nos últimos 30s             ║
+// ║ - Atualiza status do motorista (Disponível/Em Viagem)                        ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 12 | LINHAS: ~228                         ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
@@ -12,6 +46,9 @@ using System.Linq;
 
 namespace FrotiX.Hubs
 {
+    /// <summary>
+    /// Hub SignalR para escala de motoristas em tempo real.
+    /// </summary>
     public class EscalaHub : Hub
     {
         private readonly ILogger<EscalaHub> _logger;

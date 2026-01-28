@@ -1,3 +1,30 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViewLavagem.cs                                                     ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ View model para exibição de registros de lavagem de veículos.               ║
+// ║ Inclui dados do veículo, motorista responsável e equipe de lavadores.       ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ Identificadores:                                                             ║
+// ║ • LavagemId - Identificador único do registro de lavagem                    ║
+// ║ • MotoristaId - Motorista responsável pelo veículo                          ║
+// ║ • VeiculoId - Veículo que foi lavado                                        ║
+// ║ • LavadoresId - IDs dos lavadores (separados por vírgula)                   ║
+// ║                                                                              ║
+// ║ Dados da Lavagem:                                                            ║
+// ║ • Data - Data da lavagem                                                    ║
+// ║ • HorarioInicio/HorarioFim - Horários de início e término                   ║
+// ║ • DuracaoMinutos - Duração total em minutos                                 ║
+// ║                                                                              ║
+// ║ Dados para Exibição:                                                         ║
+// ║ • Lavadores - Nomes dos lavadores (concatenados)                            ║
+// ║ • DescricaoVeiculo - Descrição do veículo lavado                            ║
+// ║ • Nome - Nome do motorista responsável                                      ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

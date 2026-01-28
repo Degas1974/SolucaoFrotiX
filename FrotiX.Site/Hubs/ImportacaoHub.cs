@@ -1,3 +1,30 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ImportacaoHub.cs                                                    ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Hub SignalR para progresso em tempo real durante importação de planilhas.    ║
+// ║ Usado na importação de abastecimentos e outros dados em batch.               ║
+// ║                                                                              ║
+// ║ CLASSES INCLUÍDAS:                                                           ║
+// ║ - ImportacaoHub: Hub de conexão para importação                              ║
+// ║ - ProgressoImportacao: DTO com detalhes do progresso                         ║
+// ║                                                                              ║
+// ║ EVENTOS ENVIADOS AO CLIENTE:                                                 ║
+// ║ - Conectado → Confirmação de conexão com ConnectionId                        ║
+// ║                                                                              ║
+// ║ DTO ProgressoImportacao:                                                     ║
+// ║ - Porcentagem, Etapa, Detalhe, LinhaAtual, TotalLinhas                       ║
+// ║ - ResumoDisponivel, TotalRegistros, DataInicial, DataFinal                   ║
+// ║ - RegistrosGasolina, RegistrosDiesel, RegistrosOutros                        ║
+// ║ - XlsxAtual/Total, CsvAtual/Total, ProcessAtual/Total (3 barras)             ║
+// ║                                                                              ║
+// ║ ETAPAS DE IMPORTAÇÃO:                                                        ║
+// ║ 1. Leitura XLSX → Conversão para CSV → Processamento de registros            ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 12                                        ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Threading.Tasks;

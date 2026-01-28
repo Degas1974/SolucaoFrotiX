@@ -1,4 +1,26 @@
-﻿using System;
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViewEmpenhoMulta.cs                                                ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Modelo para VIEW de empenhos de multas com saldos calculados.               ║
+// ║ Consolida movimentações para exibição em grid.                              ║
+// ║                                                                              ║
+// ║ CAMPOS:                                                                      ║
+// ║ - EmpenhoMultaId, OrgaoAutuanteId                                           ║
+// ║ - NotaEmpenho, AnoVigencia                                                  ║
+// ║ - SaldoInicial: Valor empenhado original                                    ║
+// ║ - SaldoAtual: Saldo disponível atual                                        ║
+// ║ - SaldoMovimentacao: Total movimentado                                      ║
+// ║ - SaldoMultas: Total comprometido com multas                                ║
+// ║ - Movimentacoes: Quantidade de movimentações                                ║
+// ║                                                                              ║
+// ║ USO: Grid de empenhos, controle de saldo                                    ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

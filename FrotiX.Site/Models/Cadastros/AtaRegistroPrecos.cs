@@ -1,4 +1,34 @@
-﻿using System;
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: AtaRegistroPrecos.cs                                               ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidades para gestão de Atas de Registro de Preços e seus itens.           ║
+// ║ Usado para controle de aquisição de veículos via licitação.                 ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • AtaRegistroPrecosViewModel - ViewModel com dropdown de fornecedores       ║
+// ║ • AtaRegistroPrecos - Entidade principal da ata                             ║
+// ║ • RepactuacaoAta - Repactuações/aditivos da ata                             ║
+// ║ • ItemVeiculoAta - Itens de veículos da ata                                 ║
+// ║                                                                              ║
+// ║ PROPRIEDADES ATAREGISTROPRECOS:                                             ║
+// ║ • AtaId [Key] - Identificador único                                         ║
+// ║ • NumeroAta, AnoAta - Número e ano da ata                                   ║
+// ║ • AnoProcesso, NumeroProcesso - Dados do processo licitatório               ║
+// ║ • Objeto - Objeto da ata                                                    ║
+// ║ • DataInicio, DataFim - Vigência da ata                                     ║
+// ║ • Valor - Valor total da ata                                                ║
+// ║ • Status - Ativo/Inativo                                                    ║
+// ║ • FornecedorId → Fornecedor (FK)                                            ║
+// ║                                                                              ║
+// ║ VALIDAÇÕES:                                                                   ║
+// ║ • [ValidaZero] - Validação customizada para campos obrigatórios             ║
+// ║ • [Required] - Campos obrigatórios                                          ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

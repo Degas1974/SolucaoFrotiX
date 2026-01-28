@@ -1,3 +1,11 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
+ * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
+ * ║  Seção: RelatoriosController.cs                                          ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +18,22 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FrotiX.Controllers;
 
-/// <summary>
-/// Controller para exportação de PDFs do Dashboard Economildo
-/// Endpoint: /api/Relatorios/ExportarEconomildo?tipo=XXX
-/// </summary>
+/****************************************************************************************
+ * ⚡ CONTROLLER: Relatorios API (Dashboard Economildo)
+ * 🎯 OBJETIVO: Gerar relatórios PDF do Dashboard Economildo (análise de viagens MOB)
+ * 📋 ROTAS: /api/Relatorios/ExportarEconomildo?tipo={TipoRelatorioEconomildo}
+ * 🔗 ENTIDADES: ViagensEconomildo (View do banco)
+ * 📦 DEPENDÊNCIAS: FrotiXDbContext, IUnitOfWork, RelatorioEconomildoPdfService
+ * 📊 TIPOS DE RELATÓRIO (8):
+ *    1. HeatmapViagens - Mapa de calor de distribuição de viagens
+ *    2. HeatmapPassageiros - Mapa de calor de passageiros
+ *    3. UsuariosMes - Gráfico de barras de usuários por mês
+ *    4. UsuariosTurno - Gráfico de pizza de usuários por turno
+ *    5. ComparativoMob - Gráfico comparativo entre MOBs (PGR, Rodoviária, Cefor)
+ *    6. UsuariosDiaSemana - Gráfico de barras de usuários por dia da semana
+ *    7. DistribuicaoHorario - Gráfico de distribuição horária
+ *    8. TopVeiculos - Ranking de veículos mais utilizados
+ ****************************************************************************************/
 [ApiController]
 [Route("api/[controller]")]
 public class RelatoriosController : Controller
@@ -29,6 +49,15 @@ public class RelatoriosController : Controller
         _pdfService = new RelatorioEconomildoPdfService();
     }
 
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: ExportarEconomildo
+     * 🎯 OBJETIVO: Endpoint principal para exportar relatórios Economildo em PDF
+     * 📥 ENTRADAS: tipo (enum TipoRelatorioEconomildo), mob?, mes?, ano?
+     * 📤 SAÍDAS: FileResult (PDF binary) com nome "Economildo_{tipo}_{timestamp}.pdf"
+     * 🔗 CHAMADA POR: Dashboard Economildo (frontend JavaScript)
+     * 🔄 CHAMA: 8 métodos geradores de PDF conforme tipo selecionado
+     * 🎨 SWITCH: Direciona para método correto com pattern matching
+     ****************************************************************************************/
     [HttpGet]
     [Route("ExportarEconomildo")]
     public IActionResult ExportarEconomildo(
@@ -41,6 +70,7 @@ public class RelatoriosController : Controller
         {
             var filtro = new FiltroEconomildoDto { Mob = mob, Mes = mes, Ano = ano };
 
+            // [DOC] Switch expression: direciona para gerador específico conforme tipo
             byte[] pdfBytes = tipo switch
             {
                 TipoRelatorioEconomildo.HeatmapViagens => GerarHeatmapViagens(filtro),
@@ -66,20 +96,32 @@ public class RelatoriosController : Controller
 
     #region ==================== BUSCAR VIAGENS ====================
 
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: BuscarViagensEconomildo (Helper privado)
+     * 🎯 OBJETIVO: Query builder para buscar viagens com filtros opcionais
+     * 📥 ENTRADAS: filtro (FiltroEconomildoDto: Mob?, Mes?, Ano?), ignorarMob (bool)
+     * 📤 SAÍDAS: List<ViagensEconomildo>
+     * 🔗 CHAMADA POR: Todos os 8 métodos geradores de PDF
+     * 🔄 CHAMA: _context.ViagensEconomildo (View do banco)
+     * 📊 FILTROS: Combina MOB, Mês e Ano (opcionais) com AND lógico
+     ****************************************************************************************/
     private List<ViagensEconomildo> BuscarViagensEconomildo(FiltroEconomildoDto filtro, bool ignorarMob = false)
     {
         var query = _context.ViagensEconomildo.AsQueryable();
 
+        // [DOC] Filtro de MOB (PGR, Rodoviária, Cefor) - pode ser ignorado para comparativos
         if (!ignorarMob && !string.IsNullOrEmpty(filtro.Mob))
         {
             query = query.Where(v => v.MOB == filtro.Mob);
         }
 
+        // [DOC] Filtro de mês (1-12)
         if (filtro.Mes.HasValue && filtro.Mes.Value > 0)
         {
             query = query.Where(v => v.Data.HasValue && v.Data.Value.Month == filtro.Mes.Value);
         }
 
+        // [DOC] Filtro de ano (ex: 2025, 2026)
         if (filtro.Ano.HasValue && filtro.Ano.Value > 0)
         {
             query = query.Where(v => v.Data.HasValue && v.Data.Value.Year == filtro.Ano.Value);
@@ -89,6 +131,20 @@ public class RelatoriosController : Controller
     }
 
     #endregion
+
+    /****************************************************************************************
+     * 📊 MÉTODOS GERADORES DE PDF (8 tipos)
+     *
+     * Cada método abaixo segue o padrão:
+     * 1. Buscar dados com BuscarViagensEconomildo()
+     * 2. Agrupar/agregar dados conforme necessário (LINQ GroupBy, Sum, OrderBy)
+     * 3. Montar DTO específico (HeatmapDto, GraficoBarrasDto, GraficoPizzaDto, etc)
+     * 4. Chamar RelatorioEconomildoPdfService para gerar PDF
+     * 5. Retornar byte[] do PDF
+     *
+     * 📝 Todos os métodos são privados e chamados por ExportarEconomildo()
+     * 🎨 Cada PDF tem layout específico (heatmap, barra, pizza, linha, etc)
+     ****************************************************************************************/
 
     #region ==================== HEATMAP VIAGENS ====================
 

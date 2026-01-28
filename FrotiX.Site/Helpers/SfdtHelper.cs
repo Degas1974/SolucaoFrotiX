@@ -1,4 +1,29 @@
-﻿using System;
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: SfdtHelper.cs                                                       ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Helper para conversão de documentos usando Syncfusion e SkiaSharp.           ║
+// ║ Converte DOCX → PDF → PNG para preview de documentos.                        ║
+// ║                                                                              ║
+// ║ MÉTODOS DISPONÍVEIS:                                                         ║
+// ║ - SalvarImagemDeDocx() → Converte byte[] DOCX para byte[] PNG                ║
+// ║                                                                              ║
+// ║ PIPELINE DE CONVERSÃO:                                                       ║
+// ║ 1. DOCX → WordDocument (Syncfusion.DocIO)                                    ║
+// ║ 2. WordDocument → PdfDocument (Syncfusion.DocIORenderer)                     ║
+// ║ 3. PDF → SKBitmap (Syncfusion.EJ2.PdfViewer + SkiaSharp)                     ║
+// ║ 4. SKBitmap → PNG byte[]                                                     ║
+// ║                                                                              ║
+// ║ DEPENDÊNCIAS:                                                                ║
+// ║ - Syncfusion.DocIO, Syncfusion.DocIORenderer                                 ║
+// ║ - Syncfusion.Pdf, Syncfusion.EJ2.PdfViewer                                   ║
+// ║ - SkiaSharp                                                                  ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 12                                        ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
+using System;
 using System.IO;
 using System.Text;
 using Syncfusion.DocIO;
@@ -11,6 +36,9 @@ using SkiaSharp;
 
 namespace FrotiX.Helpers
     {
+    /// <summary>
+    /// Helper para conversão DOCX → PDF → PNG usando Syncfusion e SkiaSharp.
+    /// </summary>
     public static class SfdtHelper
         {
         public static byte[] SalvarImagemDeDocx(byte[] docxBytes)

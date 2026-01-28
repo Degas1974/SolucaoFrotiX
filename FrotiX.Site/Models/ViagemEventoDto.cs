@@ -1,3 +1,22 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViagemEventoDto.cs                                                 ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ DTO para listagem de viagens associadas a eventos.                          ║
+// ║ Usado em grids e DataTables na tela de eventos.                             ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ - EventoId, ViagemId: Identificadores                                       ║
+// ║ - NoFichaVistoria: Número da ficha de vistoria                              ║
+// ║ - NomeRequisitante, NomeSetor, NomeMotorista                                ║
+// ║ - DescricaoVeiculo, Placa                                                   ║
+// ║ - CustoViagem: Custo calculado da viagem                                    ║
+// ║ - DataInicial, HoraInicio                                                   ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using FrotiX.Models;
 using System;
 

@@ -1,3 +1,27 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViagemEstatistica.cs                                               ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade para armazenamento de estatísticas consolidadas de viagens.        ║
+// ║ Pré-calculado para performance em dashboards e relatórios.                  ║
+// ║                                                                              ║
+// ║ ESTATÍSTICAS GERAIS:                                                         ║
+// ║ - TotalViagens, ViagensFinalizadas, EmAndamento, Agendadas, Canceladas      ║
+// ║                                                                              ║
+// ║ CUSTOS:                                                                       ║
+// ║ - CustoTotal, CustoMedioPorViagem                                           ║
+// ║ - CustoVeiculo, CustoMotorista, CustoOperador, CustoLavador, Combustivel    ║
+// ║                                                                              ║
+// ║ QUILOMETRAGEM: QuilometragemTotal, QuilometragemMedia                       ║
+// ║                                                                              ║
+// ║ DADOS AGREGADOS (JSON):                                                      ║
+// ║ - ViagensPorStatus, Motorista, Veiculo, Finalidade, Requisitante, Setor     ║
+// ║ - CustosPorMotorista, Veiculo, Tipo | KmPorVeiculo                          ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

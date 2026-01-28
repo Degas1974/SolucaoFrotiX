@@ -1,3 +1,30 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: EmpenhoMulta.cs                                                    ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade para gestão de empenhos específicos para pagamento de multas.      ║
+// ║ Vinculado a órgão autuante para controle de saldos por DETRAN/PRF/etc.      ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • EmpenhoMultaViewModel - ViewModel com dropdown de órgãos autuantes        ║
+// ║ • EmpenhoMulta - Entidade de empenho de multas                              ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ • EmpenhoMultaId [Key] - Identificador único                                ║
+// ║ • NotaEmpenho - Número da nota de empenho (12 caracteres)                   ║
+// ║ • AnoVigencia - Ano de exercício orçamentário                               ║
+// ║ • SaldoInicial - Valor empenhado em R$                                      ║
+// ║ • SaldoAtual - Saldo disponível após movimentações                          ║
+// ║ • Status - Ativo/Inativo                                                    ║
+// ║ • OrgaoAutuanteId → OrgaoAutuante (FK)                                      ║
+// ║                                                                              ║
+// ║ USO:                                                                          ║
+// ║ • Controle de verba para pagamento de multas                                ║
+// ║ • Vinculação de pagamentos de multas ao empenho correto                     ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

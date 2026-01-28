@@ -1,3 +1,22 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: EstatisticaGeralMensal.cs                                          ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Consolidado geral mensal com todas as principais métricas do sistema.       ║
+// ║ Usado para dashboard executivo e KPIs gerenciais.                           ║
+// ║                                                                              ║
+// ║ MOTORISTAS:                                                                  ║
+// ║ - TotalMotoristas, MotoristasAtivos, MotoristasInativos                     ║
+// ║ - Efetivos, Feristas, Cobertura                                             ║
+// ║                                                                              ║
+// ║ VIAGENS: TotalViagens, KmTotal, HorasTotais                                 ║
+// ║ MULTAS: TotalMultas, ValorTotalMultas                                       ║
+// ║ ABASTECIMENTOS: TotalAbastecimentos                                         ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

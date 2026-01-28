@@ -1,3 +1,11 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
+ * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
+ * ║  Seção: PlacaBronzeController.cs                                         ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +14,13 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: PlacaBronze API
+     * 🎯 OBJETIVO: Gerenciar placas de bronze (identificadores físicos de veículos)
+     * 📋 ROTAS: /api/PlacaBronze/*
+     * 🔗 ENTIDADES: PlacaBronze, Veiculo
+     * 📦 DEPENDÊNCIAS: IUnitOfWork
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class PlacaBronzeController :Controller
@@ -28,11 +43,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * 🎯 OBJETIVO: Listar todas as placas de bronze com veículo associado (se houver)
+         * 📥 ENTRADAS: Nenhuma
+         * 📤 SAÍDAS: JSON { data: List<{ PlacaBronzeId, DescricaoPlaca, Status, PlacaVeiculo }> }
+         * 🔗 CHAMADA POR: Grid de placas de bronze
+         * 🔄 CHAMA: PlacaBronze.GetAll(), Veiculo.GetAll()
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
             try
             {
+                // [DOC] Left join: retorna todas as placas bronze, mesmo sem veículo associado
                 var result = (
                     from p in _unitOfWork.PlacaBronze.GetAll()
                     join v in _unitOfWork.Veiculo.GetAll()
@@ -64,6 +88,14 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * 🎯 OBJETIVO: Excluir placa de bronze (valida se não há veículos associados)
+         * 📥 ENTRADAS: model (PlacaBronzeViewModel com PlacaBronzeId)
+         * 📤 SAÍDAS: JSON { success, message }
+         * 🔗 CHAMADA POR: Modal de exclusão de placa
+         * 🔄 CHAMA: PlacaBronze.GetFirstOrDefault(), Veiculo.GetFirstOrDefault(), PlacaBronze.Remove()
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(PlacaBronzeViewModel model)
@@ -77,6 +109,7 @@ namespace FrotiX.Controllers
                     );
                     if (objFromDb != null)
                     {
+                        // [DOC] Valida integridade: não permite excluir placa vinculada a veículo
                         var modelo = _unitOfWork.Veiculo.GetFirstOrDefault(u =>
                             u.PlacaBronzeId == model.PlacaBronzeId
                         );
@@ -118,6 +151,14 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateStatusPlacaBronze
+         * 🎯 OBJETIVO: Alternar status da placa (Ativo ↔ Inativo)
+         * 📥 ENTRADAS: Id (Guid da placa)
+         * 📤 SAÍDAS: JSON { success, message, type (0=ativo, 1=inativo) }
+         * 🔗 CHAMADA POR: Toggle de status no grid
+         * 🔄 CHAMA: PlacaBronze.GetFirstOrDefault(), PlacaBronze.Update()
+         ****************************************************************************************/
         [Route("UpdateStatusPlacaBronze")]
         public JsonResult UpdateStatusPlacaBronze(Guid Id)
         {
@@ -133,6 +174,7 @@ namespace FrotiX.Controllers
 
                     if (objFromDb != null)
                     {
+                        // [DOC] Toggle status: true → false (type=1) ou false → true (type=0)
                         if (objFromDb.Status == true)
                         {
                             objFromDb.Status = false;
@@ -181,6 +223,14 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Desvincula
+         * 🎯 OBJETIVO: Desvincular placa de bronze de um veículo
+         * 📥 ENTRADAS: model (PlacaBronzeViewModel com PlacaBronzeId)
+         * 📤 SAÍDAS: JSON { success, message, type }
+         * 🔗 CHAMADA POR: Botão de desvincular no grid
+         * 🔄 CHAMA: Veiculo.GetFirstOrDefault(), Veiculo.Update()
+         ****************************************************************************************/
         [Route("Desvincula")]
         [HttpPost]
         public IActionResult Desvincula(PlacaBronzeViewModel model)
@@ -197,6 +247,7 @@ namespace FrotiX.Controllers
 
                     if (objFromDb != null)
                     {
+                        // [DOC] Desvincula placa setando PlacaBronzeId = Guid.Empty (null lógico)
                         objFromDb.PlacaBronzeId = Guid.Empty;
                         Description = string.Format(
                             "Placa de Bronze desassociada com sucesso!" ,

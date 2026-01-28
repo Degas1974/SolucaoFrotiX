@@ -1,3 +1,11 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
+ * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
+ * ║  Seção: ViagemEventoController.cs                                        ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;
@@ -16,6 +24,34 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: ViagemEvento API (Partial)
+     * 🎯 OBJETIVO: Gerenciar viagens de eventos (consultas, fluxos, upload, finalização)
+     * 📋 ROTAS:
+     *    - GET /api/ViagemEvento [GET] - Listar viagens de eventos não agendadas
+     *    - /ViagemEventos [GET] - Igual ao anterior (alias)
+     *    - /Fluxo [GET] - Fluxo geral Economildo
+     *    - /FluxoVeiculos/{Id} [GET] - Fluxo por veículo
+     *    - /FluxoMotoristas/{Id} [GET] - Fluxo por motorista
+     *    - /FluxoData/{Id} [GET] - Fluxo por data
+     *    - /ApagaFluxoEconomildo [POST] - Deletar registro de fluxo
+     *    - /MyUploader [POST] - Upload de arquivo de viagem
+     *    - /CalculaCustoViagens [POST] - Calcular custos de viagens
+     *    - /ViagemVeiculos/{Id} [GET] - Viagens por veículo
+     *    - /ViagemMotoristas/{Id} [GET] - Viagens por motorista
+     *    - /ViagemStatus/{Id} [GET] - Viagens por status
+     *    - /ViagemSetores/{Id} [GET] - Viagens por setor
+     *    - /ViagemData/{Id} [GET] - Viagens por data
+     *    - /Ocorrencias/{Id} [GET] - Ocorrências de viagem
+     *    - /Cancelar [POST] - Cancelar viagem
+     *    - /FinalizaViagem [POST] - Finalizar viagem
+     *    - /AjustaViagem [POST] - Ajustar viagem
+     *    - /ObterPorId/{id} [GET] - Obter viagem por ID
+     *    - /ObterDetalhamentoCustos/{eventoId} [GET] - Detalhamento de custos de evento
+     * 🔗 ENTIDADES: Viagem, ViewViagens, ViagensEconomildo, Evento, Veiculo, Motorista, Ocorrencia
+     * 📦 DEPENDÊNCIAS: IUnitOfWork, IWebHostEnvironment
+     * 📝 NOTA: Classe parcial - ver ViagemEventoController.UpdateStatus.cs
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     [IgnoreAntiforgeryToken]
@@ -47,6 +83,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * 🎯 OBJETIVO: Listar todas as viagens de eventos não agendadas
+         * 📥 ENTRADAS: Id (string - não utilizado)
+         * 📤 SAÍDAS: JSON { data: Array<ViewViagens> }
+         * 🔗 CHAMADA POR: Frontend (DataTable de viagens de eventos)
+         * 🔄 CHAMA: ViewViagens.GetAll()
+         * 📋 FILTRO: Finalidade == "Evento" AND StatusAgendamento == false
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get(string Id)
         {
@@ -72,6 +117,16 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ViagemEventos
+         * 🎯 OBJETIVO: Alias para Get() - listar viagens de eventos não agendadas
+         * 📥 ENTRADAS: Nenhuma
+         * 📤 SAÍDAS: JSON { data: Array<ViewViagens> }
+         * 🔗 CHAMADA POR: Frontend (rota alternativa)
+         * 🔄 CHAMA: ViewViagens.GetAll()
+         * 📋 FILTRO: Finalidade == "Evento" AND StatusAgendamento == false
+         * 📝 NOTA: Funcionalidade idêntica a Get()
+         ****************************************************************************************/
         [Route("ViagemEventos")]
         [HttpGet]
         public IActionResult ViagemEventos()
@@ -98,6 +153,16 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Fluxo
+         * 🎯 OBJETIVO: Obter fluxo geral Economildo (todas as viagens do sistema Economildo)
+         * 📥 ENTRADAS: Nenhuma
+         * 📤 SAÍDAS: JSON { data: Array<ViewFluxoEconomildo> }
+         * 🔗 CHAMADA POR: Dashboard Economildo (tabela de fluxo)
+         * 🔄 CHAMA: ViewFluxoEconomildo.GetAll()
+         * 📊 CAMPOS: ViagemEconomildoId, MotoristaId, VeiculoId, NomeMotorista, DescricaoVeiculo, MOB, Data, HoraInicio, HoraFim, etc.
+         * 📝 NOTA: View materializada para performance
+         ****************************************************************************************/
         [Route("Fluxo")]
         [HttpGet]
         public IActionResult Fluxo()
@@ -137,6 +202,16 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: FluxoVeiculos
+         * 🎯 OBJETIVO: Obter fluxo Economildo filtrado por veículo específico
+         * 📥 ENTRADAS: Id (string Guid do veículo)
+         * 📤 SAÍDAS: JSON { data: Array<ViewFluxoEconomildo> }
+         * 🔗 CHAMADA POR: Dashboard Economildo (detalhamento de veículo)
+         * 🔄 CHAMA: ViewFluxoEconomildo.GetAll()
+         * 📋 FILTRO: VeiculoId == Id
+         * 📊 ORDENAÇÃO: Data DESC, MOB DESC, HoraInicio DESC
+         ****************************************************************************************/
         [Route("FluxoVeiculos")]
         [HttpGet]
         public IActionResult FluxoVeiculos(string Id)
@@ -177,6 +252,16 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: FluxoMotoristas
+         * 🎯 OBJETIVO: Obter fluxo Economildo filtrado por motorista específico
+         * 📥 ENTRADAS: Id (string Guid do motorista)
+         * 📤 SAÍDAS: JSON { data: Array<ViewFluxoEconomildo> }
+         * 🔗 CHAMADA POR: Dashboard Economildo (detalhamento de motorista)
+         * 🔄 CHAMA: ViewFluxoEconomildo.GetAll()
+         * 📋 FILTRO: MotoristaId == Id
+         * 📊 ORDENAÇÃO: Data DESC, MOB DESC, HoraInicio DESC
+         ****************************************************************************************/
         [Route("FluxoMotoristas")]
         [HttpGet]
         public IActionResult FluxoMotoristas(string Id)
@@ -217,6 +302,16 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: FluxoData
+         * 🎯 OBJETIVO: Obter fluxo Economildo filtrado por data específica
+         * 📥 ENTRADAS: Id (string data no formato parseável)
+         * 📤 SAÍDAS: JSON { data: Array<ViewFluxoEconomildoData> }
+         * 🔗 CHAMADA POR: Dashboard Economildo (detalhamento de data)
+         * 🔄 CHAMA: ViewFluxoEconomildoData.GetAll()
+         * 📋 FILTRO: Data == Id (parseado como DateTime)
+         * 📊 ORDENAÇÃO: Data DESC, MOB DESC, HoraInicio DESC
+         ****************************************************************************************/
         [Route("FluxoData")]
         [HttpGet]
         public IActionResult FluxoData(string Id)
@@ -259,6 +354,14 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ApagaFluxoEconomildo
+         * 🎯 OBJETIVO: Deletar registro de viagem Economildo
+         * 📥 ENTRADAS: viagensEconomildo (ViagensEconomildo com ViagemEconomildoId)
+         * 📤 SAÍDAS: JSON { success, message }
+         * 🔗 CHAMADA POR: Dashboard Economildo (botão de deletar)
+         * 🔄 CHAMA: ViagensEconomildo.Remove(), Save()
+         ****************************************************************************************/
         [Route("ApagaFluxoEconomildo")]
         [HttpPost]
         public IActionResult ApagaFluxoEconomildo(ViagensEconomildo viagensEconomildo)
@@ -287,6 +390,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: MyUploader
+         * 🎯 OBJETIVO: Upload de arquivo de Ficha de Vistoria para uma viagem
+         * 📥 ENTRADAS: MyUploader (IFormFile), ViagemId (string Guid)
+         * 📤 SAÍDAS: ObjectResult { status: "success" ou "fail" }
+         * 🔗 CHAMADA POR: Formulário de upload de Ficha de Vistoria
+         * 🔄 CHAMA: Viagem.Update(), Save()
+         * 💾 ARMAZENAMENTO: Converte arquivo para byte[] e salva em Viagem.FichaVistoria
+         ****************************************************************************************/
         [Route("MyUploader")]
         [HttpPost]
         public IActionResult MyUploader(IFormFile MyUploader, [FromForm] string ViagemId)
@@ -327,6 +439,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalculaCustoViagens
+         * 🎯 OBJETIVO: Calcular custos de todas as viagens realizadas (versão antiga)
+         * 📥 ENTRADAS: Nenhuma (processa viagens filtradas)
+         * 📤 SAÍDAS: JSON { success, message }
+         * 🔗 CHAMADA POR: Interface administrativa (botão de recalcular custos)
+         * 🔄 CHAMA: Servicos.CalculaCusto*() para cada viagem, Update(), Save()
+         * 📋 FILTRO: StatusAgendamento == false AND Status == "Realizada" AND Finalidade != manutenções AND NoFichaVistoria != null
+         * 💰 CUSTOS: CustoMotorista, CustoVeiculo, CustoCombustivel (Operador e Lavador = 0)
+         * 📝 NOTA: Versão legada - ver ViagemController.CalculoCustoBatch.cs para versão otimizada
+         ****************************************************************************************/
         [Route("CalculaCustoViagens")]
         [HttpPost]
         public IActionResult CalculaCustoViagens()
@@ -386,6 +509,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ViagemVeiculos
+         * 🎯 OBJETIVO: Listar viagens filtradas por veículo específico
+         * 📥 ENTRADAS: Id (Guid do veículo)
+         * 📤 SAÍDAS: JSON { data: Array<ViewViagens> }
+         * 🔗 CHAMADA POR: Interface de detalhamento de veículo
+         * 🔄 CHAMA: ViewViagens.GetAll()
+         * 📋 FILTRO: VeiculoId == Id AND StatusAgendamento == false
+         ****************************************************************************************/
         [Route("ViagemVeiculos")]
         [HttpGet]
         public IActionResult ViagemVeiculos(Guid Id)
@@ -412,6 +544,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ViagemMotoristas
+         * 🎯 OBJETIVO: Listar viagens filtradas por motorista específico
+         * 📥 ENTRADAS: Id (Guid do motorista)
+         * 📤 SAÍDAS: JSON { data: Array<ViewViagens> }
+         * 🔗 CHAMADA POR: Interface de detalhamento de motorista
+         * 🔄 CHAMA: ViewViagens.GetAll()
+         * 📋 FILTRO: MotoristaId == Id AND StatusAgendamento == false
+         ****************************************************************************************/
         [Route("ViagemMotoristas")]
         [HttpGet]
         public IActionResult ViagemMotoristas(Guid Id)
@@ -438,6 +579,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ViagemStatus
+         * 🎯 OBJETIVO: Listar viagens filtradas por status específico
+         * 📥 ENTRADAS: Id (string status - "Realizada", "Agendada", etc.)
+         * 📤 SAÍDAS: JSON { data: Array<ViewViagens> }
+         * 🔗 CHAMADA POR: Interface de listagem de viagens
+         * 🔄 CHAMA: ViewViagens.GetAll()
+         * 📋 FILTRO: Status == Id AND StatusAgendamento == false
+         ****************************************************************************************/
         [Route("ViagemStatus")]
         [HttpGet]
         public IActionResult ViagemStatus(string Id)
@@ -464,6 +614,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ViagemSetores
+         * 🎯 OBJETIVO: Listar viagens filtradas por setor solicitante específico
+         * 📥 ENTRADAS: Id (Guid do setor solicitante)
+         * 📤 SAÍDAS: JSON { data: Array<ViewViagens> }
+         * 🔗 CHAMADA POR: Interface de detalhamento de setor
+         * 🔄 CHAMA: ViewViagens.GetAll()
+         * 📋 FILTRO: SetorSolicitanteId == Id AND StatusAgendamento == false
+         ****************************************************************************************/
         [Route("ViagemSetores")]
         [HttpGet]
         public IActionResult ViagemSetores(Guid Id)
@@ -490,6 +649,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ViagemData
+         * 🎯 OBJETIVO: Listar viagens filtradas por data específica
+         * 📥 ENTRADAS: Id (string data no formato parseável)
+         * 📤 SAÍDAS: JSON { data: Array<ViewViagens> }
+         * 🔗 CHAMADA POR: Interface de listagem de viagens por data
+         * 🔄 CHAMA: ViewViagens.GetAll()
+         * 📋 FILTRO: DataInicial == Id (parseada) AND StatusAgendamento == false
+         ****************************************************************************************/
         [Route("ViagemData")]
         [HttpGet]
         public IActionResult ViagemData(string Id)
@@ -526,6 +694,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Ocorrencias
+         * 🎯 OBJETIVO: Listar viagens que possuem ocorrências registradas
+         * 📥 ENTRADAS: Id (Guid - não utilizado)
+         * 📤 SAÍDAS: JSON { data: Array<ViewViagens> }
+         * 🔗 CHAMADA POR: Interface de listagem de ocorrências
+         * 🔄 CHAMA: ViewViagens.GetAll()
+         * 📋 FILTRO: ResumoOcorrencia != null OR DescricaoOcorrencia != null
+         ****************************************************************************************/
         [Route("Ocorrencias")]
         [HttpGet]
         public IActionResult Ocorrencias(Guid Id)
@@ -554,6 +731,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Cancelar
+         * 🎯 OBJETIVO: Cancelar uma viagem (alterar status para "Cancelada")
+         * 📥 ENTRADAS: id (ViagemID com ViagemId)
+         * 📤 SAÍDAS: JSON { success, message }
+         * 🔗 CHAMADA POR: Interface de gerenciamento de viagens (botão cancelar)
+         * 🔄 CHAMA: Viagem.GetFirstOrDefault(), Update(), Save()
+         * 📊 AÇÃO: Altera viagem.Status = "Cancelada"
+         ****************************************************************************************/
         [Route("Cancelar")]
         [HttpPost]
         public IActionResult Cancelar(ViagemID id)
@@ -589,6 +775,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaFicha
+         * 🎯 OBJETIVO: Obter Ficha de Vistoria de uma viagem em formato Base64
+         * 📥 ENTRADAS: id (Guid da viagem)
+         * 📤 SAÍDAS: JSON com viagem.FichaVistoria convertida para imagem ou false
+         * 🔗 CHAMADA POR: Interface de visualização de Ficha de Vistoria
+         * 🔄 CHAMA: Viagem.GetFirstOrDefault(), GetImage()
+         * 📝 NOTA: Converte byte[] para Base64 e depois para imagem
+         ****************************************************************************************/
         [HttpGet]
         [Route("PegaFicha")]
         public JsonResult PegaFicha(Guid id)
@@ -619,6 +814,14 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AdicionarViagensEconomildo
+         * 🎯 OBJETIVO: Adicionar nova viagem Economildo ao sistema
+         * 📥 ENTRADAS: viagensEconomildo (ViagensEconomildo)
+         * 📤 SAÍDAS: JSON { success, message }
+         * 🔗 CHAMADA POR: Formulário de cadastro de viagem Economildo
+         * 🔄 CHAMA: ViagensEconomildo.Add(), Save()
+         ****************************************************************************************/
         [Route("AdicionarViagensEconomildo")]
         [Consumes("application/json")]
         public JsonResult AdicionarViagensEconomildo([FromBody] ViagensEconomildo viagensEconomildo)
@@ -645,6 +848,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ExisteDataEconomildo
+         * 🎯 OBJETIVO: Verificar se já existe viagem Economildo para data/MOB/veículo/motorista
+         * 📥 ENTRADAS: viagensEconomildo (ViagensEconomildo com Data, VeiculoId, MOB, MotoristaId)
+         * 📤 SAÍDAS: JSON { success, message }
+         * 🔗 CHAMADA POR: Formulário de cadastro (validação de duplicidade)
+         * 🔄 CHAMA: ViagensEconomildo.GetFirstOrDefault()
+         * 📋 VALIDAÇÃO: Retorna false se já existe registro com mesma data+MOB+veículo+motorista
+         ****************************************************************************************/
         [Route("ExisteDataEconomildo")]
         [Consumes("application/json")]
         public JsonResult ExisteDataEconomildo([FromBody] ViagensEconomildo viagensEconomildo)
@@ -731,6 +943,13 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetImage (HELPER)
+         * 🎯 OBJETIVO: Converter string Base64 para byte array
+         * 📥 ENTRADAS: sBase64String (string Base64)
+         * 📤 SAÍDAS: byte[] (imagem em bytes ou null)
+         * 🔗 CHAMADA POR: PegaFicha()
+         ****************************************************************************************/
         public byte[] GetImage(string sBase64String)
         {
             byte[] bytes = null;
@@ -741,6 +960,15 @@ namespace FrotiX.Controllers
             return bytes;
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AdicionarEvento
+         * 🎯 OBJETIVO: Adicionar novo evento ao sistema
+         * 📥 ENTRADAS: evento (Evento)
+         * 📤 SAÍDAS: JSON { success, message, eventoid }
+         * 🔗 CHAMADA POR: Formulário de cadastro de evento (modal de criação rápida)
+         * 🔄 CHAMA: Evento.Add(), Save()
+         * 📋 VALIDAÇÃO: Verifica se já existe evento com mesmo nome
+         ****************************************************************************************/
         [Route("AdicionarEvento")]
         [Consumes("application/json")]
         public JsonResult AdicionarEvento([FromBody] Evento evento)
@@ -780,6 +1008,16 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AdicionarRequisitante
+         * 🎯 OBJETIVO: Adicionar novo requisitante ao sistema
+         * 📥 ENTRADAS: requisitante (Requisitante)
+         * 📤 SAÍDAS: JSON { success, message, requisitanteid }
+         * 🔗 CHAMADA POR: Formulário de cadastro de requisitante (modal de criação rápida)
+         * 🔄 CHAMA: Requisitante.Add(), Save()
+         * 📋 VALIDAÇÃO: Verifica se já existe requisitante com mesmo ponto ou nome
+         * 📝 NOTA: Preenche Status=true, DataAlteracao=Now, UsuarioIdAlteracao automaticamente
+         ****************************************************************************************/
         [Route("AdicionarRequisitante")]
         [Consumes("application/json")]
         public JsonResult AdicionarRequisitante([FromBody] Requisitante requisitante)
@@ -830,6 +1068,16 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AdicionarSetor
+         * 🎯 OBJETIVO: Adicionar novo setor solicitante ao sistema
+         * 📥 ENTRADAS: setorSolicitante (SetorSolicitante)
+         * 📤 SAÍDAS: JSON { success, message }
+         * 🔗 CHAMADA POR: Formulário de cadastro de setor (modal de criação rápida)
+         * 🔄 CHAMA: SetorSolicitante.Add(), Save()
+         * 📋 VALIDAÇÃO: Verifica se já existe setor com mesma sigla no mesmo SetorPai
+         * 📝 NOTA: Preenche Status=true, DataAlteracao=Now, UsuarioIdAlteracao automaticamente
+         ****************************************************************************************/
         [Route("AdicionarSetor")]
         [Consumes("application/json")]
         public JsonResult AdicionarSetor([FromBody] SetorSolicitante setorSolicitante)
@@ -908,6 +1156,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SaveImage
+         * 🎯 OBJETIVO: Salvar imagens de viagens no servidor (pasta DadosEditaveis/ImagensViagens)
+         * 📥 ENTRADAS: UploadFiles (IList<IFormFile>)
+         * 📤 SAÍDAS: void (StatusCode 200 sucesso, 204 erro)
+         * 🔗 CHAMADA POR: Interface de upload de imagens
+         * 💾 ARMAZENAMENTO: wwwroot/DadosEditaveis/ImagensViagens
+         * 📝 NOTA: Cria diretório se não existir, não sobrescreve arquivo existente
+         ****************************************************************************************/
         [Route("SaveImage")]
         public void SaveImage(IList<IFormFile> UploadFiles)
         {
@@ -955,6 +1212,21 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: FinalizaViagem
+         * 🎯 OBJETIVO: Finalizar viagem (atualizar dados finais + calcular custos + gerar ocorrência se necessário)
+         * 📥 ENTRADAS: viagem (FinalizacaoViagem com todos os dados de finalização)
+         * 📤 SAÍDAS: JSON { success, message }
+         * 🔗 CHAMADA POR: Formulário de finalização de viagem
+         * 🔄 CHAMA: Viagem.Update(), Servicos.CalculaCusto*(), Ocorrencia.Add() (se houver), Save()
+         * 📊 ATUALIZAÇÕES:
+         *    - DataFinal, HoraFim, KmFinal, CombustivelFinal, Descricao
+         *    - Status = "Realizada"
+         *    - StatusDocumento, StatusCartaoAbastecimento
+         *    - Calcula CustoMotorista, CustoVeiculo, CustoCombustivel
+         *    - Cria Ocorrencia se campos de ocorrência preenchidos
+         * 📝 NOTA: Método complexo - atualiza viagem, calcula custos e cria ocorrência em uma transação
+         ****************************************************************************************/
         [Route("FinalizaViagem")]
         [Consumes("application/json")]
         public IActionResult FinalizaViagem([FromBody] FinalizacaoViagem viagem)
@@ -1024,6 +1296,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AjustaViagem
+         * 🎯 OBJETIVO: Ajustar viagem (atualizar dados de viagem + recalcular custos)
+         * 📥 ENTRADAS: viagem (AjusteViagem com dados atualizados)
+         * 📤 SAÍDAS: JSON { success, message, type }
+         * 🔗 CHAMADA POR: Formulário de ajuste de viagem
+         * 🔄 CHAMA: Viagem.Update(), Servicos.CalculaCusto*(), Save()
+         * 📊 ATUALIZAÇÕES:
+         *    - NoFichaVistoria, DataInicial/Final, HoraInicio/Fim, KmInicial/Final
+         *    - MotoristaId, VeiculoId
+         *    - Recalcula CustoCombustivel, CustoMotorista, CustoVeiculo
+         *    - CustoOperador e CustoLavador = 0
+         * 📝 NOTA: Similar a FinalizaViagem mas permite ajustar viagens já finalizadas
+         ****************************************************************************************/
         [Route("AjustaViagem")]
         [Consumes("application/json")]
         public IActionResult AjustaViagem([FromBody] AjusteViagem viagem)
@@ -1133,10 +1419,15 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Obtém os dados completos de um evento por ID
-        /// Rota: /api/ViagemEvento/ObterPorId?id={guid}
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ObterPorId
+         * 🎯 OBJETIVO: Obter dados completos de um evento por ID
+         * 📥 ENTRADAS: id (Guid do evento)
+         * 📤 SAÍDAS: JSON { success, data: EventoDTO } ou {success, message}
+         * 🔗 CHAMADA POR: Interface de detalhamento de evento
+         * 🔄 CHAMA: Evento.GetFirstOrDefault()
+         * 📋 CAMPOS: EventoId, Nome, Descricao, DataInicial, DataFinal, QtdParticipantes, Status, SetorSolicitanteId, RequisitanteId
+         ****************************************************************************************/
         [Route("ObterPorId")]
         [HttpGet]
         public IActionResult ObterPorId(Guid id)
@@ -1192,6 +1483,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: FileUpload
+         * 🎯 OBJETIVO: Upload de arquivo Base64 para viagem (tamanho grande permitido)
+         * 📥 ENTRADAS: objFile (Objfile com file Base64 e viagemid)
+         * 📤 SAÍDAS: JSON com viagemid ou false
+         * 🔗 CHAMADA POR: Interface de upload de arquivo
+         * 🔄 CHAMA: Viagem.Update()
+         * 📏 LIMITE: 1999483648 bytes (~1.9 GB) via RequestSizeLimit
+         ****************************************************************************************/
         [Route("FileUpload")]
         [HttpPost]
         [RequestSizeLimit(valueCountLimit: 1999483648)]
@@ -1223,6 +1523,16 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ObterDetalhamentoCustosViagem
+         * 🎯 OBJETIVO: Obter detalhamento completo de custos de uma viagem
+         * 📥 ENTRADAS: viagemId (Guid da viagem)
+         * 📤 SAÍDAS: JSON { success, data: { custos detalhados, totais, viagem } }
+         * 🔗 CHAMADA POR: Modal de detalhamento de custos de viagem
+         * 🔄 CHAMA: Viagem.GetFirstOrDefaultAsync() com relacionamentos
+         * 📊 DADOS: Custos individuais (Combustivel, Veiculo, Motorista, Operador, Lavador) + Total
+         * 📝 NOTA: Carrega Requisitante, Motorista, Veiculo relacionados
+         ****************************************************************************************/
         [Route("ObterDetalhamentoCustosViagem")]
         [HttpGet("ObterDetalhamentoCustosViagem")]
         public async Task<IActionResult> ObterDetalhamentoCustosViagem(Guid viagemId)
@@ -1287,10 +1597,19 @@ namespace FrotiX.Controllers
         }
 
 
-        /// <summary>
-        /// Obtém o detalhamento de custos de um evento
-        /// Rota: /api/ViagemEvento/ObterDetalhamentoCustos?eventoId={guid}
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ObterDetalhamentoCustos
+         * 🎯 OBJETIVO: Obter detalhamento completo de custos de um evento (agrega todas as viagens)
+         * 📥 ENTRADAS: eventoId (Guid do evento)
+         * 📤 SAÍDAS: JSON { success, data: { custos totais, tempo total, datas, etc. } }
+         * 🔗 CHAMADA POR: Modal de detalhamento de custos de evento
+         * 🔄 CHAMA: Viagem.GetAll() filtrando por EventoId
+         * 📊 AGREGAÇÃO:
+         *    - Soma de todos os custos (Combustivel, Veiculo, Motorista, Operador, Lavador)
+         *    - Tempo total de todas as viagens
+         *    - Primeira data inicial e última data final
+         * 📝 NOTA: Diferente de ObterDetalhamentoCustosViagem (que é para viagem individual)
+         ****************************************************************************************/
         [Route("ObterDetalhamentoCustos")]
         [HttpGet]
         public IActionResult ObterDetalhamentoCustos(Guid eventoId)

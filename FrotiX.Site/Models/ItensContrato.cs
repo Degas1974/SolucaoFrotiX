@@ -1,3 +1,30 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ItensContrato.cs                                                   ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ ViewModels para gestão de itens de contratos e atas de registro de preços.  ║
+// ║ Prefixo "IC" usado para evitar conflitos com classes existentes.            ║
+// ║                                                                              ║
+// ║ CLASSES PRINCIPAIS:                                                          ║
+// ║ - ICPageViewModel: ViewModel principal da página ItensContrato              ║
+// ║ - ICPlaceholder: Placeholder para PageModel                                 ║
+// ║                                                                              ║
+// ║ VIEWMODELS DE INCLUSÃO:                                                      ║
+// ║ - ICIncluirVeiculoContratoVM, ICIncluirVeiculoAtaVM                         ║
+// ║ - ICIncluirEncarregadoContratoVM, ICIncluirOperadorContratoVM               ║
+// ║ - ICIncluirMotoristaContratoVM, ICIncluirLavadorContratoVM                  ║
+// ║                                                                              ║
+// ║ VIEWMODELS DE REMOÇÃO:                                                       ║
+// ║ - ICRemoverVeiculoContratoVM, ICRemoverVeiculoAtaVM                         ║
+// ║ - ICRemoverEncarregadoContratoVM, ICRemoverOperadorContratoVM               ║
+// ║ - ICRemoverMotoristaContratoVM, ICRemoverLavadorContratoVM                  ║
+// ║                                                                              ║
+// ║ USO: Associação de recursos (veículos, motoristas, etc) a contratos/atas    ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -5,10 +32,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
-    // ============================================================
-    // VIEWMODEL PRINCIPAL - Tela Itens dos Contratos e Atas
-    // Prefixo "IC" para evitar conflitos com classes existentes
-    // ============================================================
     
     /// <summary>
     /// ViewModel principal para a página ItensContrato

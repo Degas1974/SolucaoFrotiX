@@ -1,3 +1,28 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: LotacaoMotorista.cs                                                ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade para controle de lotação de motoristas em unidades.                ║
+// ║ Mantém histórico de transferências e coberturas entre unidades.             ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ • LotacaoMotoristaId [Key] - Identificador único                            ║
+// ║ • MotoristaId - Motorista sendo lotado                                      ║
+// ║ • MotoristaCoberturaId - Motorista que cobre durante ausência               ║
+// ║ • UnidadeId - Unidade de lotação                                            ║
+// ║ • DataInicio - Data de início da lotação                                    ║
+// ║ • DataFim - Data de término (null se ainda lotado)                          ║
+// ║ • Lotado - Flag indicando se está atualmente lotado                         ║
+// ║ • Motivo - Motivo da mudança de lotação                                     ║
+// ║                                                                              ║
+// ║ REGRAS DE NEGÓCIO:                                                           ║
+// ║ • Motorista pode ter múltiplas lotações históricas                          ║
+// ║ • Apenas uma lotação ativa (Lotado = true) por vez                          ║
+// ║ • MotoristaCoberturaId usado quando motorista titular se ausenta            ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

@@ -1,3 +1,29 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ItensManutencao.cs                                                 ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade para itens de manutenção vinculados a ordens de serviço.           ║
+// ║ Pode originar de ocorrências de viagens ou ser adicionado diretamente.      ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ • ItemManutencaoId [Key] - Identificador único                              ║
+// ║ • TipoItem - Tipo (Peça, Serviço, Mão de Obra)                              ║
+// ║ • NumFicha - Número da ficha de vistoria de origem                          ║
+// ║ • DataItem - Data de registro do item                                       ║
+// ║ • Resumo - Resumo curto do item/problema                                    ║
+// ║ • Descricao - Descrição detalhada                                           ║
+// ║ • Status - Status do item (Pendente, Em Andamento, Resolvido)               ║
+// ║ • ImagemOcorrencia - URL da foto da ocorrência                              ║
+// ║ • ManutencaoId → Manutencao (FK)                                            ║
+// ║ • MotoristaId → Motorista (FK) - Quem reportou                              ║
+// ║ • ViagemId → Viagem (FK) - Viagem de origem                                 ║
+// ║                                                                              ║
+// ║ CAMPOS NotMapped:                                                            ║
+// ║ • NumOS, DataOS - Dados auxiliares para exibição                            ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

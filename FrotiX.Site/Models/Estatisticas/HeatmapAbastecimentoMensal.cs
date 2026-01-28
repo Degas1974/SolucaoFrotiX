@@ -1,3 +1,24 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: HeatmapAbastecimentoMensal.cs                                      ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Dados para heatmap 7x24 de abastecimentos (dia da semana x hora).           ║
+// ║ Matriz pré-calculada para visualização de padrões de consumo.               ║
+// ║                                                                              ║
+// ║ CAMPOS:                                                                      ║
+// ║ - Id, Ano, Mes: Identificação do período                                    ║
+// ║ - VeiculoId: NULL = todos os veículos                                       ║
+// ║ - TipoVeiculo: NULL = todos os tipos                                        ║
+// ║ - DiaSemana: 0=Domingo, 1=Segunda, ... 6=Sábado                             ║
+// ║ - Hora: 0-23                                                                ║
+// ║ - TotalAbastecimentos, ValorTotal                                           ║
+// ║                                                                              ║
+// ║ USO: Gráfico heatmap no Dashboard de Abastecimentos                         ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 #nullable enable
 using System;
 using System.ComponentModel.DataAnnotations;

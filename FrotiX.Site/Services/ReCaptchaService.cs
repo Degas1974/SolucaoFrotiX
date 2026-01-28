@@ -1,4 +1,26 @@
-﻿using System;
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ReCaptchaService.cs                                                 ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Implementação do serviço de validação Google reCAPTCHA.                      ║
+// ║ Valida tokens do frontend com a API do Google.                               ║
+// ║                                                                              ║
+// ║ FLUXO DE VALIDAÇÃO:                                                          ║
+// ║ 1. Frontend envia token reCAPTCHA                                            ║
+// ║ 2. Backend chama API Google com secret + token                               ║
+// ║ 3. Google retorna JSON com success: true/false                               ║
+// ║                                                                              ║
+// ║ ENDPOINT GOOGLE:                                                             ║
+// ║ https://www.google.com/recaptcha/api/siteverify                              ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ - Configs: Acesso às configurações (Key pública para frontend)               ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 15                                        ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -13,6 +35,9 @@ using FrotiX.Models;
 
 namespace FrotiX.Services
     {
+    /// <summary>
+    /// Implementação do serviço de validação Google reCAPTCHA.
+    /// </summary>
     public class ReCaptchaService : IReCaptchaService
         {
         private readonly ReCaptchaSettings _settings;

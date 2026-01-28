@@ -1,3 +1,28 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: TipoMulta.cs                                                       ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade para cadastro de tipos de multas de trânsito.                      ║
+// ║ Catálogo de infrações baseado no Código de Trânsito Brasileiro.             ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • TipoMulta - Entidade única (sem ViewModel separada)                       ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ • TipoMultaId [Key] - Identificador único                                   ║
+// ║ • Artigo - Artigo/Parágrafo/Inciso do CTB (max 100 chars)                   ║
+// ║ • Descricao - Descrição da infração                                         ║
+// ║ • Infracao - Tipo da infração (Leve, Média, Grave, Gravíssima)              ║
+// ║ • CodigoDenatran - Código oficial DENATRAN                                  ║
+// ║ • Desdobramento - Desdobramento DENATRAN                                    ║
+// ║                                                                              ║
+// ║ USO:                                                                          ║
+// ║ • Vinculação em multas para classificação                                   ║
+// ║ • Relatórios por tipo de infração                                           ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

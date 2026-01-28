@@ -1,3 +1,44 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: EscalaDiaria.cs                                                    ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ ViewModel para gestão de escalas diárias de motoristas.                     ║
+// ║ Permite configurar turnos, serviços e status de disponibilidade.            ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • EscalaDiariaViewModel - ViewModel completo para o formulário              ║
+// ║ • (Entidade EscalaDiaria está em Escalas.cs)                                ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ Identificação:                                                               ║
+// ║ • EscalaDiaId, MotoristaId, VeiculoId                                       ║
+// ║                                                                              ║
+// ║ Escala:                                                                       ║
+// ║ • TipoServicoId - Tipo de serviço (Fixo, Eventual)                          ║
+// ║ • TurnoId - Turno (Matutino, Vespertino, Noturno)                           ║
+// ║ • DataEscala - Data da escala                                               ║
+// ║ • HoraInicio, HoraFim - Horário de trabalho                                 ║
+// ║ • HoraIntervaloInicio, HoraIntervaloFim - Intervalo                         ║
+// ║ • Lotacao - Local de lotação                                                ║
+// ║ • NumeroSaidas - Quantidade de saídas                                       ║
+// ║                                                                              ║
+// ║ Status:                                                                       ║
+// ║ • StatusMotorista - Status (Disponível, Em Viagem, etc)                     ║
+// ║ • MotoristaIndisponivel, MotoristaEconomildo, MotoristaEmServico            ║
+// ║ • MotoristaReservado - Flags de status especiais                            ║
+// ║                                                                              ║
+// ║ Indisponibilidade:                                                            ║
+// ║ • CategoriaIndisponibilidade - Folga, Férias, Recesso                       ║
+// ║ • DataInicioIndisponibilidade, DataFimIndisponibilidade                     ║
+// ║ • MotoristaCobertorId - Substituto                                          ║
+// ║                                                                              ║
+// ║ Dropdowns (SelectListItem):                                                  ║
+// ║ • MotoristaList, VeiculoList, TipoServicoList, TurnoList                    ║
+// ║ • RequisitanteList, LotacaoList, StatusList                                 ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

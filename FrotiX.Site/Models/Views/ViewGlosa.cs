@@ -1,4 +1,48 @@
-﻿using System;
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViewGlosa.cs                                                       ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ View model Keyless para cálculos de glosa em contratos de manutenção.       ║
+// ║ Mapeia view SQL com dados denormalizados de manutenção, veículo e valores.  ║
+// ║                                                                              ║
+// ║ PROPRIEDADES PRINCIPAIS:                                                     ║
+// ║                                                                              ║
+// ║ Identificadores:                                                             ║
+// ║ • ContratoId, ManutencaoId, VeiculoId - Chaves de relacionamento            ║
+// ║                                                                              ║
+// ║ Dados da OS:                                                                 ║
+// ║ • NumOS, ResumoOS, StatusOS - Informações da ordem de serviço               ║
+// ║ • PlacaDescricao, DescricaoVeiculo, Placa, Sigla - Dados do veículo         ║
+// ║ • CombustivelDescricao - Tipo de combustível                                ║
+// ║ • Reserva - Veículo reserva utilizado                                       ║
+// ║                                                                              ║
+// ║ Datas (formatadas string e raw DateTime):                                   ║
+// ║ • DataSolicitacao/Raw - Data de abertura                                    ║
+// ║ • DataDisponibilidade/Raw - Disponibilidade do veículo                      ║
+// ║ • DataRecolhimento, DataEntrega, DataDevolucao/Raw - Ciclo de manutenção    ║
+// ║ • DataRecebimentoReserva, DataDevolucaoReserva - Período do reserva         ║
+// ║                                                                              ║
+// ║ Cálculos de Glosa:                                                           ║
+// ║ • Descricao, Quantidade, NumItem - Item do contrato                         ║
+// ║ • ValorUnitario (double/float) - Valor unitário do serviço                  ║
+// ║ • DiasGlosa - Dias calculados para glosa via CROSS APPLY                    ║
+// ║ • ValorGlosa (decimal 18,2) - Valor total da glosa                          ║
+// ║ • Dias - Diferença entre solicitação e devolução                            ║
+// ║                                                                              ║
+// ║ Atributos de UI (controle visual e permissões):                             ║
+// ║ • Habilitado, Icon - Estado geral                                           ║
+// ║ • HabilitadoEditar, OpacityEditar, OpacityTooltipEditarEditar               ║
+// ║ • HabilitadoBaixar, ModalBaixarAttrs, OpacityBaixar, Tooltip                ║
+// ║ • HabilitadoCancelar, OpacityCancelar, TooltipCancelar                      ║
+// ║                                                                              ║
+// ║ CONFIGURAÇÃO EF CORE:                                                        ║
+// ║ • [Keyless] - Entidade sem chave primária (projeção de view)                ║
+// ║ • [Column(TypeName = "decimal(18,2)")] - Mapeamento preciso de ValorGlosa   ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;

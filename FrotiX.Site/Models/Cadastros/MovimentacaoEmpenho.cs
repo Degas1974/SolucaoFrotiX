@@ -1,3 +1,29 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: MovimentacaoEmpenho.cs                                             ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade para registro de movimentações financeiras de empenhos.            ║
+// ║ Controla créditos, débitos e ajustes nos saldos de empenhos.                ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • MovimentacaoEmpenhoViewModel - ViewModel com dropdown de empenhos         ║
+// ║ • MovimentacaoEmpenho - Entidade de movimentação                            ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ • MovimentacaoId [Key] - Identificador único                                ║
+// ║ • Descricao - Descrição da movimentação                                     ║
+// ║ • TipoMovimentacao - Tipo (Crédito, Débito, Ajuste)                         ║
+// ║ • Valor - Valor da movimentação em R$                                       ║
+// ║ • DataMovimentacao - Data da movimentação                                   ║
+// ║ • EmpenhoId → Empenho (FK)                                                  ║
+// ║                                                                              ║
+// ║ USO:                                                                          ║
+// ║ • Registro de notas fiscais que consomem empenho                            ║
+// ║ • Ajustes de saldo por cancelamentos ou correções                           ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

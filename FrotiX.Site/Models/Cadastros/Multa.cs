@@ -1,3 +1,53 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: Multa.cs                                                           ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade principal para gestão de multas de trânsito.                       ║
+// ║ Controla todo o ciclo de vida: notificação, recurso, pagamento.             ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • MultaViewModel - ViewModel com múltiplos dropdowns                        ║
+// ║ • Multa - Entidade principal                                                ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ Identificação:                                                               ║
+// ║ • MultaId [Key] - Identificador único                                       ║
+// ║ • NumInfracao - Número da infração                                          ║
+// ║ • Data, Hora - Momento da infração                                          ║
+// ║ • Localizacao - Local da infração                                           ║
+// ║ • NoFichaVistoria - Ficha de vistoria da viagem relacionada                 ║
+// ║                                                                              ║
+// ║ Valores:                                                                      ║
+// ║ • ValorAteVencimento - Valor com desconto [ValidaZero]                      ║
+// ║ • ValorPosVencimento - Valor sem desconto [ValidaZero]                      ║
+// ║ • ValorPago, DataPagamento, FormaPagamento - Dados de pagamento             ║
+// ║                                                                              ║
+// ║ Datas:                                                                        ║
+// ║ • Vencimento - Data de vencimento                                           ║
+// ║ • DataNotificacao - Data da notificação                                     ║
+// ║ • DataLimite - Data limite para reconhecimento/recurso                      ║
+// ║                                                                              ║
+// ║ Relacionamentos (FKs):                                                        ║
+// ║ • MotoristaId → Motorista - Motorista infrator                              ║
+// ║ • VeiculoId → Veiculo - Veículo autuado                                     ║
+// ║ • OrgaoAutuanteId → OrgaoAutuante - Órgão emissor                           ║
+// ║ • TipoMultaId → TipoMulta - Tipo/artigo da infração                         ║
+// ║ • EmpenhoMultaId → EmpenhoMulta - Empenho para pagamento                    ║
+// ║                                                                              ║
+// ║ Controle:                                                                     ║
+// ║ • Status - Status atual (Pendente, Paga, Recurso, etc)                      ║
+// ║ • Fase - Fase do processo                                                   ║
+// ║ • Paga - Indica se foi paga                                                 ║
+// ║ • EnviadaSecle - Enviada para SECLE                                         ║
+// ║ • ProcessoEDoc - Número do processo eletrônico                              ║
+// ║                                                                              ║
+// ║ Documentos (caminhos PDF):                                                    ║
+// ║ • AutuacaoPDF, PenalidadePDF, ComprovantePDF                                ║
+// ║ • ProcessoEdocPDF, OutrosDocumentosPDF                                      ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

@@ -1,3 +1,25 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: MotoristaContrato.cs                                               ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade de relacionamento N:N entre Motorista e Contrato.                  ║
+// ║ Permite histórico de contratos por motorista ao longo do tempo.             ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • MotoristaoContratoViewModel - ViewModel simples (note o typo histórico)   ║
+// ║ • MotoristaContrato - Entidade de relacionamento                            ║
+// ║                                                                              ║
+// ║ PROPRIEDADES (Chave Composta):                                              ║
+// ║ • MotoristaId [Key, Order=0] - ID do motorista                              ║
+// ║ • ContratoId [Key, Order=1] - ID do contrato                                ║
+// ║                                                                              ║
+// ║ USO:                                                                          ║
+// ║ • Histórico de vínculos contratuais do motorista                            ║
+// ║ • Permite motorista mudar de contrato mantendo histórico                    ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

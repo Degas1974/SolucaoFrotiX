@@ -1,3 +1,23 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViewEventos.cs                                                     ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Modelo para VIEW de eventos com dados de viagens associadas.                ║
+// ║ Usado no grid de eventos e relatórios.                                      ║
+// ║                                                                              ║
+// ║ CAMPOS:                                                                      ║
+// ║ - EventoId, Nome, Descricao, QtdParticipantes                               ║
+// ║ - DataInicial, DataFinal (formatadas como string)                           ║
+// ║ - NomeRequisitante, NomeSetor                                               ║
+// ║ - CustoViagem: Custo total das viagens do evento                            ║
+// ║ - Status: Status do evento                                                  ║
+// ║                                                                              ║
+// ║ USO: Grid de eventos, Dashboard de eventos                                  ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

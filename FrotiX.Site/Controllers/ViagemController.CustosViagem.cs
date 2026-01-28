@@ -1,3 +1,11 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
+ * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
+ * ║  Seção: ViagemController.CustosViagem.cs                                 ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Data;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -22,16 +30,42 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
-    /// <summary>
-    /// ViagemController - Partial Class para API ObterCustosViagem
-    /// </summary>
+    /****************************************************************************************
+     * ⚡ CONTROLLER: Viagem API (Partial - CustosViagem)
+     * 🎯 OBJETIVO: Obter custos detalhados de viagem com cálculo inteligente de combustível
+     * 📋 ROTAS: /api/Viagem/ObterCustosViagem [GET]
+     * 🔗 ENTIDADES: Viagem, Veiculo, Combustivel, Abastecimento, MediaCombustivel
+     * 📦 DEPENDÊNCIAS: IUnitOfWork
+     * 📊 CÁLCULOS:
+     *    1. Duração (data/hora início → data/hora fim)
+     *    2. Km percorrido (KmFinal - KmInicial)
+     *    3. Litros gastos (km / consumo médio veículo OU histórico abastecimentos)
+     *    4. Preço combustível (abastecimento mais próximo da data)
+     *    5. Custo combustível (litros × preço)
+     *    6. Custos totais (Motorista + Veículo + Combustível + Operador + Lavador)
+     * 📝 NOTA: Classe parcial - ver ViagemController.cs principal
+     ****************************************************************************************/
     public partial class ViagemController
     {
-        /// <summary>
-        /// Obtém os custos detalhados de uma viagem específica
-        /// Retorna: custos individuais, duração, km percorrido, consumo estimado
-        /// Rota: /api/Viagem/ObterCustosViagem?viagemId={guid}
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ObterCustosViagem
+         * 🎯 OBJETIVO: Calcular e retornar custos detalhados de uma viagem (combustível inteligente)
+         * 📥 ENTRADAS: viagemId (Guid da viagem)
+         * 📤 SAÍDAS: JSON { success, data: CustosDTO com 11 campos }
+         * 🔗 CHAMADA POR: Modal de visualização de custos de viagem
+         * 🔄 CHAMA: Viagem.GetFirstOrDefaultAsync(), Abastecimento.GetAll(), MediaCombustivel.GetAll()
+         * 📊 ALGORITMO (6 etapas):
+         *    1. Calcula duração (data/hora fim - data/hora início)
+         *    2. Calcula km percorrido (KmFinal - KmInicial)
+         *    3. Determina consumo veículo (Veiculo.Consumo OU média histórica abastecimentos)
+         *    4. Calcula litros gastos (km / consumo)
+         *    5. Busca preço combustível (abastecimento mais próximo OU média mensal)
+         *    6. Calcula custos: combustível (litros × preço) + outros custos
+         * 💡 LÓGICA INTELIGENTE:
+         *    - Prioriza dados reais sobre estimativas
+         *    - Fallback: consumo médio histórico se veículo não tem cadastro
+         *    - Preço: abastecimento mais próximo da data (Math.Abs diferença dias)
+         ****************************************************************************************/
         [Route("ObterCustosViagem")]
         [HttpGet]
         public async Task<IActionResult> ObterCustosViagem(Guid viagemId)
@@ -62,7 +96,7 @@ namespace FrotiX.Controllers
                     });
                 }
 
-                // ========== CÁLCULO DE DURAÇÃO ==========
+                // [DOC] ========== ETAPA 1: CÁLCULO DE DURAÇÃO (data/hora fim - data/hora início) ==========
                 double duracaoMinutos = 0;
                 string duracaoFormatada = "-";
                 if (viagem.DataInicial.HasValue && viagem.HoraInicio.HasValue &&
@@ -81,7 +115,7 @@ namespace FrotiX.Controllers
                     }
                 }
 
-                // ========== CÁLCULO DE KM PERCORRIDO ==========
+                // [DOC] ========== ETAPA 2: CÁLCULO DE KM PERCORRIDO (KmFinal - KmInicial) ==========
                 int kmPercorrido = 0;
                 if (viagem.KmFinal.HasValue && viagem.KmInicial.HasValue)
                 {
@@ -89,7 +123,7 @@ namespace FrotiX.Controllers
                     if (kmPercorrido < 0) kmPercorrido = 0;
                 }
 
-                // ========== TIPO DE COMBUSTÍVEL ==========
+                // [DOC] ========== TIPO DE COMBUSTÍVEL (para buscar preço depois) ==========
                 string tipoCombustivel = "-";
                 Guid? combustivelId = null;
                 if (viagem.Veiculo != null && viagem.Veiculo.Combustivel != null)
@@ -98,18 +132,18 @@ namespace FrotiX.Controllers
                     combustivelId = viagem.Veiculo.CombustivelId;
                 }
 
-                // ========== LÓGICA INTELIGENTE PARA LITROS GASTOS ==========
+                // [DOC] ========== ETAPA 3: LÓGICA INTELIGENTE PARA DETERMINAR CONSUMO VEÍCULO ==========
                 double litrosGastos = 0;
                 double consumoVeiculo = 0;
 
-                // 1. TENTA USAR O CONSUMO MÉDIO DO VEÍCULO
+                // [DOC] Estratégia 1: Usa consumo cadastrado no veículo (prioridade)
                 if (viagem.Veiculo != null && viagem.Veiculo.Consumo.HasValue && viagem.Veiculo.Consumo.Value > 0)
                 {
                     consumoVeiculo = viagem.Veiculo.Consumo.Value;
                 }
                 else
                 {
-                    // 2. SE NÃO TEM CONSUMO NO VEÍCULO, BUSCA MÉDIA DE CONSUMO BASEADO EM ABASTECIMENTOS HISTÓRICOS
+                    // [DOC] Estratégia 2: Fallback - calcula média histórica de abastecimentos do veículo
                     if (viagem.VeiculoId.HasValue)
                     {
                         var abastecimentosHistorico = _unitOfWork.Abastecimento
@@ -121,7 +155,7 @@ namespace FrotiX.Controllers
 
                         if (abastecimentosHistorico.Any())
                         {
-                            // Calcula média de consumo: soma(km) / soma(litros)
+                            // [DOC] Média de consumo: soma(km) / soma(litros) = km/L médio do veículo
                             double totalKm = abastecimentosHistorico.Sum(a => a.KmRodado.Value);
                             double totalLitros = abastecimentosHistorico.Sum(a => a.Litros.Value);
                             if (totalLitros > 0)
@@ -132,24 +166,23 @@ namespace FrotiX.Controllers
                     }
                 }
 
-                // 3. CALCULA LITROS GASTOS BASEADO NO KM PERCORRIDO E CONSUMO
-                // NOTA: Não usamos abastecimentos do período pois um abastecimento enche o tanque
-                // para múltiplas viagens, não apenas para a viagem do dia do abastecimento.
-                // O cálculo correto é: km percorrido / consumo médio do veículo (km/L)
+                // [DOC] ========== ETAPA 4: CALCULA LITROS GASTOS NA VIAGEM ==========
+                // REGRA DE NEGÓCIO: km percorrido / consumo médio (km/L)
+                // IMPORTANTE: NÃO usa abastecimentos do período, pois um abastecimento serve múltiplas viagens
                 if (kmPercorrido > 0 && consumoVeiculo > 0)
                 {
                     litrosGastos = kmPercorrido / consumoVeiculo;
                 }
 
-                // ========== BUSCA PREÇO DO COMBUSTÍVEL ==========
+                // [DOC] ========== ETAPA 5: BUSCA PREÇO DO COMBUSTÍVEL (2 estratégias) ==========
                 double precoCombustivel = 0;
 
-                // 1. BUSCA ABASTECIMENTO MAIS PRÓXIMO DA DATA DA VIAGEM
+                // [DOC] Estratégia 1: Busca abastecimento mais PRÓXIMO da data da viagem (prioridade)
                 if (combustivelId.HasValue && viagem.DataInicial.HasValue)
                 {
                     var dataViagem = viagem.DataInicial.Value;
 
-                    // Busca abastecimentos do mesmo tipo de combustível ordenados por proximidade de data
+                    // [DOC] OrderBy com Math.Abs garante o abastecimento com menor diferença de dias
                     var abastecimentoProximo = _unitOfWork.Abastecimento
                         .GetAll()
                         .Where(a => a.CombustivelId == combustivelId.Value
@@ -165,7 +198,7 @@ namespace FrotiX.Controllers
                     }
                 }
 
-                // 2. SE NÃO ENCONTROU, BUSCA MÉDIA DE COMBUSTÍVEL
+                // [DOC] Estratégia 2: Fallback - usa média mensal de combustível (mais recente)
                 if (precoCombustivel == 0 && combustivelId.HasValue)
                 {
                     var mediaCombustivel = _unitOfWork.MediaCombustivel
@@ -181,33 +214,34 @@ namespace FrotiX.Controllers
                     }
                 }
 
-                // ========== CÁLCULO DE CUSTOS ==========
+                // [DOC] ========== ETAPA 6: CÁLCULO FINAL DE CUSTOS ==========
+                // Custo combustível: litros gastos × preço por litro
                 double custoCombustivelCalculado = 0;
                 if (litrosGastos > 0 && precoCombustivel > 0)
                 {
                     custoCombustivelCalculado = litrosGastos * precoCombustivel;
                 }
 
-                // Custos individuais (usa valor da tabela se estiver preenchido, senão usa calculado)
+                // [DOC] Prioriza valores reais (da viagem) sobre valores calculados
                 double custoMotorista = viagem.CustoMotorista ?? 0;
                 double custoVeiculo = viagem.CustoVeiculo ?? 0;
                 double custoCombustivel = viagem.CustoCombustivel ?? custoCombustivelCalculado;
                 double custoOperador = viagem.CustoOperador ?? 0;
                 double custoLavador = viagem.CustoLavador ?? 0;
 
-                // Se o custo de combustível da viagem for 0 mas temos um valor calculado, usa o calculado
+                // [DOC] Se custo real é 0 mas temos estimativa, usa a estimativa
                 if ((viagem.CustoCombustivel ?? 0) == 0 && custoCombustivelCalculado > 0)
                 {
                     custoCombustivel = custoCombustivelCalculado;
                 }
 
-                // Ajusta litros gastos se tiver custo real de combustível mas litros calculados
+                // [DOC] Ajuste reverso: se tem custo real mas litros não foi calculado, calcula retroativamente
                 if ((viagem.CustoCombustivel ?? 0) > 0 && precoCombustivel > 0 && litrosGastos == 0)
                 {
                     litrosGastos = viagem.CustoCombustivel.Value / precoCombustivel;
                 }
 
-                // Custo total
+                // [DOC] Custo total: soma de todos os componentes
                 double custoTotal = custoMotorista + custoVeiculo + custoCombustivel + custoOperador + custoLavador;
 
                 // ========== CÁLCULO DE CONSUMO (KM/L) ==========

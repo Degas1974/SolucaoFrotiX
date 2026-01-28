@@ -1,3 +1,37 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ILogService.cs                                                      ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Interface do serviço de logging centralizado da aplicação.                   ║
+// ║ Captura erros de Razor Pages, Controllers, Services, Helpers e JavaScript.   ║
+// ║                                                                              ║
+// ║ MÉTODOS DE LOG:                                                              ║
+// ║ - Info(): Mensagem informativa                                               ║
+// ║ - Warning(): Aviso                                                           ║
+// ║ - Error(): Erro com exceção opcional                                         ║
+// ║ - ErrorJS(): Erro de JavaScript (client-side)                                ║
+// ║ - Debug(): Debug (apenas em modo DEBUG)                                      ║
+// ║                                                                              ║
+// ║ MÉTODOS DE OPERAÇÃO:                                                         ║
+// ║ - OperationStart/Success/Failed(): Rastreamento de operações                 ║
+// ║ - UserAction(): Ações do usuário                                             ║
+// ║ - HttpError(): Erros HTTP (4xx/5xx)                                          ║
+// ║                                                                              ║
+// ║ MÉTODOS DE CONSULTA:                                                         ║
+// ║ - GetAllLogs(), GetLogsByDate(), GetLogFiles()                               ║
+// ║ - ClearLogs(), ClearLogsBefore()                                             ║
+// ║ - GetErrorCount(), GetStats()                                                ║
+// ║                                                                              ║
+// ║ DTOs INCLUÍDOS:                                                              ║
+// ║ - LogFileInfo: Informações de arquivo de log                                 ║
+// ║ - LogStats: Estatísticas dos logs                                            ║
+// ║                                                                              ║
+// ║ IMPLEMENTAÇÃO: LogService                                                    ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 14                                        ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 using System.Collections.Generic;
 

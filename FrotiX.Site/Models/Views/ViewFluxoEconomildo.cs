@@ -1,3 +1,30 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViewFluxoEconomildo.cs                                             ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ View model para exibição do fluxo de viagens Economildo (transporte         ║
+// ║ coletivo interno). Usado em telas de gestão de fluxo de passageiros.        ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ Identificadores:                                                             ║
+// ║ • VeiculoId - Veículo utilizado no fluxo                                    ║
+// ║ • ViagemEconomildoId - Identificador único da viagem                        ║
+// ║ • MotoristaId - Motorista responsável                                       ║
+// ║                                                                              ║
+// ║ Dados da Viagem:                                                             ║
+// ║ • TipoCondutor - Tipo do condutor (titular, reserva, terceiro)              ║
+// ║ • Data - Data da viagem                                                     ║
+// ║ • MOB - Código MOB (Movimento Operacional Básico)                           ║
+// ║ • HoraInicio/HoraFim - Horários da viagem                                   ║
+// ║ • QtdPassageiros - Quantidade de passageiros transportados                  ║
+// ║                                                                              ║
+// ║ Dados para Exibição:                                                         ║
+// ║ • NomeMotorista - Nome do motorista                                         ║
+// ║ • DescricaoVeiculo - Descrição do veículo (marca/modelo/placa)              ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

@@ -1,3 +1,28 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: PageExceptionFilter.cs                                              ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Filtro de exceções específico para Razor Pages (.cshtml/.cshtml.cs).         ║
+// ║ Complementa o GlobalExceptionFilter que só funciona para Controllers.        ║
+// ║                                                                              ║
+// ║ CLASSES INCLUÍDAS:                                                           ║
+// ║ - PageExceptionFilter: Implementa IPageFilter e IAsyncPageFilter             ║
+// ║ - AsyncPageExceptionFilter: Filtro assíncrono para Razor Pages               ║
+// ║                                                                              ║
+// ║ FUNCIONALIDADES:                                                             ║
+// ║ - Captura exceções em OnGet, OnPost e handlers customizados                  ║
+// ║ - Extrai arquivo/linha do StackTrace e do DisplayName da página              ║
+// ║ - Suporte a padrões de caminho Razor Pages (Pages/xxx.cshtml)                ║
+// ║ - Registra no ILogService com contexto da página                             ║
+// ║ - Re-lança exceção para tratamento padrão do ASP.NET Core                    ║
+// ║                                                                              ║
+// ║ DEPENDÊNCIAS:                                                                ║
+// ║ - ILogService: Serviço de log do FrotiX                                      ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 12                                        ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 using System.IO;
 using System.Linq;

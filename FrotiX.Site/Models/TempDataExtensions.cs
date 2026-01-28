@@ -1,4 +1,23 @@
-﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: TempDataExtensions.cs                                              ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Métodos de extensão para ITempDataDictionary.                               ║
+// ║ Permite armazenar e recuperar objetos complexos em TempData.                ║
+// ║                                                                              ║
+// ║ MÉTODOS:                                                                     ║
+// ║ - Put<T>(key, value): Serializa objeto para JSON e armazena                 ║
+// ║ - Get<T>(key): Recupera e deserializa objeto do TempData                    ║
+// ║                                                                              ║
+// ║ SERIALIZAÇÃO: Newtonsoft.Json (JsonConvert)                                 ║
+// ║                                                                              ║
+// ║ USO: TempData.Put("Toast", toastObj); var t = TempData.Get<Toast>("Toast"); ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 
 

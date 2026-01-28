@@ -1,3 +1,32 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViewPendenciasManutencao.cs                                        ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ View model para listagem de pendências de manutenção não resolvidas.        ║
+// ║ Usado em dashboards de gestão para acompanhamento de itens pendentes.       ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ Identificadores:                                                             ║
+// ║ • ItemManutencaoId - Identificador do item pendente                         ║
+// ║ • ManutencaoId - OS associada                                               ║
+// ║ • MotoristaId - Motorista que reportou                                      ║
+// ║ • ViagemId - Viagem de origem                                               ║
+// ║ • VeiculoId - Veículo com pendência                                         ║
+// ║                                                                              ║
+// ║ Dados do Item:                                                               ║
+// ║ • TipoItem - Tipo (peça, serviço, etc)                                      ║
+// ║ • NumFicha - Número da ficha de vistoria                                    ║
+// ║ • DataItem - Data do registro                                               ║
+// ║ • Resumo, Descricao - Detalhes da pendência                                 ║
+// ║ • Status - Status atual                                                     ║
+// ║                                                                              ║
+// ║ Dados Adicionais:                                                            ║
+// ║ • Nome - Nome do motorista que reportou                                     ║
+// ║ • ImagemOcorrencia - Foto da ocorrência                                     ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

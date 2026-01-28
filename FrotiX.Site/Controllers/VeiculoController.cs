@@ -1,3 +1,11 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
+ * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
+ * ║  Seção: VeiculoController.cs                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +15,13 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: Veiculo API
+     * 🎯 OBJETIVO: Gerenciar veículos do sistema (CRUD + consultas especializadas)
+     * 📋 ROTAS: /api/Veiculo/* (Get, Delete, UpdateStatusVeiculo, VeiculoContratos, etc)
+     * 🔗 ENTIDADES: Veiculo, VeiculoContrato, ModeloVeiculo, MarcaVeiculo, Unidade, Combustivel, Contrato
+     * 📦 DEPENDÊNCIAS: IUnitOfWork, ViewVeiculos (view materializada)
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class VeiculoController :Controller
@@ -25,11 +40,21 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * 🎯 OBJETIVO: Listar todos os veículos do sistema (usando view materializada otimizada)
+         * 📥 ENTRADAS: Nenhuma
+         * 📤 SAÍDAS: JSON { data: List<{ VeiculoId, Placa, Quilometragem, MarcaModelo, Sigla, ... }> }
+         * 🔗 CHAMADA POR: Grid principal de veículos
+         * 🔄 CHAMA: ViewVeiculos.GetAllReduced() - view otimizada com joins pré-calculados
+         * ⚡ PERFORMANCE: Usa GetAllReduced com selector para minimizar dados trafegados
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
             try
             {
+                // [DOC] Usa view materializada para performance otimizada em consultas frequentes
                 var objVeiculos = _unitOfWork
                     .ViewVeiculos.GetAllReduced(selector: vv => new
                     {
@@ -66,6 +91,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * 🎯 OBJETIVO: Excluir veículo (valida dependências antes de remover)
+         * 📥 ENTRADAS: model (VeiculoViewModel com VeiculoId)
+         * 📤 SAÍDAS: JSON { success, message }
+         * 🔗 CHAMADA POR: Modal de exclusão de veículo
+         * 🔄 CHAMA: Veiculo.GetFirstOrDefault(), VeiculoContrato.GetFirstOrDefault(), Viagem.GetFirstOrDefault(), Veiculo.Remove()
+         * ⚠️ VALIDAÇÕES: Impede exclusão se houver contratos ou viagens associadas
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(VeiculoViewModel model)
@@ -79,6 +113,7 @@ namespace FrotiX.Controllers
                     );
                     if (objFromDb != null)
                     {
+                        // [DOC] Validação 1: Verifica se veículo está associado a contratos
                         var veiculoContrato = _unitOfWork.VeiculoContrato.GetFirstOrDefault(u =>
                             u.VeiculoId == model.VeiculoId
                         );
@@ -93,6 +128,7 @@ namespace FrotiX.Controllers
                             );
                         }
 
+                        // [DOC] Validação 2: Verifica se veículo possui viagens registradas
                         var objViagem = _unitOfWork.Viagem.GetFirstOrDefault(u =>
                             u.VeiculoId == model.VeiculoId
                         );
@@ -135,6 +171,14 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateStatusVeiculo
+         * 🎯 OBJETIVO: Alternar status do veículo (Ativo ↔ Inativo)
+         * 📥 ENTRADAS: Id (VeiculoId Guid)
+         * 📤 SAÍDAS: JSON { success, message, type (0=ativo, 1=inativo) }
+         * 🔗 CHAMADA POR: Toggle de status no grid
+         * 🔄 CHAMA: Veiculo.GetFirstOrDefault(), Veiculo.Update()
+         ****************************************************************************************/
         [Route("UpdateStatusVeiculo")]
         public JsonResult UpdateStatusVeiculo(Guid Id)
         {
@@ -148,6 +192,7 @@ namespace FrotiX.Controllers
 
                     if (objFromDb != null)
                     {
+                        // [DOC] Toggle status: true → false (type=1) ou false → true (type=0)
                         if (objFromDb.Status == true)
                         {
                             objFromDb.Status = false;
@@ -192,12 +237,22 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: VeiculoContratos
+         * 🎯 OBJETIVO: Listar veículos associados a um contrato específico
+         * 📥 ENTRADAS: Id (ContratoId Guid)
+         * 📤 SAÍDAS: JSON { data: List<{ VeiculoId, Placa, MarcaModelo, Sigla, CombustivelDescricao, Status }> }
+         * 🔗 CHAMADA POR: Grid de veículos dentro do contrato
+         * 🔄 CHAMA: Veiculo.GetAll(), VeiculoContrato.GetAll(), ModeloVeiculo.GetAll(), etc.
+         * 🔀 JOINS: 6 tabelas + left join opcional em Unidade
+         ****************************************************************************************/
         [HttpGet]
         [Route("VeiculoContratos")]
         public IActionResult VeiculoContratos(Guid Id)
         {
             try
             {
+                // [DOC] Left join em Unidade: veículo pode não estar alocado a nenhuma unidade
                 var result = (
                     from v in _unitOfWork.Veiculo.GetAll()
                     join vc in _unitOfWork.VeiculoContrato.GetAll()
@@ -238,12 +293,22 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: VeiculosDoContrato (VeiculoContratosGlosa)
+         * 🎯 OBJETIVO: Listar veículos elegíveis para glosa (com manutenção > 0 dias)
+         * 📥 ENTRADAS: id (ContratoId Guid)
+         * 📤 SAÍDAS: View com lista de veículos elegíveis
+         * 🔗 CHAMADA POR: Página de glosas de contrato
+         * 🔄 CHAMA: Manutencao.GetAll(), VeiculoContrato.GetAll(), Veiculo.GetAll(), etc.
+         * 🎯 FILTRO: Apenas veículos com manutenções de duração > 0 dias
+         ****************************************************************************************/
         [HttpGet]
         [Route("VeiculoContratosGlosa")]
         public IActionResult VeiculosDoContrato(Guid id)
         {
             try
             {
+                // [DOC] Filtra veículos com manutenções de duração > 0 dias (elegíveis para glosa)
                 var manutencoes = _unitOfWork.Manutencao.GetAll();
                 var veiculosElegiveis = new HashSet<Guid>(
                     manutencoes
@@ -268,6 +333,7 @@ namespace FrotiX.Controllers
                 var unidades = _unitOfWork.Unidade.GetAll();
                 var combustiveis = _unitOfWork.Combustivel.GetAll();
 
+                // [DOC] Filtra apenas veículos no HashSet de elegíveis (performance otimizada)
                 var result = (
                     from vc in veiculosContrato
                     where vc != null && veiculosElegiveis.Contains(vc?.VeiculoId ?? Guid.Empty)
@@ -297,6 +363,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DeleteContrato
+         * 🎯 OBJETIVO: Remover associação veículo-contrato
+         * 📥 ENTRADAS: model (VeiculoViewModel com VeiculoId e ContratoId)
+         * 📤 SAÍDAS: JSON { success, message }
+         * 🔗 CHAMADA POR: Modal de remoção de veículo do contrato
+         * 🔄 CHAMA: Veiculo.GetFirstOrDefault(), VeiculoContrato.GetFirstOrDefault(), VeiculoContrato.Remove()
+         * 💾 LÓGICA: Se ContratoId do veículo for o mesmo, limpa ContratoId também
+         ****************************************************************************************/
         [Route("DeleteContrato")]
         [HttpPost]
         public IActionResult DeleteContrato(VeiculoViewModel model)
@@ -315,6 +390,7 @@ namespace FrotiX.Controllers
                         );
                         if (veiculoContrato != null)
                         {
+                            // [DOC] Se o contrato principal do veículo é o sendo removido, limpa
                             if (objFromDb.ContratoId == model.ContratoId)
                             {
                                 objFromDb.ContratoId = Guid.Empty;
@@ -359,6 +435,14 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SelecionaValorMensalAta
+         * 🎯 OBJETIVO: Obter valor unitário de item de ata de registro de preços
+         * 📥 ENTRADAS: itemAta (ItemVeiculoAtaId Guid)
+         * 📤 SAÍDAS: JSON { valor }
+         * 🔗 CHAMADA POR: Formulário de cadastro de veículo (preenchimento automático de valor)
+         * 🔄 CHAMA: ItemVeiculoAta.GetFirstOrDefault()
+         ****************************************************************************************/
         [Route("SelecionaValorMensalAta")]
         [HttpGet]
         public JsonResult SelecionaValorMensalAta(Guid itemAta)
@@ -388,6 +472,14 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SelecionaValorMensalContrato
+         * 🎯 OBJETIVO: Obter valor unitário de item de contrato
+         * 📥 ENTRADAS: itemContrato (ItemVeiculoId Guid)
+         * 📤 SAÍDAS: JSON { valor }
+         * 🔗 CHAMADA POR: Formulário de cadastro de veículo (preenchimento automático de valor)
+         * 🔄 CHAMA: ItemVeiculoContrato.GetFirstOrDefault()
+         ****************************************************************************************/
         [Route("SelecionaValorMensalContrato")]
         [HttpGet]
         public JsonResult SelecionaValorMensalContrato(Guid itemContrato)

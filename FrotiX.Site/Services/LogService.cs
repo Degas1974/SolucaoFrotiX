@@ -1,3 +1,29 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: LogService.cs                                                       ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Implementação do serviço de logging centralizado.                            ║
+// ║ Grava logs em arquivos diários na pasta Logs/{ContentRoot}.                  ║
+// ║                                                                              ║
+// ║ FORMATO DO ARQUIVO:                                                          ║
+// ║ - Nome: frotix_log_{yyyy-MM-dd}.txt                                          ║
+// ║ - Localização: {ContentRoot}/Logs/                                           ║
+// ║                                                                              ║
+// ║ NÍVEIS DE LOG:                                                               ║
+// ║ - [INFO], [WARNING], [ERROR], [ERRORJS], [DEBUG]                             ║
+// ║ - [OP-START], [OP-SUCCESS], [OP-FAIL] (operações)                            ║
+// ║ - [USER-ACTION], [HTTP-ERROR]                                                ║
+// ║                                                                              ║
+// ║ RECURSOS:                                                                    ║
+// ║ - Evento OnErrorOccurred para notificações em tempo real                     ║
+// ║ - Thread-safe via lock object                                                ║
+// ║ - Captura usuário logado via HttpContext                                     ║
+// ║ - Estatísticas e contagem de erros                                           ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 15                                        ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 using System.Collections.Generic;
 using System.IO;

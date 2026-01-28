@@ -1,3 +1,27 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: RegistroCupomAbastecimento.cs                                      ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade para registro de lotes de cupons fiscais de abastecimento.         ║
+// ║ Organiza a digitalização/arquivamento de comprovantes.                      ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • RegistroCupomAbastecimentoViewModel - ViewModel simples                   ║
+// ║ • RegistroCupomAbastecimento - Entidade principal                           ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ • RegistroCupomId [Key] - Identificador único                               ║
+// ║ • DataRegistro - Data do registro dos cupons                                ║
+// ║ • Observacoes - Observações sobre o lote                                    ║
+// ║ • RegistroPDF - Caminho/nome do PDF digitalizado                            ║
+// ║                                                                              ║
+// ║ USO:                                                                          ║
+// ║ • Controle de digitalização de comprovantes fiscais                         ║
+// ║ • Auditoria de abastecimentos                                               ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

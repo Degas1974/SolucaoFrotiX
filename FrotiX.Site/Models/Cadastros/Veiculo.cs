@@ -1,3 +1,48 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: Veiculo.cs                                                         ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade principal para cadastro de veículos da frota.                      ║
+// ║ Centro do sistema - vincula motoristas, contratos, manutenções, viagens.    ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • VeiculoViewModel - ViewModel com múltiplos dropdowns                      ║
+// ║ • Veiculo - Entidade principal                                              ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ Identificação:                                                               ║
+// ║ • VeiculoId [Key] - Identificador único                                     ║
+// ║ • Placa - Placa do veículo (max 10 chars)                                   ║
+// ║ • PlacaVinculada - Placa anterior/alternativa                               ║
+// ║ • Renavam - Código RENAVAM (max 20 chars)                                   ║
+// ║ • Patrimonio - Número patrimonial                                           ║
+// ║ • AnoFabricacao, AnoModelo - Anos do veículo                                ║
+// ║                                                                              ║
+// ║ Relacionamentos (FKs):                                                        ║
+// ║ • MarcaId → MarcaVeiculo - Marca (Fiat, VW, etc)                            ║
+// ║ • ModeloId → ModeloVeiculo - Modelo (Uno, Gol, etc)                         ║
+// ║ • UnidadeId → Unidade - Unidade vinculada                                   ║
+// ║ • CombustivelId → Combustivel - Tipo de combustível                         ║
+// ║ • ContratoId → Contrato - Contrato de locação                               ║
+// ║ • AtaId → AtaRegistroPrecos - Ata de compra                                 ║
+// ║ • ItemVeiculoId → ItemVeiculoContrato - Item contratual                     ║
+// ║ • ItemVeiculoAtaId → ItemVeiculoAta - Item da ata                           ║
+// ║ • PlacaBronzeId → PlacaBronze - Placa comemorativa                          ║
+// ║                                                                              ║
+// ║ Controle:                                                                     ║
+// ║ • Quilometragem - Km atual                                                  ║
+// ║ • Consumo - Consumo médio km/l                                              ║
+// ║ • ValorMensal - Valor mensal de locação                                     ║
+// ║ • Reserva - Veículo reserva                                                 ║
+// ║ • VeiculoProprio - Veículo próprio (não locado)                             ║
+// ║ • Economildo - Participa da frota Economildo                                ║
+// ║ • CRLV - Documento digitalizado (byte[])                                    ║
+// ║ • DataIngresso - Data de entrada na frota                                   ║
+// ║ • Status - Ativo/Inativo                                                    ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

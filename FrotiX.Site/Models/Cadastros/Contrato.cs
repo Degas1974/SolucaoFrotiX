@@ -1,3 +1,35 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: Contrato.cs                                                        ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidades complexas para gestão de contratos de locação e terceirização.    ║
+// ║ Inclui repactuações, itens de veículos e custos de pessoal terceirizado.    ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • ContratoViewModel - ViewModel com dropdown de fornecedores                ║
+// ║ • Contrato - Entidade principal do contrato                                 ║
+// ║ • CustoMensalItensContrato - Custos mensais por nota fiscal                 ║
+// ║ • RepactuacaoContrato - Repactuações/aditivos do contrato                   ║
+// ║ • ItemVeiculoContrato - Itens de veículos do contrato                       ║
+// ║ • RepactuacaoTerceirizacao - Valores de terceirização por repactuação       ║
+// ║ • RepactuacaoServicos - Valores de serviços por repactuação                 ║
+// ║                                                                              ║
+// ║ PROPRIEDADES CONTRATO:                                                       ║
+// ║ • ContratoId [Key] - Identificador único                                    ║
+// ║ • NumeroContrato, AnoContrato - Identificação do contrato                   ║
+// ║ • Vigencia, Prorrogacao - Períodos em meses                                 ║
+// ║ • AnoProcesso, NumeroProcesso - Dados do processo licitatório               ║
+// ║ • Objeto, TipoContrato - Descrição e tipo                                   ║
+// ║ • DataInicio, DataFim, DataRepactuacao - Datas importantes                  ║
+// ║ • Valor - Valor total do contrato                                           ║
+// ║ • ContratoEncarregados/Operadores/Motoristas/Lavadores - Flags de tipo      ║
+// ║ • CustoMensal* - Custos mensais por categoria de terceirizado               ║
+// ║ • Quantidade* - Quantidades por categoria                                   ║
+// ║ • FornecedorId → Fornecedor (FK)                                            ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

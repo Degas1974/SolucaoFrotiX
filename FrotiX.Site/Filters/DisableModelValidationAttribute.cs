@@ -1,3 +1,23 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: DisableModelValidationAttribute.cs                                  ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Atributo para desabilitar validação automática do ModelState.                ║
+// ║ Implementa IResourceFilter para executar ANTES da validação [ApiController]. ║
+// ║                                                                              ║
+// ║ QUANDO USAR:                                                                 ║
+// ║ - Endpoints com [ApiController] que precisam de validação manual             ║
+// ║ - Quando propriedades nullable podem vir como null mas não são erros         ║
+// ║ - Importações ou processamentos batch com dados parciais                     ║
+// ║                                                                              ║
+// ║ DIFERENÇA DO SkipModelValidation:                                            ║
+// ║ - DisableModelValidation: IResourceFilter (executa mais cedo no pipeline)    ║
+// ║ - SkipModelValidation: IActionFilter (executa durante a action)              ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 12                                        ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;

@@ -1,3 +1,11 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
+ * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
+ * ║  Seção: UploadCRLVController.cs                                          ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +17,14 @@ using System.IO;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: UploadCRLV API (Syncfusion Uploader)
+     * 🎯 OBJETIVO: Gerenciar upload de CRLV (Certificado de Registro e Licenciamento de Veículo)
+     * 📋 ROTAS: /api/UploadCRLV/* (Save, Remove, UploadFeatures)
+     * 🔗 ENTIDADES: Veiculo (campo CRLV byte[])
+     * 📦 DEPENDÊNCIAS: IWebHostEnvironment, IUnitOfWork, Syncfusion Uploader
+     * 💾 ARMAZENAMENTO: PDF convertido para byte[] e salvo no banco de dados
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     [IgnoreAntiforgeryToken]
@@ -30,6 +46,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Save
+         * 🎯 OBJETIVO: Salvar arquivo PDF do CRLV no banco de dados (conversão para byte[])
+         * 📥 ENTRADAS: UploadFiles (IFormFile[]), veiculoId (Guid query param)
+         * 📤 SAÍDAS: Content("") com StatusCode 200 ou 500
+         * 🔗 CHAMADA POR: Syncfusion Uploader (JavaScript component)
+         * 🔄 CHAMA: Veiculo.GetFirstOrDefault(), Veiculo.Update()
+         * 💾 CONVERSÃO: IFormFile → MemoryStream → byte[] → Veiculo.CRLV
+         ****************************************************************************************/
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("Save")]
@@ -47,6 +72,7 @@ namespace FrotiX.Controllers
 
                         if (objFromDb != null)
                         {
+                            // [DOC] Converte arquivo enviado para byte array e salva no banco
                             using (var target = new MemoryStream())
                             {
                                 file.CopyTo(target);
@@ -67,6 +93,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Remove
+         * 🎯 OBJETIVO: Remover CRLV do veículo (limpa campo CRLV)
+         * 📥 ENTRADAS: UploadFiles (IFormFile[] - não usado), veiculoId (Guid query param)
+         * 📤 SAÍDAS: Content("") com StatusCode 200 ou 500
+         * 🔗 CHAMADA POR: Syncfusion Uploader (botão de remoção)
+         * 🔄 CHAMA: Veiculo.GetFirstOrDefault(), Veiculo.Update()
+         * 🗑️ OPERAÇÃO: Define CRLV = null
+         ****************************************************************************************/
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("Remove")]
@@ -99,6 +134,14 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UploadFeatures
+         * 🎯 OBJETIVO: Renderizar página de demonstração do uploader (uso interno/teste)
+         * 📥 ENTRADAS: Nenhuma
+         * 📤 SAÍDAS: View (Razor Page)
+         * 🔗 CHAMADA POR: Acesso direto para visualizar funcionalidades do uploader
+         * 🔄 CHAMA: View()
+         ****************************************************************************************/
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("UploadFeatures")]

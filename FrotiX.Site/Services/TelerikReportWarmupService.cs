@@ -1,4 +1,27 @@
-// Services/TelerikReportWarmupService.cs
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: TelerikReportWarmupService.cs                                       ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ HostedService para pré-aquecimento do Telerik Report Server.                 ║
+// ║ Reduz latência do primeiro relatório inicializando assemblies em background. ║
+// ║                                                                              ║
+// ║ ESTRATÉGIA DE WARMUP:                                                        ║
+// ║ 1. Aguarda 5 segundos após startup da aplicação                              ║
+// ║ 2. Faz requisição para api/reports/resources/js/telerikReportViewer          ║
+// ║ 3. Timeout de 30 segundos por requisição                                     ║
+// ║ 4. Delay adicional de 2 segundos para garantir inicialização                 ║
+// ║                                                                              ║
+// ║ BENEFÍCIO:                                                                   ║
+// ║ - Primeiro relatório carrega muito mais rápido                               ║
+// ║ - Engine Telerik já está inicializado quando usuário acessa                  ║
+// ║                                                                              ║
+// ║ DEPENDÊNCIAS:                                                                ║
+// ║ - IHttpClientFactory: Para criação de clientes HTTP                          ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 15                                        ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 using System.Net.Http;
 using System.Threading;
@@ -9,8 +32,7 @@ using Microsoft.Extensions.Logging;
 namespace FrotiX.Services
 {
     /// <summary>
-    /// 🚀 Serviço de Pre-Warm do Telerik Report Server
-    /// Inicializa o Report Server em background para reduzir latência do primeiro relatório
+    /// HostedService para pré-aquecimento do Telerik Report Server.
     /// </summary>
     public sealed class TelerikReportWarmupService : IHostedService, IDisposable
     {

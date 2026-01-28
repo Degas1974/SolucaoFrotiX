@@ -1,3 +1,22 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: EvolucaoViagensDiaria.cs                                           ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Evolução diária de viagens para gráficos de linha.                          ║
+// ║ MotoristaId NULL representa totais de todos os motoristas.                  ║
+// ║                                                                              ║
+// ║ CAMPOS:                                                                      ║
+// ║ - Id, Data (date): Identificação do dia                                     ║
+// ║ - MotoristaId: NULL = todos, ou ID específico                               ║
+// ║ - TotalViagens, KmTotal, MinutosTotais                                      ║
+// ║ - DataAtualizacao: Timestamp do cache                                       ║
+// ║                                                                              ║
+// ║ USO: Gráficos de evolução diária, análise de sazonalidade                   ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

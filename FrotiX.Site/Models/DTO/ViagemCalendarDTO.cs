@@ -1,3 +1,24 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViagemCalendarDTO.cs                                               ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ DTO para exibição de viagens em calendário (FullCalendar JS).               ║
+// ║ Propriedades em lowercase para compatibilidade com biblioteca JS.           ║
+// ║                                                                              ║
+// ║ PROPRIEDADES FULLCALENDAR:                                                   ║
+// ║ - id: Identificador único (Guid)                                            ║
+// ║ - title: Título do evento                                                   ║
+// ║ - start, end: Datas de início/fim (formato ISO)                             ║
+// ║ - backgroundColor, textColor: Cores do evento                               ║
+// ║                                                                              ║
+// ║ PROPRIEDADES ADICIONAIS:                                                     ║
+// ║ - dataInicial, horaInicio, dataFinal, horaFim: Dados originais              ║
+// ║ - descricao: Descrição detalhada                                            ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 
 namespace FrotiX.Models.DTO

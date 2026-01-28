@@ -1,8 +1,34 @@
-﻿using System;
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: GlosaDtos.cs                                                        ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ DTOs para cálculos de glosa de contratos de veículos.                        ║
+// ║ Glosa = desconto por dias de indisponibilidade do veículo.                   ║
+// ║                                                                              ║
+// ║ DTOs INCLUÍDOS:                                                              ║
+// ║ - GlosaResumoItemDto: Consolidado por item do contrato (para grid)           ║
+// ║   → NumItem, Descricao, Quantidade, ValorUnitario, PrecoTotalMensal          ║
+// ║   → PrecoDiario, Glosa, ValorParaAteste                                      ║
+// ║                                                                              ║
+// ║ - GlosaDetalheItemDto: Linhas individuais por O.S.                           ║
+// ║   → NumItem, Descricao, Placa, DataSolicitacao, DataDisponibilidade          ║
+// ║   → DataRecolhimento, DataDevolucao, DiasGlosa                               ║
+// ║                                                                              ║
+// ║ USO:                                                                         ║
+// ║ - IGlosaService.ListarResumo() → GlosaResumoItemDto                          ║
+// ║ - IGlosaService.ListarDetalhes() → GlosaDetalheItemDto                       ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 14                                        ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
+using System;
 
 namespace FrotiX.Services
     {
-    // DTO de Resumo (consolidado por item do contrato)
+    /// <summary>
+    /// DTO de Resumo de glosa (consolidado por item do contrato).
+    /// </summary>
     public class GlosaResumoItemDto
         {
         public int? NumItem { get; set; }

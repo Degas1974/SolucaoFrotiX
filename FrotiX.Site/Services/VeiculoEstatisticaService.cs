@@ -1,3 +1,28 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: VeiculoEstatisticaService.cs                                        ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Serviço para cálculo de estatísticas de viagens por veículo.                 ║
+// ║ Usado pela IA evolutiva para calibrar alertas de validação.                  ║
+// ║                                                                              ║
+// ║ ESTATÍSTICAS CALCULADAS:                                                     ║
+// ║ - Média de KM por viagem                                                     ║
+// ║ - Desvio padrão de KM                                                        ║
+// ║ - KM máximo/mínimo histórico                                                 ║
+// ║ - Média de duração das viagens                                               ║
+// ║ - Total de viagens consideradas                                              ║
+// ║                                                                              ║
+// ║ CONFIGURAÇÃO:                                                                ║
+// ║ - QUANTIDADE_VIAGENS_HISTORICO: 100 viagens                                  ║
+// ║ - CACHE_DURATION: 10 minutos                                                 ║
+// ║ - Chave de cache: VeiculoEstatistica_{veiculoId}                             ║
+// ║                                                                              ║
+// ║ RETORNO: EstatisticaVeiculoDto                                               ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 15                                        ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,3 +1,25 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViewCustosViagem.cs                                                ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Modelo para VIEW de custos de viagens com dados desnormalizados.            ║
+// ║ Usado em grids e relatórios de custos.                                      ║
+// ║                                                                              ║
+// ║ CAMPOS:                                                                      ║
+// ║ - ViagemId, MotoristaId, VeiculoId, SetorSolicitanteId                      ║
+// ║ - NoFichaVistoria, DataInicial/Final, HoraInicio/Fim                        ║
+// ║ - Finalidade, Status, StatusAgendamento                                     ║
+// ║ - KmInicial, KmFinal, Quilometragem                                         ║
+// ║ - DescricaoVeiculo, NomeMotorista                                           ║
+// ║ - CustoMotorista, CustoVeiculo, CustoCombustivel (formatados)               ║
+// ║ - RowNum: Para paginação server-side                                        ║
+// ║                                                                              ║
+// ║ USO: Tela de custos de viagens, relatórios gerenciais                       ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

@@ -1,3 +1,35 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: Recurso.cs                                                         ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade para controle de recursos do sistema (itens de menu).              ║
+// ║ Suporta estrutura hierárquica pai-filho para menus multi-nível.             ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • RecursoViewModel - ViewModel com propriedades espelhadas                  ║
+// ║ • Recurso - Entidade principal com navegação hierárquica                    ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ Identificação:                                                               ║
+// ║ • RecursoId [Key] - Identificador único                                     ║
+// ║ • Nome - Nome interno do recurso                                            ║
+// ║ • NomeMenu - Nome exibido no menu                                           ║
+// ║ • Descricao - Descrição do recurso                                          ║
+// ║ • Ordem - Ordem de exibição no menu                                         ║
+// ║                                                                              ║
+// ║ Navegação Hierárquica:                                                       ║
+// ║ • ParentId - ID do recurso pai (null = raiz)                                ║
+// ║ • Icon - Classe FontAwesome do ícone (default: fa-duotone fa-folder)        ║
+// ║ • Href - URL da página (default: javascript:void(0);)                       ║
+// ║ • Ativo - Se aparece no menu                                                ║
+// ║ • Nivel - Nível na hierarquia (0 = raiz)                                    ║
+// ║ • HasChild - Se tem sub-recursos                                            ║
+// ║ • Parent - Navegação para recurso pai                                       ║
+// ║ • Children - Coleção de sub-recursos                                        ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

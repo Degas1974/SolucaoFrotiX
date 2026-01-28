@@ -1,3 +1,26 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: MovimentacaoEmpenhoMulta.cs                                        ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade para registro de movimentações de empenhos específicos de multas.  ║
+// ║ Vincula pagamentos de multas aos empenhos de multas.                        ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • MovimentacaoEmpenhoMultaViewModel - ViewModel com dropdown de empenhos    ║
+// ║ • MovimentacaoEmpenhoMulta - Entidade de movimentação                       ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ • MovimentacaoId [Key] - Identificador único                                ║
+// ║ • Descricao - Descrição da movimentação                                     ║
+// ║ • TipoMovimentacao - Tipo (Débito por pagamento, Estorno, etc)              ║
+// ║ • Valor - Valor da movimentação em R$                                       ║
+// ║ • DataMovimentacao - Data da movimentação                                   ║
+// ║ • MultaId → Multa (FK) - Multa sendo paga                                   ║
+// ║ • EmpenhoMultaId → EmpenhoMulta (FK) - Empenho utilizado                    ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

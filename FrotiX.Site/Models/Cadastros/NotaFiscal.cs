@@ -1,3 +1,37 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: NotaFiscal.cs                                                      ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade para registro de notas fiscais de fornecedores vinculadas a        ║
+// ║ empenhos. Controla pagamentos, glosas e referências mensais.                ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • NotaFiscalViewModel - ViewModel com dropdowns de empenho/contrato/ata     ║
+// ║ • NotaFiscal - Entidade principal                                           ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ • NotaFiscalId [Key] - Identificador único                                  ║
+// ║ • NumeroNF - Número da nota fiscal                                          ║
+// ║ • DataEmissao - Data de emissão                                             ║
+// ║ • ValorNF - Valor total da NF em R$                                         ║
+// ║ • TipoNF - Tipo da nota (Locação, Terceirização, Combustível)               ║
+// ║ • Objeto - Descrição do objeto da NF                                        ║
+// ║ • ValorGlosa, MotivoGlosa - Dados de glosa se aplicável                     ║
+// ║ • AnoReferencia, MesReferencia - Competência da NF                          ║
+// ║                                                                              ║
+// ║ Relacionamentos:                                                              ║
+// ║ • ContratoId → Contrato (FK opcional)                                       ║
+// ║ • AtaId → AtaRegistroPrecos (FK opcional)                                   ║
+// ║ • EmpenhoId → Empenho (FK)                                                  ║
+// ║ • VeiculoId → Veiculo (FK opcional)                                         ║
+// ║                                                                              ║
+// ║ Campos NotMapped (para exibição):                                           ║
+// ║ • MediaGasolina, MediaDiesel - Preços médios de combustível                 ║
+// ║ • CustoMensalOperador/Motorista/Lavador - Custos de terceirização           ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

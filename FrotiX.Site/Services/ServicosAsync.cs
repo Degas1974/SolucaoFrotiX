@@ -1,7 +1,23 @@
-// ============================================================================
-// SERVICOSASYNC.CS - VERSÃO CORRIGIDA
-// Substitua o arquivo ServicosAsync.cs completo por este
-// ============================================================================
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ServicosAsync.cs                                                    ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Versão assíncrona dos serviços utilitários para cálculos de viagens.         ║
+// ║ Classe estática com métodos async para uso em Controllers e Pages.           ║
+// ║                                                                              ║
+// ║ MÉTODOS DISPONÍVEIS:                                                         ║
+// ║ - CalculaCustoCombustivelAsync(): Calcula custo de combustível (async)       ║
+// ║   → Busca preço do último abastecimento ou média do tipo de combustível      ║
+// ║   → Fórmula: (Km percorridos / Consumo) * Preço combustível                  ║
+// ║   → Consumo padrão: 10 km/l se não informado no veículo                      ║
+// ║                                                                              ║
+// ║ DIFERENÇA DO Servicos.cs:                                                    ║
+// ║ - ServicosAsync: Métodos estáticos async                                     ║
+// ║ - Servicos: Métodos de instância síncronos                                   ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 15                                        ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -11,6 +27,9 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Services
 {
+    /// <summary>
+    /// Versão assíncrona dos serviços de cálculo de viagens.
+    /// </summary>
     public static class ServicosAsync
     {
         public static async Task<double> CalculaCustoCombustivelAsync(Viagem viagemObj , IUnitOfWork _unitOfWork)

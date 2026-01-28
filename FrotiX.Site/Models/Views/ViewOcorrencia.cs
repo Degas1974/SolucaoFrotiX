@@ -1,3 +1,33 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViewOcorrencia.cs                                                  ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ View model para exibição de ocorrências registradas em viagens.             ║
+// ║ Inclui dados da viagem, veículo, motorista e detalhes da ocorrência.        ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ Identificadores:                                                             ║
+// ║ • VeiculoId - Veículo da ocorrência                                         ║
+// ║ • ViagemId - Viagem em que ocorreu                                          ║
+// ║ • MotoristaId - Motorista responsável                                       ║
+// ║ • ItemManutencaoId - Item de manutenção vinculado (se houver)               ║
+// ║                                                                              ║
+// ║ Dados da Viagem:                                                             ║
+// ║ • NoFichaVistoria - Número da ficha de vistoria                             ║
+// ║ • DataInicial - Data da viagem/ocorrência                                   ║
+// ║ • NomeMotorista - Nome do motorista                                         ║
+// ║ • DescricaoVeiculo - Descrição do veículo                                   ║
+// ║                                                                              ║
+// ║ Dados da Ocorrência:                                                         ║
+// ║ • ResumoOcorrencia - Resumo curto                                           ║
+// ║ • DescricaoOcorrencia - Descrição detalhada do problema                     ║
+// ║ • DescricaoSolucaoOcorrencia - Solução aplicada                             ║
+// ║ • StatusOcorrencia - Status (Pendente, Resolvida, Em Manutenção)            ║
+// ║ • ImagemOcorrencia - URL da imagem/foto da ocorrência                       ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

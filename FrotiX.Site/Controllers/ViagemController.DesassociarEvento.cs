@@ -1,17 +1,35 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
+ * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
+ * ║  Seção: ViagemController.DesassociarEvento.cs                            ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using Microsoft.AspNetCore.Mvc;
 using System;
 
 namespace FrotiX.Controllers
 {
-    /// <summary>
-    /// ViagemController - Partial Class para API DesassociarViagemEvento
-    /// </summary>
+    /****************************************************************************************
+     * ⚡ CONTROLLER: Viagem API (Partial - DesassociarEvento)
+     * 🎯 OBJETIVO: Desassociar viagem de evento, alterando finalidade e limpando cache
+     * 📋 ROTAS: /api/viagem/DesassociarViagemEvento [POST]
+     * 🔗 ENTIDADES: Viagem
+     * 📦 DEPENDÊNCIAS: IUnitOfWork, IMemoryCache
+     * 📝 NOTA: Classe parcial - ver ViagemController.cs principal
+     ****************************************************************************************/
     public partial class ViagemController
     {
-        /// <summary>
-        /// Desassocia uma viagem de um evento, alterando sua finalidade
-        /// Rota: /api/viagem/DesassociarViagemEvento
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DesassociarViagemEvento
+         * 🎯 OBJETIVO: Desassociar viagem de evento, limpar EventoId/NomeEvento e alterar finalidade
+         * 📥 ENTRADAS: DesassociarViagemRequest { ViagemId, NovaFinalidade }
+         * 📤 SAÍDAS: JSON { success, message }
+         * 🔗 CHAMADA POR: Modal de desassociação de viagem em evento
+         * 🔄 CHAMA: Viagem.GetFirstOrDefault(), Viagem.Update(), IMemoryCache.Remove()
+         * 🗑️ CACHE: Invalida cache do evento antigo (chaves: viagens_evento_{id}_1_50/100)
+         ****************************************************************************************/
         [Route("DesassociarViagemEvento")]
         [HttpPost]
         public IActionResult DesassociarViagemEvento([FromBody] DesassociarViagemRequest request)
@@ -47,21 +65,21 @@ namespace FrotiX.Controllers
                     });
                 }
 
-                // Guarda o evento antigo para invalidar cache
+                // [DOC] Guarda o evento antigo para invalidar cache depois da desassociação
                 var eventoAntigoId = viagem.EventoId;
 
-                // Remove a associação com o evento
+                // [DOC] Remove a associação com o evento
                 viagem.EventoId = null;
                 viagem.NomeEvento = null;
 
-                // Altera a finalidade
+                // [DOC] Altera a finalidade da viagem para a nova informada
                 viagem.Finalidade = request.NovaFinalidade;
 
-                // Atualiza a viagem
+                // [DOC] Atualiza a viagem no banco de dados
                 _unitOfWork.Viagem.Update(viagem);
                 _unitOfWork.Save();
 
-                // Invalida cache do evento (se existir)
+                // [DOC] Invalida cache do evento antigo (lista de viagens com paginação 50 e 100)
                 if (eventoAntigoId.HasValue && _cache != null)
                 {
                     _cache.Remove($"viagens_evento_{eventoAntigoId.Value}_1_50");
@@ -86,9 +104,13 @@ namespace FrotiX.Controllers
         }
     }
 
-    /// <summary>
-    /// Request para desassociar viagem de evento
-    /// </summary>
+    /****************************************************************************************
+     * 📦 DTO: DesassociarViagemRequest
+     * 🎯 OBJETIVO: Request para desassociar viagem de evento
+     * 📋 PROPRIEDADES:
+     *    - ViagemId: Identificador da viagem
+     *    - NovaFinalidade: Nova finalidade após desassociação
+     ****************************************************************************************/
     public class DesassociarViagemRequest
     {
         public Guid ViagemId { get; set; }

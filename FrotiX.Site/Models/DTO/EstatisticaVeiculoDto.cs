@@ -1,3 +1,28 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: EstatisticaVeiculoDto.cs                                           ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ DTO com estatísticas de viagens por veículo para validação inteligente.     ║
+// ║ Usado pela IA evolutiva para calibrar alertas baseados em histórico.        ║
+// ║                                                                              ║
+// ║ ESTATÍSTICAS DE QUILOMETRAGEM:                                               ║
+// ║ - KmMedio, KmMediano, KmDesvioPadrao, KmMinimo, KmMaximo                    ║
+// ║ - KmPercentil95, KmPercentil99                                              ║
+// ║                                                                              ║
+// ║ ESTATÍSTICAS DE DURAÇÃO:                                                     ║
+// ║ - DuracaoMedia/Mediana/DesvioPadrao/Minima/Maxima/Percentil95 (Minutos)     ║
+// ║                                                                              ║
+// ║ MÉTODOS ANALÍTICOS:                                                          ║
+// ║ - CalcularZScoreKm(km): Z-Score para anomalia                               ║
+// ║ - CalcularZScoreDuracao(min): Z-Score para anomalia                         ║
+// ║ - ClassificarKm/Duracao: Retorna NivelAnomalia                              ║
+// ║                                                                              ║
+// ║ ENUM NivelAnomalia: SemDados, Normal, Leve, Moderada, Severa                ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 
 namespace FrotiX.Models.DTO

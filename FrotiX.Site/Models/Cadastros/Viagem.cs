@@ -1,3 +1,71 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: Viagem.cs                                                          ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Arquivo central do módulo de viagens. Contém a entidade principal           ║
+// ║ e todos os DTOs relacionados ao ciclo de vida de uma viagem.                ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • AgendamentoViagem - DTO para agendamento de viagens                       ║
+// ║ • AjusteViagem - DTO para ajustes em viagens existentes                     ║
+// ║ • FinalizacaoViagem - DTO para finalização (com lista de ocorrências)       ║
+// ║ • OcorrenciaFinalizacaoDTO - DTO para cada ocorrência na finalização        ║
+// ║ • ProcuraViagemViewModel - ViewModel para busca de viagens                  ║
+// ║ • Viagem - Entidade principal                                               ║
+// ║ • ViagemID - DTO simples com apenas o ID                                    ║
+// ║ • ViagemViewModel - ViewModel completo para exibição                        ║
+// ║                                                                              ║
+// ║ ENTIDADE VIAGEM - PROPRIEDADES:                                              ║
+// ║ Identificação:                                                               ║
+// ║ • ViagemId [Key] - Identificador único                                      ║
+// ║ • NoFichaVistoria - Número da ficha de vistoria                             ║
+// ║ • NomeEvento - Nome do evento associado                                     ║
+// ║                                                                              ║
+// ║ Dados da Viagem:                                                              ║
+// ║ • DataInicial, DataFinal - Período da viagem                                ║
+// ║ • HoraInicio, HoraFim - Horários                                            ║
+// ║ • Origem, Destino - Locais                                                  ║
+// ║ • Finalidade, Descricao - Objetivo                                          ║
+// ║ • KmInicial, KmFinal, KmRodado - Quilometragem                              ║
+// ║ • CombustivelInicial, CombustivelFinal - Nível de combustível               ║
+// ║                                                                              ║
+// ║ Relacionamentos (FKs):                                                        ║
+// ║ • MotoristaId → Motorista                                                   ║
+// ║ • VeiculoId → Veiculo                                                       ║
+// ║ • RequisitanteId → Requisitante                                             ║
+// ║ • SetorSolicitanteId → SetorSolicitante                                     ║
+// ║ • EventoId → Evento                                                         ║
+// ║                                                                              ║
+// ║ Recorrência:                                                                  ║
+// ║ • Recorrente, RecorrenciaViagemId, Intervalo                                ║
+// ║ • DataFinalRecorrencia, DiaMesRecorrencia                                   ║
+// ║ • Monday-Sunday (dias da semana)                                            ║
+// ║                                                                              ║
+// ║ Custos Calculados:                                                            ║
+// ║ • CustoCombustivel, CustoVeiculo, CustoMotorista                            ║
+// ║ • CustoOperador, CustoLavador                                               ║
+// ║                                                                              ║
+// ║ Controle de Equipamentos:                                                     ║
+// ║ • CintaEntregue, CintaDevolvida                                             ║
+// ║ • TabletEntregue, TabletDevolvido                                           ║
+// ║                                                                              ║
+// ║ Vistoria:                                                                     ║
+// ║ • VistoriadorInicialId, VistoriadorFinalId                                  ║
+// ║ • Rubrica, RubricaFinal                                                     ║
+// ║ • StatusDocumento, StatusCartaoAbastecimento                                ║
+// ║                                                                              ║
+// ║ Normalização (Dashboard):                                                     ║
+// ║ • FoiNormalizada - Se passou por normalização                               ║
+// ║ • TipoNormalizacao - Tipo aplicado                                          ║
+// ║ • DataNormalizacao - Quando foi normalizada                                 ║
+// ║ • *Normalizado - Campos com valores corrigidos                              ║
+// ║                                                                              ║
+// ║ MÉTODO AtualizarDados:                                                        ║
+// ║ • Copia dados de AgendamentoViagem para Viagem                              ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;

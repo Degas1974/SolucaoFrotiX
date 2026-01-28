@@ -1,3 +1,39 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: Patrimonio.cs                                                      ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade para controle de bens patrimoniais da organização.                 ║
+// ║ Gerencia ativos físicos como computadores, móveis, equipamentos.            ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • PatrimonioViewModel - ViewModel com dropdowns de Marca/Setor/Secao        ║
+// ║ • Patrimonio - Entidade principal                                           ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ Identificação:                                                               ║
+// ║ • PatrimonioId [Key] - Identificador único                                  ║
+// ║ • NPR - Número Patrimonial (regex: números.ponto.números)                   ║
+// ║ • Marca, Modelo - Identificação do bem (max 30 chars)                       ║
+// ║ • Descricao - Descrição detalhada (max 100 chars)                           ║
+// ║ • NumeroSerie - Número de série (max 80 chars)                              ║
+// ║                                                                              ║
+// ║ Localização:                                                                  ║
+// ║ • LocalizacaoAtual - Descrição da localização atual (max 150 chars)         ║
+// ║ • SetorId → SetorPatrimonial - Setor onde está o bem                        ║
+// ║ • SecaoId → SecaoPatrimonial - Seção específica                             ║
+// ║ • SetorConferenciaId, SecaoConferenciaId - Local na conferência             ║
+// ║ • LocalizacaoConferencia - Localização encontrada na conferência            ║
+// ║                                                                              ║
+// ║ Controle:                                                                     ║
+// ║ • DataEntrada, DataSaida - Datas de movimentação                            ║
+// ║ • Situacao - Situação atual do bem                                          ║
+// ║ • Status - Ativo/Inativo                                                    ║
+// ║ • StatusConferencia - Status na última conferência                          ║
+// ║ • Imagem, ImageUrl - Foto do patrimônio                                     ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

@@ -1,3 +1,25 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: PlacaBronze.cs                                                     ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade para cadastro de placas de bronze (placas comemorativas).          ║
+// ║ Placas especiais usadas em veículos para eventos ou homenagens.             ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • PlacaBronzeViewModel - ViewModel com VeiculoId para associação            ║
+// ║ • PlacaBronze - Entidade principal                                          ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ • PlacaBronzeId [Key] - Identificador único                                 ║
+// ║ • DescricaoPlaca - Descrição da placa (max 100 chars)                       ║
+// ║ • Status - Ativo/Inativo                                                    ║
+// ║                                                                              ║
+// ║ NOTA:                                                                         ║
+// ║ • VeiculoId no ViewModel é [NotMapped] para associação temporária           ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System;
 using System.ComponentModel.DataAnnotations;

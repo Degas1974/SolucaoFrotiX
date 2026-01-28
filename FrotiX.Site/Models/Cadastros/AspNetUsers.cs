@@ -1,3 +1,31 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: AspNetUsers.cs                                                     ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Extensão da entidade IdentityUser para usuários do sistema FrotiX.          ║
+// ║ Adiciona campos customizados como NomeCompleto, Ponto, Ramal, Foto.         ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • UsuarioViewModel - ViewModel para tela de cadastro de usuários            ║
+// ║ • AspNetUsers - Entidade de usuário estendendo IdentityUser                 ║
+// ║                                                                              ║
+// ║ PROPRIEDADES CUSTOMIZADAS:                                                   ║
+// ║ • NomeCompleto - Nome completo (max 80 chars, apenas letras e espaços)      ║
+// ║ • Ponto - Ponto funcional no formato p_########## (validação regex)         ║
+// ║ • Email - Deve terminar em @camara.leg.br                                   ║
+// ║ • Ramal - Ramal telefônico (8 dígitos)                                      ║
+// ║ • Foto - Foto do usuário (byte array)                                       ║
+// ║ • Status - Ativo/Inativo                                                    ║
+// ║ • PrecisaMudarSenha - Flag para forçar troca de senha                       ║
+// ║ • DetentorCargaPatrimonial - Flag para patrimônio                           ║
+// ║ • Criacao, UltimoLogin - Datas de auditoria                                 ║
+// ║ • UsuarioIdAlteracao - Usuário que fez última alteração                     ║
+// ║                                                                              ║
+// ║ HERANÇA: IdentityUser (ASP.NET Identity)                                    ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.ComponentModel.DataAnnotations;

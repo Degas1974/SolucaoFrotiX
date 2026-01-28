@@ -1,3 +1,36 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: FrotiXDbContext.cs                                                  ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Contexto PRINCIPAL de banco de dados do sistema FrotiX.                      ║
+// ║ Gerencia 100+ entidades incluindo tabelas, views e estatísticas.             ║
+// ║                                                                              ║
+// ║ MÓDULOS COBERTOS:                                                            ║
+// ║ - Frota: Veículos, Motoristas, Operadores, Lavadores, Encarregados           ║
+// ║ - Viagens: Viagem, ViagensEconomildo, Eventos, Custos                        ║
+// ║ - Contratos: Contrato, Ata, Repactuações, Empenhos, Notas Fiscais            ║
+// ║ - Manutenção: Manutencao, Lavagem, ItensManutencao                           ║
+// ║ - Abastecimento: Abastecimento, Combustivel, MediaCombustivel                ║
+// ║ - Patrimônio: Patrimonio, SetorPatrimonial, SecaoPatrimonial                 ║
+// ║ - Multas: Multa, OrgaoAutuante, TipoMulta, EmpenhoMulta                      ║
+// ║ - TaxiLeg: CorridasTaxiLeg, CorridasCanceladasTaxiLeg                        ║
+// ║ - Escalas: EscalaDiaria, Turno, TipoServico, Ferias, Folgas                  ║
+// ║ - Estatísticas: Dashboards de Motoristas e Abastecimentos                    ║
+// ║                                                                              ║
+// ║ CONFIGURAÇÕES ESPECIAIS (OnModelCreating):                                   ║
+// ║ - Triggers declarados: Motorista, Viagem, Abastecimento, Requisitante        ║
+// ║ - UseSqlOutputClause(false): Evita erro com triggers no SQL Server           ║
+// ║ - Chaves compostas: VeiculoContrato, MotoristaContrato, LavadorContrato...   ║
+// ║ - Views sem chave (HasNoKey): 35+ views para consultas otimizadas            ║
+// ║                                                                              ║
+// ║ ARQUIVOS PARCIAIS RELACIONADOS:                                              ║
+// ║ - FrotiXDbContext.OcorrenciaViagem.cs                                        ║
+// ║ - FrotiXDbContext.RepactuacaoVeiculo.cs                                      ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 11 | LINHAS: ~773                         ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using FrotiX.Models;
 using FrotiX.Models.Cadastros;
 using FrotiX.Models.Estatisticas;
@@ -7,6 +40,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FrotiX.Data
 {
+    /// <summary>
+    /// Contexto principal do FrotiX. Gerencia 100+ entidades.
+    /// Partial class com extensões em arquivos separados.
+    /// </summary>
     public partial class FrotiXDbContext : DbContext
     {
         public FrotiXDbContext(DbContextOptions<FrotiXDbContext> options)

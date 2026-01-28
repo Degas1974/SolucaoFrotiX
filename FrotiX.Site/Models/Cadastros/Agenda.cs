@@ -1,4 +1,28 @@
-﻿using System;
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: Agenda.cs                                                          ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Modelo para representação de eventos de agenda no calendário de viagens.    ║
+// ║ Usado para integração com FullCalendar JS na interface do usuário.          ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • AgendaViewModel - Filtro de status para a agenda                          ║
+// ║ • Agenda - Dados do evento para renderização no calendário                  ║
+// ║                                                                              ║
+// ║ PROPRIEDADES AGENDA:                                                         ║
+// ║ • ViagemId - Referência à viagem                                            ║
+// ║ • HoraInicial/Final, DataInicial - Período do evento                        ║
+// ║ • Descricao - Descrição/destino da viagem                                   ║
+// ║ • Titulo - Título para exibição no calendário                               ║
+// ║ • Status - Status da viagem                                                 ║
+// ║ • DiaTodo - Flag se ocupa o dia inteiro                                     ║
+// ║ • CorEvento, CorTexto - Cores para renderização visual                      ║
+// ║ • Finalidade - Finalidade da viagem                                         ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

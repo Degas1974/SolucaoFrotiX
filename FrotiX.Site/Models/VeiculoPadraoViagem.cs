@@ -1,3 +1,25 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: VeiculoPadraoViagem.cs                                             ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade para armazenar padrões de comportamento de veículos.               ║
+// ║ Calculado a partir de histórico de viagens e abastecimentos.                ║
+// ║ Usado para detecção de outliers e normalização de dados.                    ║
+// ║                                                                              ║
+// ║ CAMPOS:                                                                      ║
+// ║ - VeiculoId (PK): Identificador do veículo                                  ║
+// ║ - TipoUso: Classificação do uso do veículo                                  ║
+// ║ - TotalViagens: Quantidade de viagens analisadas                            ║
+// ║ - MediaDuracaoMinutos, MediaKmPorViagem, MediaKmPorDia                      ║
+// ║ - MediaKmEntreAbastecimentos, MediaDiasEntreAbastecimentos                  ║
+// ║ - TotalAbastecimentosAnalisados, DataAtualizacao                            ║
+// ║                                                                              ║
+// ║ USO: IA evolutiva, validações inteligentes, alertas de anomalia             ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 #nullable enable
 using System;
 using System.ComponentModel.DataAnnotations;

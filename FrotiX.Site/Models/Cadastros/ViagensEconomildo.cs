@@ -1,3 +1,33 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViagensEconomildo.cs                                               ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade para registro de viagens do sistema Economildo.                    ║
+// ║ Controle de deslocamentos de transporte coletivo interno.                   ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • ViagensEconomildo - Entidade única (sem ViewModel separada)               ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ • ViagemEconomildoId [Key] - Identificador único                            ║
+// ║ • Data - Data da viagem                                                     ║
+// ║ • MOB - Código MOB da viagem                                                ║
+// ║ • Responsavel - Responsável pela viagem                                     ║
+// ║ • VeiculoId → Veiculo - Veículo utilizado                                   ║
+// ║ • MotoristaId → Motorista - Motorista da viagem                             ║
+// ║ • IdaVolta - Indicador de ida/volta                                         ║
+// ║ • HoraInicio, HoraFim - Horários da viagem                                  ║
+// ║ • QtdPassageiros - Quantidade de passageiros                                ║
+// ║ • Trajeto - Descrição do trajeto                                            ║
+// ║ • Duracao - Duração em minutos                                              ║
+// ║                                                                              ║
+// ║ DIFERENÇA DE VIAGEM:                                                         ║
+// ║ • Economildo = transporte coletivo interno (sem requisitante)               ║
+// ║ • Viagem regular = transporte sob demanda (com requisitante)                ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

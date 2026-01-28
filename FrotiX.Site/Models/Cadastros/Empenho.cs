@@ -1,3 +1,31 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: Empenho.cs                                                         ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade para gestão de empenhos orçamentários vinculados a contratos/atas. ║
+// ║ Controla saldos disponíveis para pagamento de notas fiscais.                ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • EmpenhoViewModel - ViewModel com dropdowns de contrato e ata              ║
+// ║ • Empenho - Entidade principal de empenho                                   ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ • EmpenhoId [Key] - Identificador único                                     ║
+// ║ • NotaEmpenho - Número da nota de empenho (12 caracteres)                   ║
+// ║ • DataEmissao - Data de emissão do empenho                                  ║
+// ║ • VigenciaInicial/Final - Período de vigência                               ║
+// ║ • AnoVigencia - Ano de exercício orçamentário                               ║
+// ║ • SaldoInicial, SaldoFinal - Valores em R$                                  ║
+// ║ • ContratoId → Contrato (FK opcional)                                       ║
+// ║ • AtaId → AtaRegistroPrecos (FK opcional)                                   ║
+// ║                                                                              ║
+// ║ REGRAS DE NEGÓCIO:                                                           ║
+// ║ • Empenho pode estar vinculado a Contrato OU Ata (não ambos)                ║
+// ║ • SaldoFinal é atualizado conforme movimentações                            ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

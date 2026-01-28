@@ -1,4 +1,29 @@
-﻿using System.Collections.Generic;
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: IdentityExtensions.cs                                               ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Extension methods para ASP.NET Identity e autorização.                       ║
+// ║ Utilitários para verificação de roles, autorização e operações DbContext.    ║
+// ║                                                                              ║
+// ║ MÉTODOS DISPONÍVEIS:                                                         ║
+// ║ - HasRole()        → Verifica se usuário possui uma das roles especificadas  ║
+// ║ - AuthorizeFor()   → Filtra ListItems baseado nas roles do usuário           ║
+// ║ - AsRaw()          → Converte string para HtmlString (HTML não-escapado)     ║
+// ║ - ToPage()         → Extrai nome da página de uma URL                        ║
+// ║ - IsVoid()         → Verifica se href é placeholder "void"                   ║
+// ║ - IsRelatedTo()    → Verifica se item de menu está relacionado à página      ║
+// ║ - UpdateAsync<T>() → Atualiza entidade no DbContext via ID                   ║
+// ║ - DeleteAsync<T>() → Remove entidade do DbContext via ID                     ║
+// ║                                                                              ║
+// ║ USO PRINCIPAL:                                                               ║
+// ║ - Autorização de menus e recursos baseada em roles                           ║
+// ║ - Operações CRUD genéricas no ApplicationDbContext                           ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 11                                        ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
@@ -10,6 +35,10 @@ using FrotiX.Models;
 
 namespace FrotiX.Extensions
     {
+    /// <summary>
+    /// Extensions para Identity e autorização.
+    /// Inclui HasRole, AuthorizeFor, UpdateAsync, DeleteAsync.
+    /// </summary>
     public static class IdentityExtensions
         {
         [DebuggerStepThrough]

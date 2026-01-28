@@ -1,3 +1,11 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
+ * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
+ * ║  Seção: RecursoController.cs                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +14,13 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: Recurso API
+     * 🎯 OBJETIVO: Gerenciar recursos do sistema (menus, permissões, funcionalidades)
+     * 📋 ROTAS: /api/Recurso/*
+     * 🔗 ENTIDADES: Recurso, ControleAcesso
+     * 📦 DEPENDÊNCIAS: IUnitOfWork
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class RecursoController :Controller
@@ -24,11 +39,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * 🎯 OBJETIVO: Listar todos os recursos do sistema ordenados por Ordem
+         * 📥 ENTRADAS: Nenhuma
+         * 📤 SAÍDAS: JSON { data: List<{ RecursoId, Nome, NomeMenu, Descricao, Ordem }> }
+         * 🔗 CHAMADA POR: Telas de gerenciamento de recursos/permissões
+         * 🔄 CHAMA: Recurso.GetAll()
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
             try
             {
+                // [DOC] Ordena por campo Ordem para manter hierarquia do menu
                 var result = (
                     from r in _unitOfWork.Recurso.GetAll()
                     select new
@@ -57,6 +81,14 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * 🎯 OBJETIVO: Excluir um recurso do sistema (valida dependências antes)
+         * 📥 ENTRADAS: model (Recurso com RecursoId)
+         * 📤 SAÍDAS: JSON { success, message }
+         * 🔗 CHAMADA POR: Modal de exclusão de recursos
+         * 🔄 CHAMA: Recurso.GetFirstOrDefault(), ControleAcesso.GetFirstOrDefault(), Recurso.Remove()
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(Recurso model)
@@ -70,6 +102,7 @@ namespace FrotiX.Controllers
                     );
                     if (objFromDb != null)
                     {
+                        // [DOC] Valida se recurso está em uso antes de excluir (integridade referencial)
                         var objControleAcesso = _unitOfWork.ControleAcesso.GetFirstOrDefault(ca =>
                             ca.RecursoId == model.RecursoId
                         );

@@ -1,3 +1,22 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: EstatisticaAbastecimentoVeiculo.cs                                 ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Estatísticas anuais de abastecimentos por veículo.                          ║
+// ║ Inclui dados desnormalizados para performance em consultas.                 ║
+// ║                                                                              ║
+// ║ CAMPOS:                                                                      ║
+// ║ - Id, Ano, VeiculoId: Identificação                                         ║
+// ║ - Placa, TipoVeiculo, Categoria: Dados desnormalizados                      ║
+// ║ - TotalAbastecimentos, ValorTotal, LitrosTotal                              ║
+// ║ - DataAtualizacao: Timestamp do cache                                       ║
+// ║                                                                              ║
+// ║ USO: Ranking de veículos por consumo, análises de custo por placa           ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 #nullable enable
 using System;
 using System.ComponentModel.DataAnnotations;

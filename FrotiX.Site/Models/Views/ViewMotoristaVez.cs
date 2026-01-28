@@ -1,3 +1,34 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViewMotoristaVez.cs                                                ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ View model para "Motorista da Vez" - sistema de rodízio/fila de motoristas. ║
+// ║ Exibe motoristas disponíveis ordenados por ordem de chamada.                ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ Motorista:                                                                    ║
+// ║ • MotoristaId - Identificador único                                         ║
+// ║ • NomeMotorista - Nome do motorista                                         ║
+// ║ • Ponto - Número do ponto funcional                                         ║
+// ║ • Foto - Foto para exibição em cards                                        ║
+// ║                                                                              ║
+// ║ Escala:                                                                       ║
+// ║ • DataEscala - Data da escala atual                                         ║
+// ║ • NumeroSaidas - Saídas já realizadas no dia                                ║
+// ║ • StatusMotorista - Status atual                                            ║
+// ║ • Lotacao - Unidade de lotação                                              ║
+// ║ • HoraInicio/Fim - Horário de trabalho                                      ║
+// ║                                                                              ║
+// ║ Veículo:                                                                      ║
+// ║ • VeiculoDescricao - Descrição do veículo alocado                           ║
+// ║ • Placa - Placa do veículo                                                  ║
+// ║                                                                              ║
+// ║ MÉTODO HELPER:                                                               ║
+// ║ • GetStatusClass() - Retorna classe CSS para status visual                  ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

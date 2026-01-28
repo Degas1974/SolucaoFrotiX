@@ -276,13 +276,14 @@ function BuildGridOcorrencias(params)
 
                             // Botão Ver Imagem - Padrão FrotiX (Terracota)
                             var btnImagem = `
-                                <a class="btn-terracota btn-icon-28 btn-ver-imagem ${temImagem ? '' : 'disabled'}" 
-                                    data-imagem="${row.imagemOcorrencia || ''}" 
-                                    data-ejtip="${temImagem ? 'Ver Imagem/Vídeo' : 'Sem imagem'}"
-                                    style="cursor:pointer;"
-                                    ${temImagem ? '' : 'disabled'}>
-                                    <i class="fa-duotone fa-image"></i>
-                                </a>`;
+                                <span class="d-inline-block" data-ejtip="${temImagem ? 'Ver Imagem/Vídeo' : 'Sem imagem disponível'}" tabindex="0">
+                                    <a class="btn-terracota btn-icon-28 btn-ver-imagem ${temImagem ? '' : 'disabled'}" 
+                                        data-imagem="${row.imagemOcorrencia || ''}" 
+                                        style="cursor:pointer; ${temImagem ? '' : 'pointer-events: none;'}"
+                                        ${temImagem ? '' : 'disabled'}>
+                                        <i class="fa-duotone fa-image"></i>
+                                    </a>
+                                </span>`;
 
                             // Ordem: Edição, Baixa, Foto
                             return `<div class="text-center" style="display:flex; justify-content:center; gap:4px;">

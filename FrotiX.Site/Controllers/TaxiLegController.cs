@@ -1,3 +1,11 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
+ * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
+ * ║  Seção: TaxiLegController.cs                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Hosting;
@@ -16,6 +24,15 @@ using System.Text;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: TaxiLeg API
+     * 🎯 OBJETIVO: Importar e gerenciar planilhas Excel de corridas TaxiLeg (realizadas e canceladas)
+     * 📋 ROTAS: /api/TaxiLeg/* (Index, Get, Import, ImportCanceladas)
+     * 🔗 ENTIDADES: CorridasTaxiLeg, CorridasCanceladasTaxiLeg
+     * 📦 DEPENDÊNCIAS: IUnitOfWork, ICorridasTaxiLegRepository, IWebHostEnvironment, ILogger, NPOI
+     * 📊 BIBLIOTECA: NPOI (leitura de Excel .xls/.xlsx)
+     * 💰 CÁLCULOS: Duração, Tempo de Espera, Glosa (espera > 15min → R$ 2,44/km)
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class TaxiLegController :Controller
@@ -25,6 +42,14 @@ namespace FrotiX.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICorridasTaxiLegRepository _corridasTaxiLegRepository;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ExtrairHora (Helper privado)
+         * 🎯 OBJETIVO: Extrair hora formatada de célula Excel (suporta múltiplos formatos)
+         * 📥 ENTRADAS: row (IRow), cellIndex (int)
+         * 📤 SAÍDAS: string "HH:mm" ou vazia se inválida
+         * 🔗 CHAMADA POR: Import()
+         * 📝 LÓGICA: Tenta 3 formatos: DateFormatted, TimeSpan, DateTime
+         ****************************************************************************************/
         private string ExtrairHora(IRow row , int cellIndex)
         {
             try
@@ -32,6 +57,7 @@ namespace FrotiX.Controllers
                 var cell = row.GetCell(cellIndex);
                 if (cell != null)
                 {
+                    // [DOC] Formato 1: Célula com formato de data nativa do Excel
                     if (cell.CellType == CellType.Numeric && DateUtil.IsCellDateFormatted(cell))
                     {
                         return cell.DateCellValue.ToString("HH:mm");
@@ -40,8 +66,10 @@ namespace FrotiX.Controllers
                     {
                         string raw = cell.ToString().Trim();
 
+                        // [DOC] Formato 2: TimeSpan (ex: "14:30")
                         if (TimeSpan.TryParse(raw , out var ts))
                             return ts.ToString(@"hh\:mm");
+                        // [DOC] Formato 3: DateTime completo
                         else if (DateTime.TryParse(raw , out var dt))
                             return dt.ToString("HH:mm");
                     }
@@ -85,6 +113,14 @@ namespace FrotiX.Controllers
             get; set;
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Index
+         * 🎯 OBJETIVO: Renderizar página principal de importação TaxiLeg
+         * 📥 ENTRADAS: Nenhuma
+         * 📤 SAÍDAS: View (Razor Page)
+         * 🔗 CHAMADA POR: Acesso direto /TaxiLeg/Index
+         * 🔄 CHAMA: View()
+         ****************************************************************************************/
         public IActionResult Index()
         {
             try
@@ -98,6 +134,14 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * 🎯 OBJETIVO: Endpoint básico de health check
+         * 📥 ENTRADAS: Nenhuma
+         * 📤 SAÍDAS: JSON true
+         * 🔗 CHAMADA POR: Verificações de disponibilidade da API
+         * 🔄 CHAMA: Nenhum
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
@@ -115,6 +159,23 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Import
+         * 🎯 OBJETIVO: Importar planilha Excel de corridas TaxiLeg realizadas (com cálculos automáticos)
+         * 📥 ENTRADAS: Request.Form.Files[0] (arquivo Excel .xls ou .xlsx)
+         * 📤 SAÍDAS: JSON { success, message, data: List<CorridasTaxiLeg> ordenada por QRU }
+         * 🔗 CHAMADA POR: Upload de arquivo no frontend
+         * 🔄 CHAMA: NPOI (HSSFWorkbook/XSSFWorkbook), CorridasTaxiLeg.Add(), ExtrairHora()
+         * 📊 CÁLCULOS AUTOMÁTICOS:
+         *    • Duração = HoraFinal - HoraInicio (em minutos)
+         *    • Espera = HoraLocal - HoraAceite (em minutos, ajusta virada de dia)
+         *    • Glosa = true se Espera > 15min
+         *    • ValorGlosa = KmReal * 2.44 (se Glosa = true)
+         * ⚠️ VALIDAÇÕES:
+         *    • Verifica se já existe importação para o mês/ano
+         *    • Valida se planilha contém datas válidas
+         * 💾 ARMAZENAMENTO: /wwwroot/DadosEditaveis/UploadExcel/
+         ****************************************************************************************/
         [Route("Import")]
         [HttpPost]
         public ActionResult Import()
@@ -144,6 +205,7 @@ namespace FrotiX.Controllers
                         file.CopyTo(stream);
                         stream.Position = 0;
 
+                        // [DOC] Carrega workbook conforme extensão (.xls = HSSF, .xlsx = XSSF)
                         if (sFileExtension == ".xls")
                         {
                             HSSFWorkbook hssfwb = new HSSFWorkbook(stream);
@@ -155,7 +217,7 @@ namespace FrotiX.Controllers
                             sheet = hssfwb.GetSheetAt(0);
                         }
 
-                        // Busca a primeira data válida da planilha para extrair ano/mês
+                        // [DOC] Passo 1: Busca a primeira data válida da planilha para extrair ano/mês
                         DateTime? primeiraDataAgenda = null;
                         for (int i = sheet.FirstRowNum + 1; i <= sheet.LastRowNum; i++)
                         {
@@ -170,7 +232,7 @@ namespace FrotiX.Controllers
                             }
                         }
 
-                        // Checa se encontrou data válida
+                        // [DOC] Validação 1: Checa se encontrou data válida
                         if (primeiraDataAgenda == null)
                         {
                             return Json(
@@ -183,7 +245,7 @@ namespace FrotiX.Controllers
                             );
                         }
 
-                        // Checa se já existem corridas para o mês/ano
+                        // [DOC] Validação 2: Checa se já existem corridas para o mês/ano
                         var ano = primeiraDataAgenda.Value.Year;
                         var mes = primeiraDataAgenda.Value.Month;
                         if (_corridasTaxiLegRepository.ExisteCorridaNoMesAno(ano , mes))
@@ -198,10 +260,11 @@ namespace FrotiX.Controllers
                             );
                         }
 
-                        // Processa as linhas normalmente se passou pela checagem
+                        // [DOC] Passo 2: Processa as linhas normalmente se passou pela checagem
                         for (int i = sheet.FirstRowNum + 1; i <= sheet.LastRowNum; i++)
                         {
                             IRow row = sheet.GetRow(i);
+                            // [DOC] Ignora linhas vazias
                             if (
                                 row == null
                                 || row.Cells.TrueForAll(cell =>
@@ -212,6 +275,7 @@ namespace FrotiX.Controllers
 
                             var TaxiLegObj = new CorridasTaxiLeg();
 
+                            // [DOC] Mapeia colunas da planilha (índices 0-17)
                             TaxiLegObj.QRU = row.GetCell(0)?.ToString() ?? "";
                             TaxiLegObj.DescSetor = row.GetCell(1)?.ToString() ?? "";
                             TaxiLegObj.Setor = row.GetCell(2)?.ToString() ?? "";
@@ -232,7 +296,7 @@ namespace FrotiX.Controllers
                                 ? dataAgenda
                                 : (DateTime?)null;
 
-                            // Usando função utilitária para hora
+                            // [DOC] Extração de horas usando função helper (suporta múltiplos formatos)
                             TaxiLegObj.HoraAgenda = ExtrairHora(row , 7);
                             TaxiLegObj.HoraAceite = ExtrairHora(row , 8);
                             TaxiLegObj.HoraInicio = ExtrairHora(row , 9);
@@ -272,7 +336,7 @@ namespace FrotiX.Controllers
                             string horaAceite = TaxiLegObj.HoraAceite?.Trim() ?? "";
                             string horaLocal = TaxiLegObj.HoraLocal?.Trim() ?? "";
 
-                            // Cálculo da Duração da Viagem
+                            // [DOC] CÁLCULO 1: Duração da Viagem (minutos)
                             TaxiLegObj.Duracao = null;
                             if (
                                 DateTime.TryParseExact(
@@ -295,7 +359,7 @@ namespace FrotiX.Controllers
                                 TaxiLegObj.Duracao = duracao < 0 ? 0 : duracao;
                             }
 
-                            // Cálculo do Tempo de Espera
+                            // [DOC] CÁLCULO 2: Tempo de Espera (minutos até motorista chegar ao local)
                             TaxiLegObj.Espera = null;
                             if (
                                 TimeSpan.TryParseExact(
@@ -320,6 +384,7 @@ namespace FrotiX.Controllers
                             )
                             {
                                 DateTime local;
+                                // [DOC] Ajusta virada de dia (ex: aceite 23:45, chegada 00:15)
                                 if (tsHoraLocal < tsHoraAceite)
                                     local = aceite.Date.AddDays(1).Add(tsHoraLocal);
                                 else
@@ -329,7 +394,7 @@ namespace FrotiX.Controllers
                                 TaxiLegObj.Espera = espera;
                             }
 
-                            // Cálculo da Glosa
+                            // [DOC] CÁLCULO 3: Glosa (penalidade se espera > 15 minutos)
                             TaxiLegObj.Glosa = TaxiLegObj.Espera > 15;
                             TaxiLegObj.ValorGlosa = (bool)TaxiLegObj.Glosa
                                 ? Math.Round((double)(TaxiLegObj.KmReal * 2.44) , 2)
@@ -343,7 +408,7 @@ namespace FrotiX.Controllers
                     }
                 }
 
-                // Ordena a lista pelo campo QRU antes de retornar
+                // [DOC] Ordena a lista pelo campo QRU antes de retornar
                 listaCorridas = listaCorridas.OrderBy(c => c.QRU).ToList();
 
                 return Json(
@@ -366,6 +431,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ImportCanceladas
+         * 🎯 OBJETIVO: Importar planilha Excel de corridas TaxiLeg canceladas (gera tabela HTML)
+         * 📥 ENTRADAS: Request.Form.Files[0] (arquivo Excel .xls ou .xlsx)
+         * 📤 SAÍDAS: JSON { success, message, response: HTML table string }
+         * 🔗 CHAMADA POR: Upload de arquivo no frontend (corridas canceladas)
+         * 🔄 CHAMA: NPOI (HSSFWorkbook/XSSFWorkbook), CorridasCanceladasTaxiLeg.Add()
+         * 📊 CÁLCULO: TempoEspera = HoraCancelamento - HoraAgenda (ajusta virada de dia)
+         * 📝 RETORNO: StringBuilder com tabela HTML completa (cabeçalho + dados)
+         * 💾 ARMAZENAMENTO: /wwwroot/DadosEditaveis/UploadExcel/
+         ****************************************************************************************/
         [Route("ImportCanceladas")]
         [HttpPost]
         public ActionResult ImportCanceladas()
@@ -390,6 +466,7 @@ namespace FrotiX.Controllers
                     {
                         file.CopyTo(stream);
                         stream.Position = 0;
+                        // [DOC] Carrega workbook conforme extensão
                         if (sFileExtension == ".xls")
                         {
                             HSSFWorkbook hssfwb = new HSSFWorkbook(stream);
@@ -401,7 +478,7 @@ namespace FrotiX.Controllers
                             sheet = hssfwb.GetSheetAt(0);
                         }
 
-                        // Faz o Cabeçalho
+                        // [DOC] Passo 1: Faz o Cabeçalho HTML da tabela
                         IRow headerRow = sheet.GetRow(0);
                         int cellCount = headerRow.LastCellNum;
                         sb.Append(
@@ -415,16 +492,19 @@ namespace FrotiX.Controllers
                         sb.Append("<th>" + "Espera" + "</th>");
                         sb.Append("</tr></thead>");
 
-                        // Lê o arquivo Excel
+                        // [DOC] Passo 2: Lê o arquivo Excel linha por linha
                         sb.AppendLine("<tbody><tr>");
                         for (int i = (sheet.FirstRowNum + 1); i <= sheet.LastRowNum; i++)
                         {
                             IRow row = sheet.GetRow(i);
                             if (row == null)
                                 continue;
+                            // [DOC] Ignora linhas completamente vazias
                             if (row.Cells.All(d => d.CellType == CellType.Blank))
                                 continue;
                             TaxiLegCanceladasObj = new CorridasCanceladasTaxiLeg();
+
+                            // [DOC] Loop de colunas 0-11: mapeia dados para o objeto e HTML
                             for (int j = row.FirstCellNum; j < cellCount; j++)
                             {
                                 if (j == 0)
@@ -607,6 +687,7 @@ namespace FrotiX.Controllers
                                 }
                             }
 
+                            // [DOC] CÁLCULO: Tempo de Espera até cancelamento (minutos)
                             DateTime startTime = DateTime.Parse(TaxiLegCanceladasObj.HoraAgenda);
                             DateTime endTime = DateTime.Parse(
                                 TaxiLegCanceladasObj.HoraCancelamento
@@ -616,6 +697,7 @@ namespace FrotiX.Controllers
 
                             TaxiLegCanceladasObj.TempoEspera = (int?)span.TotalMinutes;
 
+                            // [DOC] Ajusta virada de dia (espera negativa)
                             if (TaxiLegCanceladasObj.TempoEspera < 0)
                             {
                                 DateTime startTimeAnterior = DateTime.Parse(

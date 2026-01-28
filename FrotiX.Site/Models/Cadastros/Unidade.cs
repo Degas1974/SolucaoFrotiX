@@ -1,3 +1,33 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: Unidade.cs                                                         ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade para cadastro de unidades organizacionais.                         ║
+// ║ Representa filiais, departamentos ou bases da organização.                  ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • UnidadeViewModel - ViewModel simples (apenas ID)                          ║
+// ║ • Unidade - Entidade principal                                              ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ Identificação:                                                               ║
+// ║ • UnidadeId [Key] - Identificador único                                     ║
+// ║ • Sigla - Sigla da unidade (max 50 chars)                                   ║
+// ║ • Descricao - Nome completo (max 100 chars)                                 ║
+// ║ • Categoria - Categoria da unidade                                          ║
+// ║                                                                              ║
+// ║ Contatos (até 3):                                                            ║
+// ║ • PontoPrimeiroContato, PrimeiroContato, PrimeiroRamal                      ║
+// ║ • PontoSegundoContato, SegundoContato, SegundoRamal                         ║
+// ║ • PontoTerceiroContato, TerceiroContato, TerceiroRamal                      ║
+// ║                                                                              ║
+// ║ Controle:                                                                     ║
+// ║ • Status - Ativo/Inativo                                                    ║
+// ║ • QtdMotoristas - Quantidade de motoristas na unidade                       ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using FrotiX.Validations;
 using System;
 using System.ComponentModel.DataAnnotations;

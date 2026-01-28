@@ -87,6 +87,7 @@ namespace FrotiX.Pages.Ocorrencia
     {
         public string Descricao { get; set; }
         public Guid Id { get; set; }
+        public string Foto { get; set; }
 
         private readonly IUnitOfWork _unitOfWork;
 
@@ -116,7 +117,10 @@ namespace FrotiX.Pages.Ocorrencia
                     .Select(m => new ListaMotoristaOcorrencias
                     {
                         Id = m.MotoristaId,
-                        Descricao = m.MotoristaCondutor ?? m.Nome
+                        Descricao = m.MotoristaCondutor ?? m.Nome,
+                        Foto = m.Foto != null 
+                            ? "data:image/jpeg;base64," + Convert.ToBase64String(m.Foto)
+                            : "/images/barbudo.jpg"
                     })
                     .ToList();
 

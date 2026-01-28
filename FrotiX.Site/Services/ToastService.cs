@@ -1,4 +1,30 @@
-// Arquivo: Services/ToastService.cs
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ToastService.cs                                                     ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Serviço injetável para exibição de notificações toast.                       ║
+// ║ Diferente de AppToast (estático), este é scoped e injetado via DI.           ║
+// ║                                                                              ║
+// ║ INTERFACE IToastService:                                                     ║
+// ║ - Show(): Toast com cor, texto e duração customizáveis                       ║
+// ║ - ShowSuccess/Error/Warning(): Atalhos por tipo                              ║
+// ║ - ShowMultiple(): Múltiplas mensagens de uma vez                             ║
+// ║ - GetJavaScriptCall(): Retorna string JS para execução direta                ║
+// ║                                                                              ║
+// ║ ARMAZENAMENTO:                                                               ║
+// ║ - Usa TempData["ToastMessages"] serializado em JSON                          ║
+// ║ - Suporta fila de múltiplas mensagens                                        ║
+// ║ - Funciona com redirects (PRG pattern)                                       ║
+// ║                                                                              ║
+// ║ CORES DISPONÍVEIS:                                                           ║
+// ║ - "Verde" (sucesso), "Vermelho" (erro), "Amarelo" (aviso)                    ║
+// ║                                                                              ║
+// ║ DEPENDÊNCIAS:                                                                ║
+// ║ - ToastMessage: Model com Texto, Cor, Duracao                                ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 15                                        ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 
 using FrotiX.Models;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +34,9 @@ using System.Text.Json;
 
 namespace FrotiX.Services
 {
+    /// <summary>
+    /// Interface para serviço de notificações toast.
+    /// </summary>
     public interface IToastService
     {
         void Show(string texto , string cor = "Verde" , int duracao = 2000);

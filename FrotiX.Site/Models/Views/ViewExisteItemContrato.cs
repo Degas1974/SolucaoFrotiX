@@ -1,3 +1,22 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViewExisteItemContrato.cs                                          ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Modelo para VIEW que verifica existência de itens em contratos.             ║
+// ║ Usado para validar se veículo já está em repactuação.                       ║
+// ║                                                                              ║
+// ║ CAMPOS:                                                                      ║
+// ║ - ItemVeiculoId: ID do item se existir                                      ║
+// ║ - ExisteVeiculo: ID do veículo buscado                                      ║
+// ║ - RepactuacaoContratoId: Repactuação onde está o item                       ║
+// ║ - NumItem, Descricao, Quantidade, ValUnitario                               ║
+// ║                                                                              ║
+// ║ USO: Validação ao incluir veículos em contratos                             ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

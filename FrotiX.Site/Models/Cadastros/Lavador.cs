@@ -1,3 +1,33 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: Lavador.cs                                                         ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade para cadastro de lavadores terceirizados de veículos.              ║
+// ║ Vinculados a contratos de terceirização de serviços.                        ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • LavadorViewModel - ViewModel com dropdown de contratos                    ║
+// ║ • Lavador - Entidade principal                                              ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ • LavadorId [Key] - Identificador único                                     ║
+// ║ • Nome - Nome do lavador (max 100 chars)                                    ║
+// ║ • Ponto - Ponto funcional (max 20 chars)                                    ║
+// ║ • DataNascimento - Data de nascimento                                       ║
+// ║ • CPF - CPF do lavador (max 20 chars)                                       ║
+// ║ • Celular01/02 - Telefones de contato                                       ║
+// ║ • DataIngresso - Data de início no contrato                                 ║
+// ║ • Foto - Foto do lavador (byte array)                                       ║
+// ║ • Status - Ativo/Inativo                                                    ║
+// ║ • DataAlteracao, UsuarioIdAlteracao - Auditoria                             ║
+// ║ • ContratoId → Contrato (FK)                                                ║
+// ║                                                                              ║
+// ║ CAMPOS NotMapped:                                                            ║
+// ║ • ArquivoFoto - IFormFile para upload                                       ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

@@ -1,4 +1,26 @@
-﻿using System;
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: LavadorContrato.cs                                                 ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Entidade de relacionamento N:N entre Lavador e Contrato.                    ║
+// ║ Permite que um lavador trabalhe em múltiplos contratos ao longo do tempo.   ║
+// ║                                                                              ║
+// ║ CLASSES:                                                                      ║
+// ║ • LavadorContratoViewModel - ViewModel simples                              ║
+// ║ • LavadorContrato - Entidade de relacionamento                              ║
+// ║                                                                              ║
+// ║ PROPRIEDADES (Chave Composta):                                              ║
+// ║ • LavadorId [Key, Order=0] - ID do lavador                                  ║
+// ║ • ContratoId [Key, Order=1] - ID do contrato                                ║
+// ║                                                                              ║
+// ║ NOTA:                                                                         ║
+// ║ • Chave primária composta (LavadorId, ContratoId)                           ║
+// ║ • Histórico de contratos por lavador                                        ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

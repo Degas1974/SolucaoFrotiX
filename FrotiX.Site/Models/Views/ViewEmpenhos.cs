@@ -1,3 +1,23 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViewEmpenhos.cs                                                    ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Modelo para VIEW de empenhos com saldos e movimentações.                    ║
+// ║ Consolida dados de empenhos para grid principal.                            ║
+// ║                                                                              ║
+// ║ CAMPOS:                                                                      ║
+// ║ - EmpenhoId (PK), NotaEmpenho, AnoVigencia                                  ║
+// ║ - DataEmissao, VigenciaInicial, VigenciaFinal                               ║
+// ║ - SaldoInicial, SaldoFinal, SaldoMovimentacao, SaldoNotas                   ║
+// ║ - Movimentacoes: Quantidade de movimentações                                ║
+// ║ - ContratoId, AtaId: Vínculos (ISNULL para GUID vazio)                      ║
+// ║                                                                              ║
+// ║ USO: Grid de empenhos, controle financeiro                                  ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

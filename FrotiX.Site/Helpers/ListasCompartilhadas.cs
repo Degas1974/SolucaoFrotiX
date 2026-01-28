@@ -1,3 +1,35 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ListasCompartilhadas.cs                                             ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Classes helper para listas compartilhadas usadas em dropdowns e selects.     ║
+// ║ Centraliza consultas e dados estáticos para componentes Syncfusion.          ║
+// ║                                                                              ║
+// ║ COMPARADORES:                                                                ║
+// ║ - PtBrComparer: Ordenação pt-BR ignorando case e acentos                     ║
+// ║ - NaturalStringComparer: Ordenação natural (1 < 2 < 10 < Aaa)                ║
+// ║                                                                              ║
+// ║ LISTAS DINÂMICAS (via IUnitOfWork):                                          ║
+// ║ - ListaVeiculos: Veículos ativos da frota                                    ║
+// ║ - ListaMotorista: Motoristas ativos com foto                                 ║
+// ║ - ListaRequisitante: Requisitantes ordenados naturalmente                    ║
+// ║ - ListaEvento: Eventos ativos                                                ║
+// ║ - ListaSetores: Setores em estrutura TreeView hierárquica                    ║
+// ║ - ListaSetoresEvento: Setores em lista plana para eventos                    ║
+// ║ - ListaSetoresFlat: Setores com indentação para dropdowns                    ║
+// ║                                                                              ║
+// ║ LISTAS ESTÁTICAS:                                                            ║
+// ║ - ListaFinalidade: Finalidades de viagem (22 opções)                         ║
+// ║ - ListaNivelCombustivel: Níveis de tanque (5 opções)                         ║
+// ║ - ListaDias: Dias da semana                                                  ║
+// ║ - ListaPeriodos: Diário/Semanal/Quinzenal/Mensal                             ║
+// ║ - ListaRecorrente: Sim/Não                                                   ║
+// ║ - ListaStatus: Todas/Abertas/Realizadas/Canceladas                           ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 12 | LINHAS: ~898                         ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using System;

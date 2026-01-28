@@ -1,4 +1,36 @@
-﻿using System;
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: Validations.cs                                                      ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Biblioteca de ValidationAttributes customizados para validação server-side.  ║
+// ║ Usado em Models com [DataAnnotations] para validação de formulários.         ║
+// ║                                                                              ║
+// ║ VALIDADORES DISPONÍVEIS:                                                     ║
+// ║ 1. ValidateStrings          - Valida strings separadas por vírgula           ║
+// ║ 2. ValidateStringsWithSensitivity - Mesmo, mas case-sensitive                ║
+// ║ 3. OnlyUrls                 - Permite apenas URLs válidas                    ║
+// ║ 4. OnlyDigits               - Permite apenas dígitos (0-9)                   ║
+// ║ 5. OnlyCharacters           - Permite apenas letras (a-z, A-Z)               ║
+// ║ 6. UpperCase                - Valida se está em maiúsculas                   ║
+// ║ 7. LowerCase                - Valida se está em minúsculas                   ║
+// ║ 8. ValidateDate             - Valida data com formato específico             ║
+// ║ 9. DateRange                - Valida data dentro de intervalo                ║
+// ║ 10. ValidateDomainAtEnd     - Valida domínio no final (ex: @gov.br)          ║
+// ║ 11. ValidDomainAnyWhere     - Valida se contém domínio em qualquer lugar     ║
+// ║ 12. NumOrChars              - Permite apenas alfanuméricos                   ║
+// ║ 13. ValidateDecimals        - Valida decimais até 2 casas                    ║
+// ║ 14. ValidateAmount          - Valida valores monetários (3 casas)            ║
+// ║ 15. ValidateMinAge          - Valida idade mínima (a partir de hoje)         ║
+// ║ 16. ValidateMinAgeWithGivenDate - Valida idade mínima (data específica)      ║
+// ║ 17. ValidaLista             - Valida se item foi selecionado                 ║
+// ║ 18. ValidaZero              - Valida se valor não é zero                     ║
+// ║ 19. FormatCnpjCpf           - Utilitários de formatação CNPJ/CPF             ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 15 | LINHAS: ~908                         ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;

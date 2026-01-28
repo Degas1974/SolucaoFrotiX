@@ -1,3 +1,32 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: FrotiXLoggerProvider.cs                                             ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ Provider customizado de logging que integra com o LogService do FrotiX.      ║
+// ║ Captura logs do ASP.NET Core e os encaminha para o sistema de log interno.   ║
+// ║                                                                              ║
+// ║ CLASSES INCLUÍDAS:                                                           ║
+// ║ - FrotiXLoggerProvider: ILoggerProvider - Factory de loggers                 ║
+// ║ - FrotiXLogger: ILogger - Logger individual por categoria                    ║
+// ║ - FrotiXLoggerExtensions: Extension AddFrotiXLogger()                        ║
+// ║                                                                              ║
+// ║ NÍVEIS DE LOG:                                                               ║
+// ║ - Critical/Error → ILogService.Error()                                       ║
+// ║ - Warning → ILogService.Warning()                                            ║
+// ║ - Information → ILogService.Info() (apenas categorias importantes)           ║
+// ║                                                                              ║
+// ║ FILTROS DE RUÍDO:                                                            ║
+// ║ - Ignora: Routing, Infrastructure, StaticFiles, Diagnostics, EF Query/Cmd    ║
+// ║ - Ignora: "Executing endpoint", "Request starting/finished"                  ║
+// ║ - Permite: Categorias FrotiX.*, mensagens com started/initialized/failed     ║
+// ║                                                                              ║
+// ║ REGISTRO EM Program.cs:                                                      ║
+// ║ builder.Logging.AddFrotiXLogger(logService, LogLevel.Warning);               ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 13 | LINHAS: ~179                         ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 using System.Collections.Concurrent;
 using FrotiX.Services;

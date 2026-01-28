@@ -1,3 +1,46 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: ViewEscalasCompletas.cs                                            ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ View model completo para gestão de escalas de motoristas com coberturas.    ║
+// ║ Inclui dados do motorista, veículo, turno, requisitante e cobertura.        ║
+// ║                                                                              ║
+// ║ PROPRIEDADES:                                                                ║
+// ║ Escala:                                                                       ║
+// ║ • EscalaDiaId - Identificador da escala do dia                              ║
+// ║ • DataEscala - Data da escala                                               ║
+// ║ • HoraInicio/Fim - Horário de trabalho                                      ║
+// ║ • HoraIntervaloInicio/Fim - Intervalo de almoço                             ║
+// ║ • NumeroSaidas - Quantidade de saídas no dia                                ║
+// ║ • StatusMotorista - Status atual (Disponível, Em Viagem, etc)               ║
+// ║ • Lotacao - Unidade de lotação                                              ║
+// ║ • Observacoes - Observações da escala                                       ║
+// ║                                                                              ║
+// ║ Motorista:                                                                    ║
+// ║ • MotoristaId, NomeMotorista, Ponto, CPF, CNH, Celular01, Foto              ║
+// ║                                                                              ║
+// ║ Veículo:                                                                      ║
+// ║ • VeiculoId, Placa, Modelo, VeiculoDescricao                                ║
+// ║                                                                              ║
+// ║ Tipo Serviço e Turno:                                                        ║
+// ║ • TipoServicoId, NomeServico - Tipo de serviço                              ║
+// ║ • TurnoId, NomeTurno - Turno de trabalho                                    ║
+// ║                                                                              ║
+// ║ Requisitante:                                                                 ║
+// ║ • RequisitanteId, NomeRequisitante                                          ║
+// ║                                                                              ║
+// ║ Cobertura:                                                                    ║
+// ║ • CoberturaId, MotoristaCoberturaId, MotoristaFolgaId                       ║
+// ║ • DataInicio/Fim, MotivoCobertura                                           ║
+// ║ • NomeMotoristaCobertor, NomeMotoristaTitular                               ║
+// ║                                                                              ║
+// ║ MÉTODOS HELPER:                                                              ║
+// ║ • GetStatusClass() - Retorna classe CSS do badge de status                  ║
+// ║ • GetStatusText() - Retorna texto formatado do status                       ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
