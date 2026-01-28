@@ -1,4 +1,41 @@
-﻿using System;
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Glosas.cshtml.cs (Pages/Manutencao)                                                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para gerenciamento de glosas de manutenção. Glosas são descontos aplicados em faturas         ║
+ * ║ de contratos de locação quando o serviço não atende aos padrões contratados.                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES                                                                                              ║
+ * ║ • ContratoList : Lista de contratos ativos tipo "Locação" para dropdown                                  ║
+ * ║ • Anos : Lista de anos disponíveis (ano atual -3 até +1)                                                 ║
+ * ║ • Meses : Lista de meses em português para seleção de período                                            ║
+ * ║ • MesSelecionado, AnoSelecionado : Período atual selecionado                                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGetAsync(tipoContrato?) : Carrega página com filtro opcional de tipo de contrato                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODOS AUXILIARES                                                                                        ║
+ * ║ • SetViewModelAsync(tipoContrato) : Inicializa propriedades e listas                                    ║
+ * ║ • BuildContratoSelectListAsync(tipoContrato) : Constrói lista de contratos com EF Core                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ FILTROS DE CONTRATO                                                                                       ║
+ * ║ • Apenas contratos com Status = true (ativos)                                                            ║
+ * ║ • Apenas tipo "Locação" (veículos alugados)                                                              ║
+ * ║ • Ordenação: AnoContrato DESC, NumeroContrato DESC                                                       ║
+ * ║ • Formato: "Ano/Numero - Fornecedor (Tipo)"                                                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • FrotiXDbContext - Entity Framework Core DbContext (acesso direto)                                     ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ║ • CultureInfo pt-BR - Para nomes de meses em português                                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

@@ -1,3 +1,40 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: ControleLavagem.cshtml.cs (Pages/Manutencao)                                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para controle de lavagem de veículos da frota. Gerencia fichas de vistoria,                   ║
+ * ║ associação com lavadores e registro do nível de combustível durante a lavagem.                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                    ║
+ * ║ • _unitOfWork : Referência estática ao repositório                                                       ║
+ * ║ • FotoMotorista : Array de bytes para foto do motorista                                                  ║
+ * ║ • FichaVistoria : IFormFile para upload de ficha                                                         ║
+ * ║ • ViagemId : ID da viagem associada                                                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CLASSES AUXILIARES (HELPER CLASSES)                                                                       ║
+ * ║ • ListaNivelCombustivel : Níveis de tanque (Vazio, 1/4, 1/2, 3/4, Cheio) com imagens                     ║
+ * ║ • ListaVeiculos : Lista de veículos com Placa + Marca/Modelo (inclui PlacaVinculada)                     ║
+ * ║ • ListaMotorista : Lista de motoristas usando ViewMotoristas                                             ║
+ * ║ • ListaLavador : Lista de lavadores cadastrados                                                          ║
+ * ║ • ListaStatus : Status de lavagem (Todas, Abertas, Realizadas, Canceladas)                               ║
+ * ║ • ListaSetores : TreeView hierárquico de setores (SetorPaiId para estrutura em árvore)                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • Initialize(unitOfWork) : Método estático para inicialização                                            ║
+ * ║ • OnGet() : Handler vazio - lógica está no JavaScript/Grid                                               ║
+ * ║ • PreencheListaCombustivel() : Popula ViewData["dataCombustivel"]                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ║ • ViewMotoristas - View de motoristas                                                                    ║
+ * ║ • ViewSetores - View hierárquica de setores                                                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

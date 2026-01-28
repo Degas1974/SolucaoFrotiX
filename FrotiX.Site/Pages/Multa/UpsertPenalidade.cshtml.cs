@@ -1,3 +1,54 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: UpsertPenalidade.cshtml.cs (Pages/Multa)                                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação e edição de multas na fase de Penalidade. Gerencia o ciclo final                  ║
+ * ║ da multa incluindo pagamento, envio ao SECLE e arquivamento.                                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES BINDPROPERTY                                                                                 ║
+ * ║ • MultaObj : MultaViewModel contendo a entidade Multa                                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id) : Carrega multa existente ou inicializa nova com Status="À Pagar"                            ║
+ * ║ • OnPostSubmit() : Cria nova penalidade com Fase="Penalidade"                                            ║
+ * ║ • OnPostEdit(Id) : Atualiza penalidade existente                                                         ║
+ * ║ • OnGetAJAXPreencheListaEmpenhos(id) : Retorna empenhos por órgão autuante (JSON)                        ║
+ * ║ • OnGetPegaSaldoEmpenho(id) : Retorna saldo do empenho selecionado (JSON)                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODOS DE PREENCHIMENTO DE LISTAS                                                                        ║
+ * ║ • PreencheListaMotoristas() : Lista motoristas ativos com formato "(Ponto) Nome"                         ║
+ * ║ • PreencheListaVeiculos() : Lista veículos ativos com Placa + Marca/Modelo                               ║
+ * ║ • PreencheListaOrgaos() : Lista órgãos autuantes (DETRAN, PRF, etc.)                                     ║
+ * ║ • PreencheListaInfracoes() : Lista tipos de multa com (Artigo)-(Código/Desdobramento) - Descrição        ║
+ * ║ • PreencheListaTodosEmpenhos(orgaoId) : Empenhos do órgão para pagamento                                 ║
+ * ║ • PreencheListaStatus() : À Pagar, Paga, Paga(Defin/Infrator), Enviada Secle, Arquivada, Cancelada       ║
+ * ║ • PreencheListaContratoVeiculos() : Contratos tipo "Locação"                                             ║
+ * ║ • PreencheListaAtaVeiculos() : Atas de registro de preço                                                 ║
+ * ║ • PreencheListaContratoMotoristas() : Contratos tipo "Terceirização"                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ STATUS DE PENALIDADE                                                                                      ║
+ * ║ • À Pagar : Multa confirmada aguardando pagamento                                                        ║
+ * ║ • Paga : Multa paga pela instituição                                                                     ║
+ * ║ • Paga (Defin) : Multa paga via DEFIN                                                                    ║
+ * ║ • Paga (Infrator) : Multa paga pelo motorista infrator                                                   ║
+ * ║ • À Enviar Secle : Aguardando envio ao SECLE                                                             ║
+ * ║ • Enviada Secle : Multa enviada para cobrança via SECLE                                                  ║
+ * ║ • Arquivada (Finalizada) : Processo encerrado                                                            ║
+ * ║ • Infração Cancelada : Multa cancelada/prescrita                                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ║ • AppToast - Toast customizado do sistema                                                                ║
+ * ║ • ViewMotoristas - View de motoristas                                                                    ║
+ * ║ • ViewContratoFornecedor, ViewAtaFornecedor - Views de contratos                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

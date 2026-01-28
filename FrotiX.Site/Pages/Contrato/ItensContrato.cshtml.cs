@@ -1,3 +1,29 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: ItensContrato.cshtml.cs (Pages/Contrato)                                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para gestão de Itens Contratuais (veículos previstos no contrato de locação).                  ║
+ * ║ Permite adicionar/editar tipos de veículos e quantidades por contrato.                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ BIND PROPERTIES                                                                                          ║
+ * ║ • ItensContratoObj : ICPageViewModel - ViewModel com ICPlaceholder                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet() : Inicializa ViewModel com placeholder vazio                                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ OBSERVAÇÃO                                                                                               ║
+ * ║ A lógica de CRUD é feita via AJAX no Controller - este PageModel apenas prepara visualização             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (injetado para Controller)                                                                 ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

@@ -1,3 +1,40 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: GestaoFluxo.cshtml.cs (Pages/Viagens)                                                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para gestão de fluxo de veículos Economildo. Inclui classes helper especializadas             ║
+ * ║ para listar apenas veículos e motoristas que participam do serviço Economildo (shuttle).                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CLASSES                                                                                                   ║
+ * ║ • GestaoFluxoModel : PageModel principal (static _unitOfWork para persistência)                         ║
+ * ║ • ListaVeiculosMOB : Helper para listar veículos Economildo (Coletivos Pequenos/Ônibus)                 ║
+ * ║ • ListaMotoristasMOB : Helper para listar motoristas que têm viagens Economildo                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet() : Handler vazio - dados carregados via helpers                                                ║
+ * ║ • Initialize(unitOfWork) : Inicializa UnitOfWork estático                                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ FILTRO VEÍCULOS ECONOMILDO                                                                                ║
+ * ║ ListaVeiculosMOB.VeiculosList() filtra por:                                                             ║
+ * ║ • Categoria = "Coletivos Pequenos" OU "Ônibus"                                                          ║
+ * ║ • Economildo = true                                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ FILTRO MOTORISTAS ECONOMILDO                                                                              ║
+ * ║ ListaMotoristasMOB.MotoristaList() filtra por:                                                          ║
+ * ║ • JOIN com ViagensEconomildo (apenas motoristas com viagens Economildo)                                 ║
+ * ║ • Distinct para evitar duplicatas                                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern (static para compartilhamento)                                       ║
+ * ║ • ViewMotoristas - View de motoristas com condutor                                                      ║
+ * ║ • ViagensEconomildo - Tabela de viagens Economildo                                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;

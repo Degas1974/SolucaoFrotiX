@@ -1,3 +1,30 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: RepactuacaoContrato.cshtml.cs (Pages/Contrato)                                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para gestão de Repactuações Contratuais (reajustes de valores durante vigência).               ║
+ * ║ Permite registrar novos valores por item após aditivos ou reajustes previstos.                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ATRIBUTOS                                                                                                ║
+ * ║ • [Consumes("application/json")] - Aceita requisições JSON                                               ║
+ * ║ • [IgnoreAntiforgeryToken] - Desabilita validação CSRF (para chamadas AJAX)                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ BIND PROPERTIES                                                                                          ║
+ * ║ • ContratoObj : ContratoViewModel - ViewModel com Contrato + FornecedorList                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet() : Inicializa ViewModel com FornecedorList para dropdown                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (Contrato, Fornecedor)                                                                     ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

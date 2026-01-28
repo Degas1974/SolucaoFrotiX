@@ -1,3 +1,55 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: UpsertCEscala.cshtml.cs (Pages/Escalas)                                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação em massa de escalas de motoristas. Permite criar múltiplas escalas para um        ║
+ * ║ motorista em um período, selecionando dias da semana específicos.                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES BINDPROPERTY                                                                                 ║
+ * ║ • MotoristaId, VeiculoId, TipoServicoId, TurnoId - Configuração da escala                                ║
+ * ║ • HoraInicio, HoraFim, Lotacao, NumeroSaidas - Detalhes do turno                                         ║
+ * ║ • StatusMotorista - Estado: Disponível, Economildo, Em Serviço, Reservado, Indisponível                  ║
+ * ║ • MotoristaIndisponivel, MotoristaEconomildo, MotoristaEmServico, MotoristaReservado - Checkboxes        ║
+ * ║ • DataInicio, DataFim - Período para criação em massa                                                    ║
+ * ║ • Segunda..Domingo - Checkboxes de dias da semana                                                        ║
+ * ║ • CategoriaIndisponibilidade, MotoristaCobertorId - Para casos de indisponibilidade                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet() : Inicializa formulário com padrões (seg-sex, próximos 30 dias)                                ║
+ * ║ • OnPost() : Cria escalas em massa com lógica de associação, indisponibilidade e cobertura               ║
+ * ║ • OnPostCriarCobertura() : Cria Férias/FolgaRecesso + CoberturaFolga para motorista indisponível         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ LÓGICA DE NEGÓCIO                                                                                         ║
+ * ║ • Cria VAssociado (motorista-veículo) se não existir                                                     ║
+ * ║ • Verifica escalas existentes antes de criar (evita duplicação)                                          ║
+ * ║ • Para Economildo: preenche Lotacao (Aeroporto, Rodoviária, PGR, Cefor, etc.)                            ║
+ * ║ • Para Em Serviço: associa RequisitanteId                                                                ║
+ * ║ • Para Indisponível: marca escalas existentes + cria CoberturaFolga + escalas para cobertor              ║
+ * ║ • Cobertor herda status original do motorista titular por dia                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODOS AUXILIARES                                                                                        ║
+ * ║ • CarregarDropdowns() : Popula listas de motoristas, veículos, tipos, turnos, requisitantes              ║
+ * ║ • ObterDatasValidas() : Retorna datas no período que correspondem aos dias marcados                      ║
+ * ║ • DeterminarStatusDaEscala() : Retorna status baseado nos checkboxes                                     ║
+ * ║ • DiaDaSemanaEstaMarcado(DayOfWeek) : Verifica se dia da semana está selecionado                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ENTIDADES RELACIONADAS                                                                                    ║
+ * ║ • VAssociado - Associação motorista-veículo                                                              ║
+ * ║ • EscalaDiaria - Escala do dia                                                                           ║
+ * ║ • CoberturaFolga - Registro de cobertura                                                                 ║
+ * ║ • Ferias, FolgaRecesso - Registros de indisponibilidade                                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ║ • ViewMotoristas, ViewVeiculos - Views para listagens                                                    ║
+ * ║ • ViewEscalasCompletas - View consolidada de escalas                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

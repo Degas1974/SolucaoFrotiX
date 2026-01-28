@@ -1,3 +1,38 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Upsert.cshtml.cs (Pages/SetorPatrimonial)                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação e edição de Setores Patrimoniais (departamentos responsáveis por bens).           ║
+ * ║ Cada setor possui um detentor (responsável) e pode ser setor de baixa (para bens obsoletos).             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                   ║
+ * ║ • setorId : Guid - ID do setor em edição                                                                 ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ BIND PROPERTIES                                                                                          ║
+ * ║ • SetorObj : SetorPatrimonial - Entidade do setor (namespace: FrotiX.Models.Cadastros)                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id)      : Carrega setor para edição ou prepara novo                                             ║
+ * ║ • OnPostSubmit() : Cria novo setor                                                                       ║
+ * ║ • OnPostEdit(id) : Atualiza setor existente                                                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES                                                                                               ║
+ * ║ • NomeSetor obrigatório (não pode estar vazio)                                                           ║
+ * ║ • DetentorId obrigatório (responsável pelo setor)                                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ NOTA                                                                                                     ║
+ * ║ Namespace incorreto (Pages.Setor em vez de Pages.SetorPatrimonial) - manter para compatibilidade         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (SetorPatrimonial)                                                                         ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;

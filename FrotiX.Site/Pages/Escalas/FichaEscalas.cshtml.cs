@@ -1,3 +1,37 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: FichaEscalas.cshtml.cs (Pages/Escalas)                                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para exibição de Ficha de Escalas Diárias. Mostra listagem de escalas do dia com identificação ║
+ * ║ de motoristas que estão em cobertura (substituindo outro motorista em folga/férias).                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES                                                                                             ║
+ * ║ • Escalas             : List<ViewEscalasCompletas> - Lista de escalas carregadas                         ║
+ * ║ • MotoristasCobrindo  : Dictionary<Guid, string>   - Motoristas cobrindo (Id → Nome do titular)          ║
+ * ║ • DataEscala          : DateTime? [BindProperty]   - Data filtro (padrão: hoje)                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet() : Carrega escalas da data e identifica coberturas                                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ORDENAÇÃO DAS ESCALAS                                                                                    ║
+ * ║ 1. Por Turno: Matutino → Vespertino → Noturno                                                            ║
+ * ║ 2. Por Serviço: Serviços Gerais → outros                                                                 ║
+ * ║ 3. Por HoraInicio                                                                                        ║
+ * ║ 4. Por NomeMotorista                                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODOS AUXILIARES                                                                                       ║
+ * ║ • EhCobertor(motoristaId)     : Verifica se motorista está cobrindo outro                                ║
+ * ║ • ObterNomeTitular(motoristaId): Retorna nome do motorista titular coberto                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (ViewEscalasCompletas, CoberturaFolga, Motorista)                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

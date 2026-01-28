@@ -1,3 +1,28 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Ocorrencias.cshtml.cs (Pages/Ocorrencia)                                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para listagem de Ocorrências de Viagens (acidentes, avarias, infrações, etc.).                 ║
+ * ║ Inclui classes auxiliares para preenchimento de dropdowns de filtros.                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet() : Método vazio (dados carregados via AJAX)                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CLASSES AUXILIARES                                                                                       ║
+ * ║ • ListaVeiculosOcorrencias  : Id (Guid), Descricao - Lista veículos via ViewVeiculos                     ║
+ * ║ • ListaMotoristaOcorrencias : Id (Guid), Descricao - Lista motoristas via ViewMotoristas                 ║
+ * ║ • ListaStatusOcorrencias    : StatusId, Status - Lista fixa de status:                                   ║
+ * ║   - Todas, Abertas, Baixadas, Pendentes, Manutenção                                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (ViewVeiculos, ViewMotoristas)                                                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;

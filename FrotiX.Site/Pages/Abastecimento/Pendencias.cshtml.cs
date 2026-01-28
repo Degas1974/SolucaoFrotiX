@@ -1,3 +1,32 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Pendencias.cshtml.cs (Pages/Abastecimento)                                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para listagem de pendências de abastecimento. Exibe abastecimentos que precisam               ║
+ * ║ de validação, correção de dados ou aprovação.                                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                    ║
+ * ║ • _unitOfWork : Referência estática ao repositório                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • Initialize(unitOfWork) : Método estático para inicialização                                            ║
+ * ║ • OnGet() : Carrega listas de veículos, combustíveis e motoristas via ViewData                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ LISTAS CARREGADAS (ViewData)                                                                              ║
+ * ║ • lstVeiculos : Lista de veículos para filtro                                                            ║
+ * ║ • lstCombustivel : Lista de tipos de combustível                                                         ║
+ * ║ • lstMotorista : Lista de motoristas para filtro                                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ║ • ListaVeiculos, ListaCombustivel, ListaMotorista - Classes helper do módulo                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;

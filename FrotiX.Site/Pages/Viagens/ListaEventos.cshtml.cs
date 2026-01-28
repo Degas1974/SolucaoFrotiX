@@ -1,3 +1,38 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: ListaEventos.cshtml.cs (Pages/Viagens)                                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para listagem de Eventos cadastrados no sistema. Eventos são reuniões, sessões ou             ║
+ * ║ audiências que geram demandas de transporte e podem ter múltiplas viagens associadas.                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                    ║
+ * ║ • _unitOfWork : Referência estática ao repositório                                                       ║
+ * ║ • FotoMotorista : Array de bytes para foto do motorista                                                  ║
+ * ║ • FichaVistoria : IFormFile para upload de ficha                                                         ║
+ * ║ • ViagemId : ID da viagem atual                                                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES BINDPROPERTY                                                                                 ║
+ * ║ • ViagemObj : ViagemViewModel - Usado para contexto de viagem                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • Initialize(unitOfWork) : Método estático para inicialização                                            ║
+ * ║ • OnGet() : Handler vazio - dados carregados via Grid JavaScript                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CLASSES AUXILIARES                                                                                        ║
+ * ║ • CombustivelData : Item de nível de combustível com Nivel, Descricao e caminho da Imagem               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODOS AUXILIARES                                                                                        ║
+ * ║ • PreencheListaCombustivel() : Popula ViewData["dataCombustivel"] com níveis de tanque                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

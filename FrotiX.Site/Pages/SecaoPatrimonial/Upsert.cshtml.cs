@@ -1,3 +1,38 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Upsert.cshtml.cs (Pages/SecaoPatrimonial)                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação e edição de Seções Patrimoniais (subdivisões dos Setores Patrimoniais).           ║
+ * ║ Cada seção pertence a um setor patrimonial específico.                                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                   ║
+ * ║ • secaoId : Guid - ID da seção em edição                                                                 ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ BIND PROPERTIES                                                                                          ║
+ * ║ • SecaoObj : SecaoPatrimonial - Entidade da seção (namespace: FrotiX.Models.Cadastros)                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id)      : Carrega seção para edição ou prepara nova                                             ║
+ * ║ • OnPostSubmit() : Cria nova seção                                                                       ║
+ * ║ • OnPostEdit(id) : Atualiza seção existente                                                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES                                                                                               ║
+ * ║ • NomeSecao obrigatório (não pode estar vazio)                                                           ║
+ * ║ • SetorId obrigatório (não pode ser Guid.Empty)                                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ NOTA                                                                                                     ║
+ * ║ Namespace incorreto (Pages.Secao em vez de Pages.SecaoPatrimonial) - manter para compatibilidade         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (SecaoPatrimonial)                                                                         ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;

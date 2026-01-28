@@ -1,3 +1,33 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: DashboardEconomildo.cshtml.cs (Pages/Frota)                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para Dashboard do serviço Economildo (transporte compartilhado econômico).                     ║
+ * ║ Exibe métricas e estatísticas filtradas por MOB (ponto de origem), mês e ano.                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ATRIBUTOS                                                                                                ║
+ * ║ • [Authorize] - Requer autenticação                                                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES (Filtros)                                                                                   ║
+ * ║ • MobList : SelectListItem[] - Filtro por MOB (Rodoviaria, PGR, Cefor)                                   ║
+ * ║ • MesList : SelectListItem[] - Filtro por mês (Janeiro a Dezembro)                                       ║
+ * ║ • AnoList : SelectListItem[] - Filtro por ano (últimos 5 anos)                                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet() : Carrega listas de filtros para os dropdowns                                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ OBSERVAÇÃO                                                                                               ║
+ * ║ Os dados do dashboard são carregados via AJAX no ViagemController (DashboardEconomildo)                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (injetado para Controller)                                                                 ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;
 using Microsoft.AspNetCore.Authorization;

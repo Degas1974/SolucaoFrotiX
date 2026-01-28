@@ -1,3 +1,33 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: AnalyticsDashboard.cshtml.cs (Pages/Intel)                                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para dashboard de analytics/inteligência. Exibe métricas e indicadores de desempenho          ║
+ * ║ da frota. Inicializa variável global com ponto do usuário corrente para personalização.                 ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet() : Obtém usuário corrente via Claims e define Settings.GlobalVariables.gPontoUsuario           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VARIÁVEIS GLOBAIS                                                                                         ║
+ * ║ • Settings.GlobalVariables.gPontoUsuario : Ponto funcional do usuário logado                            ║
+ * ║   - Usado para filtrar dados por unidade/setor do usuário                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ AUTENTICAÇÃO                                                                                              ║
+ * ║ • ClaimsPrincipal.User - Usuário autenticado via Identity                                                ║
+ * ║ • ClaimTypes.NameIdentifier - ID único do usuário                                                        ║
+ * ║ • AspNetUsers.Ponto - Ponto funcional para personalização                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ║ • ILogger - Logging                                                                                      ║
+ * ║ • AspNetUsers - Dados do usuário                                                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;

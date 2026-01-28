@@ -1,3 +1,51 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: UpsertAutuacao.cshtml.cs (Pages/Multa)                                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação e edição de multas na fase de Autuação. Gerencia o registro inicial               ║
+ * ║ de infrações de trânsito com motorista, veículo, órgão autuante e tipo de infração.                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES BINDPROPERTY                                                                                 ║
+ * ║ • MultaObj : MultaViewModel contendo a entidade Multa                                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id) : Carrega multa existente ou inicializa nova com Status="Notificado"                         ║
+ * ║ • OnPostSubmit() : Cria nova autuação com Fase="Autuação"                                                ║
+ * ║ • OnPostEdit(Id) : Atualiza autuação existente                                                           ║
+ * ║ • OnGetAJAXPreencheListaEmpenhos(id) : Retorna empenhos por órgão autuante (JSON)                        ║
+ * ║ • OnGetPegaSaldoEmpenho(id) : Retorna saldo do empenho selecionado (JSON)                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODOS DE PREENCHIMENTO DE LISTAS                                                                        ║
+ * ║ • PreencheListaMotoristas() : Lista motoristas ativos com formato "(Ponto) Nome"                         ║
+ * ║ • PreencheListaVeiculos() : Lista veículos ativos com Placa + Marca/Modelo                               ║
+ * ║ • PreencheListaOrgaos() : Lista órgãos autuantes (DETRAN, PRF, etc.)                                     ║
+ * ║ • PreencheListaInfracoes() : Lista tipos de multa com (Artigo)-(Código/Desdobramento) - Descrição        ║
+ * ║ • PreencheListaTodosEmpenhos(orgaoId) : Empenhos do órgão para pagamento                                 ║
+ * ║ • PreencheListaStatus() : Pendente, Notificado, Reconhecido                                              ║
+ * ║ • PreencheListaContratoVeiculos() : Contratos tipo "Locação"                                             ║
+ * ║ • PreencheListaAtaVeiculos() : Atas de registro de preço                                                 ║
+ * ║ • PreencheListaContratoMotoristas() : Contratos tipo "Terceirização"                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ FLUXO DE MULTAS                                                                                           ║
+ * ║ • Autuação: Registro inicial → Status: Pendente → Notificado → Reconhecido                               ║
+ * ║ • Após reconhecimento, multa avança para fase Penalidade                                                 ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DROPDOWNS EM CASCATA                                                                                      ║
+ * ║ • OrgaoAutuante → EmpenhoMulta (via AJAX OnGetAJAXPreencheListaEmpenhos)                                 ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ║ • AppToast - Toast customizado do sistema                                                                ║
+ * ║ • ViewMotoristas - View de motoristas                                                                    ║
+ * ║ • ViewContratoFornecedor, ViewAtaFornecedor - Views de contratos                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

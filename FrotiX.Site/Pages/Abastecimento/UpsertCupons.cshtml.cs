@@ -1,3 +1,38 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: UpsertCupons.cshtml.cs (Pages/Abastecimento)                                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação e edição de registros de cupons de abastecimento. Gerencia metadados              ║
+ * ║ dos cupons fiscais associados a abastecimentos da frota.                                                 ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES BINDPROPERTY                                                                                 ║
+ * ║ • RegistroCupomAbastecimentoObj : ViewModel contendo RegistroCupomAbastecimento                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id) : Carrega cupom existente ou inicializa novo                                                 ║
+ * ║ • OnPostSubmit() : Cria novo registro de cupom                                                           ║
+ * ║ • OnPostEdit(Id) : Atualiza registro existente                                                           ║
+ * ║ • OnPostSavePDF(files) : Salva arquivos em DadosEditaveis/Cupons com tratamento de acentos               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODOS AUXILIARES                                                                                        ║
+ * ║ • TiraAcento(frase) : Remove acentos e substitui espaços por underscore                                  ║
+ * ║ • RemoveAcento(c) : Remove acento de caractere individual (á→a, ç→c, etc.)                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ UPLOAD DE ARQUIVOS                                                                                        ║
+ * ║ • Diretório: wwwroot/DadosEditaveis/Cupons                                                               ║
+ * ║ • Tratamento: remove acentos e converte para maiúsculo                                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ║ • IWebHostEnvironment - Para caminho do wwwroot                                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

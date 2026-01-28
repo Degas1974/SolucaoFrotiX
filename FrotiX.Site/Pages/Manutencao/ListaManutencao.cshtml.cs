@@ -1,3 +1,37 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: ListaManutencao.cshtml.cs (Pages/Manutencao)                                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para listagem de ordens de manutenção de veículos. Gerencia o ciclo de vida                   ║
+ * ║ de manutenções preventivas e corretivas da frota.                                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                    ║
+ * ║ • _unitOfWork : Referência estática ao repositório                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CLASSES AUXILIARES (HELPER CLASSES)                                                                       ║
+ * ║ • ListaVeiculosManutencao : Lista todos os veículos com Placa + Marca/Modelo                             ║
+ * ║ • ListaVeiculosReservaManutencao : Lista apenas veículos reserva (Reserva = true)                        ║
+ * ║ • ListaStatusManutencao : Status de OS (Todas, Abertas, Canceladas, Fechadas/Baixadas)                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • Initialize(unitOfWork) : Método estático para inicialização                                            ║
+ * ║ • OnGet() : Handler vazio - lógica no Grid JavaScript                                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CICLO DE VIDA DA MANUTENÇÃO                                                                               ║
+ * ║ • Aberta : OS criada, veículo em manutenção                                                              ║
+ * ║ • Cancelada : OS cancelada por algum motivo                                                              ║
+ * ║ • Fechada : OS concluída, veículo liberado                                                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ║ • Veiculo, ModeloVeiculo, MarcaVeiculo - Entidades de veículo                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;

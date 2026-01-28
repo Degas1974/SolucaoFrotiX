@@ -1,3 +1,43 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: UpsertEEscala.cshtml.cs (Pages/Escalas)                                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para visualização/edição de escalas existentes. Carrega dados da escala a partir da View      ║
+ * ║ consolidada ViewEscalasCompletas e exibe informações de cobertura quando motorista está indisponível.   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES                                                                                              ║
+ * ║ • EscalaDiaId - Identificador da escala                                                                  ║
+ * ║ • MotoristaId, VeiculoId, TipoServicoId, TurnoId - Configuração da escala                                ║
+ * ║ • DataEscala, HoraInicio, HoraFim - Data e horários                                                      ║
+ * ║ • StatusMotorista - Disponível, Economildo, Em Serviço, Reservado, Indisponível                          ║
+ * ║ • CoberturaId, MotoristaTitularId, MotoristaCobertorId - Dados de cobertura                              ║
+ * ║ • NomeMotoristaCobertor, NomeMotoristaTitular - Nomes para exibição                                      ║
+ * ║ • Segunda..Domingo - Checkboxes populados baseado nas escalas futuras do motorista                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id) : Carrega escala da ViewEscalasCompletas pelo EscalaDiaId                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ LÓGICA DE EXIBIÇÃO                                                                                        ║
+ * ║ • Mapeia campos da View para propriedades do PageModel                                                   ║
+ * ║ • Marca checkboxes de status baseado no StatusMotorista                                                  ║
+ * ║ • Se Indisponível: carrega dados de cobertura (cobertor, titular, motivo, período)                       ║
+ * ║ • Carrega dias da semana baseado nas escalas futuras do motorista                                        ║
+ * ║ • Se não há escalas futuras, define padrão seg-sex                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODOS AUXILIARES                                                                                        ║
+ * ║ • CarregarDropdowns() : Popula listas filtradas (Economildo/Serviços Gerais, Matutino/Vespertino/Noturno)║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ║ • ViewEscalasCompletas - View consolidada com escalas + coberturas                                       ║
+ * ║ • ViewMotoristas, ViewVeiculos - Views para dropdowns                                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

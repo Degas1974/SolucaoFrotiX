@@ -1,3 +1,35 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Upsert.cshtml.cs (Pages/SetorSolicitante)                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação e edição de Setores Solicitantes (organograma hierárquico). Permite definir       ║
+ * ║ setor pai via TreeView para criar estrutura de departamentos.                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ BIND PROPERTIES                                                                                          ║
+ * ║ • SetorSolicitanteObj : SetorSolicitante - Entidade do setor                                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id)      : Carrega setor para edição ou prepara novo + preenche TreeView                         ║
+ * ║ • OnPostSubmit() : Cria ou atualiza setor (diferencia por SetorSolicitanteId == Guid.Empty)              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES                                                                                               ║
+ * ║ • Sigla única dentro do mesmo SetorPaiId (case-insensitive)                                              ║
+ * ║ • Nome único dentro do mesmo SetorPaiId (case-insensitive)                                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CLASSE INTERNA TreeData                                                                                  ║
+ * ║ • SetorSolicitanteId, SetorPaiId, HasChild, Sigla, Expanded, IsSelected, Nome                            ║
+ * ║ • Usada para popular ViewData["dataSource"] do Syncfusion TreeView                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (SetorSolicitante, ViewSetores)                                                            ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;

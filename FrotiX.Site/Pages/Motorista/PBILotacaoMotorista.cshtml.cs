@@ -1,3 +1,48 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: PBILotacaoMotorista.cshtml.cs (Pages/Motorista - namespace Viagens)                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para registro de viagens relacionadas a lotação de motoristas. Similar ao Upsert.cshtml.cs    ║
+ * ║ mas focado em contexto de lotação/designação temporária de motoristas para unidades.                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ NOTA: NAMESPACE INCONSISTENTE                                                                             ║
+ * ║ • Arquivo está em Pages/Motorista mas namespace é FrotiX.Pages.Viagens                                  ║
+ * ║ • Mantido para compatibilidade com código existente                                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                    ║
+ * ║ • FichaVistoria : Array de bytes para PDF de vistoria                                                    ║
+ * ║ • viagemId, dataCriacao, kmAtual, veiculoAtual - Estado da viagem                                        ║
+ * ║ • usuarioCorrenteId, usuarioCorrenteNome, usuarioIdCriacao - Dados do usuário                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS PRINCIPAIS                                                                                       ║
+ * ║ • OnGet(id) : Carrega viagem existente ou inicializa nova                                                ║
+ * ║ • OnPostSubmit() : Cria nova viagem com custos calculados                                                ║
+ * ║ • OnPostEdit(Id) : Atualiza viagem existente                                                             ║
+ * ║ • OnPostInsereFicha(Id) : Faz upload de ficha de vistoria                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS AJAX                                                                                             ║
+ * ║ • OnGetAJAXPreencheListaRequisitantes() : Lista de requisitantes (NaturalStringComparer)                 ║
+ * ║ • OnGetAJAXPreencheListaSetores() : TreeView hierárquico de setores                                      ║
+ * ║ • OnGetPegaKmAtualVeiculo(id) : Quilometragem atual do veículo                                           ║
+ * ║ • OnGetPegaRamal(id), OnGetPegaSetor(id) : Dados do requisitante                                         ║
+ * ║ • OnGetVerificaFicha(id), OnGetVerificaMotoristaViagem(id), OnGetVerificaVeiculoViagem(id)               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CÁLCULOS DE CUSTO (ao finalizar viagem)                                                                   ║
+ * ║ • Servicos.CalculaCustoCombustivel() - Custo de combustível                                              ║
+ * ║ • Servicos.CalculaCustoMotorista() - Custo de mão de obra (em minutos)                                   ║
+ * ║ • Servicos.CalculaCustoVeiculo() - Depreciação/uso do veículo                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork, INotyfService, IWebHostEnvironment, ILogger                                               ║
+ * ║ • HtmlAgilityPack - Para conversão HTML para texto                                                       ║
+ * ║ • NaturalStringComparer - Ordenação natural de strings                                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -1,3 +1,36 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Importacao.cshtml.cs (Pages/TaxiLeg)                                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para importação de corridas do TaxiLeg (serviço de táxi corporativo).                          ║
+ * ║ Processa arquivos Excel (.xlsx) e converte dados para exibição em HTML.                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnPostSubmit(file) : Upload e processamento de arquivo Excel                                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ FLUXO DE PROCESSAMENTO                                                                                   ║
+ * ║ 1. Valida tipo de arquivo (xlsx/xls)                                                                     ║
+ * ║ 2. Salva arquivo em wwwroot/Uploads/{guid}/                                                              ║
+ * ║ 3. Lê planilhas com EPPlus (ExcelPackage)                                                                ║
+ * ║ 4. Converte cada worksheet para HTML (ExcelViewModel)                                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ TIPOS DE ARQUIVO ACEITOS                                                                                 ║
+ * ║ • application/octet-stream                                                                               ║
+ * ║ • application/vnd.openxmlformats-officedocument.spreadsheetml.sheet (.xlsx)                              ║
+ * ║ • application/vnd.ms-excel (.xls)                                                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (injetado)                                                                                 ║
+ * ║ • IWebHostEnvironment - Para caminho de upload (wwwroot/Uploads)                                         ║
+ * ║ • EPPlus (ExcelPackage, ExcelWorksheet) - Leitura de Excel                                               ║
+ * ║ • ExcelViewModel - DTO com SheetName + Data (HTML)                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Hosting;

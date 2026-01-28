@@ -1,3 +1,41 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: ListaEscala.cshtml.cs (Pages/Escalas)                                                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para listagem e gestão de Escalas Diárias com filtros avançados. Permite visualizar, filtrar   ║
+ * ║ e excluir escalas de motoristas/veículos por diversos critérios.                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ BIND PROPERTIES                                                                                          ║
+ * ║ • Filtro     : FiltroEscalaViewModel          - Filtros selecionados pelo usuário                        ║
+ * ║ • EscalasObj : List<ViewEscalasCompletas>     - Resultado da query filtrada                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet()         : Carrega escalas do dia atual                                                         ║
+ * ║ • OnPost()        : Aplica filtros selecionados                                                          ║
+ * ║ • OnGetDelete(id) : Exclui escala pelo EscalaDiaId                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ FILTROS DISPONÍVEIS                                                                                      ║
+ * ║ • DataFiltro     : Data específica                                                                       ║
+ * ║ • TipoServicoId  : Economildo / Serviços Gerais                                                          ║
+ * ║ • TurnoId        : Matutino / Vespertino / Noturno                                                       ║
+ * ║ • MotoristaId    : Motorista específico                                                                  ║
+ * ║ • VeiculoId      : Veículo específico                                                                    ║
+ * ║ • StatusMotorista: Disponível, Em Viagem, Indisponível, etc.                                             ║
+ * ║ • Lotacao        : Aeroporto, Rodoviária, PGR, Cefor, etc.                                               ║
+ * ║ • TextoPesquisa  : Busca livre em nome, placa, serviço, requisitante                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ORDENAÇÃO PADRÃO                                                                                         ║
+ * ║ DataEscala → HoraInicio → NomeMotorista                                                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (ViewEscalasCompletas, EscalaDiaria, Motorista, Veiculo)                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

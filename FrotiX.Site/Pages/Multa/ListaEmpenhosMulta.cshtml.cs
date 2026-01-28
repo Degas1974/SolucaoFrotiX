@@ -1,3 +1,32 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: ListaEmpenhosMulta.cshtml.cs (Pages/Multa)                                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para listagem de Empenhos de Multa (recursos orçamentários alocados para pagamento            ║
+ * ║ de multas de trânsito). Inclui classe auxiliar para popular dropdown de órgãos autuantes.               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                    ║
+ * ║ • _unitOfWork : Referência estática ao repositório                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • Initialize(unitOfWork) : Método estático para inicialização                                            ║
+ * ║ • OnGet() : Handler vazio - dados carregados via Grid                                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CLASSES AUXILIARES                                                                                        ║
+ * ║ • ListaOrgaoAutuante : Classe para popular dropdown de órgãos autuantes                                  ║
+ * ║   - Id (Guid), Descricao (Nome + Sigla)                                                                  ║
+ * ║   - OrgaoAutuanteList() : Retorna lista ordenada por Nome                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ║ • OrgaoAutuante - Entidade (DETRAN, PRF, PM, etc.)                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;

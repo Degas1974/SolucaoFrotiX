@@ -1,3 +1,43 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: UpsertEvento.cshtml.cs (Pages/Viagens)                                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação e edição de Eventos (reuniões, sessões, audiências que geram demanda de          ║
+ * ║ transporte). Eventos podem ter múltiplas viagens associadas.                                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES BINDPROPERTY                                                                                 ║
+ * ║ • EventoObj : EventoViewModel - ViewModel contendo entidade Evento                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id) : Carrega evento existente ou inicializa novo                                                ║
+ * ║ • OnPostSubmit() : Cria ou atualiza evento com validação de duplicidade (Nome)                          ║
+ * ║ • OnGetPegaSetor(id) : Retorna setor do requisitante selecionado (JSON)                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODOS DE PREENCHIMENTO                                                                                  ║
+ * ║ • PreencheListaSetores() : TreeView hierárquico de setores com indentação visual (--Nome)               ║
+ * ║ • PreencheListaRequisitantes() : Lista ordenada com NaturalStringComparer                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES DE NEGÓCIO                                                                                     ║
+ * ║ • Verifica duplicidade: evento com mesmo Nome (case insensitive) é rejeitado                             ║
+ * ║ • Usa AppToast para feedback visual                                                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CLASSES AUXILIARES                                                                                        ║
+ * ║ • SetorListItem : Item formatado para dropdown com indentação                                            ║
+ * ║ • TreeData : Estrutura para TreeView com SetorPaiId                                                      ║
+ * ║ • RequisitanteData : Item de requisitante para dropdown                                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ║ • ILogger - Logging                                                                                      ║
+ * ║ • AppToast - Feedback visual                                                                             ║
+ * ║ • NaturalStringComparer - Ordenação natural de strings                                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;
 using Microsoft.AspNetCore.Mvc;

@@ -1,3 +1,58 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: PBILavagem.cshtml.cs (Pages/Manutencao - namespace Viagens)                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para registro de viagens relacionadas a lavagem de veículos. Integra controle de              ║
+ * ║ lavagem com o módulo de viagens para rastrear deslocamentos até postos de lavagem.                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ NOTA: NAMESPACE INCONSISTENTE                                                                             ║
+ * ║ • Arquivo está em Pages/Manutencao mas namespace é FrotiX.Pages.Viagens                                  ║
+ * ║ • Mantido para compatibilidade com código existente                                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                    ║
+ * ║ • FichaVistoria : Array de bytes para PDF de vistoria                                                    ║
+ * ║ • viagemId, dataCriacao, kmAtual, veiculoAtual - Estado da viagem                                        ║
+ * ║ • usuarioCorrenteId, usuarioCorrenteNome, usuarioIdCriacao - Dados do usuário                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id) : Carrega viagem existente ou inicializa nova                                                ║
+ * ║ • OnPostSubmit() : Cria nova viagem de lavagem com custos calculados                                     ║
+ * ║ • OnPostEdit(Id) : Atualiza viagem existente                                                             ║
+ * ║ • OnPostInsereFicha(Id) : Faz upload de ficha de vistoria                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS AJAX                                                                                             ║
+ * ║ • OnGetAJAXPreencheListaRequisitantes() : Lista de requisitantes (NaturalStringComparer)                 ║
+ * ║ • OnGetAJAXPreencheListaSetores() : TreeView hierárquico de setores                                      ║
+ * ║ • OnGetPegaKmAtualVeiculo(id) : Quilometragem atual do veículo                                           ║
+ * ║ • OnGetPegaRamal(id), OnGetPegaSetor(id) : Dados do requisitante                                         ║
+ * ║ • OnGetVerificaFicha(id) : Última ficha de vistoria                                                      ║
+ * ║ • OnGetVerificaMotoristaViagem(id) : Verifica se motorista está em viagem aberta                         ║
+ * ║ • OnGetVerificaVeiculoViagem(id) : Verifica se veículo está em viagem aberta                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODOS DE PREENCHIMENTO                                                                                  ║
+ * ║ • PreencheListaSetores() : TreeView com HasChild e SetorPaiId                                            ║
+ * ║ • PreencheListaRequisitantes() : Lista ordenada com NaturalStringComparer                                ║
+ * ║ • PreencheListaMotoristas() : Motoristas ativos                                                          ║
+ * ║ • PreencheListaVeiculos() : Veículos ativos com Placa + Marca/Modelo                                     ║
+ * ║ • PreencheListaCombustivel() : Níveis de tanque (Vazio a Cheio)                                          ║
+ * ║ • PreencheListaFinalidade() : Finalidades de viagem (Economildo, Manutenção, etc.)                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CÁLCULOS DE CUSTO                                                                                         ║
+ * ║ • Servicos.CalculaCustoCombustivel() - Custo de combustível                                              ║
+ * ║ • Servicos.CalculaCustoMotorista() - Custo de mão de obra (com minutos)                                  ║
+ * ║ • Servicos.CalculaCustoVeiculo() - Custo do veículo                                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork, INotyfService, IWebHostEnvironment, ILogger                                               ║
+ * ║ • HtmlAgilityPack - Para conversão HTML para texto                                                       ║
+ * ║ • NaturalStringComparer - Ordenação natural de strings                                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Generic;
 using System.IO;

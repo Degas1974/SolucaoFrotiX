@@ -555,8 +555,25 @@ async function carregarOcorrencia(id)
 {
     try
     {
+        if (!id) {
+             console.warn("ID inválido para carregar ocorrência");
+             return;
+        }
+
         const response = await fetch(`/api/OcorrenciaViagem/ObterOcorrencia?id=${id}`);
-        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
+
+        const text = await response.text();
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            console.error("Erro ao parsear resposta servida:", text);
+            throw new Error("Resposta inválida do servidor (não é JSON).");
+        }
 
         if (data.success && data.ocorrencia)
         {

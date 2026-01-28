@@ -1,3 +1,81 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: TaxiLeg.cshtml.cs (Pages/Viagens)                                                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel COMPLETO para gestão de viagens Táxi-Leg. Formulário principal para registro e edição         ║
+ * ║ de viagens com controle de km inicial/final, combustível, motorista, veículo, requisitante,             ║
+ * ║ setor solicitante, finalidade e ficha de vistoria (upload de imagem).                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES STATIC                                                                                       ║
+ * ║ • FichaVistoria : byte[] - Imagem da ficha de vistoria atual                                            ║
+ * ║ • viagemId : Guid - ID da viagem em edição                                                              ║
+ * ║ • dataCriacao, usuarioIdCriacao, usuarioCorrenteId/Nome : Controle de auditoria                         ║
+ * ║ • kmAtual, veiculoAtual : Preserva dados entre requests                                                 ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id) : Carrega viagem existente ou prepara nova, preenche dropdowns                              ║
+ * ║ • OnPostSubmit() : Insere nova viagem (novo registro)                                                   ║
+ * ║ • OnPostEdit(Id) : Atualiza viagem existente                                                            ║
+ * ║ • OnPostInsereFicha(Id) : Upload de ficha de vistoria                                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ AJAX HANDLERS                                                                                             ║
+ * ║ • OnGetPegaKmAtualVeiculo(id) : Retorna quilometragem atual do veículo                                  ║
+ * ║ • OnGetPegaRamal(id) : Retorna ramal do requisitante                                                    ║
+ * ║ • OnGetPegaSetor(id) : Retorna setor do requisitante                                                    ║
+ * ║ • OnGetVerificaFicha(id) : Retorna último número de ficha de vistoria                                   ║
+ * ║ • OnGetVerificaMotoristaViagem(id) : Verifica se motorista está em viagem aberta                        ║
+ * ║ • OnGetVerificaVeiculoViagem(id) : Verifica se veículo está em viagem aberta                            ║
+ * ║ • OnGetAJAXPreencheListaRequisitantes() : Lista requisitantes para dropdown                             ║
+ * ║ • OnGetAJAXPreencheListaSetores() : Lista setores para TreeView hierárquico                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODOS PRIVADOS                                                                                          ║
+ * ║ • SetViewModel() : Inicializa ViagemObj                                                                 ║
+ * ║ • PreencheListaSetores() : Preenche TreeView de setores hierárquico (pai/filho)                         ║
+ * ║ • PreencheListaRequisitantes() : Preenche combo requisitantes (NaturalStringComparer)                   ║
+ * ║ • PreencheListaMotoristas() : Preenche combo motoristas ativos                                          ║
+ * ║ • PreencheListaVeiculos() : Preenche combo veículos ativos                                              ║
+ * ║ • PreencheListaCombustivel() : Preenche combo níveis de combustível com imagens                         ║
+ * ║ • PreencheListaFinalidade() : Preenche combo finalidades (fixas)                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CONVERSÃO HTML                                                                                            ║
+ * ║ • ConvertHtml(html) : Converte HTML para texto (remove tags)                                            ║
+ * ║ • ConvertTo(node, writer) : Processa nós HTML recursivamente                                            ║
+ * ║ • ConvertContentTo(node, writer) : Processa filhos de nó HTML                                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ REGRAS DE NEGÓCIO                                                                                         ║
+ * ║ • Viagem só pode ser finalizada com HoraFim E KmFinal preenchidos                                       ║
+ * ║ • Status: "Aberta" (sem HoraFim) ou "Realizada" (com HoraFim)                                           ║
+ * ║ • Ao finalizar, calcula custos: Combustível, Motorista (Servicos.CalculaCustoMotorista),                ║
+ * ║   Veículo (Servicos.CalculaCustoVeiculo)                                                                ║
+ * ║ • Ficha de vistoria padrão: FichaAmarelaNova.jpg se não houver upload                                   ║
+ * ║ • StatusAgendamento = false para viagens TaxiLeg                                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CLASSES DATA (PRIVADAS)                                                                                   ║
+ * ║ • TreeData : Setor hierárquico (SetorPaiId, HasChild)                                                   ║
+ * ║ • RequisitanteData, MotoristaData, VeiculoData : Dropdown simples                                       ║
+ * ║ • CombustivelData : Nível + Imagem                                                                      ║
+ * ║ • FinalidadeData : Finalidade fixa                                                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ FINALIDADES DISPONÍVEIS                                                                                   ║
+ * ║ Transporte de Funcionários, Convidados, Materiais/Cargas, Economildo Norte/Sul/Rodoviária,              ║
+ * ║ Mesa (carros pretos), TV/Rádio Câmara, Aeroporto, Manutenção, Abastecimento,                            ║
+ * ║ Devolução/Recebimento Locadora, Saída Programada, Evento, Ambulância                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ║ • INotyfService - Notificações toast                                                                    ║
+ * ║ • IWebHostEnvironment - Acesso a wwwroot                                                                ║
+ * ║ • ILogger<IndexModel> - Logging                                                                         ║
+ * ║ • HtmlAgilityPack - Conversão HTML para texto                                                           ║
+ * ║ • FrotiX.Services.Servicos - Cálculos de custo                                                          ║
+ * ║ • NaturalStringComparer - Ordenação natural de strings                                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
