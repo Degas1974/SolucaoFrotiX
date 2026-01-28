@@ -1,3 +1,35 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Upsert.cshtml.cs (Pages/Unidade)                                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação e edição de Unidades Organizacionais (Garagem, Manutenção, TV Câmara, etc.).      ║
+ * ║ Gerencia até 3 contatos e normaliza códigos de ponto.                                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ BIND PROPERTIES                                                                                          ║
+ * ║ • UnidadeObj : Unidade - Entidade da unidade                                                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id)      : Carrega unidade para edição ou prepara nova                                           ║
+ * ║ • OnPostSubmit() : Cria ou atualiza unidade (diferencia por UnidadeId == Guid.Empty)                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES                                                                                               ║
+ * ║ • Descrição única (case-insensitive)                                                                     ║
+ * ║ • Sigla única (case-insensitive)                                                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ REGRAS DE NEGÓCIO                                                                                        ║
+ * ║ • Sigla convertida para maiúscula                                                                        ║
+ * ║ • PontoPrimeiroContato, PontoSegundoContato, PontoTerceiroContato normalizados com prefixo "p_"          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (Unidade)                                                                                  ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;

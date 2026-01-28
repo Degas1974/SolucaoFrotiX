@@ -1,3 +1,24 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: Upsert.cshtml.cs (AtaRegistroPrecos)                               ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ PageModel para criação/edição de Atas de Registro de Preços.                ║
+// ║ CRUD completo com validação de duplicidade (AnoAta + NumeroAta).            ║
+// ║                                                                              ║
+// ║ CARACTERÍSTICAS:                                                              ║
+// ║ • Injeção de IUnitOfWork, IWebHostEnvironment, INotyfService                ║
+// ║ • [BindProperty] AtaObj - AtaRegistroPrecosViewModel                        ║
+// ║ • SetViewModel - Inicializa com dropdown de Fornecedores                    ║
+// ║ • PopulateViewData - Lista de Anos (2020-2027)                              ║
+// ║                                                                              ║
+// ║ HANDLERS:                                                                     ║
+// ║ • OnGet(id) - Carrega ata existente ou nova                                 ║
+// ║ • OnPostSubmit - Adiciona nova ata (valida duplicidade)                     ║
+// ║ • OnPostEdit(id) - Atualiza ata existente                                   ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 19                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

@@ -1,3 +1,29 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: HigienizarViagens.cshtml.cs                                        ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ PageModel para higienização/normalização de dados de viagens.               ║
+// ║ Padroniza origens e destinos com variações de escrita.                      ║
+// ║                                                                              ║
+// ║ CARACTERÍSTICAS:                                                              ║
+// ║ • Injeção de IViagemRepository                                              ║
+// ║ • Interface dual-listbox: seleciona valores para corrigir                   ║
+// ║ • OnGetAsync - Carrega listas distintas de Origens e Destinos               ║
+// ║                                                                              ║
+// ║ HANDLERS POST:                                                                ║
+// ║ • OnPostApplyOrigemAsync - Aplica correção em Origens                       ║
+// ║ • OnPostMoveDestinoAsync - Move destinos para lista de correção             ║
+// ║ • OnPostRemoveDestinoAsync - Remove destinos da lista de correção           ║
+// ║ • OnPostApplyDestinoAsync - Aplica correção em Destinos                     ║
+// ║                                                                              ║
+// ║ PROPERTIES:                                                                   ║
+// ║ • OrigensDistintas, DestinosDistintos - Listas únicas                       ║
+// ║ • OrigensParaCorrigir, DestinosParaCorrigir - Selecionados                  ║
+// ║ • NovaOrigem, NovoDestino - Valores corrigidos                              ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 19                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

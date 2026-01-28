@@ -1,3 +1,22 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: Upsert.cshtml.cs (Fornecedor)                                      ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ PageModel para criação/edição de fornecedores.                              ║
+// ║ CRUD unificado (Insert/Update) com validação de CNPJ único.                 ║
+// ║                                                                              ║
+// ║ CARACTERÍSTICAS:                                                              ║
+// ║ • Injeção de IUnitOfWork, ILogger, INotyfService                            ║
+// ║ • [BindProperty] FornecedorObj - Models.Fornecedor                          ║
+// ║ • Sem SetViewModel - entidade direta                                        ║
+// ║                                                                              ║
+// ║ HANDLERS:                                                                     ║
+// ║ • OnGet(id) - Carrega fornecedor existente ou novo                          ║
+// ║ • OnPostSubmit - Cria ou atualiza (valida CNPJ duplicado)                   ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 19                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;

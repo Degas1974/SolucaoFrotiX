@@ -1,3 +1,45 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Upsert.cshtml.cs (Pages/Patrimonio)                                                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação e edição de Patrimônios (bens móveis institucionais). Gerencia upload de          ║
+ * ║ imagem do bem e vinculação com Setor e Seção Patrimonial.                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                   ║
+ * ║ • patrimonioId : Guid - ID do patrimônio em edição                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ BIND PROPERTIES                                                                                          ║
+ * ║ • PatrimonioObj : PatrimonioViewModel - ViewModel com Patrimonio                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id)                     : Carrega patrimônio para edição ou prepara novo                         ║
+ * ║ • OnPostSubmit(UploadedFile)    : Cria novo patrimônio com upload de imagem                              ║
+ * ║ • OnPostEdit(id, npratual)      : Atualiza patrimônio existente                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES                                                                                               ║
+ * ║ • NPR único (não pode repetir)                                                                           ║
+ * ║ • NPR obrigatório                                                                                         ║
+ * ║ • SetorId obrigatório                                                                                    ║
+ * ║ • SecaoId obrigatório                                                                                    ║
+ * ║ • Descricao obrigatória                                                                                  ║
+ * ║ • Situacao obrigatória                                                                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ UPLOAD DE IMAGEM                                                                                         ║
+ * ║ • Pasta destino: wwwroot/ImagensPatrimonio/                                                              ║
+ * ║ • Nome único: Guid + extensão original                                                                   ║
+ * ║ • ImageUrl armazenada no banco: /ImagensPatrimonio/{filename}                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (Patrimonio)                                                                               ║
+ * ║ • IWebHostEnvironment - Para caminho do wwwroot                                                          ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

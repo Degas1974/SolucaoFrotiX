@@ -1,3 +1,30 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: LotacaoMotoristas.cshtml.cs (Pages/Unidade)                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para gestão de lotação de motoristas nas unidades. Permite transferir motoristas entre         ║
+ * ║ unidades com registro do motivo da mudança.                                                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                   ║
+ * ║ • _unitOfWork : IUnitOfWork - Acesso ao repositório (inicializado via Initialize ou construtor)          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet() : Método vazio (dados carregados via AJAX)                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CLASSES AUXILIARES                                                                                       ║
+ * ║ • ListaUnidades : UnidadeId (Guid), Descricao - Lista de unidades para dropdown                          ║
+ * ║ • ListaMudancas : MudancaId (string), Descricao - Motivos de transferência:                              ║
+ * ║   - Férias, Cobertura, Retorno, Devolução, À Pedido, Lotação Inicial, Desligamento                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (Unidade)                                                                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;

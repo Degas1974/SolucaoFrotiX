@@ -1,3 +1,44 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: Upsert.cshtml.cs (AlertasFrotiX)                                   ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ PageModel complexo para CRUD de alertas do sistema FrotiX.                  ║
+// ║ Suporta alertas únicos e recorrentes com SignalR real-time.                 ║
+// ║                                                                              ║
+// ║ INJEÇÕES:                                                                     ║
+// ║ • IUnitOfWork, IAlertasFrotiXRepository, UserManager, IHubContext           ║
+// ║ • FrotiXDbContext                                                           ║
+// ║                                                                              ║
+// ║ PROPRIEDADES [BindProperty]:                                                 ║
+// ║ • Identificação: AlertasFrotiXId, Titulo, Descricao                         ║
+// ║ • Configuração: TipoAlerta, Prioridade, TipoExibicao                        ║
+// ║ • Agendamento: DataExibicao, HorarioExibicao, DataExpiracao                 ║
+// ║ • Vínculos: ViagemId, ManutencaoId, MotoristaId, VeiculoId                  ║
+// ║ • Destinatários: UsuariosIds                                                ║
+// ║ • Recorrência V2: DiasSemana, DiaMesRecorrencia, DatasSelecionadas          ║
+// ║                                                                              ║
+// ║ HANDLERS:                                                                     ║
+// ║ • OnGetAsync(id) - Carrega alerta existente ou novo                         ║
+// ║ • OnPostAsync - Salva alerta (novo ou edição)                               ║
+// ║                                                                              ║
+// ║ MÉTODOS AUXILIARES:                                                           ║
+// ║ • CriarNovoAlerta - Cria objeto AlertasFrotiX                               ║
+// ║ • PreencherDiasSemana - Converte lista para flags booleanos                 ║
+// ║ • AtualizarAlerta - Atualiza alerta existente                               ║
+// ║ • CriarAlertasRecorrentes - Gera série de alertas                           ║
+// ║ • GerarDatasRecorrencia - Calcula datas (Diário/Semanal/Mensal/etc)         ║
+// ║ • CriarAlertasUsuario - Cria vínculos alerta-usuário                        ║
+// ║ • AtualizarAlertasUsuario - Atualiza destinatários                          ║
+// ║ • NotificarUsuarios - Envia via SignalR                                     ║
+// ║ • CarregarListas - Popula dropdowns                                         ║
+// ║                                                                              ║
+// ║ CLASSES AUXILIARES:                                                           ║
+// ║ • ViagemDropdownItem, ManutencaoDropdownData                                ║
+// ║ • EnumExtensions (GetDisplayName)                                           ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 19                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using FrotiX.Data;
 using FrotiX.Helpers;
 using FrotiX.Hubs;

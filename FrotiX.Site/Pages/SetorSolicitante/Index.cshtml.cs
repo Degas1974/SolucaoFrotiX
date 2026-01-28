@@ -1,3 +1,33 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Index.cshtml.cs (Pages/SetorSolicitante)                                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para listagem hierárquica de Setores Solicitantes (organograma). Usa TreeGrid para exibir      ║
+ * ║ estrutura pai-filho de setores.                                                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                   ║
+ * ║ • _unitOfWork : IUnitOfWork - Acesso ao repositório (inicializado via Initialize ou construtor)          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CLASSE INTERNA TreeGridItems                                                                             ║
+ * ║ • SetorSolicitanteId : Guid   - ID do setor                                                              ║
+ * ║ • Nome               : string - Nome do setor                                                            ║
+ * ║ • Sigla              : string - Sigla do setor                                                           ║
+ * ║ • Ramal              : int    - Ramal telefônico                                                         ║
+ * ║ • Status             : string - "Ativo" ou "Inativo"                                                     ║
+ * ║ • SetorPaiId         : Guid   - ID do setor pai (para hierarquia)                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODO GetSelfData()                                                                                     ║
+ * ║ Retorna lista de TreeGridItems para o Syncfusion TreeGrid com Self-Referencing Data                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (SetorSolicitante)                                                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;

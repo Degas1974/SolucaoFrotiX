@@ -1,3 +1,43 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Upsert.cshtml.cs (Pages/Operador)                                                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação e edição de Operadores (despachantes terceirizados). Gerencia upload de foto,     ║
+ * ║ normalização do código de ponto e associação com Contratos.                                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                   ║
+ * ║ • operadorId   : Guid     - ID do operador em edição                                                     ║
+ * ║ • FotoOperador : byte[]   - Foto atual (preserva se não houver novo upload)                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ BIND PROPERTIES                                                                                          ║
+ * ║ • OperadorObj : OperadorViewModel - ViewModel com Operador + ContratoList dropdown                       ║
+ * ║ • FotoUpload  : IFormFile         - Arquivo de foto enviado                                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id)      : Carrega operador para edição ou prepara novo (Status = true por padrão)               ║
+ * ║ • OnPostSubmit() : Cria novo operador + OperadorContrato                                                 ║
+ * ║ • OnPostEdit(id) : Atualiza operador existente                                                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES (ChecaDuplicado)                                                                              ║
+ * ║ • Nome único (case-insensitive)                                                                          ║
+ * ║ • CPF único                                                                                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ REGRAS DE NEGÓCIO                                                                                        ║
+ * ║ • Ponto normalizado: sempre começa com "p_" minúsculo                                                    ║
+ * ║ • Foto padrão: barbudo.jpg (wwwroot/Images)                                                              ║
+ * ║ • Cria OperadorContrato automaticamente se ContratoId informado                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (Operador, Contrato, OperadorContrato, AspNetUsers)                                        ║
+ * ║ • IWebHostEnvironment - Para caminho do wwwroot                                                          ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

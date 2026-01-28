@@ -1,3 +1,18 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: CalculaCustoViagensTotal.cshtml.cs                                 ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ PageModel para cálculo batch de custos de viagens.                          ║
+// ║ Permite recalcular custos de todas as viagens do sistema.                   ║
+// ║                                                                              ║
+// ║ CARACTERÍSTICAS:                                                              ║
+// ║ • Injeção de IUnitOfWork e IWebHostEnvironment                              ║
+// ║ • Processamento em batch via ViagemController                               ║
+// ║ • Atualiza CustoCombustivel, CustoMotorista, CustoVeiculo                   ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 19                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.RazorPages;

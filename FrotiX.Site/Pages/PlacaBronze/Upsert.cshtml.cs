@@ -1,3 +1,32 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Upsert.cshtml.cs (Pages/PlacaBronze)                                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação e edição de Placas de Bronze (placas comemorativas instaladas em veículos).       ║
+ * ║ Gerencia vinculação da placa a um veículo específico.                                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ BIND PROPERTIES                                                                                          ║
+ * ║ • PlacaBronzeObj : PlacaBronzeViewModel - ViewModel com PlacaBronze + VeiculoId                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id)           : Carrega placa para edição ou prepara nova, busca veículo associado               ║
+ * ║ • OnPostAsync()       : Cria/atualiza placa e gerencia associação com veículo                            ║
+ * ║ • OnGetVeiculoData()  : Retorna JSON com lista de veículos para dropdown                                 ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ LÓGICA DE ASSOCIAÇÃO VEÍCULO                                                                             ║
+ * ║ 1. Busca veículo atualmente associado (Veiculo.PlacaBronzeId == this.Id)                                 ║
+ * ║ 2. Se veículo mudou: remove PlacaBronzeId do antigo                                                      ║
+ * ║ 3. Se novo veículo selecionado: atribui PlacaBronzeId ao novo                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (PlacaBronze, Veiculo)                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Hosting;

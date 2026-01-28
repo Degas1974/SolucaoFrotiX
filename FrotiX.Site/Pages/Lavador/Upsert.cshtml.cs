@@ -1,3 +1,43 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Upsert.cshtml.cs (Pages/Lavador)                                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação e edição de Lavadores (funcionários de lavagem terceirizados). Gerencia upload    ║
+ * ║ de foto, normalização do código de ponto e associação com Contratos.                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                   ║
+ * ║ • LavadorId   : Guid     - ID do lavador em edição                                                       ║
+ * ║ • FotoLavador : byte[]   - Foto atual (preserva se não houver novo upload)                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ BIND PROPERTIES                                                                                          ║
+ * ║ • LavadorObj : LavadorViewModel - ViewModel com Lavador + ContratoList dropdown                          ║
+ * ║ • FotoUpload : IFormFile        - Arquivo de foto enviado                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id)      : Carrega lavador para edição ou prepara novo (Status = true por padrão)                ║
+ * ║ • OnPostSubmit() : Cria novo lavador + LavadorContrato                                                   ║
+ * ║ • OnPostEdit(id) : Atualiza lavador existente                                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES (ChecaDuplicado)                                                                              ║
+ * ║ • Nome único (case-insensitive)                                                                          ║
+ * ║ • CPF único                                                                                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ REGRAS DE NEGÓCIO                                                                                        ║
+ * ║ • Ponto normalizado: sempre começa com "p_" minúsculo                                                    ║
+ * ║ • Foto padrão: barbudo.jpg (wwwroot/Images)                                                              ║
+ * ║ • Cria LavadorContrato automaticamente se ContratoId informado                                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (Lavador, Contrato, LavadorContrato, AspNetUsers)                                          ║
+ * ║ • IWebHostEnvironment - Para caminho do wwwroot                                                          ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

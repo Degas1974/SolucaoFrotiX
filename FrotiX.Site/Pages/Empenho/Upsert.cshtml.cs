@@ -1,3 +1,21 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: Upsert.cshtml.cs (Empenho)                                         ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ PageModel para criação/edição de empenhos orçamentários.                    ║
+// ║ Vincula empenhos a contratos ou atas de registro de preços.                 ║
+// ║                                                                              ║
+// ║ CARACTERÍSTICAS:                                                              ║
+// ║ • Injeção de IUnitOfWork, ILogger, IWebHostEnvironment, INotyfService       ║
+// ║ • [BindProperty] EmpenhoObj - EmpenhoViewModel                              ║
+// ║ • SetViewModel - Inicializa com dropdowns (ContratoList, AtaList)           ║
+// ║                                                                              ║
+// ║ HANDLERS:                                                                     ║
+// ║ • OnGet(id) - Carrega empenho existente ou novo                             ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 19                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

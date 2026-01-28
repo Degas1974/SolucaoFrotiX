@@ -1,3 +1,19 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: AlertasFrotiX.cshtml.cs                                            ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ PageModel para listagem de alertas do sistema FrotiX.                       ║
+// ║ Central de notificações e lembretes com SignalR real-time.                  ║
+// ║                                                                              ║
+// ║ CARACTERÍSTICAS:                                                              ║
+// ║ • [Authorize] - Requer autenticação                                         ║
+// ║ • Injeção de IUnitOfWork e IAlertasFrotiXRepository                         ║
+// ║ • OnGetAsync - Carrega página de alertas                                    ║
+// ║ • Dados adicionais carregados via AJAX                                      ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 19                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

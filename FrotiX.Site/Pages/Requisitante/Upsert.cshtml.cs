@@ -1,3 +1,42 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Upsert.cshtml.cs (Pages/Requisitante)                                                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação e edição de Requisitantes (pessoas que solicitam viagens). Inclui seleção de      ║
+ * ║ setor via TreeView hierárquico e normalização do código de ponto.                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                   ║
+ * ║ • requisitanteId : Guid - ID do requisitante em edição                                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ BIND PROPERTIES                                                                                          ║
+ * ║ • RequisitanteObj : RequisitanteViewModel - ViewModel com Requisitante + SetorSolicitanteList dropdown   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id)      : Carrega requisitante para edição ou prepara novo (Status = true por padrão)           ║
+ * ║ • OnPostSubmit() : Cria novo requisitante                                                                ║
+ * ║ • OnPostEdit(id) : Atualiza requisitante existente                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES                                                                                               ║
+ * ║ • Ponto único OU Nome único (valida combinação)                                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ REGRAS DE NEGÓCIO                                                                                        ║
+ * ║ • Ponto normalizado: sempre começa com "p_" minúsculo                                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CLASSES INTERNAS                                                                                         ║
+ * ║ • TreeData : SetorSolicitanteId (string), SetorPaiId (string), HasChild, Nome                            ║
+ * ║   - IDs convertidos para string para compatibilidade com Syncfusion TreeView                             ║
+ * ║   - SetorPaiId = null para itens raiz                                                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (Requisitante, SetorSolicitante, ViewSetores, AspNetUsers)                                 ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

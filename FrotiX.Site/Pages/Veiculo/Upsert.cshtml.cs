@@ -1,3 +1,57 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Upsert.cshtml.cs (Pages/Veiculo)                                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação e edição de Veículos. Gerencia upload de CRLV, dropdowns em cascata               ║
+ * ║ (Marca→Modelo, Contrato→Item, Ata→Item) e validações de vínculo (Contrato/Ata/Próprio).                 ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                   ║
+ * ║ • veiculoId   : Guid     - ID do veículo em edição (preserva entre requests)                             ║
+ * ║ • CRLVveiculo : byte[]   - CRLV atual do veículo (preserva se não houver novo upload)                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ BIND PROPERTIES                                                                                          ║
+ * ║ • VeiculoObj  : VeiculoViewModel  - ViewModel com Veiculo + listas dropdown                              ║
+ * ║ • ArquivoCRLV : IFormFile         - Arquivo CRLV enviado pelo usuário                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS PRINCIPAIS                                                                                      ║
+ * ║ • OnGet(id)         : Carrega veículo para edição ou prepara novo                                        ║
+ * ║ • OnPostSubmit()    : Cria novo veículo + VeiculoContrato                                                ║
+ * ║ • OnPostEdit(id)    : Atualiza veículo existente                                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS AJAX (Dropdowns Cascata)                                                                        ║
+ * ║ • OnGetModeloList(id)     : Retorna modelos por MarcaId                                                  ║
+ * ║ • OnGetItemContratual(id) : Retorna itens contratuais por ContratoId (join RepactuacaoContrato)          ║
+ * ║ • OnGetItemAta(id)        : Retorna itens da ata por AtaId (join RepactuacaoAta)                         ║
+ * ║ • OnGetSlaveData(id)      : Retorna SelectList de modelos (alternativo)                                  ║
+ * ║ • OnGetVerificaPlaca(id)  : Verifica se placa já existe                                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES (ChecaInconstancias)                                                                          ║
+ * ║ Campos obrigatórios: Placa, Marca/Modelo, Quilometragem, Unidade, Combustível, Categoria, DataIngresso   ║
+ * ║ Duplicidades: Placa única (case-insensitive), Renavam único                                              ║
+ * ║ Vínculos:                                                                                                ║
+ * ║   • Deve ter Contrato OU Ata OU VeiculoProprio=true                                                      ║
+ * ║   • Se Contrato → ItemVeiculoId obrigatório                                                              ║
+ * ║   • Se Ata → ItemVeiculoAtaId obrigatório                                                                ║
+ * ║   • Se VeiculoProprio → Patrimonio obrigatório                                                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ REGRAS DE NEGÓCIO                                                                                        ║
+ * ║ • Status = true, Reserva = false, Economildo = false, VeiculoProprio = false por padrão                  ║
+ * ║ • Placa convertida para maiúscula automaticamente                                                        ║
+ * ║ • Cria VeiculoContrato automaticamente se ContratoId informado                                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (Veiculo, MarcaVeiculo, ModeloVeiculo, Unidade, Combustivel, Contrato,                     ║
+ * ║                AtaRegistroPrecos, VeiculoContrato, ItemVeiculoContrato, ItemVeiculoAta,                  ║
+ * ║                RepactuacaoContrato, RepactuacaoAta, PlacaBronze, AspNetUsers)                            ║
+ * ║ • IWebHostEnvironment - Para caminho do wwwroot                                                          ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

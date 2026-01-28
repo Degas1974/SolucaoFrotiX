@@ -1,3 +1,46 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Upsert.cshtml.cs (Pages/Encarregado)                                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação e edição de Encarregados (supervisores terceirizados). Gerencia upload de foto,   ║
+ * ║ validação de CPF com algoritmo de dígitos verificadores, e normalização do código de ponto.              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                   ║
+ * ║ • encarregadoId   : Guid     - ID do encarregado em edição                                               ║
+ * ║ • FotoEncarregado : byte[]   - Foto atual (preserva se não houver novo upload)                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ BIND PROPERTIES                                                                                          ║
+ * ║ • EncarregadoObj : EncarregadoViewModel - ViewModel com Encarregado + ContratoList dropdown              ║
+ * ║ • FotoUpload     : IFormFile            - Arquivo de foto enviado                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id)      : Carrega encarregado para edição ou prepara novo (Status = true por padrão)            ║
+ * ║ • OnPostSubmit() : Cria novo encarregado + EncarregadoContrato                                           ║
+ * ║ • OnPostEdit(id) : Atualiza encarregado existente                                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES (ChecaDuplicado)                                                                              ║
+ * ║ • CPF válido (ValidaCPF com algoritmo oficial)                                                           ║
+ * ║ • Nome único (case-insensitive)                                                                          ║
+ * ║ • CPF único                                                                                               ║
+ * ║ • Celular único (se informado)                                                                           ║
+ * ║ • Ponto único (normalizado com prefixo "p_")                                                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ REGRAS DE NEGÓCIO                                                                                        ║
+ * ║ • Ponto normalizado: sempre começa com "p_" minúsculo                                                    ║
+ * ║ • Foto padrão: barbudo.jpg (wwwroot/Images)                                                              ║
+ * ║ • Cria EncarregadoContrato automaticamente se ContratoId informado                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (Encarregado, Contrato, EncarregadoContrato, AspNetUsers)                                  ║
+ * ║ • IWebHostEnvironment - Para caminho do wwwroot                                                          ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

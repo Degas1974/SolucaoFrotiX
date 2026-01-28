@@ -1,3 +1,28 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: Upsert.cshtml.cs (Manutencao)                                      ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ PageModel para criação/edição de ordens de serviço de manutenção.           ║
+// ║ Utiliza IMemoryCache para dropdowns otimizados.                             ║
+// ║                                                                              ║
+// ║ CARACTERÍSTICAS:                                                              ║
+// ║ • [Consumes("application/json")], [IgnoreAntiforgeryToken]                  ║
+// ║ • Injeção: IUnitOfWork, ILogger, IWebHostEnvironment, INotyfService, Cache  ║
+// ║ • [BindProperty] ManutencaoObj - ManutencaoViewModel                        ║
+// ║ • Usa DTOs: MotoristaData, VeiculoData, VeiculoReservaData                  ║
+// ║                                                                              ║
+// ║ MÉTODOS AUXILIARES:                                                           ║
+// ║ • PreencheListaMotoristasFromCache - Lista de motoristas do cache           ║
+// ║ • PreencheListaVeiculosFromCache - Lista de veículos do cache               ║
+// ║ • PreencheListaVeiculosReservaFromCache - Veículos reserva do cache         ║
+// ║ • SetViewModel - Inicializa ManutencaoViewModel                             ║
+// ║                                                                              ║
+// ║ HANDLERS:                                                                     ║
+// ║ • OnGetAsync(id) - Carrega OS existente ou nova + listas do cache           ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 19                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Infrastructure;
 using FrotiX.Models;

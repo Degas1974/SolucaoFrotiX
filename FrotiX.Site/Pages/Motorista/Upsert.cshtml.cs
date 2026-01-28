@@ -1,3 +1,47 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Upsert.cshtml.cs (Pages/Motorista)                                                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação e edição de Motoristas. Gerencia upload de foto, validação de                     ║
+ * ║ duplicados (Nome, CPF, CNH) e associação automática com Contratos.                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS                                                                                   ║
+ * ║ • motoristaId      : Guid        - ID do motorista em edição (preserva entre requests)                   ║
+ * ║ • FotoMotorista    : byte[]      - Foto atual do motorista (preserva se não houver novo upload)          ║
+ * ║ • CNHMotorista     : byte[]      - CNH digital do motorista                                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ BIND PROPERTIES                                                                                          ║
+ * ║ • MotoristaObj     : MotoristaViewModel  - ViewModel com Motorista + listas dropdown                     ║
+ * ║ • FotoUpload       : IFormFile           - Arquivo de foto enviado pelo usuário                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id)        : Carrega motorista para edição ou prepara novo                                       ║
+ * ║ • OnPostSubmit()   : Cria novo motorista + MotoristaContrato                                             ║
+ * ║ • OnPostEdit(id)   : Atualiza motorista existente                                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES (ChecaDuplicado)                                                                              ║
+ * ║ • Nome único (case-insensitive)                                                                          ║
+ * ║ • CPF único                                                                                               ║
+ * ║ • CNH única                                                                                               ║
+ * ║ • TipoCondutor obrigatório                                                                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ REGRAS DE NEGÓCIO                                                                                        ║
+ * ║ • Status = true por padrão (novo motorista ou reativação)                                                ║
+ * ║ • Foto padrão: barbudo.jpg (wwwroot/Images)                                                              ║
+ * ║ • CategoriaCNH convertida para maiúscula                                                                 ║
+ * ║ • Cria MotoristaContrato automaticamente se ContratoId informado                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (Motorista, Unidade, Contrato, MotoristaContrato, AspNetUsers)                             ║
+ * ║ • IWebHostEnvironment - Para caminho do wwwroot                                                          ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

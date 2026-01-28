@@ -1,3 +1,21 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Index.cshtml.cs (Pages/Veiculo)                                                                 ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel mínimo para listagem de Veículos. Dados são carregados via AJAX no VeiculoController.          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet() : Apenas tratamento de erro padrão (sem lógica de negócio)                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ OBSERVAÇÃO                                                                                               ║
+ * ║ O grid de veículos usa Syncfusion EJ2 Grid com dados carregados via VeiculoController.GetAll()           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 

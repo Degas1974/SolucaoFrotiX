@@ -1,3 +1,95 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Upsert.cshtml.cs (Pages/Viagens)                                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel PRINCIPAL para criação e edição de Viagens. Este é o arquivo mais complexo do sistema,         ║
+ * ║ com ~2000 linhas, gerenciando todo o ciclo de vida das viagens: criação, edição, finalização,            ║
+ * ║ upload de ficha de vistoria, ocorrências e atualização de estatísticas.                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ SERVIÇOS INJETADOS                                                                                       ║
+ * ║ • FrotiXDbContext           - Acesso direto ao banco                                                     ║
+ * ║ • IUnitOfWork               - Repository pattern                                                         ║
+ * ║ • ViagemEstatisticaService  - Atualiza estatísticas diárias ao finalizar viagem                          ║
+ * ║ • MotoristaFotoService      - Processamento de fotos dos motoristas                                      ║
+ * ║ • MotoristaCache            - Cache de motoristas para performance                                       ║
+ * ║ • INotyfService             - Notificações toast                                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES ESTÁTICAS (preservam entre requests)                                                        ║
+ * ║ • viagemId            : Guid     - ID da viagem em edição                                                ║
+ * ║ • dataAgendamento     : DateTime - Data do agendamento original                                          ║
+ * ║ • dataCancelamento    : DateTime - Data de cancelamento                                                  ║
+ * ║ • dataCriacao         : DateTime - Data de criação                                                       ║
+ * ║ • usuarioCorrenteId   : string   - ID do usuário logado                                                  ║
+ * ║ • usuarioCorrenteNome : string   - Nome do usuário logado                                                ║
+ * ║ • veiculoAtual        : Guid     - ID do veículo selecionado                                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ BIND PROPERTIES                                                                                          ║
+ * ║ • ViagemObj                : ViagemViewModel  - ViewModel principal                                      ║
+ * ║ • DescricaoViagemWordBase64: string           - Documento Word em Base64                                 ║
+ * ║ • FotoBase64               : string           - Ficha de vistoria em Base64                              ║
+ * ║ • FichaVistoriaExistente   : string           - Preserva ficha existente                                 ║
+ * ║ • OcorrenciasJson          : string           - Lista de ocorrências em JSON                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS PRINCIPAIS                                                                                      ║
+ * ║ • OnGet(id)                 : Carrega viagem ou prepara nova (inclui profiling de performance)           ║
+ * ║ • OnPostSubmitAsync()       : Cria nova viagem + processa ocorrências                                    ║
+ * ║ • OnPostEditAsync(id)       : Atualiza viagem + processa ocorrências + atualiza estatísticas             ║
+ * ║ • OnPostSalvarDescricaoAsync: Salva apenas descrição (Word) via AJAX                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS AJAX (Preenchimento de Dropdowns)                                                               ║
+ * ║ • OnGetAJAXPreencheListaSetores()       : Árvore hierárquica de setores                                  ║
+ * ║ • OnGetAJAXPreencheListaRequisitantes() : Lista de requisitantes (ordenação natural)                     ║
+ * ║ • OnGetAJAXPreencheListaEventos()       : Lista de eventos ativos                                        ║
+ * ║ • OnGetMotoristasJson()                 : Motoristas via cache                                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS AJAX (Verificações)                                                                             ║
+ * ║ • OnGetPegaKmAtualVeiculo(id)     : Retorna quilometragem atual do veículo                               ║
+ * ║ • OnGetPegaRamal(id)              : Retorna ramal do requisitante                                        ║
+ * ║ • OnGetPegaSetor(id)              : Retorna setor do requisitante                                        ║
+ * ║ • OnGetVerificaMotoristaViagem(id): Verifica se motorista tem viagem aberta                              ║
+ * ║ • OnGetVerificaVeiculoViagem(id)  : Verifica se veículo tem viagem aberta                                ║
+ * ║ • OnGetVerificaFicha(id)          : Retorna maior nº de ficha de vistoria                                ║
+ * ║ • OnGetFichaExistente(id)         : Verifica se nº de ficha já existe                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODOS DE PREENCHIMENTO (ViewData)                                                                      ║
+ * ║ • PreencheListaSetores()       : TreeView hierárquico (SetorPaiId)                                       ║
+ * ║ • PreencheListaRequisitantes() : ComboBox com ordenação natural (NaturalStringComparer)                  ║
+ * ║ • PreencheListaMotoristas()    : ComboBox com foto Base64 inline                                         ║
+ * ║ • PreencheListaVeiculos()      : ComboBox Placa - Marca/Modelo                                           ║
+ * ║ • PreencheListaCombustivel()   : Nível de tanque (Vazio, 1/4, 1/2, 3/4, Cheio)                           ║
+ * ║ • PreencheListaFinalidade()    : 22 tipos de finalidade de viagem                                        ║
+ * ║ • PreencheListaEventos()       : Eventos ativos (Status = "1")                                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ REGRAS DE NEGÓCIO                                                                                        ║
+ * ║ • Status inicial: "Aberta" (sem HoraFim) ou "Realizada" (com HoraFim)                                    ║
+ * ║ • Finalização requer HoraFim E KmFinal preenchidos simultaneamente                                       ║
+ * ║ • Atualiza quilometragem do veículo ao finalizar viagem                                                  ║
+ * ║ • Converte HTML para texto plano (DescricaoSemFormato) usando HtmlAgilityPack                            ║
+ * ║ • Processa ocorrências enviadas em JSON (ProcessarOcorrencias)                                           ║
+ * ║ • Atualiza ViagemEstatisticaService quando Status = "Realizada"                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CLASSES INTERNAS (DTOs para ViewData)                                                                    ║
+ * ║ • TreeData        : Setor hierárquico (SetorSolicitanteId, SetorPaiId, HasChild)                         ║
+ * ║ • RequisitanteData: Requisitante (RequisitanteId, Requisitante)                                          ║
+ * ║ • MotoristaData   : Motorista (MotoristaId, Nome, Foto)                                                  ║
+ * ║ • VeiculoData     : Veiculo (VeiculoId, Descricao)                                                       ║
+ * ║ • CombustivelData : Nível tanque (Nivel, Descricao, Imagem)                                              ║
+ * ║ • FinalidadeData  : Finalidade (FinalidadeId, Descricao)                                                 ║
+ * ║ • EventoData      : Evento (EventoId, Nome)                                                              ║
+ * ║ • OcorrenciaUpsertDto: Ocorrência (Resumo, Descricao, ImagemOcorrencia)                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ OBSERVAÇÕES DE PERFORMANCE                                                                               ║
+ * ║ • Profiling via Stopwatch para cada operação no OnGet                                                    ║
+ * ║ • GetAllReduced com selector para projeção otimizada                                                     ║
+ * ║ • NaturalStringComparer para ordenação de requisitantes (trata números corretamente)                     ║
+ * ║ • MotoristaCache para evitar queries repetidas                                                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Cache;
 using FrotiX.Data;

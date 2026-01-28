@@ -1,3 +1,24 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ ARQUIVO: Upsert.cshtml.cs (Contrato)                                        ║
+// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO:                                                                   ║
+// ║ PageModel para criação/edição de contratos de locação de veículos.          ║
+// ║ CRUD com validação de duplicidade (AnoContrato + NumeroContrato).           ║
+// ║                                                                              ║
+// ║ CARACTERÍSTICAS:                                                              ║
+// ║ • [Consumes("application/json")], [IgnoreAntiforgeryToken]                  ║
+// ║ • Injeção de IUnitOfWork, ILogger, IWebHostEnvironment, INotyfService       ║
+// ║ • [BindProperty] ContratoObj - ContratoViewModel                            ║
+// ║ • SetViewModel - Inicializa com dropdown de Fornecedores                    ║
+// ║                                                                              ║
+// ║ HANDLERS:                                                                     ║
+// ║ • OnGet(id) - Carrega contrato existente ou novo (Status=true)              ║
+// ║ • OnPostInsereContrato(contrato) - JSON - Adiciona contrato                 ║
+// ║ • OnPostEdit(id) - Form - Atualiza contrato existente                       ║
+// ║                                                                              ║
+// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 19                                       ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

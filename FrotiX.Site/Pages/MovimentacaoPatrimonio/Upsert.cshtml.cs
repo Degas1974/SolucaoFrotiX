@@ -1,3 +1,34 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: Upsert.cshtml.cs (Pages/MovimentacaoPatrimonio)                                                 ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para criação e edição de Movimentações de Patrimônio (transferências de bens entre setores     ║
+ * ║ e seções). Carrega dados iniciais para formulário AJAX.                                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ BIND PROPERTIES                                                                                          ║
+ * ║ • MovimentacaoPatrimonioObj : MovimentacaoPatrimonioViewModel - ViewModel com:                           ║
+ * ║   - MovimentacaoPatrimonio (entidade)                                                                    ║
+ * ║   - MovimentacaoPatrimonioId, PatrimonioId                                                               ║
+ * ║   - PatrimonioNome, SetorOrigemNome, SecaoOrigemNome (para exibição)                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id, patrimonioId) : Carrega movimentação existente ou prepara nova                               ║
+ * ║ • OnPost()                : Redireciona para Index (POST via AJAX)                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ LÓGICA OnGet                                                                                             ║
+ * ║ • Se id existente: carrega MovimentacaoPatrimonio + Patrimonio + SetorOrigem + SecaoOrigem               ║
+ * ║ • Se patrimonioId: prepara nova movimentação para um patrimônio específico                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                             ║
+ * ║ • IUnitOfWork (MovimentacaoPatrimonio, Patrimonio, SetorPatrimonial, SecaoPatrimonial)                   ║
+ * ║ • INotyfService - Notificações toast                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
