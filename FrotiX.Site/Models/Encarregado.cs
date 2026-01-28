@@ -1,27 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: Encarregado.cs                                                     ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade e ViewModel para gestão de encarregados (supervisores de campo).   ║
-// ║ Encarregados supervisionam motoristas e operações em contratos.             ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                     ║
-// ║ - EncarregadoViewModel: ViewModel para tela de cadastro                     ║
-// ║ - Encarregado: Entidade principal com dados pessoais                        ║
-// ║                                                                              ║
-// ║ CAMPOS PRINCIPAIS:                                                           ║
-// ║ - Nome, Ponto, DataNascimento, CPF (obrigatórios)                           ║
-// ║ - Celular01, Celular02, DataIngresso                                        ║
-// ║ - Foto (byte[]), Status (ativo/inativo)                                     ║
-// ║ - ContratoId (FK obrigatório via ValidaLista)                               ║
-// ║                                                                              ║
-// ║ VALIDAÇÕES CUSTOMIZADAS:                                                     ║
-// ║ - [ValidaLista] para ContratoId - garante seleção de contrato               ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 #nullable enable
 using FrotiX.Validations;
 using Microsoft.AspNetCore.Http;

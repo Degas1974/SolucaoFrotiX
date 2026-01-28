@@ -1,21 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: EstatisticaAbastecimentoCombustivel.cs                             ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Estatísticas de abastecimentos agrupadas por tipo de combustível.           ║
-// ║ Inclui média de preço por litro para análise de variação.                   ║
-// ║                                                                              ║
-// ║ CAMPOS:                                                                      ║
-// ║ - Id, Ano, Mes: Identificação do período                                    ║
-// ║ - TipoCombustivel: Gasolina, Etanol, Diesel, GNV                            ║
-// ║ - TotalAbastecimentos, ValorTotal, LitrosTotal                              ║
-// ║ - MediaValorLitro: Preço médio por litro no período                         ║
-// ║ - DataAtualizacao: Timestamp do cache                                       ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

@@ -1,35 +1,4 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: Alerta.cs                                                           ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Classe estática central para alertas visuais e tratamento de erros.          ║
-// ║ Integrada com SweetAlert para exibição no frontend.                          ║
-// ║                                                                              ║
-// ║ MÉTODOS DE ALERTA VISUAL:                                                    ║
-// ║ - Erro()      → Alerta vermelho de erro                                      ║
-// ║ - Sucesso()   → Alerta verde de sucesso                                      ║
-// ║ - Info()      → Alerta azul informativo                                      ║
-// ║ - Warning()   → Alerta amarelo de aviso                                      ║
-// ║ - Confirmar() → Alerta com botões Sim/Cancelar                               ║
-// ║                                                                              ║
-// ║ MÉTODOS DE LOG/ERRO:                                                         ║
-// ║ - TratamentoErroComLinha() → Log + alerta visual com stack trace             ║
-// ║                                                                              ║
-// ║ MÉTODOS DE PRIORIDADE:                                                       ║
-// ║ - GetIconePrioridade()   → Ícone FontAwesome por prioridade                  ║
-// ║ - GetCorPrioridade()     → Classe CSS por prioridade                         ║
-// ║ - GetCorHexPrioridade()  → Cor hexadecimal por prioridade                    ║
-// ║ - GetNomePrioridade()    → Nome descritivo por prioridade                    ║
-// ║                                                                              ║
-// ║ CONFIGURAÇÃO (Startup/Program):                                              ║
-// ║ - HttpCtx: IHttpContextAccessor                                              ║
-// ║ - TempFactory: ITempDataDictionaryFactory                                    ║
-// ║ - LoggerFactory: ILoggerFactory                                              ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 12 | LINHAS: ~336                         ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
+// Helpers/Alerta.cs
 using FrotiX.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;

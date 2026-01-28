@@ -1,29 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: ViagemEstatisticaService.cs                                         ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Serviço para cálculo e persistência de estatísticas diárias de viagens.      ║
-// ║ Gera dados para dashboards e relatórios de gestão.                           ║
-// ║                                                                              ║
-// ║ MÉTODOS PRINCIPAIS:                                                          ║
-// ║ - ObterEstatisticasAsync(): Obtém ou calcula estatísticas de uma data        ║
-// ║   → SEMPRE recalcula e atualiza se registro já existe                        ║
-// ║                                                                              ║
-// ║ ESTATÍSTICAS CALCULADAS:                                                     ║
-// ║ - Total de viagens realizadas                                                ║
-// ║ - Total de viagens canceladas                                                ║
-// ║ - Total de KM percorridos                                                    ║
-// ║ - Custo total de combustível                                                 ║
-// ║ - Tempo médio de viagem                                                      ║
-// ║ - Quantidade de motoristas ativos                                            ║
-// ║ - Quantidade de veículos utilizados                                          ║
-// ║                                                                              ║
-// ║ PERSISTÊNCIA: Tabela ViagemEstatistica                                       ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 15                                        ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,9 +10,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FrotiX.Services
 {
-    /// <summary>
-    /// Serviço para cálculo de estatísticas diárias de viagens.
-    /// </summary>
     public class ViagemEstatisticaService
     {
         private readonly FrotiXDbContext _context;

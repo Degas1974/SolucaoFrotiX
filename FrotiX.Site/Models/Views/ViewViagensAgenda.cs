@@ -1,38 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: ViewViagensAgenda.cs                                               ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ View model para integração com calendário FullCalendar JS.                  ║
-// ║ Inclui propriedades específicas para renderização de eventos no calendário. ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ Identificadores:                                                             ║
-// ║ • ViagemId - Identificador único da viagem                                  ║
-// ║ • VeiculoId, MotoristaId, EventoId - Recursos relacionados                  ║
-// ║                                                                              ║
-// ║ Dados da Viagem:                                                             ║
-// ║ • DataInicial/Final, HoraInicio/Fim - Período da viagem                     ║
-// ║ • Status, StatusAgendamento, FoiAgendamento - Estados                       ║
-// ║ • Finalidade, Descricao - Detalhes da viagem                                ║
-// ║                                                                              ║
-// ║ Dados de Evento (FullCalendar):                                              ║
-// ║ • Titulo - Título do evento no calendário                                   ║
-// ║ • Start, End - Datas de início/fim para FullCalendar                        ║
-// ║ • CorEvento, CorTexto - Cores do evento                                     ║
-// ║ • DescricaoEvento, DescricaoMontada - Textos formatados                     ║
-// ║ • NomeEvento, NomeEventoFull - Nome do evento associado                     ║
-// ║                                                                              ║
-// ║ Tooltips (adicionados em 16/01/2026):                                       ║
-// ║ • Placa - Placa do veículo para tooltip                                     ║
-// ║ • NomeMotorista - Nome do motorista para tooltip                            ║
-// ║                                                                              ║
-// ║ USO:                                                                          ║
-// ║ • Alimenta calendário FullCalendar na tela de agenda                        ║
-// ║ • Serializado como JSON para JavaScript                                     ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

@@ -1,23 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: AlertasBackgroundService.cs                                         ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ BackgroundService para verificação periódica de alertas agendados.           ║
-// ║ Executa a cada minuto e envia alertas via SignalR (AlertasHub).              ║
-// ║                                                                              ║
-// ║ FUNCIONALIDADES:                                                             ║
-// ║ - Verificação de alertas agendados no banco de dados                         ║
-// ║ - Envio de notificações em tempo real via AlertasHub                         ║
-// ║ - Timer configurável (padrão: 1 minuto)                                      ║
-// ║                                                                              ║
-// ║ DEPENDÊNCIAS:                                                                ║
-// ║ - IHubContext<AlertasHub>: Contexto SignalR para envio de mensagens          ║
-// ║ - IUnitOfWork: Acesso ao banco de dados via scoped service                   ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 14                                        ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 using System;
 using System.Linq;
 using System.Threading;
@@ -33,9 +13,6 @@ using Microsoft.Extensions.Logging;
 
 namespace FrotiX.Services
     {
-    /// <summary>
-    /// BackgroundService para verificação de alertas agendados.
-    /// </summary>
     public class AlertasBackgroundService :BackgroundService
         {
         private readonly IServiceProvider _serviceProvider;

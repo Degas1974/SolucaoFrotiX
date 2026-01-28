@@ -1,28 +1,4 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: UiExceptionMiddleware.cs                                            ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Middleware para tratamento de exceções com resposta apropriada ao cliente.   ║
-// ║ Diferencia requisições AJAX/API (JSON) de requisições de página (redirect).  ║
-// ║                                                                              ║
-// ║ COMPORTAMENTO:                                                               ║
-// ║ - AJAX/API (Accept: application/json ou X-Requested-With: XMLHttpRequest):   ║
-// ║   → Retorna JSON ProblemDetails com status 500                               ║
-// ║ - Razor Pages/Views:                                                         ║
-// ║   → Redireciona para /Erro (que lê TempData["UiError"])                      ║
-// ║                                                                              ║
-// ║ PAYLOAD DE ERRO (HttpContext.Items["UiError"]):                              ║
-// ║ - Permite que controllers/pages definam payload customizado                  ║
-// ║ - Se não definido, monta payload básico com Origem, Mensagem, Stack          ║
-// ║                                                                              ║
-// ║ FORMATO JSON DE RESPOSTA:                                                    ║
-// ║ { title: "Erro no servidor", status: 500, detail: {...} }                    ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 13                                        ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
-using System;
+﻿using System;
 using System.Linq; // ← Para .Any()
 using System.Net.Mime; // ← Para MediaTypeNames
 using System.Text.Json;
@@ -31,9 +7,6 @@ using Microsoft.AspNetCore.Http;
 
 namespace FrotiX.Middlewares
 {
-    /// <summary>
-    /// Middleware para tratamento de exceções com resposta JSON ou redirect.
-    /// </summary>
     public sealed class UiExceptionMiddleware
     {
         private readonly RequestDelegate _next;

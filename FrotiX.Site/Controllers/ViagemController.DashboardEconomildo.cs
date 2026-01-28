@@ -1,11 +1,3 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
- * ║  Seção: ViagemController.DashboardEconomildo.cs                          ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
-
 using FrotiX.Data;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -19,53 +11,28 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ CONTROLLER: Viagem API (Partial - DashboardEconomildo)
-     * 🎯 OBJETIVO: Dashboard analítico completo com 15+ métricas do sistema Economildo
-     * 📋 ROTAS: /api/viagem/DashboardEconomildo [GET]
-     * 🔗 ENTIDADES: ViagensEconomildo (view), ViewVeiculos
-     * 📦 DEPENDÊNCIAS: IUnitOfWork, ApplicationDbContext
-     * 📊 MÉTRICAS: Total usuários/viagens, médias (mensal/diária), análises temporais, comparativos por MOB
-     * 📝 NOTA: Classe parcial - ver ViagemController.cs principal
-     ****************************************************************************************/
     public partial class ViagemController
     {
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: DashboardEconomildo
-         * 🎯 OBJETIVO: Retornar 15+ métricas analíticas do sistema Economildo (passageiros, viagens, médias, comparativos)
-         * 📥 ENTRADAS: mob (opcional: "PGR", "Rodoviaria", "Cefor"), mes (1-12), ano
-         * 📤 SAÍDAS: JSON com 27 propriedades analíticas
-         * 🔗 CHAMADA POR: Dashboard Economildo (frontend)
-         * 🔄 CHAMA: ViagensEconomildo (view), ViewVeiculos, métodos helper
-         * 📊 MÉTRICAS RETORNADAS:
-         *    - Totais gerais: totalUsuarios, totalViagens, mediaMensal, mediaDiaria
-         *    - Por MOB: totalPGR/Rodoviaria/Cefor, mediaMensalPGR/Rodoviaria/Cefor
-         *    - Tempos médios: tempoMedioIda/Volta por MOB
-         *    - Distribuições: usuariosPorMes, usuariosPorTurno, usuariosPorDiaSemana, usuariosPorHora
-         *    - Comparativos: comparativoMob (mensal), topVeiculos (top 10)
-         ****************************************************************************************/
         [HttpGet]
         [Route("DashboardEconomildo")]
         public IActionResult DashboardEconomildo(string? mob, int? mes, int? ano)
         {
             try
             {
-                // [DOC] ========== ETAPA 1: Filtra viagens Economildo base (com filtros opcionais) ==========
+                // Query base
                 var query = _context.ViagensEconomildo.AsQueryable();
 
-                // [DOC] Filtro por MOB (PGR, Rodoviaria, Cefor)
+                // Aplicar filtros
                 if (!string.IsNullOrEmpty(mob))
                 {
                     query = query.Where(v => v.MOB == mob);
                 }
 
-                // [DOC] Filtro por mês
                 if (mes.HasValue && mes.Value > 0)
                 {
                     query = query.Where(v => v.Data.HasValue && v.Data.Value.Month == mes.Value);
                 }
 
-                // [DOC] Filtro por ano
                 if (ano.HasValue && ano.Value > 0)
                 {
                     query = query.Where(v => v.Data.HasValue && v.Data.Value.Year == ano.Value);
@@ -73,12 +40,11 @@ namespace FrotiX.Controllers
 
                 var viagens = query.ToList();
 
-                // [DOC] ========== ETAPA 2: Cálculos gerais (totais e médias) ==========
-                // Total de passageiros (usuários) transportados
+                // Total de usuarios (soma de passageiros)
                 var totalUsuarios = viagens.Sum(v => v.QtdPassageiros ?? 0);
                 var totalViagens = viagens.Count;
 
-                // [DOC] Média mensal: total passageiros / quantidade meses distintos
+                // Calcular meses distintos para media
                 var mesesDistintos = viagens
                     .Where(v => v.Data.HasValue)
                     .Select(v => new { v.Data.Value.Year, v.Data.Value.Month })
@@ -87,7 +53,7 @@ namespace FrotiX.Controllers
 
                 var mediaMensal = mesesDistintos > 0 ? (double)totalUsuarios / mesesDistintos : 0;
 
-                // [DOC] Média diária: total passageiros / quantidade dias distintos
+                // Calcular dias distintos para media diaria
                 var diasDistintos = viagens
                     .Where(v => v.Data.HasValue)
                     .Select(v => v.Data.Value.Date)
@@ -96,7 +62,7 @@ namespace FrotiX.Controllers
 
                 var mediaDiaria = diasDistintos > 0 ? (double)totalUsuarios / diasDistintos : 0;
 
-                // [DOC] ========== ETAPA 3: Totais e médias por MOB (sem filtro MOB para comparar todos) ==========
+                // Totais por MOB (sem filtro de MOB para mostrar todos)
                 var queryTodos = _context.ViagensEconomildo.AsQueryable();
 
                 if (mes.HasValue && mes.Value > 0)
@@ -128,11 +94,11 @@ namespace FrotiX.Controllers
                 var mediaMensalRodoviaria = mesesRodoviaria > 0 ? (double)totalRodoviaria / mesesRodoviaria : 0;
                 var mediaMensalCefor = mesesCefor > 0 ? (double)totalCefor / mesesCefor : 0;
 
-                // [DOC] ========== ETAPA 4: Tempos médios de IDA e VOLTA (geral + por MOB) ==========
+                // Tempo medio de IDA e VOLTA (usando campo Duracao da tabela)
                 var tempoMedioIda = CalcularMediaDuracao(viagens, true);
                 var tempoMedioVolta = CalcularMediaDuracao(viagens, false);
 
-                // [DOC] Tempo médio por MOB (PGR, Rodoviaria, Cefor)
+                // Tempo medio por MOB (IDA e VOLTA)
                 var tempoMedioIdaPGR = CalcularMediaDuracao(viagensPGR, true);
                 var tempoMedioVoltaPGR = CalcularMediaDuracao(viagensPGR, false);
                 var tempoMedioIdaRodoviaria = CalcularMediaDuracao(viagensRodoviaria, true);
@@ -140,8 +106,7 @@ namespace FrotiX.Controllers
                 var tempoMedioIdaCefor = CalcularMediaDuracao(viagensCefor, true);
                 var tempoMedioVoltaCefor = CalcularMediaDuracao(viagensCefor, false);
 
-                // [DOC] ========== ETAPA 5: Distribuições temporais (mês, turno, dia semana, hora) ==========
-                // Passageiros por mês
+                // Usuarios por Mes
                 var usuariosPorMes = viagens
                     .Where(v => v.Data.HasValue)
                     .GroupBy(v => v.Data.Value.Month)
@@ -154,7 +119,7 @@ namespace FrotiX.Controllers
                     .OrderBy(x => x.mesNum)
                     .ToList();
 
-                // [DOC] Passageiros por turno (Manhã 6-12h, Tarde 12-18h, Noite 18-6h)
+                // Usuarios por Turno
                 var usuariosPorTurno = new
                 {
                     manha = viagens.Where(v => ClassificarTurno(v.HoraInicio) == "Manha").Sum(v => v.QtdPassageiros ?? 0),
@@ -162,8 +127,7 @@ namespace FrotiX.Controllers
                     noite = viagens.Where(v => ClassificarTurno(v.HoraInicio) == "Noite").Sum(v => v.QtdPassageiros ?? 0)
                 };
 
-                // [DOC] ========== ETAPA 6: Comparativos e rankings ==========
-                // Comparativo mensal por MOB (grafico multi-linhas)
+                // Comparativo Mensal por MOB
                 var comparativoMob = viagensTodos
                     .Where(v => v.Data.HasValue)
                     .GroupBy(v => v.Data.Value.Month)
@@ -178,7 +142,7 @@ namespace FrotiX.Controllers
                     .OrderBy(x => x.mesNum)
                     .ToList();
 
-                // [DOC] Passageiros por dia da semana (exclui sábado e domingo)
+                // Usuarios por Dia da Semana
                 var usuariosPorDiaSemana = viagens
                     .Where(v => v.Data.HasValue)
                     .GroupBy(v => v.Data.Value.DayOfWeek)
@@ -192,7 +156,7 @@ namespace FrotiX.Controllers
                     .OrderBy(x => x.diaNum == 0 ? 7 : x.diaNum)
                     .ToList();
 
-                // [DOC] Passageiros por hora (00:00 a 23:00)
+                // Usuarios por Hora
                 var usuariosPorHora = viagens
                     .Where(v => !string.IsNullOrEmpty(v.HoraInicio))
                     .GroupBy(v => ExtrairHora(v.HoraInicio))
@@ -206,7 +170,7 @@ namespace FrotiX.Controllers
                     .OrderBy(x => x.horaNum)
                     .ToList();
 
-                // [DOC] Top 10 veículos mais usados (ranking por quantidade de viagens)
+                // Top 10 Veiculos
                 var topVeiculos = viagens
                     .Where(v => v.VeiculoId != Guid.Empty)
                     .GroupBy(v => v.VeiculoId)
@@ -273,12 +237,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: EhIda (HELPER)
-         * 🎯 OBJETIVO: Verificar se viagem é do tipo IDA
-         * 📥 ENTRADAS: idaVolta (string: "IDA", "I", ou variações)
-         * 📤 SAÍDAS: bool (true se é IDA)
-         ****************************************************************************************/
         private bool EhIda(string? idaVolta)
         {
             try
@@ -293,12 +251,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: EhVolta (HELPER)
-         * 🎯 OBJETIVO: Verificar se viagem é do tipo VOLTA
-         * 📥 ENTRADAS: idaVolta (string: "VOLTA", "V", ou variações)
-         * 📤 SAÍDAS: bool (true se é VOLTA)
-         ****************************************************************************************/
         private bool EhVolta(string? idaVolta)
         {
             try
@@ -313,13 +265,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: CalcularMediaDuracao (HELPER)
-         * 🎯 OBJETIVO: Calcular média de duração de viagens (IDA ou VOLTA)
-         * 📥 ENTRADAS: viagens (lista), ehIda (bool: true=IDA, false=VOLTA)
-         * 📤 SAÍDAS: string formatada "X min"
-         * 📊 LÓGICA: Filtra por tipo (IDA/VOLTA) e calcula média do campo Duracao
-         ****************************************************************************************/
         private string CalcularMediaDuracao(List<ViagensEconomildo> viagens, bool ehIda)
         {
             try
@@ -338,13 +283,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: ClassificarTurno (HELPER)
-         * 🎯 OBJETIVO: Classificar turno com base na hora de início
-         * 📥 ENTRADAS: horaInicio (string TimeSpan)
-         * 📤 SAÍDAS: string ("Manha", "Tarde", "Noite")
-         * 📊 REGRAS: Manhã 6-12h, Tarde 12-18h, Noite 18-6h
-         ****************************************************************************************/
         private string ClassificarTurno(string? horaInicio)
         {
             try
@@ -366,12 +304,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: ExtrairHora (HELPER)
-         * 🎯 OBJETIVO: Extrair hora (0-23) de string TimeSpan
-         * 📥 ENTRADAS: horaStr (string formato TimeSpan)
-         * 📤 SAÍDAS: int (0-23, ou -1 se inválido)
-         ****************************************************************************************/
         private int ExtrairHora(string? horaStr)
         {
             try
@@ -391,13 +323,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: ObterNomeMes (HELPER)
-         * 🎯 OBJETIVO: Converter número do mês (1-12) para nome abreviado
-         * 📥 ENTRADAS: mes (int de 1 a 12)
-         * 📤 SAÍDAS: string abreviada ("Jan", "Fev", ..., "Dez")
-         * 📊 ARRAY: ["", "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
-         ****************************************************************************************/
         private string ObterNomeMes(int mes)
         {
             try
@@ -411,13 +336,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: ObterNomeDiaSemana (HELPER)
-         * 🎯 OBJETIVO: Converter DayOfWeek enum para nome abreviado do dia da semana
-         * 📥 ENTRADAS: dia (DayOfWeek enum)
-         * 📤 SAÍDAS: string abreviada ("Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom")
-         * 📊 SWITCH: Monday→Seg, Tuesday→Ter, Wednesday→Qua, Thursday→Qui, Friday→Sex, Saturday→Sab, Sunday→Dom
-         ****************************************************************************************/
         private string ObterNomeDiaSemana(DayOfWeek dia)
         {
             try

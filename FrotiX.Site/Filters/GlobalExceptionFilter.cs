@@ -1,30 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: GlobalExceptionFilter.cs                                            ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Filtro global de exceções para Controllers MVC e API.                        ║
-// ║ Captura e registra erros detalhados com arquivo, método e linha.             ║
-// ║                                                                              ║
-// ║ CLASSES INCLUÍDAS:                                                           ║
-// ║ - GlobalExceptionFilter: Filtro síncrono para Controllers                    ║
-// ║ - AsyncExceptionFilter: Filtro assíncrono para operações async               ║
-// ║                                                                              ║
-// ║ FUNCIONALIDADES:                                                             ║
-// ║ - Extrai arquivo e linha do StackTrace via Regex                             ║
-// ║ - Registra no ILogService com contexto completo                              ║
-// ║ - Retorna JSON estruturado para requisições AJAX/API                         ║
-// ║ - Em Development: inclui detalhes técnicos no JSON de erro                   ║
-// ║ - Em Production: mensagem genérica para o usuário                            ║
-// ║ - Trata TaskCanceledException como warning (não erro)                        ║
-// ║                                                                              ║
-// ║ DEPENDÊNCIAS:                                                                ║
-// ║ - ILogService: Serviço de log do FrotiX                                      ║
-// ║ - IWebHostEnvironment: Para diferenciar Development/Production               ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 12                                        ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 using System;
 using System.IO;
 using System.Linq;

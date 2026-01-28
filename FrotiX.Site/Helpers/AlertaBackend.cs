@@ -1,30 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: AlertaBackend.cs                                                    ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Helper de log backend-only. Não depende de JSInterop ou frontend.            ║
-// ║ Usado para logging consistente em contextos sem acesso ao HttpContext.       ║
-// ║                                                                              ║
-// ║ MÉTODOS DISPONÍVEIS:                                                         ║
-// ║ - ConfigureLogger()           → Injeta ILogger em Startup                    ║
-// ║ - GetCorrelationId()          → Obtém ID de correlação (Activity ou GUID)    ║
-// ║ - TratamentoErroComLinha()    → Log de erro com contexto (instância)         ║
-// ║ - TratamentoErroComLinhaStatic<T>() → Log de erro em contexto estático       ║
-// ║ - SendUnexpected()            → Log direto sem contexto                      ║
-// ║ - TryExtractFileLine()        → Extrai arquivo/linha do StackTrace           ║
-// ║                                                                              ║
-// ║ ATRIBUTOS USADOS:                                                            ║
-// ║ - [CallerMemberName]: Captura nome do método automaticamente                 ║
-// ║ - [CallerFilePath]: Captura caminho do arquivo automaticamente               ║
-// ║ - [CallerLineNumber]: Captura número da linha automaticamente                ║
-// ║                                                                              ║
-// ║ FORMATO DO LOG:                                                              ║
-// ║ Unexpected error | ctx={Context} | member={Member} | file={File}:{Line}...   ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 12 | LINHAS: ~235                         ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;

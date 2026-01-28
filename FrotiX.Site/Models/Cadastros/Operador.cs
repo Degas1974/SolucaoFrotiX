@@ -1,37 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: Operador.cs                                                        ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade principal para cadastro de operadores/despachantes da frota.       ║
-// ║ Diferente de motoristas, operadores gerenciam escalas e viagens.            ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • OperadorViewModel - ViewModel com dropdown de contratos                   ║
-// ║ • Operador - Entidade principal                                             ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ Identificação:                                                               ║
-// ║ • OperadorId [Key] - Identificador único                                    ║
-// ║ • Nome - Nome do operador (max 100 chars)                                   ║
-// ║ • Ponto - Ponto funcional (max 20 chars)                                    ║
-// ║ • DataNascimento - Data de nascimento                                       ║
-// ║ • CPF - CPF do operador                                                     ║
-// ║                                                                              ║
-// ║ Contato:                                                                      ║
-// ║ • Celular01/02 - Telefones de contato                                       ║
-// ║                                                                              ║
-// ║ Relacionamentos:                                                              ║
-// ║ • ContratoId → Contrato - Contrato vinculado [ValidaLista]                  ║
-// ║                                                                              ║
-// ║ Metadados:                                                                    ║
-// ║ • Foto - Foto do operador (byte array)                                      ║
-// ║ • ArquivoFoto [NotMapped] - Upload de foto                                  ║
-// ║ • Status - Ativo/Inativo                                                    ║
-// ║ • DataAlteracao, UsuarioIdAlteracao - Auditoria                             ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using FrotiX.Validations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;

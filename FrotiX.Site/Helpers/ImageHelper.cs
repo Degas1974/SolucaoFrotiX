@@ -1,28 +1,4 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: ImageHelper.cs                                                      ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Helper para manipulação de imagens usando System.Drawing.                    ║
-// ║ IMPORTANTE: Só funciona em Windows ([SupportedOSPlatform("windows")]).       ║
-// ║                                                                              ║
-// ║ MÉTODOS DISPONÍVEIS:                                                         ║
-// ║ - IsImageValid()  → Verifica se byte[] é uma imagem válida                   ║
-// ║ - ResizeImage()   → Redimensiona imagem para dimensões especificadas         ║
-// ║                                                                              ║
-// ║ CONFIGURAÇÃO DE QUALIDADE:                                                   ║
-// ║ - CompositingQuality: HighSpeed (performance sobre qualidade)                ║
-// ║ - InterpolationMode: Low (redimensionamento rápido)                          ║
-// ║ - Formato de saída: JPEG                                                     ║
-// ║                                                                              ║
-// ║ USO TÍPICO:                                                                  ║
-// ║ - Redimensionar fotos de motoristas para thumbnails                          ║
-// ║ - Validar uploads de imagens                                                 ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 12                                        ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
-using System;
+﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -31,9 +7,6 @@ using System.Runtime.Versioning;
 
 namespace FrotiX.Helpers
     {
-    /// <summary>
-    /// Helper para manipulação de imagens. Só funciona em Windows.
-    /// </summary>
     [SupportedOSPlatform("windows")]
     public static class ImageHelper
         {

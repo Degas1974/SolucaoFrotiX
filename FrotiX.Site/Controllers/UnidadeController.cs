@@ -1,11 +1,3 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
- * ║  Seção: UnidadeController.cs                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
-
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -15,14 +7,6 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ CONTROLLER: Unidade API
-     * 🎯 OBJETIVO: Gerenciar unidades e lotação de motoristas em unidades
-     * 📋 ROTAS: /api/Unidade/* (Get, Delete, UpdateStatus, ListaLotacao, LotaMotorista, etc)
-     * 🔗 ENTIDADES: Unidade, LotacaoMotorista, Motorista, ViewLotacaoMotorista, ViewLotacoes
-     * 📦 DEPENDÊNCIAS: IUnitOfWork, INotyfService (toast notifications)
-     * 📝 FUNCIONALIDADES: CRUD unidades + Sistema completo de lotação de motoristas
-     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class UnidadeController :Controller
@@ -43,14 +27,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Get
-         * 🎯 OBJETIVO: Listar todas as unidades do sistema
-         * 📥 ENTRADAS: Nenhuma
-         * 📤 SAÍDAS: JSON { data: List<Unidade> }
-         * 🔗 CHAMADA POR: Grid de unidades
-         * 🔄 CHAMA: Unidade.GetAll()
-         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
@@ -72,15 +48,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Delete
-         * 🎯 OBJETIVO: Excluir unidade (valida se há veículos associados)
-         * 📥 ENTRADAS: model (UnidadeViewModel com UnidadeId)
-         * 📤 SAÍDAS: JSON { success, message }
-         * 🔗 CHAMADA POR: Modal de exclusão de unidade
-         * 🔄 CHAMA: Unidade.GetFirstOrDefault(), Veiculo.GetFirstOrDefault(), Unidade.Remove()
-         * ⚠️ VALIDAÇÃO: Impede exclusão se existirem veículos associados
-         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(UnidadeViewModel model)
@@ -94,7 +61,6 @@ namespace FrotiX.Controllers
                     );
                     if (objFromDb != null)
                     {
-                        // [DOC] Valida integridade referencial: não permite excluir unidade com veículos
                         var veiculo = _unitOfWork.Veiculo.GetFirstOrDefault(u =>
                             u.UnidadeId == model.UnidadeId
                         );
@@ -136,15 +102,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: UpdateStatus
-         * 🎯 OBJETIVO: Alternar status da unidade (Ativo ↔ Inativo)
-         * 📥 ENTRADAS: Id (UnidadeId Guid)
-         * 📤 SAÍDAS: JSON { success, type (0=ativo, 1=inativo) }
-         * 🔗 CHAMADA POR: Toggle de status no grid
-         * 🔄 CHAMA: Unidade.GetFirstOrDefault(), Unidade.Update()
-         * 📝 NOTA: Mensagem de description existe mas está comentada no retorno
-         ****************************************************************************************/
         [Route("UpdateStatus")]
         public JsonResult UpdateStatus(Guid Id)
         {
@@ -158,7 +115,6 @@ namespace FrotiX.Controllers
 
                     if (objFromDb != null)
                     {
-                        // [DOC] Toggle status: true → false (type=1) ou false → true (type=0)
                         if (objFromDb.Status == true)
                         {
                             objFromDb.Status = false;
@@ -203,22 +159,12 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: ListaLotacao
-         * 🎯 OBJETIVO: Listar lotações de um motorista específico (ou vazia se não informado)
-         * 📥 ENTRADAS: motoristaId (string Guid - opcional)
-         * 📤 SAÍDAS: JSON { data: registros da ViewLotacaoMotorista }
-         * 🔗 CHAMADA POR: Grid de histórico de lotações do motorista
-         * 🔄 CHAMA: ViewLotacaoMotorista.GetAll()
-         * 🔍 FILTRO: Se motoristaId null, retorna lista vazia (Guid.Empty)
-         ****************************************************************************************/
         [HttpGet]
         [Route("ListaLotacao")]
         public IActionResult ListaLotacao(string motoristaId)
         {
             try
             {
-                // [DOC] Se motoristaId não informado, retorna lista vazia usando Guid.Empty
                 var result = _unitOfWork.ViewLotacaoMotorista.GetAll(lm => lm.MotoristaId == Guid.Empty);
 
                 if (motoristaId != null)
@@ -244,16 +190,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: LotaMotorista
-         * 🎯 OBJETIVO: Criar nova lotação de motorista em unidade
-         * 📥 ENTRADAS: MotoristaId, UnidadeId, DataInicio, DataFim?, Lotado, Motivo (strings)
-         * 📤 SAÍDAS: JSON { data: MotoristaId, message, lotacaoId } ou "00000000..." se duplicado
-         * 🔗 CHAMADA POR: Modal de lotação de motorista
-         * 🔄 CHAMA: LotacaoMotorista.GetFirstOrDefault(), LotacaoMotorista.Add(), Motorista.Update()
-         * ⚠️ VALIDAÇÃO: Impede criar lotação duplicada (mesmo motorista+unidade+data)
-         * 💾 OPERAÇÃO: Cria lotação E atualiza UnidadeId do motorista simultaneamente
-         ****************************************************************************************/
         [HttpGet]
         [Route("LotaMotorista")]
         public IActionResult LotaMotorista(
@@ -267,7 +203,6 @@ namespace FrotiX.Controllers
         {
             try
             {
-                // [DOC] Valida duplicidade: mesma lotação não pode existir duas vezes
                 var existeLotacao = _unitOfWork.LotacaoMotorista.GetFirstOrDefault(lm =>
                     (lm.MotoristaId == Guid.Parse(MotoristaId))
                     && (lm.UnidadeId == Guid.Parse(UnidadeId))
@@ -282,7 +217,6 @@ namespace FrotiX.Controllers
                     });
                 }
 
-                // [DOC] Cria registro de lotação
                 var objLotacaoMotorista = new LotacaoMotorista();
                 objLotacaoMotorista.MotoristaId = Guid.Parse(MotoristaId);
                 objLotacaoMotorista.UnidadeId = Guid.Parse(UnidadeId);
@@ -296,7 +230,6 @@ namespace FrotiX.Controllers
 
                 _unitOfWork.LotacaoMotorista.Add(objLotacaoMotorista);
 
-                // [DOC] Atualiza unidade do motorista (sincronização)
                 var obJMotorista = _unitOfWork.Motorista.GetFirstOrDefault(m =>
                     m.MotoristaId == Guid.Parse(MotoristaId)
                 );
@@ -325,16 +258,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: EditaLotacao
-         * 🎯 OBJETIVO: Editar lotação existente de motorista
-         * 📥 ENTRADAS: LotacaoId, MotoristaId, UnidadeId, DataInicio, DataFim?, Lotado, Motivo
-         * 📤 SAÍDAS: JSON { data: MotoristaId, message }
-         * 🔗 CHAMADA POR: Modal de edição de lotação
-         * 🔄 CHAMA: LotacaoMotorista.GetFirstOrDefault(), LotacaoMotorista.Update(), Motorista.Update()
-         * 💾 OPERAÇÃO: Atualiza lotação E unidade do motorista simultaneamente
-         * 🗑️ LÓGICA: DataFim pode ser null (lotação em aberto)
-         ****************************************************************************************/
         [HttpGet]
         [Route("EditaLotacao")]
         public IActionResult EditaLotacao(
@@ -355,7 +278,6 @@ namespace FrotiX.Controllers
                 objLotacaoMotorista.MotoristaId = Guid.Parse(MotoristaId);
                 objLotacaoMotorista.UnidadeId = Guid.Parse(UnidadeId);
                 objLotacaoMotorista.DataInicio = DateTime.Parse(DataInicio);
-                // [DOC] DataFim opcional: null indica lotação em aberto
                 if (DataFim != null)
                 {
                     objLotacaoMotorista.DataFim = DateTime.Parse(DataFim);
@@ -368,7 +290,6 @@ namespace FrotiX.Controllers
                 objLotacaoMotorista.Motivo = Motivo;
                 _unitOfWork.LotacaoMotorista.Update(objLotacaoMotorista);
 
-                // [DOC] Sincroniza unidade do motorista
                 var obJMotorista = _unitOfWork.Motorista.GetFirstOrDefault(m =>
                     m.MotoristaId == Guid.Parse(MotoristaId)
                 );
@@ -396,15 +317,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: DeleteLotacao
-         * 🎯 OBJETIVO: Remover lotação de motorista
-         * 📥 ENTRADAS: Id (LotacaoMotoristaId string)
-         * 📤 SAÍDAS: JSON { success, message, motoristaId }
-         * 🔗 CHAMADA POR: Modal de exclusão de lotação
-         * 🔄 CHAMA: LotacaoMotorista.GetFirstOrDefault(), LotacaoMotorista.Remove(), Motorista.Update()
-         * 💾 OPERAÇÃO: Remove lotação E limpa UnidadeId do motorista (Guid.Empty)
-         ****************************************************************************************/
         [Route("DeleteLotacao")]
         [HttpGet]
         public IActionResult DeleteLotacao(string Id)
@@ -418,7 +330,6 @@ namespace FrotiX.Controllers
                 _unitOfWork.LotacaoMotorista.Remove(objFromDb);
                 _unitOfWork.Save();
 
-                // [DOC] Limpa unidade do motorista após remover lotação
                 var obJMotorista = _unitOfWork.Motorista.GetFirstOrDefault(m =>
                     m.MotoristaId == motoristaId
                 );
@@ -445,15 +356,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: AtualizaMotoristaLotacaoAtual
-         * 🎯 OBJETIVO: Atualizar lotação atual do motorista (remoção ou transferência)
-         * 📥 ENTRADAS: MotoristaId, UnidadeAtualId, UnidadeNovaId?, DataFimLotacaoAnterior, DataInicioNovoMotivo, MotivoLotacaoAtual
-         * 📤 SAÍDAS: JSON { data: MotoristaId, message }
-         * 🔗 CHAMADA POR: Modal de atualização de lotação
-         * 🔄 CHAMA: Motorista.Update(), LotacaoMotorista.GetFirstOrDefault(), LotacaoMotorista.Update()
-         * 📝 LÓGICA: Se UnidadeNovaId null → remove (Guid.Empty); Se diferente → transfere
-         ****************************************************************************************/
         [HttpGet]
         [Route("AtualizaMotoristaLotacaoAtual")]
         public IActionResult AtualizaMotoristaLotacaoAtual(
@@ -467,7 +369,6 @@ namespace FrotiX.Controllers
         {
             try
             {
-                // [DOC] Cenário 1: Remover de unidade (UnidadeNovaId = null)
                 if (UnidadeNovaId == null)
                 {
                     var obJMotorista = _unitOfWork.Motorista.GetFirstOrDefault(m =>
@@ -483,7 +384,6 @@ namespace FrotiX.Controllers
                     obJLotacao.DataFim = DateTime.Parse(DataFimLotacaoAnterior);
                     _unitOfWork.LotacaoMotorista.Update(obJLotacao);
                 }
-                // [DOC] Cenário 2: Transferir para outra unidade
                 else if (UnidadeAtualId != UnidadeNovaId)
                 {
                     var obJMotorista = _unitOfWork.Motorista.GetFirstOrDefault(m =>
@@ -492,7 +392,6 @@ namespace FrotiX.Controllers
                     obJMotorista.UnidadeId = Guid.Parse(UnidadeNovaId);
                     _unitOfWork.Motorista.Update(obJMotorista);
 
-                    // [DOC] Finaliza lotação anterior
                     var obJLotacao = _unitOfWork.LotacaoMotorista.GetFirstOrDefault(lm =>
                         lm.UnidadeId == Guid.Parse(UnidadeAtualId)
                     );
@@ -500,7 +399,6 @@ namespace FrotiX.Controllers
                     obJLotacao.DataFim = DateTime.Parse(DataFimLotacaoAnterior);
                     _unitOfWork.LotacaoMotorista.Update(obJLotacao);
 
-                    // [DOC] Cria nova lotação
                     var objLotacaoMotorista = new LotacaoMotorista();
                     objLotacaoMotorista.MotoristaId = Guid.Parse(MotoristaId);
                     objLotacaoMotorista.UnidadeId = Guid.Parse(UnidadeNovaId);
@@ -535,19 +433,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: AlocaMotoristaCobertura
-         * 🎯 OBJETIVO: Alocar motorista de cobertura durante férias de outro motorista
-         * 📥 ENTRADAS: MotoristaId, MotoristaCoberturaId?, DataFimLotacao, DataInicioLotacao, DataInicioCobertura, DataFimCobertura, UnidadeId
-         * 📤 SAÍDAS: JSON { data: MotoristaId, message }
-         * 🔗 CHAMADA POR: Modal de gestão de férias/cobertura
-         * 🔄 CHAMA: LotacaoMotorista.GetFirstOrDefault(), LotacaoMotorista.Update/Add()
-         * 📝 LÓGICA COMPLEXA:
-         *    1. Finaliza lotação atual do motorista (Férias)
-         *    2. Cria nova lotação para motorista em férias
-         *    3. Remove motorista cobertura da lotação atual
-         *    4. Aloca motorista cobertura na unidade
-         ****************************************************************************************/
         [HttpGet]
         [Route("AlocaMotoristaCobertura")]
         public IActionResult AlocaMotoristaCobertura(
@@ -562,7 +447,7 @@ namespace FrotiX.Controllers
         {
             try
             {
-                // [DOC] Passo 1: Desabilita Motorista Atual da Sua Locacao
+                // Desabilita Motorista Atual da Sua Locacao
                 var objMotoristaAtual = _unitOfWork.LotacaoMotorista.GetFirstOrDefault(lm =>
                     (lm.MotoristaId == Guid.Parse(MotoristaId) && lm.Lotado == true)
                 );
@@ -578,7 +463,7 @@ namespace FrotiX.Controllers
                     _unitOfWork.LotacaoMotorista.Update(objMotoristaAtual);
                 }
 
-                // [DOC] Passo 2: Insere Motorista Atual em Nova Locacao (Férias)
+                // Insere Motorista Atual em Nova Locacao
                 var objMotoristaLotacaoNova = new LotacaoMotorista();
                 objMotoristaLotacaoNova.MotoristaId = Guid.Parse(MotoristaId);
                 objMotoristaLotacaoNova.DataInicio = DateTime.Parse(DataInicioLotacao);
@@ -591,7 +476,7 @@ namespace FrotiX.Controllers
                 }
                 _unitOfWork.LotacaoMotorista.Add(objMotoristaLotacaoNova);
 
-                // [DOC] Passo 3: Remove Motorista Cobertura da Lotação Atual
+                // Remove Motorista Cobertura da Lotação Atual
                 if (MotoristaCoberturaId != null)
                 {
                     var objCobertura = _unitOfWork.LotacaoMotorista.GetFirstOrDefault(lm =>
@@ -605,7 +490,7 @@ namespace FrotiX.Controllers
                     }
                 }
 
-                // [DOC] Passo 4: Aloca Motorista em Nova Lotação (Cobertura)
+                // Aloca Motorista em Nova Lotação
                 if (MotoristaCoberturaId != null)
                 {
                     var objLotacaoMotorista = new LotacaoMotorista();
@@ -643,15 +528,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: ListaLotacoes
-         * 🎯 OBJETIVO: Listar todas as lotações do sistema (com filtro opcional por categoria)
-         * 📥 ENTRADAS: categoriaId (string - opcional)
-         * 📤 SAÍDAS: JSON { data: registros da ViewLotacoes ordenados por categoria e unidade }
-         * 🔗 CHAMADA POR: Grid de lotações gerenciais
-         * 🔄 CHAMA: ViewLotacoes.GetAll()
-         * 📊 ORDENAÇÃO: NomeCategoria → Unidade
-         ****************************************************************************************/
         [HttpGet]
         [Route("ListaLotacoes")]
         public IActionResult ListaLotacoes(string categoriaId)
@@ -664,7 +540,6 @@ namespace FrotiX.Controllers
                     .ThenBy(vl => vl.Unidade)
                     .ToList();
 
-                // [DOC] Filtro opcional por categoria de motorista
                 if (categoriaId != null)
                 {
                     result = _unitOfWork
@@ -690,27 +565,16 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: DesativarLotacoes (Helper privado)
-         * 🎯 OBJETIVO: Desativar todas as lotações antigas de um motorista exceto a atual
-         * 📥 ENTRADAS: motoristaId (string), lotacaoAtualId (Guid)
-         * 📤 SAÍDAS: void
-         * 🔗 CHAMADA POR: RemoveLotacoes()
-         * 🔄 CHAMA: LotacaoMotorista.GetAll(), LotacaoMotorista.Update()
-         * 💾 LÓGICA: Define Lotado = false em todas as lotações ativas exceto a lotacaoAtualId
-         ****************************************************************************************/
         private void DesativarLotacoes(string motoristaId , Guid lotacaoAtualId)
         {
             try
             {
-                // [DOC] Busca todas lotações ativas do motorista
                 var lotacoesAnteriores = _unitOfWork.LotacaoMotorista.GetAll(lm =>
                     lm.MotoristaId == Guid.Parse(motoristaId)
                     && lm.Lotado == true
                 );
                 foreach (var lotacao in lotacoesAnteriores)
                 {
-                    // [DOC] Preserva lotação atual, desativa as demais
                     if (lotacao.LotacaoMotoristaId == lotacaoAtualId)
                     {
                         continue;
@@ -730,14 +594,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: RemoveLotacoes
-         * 🎯 OBJETIVO: Remover lotações antigas de motorista mantendo apenas a atual
-         * 📥 ENTRADAS: motoristaId (string), lotacaoAtualId (Guid)
-         * 📤 SAÍDAS: JSON { success }
-         * 🔗 CHAMADA POR: Limpeza de lotações duplicadas/antigas
-         * 🔄 CHAMA: DesativarLotacoes()
-         ****************************************************************************************/
         [HttpGet]
         [Route("RemoveLotacoes")]
         public IActionResult RemoveLotacoes(string motoristaId , Guid lotacaoAtualId)

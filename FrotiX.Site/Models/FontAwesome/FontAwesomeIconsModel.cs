@@ -1,23 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: FontAwesomeIconsModel.cs                                           ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Modelos para carregar e buscar ícones FontAwesome traduzidos para PT-BR.    ║
-// ║ Usado no seletor de ícones para menus e recursos do sistema.                ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                     ║
-// ║ - FontAwesomeCategoryPT: Categoria de ícones (categoria, categoriaOriginal) ║
-// ║ - FontAwesomeIconPT: Ícone individual (Id, Name, Label, Keywords)           ║
-// ║ - FontAwesomeIconsLoader: Helper estático para deserializar JSON            ║
-// ║                                                                              ║
-// ║ USO: FontAwesomeIconsLoader.FromJson(jsonText) → List<FontAwesomeCategoryPT>║
-// ║                                                                              ║
-// ║ ARQUIVO JSON: fontawesome-icons.json (traduzido para PT-BR)                 ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;

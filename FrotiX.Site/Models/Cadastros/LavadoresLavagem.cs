@@ -1,25 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: LavadoresLavagem.cs                                                ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade de relacionamento N:N entre Lavagem e Lavador.                     ║
-// ║ Permite múltiplos lavadores em uma única lavagem de veículo.                ║
-// ║                                                                              ║
-// ║ PROPRIEDADES (Chave Composta):                                              ║
-// ║ • LavagemId [Key, Order=0] - ID da lavagem → Lavagem (FK)                   ║
-// ║ • LavadorId [Key, Order=1] - ID do lavador → Lavador (FK)                   ║
-// ║                                                                              ║
-// ║ RELACIONAMENTOS:                                                             ║
-// ║ • Lavagem - Navegação para a lavagem                                        ║
-// ║ • Lavador - Navegação para o lavador                                        ║
-// ║                                                                              ║
-// ║ USO:                                                                          ║
-// ║ • Registro de quais lavadores participaram de cada lavagem                  ║
-// ║ • Cálculo de produtividade por lavador                                      ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

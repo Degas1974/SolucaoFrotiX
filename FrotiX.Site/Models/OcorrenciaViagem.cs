@@ -1,25 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: OcorrenciaViagem.cs                                                ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade para registro de ocorrências/problemas identificados em viagens.   ║
-// ║ Permite rastreabilidade de defeitos, avarias e manutenções necessárias.     ║
-// ║                                                                              ║
-// ║ CAMPOS PRINCIPAIS:                                                           ║
-// ║ - ViagemId, VeiculoId (obrigatórios), MotoristaId (opcional)               ║
-// ║ - Resumo (200 chars), Descricao, ImagemOcorrencia                           ║
-// ║ - Status: "Aberta", "Em Análise", "Baixada"                                 ║
-// ║ - StatusOcorrencia: null/true = Aberta, false = Baixada                     ║
-// ║ - DataCriacao, DataBaixa, UsuarioCriacao, UsuarioBaixa                      ║
-// ║ - ItemManutencaoId: Link para item de manutenção gerado                     ║
-// ║ - Observacoes, Solucao: Campos de texto livre                               ║
-// ║                                                                              ║
-// ║ FLUXO: Viagem gera Ocorrência → Análise → Baixa (com/sem Manutenção)       ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

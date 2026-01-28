@@ -1,25 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: MarcaVeiculo.cs                                                    ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade para cadastro de marcas de veículos (Fiat, VW, Chevrolet, etc).    ║
-// ║ Cadastro básico hierárquico: Marca → Modelo → Veículo.                      ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • MarcaVeiculoViewModel - ViewModel simples                                 ║
-// ║ • MarcaVeiculo - Entidade principal                                         ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ • MarcaId [Key] - Identificador único                                       ║
-// ║ • DescricaoMarca - Nome da marca (max 50 chars)                             ║
-// ║ • Status - Ativo/Inativo                                                    ║
-// ║                                                                              ║
-// ║ RELACIONAMENTOS:                                                             ║
-// ║ • ModeloVeiculo.MarcaId - Modelos desta marca                               ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

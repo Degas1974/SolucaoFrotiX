@@ -1,32 +1,4 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: Combustivel.cs                                                     ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidades para gestão de tipos de combustível e médias de preço.            ║
-// ║ Cadastro básico usado em abastecimentos e cálculos de custo.                ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • CombustivelViewModel - ViewModel simples                                  ║
-// ║ • Combustivel - Tipo de combustível (Gasolina, Diesel, Etanol, etc)         ║
-// ║ • MediaCombustivel - Preço médio mensal por tipo de combustível             ║
-// ║                                                                              ║
-// ║ PROPRIEDADES COMBUSTIVEL:                                                    ║
-// ║ • CombustivelId [Key] - Identificador único                                 ║
-// ║ • Descricao - Nome do combustível (max 50 chars)                            ║
-// ║ • Status - Ativo/Inativo                                                    ║
-// ║                                                                              ║
-// ║ PROPRIEDADES MEDIACOMBUSTIVEL:                                              ║
-// ║ • NotaFiscalId, CombustivelId, Ano, Mes - Chave composta                    ║
-// ║ • PrecoMedio - Preço médio calculado no período                             ║
-// ║                                                                              ║
-// ║ USO:                                                                          ║
-// ║ • Dropdown de combustíveis em abastecimentos                                ║
-// ║ • Cálculo de custo de viagens baseado em preço médio                        ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

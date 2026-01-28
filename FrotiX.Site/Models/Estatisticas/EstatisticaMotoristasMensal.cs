@@ -1,22 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: EstatisticaMotoristasMensal.cs                                     ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Estatísticas mensais individuais por motorista.                             ║
-// ║ Consolida viagens, multas e abastecimentos por motorista/mês.               ║
-// ║                                                                              ║
-// ║ VIAGENS: TotalViagens, KmTotal, MinutosTotais                               ║
-// ║ MULTAS: TotalMultas, ValorTotalMultas                                       ║
-// ║ ABASTECIMENTOS: TotalAbastecimentos, LitrosTotais, ValorTotal               ║
-// ║                                                                              ║
-// ║ RELACIONAMENTO: Motorista (FK MotoristaId)                                  ║
-// ║                                                                              ║
-// ║ USO: Ranking de motoristas, análise de performance individual               ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

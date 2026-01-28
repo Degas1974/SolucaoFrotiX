@@ -1,30 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: SetorSolicitante.cs                                                ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade para cadastro de setores solicitantes de viagens.                  ║
-// ║ Departamentos/áreas que podem requisitar veículos.                          ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • SetorSolicitanteViewModel - ViewModel simples                             ║
-// ║ • SetorSolicitante - Entidade principal                                     ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ • SetorSolicitanteId [Key] - Identificador único                            ║
-// ║ • Nome - Nome do setor (max 200 chars)                                      ║
-// ║ • Sigla - Sigla do setor (max 50 chars)                                     ║
-// ║ • SetorPaiId - ID do setor pai (hierarquia)                                 ║
-// ║ • Ramal - Ramal telefônico                                                  ║
-// ║ • Status - Ativo/Inativo                                                    ║
-// ║ • DataAlteracao, UsuarioIdAlteracao - Auditoria                             ║
-// ║                                                                              ║
-// ║ USO:                                                                          ║
-// ║ • Vinculação em Requisitante e Viagem                                       ║
-// ║ • Relatórios por setor                                                      ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

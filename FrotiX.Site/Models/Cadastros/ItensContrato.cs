@@ -1,25 +1,4 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: ItensContrato.cs                                                   ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Modelo auxiliar para navegação de itens de contrato.                        ║
-// ║ Usado como wrapper para acesso à tela de itens de contrato.                 ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • ItensContratoViewModel - ViewModel com dropdown de contratos              ║
-// ║ • ItensContrato - Modelo auxiliar (ContratoId NotMapped)                    ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ • ContratoId [NotMapped] - ID do contrato para navegação                    ║
-// ║                                                                              ║
-// ║ NOTA:                                                                         ║
-// ║ • Os itens reais do contrato estão em ItemVeiculoContrato                   ║
-// ║ • Esta classe é apenas para suporte à navegação na UI                       ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

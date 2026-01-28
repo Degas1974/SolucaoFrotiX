@@ -1,31 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: FiltroEscala.cs                                                    ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ ViewModel para filtros de pesquisa nas escalas de motoristas.               ║
-// ║ Permite buscas por diversos critérios.                                      ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • FiltroEscalaViewModel - ViewModel para formulário de filtro               ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ Critérios de Filtro:                                                         ║
-// ║ • DataFiltro - Data da escala                                               ║
-// ║ • TipoServicoId - Tipo de serviço                                           ║
-// ║ • Lotacao - Local de lotação                                                ║
-// ║ • VeiculoId - Veículo específico                                            ║
-// ║ • MotoristaId - Motorista específico                                        ║
-// ║ • StatusMotorista - Status do motorista                                     ║
-// ║ • TurnoId - Turno de trabalho                                               ║
-// ║ • TextoPesquisa - Texto livre para busca                                    ║
-// ║                                                                              ║
-// ║ Dropdowns (SelectListItem):                                                  ║
-// ║ • TipoServicoList, LotacaoList, VeiculoList                                 ║
-// ║ • MotoristaList, StatusList, TurnoList                                      ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

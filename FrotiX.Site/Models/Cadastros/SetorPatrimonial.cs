@@ -1,27 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: SetorPatrimonial.cs                                                ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade para cadastro de setores patrimoniais.                             ║
-// ║ Representa departamentos/áreas que detêm patrimônios.                       ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • SetorPatrimonial - Entidade única (sem ViewModel separada)                ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ • SetorId [Key] - Identificador único                                       ║
-// ║ • NomeSetor - Nome do setor (max 50 chars)                                  ║
-// ║ • DetentorId - ID do usuário responsável pelo setor                         ║
-// ║ • Status - Ativo/Inativo                                                    ║
-// ║ • SetorBaixa - Indica se é setor de baixa patrimonial                       ║
-// ║                                                                              ║
-// ║ USO:                                                                          ║
-// ║ • Raiz da hierarquia patrimonial                                            ║
-// ║ • SetorBaixa=true: setor onde bens são baixados/descartados                 ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

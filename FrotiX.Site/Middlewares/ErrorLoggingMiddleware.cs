@@ -1,27 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: ErrorLoggingMiddleware.cs                                           ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Middleware para logging centralizado de erros HTTP e exceções.               ║
-// ║ Intercepta toda requisição e registra erros 4xx/5xx e exceções não tratadas. ║
-// ║                                                                              ║
-// ║ FUNCIONALIDADES:                                                             ║
-// ║ - Captura respostas com StatusCode >= 400                                    ║
-// ║ - Captura exceções não tratadas (e re-lança para handler padrão)             ║
-// ║ - Extrai arquivo/método/linha do StackTrace                                  ║
-// ║ - Registra via ILogService.Error() e ILogService.HttpError()                 ║
-// ║                                                                              ║
-// ║ MENSAGENS DE STATUS HTTP:                                                    ║
-// ║ - 400-429: Erros de cliente (Bad Request, Unauthorized, Forbidden, etc.)     ║
-// ║ - 500-504: Erros de servidor (Internal Error, Bad Gateway, etc.)             ║
-// ║                                                                              ║
-// ║ REGISTRO EM Program.cs:                                                      ║
-// ║ app.UseErrorLogging(); (extension method incluído)                           ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 13                                        ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;

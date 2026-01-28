@@ -257,73 +257,6 @@ namespace FrotiX.Controllers
 
         #endregion LISTAR PARA GESTÃO
 
-        #region OBTER OCORRÊNCIA
-
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: ObterOcorrencia
-         * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Retorna os dados de uma ocorrência específica para edição
-         * 📥 ENTRADAS     : id (Guid)
-         * 📤 SAÍDAS       : JSON com success e objeto ocorrencia
-         * 🔗 CHAMADA POR  : Modal de edição via GET /ObterOcorrencia
-         * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem.GetFirstOrDefault
-         * 📦 DEPENDÊNCIAS : Alerta.TratamentoErroComLinha
-         ****************************************************************************************/
-        [HttpGet]
-        [Route("ObterOcorrencia")]
-        public IActionResult ObterOcorrencia(Guid id)
-        {
-            try
-            {
-                if (id == Guid.Empty)
-                {
-                    return new JsonResult(new { success = false , message = "ID inválido" });
-                }
-
-                var oc = _unitOfWork.OcorrenciaViagem.GetFirstOrDefault(x => x.OcorrenciaViagemId == id);
-                if (oc == null)
-                {
-                    return new JsonResult(new { success = false , message = "Ocorrência não encontrada" });
-                }
-
-                // Lógica de status para exibição
-                string statusFinal;
-                if (!string.IsNullOrEmpty(oc.Status) && (oc.Status == "Pendente" || oc.Status == "Manutenção"))
-                {
-                    statusFinal = oc.Status;
-                }
-                else if (oc.StatusOcorrencia == false || oc.Status == "Baixada")
-                {
-                    statusFinal = "Baixada";
-                }
-                else
-                {
-                    statusFinal = "Aberta";
-                }
-
-                return new JsonResult(new
-                {
-                    success = true ,
-                    ocorrencia = new
-                    {
-                        ocorrenciaViagemId = oc.OcorrenciaViagemId ,
-                        resumoOcorrencia = oc.Resumo ,
-                        descricaoOcorrencia = oc.Descricao ,
-                        solucaoOcorrencia = oc.Observacoes ,
-                        imagemOcorrencia = oc.ImagemOcorrencia ,
-                        statusOcorrencia = statusFinal
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                Alerta.TratamentoErroComLinha("OcorrenciaViagemController.Gestao.cs" , "ObterOcorrencia" , ex);
-                return new JsonResult(new { success = false , message = ex.Message });
-            }
-        }
-
-        #endregion OBTER OCORRÊNCIA
-
         #region EDITAR OCORRÊNCIA
 
         /****************************************************************************************
@@ -580,23 +513,6 @@ namespace FrotiX.Controllers
         }
 
         #endregion BAIXAR COM SOLUÇÃO
-
-        #region BAIXAR OCORRENCIA (ALIAS)
-
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: BaixarOcorrencia
-         * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Alias para BaixarOcorrenciaComSolucao atender chamada do JS antigo
-         * 🔗 CHAMADA POR  : Grid via POST /BaixarOcorrencia
-         ****************************************************************************************/
-        [HttpPost]
-        [Route("BaixarOcorrencia")]
-        public async Task<IActionResult> BaixarOcorrencia([FromBody] BaixarComSolucaoDTO dto)
-        {
-            return await BaixarOcorrenciaComSolucao(dto);
-        }
-
-        #endregion BAIXAR OCORRENCIA (ALIAS)
 
         /****************************************************************************************
          * ⚡ FUNÇÃO: ContarOcorrencias

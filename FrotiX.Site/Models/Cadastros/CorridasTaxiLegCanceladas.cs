@@ -1,31 +1,4 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: CorridasTaxiLegCanceladas.cs                                       ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade para registro de corridas canceladas do serviço TaxiLeg.           ║
-// ║ Armazena motivos e dados de cancelamentos para análise e glosa.             ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ • CorridaCanceladaId [Key] - Identificador único                            ║
-// ║ • Origem - Origem da solicitação                                            ║
-// ║ • Setor, SetorExtra - Setor solicitante e informações extras                ║
-// ║ • Unidade, UnidadeExtra - Unidade solicitante                               ║
-// ║ • QtdPassageiros - Quantidade de passageiros prevista                       ║
-// ║ • MotivoUso - Motivo original da corrida                                    ║
-// ║ • DataAgenda, HoraAgenda - Data e hora agendada                             ║
-// ║ • DataHoraCancelamento, HoraCancelamento - Momento do cancelamento          ║
-// ║ • TipoCancelamento - Tipo (usuário, motorista, sistema)                     ║
-// ║ • MotivoCancelamento - Motivo informado para o cancelamento                 ║
-// ║ • TempoEspera - Tempo de espera até o cancelamento (minutos)                ║
-// ║                                                                              ║
-// ║ USO:                                                                          ║
-// ║ • Análise de cancelamentos para melhoria do serviço                         ║
-// ║ • Cálculo de glosas por cancelamentos indevidos                             ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

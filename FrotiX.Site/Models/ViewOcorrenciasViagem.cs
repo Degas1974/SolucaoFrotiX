@@ -1,25 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: ViewOcorrenciasViagem.cs                                           ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Modelo para VIEW de banco com ocorrências e dados completos de viagem.      ║
-// ║ Desnormalizada para listagens com joins pré-computados.                     ║
-// ║                                                                              ║
-// ║ CAMPOS DA VIEW:                                                              ║
-// ║ - Ocorrência: OcorrenciaViagemId, Resumo, Descricao, Status, Observacoes    ║
-// ║ - Datas: DataCriacao, DataBaixa, DiasEmAberto, Urgencia, CorUrgencia        ║
-// ║ - Viagem: ViagemId, DataInicial/Final, HoraInicio/Fim, NoFichaVistoria      ║
-// ║ - Viagem: Origem, Destino, FinalidadeViagem, StatusViagem                   ║
-// ║ - Veículo: VeiculoId, Placa, MarcaModelo, VeiculoCompleto                   ║
-// ║ - Motorista: MotoristaId, NomeMotorista, FotoMotorista                      ║
-// ║ - Usuários: UsuarioCriacao, UsuarioBaixa                                    ║
-// ║                                                                              ║
-// ║ USO: Tela de gestão de ocorrências, relatórios                              ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 #nullable enable
 using System;
 using System.ComponentModel.DataAnnotations;

@@ -1,11 +1,3 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
- * ║  Seção: ViagemController.HeatmapEconomildoPassageiros.cs                 ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
-
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;
@@ -17,77 +9,57 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ CONTROLLER: Viagem API (Partial - HeatmapEconomildoPassageiros)
-     * 🎯 OBJETIVO: Gerar matriz 7×24 (dia da semana × hora) com soma de PASSAGEIROS Economildo
-     * 📋 ROTAS: /api/viagem/HeatmapEconomildoPassageiros [GET]
-     * 🔗 ENTIDADES: ViewFluxoEconomildo (view materializada)
-     * 📦 DEPENDÊNCIAS: IUnitOfWork
-     * 📊 FORMATO: Heatmap para visualização de densidade de passageiros por período
-     * 📝 NOTA: Classe parcial - ver ViagemController.cs principal
-     ****************************************************************************************/
     public partial class ViagemController
     {
         #region Heatmap Economildo Passageiros
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: HeatmapEconomildoPassageiros
-         * 🎯 OBJETIVO: Gerar matriz 7×24 com SOMA de passageiros Economildo por dia da semana e hora
-         * 📥 ENTRADAS: mob (opcional), mes (opcional), ano (opcional)
-         * 📤 SAÍDAS: JSON { success, data: Array<{ diaSemana, diaIndex, horas: int[24] }>, maxValor, totalPassageiros }
-         * 🔗 CHAMADA POR: Dashboard Economildo (gráfico heatmap de passageiros)
-         * 🔄 CHAMA: ViewFluxoEconomildo.GetAll()
-         * 📊 LÓGICA:
-         *    1. Filtra viagens por MOB/mês/ano (opcional)
-         *    2. Cria matriz 7×24 (dias × horas)
-         *    3. SOMA passageiros (QtdPassageiros) para cada slot dia/hora
-         *    4. Retorna array com 7 objetos (um por dia) + horas[24]
-         ****************************************************************************************/
+        /// <summary>
+        /// Retorna matriz 7x24 com quantidade de PASSAGEIROS Economildo por dia da semana e hora
+        /// </summary>
         [HttpGet]
         [Route("HeatmapEconomildoPassageiros")]
         public IActionResult HeatmapEconomildoPassageiros(string? mob, string? mes, string? ano)
         {
             try
             {
-                // [DOC] Usa view materializada ViewFluxoEconomildo para performance otimizada
+                // Usar ViewFluxoEconomildo que já tem os dados necessários
                 var viagens = _unitOfWork.ViewFluxoEconomildo.GetAll();
 
-                // [DOC] Filtro por MOB (opcional)
+                // Filtro por MOB
                 if (!string.IsNullOrEmpty(mob))
                 {
                     viagens = viagens.Where(v => v.MOB == mob);
                 }
 
-                // [DOC] Filtro por mês (opcional)
+                // Filtro por mês
                 if (!string.IsNullOrEmpty(mes) && int.TryParse(mes, out int mesInt))
                 {
                     viagens = viagens.Where(v => v.Data.HasValue && v.Data.Value.Month == mesInt);
                 }
 
-                // [DOC] Filtro por ano (opcional)
+                // Filtro por ano
                 if (!string.IsNullOrEmpty(ano) && int.TryParse(ano, out int anoInt))
                 {
                     viagens = viagens.Where(v => v.Data.HasValue && v.Data.Value.Year == anoInt);
                 }
 
-                // [DOC] Materializar a query antes de processar
+                // Materializar a query
                 var listaViagens = viagens.ToList();
 
-                // [DOC] Cria matriz 7×24 para SOMA DE PASSAGEIROS (diferente do heatmap de viagens que conta trips)
+                // Criar matriz 7x24 (dias x horas) - SOMA DE PASSAGEIROS
                 var heatmap = new int[7, 24];
                 int maxValor = 0;
 
-                // [DOC] Popula matriz somando passageiros para cada slot dia/hora
                 foreach (var v in listaViagens)
                 {
                     if (!v.Data.HasValue || string.IsNullOrEmpty(v.HoraInicio))
                         continue;
 
-                    // [DOC] Converte DayOfWeek para índice (0=Segunda, 6=Domingo)
+                    // Converter DayOfWeek para índice (0=Segunda, 6=Domingo)
                     int diaSemana = (int)v.Data.Value.DayOfWeek;
-                    int diaIndex = diaSemana == 0 ? 6 : diaSemana - 1;
+                    int diaIndex = diaSemana == 0 ? 6 : diaSemana - 1; // Sunday(0) vai para 6
 
-                    // [DOC] Extrai hora do campo HoraInicio (formato "HH:mm" ou "HH:mm:ss")
+                    // Extrair hora do campo HoraInicio (formato esperado: "HH:mm" ou "HH:mm:ss")
                     int horaIndex = 0;
                     if (TimeSpan.TryParse(v.HoraInicio, out TimeSpan horaTimeSpan))
                     {
@@ -98,15 +70,14 @@ namespace FrotiX.Controllers
                         horaIndex = Math.Clamp(horaInt, 0, 23);
                     }
 
-                    // [DOC] DIFERENÇA CHAVE: Soma passageiros (QtdPassageiros) ao invés de contar viagens
+                    // Somar passageiros ao invés de contar viagens
                     heatmap[diaIndex, horaIndex] += v.QtdPassageiros ?? 0;
 
-                    // [DOC] Atualiza valor máximo para normalização de escala de cores
                     if (heatmap[diaIndex, horaIndex] > maxValor)
                         maxValor = heatmap[diaIndex, horaIndex];
                 }
 
-                // [DOC] Converte matriz para lista de objetos (um por dia) para serialização JSON
+                // Converter para lista de objetos para JSON
                 var dados = new List<object>();
                 var diasNomes = new[] { "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo" };
 
@@ -122,11 +93,10 @@ namespace FrotiX.Controllers
                     {
                         diaSemana = diasNomes[dia],
                         diaIndex = dia,
-                        horas = horasArray // Array de 24 posições com soma de passageiros por hora
+                        horas = horasArray
                     });
                 }
 
-                // [DOC] Retorna dados + total geral de passageiros (diferente do heatmap de viagens que retorna totalViagens)
                 return Json(new
                 {
                     success = true,

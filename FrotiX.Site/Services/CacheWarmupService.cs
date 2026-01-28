@@ -1,27 +1,4 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: CacheWarmupService.cs                                               ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ HostedService para pré-aquecimento de cache na inicialização da aplicação.   ║
-// ║ Carrega dados frequentemente acessados em memória antes de atender requests. ║
-// ║                                                                              ║
-// ║ DADOS PRÉ-CARREGADOS:                                                        ║
-// ║ - Lista de motoristas (CacheKeys.Motoristas)                                 ║
-// ║ - Lista de veículos (CacheKeys.Veiculos)                                     ║
-// ║ - Lista de veículos reserva (CacheKeys.VeiculosReserva)                      ║
-// ║                                                                              ║
-// ║ CONFIGURAÇÃO:                                                                ║
-// ║ - TTL: 30 minutos (tempo de vida do cache)                                   ║
-// ║ - Refresh: 10 minutos (loop de atualização em background)                    ║
-// ║                                                                              ║
-// ║ COMPORTAMENTO:                                                               ║
-// ║ 1. StartAsync: Warmup BLOQUEANTE (garante cache pronto)                      ║
-// ║ 2. RefreshLoop: Atualização periódica em background                          ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 14                                        ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
+// Services/CacheWarmupService.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,9 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-/// <summary>
-/// HostedService para pré-aquecimento de cache na inicialização.
-/// </summary>
 public sealed class CacheWarmupService : IHostedService, IDisposable
 {
     private readonly IServiceProvider _sp;

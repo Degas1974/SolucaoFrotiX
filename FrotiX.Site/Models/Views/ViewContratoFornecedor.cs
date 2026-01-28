@@ -1,21 +1,4 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: ViewContratoFornecedor.cs                                          ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Modelo simples para dropdown de contratos com fornecedores.                 ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ - ContratoId: Identificador do contrato                                     ║
-// ║ - Descricao: Descrição do contrato                                          ║
-// ║ - TipoContrato: Tipo (Locação, Terceirização, etc)                          ║
-// ║                                                                              ║
-// ║ USO: Combos de seleção de contratos em formulários                          ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

@@ -1,25 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: OrgaoAutuante.cs                                                   ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade para cadastro de órgãos autuantes de trânsito.                     ║
-// ║ Representa entidades que emitem multas (DETRAN, PRF, Municipais).           ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • OrgaoAutuante - Entidade única (sem ViewModel separada)                   ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ • OrgaoAutuanteId [Key] - Identificador único                               ║
-// ║ • Sigla - Sigla do órgão (max 50 chars) - Ex: DETRAN, PRF                   ║
-// ║ • Nome - Nome completo (max 100 chars)                                      ║
-// ║                                                                              ║
-// ║ USO:                                                                          ║
-// ║ • Vinculação em multas para identificar emissor                             ║
-// ║ • Categorização de infrações por jurisdição                                 ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

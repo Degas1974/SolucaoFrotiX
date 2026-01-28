@@ -1,29 +1,4 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: ToastExtensions.cs                                                  ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Extension methods para exibição de notificações Toast.                       ║
-// ║ Permite exibir mensagens de feedback ao usuário de forma simplificada.       ║
-// ║                                                                              ║
-// ║ MÉTODOS PARA PageModel:                                                      ║
-// ║ - ShowToast()    → Exibe toast com cor e duração customizáveis               ║
-// ║ - ShowSuccess()  → Toast verde (sucesso) - duração padrão 2000ms             ║
-// ║ - ShowError()    → Toast vermelho (erro) - duração padrão 2000ms             ║
-// ║ - ShowWarning()  → Toast amarelo (aviso) - duração padrão 2000ms             ║
-// ║                                                                              ║
-// ║ MÉTODOS PARA Controller:                                                     ║
-// ║ - ShowToast()    → Exibe toast com cor e duração customizáveis               ║
-// ║                                                                              ║
-// ║ CORES DISPONÍVEIS:                                                           ║
-// ║ - "Verde"    → Sucesso                                                       ║
-// ║ - "Vermelho" → Erro                                                          ║
-// ║ - "Amarelo"  → Aviso/Warning                                                 ║
-// ║                                                                              ║
-// ║ DEPENDÊNCIA: IToastService (injetado via HttpContext.RequestServices)        ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 11                                        ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+// Arquivo: Extensions/ToastExtensions.cs
 
 using FrotiX.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -32,10 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FrotiX.Extensions
 {
-    /// <summary>
-    /// Extensions para exibição de notificações Toast.
-    /// Suporta PageModel e Controller.
-    /// </summary>
     public static class ToastExtensions
     {
         // Extension para PageModel

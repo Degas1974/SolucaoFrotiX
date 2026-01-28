@@ -1,20 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: EstatisticaAbastecimentoCategoria.cs                               ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Estatísticas de abastecimentos agrupadas por categoria de veículo.          ║
-// ║ Pré-calculado para gráficos de pizza/barra em dashboards.                   ║
-// ║                                                                              ║
-// ║ CAMPOS:                                                                      ║
-// ║ - Id, Ano, Mes: Identificação do período                                    ║
-// ║ - Categoria: Categoria do veículo (Passeio, Utilitário, etc)               ║
-// ║ - TotalAbastecimentos, ValorTotal, LitrosTotal                              ║
-// ║ - DataAtualizacao: Timestamp do cache                                       ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

@@ -1,11 +1,3 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
- * ║  Seção: UsuarioController.cs                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
-
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -15,14 +7,6 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ CONTROLLER: Usuario API (Partial Class)
-     * 🎯 OBJETIVO: Gerenciar usuários e controle de acesso a recursos
-     * 📋 ROTAS: /api/Usuario/* (Get, Delete, UpdateStatusUsuario, UpdateCargaPatrimonial, etc)
-     * 🔗 ENTIDADES: AspNetUsers, ControleAcesso, Recurso, ViewControleAcesso
-     * 📦 DEPENDÊNCIAS: IUnitOfWork
-     * 📝 NOTA: Classe parcial - métodos adicionais em UsuarioController.Usuarios.cs
-     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public partial class UsuarioController : Controller
@@ -41,15 +25,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Get
-         * 🎯 OBJETIVO: Listar todos os usuários com indicador de exclusão permitida
-         * 📥 ENTRADAS: Nenhuma
-         * 📤 SAÍDAS: JSON { data: List<{ UsuarioId, NomeCompleto, Ponto, DetentorCargaPatrimonial, Status, PodeExcluir }> }
-         * 🔗 CHAMADA POR: Grid de usuários
-         * 🔄 CHAMA: AspNetUsers.GetAll(), valida vínculos em 5 tabelas
-         * ⚠️ VALIDAÇÃO: Calcula PodeExcluir verificando ControleAcesso, Viagem, Manutencao, MovimentacaoPatrimonio, SetorPatrimonial
-         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
@@ -60,16 +35,16 @@ namespace FrotiX.Controllers
 
                 foreach (var u in usuarios)
                 {
-                    // [DOC] Verifica todos os vínculos para determinar se usuário pode ser excluído
+                    // Verificar se o usuário pode ser excluído (mesma lógica do Delete)
                     bool podeExcluir = true;
 
-                    // [DOC] Validação 1: ControleAcesso
+                    // 1. ControleAcesso
                     var temControleAcesso = _unitOfWork.ControleAcesso.GetFirstOrDefault(ca =>
                         ca.UsuarioId == u.Id
                     );
                     if (temControleAcesso != null) podeExcluir = false;
 
-                    // [DOC] Validação 2: Viagens (criação ou finalização)
+                    // 2. Viagens
                     if (podeExcluir)
                     {
                         var temViagens = _unitOfWork.Viagem.GetFirstOrDefault(v =>
@@ -78,7 +53,7 @@ namespace FrotiX.Controllers
                         if (temViagens != null) podeExcluir = false;
                     }
 
-                    // [DOC] Validação 3: Manutenções (criação, alteração, finalização ou cancelamento)
+                    // 3. Manutenções
                     if (podeExcluir)
                     {
                         var temManutencoes = _unitOfWork.Manutencao.GetFirstOrDefault(m =>
@@ -90,7 +65,7 @@ namespace FrotiX.Controllers
                         if (temManutencoes != null) podeExcluir = false;
                     }
 
-                    // [DOC] Validação 4: MovimentacaoPatrimonio (responsável)
+                    // 4. MovimentacaoPatrimonio
                     if (podeExcluir)
                     {
                         var temMovimentacao = _unitOfWork.MovimentacaoPatrimonio.GetFirstOrDefault(mp =>
@@ -99,7 +74,7 @@ namespace FrotiX.Controllers
                         if (temMovimentacao != null) podeExcluir = false;
                     }
 
-                    // [DOC] Validação 5: SetorPatrimonial (detentor)
+                    // 5. SetorPatrimonial
                     if (podeExcluir)
                     {
                         var temSetor = _unitOfWork.SetorPatrimonial.GetFirstOrDefault(sp =>
@@ -135,16 +110,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Delete
-         * 🎯 OBJETIVO: Excluir usuário (valida vínculos extensivamente antes de remover)
-         * 📥 ENTRADAS: users (AspNetUsers com Id)
-         * 📤 SAÍDAS: JSON { success, message } - message inclui HTML com lista de vínculos se houver
-         * 🔗 CHAMADA POR: Modal de exclusão de usuário
-         * 🔄 CHAMA: AspNetUsers.GetFirstOrDefault(), valida 5 tabelas, AspNetUsers.Remove()
-         * ⚠️ VALIDAÇÕES: Impede exclusão se houver vínculos em qualquer das 5 áreas
-         * 💬 FEEDBACK: Mensagem HTML formatada com lista de vínculos encontrados
-         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(AspNetUsers users)
@@ -161,10 +126,10 @@ namespace FrotiX.Controllers
                     });
                 }
 
-                // [DOC] Lista acumuladora de vínculos encontrados para feedback detalhado
+                // Verificar vínculos com outras tabelas
                 var vinculos = new List<string>();
 
-                // [DOC] Validação 1: ControleAcesso
+                // 1. ControleAcesso
                 var temControleAcesso = _unitOfWork.ControleAcesso.GetFirstOrDefault(ca =>
                     ca.UsuarioId == users.Id
                 );
@@ -173,7 +138,7 @@ namespace FrotiX.Controllers
                     vinculos.Add("Controle de Acesso a Recursos");
                 }
 
-                // [DOC] Validação 2: Viagens (Criação e Finalização)
+                // 2. Viagens (Criação e Finalização)
                 var temViagens = _unitOfWork.Viagem.GetFirstOrDefault(v =>
                     v.UsuarioIdCriacao == users.Id || v.UsuarioIdFinalizacao == users.Id
                 );
@@ -182,7 +147,7 @@ namespace FrotiX.Controllers
                     vinculos.Add("Viagens (como responsável pelo cadastro ou finalização)");
                 }
 
-                // [DOC] Validação 3: Manutenções (4 tipos de operação)
+                // 3. Manutenções
                 var temManutencoes = _unitOfWork.Manutencao.GetFirstOrDefault(m =>
                     m.IdUsuarioAlteracao == users.Id ||
                     m.IdUsuarioCriacao == users.Id ||
@@ -194,7 +159,7 @@ namespace FrotiX.Controllers
                     vinculos.Add("Manutenções (como responsável pelo cadastro, alteração, finalização ou cancelamento)");
                 }
 
-                // [DOC] Validação 4: MovimentacaoPatrimonio
+                // 4. MovimentacaoPatrimonio
                 var temMovimentacao = _unitOfWork.MovimentacaoPatrimonio.GetFirstOrDefault(mp =>
                     mp.ResponsavelMovimentacao == users.Id
                 );
@@ -203,7 +168,7 @@ namespace FrotiX.Controllers
                     vinculos.Add("Movimentações de Patrimônio (como responsável)");
                 }
 
-                // [DOC] Validação 5: SetorPatrimonial
+                // 5. SetorPatrimonial
                 var temSetor = _unitOfWork.SetorPatrimonial.GetFirstOrDefault(sp =>
                     sp.DetentorId == users.Id
                 );
@@ -212,7 +177,7 @@ namespace FrotiX.Controllers
                     vinculos.Add("Setores Patrimoniais (como detentor)");
                 }
 
-                // [DOC] Se houver vínculos, retorna mensagem HTML formatada com a lista
+                // Se houver vínculos, impedir exclusão
                 if (vinculos.Any())
                 {
                     var mensagemVinculos = string.Join(", ", vinculos);
@@ -230,7 +195,7 @@ namespace FrotiX.Controllers
                     );
                 }
 
-                // [DOC] Se não houver vínculos, pode excluir
+                // Se não houver vínculos, pode excluir
                 _unitOfWork.AspNetUsers.Remove(objFromDb);
                 _unitOfWork.Save();
 
@@ -251,14 +216,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: UpdateStatusUsuario
-         * 🎯 OBJETIVO: Alternar status do usuário (Ativo ↔ Inativo)
-         * 📥 ENTRADAS: Id (UsuarioId String)
-         * 📤 SAÍDAS: JSON { success, message, type (0=ativo, 1=inativo) }
-         * 🔗 CHAMADA POR: Toggle de status no grid
-         * 🔄 CHAMA: AspNetUsers.GetFirstOrDefault(), AspNetUsers.Update()
-         ****************************************************************************************/
         [Route("UpdateStatusUsuario")]
         public JsonResult UpdateStatusUsuario(String Id)
         {
@@ -272,7 +229,6 @@ namespace FrotiX.Controllers
 
                     if (objFromDb != null)
                     {
-                        // [DOC] Toggle status: true → false (type=1) ou false → true (type=0)
                         if (objFromDb.Status == true)
                         {
                             objFromDb.Status = false;
@@ -317,14 +273,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: UpdateCargaPatrimonial
-         * 🎯 OBJETIVO: Alternar flag de detentor de carga patrimonial (Sim ↔ Não)
-         * 📥 ENTRADAS: Id (UsuarioId String)
-         * 📤 SAÍDAS: JSON { success, message, type (0=sim, 1=não) }
-         * 🔗 CHAMADA POR: Toggle no grid de usuários
-         * 🔄 CHAMA: AspNetUsers.GetFirstOrDefault(), AspNetUsers.Update()
-         ****************************************************************************************/
         [Route("UpdateCargaPatrimonial")]
         public JsonResult UpdateCargaPatrimonial(String Id)
         {
@@ -338,7 +286,6 @@ namespace FrotiX.Controllers
 
                     if (objFromDb != null)
                     {
-                        // [DOC] Toggle DetentorCargaPatrimonial: true → false ou false → true
                         if (objFromDb.DetentorCargaPatrimonial == true)
                         {
                             objFromDb.DetentorCargaPatrimonial = false;
@@ -387,21 +334,11 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: UpdateStatusAcesso
-         * 🎯 OBJETIVO: Alternar permissão de acesso de usuário a recurso específico
-         * 📥 ENTRADAS: IDS (String concatenada "usuarioId|recursoId" separada por pipe)
-         * 📤 SAÍDAS: JSON { success, message, type (0=com acesso, 1=sem acesso) }
-         * 🔗 CHAMADA POR: Toggle de acesso na matriz usuário-recurso
-         * 🔄 CHAMA: ControleAcesso.GetFirstOrDefault(), ControleAcesso.Update()
-         * 🔀 PARSING: Separa string de entrada por pipe para extrair IDs
-         ****************************************************************************************/
         [Route("UpdateStatusAcesso")]
         public JsonResult UpdateStatusAcesso(String IDS)
         {
             try
             {
-                // [DOC] Parse da string concatenada "usuarioId|recursoId"
                 string inputString = IDS;
                 char separator = '|';
 
@@ -418,7 +355,6 @@ namespace FrotiX.Controllers
 
                 if (objFromDb != null)
                 {
-                    // [DOC] Toggle acesso: true → false (type=1) ou false → true (type=0)
                     if (objFromDb.Acesso == true)
                     {
                         objFromDb.Acesso = false;
@@ -457,14 +393,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: PegaRecursosUsuario
-         * 🎯 OBJETIVO: Listar recursos e permissões de um usuário específico
-         * 📥 ENTRADAS: UsuarioId (String)
-         * 📤 SAÍDAS: JSON { data: registros da ViewControleAcesso }
-         * 🔗 CHAMADA POR: Modal de gerenciamento de permissões do usuário
-         * 🔄 CHAMA: ViewControleAcesso.GetAll()
-         ****************************************************************************************/
         [Route("PegaRecursosUsuario")]
         [HttpGet]
         public IActionResult PegaRecursosUsuario(String UsuarioId)
@@ -491,14 +419,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: PegaUsuariosRecurso
-         * 🎯 OBJETIVO: Listar usuários e permissões para um recurso específico
-         * 📥 ENTRADAS: RecursoId (String - Guid)
-         * 📤 SAÍDAS: JSON { data: registros da ViewControleAcesso ordenados por nome }
-         * 🔗 CHAMADA POR: Modal de gerenciamento de permissões do recurso
-         * 🔄 CHAMA: ViewControleAcesso.GetAll()
-         ****************************************************************************************/
         [Route("PegaUsuariosRecurso")]
         [HttpGet]
         public IActionResult PegaUsuariosRecurso(String RecursoId)
@@ -525,22 +445,12 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: InsereRecursosUsuario
-         * 🎯 OBJETIVO: Criar registros de controle de acesso para todos usuários x recursos (inicialização)
-         * 📥 ENTRADAS: Nenhuma
-         * 📤 SAÍDAS: JSON { data: true }
-         * 🔗 CHAMADA POR: Script de inicialização/migração do sistema
-         * 🔄 CHAMA: AspNetUsers.GetAll(), Recurso.GetAll(), ControleAcesso.Add() (loop duplo)
-         * ⚠️ ATENÇÃO: Operação custosa - cria N x M registros (usuários × recursos)
-         ****************************************************************************************/
         [Route("InsereRecursosUsuario")]
         [HttpPost]
         public IActionResult InsereRecursosUsuario()
         {
             try
             {
-                // [DOC] Busca todos usuários e recursos do sistema
                 var objUsuarios = (
                     from u in _unitOfWork.AspNetUsers.GetAll()
                     select new
@@ -555,7 +465,6 @@ namespace FrotiX.Controllers
 
                 var objRecursos = _unitOfWork.Recurso.GetAll();
 
-                // [DOC] Loop duplo: cria registro para cada combinação usuário-recurso
                 foreach (var usuario in objUsuarios)
                 {
                     foreach (var recurso in objRecursos)
@@ -591,22 +500,12 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: listaUsuariosDetentores
-         * 🎯 OBJETIVO: Listar usuários detentores de carga patrimonial ativos
-         * 📥 ENTRADAS: Nenhuma
-         * 📤 SAÍDAS: JSON { success, data: List<{ UsuarioId, NomeCompleto }> }
-         * 🔗 CHAMADA POR: Combobox de detentores em formulários patrimoniais
-         * 🔄 CHAMA: AspNetUsers.GetAll()
-         * 🔍 FILTRO: DetentorCargaPatrimonial == true && Status == true
-         ****************************************************************************************/
         [HttpGet]
         [Route("listaUsuariosDetentores")]
         public IActionResult listaUsuariosDetentores()
         {
             try
             {
-                // [DOC] Filtra apenas usuários ativos que são detentores de carga
                 var result = (
                     from u in _unitOfWork.AspNetUsers.GetAll(u =>
                         u.DetentorCargaPatrimonial == true && u.Status == true
@@ -639,15 +538,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: DeleteRecurso
-         * 🎯 OBJETIVO: Excluir recurso (valida se há controle de acesso associado)
-         * 📥 ENTRADAS: RecursoId (String - Guid)
-         * 📤 SAÍDAS: JSON { success, message }
-         * 🔗 CHAMADA POR: Modal de exclusão de recurso
-         * 🔄 CHAMA: Recurso.GetFirstOrDefault(), ControleAcesso.GetFirstOrDefault(), Recurso.Remove()
-         * ⚠️ VALIDAÇÃO: Impede exclusão se houver controle de acesso associado
-         ****************************************************************************************/
         [Route("DeleteRecurso")]
         [HttpPost]
         public IActionResult DeleteRecurso([FromBody] string RecursoId)
@@ -659,7 +549,6 @@ namespace FrotiX.Controllers
                 );
                 if (objRecursos != null)
                 {
-                    // [DOC] Valida integridade referencial: não permite excluir recurso com permissões
                     var objControleAcesso = _unitOfWork.ControleAcesso.GetFirstOrDefault(ca =>
                         ca.RecursoId == objRecursos.RecursoId
                     );

@@ -1,29 +1,4 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: NavigationModel.cs                                                 ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Modelo de navegação que implementa INavigationModel.                        ║
-// ║ Constrói menu lateral dinamicamente baseado em permissões do usuário.       ║
-// ║                                                                              ║
-// ║ FUNCIONAMENTO:                                                               ║
-// ║ 1. Lê nav.json com estrutura completa do menu                               ║
-// ║ 2. Para cada item, verifica se recurso existe em Recurso                    ║
-// ║ 3. Verifica permissão do usuário em ControleAcesso                          ║
-// ║ 4. Só adiciona item ao menu se usuário tem acesso                           ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ - Full: Menu completo com todos os itens permitidos                         ║
-// ║ - Seed: Menu básico (itens com ShowOnSeed = true)                           ║
-// ║                                                                              ║
-// ║ TIPOS DE ITEM: Category, Single, Parent, Sibling, Child                     ║
-// ║                                                                              ║
-// ║ DEPENDÊNCIAS: IUnitOfWork, IHttpContextAccessor, nav.json                   ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

@@ -1,22 +1,4 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: HigienizacaoDto.cs                                                 ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ DTOs para operações de higienização/limpeza de dados de viagens.            ║
-// ║ Usado pelo ViagemLimpezaController para correção em massa.                  ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                     ║
-// ║ - HigienizacaoDto: Request genérico (Tipo: origem/destino)                  ║
-// ║ - CorrecaoOrigemDto: Corrigir múltiplas origens para NovaOrigem             ║
-// ║ - CorrecaoDestinoDto: Corrigir múltiplos destinos para NovoDestino          ║
-// ║                                                                              ║
-// ║ EXEMPLO: Unificar "SEDE", "Sede", "sede" → "Sede"                           ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 
 namespace FrotiX.Models.DTO

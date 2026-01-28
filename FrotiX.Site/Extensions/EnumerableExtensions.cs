@@ -1,28 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: EnumerableExtensions.cs                                             ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Extension methods para IEnumerable e serialização JSON.                      ║
-// ║ Utilitários genéricos usados em todo o sistema.                              ║
-// ║                                                                              ║
-// ║ MÉTODOS DISPONÍVEIS:                                                         ║
-// ║ - HasItems<T>()     → Verifica se coleção não é nula e tem elementos         ║
-// ║ - IsNullOrEmpty<T>()→ Verifica se coleção é nula ou vazia                    ║
-// ║ - ToSafeList<T>()   → Converte para List<T> de forma segura                  ║
-// ║ - MapTo<T>()        → Mapeia objeto para outro tipo via JSON (deep clone)    ║
-// ║ - MapTo<S,T>()      → Mapeia objeto tipado para outro tipo                   ║
-// ║ - MapTo<S,T>(IEnum) → Mapeia coleção para outra coleção de tipo diferente    ║
-// ║                                                                              ║
-// ║ CONFIGURAÇÃO JSON:                                                           ║
-// ║ - Ignora nulos (JsonIgnoreCondition.WhenWritingNull)                         ║
-// ║ - Formatação indentada para legibilidade                                     ║
-// ║ - CamelCase para propriedades                                                ║
-// ║ - Enums como strings                                                         ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 11                                        ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -31,10 +6,6 @@ using System.Text.Json.Serialization;
 
 namespace FrotiX.Extensions
     {
-    /// <summary>
-    /// Extensions para IEnumerable e serialização JSON.
-    /// Inclui HasItems, IsNullOrEmpty, ToSafeList e MapTo.
-    /// </summary>
     public static class EnumerableExtensions
         {
         [DebuggerStepThrough]

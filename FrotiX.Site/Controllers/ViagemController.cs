@@ -1,11 +1,3 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
- * ║  Seção: ViagemController.cs                                              ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
-
 using FrotiX.Data;
 using FrotiX.Models;
 using FrotiX.Models.DTO;
@@ -32,34 +24,6 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ CONTROLLER: Viagem API (Partial - ARQUIVO PRINCIPAL)
-     * 🎯 OBJETIVO: Controller principal de viagens - gerenciar CRUD completo de viagens
-     * 📋 ROTAS PRINCIPAIS:
-     *    - GET /api/Viagem - Listar viagens
-     *    - GET /api/Viagem/{id} - Obter viagem por ID
-     *    - POST /api/Viagem/Upsert - Criar ou atualizar viagem
-     *    - DELETE /api/Viagem/Delete - Deletar viagem
-     *    + MUITAS outras rotas (estatísticas, dashboards, relatórios, etc.)
-     * 🔗 ENTIDADES: Viagem, ViewViagens, Veiculo, Motorista, Evento, Ocorrencia
-     * 📦 DEPENDÊNCIAS:
-     *    - FrotiXDbContext, IUnitOfWork, IViagemRepository
-     *    - MotoristaFotoService, IMemoryCache, IServiceScopeFactory
-     *    - ViagemEstatisticaService, VeiculoEstatisticaService
-     * 📝 NOTA: Classe parcial com múltiplos arquivos:
-     *    - ViagemController.cs (PRINCIPAL - 3.101 linhas)
-     *    - ViagemController.DashboardEconomildo.cs
-     *    - ViagemController.CalculoCustoBatch.cs
-     *    - ViagemController.AtualizarDados.cs
-     *    - ViagemController.AtualizarDadosViagem.cs
-     *    - ViagemController.CustosViagem.cs
-     *    - ViagemController.DesassociarEvento.cs
-     *    - ViagemController.HeatmapEconomildo.cs
-     *    - ViagemController.HeatmapEconomildoPassageiros.cs
-     *    - ViagemController.ListaEventos.cs
-     *    - ViagemController.MetodosEstatisticas.cs
-     * ⚠️ ARQUIVO MUITO GRANDE: 3.101 linhas com dezenas de métodos
-     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     [IgnoreAntiforgeryToken]
@@ -103,20 +67,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: viagemsFilters (PRIVATE STATIC HELPER)
-         * 🎯 OBJETIVO: Criar expressão de filtro dinâmico para consultas de viagens
-         * 📥 ENTRADAS: veiculoId, motoristaId, dataViagem, statusId, eventoId
-         * 📤 SAÍDAS: Expression<Func<ViewViagens, bool>> (expressão LINQ)
-         * 🔗 CHAMADA POR: Get(), FluxoFiltrado() e outros métodos de consulta
-         * 📊 FILTROS:
-         *    - StatusAgendamento == false (sempre)
-         *    - Status (opcional)
-         *    - MotoristaId (opcional)
-         *    - VeiculoId (opcional)
-         *    - EventoId (opcional)
-         *    - DataInicial (opcional, parseada de dd/MM/yyyy)
-         ****************************************************************************************/
         private static Expression<Func<ViewViagens , bool>> viagemsFilters(
             Guid veiculoId ,
             Guid motoristaId ,
@@ -264,12 +214,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: ExisteFichaParaData
-         * 🎯 OBJETIVO: Verificar se existe viagem Economildo para data específica
-         * 📥 ENTRADAS: data (string yyyy-MM-dd)
-         * 📤 SAÍDAS: JSON boolean (true se existe, false se não)
-         ****************************************************************************************/
         [Route("ExisteFichaParaData")]
         public JsonResult ExisteFichaParaData(string data)
         {
@@ -295,12 +239,7 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: VerificaFichaExiste
-         * 🎯 OBJETIVO: Verificar se ficha de vistoria já existe (evitar duplicidade)
-         * 📥 ENTRADAS: noFichaVistoria (int)
-         * 📤 SAÍDAS: JSON { success, data: { existe, viagemId, fichaId } }
-         ****************************************************************************************/
+        // ViagemController.cs
         [Route("VerificaFichaExiste")]
         [HttpGet]
         public IActionResult VerificaFichaExiste(int noFichaVistoria)
@@ -536,14 +475,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * 📦 CLASSE: UnificacaoRequest
-         * 🎯 OBJETIVO: Request para unificação de origens/destinos
-         * 📋 PROPRIEDADES:
-         *    - NovoValor: Valor normalizado final
-         *    - OrigensSelecionadas: Lista de origens a unificar
-         *    - DestinosSelecionados: Lista de destinos a unificar
-         ****************************************************************************************/
         public class UnificacaoRequest
         {
             public string NovoValor
@@ -562,20 +493,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Unificar
-         * 🎯 OBJETIVO: Unificar valores de Origem e/ou Destino (correção em massa)
-         * 📥 ENTRADAS: request (UnificacaoRequest com NovoValor e listas de valores antigos)
-         * 📤 SAÍDAS: OK { mensagem } ou BadRequest/StatusCode 500
-         * 🔗 CHAMADA POR: Interface de limpeza de dados (unificação de origens/destinos)
-         * 🔄 CHAMA: Viagem.GetAllReduced(), Update(), Save()
-         * 📊 ALGORITMO:
-         *    1. Normaliza valores selecionados (remove espaços, acentos, caracteres especiais)
-         *    2. Busca viagens com origens/destinos normalizados correspondentes
-         *    3. Atualiza para NovoValor
-         *    4. Salva em batch
-         * 📝 NOTA: Função de limpeza de dados - unifica variações do mesmo local
-         ****************************************************************************************/
         [HttpPost]
         [Route("Unificar")]
         public IActionResult Unificar([FromBody] UnificacaoRequest request)
@@ -683,23 +600,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Get (MÉTODO PRINCIPAL DE CONSULTA)
-         * 🎯 OBJETIVO: Listar viagens com filtros opcionais (CRUD Read)
-         * 📥 ENTRADAS: veiculoId, motoristaId, statusId, dataViagem, eventoId (todos opcionais)
-         * 📤 SAÍDAS: JSON { data: Array<ViewViagens projetado> }
-         * 🔗 CHAMADA POR: Frontend (DataTable principal de viagens)
-         * 🔄 CHAMA: ViewViagens.GetAll() com viagemsFilters()
-         * ⚡ OTIMIZAÇÃO:
-         *    - Ordenação no banco (SQL ORDER BY)
-         *    - Projeção no banco (SQL SELECT específico)
-         *    - AsNoTracking (read-only query)
-         * 📊 ORDENAÇÃO ESPECIAL:
-         *    1. NoFichaVistoria = 0 ou null primeiro (para preenchimento)
-         *    2. DataInicial DESC
-         *    3. HoraInicio DESC
-         *    4. NoFichaVistoria DESC
-         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get(
             string veiculoId = null ,

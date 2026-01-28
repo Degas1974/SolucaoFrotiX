@@ -1,30 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: CoberturaFolga.cs                                                  ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ ViewModel para gestão de coberturas de folga entre motoristas.              ║
-// ║ Permite escalar motorista substituto durante ausências.                     ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • CoberturaFolgaViewModel - ViewModel para o formulário                     ║
-// ║ • (Entidade CoberturaFolga está em Escalas.cs)                              ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ • CoberturaId - ID da cobertura                                             ║
-// ║ • MotoristaFolgaId - Motorista que está em folga                            ║
-// ║ • MotoristaCoberturaId - Motorista que vai cobrir                           ║
-// ║ • DataInicio, DataFim - Período da cobertura                                ║
-// ║ • Motivo - Motivo da ausência (Folga, Férias, Atestado)                     ║
-// ║ • StatusOriginal - Status original do motorista em folga                    ║
-// ║ • Observacoes - Observações adicionais                                      ║
-// ║ • MotoristaList - Dropdown de motoristas                                    ║
-// ║ • NomeMotoristaFolga, NomeMotoristaCobertor - Nomes para exibição           ║
-// ║                                                                              ║
-// ║ NOTA: Inicializa DataInicio/DataFim com DateTime.Today                      ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

@@ -1,25 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: RepactuacaoVeiculo.cs                                              ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade para armazenar valores individuais de veículos em repactuações.    ║
-// ║ Cada veículo pode ter valor diferente dentro de uma mesma repactuação.      ║
-// ║                                                                              ║
-// ║ CAMPOS:                                                                      ║
-// ║ - RepactuacaoVeiculoId: Chave primária                                      ║
-// ║ - RepactuacaoContratoId: FK para RepactuacaoContrato                        ║
-// ║ - VeiculoId: FK para Veiculo                                                ║
-// ║ - Valor: Valor mensal do veículo nesta repactuação (R$)                     ║
-// ║ - Observacao: Observações específicas do veículo                            ║
-// ║                                                                              ║
-// ║ RELACIONAMENTOS:                                                             ║
-// ║ - RepactuacaoContrato (N:1) - Repactuação pai                               ║
-// ║ - Veiculo (N:1) - Veículo referenciado                                      ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 #nullable enable
 using System;
 using System.ComponentModel.DataAnnotations;

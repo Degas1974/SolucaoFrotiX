@@ -1,11 +1,3 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
- * ║  Seção: PatrimonioController.cs                                          ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
-
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -21,14 +13,7 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ CONTROLLER: Patrimonio API
-     * 🎯 OBJETIVO: Gerenciar patrimônios, movimentações e hierarquia setor/seção
-     * 📋 ROTAS: /api/Patrimonio/*
-     * 🔗 ENTIDADES: Patrimonio, MovimentacaoPatrimonio, SetorPatrimonial, SecaoPatrimonial
-     * 📦 DEPENDÊNCIAS: IUnitOfWork, IMemoryCache
-     * 🔒 CONCORRÊNCIA: HashSet para prevenir movimentações duplicadas
-     ****************************************************************************************/
+    // Adicionar estes métodos ao PatrimonioController.cs existente
 
     [Route("api/[controller]")]
     [ApiController]
@@ -46,30 +31,20 @@ namespace FrotiX.Controllers
             _cache = cache;
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Get (Listar Patrimônios Filtrados)
-         * 🎯 OBJETIVO: Buscar patrimônios com filtros múltiplos (marca, modelo, setor, seção, situação)
-         * 📥 ENTRADAS: marca, modelo, setor, secao, situacao (strings, valores separados por vírgula)
-         * 📤 SAÍDAS: JSON { success, data: List<ViewPatrimonioConferencia> }
-         * 🔗 CHAMADA POR: Frontend (grids de conferência/relatórios de patrimônio)
-         * 🔄 CHAMA: ViewPatrimonioConferencia.GetAll()
-         ****************************************************************************************/
         // GET: api/Patrimonio/Get
         [HttpGet]
         public IActionResult Get(string marca = "" , string modelo = "" , string setor = "" , string secao = "" , string situacao = "")
         {
             try
             {
-                // [DOC] ViewPatrimonioConferencia une dados de Patrimonio + SetorPatrimonial + SecaoPatrimonial
                 var query = _unitOfWork.ViewPatrimonioConferencia.GetAll().AsQueryable();
 
-                // [DOC] Aplicar filtros se fornecidos (permite múltiplos valores separados por vírgula)
+                // Aplicar filtros se fornecidos
                 if (!string.IsNullOrWhiteSpace(marca))
                 {
                     var marcas = marca.Split(',').Select(m => m.Trim()).Where(m => !string.IsNullOrWhiteSpace(m)).ToList();
                     if (marcas.Any())
                     {
-                        // [DOC] Filtro IN: p.Marca IN ('Marca1', 'Marca2', ...)
                         query = query.Where(p => marcas.Contains(p.Marca));
                     }
                 }
@@ -131,14 +106,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: GetMovimentacao
-         * 🎯 OBJETIVO: Buscar detalhes de uma movimentação específica (origem/destino/patrimônio)
-         * 📥 ENTRADAS: id (Guid) - MovimentacaoPatrimonioId
-         * 📤 SAÍDAS: JSON { success, data: { movimentacao + nomes de setor/seção/patrimônio } }
-         * 🔗 CHAMADA POR: Modal de edição de movimentação
-         * 🔄 CHAMA: MovimentacaoPatrimonio, Patrimonio, SetorPatrimonial, SecaoPatrimonial
-         ****************************************************************************************/
         // GET: api/Patrimonio/GetMovimentacao
         [HttpGet]
         [Route("GetMovimentacao")]
@@ -217,16 +184,6 @@ namespace FrotiX.Controllers
         }
 
         // POST: api/Patrimonio/CreateMovimentacao
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: CreateMovimentacao
-         * 🎯 OBJETIVO: Criar nova movimentação de patrimônio (troca de setor/seção)
-         * 📥 ENTRADAS: dto (MovimentacaoPatrimonioDto: PatrimonioId, DataMovimentacao, SetorOrigemId, etc)
-         * 📤 SAÍDAS: JSON { success, message }
-         * 🔗 CHAMADA POR: Modal de criação de movimentação
-         * 🔄 CHAMA: MovimentacaoPatrimonio.Add(), Patrimonio.Update()
-         * 🔒 CONCORRÊNCIA: Lock e HashSet para prevenir submissões duplicadas
-         * 👤 AUDITORIA: Registra UsuarioIdCriacao via Claims
-         ****************************************************************************************/
         [HttpPost]
         [Route("CreateMovimentacao")]
         public IActionResult CreateMovimentacao([FromBody] MovimentacaoPatrimonioDto dto)
@@ -237,11 +194,10 @@ namespace FrotiX.Controllers
                 $"[{requestId}] Dados recebidos: PatrimonioId={dto.PatrimonioId}, Data={dto.DataMovimentacao}"
             );
 
-            // [DOC] Chave única para prevenir duplicação: PatrimonioId + Data
+            // Criar chave única para prevenir duplicação
             var requestKey =
                 $"{dto.PatrimonioId}_{dto.DataMovimentacao?.ToString("yyyyMMddHHmmss")}";
 
-            // [DOC] Lock: garante que apenas um thread processe esta movimentação por vez
             lock (_lockObject)
             {
                 if (_processandoRequests.Contains(requestKey))
@@ -459,14 +415,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: UpdateMovimentacao
-         * 🎯 OBJETIVO: Atualizar movimentação existente (altera destino/data)
-         * 📥 ENTRADAS: dto (MovimentacaoPatrimonioDto com MovimentacaoPatrimonioId)
-         * 📤 SAÍDAS: JSON { success, message }
-         * 🔗 CHAMADA POR: Modal de edição de movimentação
-         * 🔄 CHAMA: MovimentacaoPatrimonio.Update(), Patrimonio.Update()
-         ****************************************************************************************/
         // POST: api/Patrimonio/UpdateMovimentacao
         [HttpPost]
         [Route("UpdateMovimentacao")]
@@ -564,15 +512,6 @@ namespace FrotiX.Controllers
         }
 
         // DELETE: api/Patrimonio/DeleteMovimentacaoPatrimonio
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: DeleteMovimentacaoPatrimonio
-         * 🎯 OBJETIVO: Excluir movimentação e reverter patrimônio para setor/seção anterior
-         * 📥 ENTRADAS: dto (DeleteMovimentacaoDto com MovimentacaoPatrimonioId)
-         * 📤 SAÍDAS: JSON { success, message }
-         * 🔗 CHAMADA POR: Modal de exclusão de movimentação
-         * 🔄 CHAMA: MovimentacaoPatrimonio.Remove(), Patrimonio.Update()
-         * ⚠️  IMPORTANTE: Reverte patrimônio para localização anterior (origem)
-         ****************************************************************************************/
         [HttpPost]
         [Route("DeleteMovimentacaoPatrimonio")]
         public IActionResult DeleteMovimentacaoPatrimonio([FromBody] DeleteMovimentacaoDto dto)
@@ -623,14 +562,6 @@ namespace FrotiX.Controllers
         }
 
         // GET: api/Patrimonio/MovimentacaoPatrimonioGrid
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: MovimentacaoPatrimonioGrid
-         * 🎯 OBJETIVO: Listar movimentações com filtros para grid (data, patrimônio, responsável)
-         * 📥 ENTRADAS: dataInicio?, dataFim?, patrimonioId?, responsavelId?
-         * 📤 SAÍDAS: JSON { success, data: List<movimentações com joins> }
-         * 🔗 CHAMADA POR: Grid de movimentações patrimoniais
-         * 🔄 CHAMA: MovimentacaoPatrimonio + Patrimonio + SetorPatrimonial + SecaoPatrimonial (joins)
-         ****************************************************************************************/
         [HttpGet]
         [Route("MovimentacaoPatrimonioGrid")]
         public IActionResult MovimentacaoPatrimonioGrid(
@@ -781,14 +712,6 @@ namespace FrotiX.Controllers
         }
 
         // GET: api/Patrimonio/GetResponsaveisMovimentacoes
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: GetResponsaveisMovimentacoes
-         * 🎯 OBJETIVO: Listar usuários que já criaram movimentações (para filtro)
-         * 📥 ENTRADAS: Nenhuma
-         * 📤 SAÍDAS: JSON List<{ id, nome }>
-         * 🔗 CHAMADA POR: Combobox de filtro por responsável
-         * 🔄 CHAMA: MovimentacaoPatrimonio + ApplicationUser (join)
-         ****************************************************************************************/
         [HttpGet]
         [Route("GetResponsaveisMovimentacoes")]
         public IActionResult GetResponsaveisMovimentacoes()
@@ -823,14 +746,6 @@ namespace FrotiX.Controllers
         }
 
         // GET: api/Patrimonio/GetSetoresSecoesHierarquicos
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: GetSetoresSecoesHierarquicos
-         * 🎯 OBJETIVO: Retornar setores e seções em estrutura hierárquica para TreeView
-         * 📥 ENTRADAS: Nenhuma
-         * 📤 SAÍDAS: JSON List<SetorDto { id, nome, secoes: List<SecaoDto> }>
-         * 🔗 CHAMADA POR: TreeView de seleção de setor/seção
-         * 🔄 CHAMA: SetorPatrimonial + SecaoPatrimonial (join)
-         ****************************************************************************************/
         [HttpGet]
         [Route("GetSetoresSecoesHierarquicos")]
         public IActionResult GetSetoresSecoesHierarquicos()
@@ -885,24 +800,6 @@ namespace FrotiX.Controllers
         // ====== PatrimonioController.cs ======
 
         // GET: api/Patrimonio/ListaPatrimonios
-        /****************************************************************************************
-         * 📋 MÉTODOS AUXILIARES PARA COMBOBOXES/FILTROS (8 métodos)
-         *
-         * Todos os métodos abaixo retornam listas para popular comboboxes e filtros:
-         * - ListaPatrimonios: Lista completa de patrimônios ativos
-         * - GetSingle: Busca patrimônio por ID (usado em edição)
-         * - ListaSetores: Lista de setores patrimoniais ativos
-         * - ListaSecoes: Lista de seções de um setor específico
-         * - ListaMarcas: Lista de marcas de patrimônio (distinct)
-         * - ListaModelos: Lista de modelos de uma marca específica
-         * - ListaMarcasModelos: Lista hierárquica marca → modelos (otimizado)
-         * - ListaSetoresSecoes: Lista hierárquica setor → seções (otimizado)
-         * - ListaSituacoes: Lista de situações possíveis (Ativo, Inativo, etc)
-         *
-         * 📝 Formato de saída: JSON List<{ id, nome/text }> ou hierárquico
-         * 🎯 Uso: Populat comboboxes, dropdowns e filtros no frontend
-         ****************************************************************************************/
-
         [HttpGet]
         [Route("ListaPatrimonios")]
         public IActionResult ListaPatrimonios()

@@ -1,26 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: AbastecimentoPendente.cs                                           ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade para armazenamento de abastecimentos pendentes de validação.       ║
-// ║ Representa registros importados de planilhas que precisam de correção.      ║
-// ║                                                                              ║
-// ║ CAMPOS PRINCIPAIS:                                                           ║
-// ║ - Dados originais: AutorizacaoQCard, Placa, CodMotorista, Produto, etc     ║
-// ║ - IDs identificados: VeiculoId, MotoristaId, CombustivelId (nullable)       ║
-// ║ - Pendência: DescricaoPendencia, TipoPendencia                              ║
-// ║ - Sugestão de correção: CampoCorrecao, ValorSugerido, Justificativa         ║
-// ║ - Status: 0=Pendente, 1=Resolvida, 2=Ignorada                               ║
-// ║                                                                              ║
-// ║ RELACIONAMENTOS:                                                             ║
-// ║ - Veiculo (opcional) - FK VeiculoId                                         ║
-// ║ - Motorista (opcional) - FK MotoristaId                                     ║
-// ║ - Combustivel (opcional) - FK CombustivelId                                 ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 #nullable enable
 using System;
 using System.ComponentModel.DataAnnotations;

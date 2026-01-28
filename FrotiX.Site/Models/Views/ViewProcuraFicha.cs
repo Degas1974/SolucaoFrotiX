@@ -1,29 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: ViewProcuraFicha.cs                                                ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ View model para busca de fichas de vistoria por critérios diversos.         ║
-// ║ Usado em telas de consulta para localizar fichas existentes.                ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ Identificadores:                                                             ║
-// ║ • MotoristaId - Filtro por motorista                                        ║
-// ║ • VeiculoId - Filtro por veículo                                            ║
-// ║                                                                              ║
-// ║ Período:                                                                      ║
-// ║ • DataInicial, DataFinal - Intervalo de datas (DateTime)                    ║
-// ║ • HoraInicio, HoraFim - Horários de início e fim                            ║
-// ║                                                                              ║
-// ║ Resultado:                                                                    ║
-// ║ • NoFichaVistoria - Número da ficha encontrada                              ║
-// ║                                                                              ║
-// ║ USO:                                                                          ║
-// ║ • Parâmetros de busca para localização de fichas de vistoria                ║
-// ║ • Retorna dados da viagem que corresponde aos critérios                     ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

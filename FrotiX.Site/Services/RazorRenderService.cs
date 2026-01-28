@@ -1,29 +1,4 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: RazorRenderService.cs                                               ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Serviço para renderização de Razor Views para string HTML.                   ║
-// ║ Útil para geração de e-mails HTML, PDFs, ou retorno de HTML via API.         ║
-// ║                                                                              ║
-// ║ INTERFACE IRazorRenderService:                                               ║
-// ║ - ToStringAsync<T>(): Renderiza view com modelo para string                  ║
-// ║                                                                              ║
-// ║ DEPENDÊNCIAS:                                                                ║
-// ║ - IRazorViewEngine: Engine de views Razor                                    ║
-// ║ - ITempDataProvider: Provider de TempData                                    ║
-// ║ - IHttpContextAccessor: Acesso ao contexto HTTP                              ║
-// ║ - IRazorPageActivator: Ativador de páginas Razor                             ║
-// ║                                                                              ║
-// ║ USO TÍPICO:                                                                  ║
-// ║ - Geração de corpo de e-mail a partir de template Razor                      ║
-// ║ - Geração de HTML para conversão em PDF                                      ║
-// ║ - Retorno de partial views via AJAX                                          ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 15                                        ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -41,17 +16,10 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Services
     {
-    /// <summary>
-    /// Interface para renderização de Razor Views para string.
-    /// </summary>
     public interface IRazorRenderService
         {
         Task<string> ToStringAsync<T>(string viewName, T model);
         }
-
-    /// <summary>
-    /// Serviço para renderização de Razor Views para string HTML.
-    /// </summary>
     public class RazorRenderService : IRazorRenderService
         {
         private readonly IRazorViewEngine _razorViewEngine;

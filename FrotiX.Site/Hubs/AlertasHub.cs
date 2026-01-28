@@ -1,38 +1,9 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: AlertasHub.cs                                                       ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Hub SignalR para sistema de alertas/notificações em tempo real.              ║
-// ║ Gerencia conexões de usuários e distribuição de alertas.                     ║
-// ║                                                                              ║
-// ║ MÉTODOS DISPONÍVEIS:                                                         ║
-// ║ - MarcarComoLido()     → Cliente marca alerta como lido                      ║
-// ║ - OnConnectedAsync()   → Adiciona usuário ao grupo user_{usuarioId}          ║
-// ║ - OnDisconnectedAsync()→ Remove usuário do grupo                             ║
-// ║                                                                              ║
-// ║ EVENTOS ENVIADOS AO CLIENTE:                                                 ║
-// ║ - AlertaMarcadoComoLido → Confirmação de leitura                             ║
-// ║                                                                              ║
-// ║ ESTRUTURA DE GRUPOS:                                                         ║
-// ║ - user_{email}: Grupo individual por usuário                                 ║
-// ║ - Permite envio direcionado via Clients.Group("user_{id}")                   ║
-// ║                                                                              ║
-// ║ DEPENDÊNCIA:                                                                 ║
-// ║ - EmailBasedUserIdProvider: Define UserIdentifier como email                 ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 12                                        ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Threading.Tasks;
 
 namespace FrotiX.Hubs
 {
-    /// <summary>
-    /// Hub SignalR para alertas/notificações em tempo real.
-    /// </summary>
     public class AlertasHub :Hub
     {
         // Método que pode ser chamado do cliente para marcar alerta como lido

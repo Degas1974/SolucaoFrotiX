@@ -1,26 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: ModeloVeiculo.cs                                                   ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade para cadastro de modelos de veículos vinculados a marcas.          ║
-// ║ Hierarquia: Marca → Modelo → Veículo.                                       ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • ModeloVeiculoViewModel - ViewModel com dropdown de marcas                 ║
-// ║ • ModeloVeiculo - Entidade principal                                        ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ • ModeloId [Key] - Identificador único                                      ║
-// ║ • DescricaoModelo - Nome do modelo (max 50 chars)                           ║
-// ║ • Status - Ativo/Inativo                                                    ║
-// ║ • MarcaId → MarcaVeiculo (FK) - Marca do modelo                             ║
-// ║                                                                              ║
-// ║ RELACIONAMENTOS:                                                             ║
-// ║ • Veiculo.ModeloId - Veículos deste modelo                                  ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using FrotiX.Validations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;

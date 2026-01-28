@@ -1,33 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: CorridasTaxiLeg.cs                                                 ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade para registro de corridas do serviço TaxiLeg (táxi legislativo).   ║
-// ║ Armazena dados importados do sistema externo de táxi.                       ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • CorridasTaxiLegViewModel - ViewModel para filtros                         ║
-// ║ • CorridasTaxiLeg - Entidade principal de corridas                          ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ • CorridaId [Key] - Identificador único                                     ║
-// ║ • QRU - Código QRU da corrida                                               ║
-// ║ • Origem - Origem da solicitação                                            ║
-// ║ • Setor, DescSetor - Setor solicitante                                      ║
-// ║ • Unidade, DescUnidade - Unidade solicitante                                ║
-// ║ • QtdPassageiros - Quantidade de passageiros                                ║
-// ║ • MotivoUso - Motivo da corrida                                             ║
-// ║ • DataAgenda, DataFinal - Datas da corrida                                  ║
-// ║ • HoraAgenda/Aceite/Local/Inicio/Final - Horários detalhados                ║
-// ║ • KmReal - Quilometragem real percorrida                                    ║
-// ║ • QtdEstrelas, Avaliacao - Avaliação do serviço                             ║
-// ║ • Duracao, Espera - Tempos em minutos                                       ║
-// ║ • OrigemCorrida, DestinoCorrida - Endereços                                 ║
-// ║ • Glosa, ValorGlosa - Dados de glosa se aplicável                           ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

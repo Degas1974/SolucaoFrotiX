@@ -1,11 +1,3 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
- * ║  Seção: ViagemController.AtualizarDadosViagem.cs                         ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
-
 using FrotiX.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,28 +5,20 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ CONTROLLER: Viagem API (Partial - AtualizarDadosViagemDashboard)
-     * 🎯 OBJETIVO: Atualizar viagem via Dashboard com cálculo normalizado de minutos (jornada 8h)
-     * 📋 ROTAS: /api/Viagem/AtualizarDadosViagemDashboard [POST]
-     * 🔗 ENTIDADES: Viagem
-     * 📦 DEPENDÊNCIAS: IUnitOfWork
-     * ⚙️ REGRA DE NEGÓCIO: Jornada limitada a 8h/dia (480 minutos/dia)
-     * 🗄️ TRIGGER: tr_Viagem_CalculaCustos recalcula custos automaticamente após Update
-     * 📝 NOTA: Classe parcial - ver ViagemController.cs principal
-     ****************************************************************************************/
+    /// <summary>
+    /// ViagemController - Partial Class para API AtualizarDadosViagemDashboard
+    /// O trigger tr_Viagem_CalculaCustos recalcula os custos automaticamente
+    /// </summary>
     public partial class ViagemController
     {
-        // [DOC] Constantes para cálculo de jornada normalizada (8h/dia, expediente 08h-18h)
+        // Constantes para cálculo de jornada
         private const int MINUTOS_JORNADA_DIA = 480; // 8 horas
         private static readonly TimeSpan INICIO_EXPEDIENTE = new TimeSpan(8, 0, 0);  // 08:00
         private static readonly TimeSpan FIM_EXPEDIENTE = new TimeSpan(18, 0, 0);    // 18:00
 
-        /****************************************************************************************
-         * 📦 DTO: AtualizarViagemDashboardDTO
-         * 🎯 OBJETIVO: Request para atualização de viagem via modal do Dashboard
-         * 📋 PROPRIEDADES: Todos os campos de viagem (datas/horas como string para parsing)
-         ****************************************************************************************/
+        /// <summary>
+        /// DTO para receber dados do modal de ajuste do Dashboard
+        /// </summary>
         public class AtualizarViagemDashboardDTO
         {
             public Guid ViagemId { get; set; }
@@ -54,53 +38,39 @@ namespace FrotiX.Controllers
             public string RamalRequisitante { get; set; }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: CalcularMinutosNormalizadoComJornada
-         * 🎯 OBJETIVO: Calcular minutos trabalhados considerando jornada de 8h/dia (480 min/dia)
-         * 📥 ENTRADAS: dataInicial, dataFinal, horaInicio, horaFim
-         * 📤 SAÍDAS: int (total de minutos normalizados)
-         * 📊 ALGORITMO:
-         *    - Mesmo dia: (horaFim - horaInicio), limitado a 480 min
-         *    - Múltiplos dias:
-         *      1. Primeiro dia: (18:00 - horaInicio), max 480
-         *      2. Dias intermediários: 480 min cada
-         *      3. Último dia: (horaFim - 08:00), max 480
-         * 📝 EXEMPLO: 10/01 14:00 → 12/01 10:00
-         *    - Dia 10: (18:00-14:00) = 240 min
-         *    - Dia 11: 480 min (dia inteiro)
-         *    - Dia 12: (10:00-08:00) = 120 min
-         *    - Total: 840 min
-         ****************************************************************************************/
+        /// <summary>
+        /// Calcula minutos trabalhados considerando jornada de 8h/dia (Opção B)
+        /// - Mesmo dia: tempo real limitado a 480 min
+        /// - Múltiplos dias: primeiro dia (hora início → 18h) + dias intermediários (480) + último dia (08h → hora fim)
+        /// </summary>
         private int CalcularMinutosNormalizadoComJornada(DateTime dataInicial, DateTime dataFinal, TimeSpan horaInicio, TimeSpan horaFim)
         {
             try
             {
-                // [DOC] Calcula total de dias (inclusive)
                 int totalDias = (dataFinal.Date - dataInicial.Date).Days + 1;
 
-                // [DOC] CASO 1: Mesmo dia - tempo real limitado a 480 min (jornada máxima)
+                // Mesmo dia
                 if (totalDias == 1)
                 {
                     int minutosDia = (int)(horaFim - horaInicio).TotalMinutes;
                     return Math.Min(Math.Max(minutosDia, 0), MINUTOS_JORNADA_DIA);
                 }
 
-                // [DOC] CASO 2: Múltiplos dias - soma primeiro + intermediários + último
                 int totalMinutos = 0;
 
-                // [DOC] Primeiro dia: de HoraInicio até FIM_EXPEDIENTE (18:00), limitado a 480
+                // Primeiro dia: de HoraInicio até FIM_EXPEDIENTE (18:00), limitado a 480
                 int minutosPrimeiroDia = (int)(FIM_EXPEDIENTE - horaInicio).TotalMinutes;
                 minutosPrimeiroDia = Math.Min(Math.Max(minutosPrimeiroDia, 0), MINUTOS_JORNADA_DIA);
                 totalMinutos += minutosPrimeiroDia;
 
-                // [DOC] Dias intermediários: 480 minutos (jornada completa) para cada dia
+                // Dias intermediários: 480 minutos cada
                 int diasIntermediarios = totalDias - 2;
                 if (diasIntermediarios > 0)
                 {
                     totalMinutos += diasIntermediarios * MINUTOS_JORNADA_DIA;
                 }
 
-                // [DOC] Último dia: de INICIO_EXPEDIENTE (08:00) até HoraFim, limitado a 480
+                // Último dia: de INICIO_EXPEDIENTE (08:00) até HoraFim, limitado a 480
                 int minutosUltimoDia = (int)(horaFim - INICIO_EXPEDIENTE).TotalMinutes;
                 minutosUltimoDia = Math.Min(Math.Max(minutosUltimoDia, 0), MINUTOS_JORNADA_DIA);
                 totalMinutos += minutosUltimoDia;
@@ -113,19 +83,11 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: AtualizarDadosViagemDashboard
-         * 🎯 OBJETIVO: Atualizar viagem com cálculo normalizado (campos *Normalizado + MinutosNormalizado)
-         * 📥 ENTRADAS: AtualizarViagemDashboardDTO (todos os campos da viagem)
-         * 📤 SAÍDAS: JSON { success, message }
-         * 🔗 CHAMADA POR: Modal de ajuste de viagem no Dashboard
-         * 🔄 CHAMA: Viagem.Update(), CalcularMinutosNormalizadoComJornada()
-         * 📊 CÁLCULOS:
-         *    1. Normaliza datas/horas (DataInicialNormalizada, HoraInicioNormalizada, etc.)
-         *    2. Calcula KmRodadoNormalizado (KmFinal - KmInicial)
-         *    3. Calcula MinutosNormalizado com jornada 8h/dia
-         * 🗄️ TRIGGER: tr_Viagem_CalculaCustos recalcula automaticamente após Update
-         ****************************************************************************************/
+        /// <summary>
+        /// Atualiza dados da viagem a partir do modal do Dashboard
+        /// O trigger tr_Viagem_CalculaCustos recalcula os custos automaticamente
+        /// Rota: POST /api/Viagem/AtualizarDadosViagemDashboard
+        /// </summary>
         [Route("AtualizarDadosViagemDashboard")]
         [HttpPost]
         public IActionResult AtualizarDadosViagemDashboard([FromBody] AtualizarViagemDashboardDTO dados)
@@ -152,18 +114,18 @@ namespace FrotiX.Controllers
                     });
                 }
 
-                // [DOC] Atualiza campos básicos
+                // Atualiza campos básicos
                 viagem.NoFichaVistoria = dados.NoFichaVistoria;
                 viagem.Finalidade = dados.Finalidade;
                 viagem.EventoId = dados.EventoId;
 
-                // [DOC] Variáveis temporárias para cálculo de MinutosNormalizado
+                // Variáveis para cálculo dos campos normalizados
                 DateTime? dataInicialDt = null;
                 DateTime? dataFinalDt = null;
                 TimeSpan? horaInicioTs = null;
                 TimeSpan? horaFimTs = null;
 
-                // [DOC] Atualiza datas (campos normais + normalizados)
+                // Atualiza datas
                 if (!string.IsNullOrEmpty(dados.DataInicial))
                 {
                     if (DateTime.TryParse(dados.DataInicial, out DateTime dtInicial))
@@ -205,13 +167,15 @@ namespace FrotiX.Controllers
                     }
                 }
 
-                // [DOC] Atualiza quilometragem (campos normais + normalizados)
+                // Atualiza quilometragem
                 viagem.KmInicial = dados.KmInicial;
                 viagem.KmFinal = dados.KmFinal;
+
+                // Atualiza campos normalizados de KM
                 viagem.KmInicialNormalizado = dados.KmInicial;
                 viagem.KmFinalNormalizado = dados.KmFinal;
 
-                // [DOC] Calcula KmRodadoNormalizado (KmFinal - KmInicial, mínimo 0)
+                // Calcula KmRodadoNormalizado
                 if (dados.KmFinal.HasValue && dados.KmInicial.HasValue)
                 {
                     int kmRodado = dados.KmFinal.Value - dados.KmInicial.Value;
@@ -222,9 +186,9 @@ namespace FrotiX.Controllers
                     viagem.KmRodadoNormalizado = 0;
                 }
 
-                // [DOC] ================================================================
-                // [DOC] CALCULA MinutosNormalizado COM JORNADA DE 8H/DIA (Opção B)
-                // [DOC] ================================================================
+                // ================================================================
+                // CALCULA MinutosNormalizado COM JORNADA DE 8H/DIA (Opção B)
+                // ================================================================
                 if (dataInicialDt.HasValue && dataFinalDt.HasValue && 
                     horaInicioTs.HasValue && horaFimTs.HasValue)
                 {

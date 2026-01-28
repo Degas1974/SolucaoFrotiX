@@ -1,11 +1,3 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
- * ║  Seção: PdfViewerController.cs                                           ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
-
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -16,14 +8,6 @@ using System.IO;
 
 namespace FrotiX.Controllers.API
 {
-    /****************************************************************************************
-     * ⚡ CONTROLLER: PdfViewer API (Syncfusion)
-     * 🎯 OBJETIVO: Fornecer endpoints para visualização e manipulação de PDFs com Syncfusion
-     * 📋 ROTAS: /api/PdfViewer/* (Load, Bookmarks, RenderPdfPages, Download, Print, etc)
-     * 🔗 ENTIDADES: Nenhuma (manipulação de arquivos PDF)
-     * 📦 DEPENDÊNCIAS: Syncfusion.EJ2.PdfViewer, IWebHostEnvironment
-     * 🌐 CORS: AllowAllOrigins habilitado em todos os endpoints
-     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class PdfViewerController :ControllerBase
@@ -42,14 +26,6 @@ namespace FrotiX.Controllers.API
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Load
-         * 🎯 OBJETIVO: Carregar PDF de arquivo físico ou string base64 para o viewer
-         * 📥 ENTRADAS: jsonObject { document, isFileName? }
-         * 📤 SAÍDAS: JSON serializado com dados do PDF
-         * 🔗 CHAMADA POR: Syncfusion PDF Viewer (JavaScript frontend)
-         * 🔄 CHAMA: PdfRenderer.Load()
-         ****************************************************************************************/
         [HttpPost("Load")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
         public IActionResult Load([FromBody] Dictionary<string , string> jsonObject)
@@ -62,7 +38,6 @@ namespace FrotiX.Controllers.API
 
                 if (jsonObject != null && jsonObject.ContainsKey("document"))
                 {
-                    // [DOC] Suporta dois modos: arquivo físico (isFileName=true) ou base64
                     if (bool.TryParse(jsonObject["isFileName"] , out bool isFileName) && isFileName)
                     {
                         string documentPath = jsonObject["document"].TrimStart('/');
@@ -83,7 +58,6 @@ namespace FrotiX.Controllers.API
                     }
                     else
                     {
-                        // [DOC] Decodifica PDF de string base64
                         byte[] bytes = Convert.FromBase64String(jsonObject["document"]);
                         stream = new MemoryStream(bytes);
                     }
@@ -102,14 +76,6 @@ namespace FrotiX.Controllers.API
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Bookmarks
-         * 🎯 OBJETIVO: Obter marcadores (bookmarks) do PDF
-         * 📥 ENTRADAS: jsonObject (documento)
-         * 📤 SAÍDAS: JSON com estrutura de bookmarks
-         * 🔗 CHAMADA POR: Syncfusion PDF Viewer
-         * 🔄 CHAMA: PdfRenderer.GetBookmarks()
-         ****************************************************************************************/
         [HttpPost("Bookmarks")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
         public IActionResult Bookmarks([FromBody] Dictionary<string , string> jsonObject)
@@ -130,14 +96,6 @@ namespace FrotiX.Controllers.API
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: RenderPdfPages
-         * 🎯 OBJETIVO: Renderizar páginas específicas do PDF
-         * 📥 ENTRADAS: jsonObject (documento e índices de páginas)
-         * 📤 SAÍDAS: JSON com imagens das páginas renderizadas
-         * 🔗 CHAMADA POR: Syncfusion PDF Viewer (navegação de páginas)
-         * 🔄 CHAMA: PdfRenderer.GetPage()
-         ****************************************************************************************/
         [HttpPost("RenderPdfPages")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
         public IActionResult RenderPdfPages([FromBody] Dictionary<string , string> jsonObject)
@@ -158,14 +116,6 @@ namespace FrotiX.Controllers.API
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: RenderPdfTexts
-         * 🎯 OBJETIVO: Extrair texto do PDF (para busca e seleção)
-         * 📥 ENTRADAS: jsonObject (documento)
-         * 📤 SAÍDAS: JSON com texto extraído do PDF
-         * 🔗 CHAMADA POR: Syncfusion PDF Viewer (funcionalidade de busca)
-         * 🔄 CHAMA: PdfRenderer.GetDocumentText()
-         ****************************************************************************************/
         [HttpPost("RenderPdfTexts")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
         public IActionResult RenderPdfTexts([FromBody] Dictionary<string , string> jsonObject)
@@ -186,14 +136,6 @@ namespace FrotiX.Controllers.API
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: RenderThumbnailImages
-         * 🎯 OBJETIVO: Gerar miniaturas (thumbnails) das páginas do PDF
-         * 📥 ENTRADAS: jsonObject (documento)
-         * 📤 SAÍDAS: JSON com imagens thumbnail das páginas
-         * 🔗 CHAMADA POR: Syncfusion PDF Viewer (painel de miniaturas)
-         * 🔄 CHAMA: PdfRenderer.GetThumbnailImages()
-         ****************************************************************************************/
         [HttpPost("RenderThumbnailImages")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
         public IActionResult RenderThumbnailImages([FromBody] Dictionary<string , string> jsonObject)
@@ -214,14 +156,6 @@ namespace FrotiX.Controllers.API
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: RenderAnnotationComments
-         * 🎯 OBJETIVO: Obter comentários de anotações do PDF
-         * 📥 ENTRADAS: jsonObject (documento)
-         * 📤 SAÍDAS: JSON com comentários das anotações
-         * 🔗 CHAMADA POR: Syncfusion PDF Viewer (painel de comentários)
-         * 🔄 CHAMA: PdfRenderer.GetAnnotationComments()
-         ****************************************************************************************/
         [HttpPost("RenderAnnotationComments")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
         public IActionResult RenderAnnotationComments([FromBody] Dictionary<string , string> jsonObject)
@@ -242,14 +176,6 @@ namespace FrotiX.Controllers.API
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: ExportAnnotations
-         * 🎯 OBJETIVO: Exportar anotações do PDF (marcações, destaques, comentários)
-         * 📥 ENTRADAS: jsonObject (documento e anotações)
-         * 📤 SAÍDAS: String JSON com anotações exportadas
-         * 🔗 CHAMADA POR: Syncfusion PDF Viewer (botão Exportar Anotações)
-         * 🔄 CHAMA: PdfRenderer.ExportAnnotation()
-         ****************************************************************************************/
         [HttpPost("ExportAnnotations")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
         public IActionResult ExportAnnotations([FromBody] Dictionary<string , string> jsonObject)
@@ -270,14 +196,6 @@ namespace FrotiX.Controllers.API
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: ImportAnnotations
-         * 🎯 OBJETIVO: Importar anotações para o PDF
-         * 📥 ENTRADAS: jsonObject (documento e anotações a importar)
-         * 📤 SAÍDAS: JSON com resultado da importação
-         * 🔗 CHAMADA POR: Syncfusion PDF Viewer (botão Importar Anotações)
-         * 🔄 CHAMA: PdfRenderer.ImportAnnotation()
-         ****************************************************************************************/
         [HttpPost("ImportAnnotations")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
         public IActionResult ImportAnnotations([FromBody] Dictionary<string , string> jsonObject)
@@ -298,14 +216,6 @@ namespace FrotiX.Controllers.API
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: ExportFormFields
-         * 🎯 OBJETIVO: Exportar campos de formulário PDF (valores preenchidos)
-         * 📥 ENTRADAS: jsonObject (documento e form fields)
-         * 📤 SAÍDAS: String JSON com campos exportados
-         * 🔗 CHAMADA POR: Syncfusion PDF Viewer (exportação de formulários)
-         * 🔄 CHAMA: PdfRenderer.ExportFormFields()
-         ****************************************************************************************/
         [HttpPost("ExportFormFields")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
         public IActionResult ExportFormFields([FromBody] Dictionary<string , string> jsonObject)
@@ -326,14 +236,6 @@ namespace FrotiX.Controllers.API
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: ImportFormFields
-         * 🎯 OBJETIVO: Importar/preencher campos de formulário PDF
-         * 📥 ENTRADAS: jsonObject (documento e valores dos campos)
-         * 📤 SAÍDAS: JSON com resultado da importação
-         * 🔗 CHAMADA POR: Syncfusion PDF Viewer (importação de formulários)
-         * 🔄 CHAMA: PdfRenderer.ImportFormFields()
-         ****************************************************************************************/
         [HttpPost("ImportFormFields")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
         public IActionResult ImportFormFields([FromBody] Dictionary<string , string> jsonObject)
@@ -354,14 +256,6 @@ namespace FrotiX.Controllers.API
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Unload
-         * 🎯 OBJETIVO: Limpar cache do PDF quando viewer é fechado (liberar memória)
-         * 📥 ENTRADAS: jsonObject (documento)
-         * 📤 SAÍDAS: Mensagem de sucesso
-         * 🔗 CHAMADA POR: Syncfusion PDF Viewer (evento onUnload)
-         * 🔄 CHAMA: PdfRenderer.ClearCache()
-         ****************************************************************************************/
         [HttpPost("Unload")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
         public IActionResult Unload([FromBody] Dictionary<string , string> jsonObject)
@@ -382,14 +276,6 @@ namespace FrotiX.Controllers.API
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Download
-         * 🎯 OBJETIVO: Baixar PDF completo como string base64
-         * 📥 ENTRADAS: jsonObject (documento)
-         * 📤 SAÍDAS: String base64 do PDF
-         * 🔗 CHAMADA POR: Syncfusion PDF Viewer (botão Download)
-         * 🔄 CHAMA: PdfRenderer.GetDocumentAsBase64()
-         ****************************************************************************************/
         [HttpPost("Download")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
         public IActionResult Download([FromBody] Dictionary<string , string> jsonObject)
@@ -410,14 +296,6 @@ namespace FrotiX.Controllers.API
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: PrintImages
-         * 🎯 OBJETIVO: Gerar imagens das páginas do PDF para impressão
-         * 📥 ENTRADAS: jsonObject (documento)
-         * 📤 SAÍDAS: JSON com imagens das páginas para impressão
-         * 🔗 CHAMADA POR: Syncfusion PDF Viewer (botão Imprimir)
-         * 🔄 CHAMA: PdfRenderer.GetPrintImage()
-         ****************************************************************************************/
         [HttpPost("PrintImages")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
         public IActionResult PrintImages([FromBody] Dictionary<string , string> jsonObject)

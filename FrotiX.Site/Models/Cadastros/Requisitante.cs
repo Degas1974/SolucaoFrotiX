@@ -1,32 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: Requisitante.cs                                                    ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade para cadastro de requisitantes de viagens.                         ║
-// ║ Pessoas autorizadas a solicitar veículos para viagens.                      ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • RequisitanteViewModel - ViewModel com dropdown de SetorSolicitante        ║
-// ║ • Requisitante - Entidade principal                                         ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ Identificação:                                                               ║
-// ║ • RequisitanteId [Key] - Identificador único                                ║
-// ║ • Nome - Nome do requisitante                                               ║
-// ║ • Ponto - Ponto funcional                                                   ║
-// ║ • Ramal - Ramal telefônico [ValidaZero]                                     ║
-// ║ • Email - Email para contato                                                ║
-// ║                                                                              ║
-// ║ Relacionamentos:                                                              ║
-// ║ • SetorSolicitanteId → SetorSolicitante - Setor do requisitante             ║
-// ║                                                                              ║
-// ║ Metadados:                                                                    ║
-// ║ • Status - Ativo/Inativo                                                    ║
-// ║ • DataAlteracao, UsuarioIdAlteracao - Auditoria                             ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using FrotiX.Validations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;

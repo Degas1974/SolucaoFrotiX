@@ -1,28 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: Lavagem.cs                                                         ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade para registro de lavagens de veículos da frota.                    ║
-// ║ Inclui data/hora de início e fim para cálculo de duração.                   ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ • LavagemId [Key] - Identificador único                                     ║
-// ║ • Data - Data da lavagem                                                    ║
-// ║ • HorarioInicio - Hora de início da lavagem                                 ║
-// ║ • HorarioFim - Hora de término da lavagem                                   ║
-// ║ • VeiculoId → Veiculo (FK) - Veículo lavado                                 ║
-// ║ • MotoristaId → Motorista (FK) - Motorista responsável pelo veículo         ║
-// ║                                                                              ║
-// ║ RELACIONAMENTOS:                                                             ║
-// ║ • LavadoresLavagem - Lavadores que realizaram a lavagem (N:N)               ║
-// ║                                                                              ║
-// ║ USO:                                                                          ║
-// ║ • Controle de higienização da frota                                         ║
-// ║ • Relatórios de frequência de lavagem por veículo                           ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

@@ -1,24 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: SkipModelValidationAttribute.cs                                     ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Atributo para pular validação de ModelState em endpoints específicos.        ║
-// ║ Implementa IActionFilter para limpar erros durante execução da action.       ║
-// ║                                                                              ║
-// ║ QUANDO USAR:                                                                 ║
-// ║ - Propriedades nullable que podem vir null do frontend                       ║
-// ║ - [ApiController] tenta validar como required mas null é válido              ║
-// ║ - Endpoints que fazem validação customizada                                  ║
-// ║                                                                              ║
-// ║ EXEMPLO DE USO:                                                              ║
-// ║ [HttpPost]                                                                   ║
-// ║ [SkipModelValidation]                                                        ║
-// ║ public IActionResult SaveData([FromBody] MyDto dto) { ... }                  ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 12                                        ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 using System;
 using Microsoft.AspNetCore.Mvc.Filters;
 

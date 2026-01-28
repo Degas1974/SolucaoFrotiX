@@ -1,26 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: RankingMotoristasMensal.cs                                         ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Rankings mensais de motoristas por diferentes métricas.                     ║
-// ║ Pré-calculado para dashboards de performance.                               ║
-// ║                                                                              ║
-// ║ TIPOS DE RANKING:                                                            ║
-// ║ - VIAGENS: Quantidade de viagens realizadas                                 ║
-// ║ - KM: Quilometragem total percorrida                                        ║
-// ║ - HORAS: Total de horas trabalhadas                                         ║
-// ║ - ABASTECIMENTOS: Quantidade de abastecimentos                              ║
-// ║ - MULTAS: Quantidade de multas (ranking inverso)                            ║
-// ║ - PERFORMANCE: Score composto (viagens, km, horas, menos multas)            ║
-// ║                                                                              ║
-// ║ CAMPOS:                                                                      ║
-// ║ - Posicao: 1 = primeiro lugar                                               ║
-// ║ - ValorPrincipal, ValorSecundario, ValorTerciario, ValorQuaternario         ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

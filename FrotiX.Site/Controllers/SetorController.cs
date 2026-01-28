@@ -1,11 +1,3 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
- * ║  Seção: SetorController.cs                                               ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
-
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -14,13 +6,6 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ CONTROLLER: Setor API (SetorPatrimonial)
-     * 🎯 OBJETIVO: Gerenciar setores patrimoniais do sistema
-     * 📋 ROTAS: /api/Setor/* (ListaSetores, UpdateStatusSetor, Delete, ListaSetoresCombo)
-     * 🔗 ENTIDADES: SetorPatrimonial, SecaoPatrimonial, AspNetUsers
-     * 📦 DEPENDÊNCIAS: IUnitOfWork
-     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class SetorController : Controller
@@ -39,22 +24,12 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: ListaSetores
-         * 🎯 OBJETIVO: Listar todos os setores patrimoniais com seus detentores
-         * 📥 ENTRADAS: Nenhuma
-         * 📤 SAÍDAS: JSON { success, data: List<{ SetorId, NomeSetor, NomeCompleto, Status, SetorBaixa }> }
-         * 🔗 CHAMADA POR: Grid de setores patrimoniais
-         * 🔄 CHAMA: SetorPatrimonial.GetAll(), AspNetUsers.GetAll()
-         * 🔀 JOIN: SetorPatrimonial com AspNetUsers (detentor)
-         ****************************************************************************************/
         [HttpGet]
         [Route("ListaSetores")]
         public IActionResult ListaSetores()
         {
             try
             {
-                // [DOC] Join com usuários para obter nome do detentor do setor
                 var setores = _unitOfWork
                     .SetorPatrimonial.GetAll()
                     .Join(
@@ -92,14 +67,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: UpdateStatusSetor
-         * 🎯 OBJETIVO: Alternar status do setor patrimonial (Ativo ↔ Inativo)
-         * 📥 ENTRADAS: Id (Guid do setor)
-         * 📤 SAÍDAS: JSON { success, message, type (0=ativo, 1=inativo) }
-         * 🔗 CHAMADA POR: Toggle de status no grid
-         * 🔄 CHAMA: SetorPatrimonial.GetFirstOrDefault(), SetorPatrimonial.Update()
-         ****************************************************************************************/
         [Route("UpdateStatusSetor")]
         public JsonResult UpdateStatusSetor(Guid Id)
         {
@@ -114,7 +81,6 @@ namespace FrotiX.Controllers
                     int type = 0;
                     if (objFromDb != null)
                     {
-                        // [DOC] Toggle status: true → false (type=1) ou false → true (type=0)
                         if (objFromDb.Status == true)
                         {
                             objFromDb.Status = false;
@@ -164,15 +130,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Delete
-         * 🎯 OBJETIVO: Excluir setor patrimonial (valida dependências antes de remover)
-         * 📥 ENTRADAS: id (Guid do setor)
-         * 📤 SAÍDAS: JSON { success, message }
-         * 🔗 CHAMADA POR: Modal de exclusão de setor
-         * 🔄 CHAMA: SetorPatrimonial.GetFirstOrDefault(), SecaoPatrimonial.GetFirstOrDefault(), SetorPatrimonial.Remove()
-         * ⚠️ VALIDAÇÃO: Impede exclusão se existirem seções associadas
-         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete([FromBody] Guid id)
@@ -186,7 +143,6 @@ namespace FrotiX.Controllers
                     );
                     if (objFromDb != null)
                     {
-                        // [DOC] Valida integridade referencial: não permite excluir setor com seções
                         var secao = _unitOfWork.SecaoPatrimonial.GetFirstOrDefault(u =>
                             u.SetorId == id
                         );
@@ -224,22 +180,12 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: ListaSetoresCombo
-         * 🎯 OBJETIVO: Listar setores ativos para combobox (dropdown)
-         * 📥 ENTRADAS: Nenhuma
-         * 📤 SAÍDAS: JSON { success, data: List<{ text, value }> }
-         * 🔗 CHAMADA POR: Combobox de setores em formulários
-         * 🔄 CHAMA: SetorPatrimonial.GetAll()
-         * 🔍 FILTRO: Apenas setores com Status = true
-         ****************************************************************************************/
         [HttpGet]
         [Route("ListaSetoresCombo")]
         public IActionResult ListaSetoresCombo()
         {
             try
             {
-                // [DOC] Filtra apenas setores ativos e formata para combobox (text/value)
                 var setores = _unitOfWork
                     .SetorPatrimonial.GetAll()
                     .Where(s => s.Status == true)

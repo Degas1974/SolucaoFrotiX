@@ -1,11 +1,3 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
- * ║  Seção: ViagemController.ListaEventos.cs                                 ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
-
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using FrotiX.Data;
@@ -17,76 +9,57 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ CONTROLLER: Viagem API (Partial - ListaEventos)
-     * 🎯 OBJETIVO: Listar eventos com paginação server-side DataTables (SUPER OTIMIZADO)
-     * 📋 ROTAS: /api/viagem/ListaEventos [GET]
-     * 🔗 ENTIDADES: Evento, SetorSolicitante, Requisitante, Viagem
-     * 📦 DEPENDÊNCIAS: ApplicationDbContext (acesso direto ao EF Core)
-     * ⚡ PERFORMANCE: <2s (antes: 30+ segundos com timeout)
-     * 📊 OTIMIZAÇÕES:
-     *    - Paginação server-side (25 registros por página)
-     *    - AsNoTracking para queries read-only
-     *    - Custos agregados apenas para eventos da página atual
-     *    - Ordenação dinâmica por coluna (DataTables)
-     * 📝 NOTA: Classe parcial - ver ViagemController.cs principal
-     ****************************************************************************************/
+    /// <summary>
+    /// Partial class para endpoint ListaEventos otimizado com paginação server-side
+    /// Arquivo: ViagemController_ListaEventos.cs
+    /// Destino: /Controllers/ViagemController_ListaEventos.cs
+    /// </summary>
     public partial class ViagemController : Controller
     {
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: ListaEventos
-         * 🎯 OBJETIVO: Listar eventos com paginação server-side e custos agregados (DataTables)
-         * 📥 ENTRADAS:
-         *    - draw: Contador de requisição DataTables (controle de sincronização)
-         *    - start: Offset de registros (início da página)
-         *    - length: Quantidade de registros por página (padrão: 25)
-         *    - orderColumn: Índice da coluna para ordenação (0-6)
-         *    - orderDir: Direção da ordenação ("asc" ou "desc")
-         * 📤 SAÍDAS: JSON DataTables { draw, recordsTotal, recordsFiltered, data: Array<EventoDTO> }
-         * 🔗 CHAMADA POR: DataTable de eventos (frontend com paginação)
-         * 🔄 CHAMA: Evento.Include(), Viagem.GroupBy() (custos), AsNoTracking()
-         * ⚡ PERFORMANCE: <2 segundos (antes: 30+ segundos com timeout)
-         * 📊 ALGORITMO (5 passos):
-         *    1. Contar total de eventos
-         *    2. Buscar APENAS eventos da página atual (Skip + Take)
-         *    3. Calcular custos APENAS dos eventos da página
-         *    4. Montar resultado em memória (apenas 25 registros)
-         *    5. Retornar formato DataTables server-side
-         ****************************************************************************************/
+        /// <summary>
+        /// Lista eventos com paginação server-side - SUPER OTIMIZADO
+        /// Rota: /api/viagem/listaeventos
+        ///
+        /// OTIMIZAÇÕES:
+        /// 1. Paginação server-side - carrega apenas 25 registros por vez
+        /// 2. Agrega custos apenas dos eventos da página atual
+        /// 3. Queries otimizadas com AsNoTracking
+        ///
+        /// PERFORMANCE: < 2 segundos (ao invés de 30+ segundos timeout)
+        /// </summary>
         [HttpGet]
         [Route("ListaEventos")]
         public IActionResult ListaEventos(
-            int draw = 1,
-            int start = 0,
-            int length = 25,
-            int orderColumn = 1,
-            string orderDir = "desc")
+            int draw = 1,           // DataTables: contador de requisição
+            int start = 0,          // DataTables: offset (início da página)
+            int length = 25,        // DataTables: quantidade de registros por página
+            int orderColumn = 1,    // DataTables: índice da coluna a ordenar (padrão: coluna 1 - Início)
+            string orderDir = "desc") // DataTables: direção da ordenação (asc/desc)
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
 
             try
             {
-                // [DOC] ============================================================
-                // [DOC] PASSO 1: Contar total de registros (para paginação DataTables)
-                // [DOC] ============================================================
+                // ============================================================
+                // PASSO 1: Contar total de registros (para paginação)
+                // ============================================================
                 var totalRecords = _context.Evento.Count();
 
                 Console.WriteLine($"[ListaEventos] Total de eventos: {totalRecords}");
 
-                // [DOC] ============================================================
-                // [DOC] PASSO 2: Buscar APENAS eventos da página atual (Skip + Take)
-                // [DOC] ============================================================
+                // ============================================================
+                // PASSO 2: Buscar APENAS eventos da página atual (com Include)
+                // ============================================================
 
-                // [DOC] Mapeia índice da coluna DataTables para campo de ordenação no banco
+                // Mapeia índice da coluna para campo de ordenação
                 // Colunas do DataTable: 0=nome, 1=dataInicial, 2=dataFinal, 3=qtdParticipantes,
-                //                       4=nomeSetor, 5=custoViagem (em memória), 6=status, 7=acao (não ordenável)
-                // [DOC] Cria query base com AsNoTracking (read-only, sem tracking de mudanças)
+                //                       4=nomeSetor, 5=custoViagem, 6=status (ordenável), 7=acao (não ordenável)
                 IQueryable<Evento> query = _context.Evento
                     .Include(e => e.SetorSolicitante)
                     .Include(e => e.Requisitante)
                     .AsNoTracking();
 
-                // [DOC] Aplica ordenação dinâmica baseada nos parâmetros do DataTables
+                // Aplica ordenação baseada nos parâmetros do DataTables
                 query = orderColumn switch
                 {
                     0 => orderDir == "asc" ? query.OrderBy(e => e.Nome) : query.OrderByDescending(e => e.Nome),
@@ -107,13 +80,11 @@ namespace FrotiX.Controllers
 
                 Console.WriteLine($"[ListaEventos] Eventos da página: {sw.ElapsedMilliseconds}ms ({eventos.Count} eventos)");
 
-                // [DOC] ============================================================
-                // [DOC] PASSO 3: Calcular custos APENAS dos eventos da página atual
-                // [DOC] ============================================================
+                // ============================================================
+                // PASSO 3: Buscar custos APENAS dos eventos da página atual
+                // ============================================================
                 var eventoIds = eventos.Select(e => e.EventoId).ToList();
 
-                // [DOC] Agrega custos apenas para os eventos da página atual (GroupBy + Sum)
-                // Inclui soma de 5 componentes de custo + contagem de viagens
                 var viagensDict = _context.Viagem
                     .Where(v => v.EventoId != null && eventoIds.Contains(v.EventoId.Value) && v.Status == "Realizada")
                     .AsNoTracking()
@@ -133,9 +104,9 @@ namespace FrotiX.Controllers
 
                 Console.WriteLine($"[ListaEventos] Custos calculados: {sw.ElapsedMilliseconds}ms ({viagensDict.Count} eventos com viagens)");
 
-                // [DOC] ============================================================
-                // [DOC] PASSO 4: Montar resultado DTO (em memória - apenas 25 registros)
-                // [DOC] ============================================================
+                // ============================================================
+                // PASSO 4: Montar resultado (em memória - apenas 25 registros)
+                // ============================================================
                 var resultado = eventos.Select(e =>
                 {
                     string nomeSetor = "";
@@ -171,8 +142,7 @@ namespace FrotiX.Controllers
                     };
                 });
 
-                // [DOC] Se ordenação é pela coluna 5 (custoViagem), ordena em memória
-                // (não pode ser feito no SQL pois é campo calculado)
+                // Se ordenação é pela coluna 5 (custoViagem), ordena em memória
                 if (orderColumn == 5)
                 {
                     resultado = orderDir == "asc"
@@ -185,9 +155,9 @@ namespace FrotiX.Controllers
                 sw.Stop();
                 Console.WriteLine($"[ListaEventos] ✅ TOTAL: {sw.ElapsedMilliseconds}ms - Página {(start / length) + 1} ({resultadoFinal.Count} de {totalRecords} eventos) - Ordenado por coluna {orderColumn} ({orderDir})");
 
-                // [DOC] ============================================================
-                // [DOC] PASSO 5: Retornar no formato DataTables server-side processing
-                // [DOC] ============================================================
+                // ============================================================
+                // PASSO 5: Retornar no formato DataTables server-side
+                // ============================================================
                 return Json(new
                 {
                     draw = draw,

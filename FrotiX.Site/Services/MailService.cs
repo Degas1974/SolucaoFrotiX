@@ -1,29 +1,4 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: MailService.cs                                                      ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Implementação do serviço de envio de e-mails via SMTP.                       ║
-// ║ Usa MailKit para conexão segura com servidores de e-mail.                    ║
-// ║                                                                              ║
-// ║ FUNCIONALIDADES:                                                             ║
-// ║ - Envio de e-mail HTML assíncrono                                            ║
-// ║ - Conexão TLS quando disponível (StartTlsWhenAvailable)                      ║
-// ║ - Configuração via IOptions<MailSettings>                                    ║
-// ║                                                                              ║
-// ║ DEPENDÊNCIAS:                                                                ║
-// ║ - MailKit: Biblioteca de e-mail cross-platform                               ║
-// ║ - MimeKit: Criação de mensagens MIME                                         ║
-// ║                                                                              ║
-// ║ USO TÍPICO:                                                                  ║
-// ║ - Envio de código de verificação de login                                    ║
-// ║ - Recuperação de senha                                                       ║
-// ║ - Notificações do sistema                                                    ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 15                                        ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -38,9 +13,6 @@ using MailKit.Security;
 
 namespace FrotiX.Services
     {
-    /// <summary>
-    /// Implementação do serviço de envio de e-mails via SMTP/MailKit.
-    /// </summary>
     public class MailService : IMailService
         {
         public class EmailSettings

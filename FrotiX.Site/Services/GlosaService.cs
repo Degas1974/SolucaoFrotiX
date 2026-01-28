@@ -1,29 +1,4 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: GlosaService.cs                                                     ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Serviço de cálculo de glosa para contratos de veículos.                      ║
-// ║ Glosa = desconto aplicado por dias de indisponibilidade do veículo.          ║
-// ║                                                                              ║
-// ║ MÉTODOS IMPLEMENTADOS:                                                       ║
-// ║ - ListarResumo(): Consolidado por item do contrato                           ║
-// ║   → Agrupa por NumItem/Descricao                                             ║
-// ║   → Calcula PrecoTotalMensal = Qtd * VlrUnit                                 ║
-// ║   → Soma Glosa de todas as O.S.                                              ║
-// ║   → ValorParaAteste = PrecoTotalMensal - Glosa                               ║
-// ║                                                                              ║
-// ║ - ListarDetalhes(): Linhas individuais por O.S.                              ║
-// ║   → Mostra cada ocorrência de manutenção/indisponibilidade                   ║
-// ║   → Inclui datas de solicitação, disponibilidade, recolhimento, devolução    ║
-// ║                                                                              ║
-// ║ FONTE DE DADOS:                                                              ║
-// ║ - ViewGlosa: View que consolida dados de contratos e O.S.                    ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 14                                        ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using FrotiX.Repository.IRepository;
@@ -31,7 +6,11 @@ using FrotiX.Repository.IRepository;
 namespace FrotiX.Services
     {
     /// <summary>
-    /// Serviço de cálculo de glosa para contratos de veículos.
+    /// Serviço de Glosa (v2):
+    /// - Resumo consolidado por NumItem/Descricao, COM cálculo correto do contrato (Qtd * VlrUnit) independente de O.S.
+    /// - Glosa somada por item (somatório de todas as O.S.)
+    /// - Ordenação por NumItem
+    /// - Detalhes exibem DataDevolucao como "Retorno"
     /// </summary>
     public class GlosaService : IGlosaService
         {

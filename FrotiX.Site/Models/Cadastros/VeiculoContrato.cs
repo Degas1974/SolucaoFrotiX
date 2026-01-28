@@ -1,25 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: VeiculoContrato.cs                                                 ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade de relacionamento N:N entre Veiculo e Contrato.                    ║
-// ║ Permite histórico de contratos por veículo (trocas de locadora).            ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • VeiculoContratoViewModel - ViewModel simples                              ║
-// ║ • VeiculoContrato - Entidade de relacionamento                              ║
-// ║                                                                              ║
-// ║ PROPRIEDADES (Chave Composta):                                              ║
-// ║ • VeiculoId [Key, Order=0] - ID do veículo                                  ║
-// ║ • ContratoId [Key, Order=1] - ID do contrato                                ║
-// ║                                                                              ║
-// ║ USO:                                                                          ║
-// ║ • Histórico de vínculos contratuais do veículo                              ║
-// ║ • Auditoria de locações                                                     ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

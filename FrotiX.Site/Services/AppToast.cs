@@ -1,38 +1,12 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: AppToast.cs                                                         ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Classe estática para exibição de notificações toast via TempData.            ║
-// ║ Funciona com redirects (PRG pattern) graças ao uso de TempData.              ║
-// ║                                                                              ║
-// ║ MÉTODOS DISPONÍVEIS:                                                         ║
-// ║ - show()         → Método base com cor, mensagem e duração                   ║
-// ║ - ShowSuccess()  → Toast verde (sucesso)                                     ║
-// ║ - ShowError()    → Toast vermelho (erro) - duração maior                     ║
-// ║ - ShowWarning()  → Toast amarelo (aviso)                                     ║
-// ║ - ShowInfo()     → Toast azul (informação)                                   ║
-// ║                                                                              ║
-// ║ CORES DISPONÍVEIS:                                                           ║
-// ║ - "Verde", "Vermelho", "Amarelo", "Azul"                                     ║
-// ║                                                                              ║
-// ║ CONFIGURAÇÃO (Program.cs):                                                   ║
-// ║ AppToast.Configure(httpContextAccessor, tempDataFactory);                    ║
-// ║                                                                              ║
-// ║ INTEGRAÇÃO FRONTEND:                                                         ║
-// ║ - Lê TempData["ToastScripts"] e executa AppToast.show() no JavaScript        ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 14                                        ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
+// =====================================================
+// ARQUIVO COMPLETO CORRIGIDO COM show MINÚSCULO
+// =====================================================
+// Arquivo: Services/AppToast.cs
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace FrotiX.Services
 {
-    /// <summary>
-    /// Classe estática para toasts via TempData. Funciona com redirects.
-    /// </summary>
     public static class AppToast
     {
         private static IHttpContextAccessor? _httpContextAccessor;

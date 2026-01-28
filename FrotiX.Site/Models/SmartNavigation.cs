@@ -1,29 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: SmartNavigation.cs                                                 ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╝
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Classes para estrutura de navegação do template SmartAdmin.                 ║
-// ║ Permite deserialização do nav.json e construção dinâmica de menus.          ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                     ║
-// ║ - NavigationBuilder: Helper estático para deserializar JSON                 ║
-// ║ - SmartNavigation: Container principal (Version, Lists)                     ║
-// ║ - ListItem: Item de menu com propriedades completas                         ║
-// ║ - Span: Badge/indicador visual no item                                      ║
-// ║ - ItemType: Enum (Category, Single, Parent, Sibling, Child)                 ║
-// ║                                                                              ║
-// ║ PROPRIEDADES ListItem:                                                       ║
-// ║ - Icon, Title, Text, NomeMenu, Href, Route                                  ║
-// ║ - Type (ItemType), Tags, I18n, Disabled, HasChild                           ║
-// ║ - Items (filhos), Span (badge), Roles (autorização)                         ║
-// ║                                                                              ║
-// ║ USO: NavigationBuilder.FromJson(jsonText) → SmartNavigation                 ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;

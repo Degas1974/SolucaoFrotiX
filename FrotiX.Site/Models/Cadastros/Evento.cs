@@ -1,29 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: Evento.cs                                                          ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade para cadastro de eventos institucionais que demandam transporte.   ║
-// ║ Permite agrupar múltiplas viagens em um único evento para gestão e custos.  ║
-// ║                                                                              ║
-// ║ CLASSES ANINHADAS:                                                           ║
-// ║ • EventoViewModel - ViewModel para cadastro de eventos                      ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ • EventoId [Key] - Identificador único                                      ║
-// ║ • Nome - Nome do evento (max 200 chars)                                     ║
-// ║ • Descricao - Descrição detalhada (max 300 chars)                           ║
-// ║ • QtdParticipantes - Quantidade prevista de participantes                   ║
-// ║ • DataInicial/Final - Período do evento                                     ║
-// ║ • Status - Status do evento (Planejado, Em Andamento, Concluído)            ║
-// ║ • SetorSolicitanteId → SetorSolicitante (FK)                                ║
-// ║ • RequisitanteId → Requisitante (FK)                                        ║
-// ║                                                                              ║
-// ║ RELACIONAMENTOS:                                                             ║
-// ║ • Viagem.EventoId - Viagens vinculadas ao evento                            ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

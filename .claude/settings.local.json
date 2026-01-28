@@ -4,9 +4,7 @@
       "Bash(dotnet restore:*)",
       "Bash(dotnet nuget list source:*)",
       "Bash(NUGET_PACKAGES=$HOME/.nuget/packages dotnet build:*)",
-      "Bash(NUGET_PACKAGES=\"$HOME/.nuget/packages\" dotnet build:*)",
-      "Bash(for file in \"FrotiX.Site/Controllers/SetorController.cs\" \"FrotiX.Site/Controllers/SetorSolicitanteController.cs\" \"FrotiX.Site/Controllers/TaxiLegController.cs\" \"FrotiX.Site/Controllers/TestePdfController.cs\" \"FrotiX.Site/Controllers/UnidadeController.cs\" \"FrotiX.Site/Controllers/UploadCNHController.cs\" \"FrotiX.Site/Controllers/UploadCRLVController.cs\" \"FrotiX.Site/Controllers/UsuarioController.cs\" \"FrotiX.Site/Controllers/VeiculoController.cs\" \"FrotiX.Site/Controllers/VeiculosUnidadeController.cs\")",
-      "Bash(done)"
+      "Bash(NUGET_PACKAGES=\"$HOME/.nuget/packages\" dotnet build:*)"
     ]
   }
 }

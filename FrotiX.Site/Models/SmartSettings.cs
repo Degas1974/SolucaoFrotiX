@@ -1,27 +1,4 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: SmartSettings.cs                                                   ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Configurações do template SmartAdmin e tema visual.                         ║
-// ║ Carregado de appsettings.json na seção "SmartSettings".                     ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                     ║
-// ║ - Theme: Configurações de tema (Logo, User, Role, Email, Avatar)            ║
-// ║ - Features: Toggle de funcionalidades (Sidebar, Header, Footer, etc)        ║
-// ║ - SmartSettings: Container principal com Version, App, AppName, Theme       ║
-// ║ - SmartError: Estrutura para retorno de erros em APIs                       ║
-// ║                                                                              ║
-// ║ FEATURES DISPONÍVEIS:                                                        ║
-// ║ - AppSidebar, AppHeader, AppFooter, AppLayoutShortcut                       ║
-// ║ - ShortcutMenu, GoogleAnalytics, ChatInterface, LayoutSettings              ║
-// ║                                                                              ║
-// ║ USO: IOptions<SmartSettings> via DI                                         ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 16                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
-namespace FrotiX.Models
+﻿namespace FrotiX.Models
     {
     public class Theme
         {

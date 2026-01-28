@@ -1,31 +1,4 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: Fornecedor.cs                                                      ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade para cadastro de fornecedores de contratos e atas.                 ║
-// ║ Empresas que fornecem veículos, motoristas ou serviços terceirizados.       ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • FornecedorViewModel - ViewModel simples                                   ║
-// ║ • Fornecedor - Entidade principal                                           ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ • FornecedorId [Key] - Identificador único                                  ║
-// ║ • DescricaoFornecedor - Nome/razão social do fornecedor                     ║
-// ║ • CNPJ - CNPJ do fornecedor                                                 ║
-// ║ • Endereco - Endereço comercial                                             ║
-// ║ • Contato01/02 - Nomes dos contatos                                         ║
-// ║ • Telefone01/02 - Telefones dos contatos                                    ║
-// ║ • Status - Ativo/Inativo                                                    ║
-// ║                                                                              ║
-// ║ RELACIONAMENTOS:                                                             ║
-// ║ • Contrato.FornecedorId - Contratos do fornecedor                           ║
-// ║ • AtaRegistroPrecos.FornecedorId - Atas do fornecedor                       ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;

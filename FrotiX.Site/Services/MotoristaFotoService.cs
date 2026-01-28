@@ -1,29 +1,4 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: MotoristaFotoService.cs                                             ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Serviço para processamento e cache de fotos de motoristas.                   ║
-// ║ Redimensiona imagens grandes e mantém cache em memória.                      ║
-// ║ IMPORTANTE: Só funciona em Windows ([SupportedOSPlatform("windows")]).       ║
-// ║                                                                              ║
-// ║ MÉTODOS DISPONÍVEIS:                                                         ║
-// ║ - ObterFotoBase64(): Retorna foto em base64 (com cache)                      ║
-// ║ - RedimensionarImagem(): Redimensiona para dimensões específicas             ║
-// ║                                                                              ║
-// ║ CONFIGURAÇÃO DE CACHE:                                                       ║
-// ║ - Chave: foto_{motoristaId}                                                  ║
-// ║ - TTL: 1 hora                                                                ║
-// ║ - Redimensiona se > 50KB para 60x60 pixels                                   ║
-// ║                                                                              ║
-// ║ USO:                                                                         ║
-// ║ - Exibição de miniaturas em grids de motoristas                              ║
-// ║ - Otimização de performance em listagens                                     ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 15                                        ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -34,9 +9,6 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace FrotiX.Services
     {
-    /// <summary>
-    /// Serviço de fotos de motoristas com cache e redimensionamento.
-    /// </summary>
     [SupportedOSPlatform("windows")]
     public class MotoristaFotoService
         {

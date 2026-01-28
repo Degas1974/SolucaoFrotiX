@@ -1,10 +1,16 @@
 /*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
- * ║  Seção: RequisitanteController.cs                                        ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+    ═══════════════════════════════════════════════════════════════════════════════
+    📄 DOCUMENTAÇÃO COMPLETA DISPONÍVEL
+    ═══════════════════════════════════════════════════════════════════════════════
+    
+    📍 Localização: Documentacao/Pages/Requisitante - Index.md
+    📅 Última Atualização: 08/01/2026
+    📋 Versão: 2.0 (Padrão FrotiX Simplificado)
+    
+    Este arquivo contém os endpoints API REST para gerenciamento de Requisitantes.
+    Para entender completamente a funcionalidade, consulte a documentação acima.
+    ═══════════════════════════════════════════════════════════════════════════════
+*/
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -15,14 +21,6 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ CONTROLLER: Requisitante API
-     * 🎯 OBJETIVO: Gerenciar requisitantes de viagens (funcionários que solicitam veículos)
-     * 📋 ROTAS: /api/Requisitante/* (Get, GetAll, GetById, Upsert, Delete, etc)
-     * 🔗 ENTIDADES: Requisitante, SetorSolicitante
-     * 📦 DEPENDÊNCIAS: IUnitOfWork
-     * 🌳 HIERARQUIA: Suporta árvore hierárquica de setores (GetSetoresHierarquia)
-     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class RequisitanteController : Controller
@@ -45,20 +43,11 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Get
-         * 🎯 OBJETIVO: Listar requisitantes com seus setores para grid (inner join)
-         * 📥 ENTRADAS: Nenhuma
-         * 📤 SAÍDAS: JSON { data: List<{ Ponto, Nome, Ramal, NomeSetor, Status, RequisitanteId }> }
-         * 🔗 CHAMADA POR: Grid de requisitantes
-         * 🔄 CHAMA: Requisitante.GetAll(), SetorSolicitante.GetAll()
-         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
             try
             {
-                // [DOC] Inner join: retorna apenas requisitantes com setor associado
                 var result = (
                     from r in _unitOfWork.Requisitante.GetAll()
                     join s in _unitOfWork.SetorSolicitante.GetAll()
@@ -87,21 +76,12 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: GetAll
-         * 🎯 OBJETIVO: Listar todos os requisitantes (com ou sem setor) para API externa
-         * 📥 ENTRADAS: Nenhuma
-         * 📤 SAÍDAS: JSON List<{ requisitanteId, ponto, nome, ramal, setorSolicitanteId, setorNome, status }>
-         * 🔗 CHAMADA POR: APIs externas, comboboxes
-         * 🔄 CHAMA: Requisitante.GetAll(), SetorSolicitante.GetAll()
-         ****************************************************************************************/
         [Route("GetAll")]
         [HttpGet]
         public IActionResult GetAll()
         {
             try
             {
-                // [DOC] Left join: retorna todos os requisitantes, mesmo sem setor associado
                 var result = (
                     from r in _unitOfWork.Requisitante.GetAll()
                     join s in _unitOfWork.SetorSolicitante.GetAll()
@@ -131,14 +111,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: GetById
-         * 🎯 OBJETIVO: Buscar requisitante por ID para edição
-         * 📥 ENTRADAS: id (string GUID)
-         * 📤 SAÍDAS: JSON { success, data: { requisitanteId, ponto, nome, ramal, setorSolicitanteId, status } }
-         * 🔗 CHAMADA POR: Modal de edição de requisitante
-         * 🔄 CHAMA: Requisitante.GetFirstOrDefault()
-         ****************************************************************************************/
         [Route("GetById")]
         [HttpGet]
         public IActionResult GetById(string id)
@@ -179,15 +151,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Upsert
-         * 🎯 OBJETIVO: Criar ou atualizar requisitante (insert ou update)
-         * 📥 ENTRADAS: model (RequisitanteUpsertModel: RequisitanteId?, Ponto, Nome, Ramal, SetorSolicitanteId, Status)
-         * 📤 SAÍDAS: JSON { success, message }
-         * 🔗 CHAMADA POR: Modal de criação/edição de requisitante
-         * 🔄 CHAMA: Requisitante.Add() ou Requisitante.Update()
-         * 👤 AUDITORIA: Registra DataAlteracao e UsuarioIdAlteracao (via Claims)
-         ****************************************************************************************/
         [Route("Upsert")]
         [HttpPost]
         public IActionResult Upsert([FromBody] RequisitanteUpsertModel model)
@@ -202,14 +165,14 @@ namespace FrotiX.Controllers
                 Requisitante requisitante;
                 bool isNew = string.IsNullOrEmpty(model.RequisitanteId) || model.RequisitanteId == Guid.Empty.ToString();
 
-                // [DOC] Parse do SetorSolicitanteId (pode ser null/empty)
+                // Parse do SetorSolicitanteId
                 Guid setorId = Guid.Empty;
                 if (!string.IsNullOrEmpty(model.SetorSolicitanteId))
                 {
                     Guid.TryParse(model.SetorSolicitanteId , out setorId);
                 }
 
-                // [DOC] Captura usuário logado via Claims (ASP.NET Identity)
+                // Pega o ID do usuário logado
                 var usuarioId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "";
 
                 if (isNew)
@@ -265,21 +228,12 @@ namespace FrotiX.Controllers
         }
 
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: GetSetores
-         * 🎯 OBJETIVO: Listar setores ativos para dropdown/combobox
-         * 📥 ENTRADAS: Nenhuma
-         * 📤 SAÍDAS: JSON List<{ id, nome }>
-         * 🔗 CHAMADA POR: Combobox de setores em formulários
-         * 🔄 CHAMA: SetorSolicitante.GetAll()
-         ****************************************************************************************/
         [Route("GetSetores")]
         [HttpGet]
         public IActionResult GetSetores()
         {
             try
             {
-                // [DOC] Filtra apenas setores ativos (Status = true)
                 var setores = _unitOfWork.SetorSolicitante.GetAll()
                     .Where(s => s.Status)
                     .OrderBy(s => s.Nome)
@@ -299,14 +253,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Delete
-         * 🎯 OBJETIVO: Excluir requisitante do sistema
-         * 📥 ENTRADAS: model (RequisitanteViewModel com RequisitanteId)
-         * 📤 SAÍDAS: JSON { success, message }
-         * 🔗 CHAMADA POR: Modal de exclusão de requisitante
-         * 🔄 CHAMA: Requisitante.GetFirstOrDefault(), Requisitante.Remove()
-         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(RequisitanteViewModel model)
@@ -344,15 +290,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: GetSetoresHierarquia
-         * 🎯 OBJETIVO: Retornar setores em estrutura hierárquica (árvore) para TreeView
-         * 📥 ENTRADAS: Nenhuma
-         * 📤 SAÍDAS: JSON List<{ id, nome, hasChild, children[] }>
-         * 🔗 CHAMADA POR: TreeView de setores (SyncFusion ou similar)
-         * 🔄 CHAMA: SetorSolicitante.GetAll(), MontarHierarquiaSetor() (recursivo)
-         * 🌳 ESTRUTURA: Monta árvore recursiva de setores pai-filho
-         ****************************************************************************************/
         [Route("GetSetoresHierarquia")]
         [HttpGet]
         public IActionResult GetSetoresHierarquia()
@@ -363,7 +300,7 @@ namespace FrotiX.Controllers
                     .Where(s => s.Status)
                     .ToList();
 
-                // [DOC] Busca setores raiz (SetorPaiId = null ou Guid.Empty)
+                // Busca setores raiz (sem pai)
                 var raizes = todosSetores
                     .Where(s => !s.SetorPaiId.HasValue || s.SetorPaiId.Value == Guid.Empty)
                     .OrderBy(s => s.Nome)
@@ -379,22 +316,12 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: MontarHierarquiaSetor (Helper recursivo)
-         * 🎯 OBJETIVO: Montar objeto hierárquico de setor com seus filhos (recursivo)
-         * 📥 ENTRADAS: setor (SetorSolicitante), todosSetores (List completa)
-         * 📤 SAÍDAS: Object { id, nome, hasChild, children[] }
-         * 🔗 CHAMADA POR: GetSetoresHierarquia(), MontarHierarquiaSetor() (si mesmo - recursão)
-         * 🔄 CHAMA: MontarHierarquiaSetor() recursivamente para cada filho
-         * 🌳 RECURSÃO: Profundidade ilimitada de níveis hierárquicos
-         ****************************************************************************************/
         private object MontarHierarquiaSetor(SetorSolicitante setor , List<SetorSolicitante> todosSetores)
         {
-            // [DOC] Busca todos os filhos deste setor (SetorPaiId == setor.SetorSolicitanteId)
             var filhos = todosSetores
                 .Where(s => s.SetorPaiId == setor.SetorSolicitanteId)
                 .OrderBy(s => s.Nome)
-                .Select(s => MontarHierarquiaSetor(s , todosSetores)) // [DOC] Recursão aqui
+                .Select(s => MontarHierarquiaSetor(s , todosSetores))
                 .ToList();
 
             return new
@@ -422,15 +349,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: AtualizarRequisitanteRamalSetor
-         * 🎯 OBJETIVO: Atualização parcial de requisitante (apenas Ramal e SetorSolicitanteId)
-         * 📥 ENTRADAS: dto (AtualizarRequisitanteDto: RequisitanteId, Ramal?, SetorSolicitanteId?)
-         * 📤 SAÍDAS: JSON { success, message }
-         * 🔗 CHAMADA POR: APIs externas ou formulários parciais
-         * 🔄 CHAMA: Requisitante.GetFirstOrDefault(), Requisitante.Update()
-         * 🔍 OTIMIZAÇÃO: Só atualiza se houver mudança real nos campos
-         ****************************************************************************************/
         [Route("AtualizarRequisitanteRamalSetor")]
         [HttpPost]
         public IActionResult AtualizarRequisitanteRamalSetor([FromBody] AtualizarRequisitanteDto dto)
@@ -460,7 +378,6 @@ namespace FrotiX.Controllers
 
                 bool houveMudanca = false;
 
-                // [DOC] Atualiza apenas campos enviados e diferentes dos atuais
                 if (dto.Ramal.HasValue && requisitante.Ramal != dto.Ramal.Value)
                 {
                     requisitante.Ramal = dto.Ramal.Value;
@@ -504,14 +421,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: UpdateStatusRequisitante
-         * 🎯 OBJETIVO: Alternar status do requisitante (Ativo ↔ Inativo)
-         * 📥 ENTRADAS: Id (Guid do requisitante)
-         * 📤 SAÍDAS: JSON { success, message, type (0=ativo, 1=inativo) }
-         * 🔗 CHAMADA POR: Toggle de status no grid
-         * 🔄 CHAMA: Requisitante.GetFirstOrDefault(), Requisitante.Update()
-         ****************************************************************************************/
         [Route("UpdateStatusRequisitante")]
         public JsonResult UpdateStatusRequisitante(Guid Id)
         {
@@ -527,7 +436,6 @@ namespace FrotiX.Controllers
 
                     if (objFromDb != null)
                     {
-                        // [DOC] Toggle status: true → false (type=1) ou false → true (type=0)
                         if (objFromDb.Status == true)
                         {
                             objFromDb.Status = false;

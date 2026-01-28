@@ -1,24 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: ViewAbastecimentos.cs                                              ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Modelo para VIEW de banco que lista abastecimentos com dados completos.     ║
-// ║ Desnormalizado para performance em grids e relatórios.                      ║
-// ║                                                                              ║
-// ║ CAMPOS:                                                                      ║
-// ║ - AbastecimentoId, DataHora, Data, Hora                                     ║
-// ║ - Veículo: Placa, TipoVeiculo, VeiculoId                                    ║
-// ║ - Motorista: Nome, MotoristaCondutor, MotoristaId                           ║
-// ║ - Combustível: TipoCombustivel, Sigla, CombustivelId                        ║
-// ║ - Valores: Litros, ValorUnitario, ValorTotal, Consumo, ConsumoGeral         ║
-// ║ - KmRodado, UnidadeId                                                       ║
-// ║                                                                              ║
-// ║ USO: Grid de abastecimentos, relatórios de consumo                          ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 17                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

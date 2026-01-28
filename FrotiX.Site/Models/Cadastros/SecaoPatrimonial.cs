@@ -1,26 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: SecaoPatrimonial.cs                                                ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade para cadastro de seções patrimoniais (subdivisões de setor).       ║
-// ║ Permite localização mais granular de patrimônios dentro de setores.         ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • SecaoPatrimonial - Entidade única (sem ViewModel separada)                ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ • SecaoId [Key] - Identificador único                                       ║
-// ║ • NomeSecao - Nome da seção (max 50 chars)                                  ║
-// ║ • SetorId → SetorPatrimonial - Setor pai                                    ║
-// ║ • Status - Ativo/Inativo                                                    ║
-// ║                                                                              ║
-// ║ USO:                                                                          ║
-// ║ • Hierarquia: SetorPatrimonial > SecaoPatrimonial > Patrimonio              ║
-// ║ • Ex: Setor "TI" → Seção "Sala de Servidores"                               ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

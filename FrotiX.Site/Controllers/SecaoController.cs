@@ -1,11 +1,3 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
- * ║  Seção: SecaoController.cs                                               ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
-
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -14,13 +6,6 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ CONTROLLER: Secao API
-     * 🎯 OBJETIVO: Gerenciar seções patrimoniais (subdivisões de setores)
-     * 📋 ROTAS: /api/Secao/*
-     * 🔗 ENTIDADES: SecaoPatrimonial, SetorPatrimonial
-     * 📦 DEPENDÊNCIAS: IUnitOfWork
-     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class SecaoController :Controller
@@ -39,21 +24,13 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: ListaSecoes
-         * 🎯 OBJETIVO: Listar todas as seções patrimoniais com seus setores
-         * 📥 ENTRADAS: Nenhuma
-         * 📤 SAÍDAS: JSON { success, data: List<{ SecaoId, NomeSecao, SetorId, Status, NomeSetor }> }
-         * 🔗 CHAMADA POR: Grid de seções patrimoniais
-         * 🔄 CHAMA: SecaoPatrimonial.GetAll(), SetorPatrimonial.GetAll()
-         ****************************************************************************************/
         [HttpGet]
         [Route("ListaSecoes")]
         public IActionResult ListaSecoes()
         {
             try
             {
-                // [DOC] Inner join: combina seções com setores patrimoniais
+
                 var secoes = _unitOfWork
                     .SecaoPatrimonial.GetAll()
                     .Join(
@@ -91,21 +68,12 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: ListaSecoesCombo
-         * 🎯 OBJETIVO: Listar seções ativas de um setor específico para combobox (dropdown)
-         * 📥 ENTRADAS: setorSelecionado (Guid? - pode ser null)
-         * 📤 SAÍDAS: JSON { success, data: List<{ text, value }> }
-         * 🔗 CHAMADA POR: Combobox de seções em formulários
-         * 🔄 CHAMA: SecaoPatrimonial.GetAll()
-         ****************************************************************************************/
         [HttpGet]
         [Route("ListaSecoesCombo")]
         public IActionResult ListaSecoesCombo(Guid? setorSelecionado)
         {
             try
             {
-                // [DOC] Se setor não informado, retorna lista vazia (válido para limpar combo)
                 if (!setorSelecionado.HasValue || setorSelecionado == Guid.Empty)
                 {
                     return Json(new
@@ -115,7 +83,6 @@ namespace FrotiX.Controllers
                     });
                 }
 
-                // [DOC] Filtra apenas seções ativas do setor selecionado
                 var secoes = _unitOfWork
                     .SecaoPatrimonial.GetAll()
                     .Where(s => s.SetorId == setorSelecionado && s.Status == true)
@@ -142,14 +109,6 @@ namespace FrotiX.Controllers
                 );
             }
         }
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: UpdateStatusSecao
-         * 🎯 OBJETIVO: Alternar status da seção patrimonial (Ativo ↔ Inativo)
-         * 📥 ENTRADAS: Id (Guid da seção)
-         * 📤 SAÍDAS: JSON { success, message, type (0=ativo, 1=inativo) }
-         * 🔗 CHAMADA POR: Toggle de status no grid
-         * 🔄 CHAMA: SecaoPatrimonial.GetFirstOrDefault(), SecaoPatrimonial.Update()
-         ****************************************************************************************/
         [Route("UpdateStatusSecao")]
         public JsonResult UpdateStatusSecao(Guid Id)
         {
@@ -164,7 +123,6 @@ namespace FrotiX.Controllers
                     int type = 0;
                     if (objFromDb != null)
                     {
-                        // [DOC] Toggle status: true → false (type=1) ou false → true (type=0)
                         if (objFromDb.Status == true)
                         {
                             objFromDb.Status = false;

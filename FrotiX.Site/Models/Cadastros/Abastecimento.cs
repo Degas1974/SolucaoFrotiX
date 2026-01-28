@@ -1,32 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: Abastecimento.cs                                                   ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade principal de registro de abastecimentos de veículos da frota.      ║
-// ║ Inclui ViewModel para formulários com dropdowns de veículos/motoristas.     ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • AbastecimentoViewModel - ViewModel para tela de cadastro                  ║
-// ║ • Abastecimento - Entidade EF Core com validações                           ║
-// ║                                                                              ║
-// ║ PROPRIEDADES ABASTECIMENTO:                                                  ║
-// ║ • AbastecimentoId [Key] - Identificador único                               ║
-// ║ • Litros, ValorUnitario - Valores do abastecimento                          ║
-// ║ • DataHora - Data e hora do abastecimento                                   ║
-// ║ • KmRodado, Hodometro - Quilometragem                                       ║
-// ║ • AutorizacaoQCard - Autorização do sistema QCard                           ║
-// ║                                                                              ║
-// ║ RELACIONAMENTOS:                                                             ║
-// ║ • VeiculoId → Veiculo (FK)                                                  ║
-// ║ • CombustivelId → Combustivel (FK)                                          ║
-// ║ • MotoristaId → Motorista (FK)                                              ║
-// ║                                                                              ║
-// ║ VALIDAÇÕES:                                                                   ║
-// ║ • [Required] em todos os campos obrigatórios                                ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

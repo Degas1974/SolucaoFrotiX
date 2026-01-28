@@ -1,31 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: ObservacoesEscala.cs                                               ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ ViewModel para gestão de observações/avisos nas escalas.                    ║
-// ║ Permite adicionar notas com período de exibição e prioridade.               ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • ObservacoesEscalaViewModel - ViewModel para o formulário                  ║
-// ║ • (Entidade ObservacoesEscala está em Escalas.cs)                           ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ • ObservacaoId - ID da observação                                           ║
-// ║ • DataEscala - Data da escala relacionada                                   ║
-// ║ • Titulo - Título da observação (max 200 chars)                             ║
-// ║ • Descricao - Descrição detalhada (MultilineText)                           ║
-// ║ • Prioridade - Baixa, Normal, Alta (default: Normal)                        ║
-// ║ • ExibirDe, ExibirAte - Período de exibição                                 ║
-// ║ • PrioridadeList - Dropdown de prioridades                                  ║
-// ║                                                                              ║
-// ║ CONSTRUTOR:                                                                   ║
-// ║ • Inicializa DataEscala e ExibirDe com DateTime.Today                       ║
-// ║ • Inicializa ExibirAte com DateTime.Today.AddDays(7)                        ║
-// ║ • Inicializa Prioridade com "Normal"                                        ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

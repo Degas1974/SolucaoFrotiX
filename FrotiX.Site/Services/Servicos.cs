@@ -1,27 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: Servicos.cs                                                         ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Classe de serviços utilitários síncronos para cálculos de viagens/custos.    ║
-// ║ Contém métodos estáticos para cálculos de custos de combustível, etc.        ║
-// ║                                                                              ║
-// ║ MÉTODOS PRINCIPAIS:                                                          ║
-// ║ - CalculaCustoCombustivel(): Calcula custo de combustível de uma viagem      ║
-// ║   → Usa preço do último abastecimento ou média do combustível                ║
-// ║   → Considera consumo do veículo (padrão 10 km/l se não informado)           ║
-// ║                                                                              ║
-// ║ DEPENDÊNCIAS:                                                                ║
-// ║ - IUnitOfWork: Acesso ao repositório                                         ║
-// ║ - ViewVeiculos: Dados do veículo (consumo, combustível)                      ║
-// ║ - Abastecimento: Histórico de abastecimentos                                 ║
-// ║ - MediaCombustivel: Preço médio por tipo de combustível                      ║
-// ║                                                                              ║
-// ║ OBSERVAÇÃO: Versão assíncrona em ServicosAsync.cs                            ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 15                                        ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
-
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using HtmlAgilityPack;
@@ -38,9 +14,6 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Services
 {
-    /// <summary>
-    /// Serviços utilitários síncronos para cálculos de viagens.
-    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class Servicos

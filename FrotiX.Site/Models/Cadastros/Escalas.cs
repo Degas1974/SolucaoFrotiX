@@ -1,37 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: Escalas.cs                                                         ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Arquivo central do módulo de escalas de motoristas.                         ║
-// ║ Contém todas as entidades relacionadas à gestão de escalas.                 ║
-// ║                                                                              ║
-// ║ ENTIDADES:                                                                    ║
-// ║ • TipoServico - Tipos de serviço (Fixo, Eventual, etc)                      ║
-// ║ • Turno - Turnos de trabalho (Matutino, Vespertino, Noturno)                ║
-// ║ • VAssociado - Associação Motorista-Veículo                                 ║
-// ║ • EscalaDiaria - Escala diária do motorista                                 ║
-// ║ • FolgaRecesso - Registro de folgas e recessos                              ║
-// ║ • Ferias - Registro de férias com substituto                                ║
-// ║ • CoberturaFolga - Cobertura de folga entre motoristas                      ║
-// ║ • ObservacoesEscala - Observações/avisos nas escalas                        ║
-// ║                                                                              ║
-// ║ ENUMERAÇÕES:                                                                  ║
-// ║ • StatusMotoristaEnum - Disponivel, EmViagem, Indisponivel, etc             ║
-// ║ • TurnoEnum - Matutino, Vespertino, Noturno                                 ║
-// ║ • LotacaoEnum - Aeroporto, Rodoviaria, PGR, Cefor, etc                      ║
-// ║                                                                              ║
-// ║ RELACIONAMENTOS PRINCIPAIS:                                                   ║
-// ║ • VAssociado: MotoristaId → Motorista, VeiculoId → Veiculo                  ║
-// ║ • EscalaDiaria: AssociacaoId → VAssociado, TipoServicoId, TurnoId           ║
-// ║ • Ferias: MotoristaId (titular), MotoristaSubId (substituto)                ║
-// ║ • CoberturaFolga: MotoristaFolgaId, MotoristaCoberturaId                    ║
-// ║                                                                              ║
-// ║ CONSTRUTORES:                                                                 ║
-// ║ • Todas as entidades geram Guid e DataCriacao no construtor                 ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

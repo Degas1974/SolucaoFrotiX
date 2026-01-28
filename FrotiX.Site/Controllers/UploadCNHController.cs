@@ -1,11 +1,3 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║  📄 DocumentacaoIntraCodigo/DocumentacaoIntracodigo.md                  ║
- * ║  Seção: UploadCNHController.cs                                           ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
-
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -17,14 +9,6 @@ using System.IO;
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ CONTROLLER: UploadCNH API (Syncfusion Uploader)
-     * 🎯 OBJETIVO: Gerenciar upload de CNH digital (PDF) de motoristas
-     * 📋 ROTAS: /api/UploadCNH/* (Save, Remove, UploadFeatures)
-     * 🔗 ENTIDADES: Motorista (campo CNHDigital byte[])
-     * 📦 DEPENDÊNCIAS: IWebHostEnvironment, IUnitOfWork, Syncfusion Uploader
-     * 💾 ARMAZENAMENTO: PDF convertido para byte[] e salvo no banco de dados
-     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     [IgnoreAntiforgeryToken]
@@ -46,15 +30,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Save
-         * 🎯 OBJETIVO: Salvar arquivo PDF da CNH no banco de dados (conversão para byte[])
-         * 📥 ENTRADAS: UploadFiles (IFormFile[]), motoristaId (Guid query param)
-         * 📤 SAÍDAS: Content("") com StatusCode 200 ou 500
-         * 🔗 CHAMADA POR: Syncfusion Uploader (JavaScript component)
-         * 🔄 CHAMA: Motorista.GetFirstOrDefault(), Motorista.Update()
-         * 💾 CONVERSÃO: IFormFile → MemoryStream → byte[] → Motorista.CNHDigital
-         ****************************************************************************************/
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("Save")]
@@ -72,7 +47,6 @@ namespace FrotiX.Controllers
 
                         if (objFromDb != null)
                         {
-                            // [DOC] Converte arquivo enviado para byte array e salva no banco
                             using (var target = new MemoryStream())
                             {
                                 file.CopyTo(target);
@@ -93,15 +67,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Remove
-         * 🎯 OBJETIVO: Remover CNH digital do motorista (limpa campo CNHDigital)
-         * 📥 ENTRADAS: UploadFiles (IFormFile[] - não usado), motoristaId (Guid query param)
-         * 📤 SAÍDAS: Content("") com StatusCode 200 ou 500
-         * 🔗 CHAMADA POR: Syncfusion Uploader (botão de remoção)
-         * 🔄 CHAMA: Motorista.GetFirstOrDefault(), Motorista.Update()
-         * 🗑️ OPERAÇÃO: Define CNHDigital = null
-         ****************************************************************************************/
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("Remove")]
@@ -134,14 +99,6 @@ namespace FrotiX.Controllers
             }
         }
 
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: UploadFeatures
-         * 🎯 OBJETIVO: Renderizar página de demonstração do uploader (uso interno/teste)
-         * 📥 ENTRADAS: Nenhuma
-         * 📤 SAÍDAS: View (Razor Page)
-         * 🔗 CHAMADA POR: Acesso direto para visualizar funcionalidades do uploader
-         * 🔄 CHAMA: View()
-         ****************************************************************************************/
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("UploadFeatures")]

@@ -1,29 +1,3 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ ARQUIVO: MovimentacaoPatrimonio.cs                                          ║
-// ║ PROJETO: FrotiX - Sistema de Gestão de Frotas                               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO:                                                                   ║
-// ║ Entidade para registro de movimentações de patrimônios entre setores.       ║
-// ║ Mantém histórico de transferências de bens patrimoniais.                    ║
-// ║                                                                              ║
-// ║ CLASSES:                                                                      ║
-// ║ • MovimentacaoPatrimonioViewModel - ViewModel com dados de origem/destino   ║
-// ║ • MovimentacaoPatrimonio - Entidade de movimentação                         ║
-// ║                                                                              ║
-// ║ PROPRIEDADES:                                                                ║
-// ║ • MovimentacaoPatrimonioId [Key] - Identificador único                      ║
-// ║ • DataMovimentacao - Data da transferência                                  ║
-// ║ • ResponsavelMovimentacao - Quem autorizou/executou                         ║
-// ║ • SetorOrigemId, SecaoOrigemId - Localização de origem                      ║
-// ║ • SetorDestinoId, SecaoDestinoId - Localização de destino                   ║
-// ║ • PatrimonioId - Patrimônio movimentado                                     ║
-// ║                                                                              ║
-// ║ USO:                                                                          ║
-// ║ • Rastreabilidade de bens patrimoniais                                      ║
-// ║ • Auditoria de transferências entre unidades                                ║
-// ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 18                                       ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
