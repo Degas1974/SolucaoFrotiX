@@ -1,44 +1,12 @@
-/*
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Arquivo    : PlacaBronzeController.cs                                        ║
-║ Projeto    : FrotiX.Site                                                     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ DESCRICAO                                                                    ║
-║ Controller API para gerenciamento de Placas de Bronze (identificação         ║
-║ patrimonial de veículos). Placas de bronze são placas físicas afixadas       ║
-║ em veículos oficiais com número de patrimônio.                               ║
-║ Endpoint: /api/PlacaBronze                                                   ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ ENDPOINTS                                                                    ║
-║ - GET /api/PlacaBronze : Lista todas as placas de bronze                     ║
-║   * LEFT JOIN com Veiculo para mostrar veículo vinculado                     ║
-║   * Retorna: { data: [{ PlacaBronzeId, DescricaoPlaca, Status, PlacaVeiculo }] }║
-║ - POST Delete          : Remove placa de bronze                              ║
-║   * Validação: Não permite excluir se houver veículo vinculado               ║
-║ - GET UpdateStatusPlacaBronze : Alterna status Ativo/Inativo                 ║
-║   * Parâmetro: Id (GUID)                                                     ║
-║   * Retorna: { success, message, type (0=ativo, 1=inativo) }                 ║
-║ - POST Desvincula      : Remove vínculo entre placa e veículo                ║
-║   * Define Veiculo.PlacaBronzeId = Guid.Empty                                ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ CAMPOS DA PLACA DE BRONZE                                                    ║
-║ - PlacaBronzeId  : Identificador único (GUID)                                ║
-║ - DescricaoPlaca : Número/descrição da placa de bronze                       ║
-║ - Status         : Ativo (true) / Inativo (false)                            ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ REGRAS DE NEGOCIO                                                            ║
-║ - Placa só pode ser excluída se não estiver vinculada a nenhum veículo       ║
-║ - Desvinculação limpa PlacaBronzeId do veículo (não exclui a placa)          ║
-║ - Toggle de status mantém placa no sistema mas a desabilita                  ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ DEPENDENCIAS                                                                 ║
-║ - IUnitOfWork        : Acesso a repositórios PlacaBronze e Veiculo           ║
-║ - PlacaBronzeViewModel: DTO para receber dados do frontend                   ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: PlacaBronzeController.cs                                                                ║
+   ║ 📂 CAMINHO: /Controllers                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Gerenciar Placas de Bronze (identificação patrimonial de veículos oficiais).           ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: Get(), Delete(), UpdateStatus(), Desvincula() - vínculo com Veiculo, toggle status       ║
+   ║ 🔗 DEPS: IUnitOfWork (PlacaBronze, Veiculo) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                  ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
 */
 
 using FrotiX.Models;
