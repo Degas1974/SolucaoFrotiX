@@ -1,21 +1,17 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ║ ARQUIVO    : IAlertasFrotiXRepository.cs                                     ║
-// ║ LOCALIZAÇÃO: Repository/IRepository/                                         ║
-// ║ LOTE       : 24 — Repository/IRepository                                     ║
-// ║ DATA       : 29/01/2026                                                      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ FINALIDADE                                                                   ║
-// ║ Interface do repositório de AlertasFrotiX, gerenciando sistema de alertas    ║
-// ║ do sistema (vencimentos, manutenções, documentos, etc.).                    ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ MÉTODOS ADICIONAIS                                                           ║
-// ║ • GetTodosAlertasAtivosAsync() → Lista alertas ativos                        ║
-// ║ • GetQuantidadeAlertasNaoLidosAsync() → Contador para badge                  ║
-// ║ • MarcarComoLidoAsync() → Atualiza status de leitura                         ║
-// ║ • CriarAlertaAsync() → Cria alerta com notificação para usuários             ║
-// ║ • GetAlertasParaNotificarAsync() → Alertas pendentes de notificação          ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  🚀 ARQUIVO: IAlertasFrotiXRepository.cs                                                                         ║
+║  📂 CAMINHO: Repository/IRepository/                                                                             ║
+║  🎯 OBJETIVO: Interface do repositório de AlertasFrotiX, gerenciando sistema de alertas do sistema              ║
+║              (vencimentos, manutenções, documentos, etc.).                                                       ║
+║  📋 MÉTODOS ADICIONAIS:                                                                                          ║
+║     • GetTodosAlertasAtivosAsync() → Lista alertas ativos                                                       ║
+║     • GetQuantidadeAlertasNaoLidosAsync() → Contador para badge                                                 ║
+║     • MarcarComoLidoAsync() → Atualiza status de leitura                                                        ║
+║     • CriarAlertaAsync() → Cria alerta com notificação para usuários                                            ║
+║     • GetAlertasParaNotificarAsync() → Alertas pendentes de notificação                                         ║
+║  🔗 DEPENDÊNCIAS: IRepository<AlertasFrotiX>, Task, async/await                                                 ║
+║  📅 Atualizado: 29/01/2026    👤 Team: FrotiX    📝 Versão: 2.0                                                 ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 using FrotiX.Models;
 using System;
 using System.Collections.Generic;

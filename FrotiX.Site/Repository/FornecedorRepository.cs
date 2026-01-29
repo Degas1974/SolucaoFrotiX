@@ -1,18 +1,14 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ║ ARQUIVO    : FornecedorRepository.cs                                         ║
-// ║ LOCALIZAÇÃO: Repository/                                                     ║
-// ║ LOTE       : 24 — Repository                                                 ║
-// ║ DATA       : 29/01/2026                                                      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ FINALIDADE                                                                   ║
-// ║ Repositório especializado para entidade Fornecedor. Gerencia fornecedores    ║
-// ║ de contratos (combustível, veículos, manutenção, etc).                        ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ PRINCIPAIS MÉTODOS                                                           ║
-// ║ • GetFornecedorListForDropDown() → SelectList apenas ativos (Status=true)    ║
-// ║ • Update() → Atualização da entidade Fornecedor                              ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  🚀 ARQUIVO: FornecedorRepository.cs                                                                             ║
+║  📂 CAMINHO: Repository/                                                                                         ║
+║  🎯 OBJETIVO: Repositório especializado para entidade Fornecedor. Gerencia fornecedores de contratos            ║
+║              (combustível, veículos, manutenção, etc).                                                           ║
+║  📋 MÉTODOS PRINCIPAIS:                                                                                          ║
+║     • GetFornecedorListForDropDown() → SelectList apenas ativos (Status=true)                                   ║
+║     • Update() → Atualização da entidade Fornecedor                                                             ║
+║  🔗 DEPENDÊNCIAS: FrotiXDbContext, SelectListItem, IFornecedorRepository                                        ║
+║  📅 Atualizado: 29/01/2026    👤 Team: FrotiX    📝 Versão: 2.0                                                 ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 using System;
 using System.Collections.Generic;
 using System.Linq;

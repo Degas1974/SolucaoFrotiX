@@ -1,21 +1,17 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ║ ARQUIVO    : IAlertasUsuarioRepository.cs                                    ║
-// ║ LOCALIZAÇÃO: Repository/IRepository/                                         ║
-// ║ LOTE       : 24 — Repository/IRepository                                     ║
-// ║ DATA       : 29/01/2026                                                      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ FINALIDADE                                                                   ║
-// ║ Interface do repositório de AlertasUsuario, gerenciando associação MxN       ║
-// ║ entre alertas e usuários para controle de leitura/notificação.               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ MÉTODOS ADICIONAIS                                                           ║
-// ║ • ObterAlertasPorUsuarioAsync() → Alertas de um usuário                      ║
-// ║ • ObterUsuariosPorAlertaAsync() → Usuários vinculados a um alerta            ║
-// ║ • UsuarioTemAlertaAsync() → Verifica vínculo existente                        ║
-// ║ • RemoverAlertasDoUsuarioAsync() → Limpa alertas do usuário                  ║
-// ║ • Update() → Atualização do vínculo alerta-usuário                            ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  🚀 ARQUIVO: IAlertasUsuarioRepository.cs                                                                        ║
+║  📂 CAMINHO: Repository/IRepository/                                                                             ║
+║  🎯 OBJETIVO: Interface do repositório de AlertasUsuario, gerenciando associação MxN entre alertas e usuários   ║
+║              para controle de leitura/notificação.                                                               ║
+║  📋 MÉTODOS ADICIONAIS:                                                                                          ║
+║     • ObterAlertasPorUsuarioAsync() → Alertas de um usuário                                                     ║
+║     • ObterUsuariosPorAlertaAsync() → Usuários vinculados a um alerta                                           ║
+║     • UsuarioTemAlertaAsync() → Verifica vínculo existente                                                      ║
+║     • RemoverAlertasDoUsuarioAsync() → Limpa alertas do usuário                                                 ║
+║     • Update() → Atualização do vínculo alerta-usuário                                                          ║
+║  🔗 DEPENDÊNCIAS: IRepository<AlertasUsuario>, Task, async/await                                                ║
+║  📅 Atualizado: 29/01/2026    👤 Team: FrotiX    📝 Versão: 2.0                                                 ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 using FrotiX.Models;
 using System;
 using System.Collections.Generic;
