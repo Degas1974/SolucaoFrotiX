@@ -1,34 +1,13 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ ARQUIVO    : EvolutionApiWhatsAppService.cs                                  ║
-// ║ LOCALIZAÇÃO: Services/WhatsApp/                                              ║
-// ║ FINALIDADE : Implementação do IWhatsAppService usando Evolution API.         ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO FUNCIONAL                                                          ║
-// ║ Serviço HTTP para comunicação com WhatsApp via Evolution API:                ║
-// ║ • StartSessionAsync: POST para iniciar/criar sessão (retorna "aguarde QR")   ║
-// ║ • GetStatusAsync: GET para obter status da sessão, parseia JSON para         ║
-// ║   extrair status (CONNECTED/QRCODE/DISCONNECTED) e QR code se disponível     ║
-// ║ • GetQrBase64Async: GET para obter QR code em Base64 para pareamento         ║
-// ║ • SendTextAsync: POST para enviar mensagem de texto ao número E.164          ║
-// ║ • SendMediaAsync: POST para enviar mídia (imagem/arquivo) em Base64          ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DETALHES TÉCNICOS                                                            ║
-// ║ • Usa HttpClient tipado injetado via DI                                      ║
-// ║ • Configuração via IOptions<EvolutionApiOptions>                             ║
-// ║ • Usa JsonContent.Create() ao invés de PostAsJsonAsync (evita ambiguidade)   ║
-// ║ • Parsing de JSON com JsonDocument para extrair campos de resposta           ║
-// ║ • Tratamento de erros via Alerta.TratamentoErroComLinha                      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ REGISTRO NO DI (Program.cs ou Startup.cs)                                    ║
-// ║ services.AddHttpClient<IWhatsAppService, EvolutionApiWhatsAppService>(c =>   ║
-// ║   c.BaseAddress = new Uri(config["EvolutionApi:BaseUrl"]));                  ║
-// ║ services.Configure<EvolutionApiOptions>(config.GetSection("EvolutionApi"));  ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ LOTE        : 22 — Services                                                  ║
-// ║ DATA        : 29/01/2026                                                     ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: EvolutionApiWhatsAppService.cs                                                          ║
+   ║ 📂 CAMINHO: /Services/WhatsApp                                                                      ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Implementação de IWhatsAppService via Evolution API. Sessões, texto, mídia.            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: StartSessionAsync(), GetStatusAsync(), GetQrBase64Async(), SendTextAsync(), SendMedia()  ║
+   ║ 🔗 DEPS: HttpClient, EvolutionApiOptions | 📅 29/01/2026 | 👤 Copilot | 📝 v2.0                     ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using FrotiX.Services.WhatsApp;
 using Microsoft.Extensions.Options;
