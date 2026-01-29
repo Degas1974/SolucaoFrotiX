@@ -1,18 +1,14 @@
-﻿// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ║ ARQUIVO    : IEmpenhoMultaRepository.cs                                      ║
-// ║ LOCALIZAÇÃO: Repository/IRepository/                                         ║
-// ║ LOTE       : 24 — Repository/IRepository                                     ║
-// ║ DATA       : 29/01/2026                                                      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ FINALIDADE                                                                   ║
-// ║ Interface do repositório de EmpenhoMulta, gerenciando empenhos específicos   ║
-// ║ para pagamento de multas de trânsito.                                        ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ MÉTODOS ADICIONAIS                                                           ║
-// ║ • GetEmpenhoMultaListForDropDown() → DropDown de empenhos de multa           ║
-// ║ • Update() → Atualização de empenho-multa                                    ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  🚀 ARQUIVO: IEmpenhoMultaRepository.cs                                                                          ║
+║  📂 CAMINHO: Repository/IRepository/                                                                             ║
+║  🎯 OBJETIVO: Interface do repositório de EmpenhoMulta, gerenciando empenhos específicos para pagamento de      ║
+║              multas de trânsito.                                                                                ║
+║  📋 MÉTODOS ADICIONAIS:                                                                                          ║
+║     • GetEmpenhoMultaListForDropDown() → DropDown de empenhos de multa                                          ║
+║     • Update() → Atualização de empenho-multa                                                                   ║
+║  🔗 DEPENDÊNCIAS: IRepository<EmpenhoMulta>, SelectListItem                                                    ║
+║  📅 Atualizado: 29/01/2026    👤 Team: FrotiX    📝 Versão: 2.0                                                 ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,18 +1,14 @@
-﻿// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ║ ARQUIVO    : ICorridasTaxiLegCanceladas.cs                                   ║
-// ║ LOCALIZAÇÃO: Repository/IRepository/                                         ║
-// ║ LOTE       : 24 — Repository/IRepository                                     ║
-// ║ DATA       : 29/01/2026                                                      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ FINALIDADE                                                                   ║
-// ║ Interface do repositório de CorridasCanceladasTaxiLeg, gerenciando corridas  ║
-// ║ canceladas importadas do sistema TaxiLeg.                                    ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ MÉTODOS ADICIONAIS                                                           ║
-// ║ • GetCorridasCanceladasTaxiLegListForDropDown() → DropDown de canceladas     ║
-// ║ • Update() → Atualização de corrida cancelada                                ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  🚀 ARQUIVO: ICorridasTaxiLegCanceladas.cs                                                                       ║
+║  📂 CAMINHO: Repository/IRepository/                                                                             ║
+║  🎯 OBJETIVO: Interface do repositório de CorridasCanceladasTaxiLeg, gerenciando corridas canceladas            ║
+║              importadas do sistema TaxiLeg.                                                                    ║
+║  📋 MÉTODOS ADICIONAIS:                                                                                          ║
+║     • GetCorridasCanceladasTaxiLegListForDropDown() → DropDown de canceladas                                    ║
+║     • Update() → Atualização de corrida cancelada                                                               ║
+║  🔗 DEPENDÊNCIAS: IRepository<CorridasCanceladasTaxiLeg>, SelectListItem                                       ║
+║  📅 Atualizado: 29/01/2026    👤 Team: FrotiX    📝 Versão: 2.0                                                 ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 using System;
 using System.Collections.Generic;
 using System.Linq;
