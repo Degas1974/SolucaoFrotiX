@@ -2520,31 +2520,34 @@ function initViewer(viagemId)
             return;
         }
 
-        console.log('Inicializando Report Viewer para viagem:', viagemId);
+        console.log('📊 Inicializando Report Viewer para viagem:', viagemId);
 
         // VERIFICAÇÕES CRÍTICAS
         if (typeof $ === 'undefined')
         {
-            console.error('jQuery não carregado!');
+            console.error('❌ jQuery não carregado!');
             $("#reportViewer1").html('<div class="alert alert-danger">jQuery não carregado.</div>');
             return;
         }
 
         if (typeof kendo === 'undefined')
         {
-            console.error('Kendo UI não carregado!');
+            console.error('❌ Kendo UI não carregado!');
             $("#reportViewer1").html('<div class="alert alert-danger">Kendo UI não carregado.</div>');
             return;
         }
 
         if (typeof telerikReportViewer === 'undefined')
         {
-            console.error('telerikReportViewer não está definido.');
+            console.error('❌ telerikReportViewer não está definido.');
             $("#reportViewer1").html('<div class="alert alert-danger">Telerik Report Viewer não carregado.</div>');
             return;
         }
 
+        console.log('✅ Todas as dependências estão carregadas');
+
         const $viewer = $("#reportViewer1");
+        console.log('📊 Viewer element encontrado:', $viewer.length > 0 ? '✅' : '❌');
 
         // Limpa instância anterior
         const existingInstance = $viewer.data("telerik_ReportViewer");
@@ -2574,6 +2577,7 @@ function initViewer(viagemId)
         }).addClass("visible");
 
         // Busca dados da viagem
+        console.log('📡 Fazendo requisição AJAX para /api/Agenda/RecuperaViagem...');
         $.ajax({
             type: "GET",
             url: "/api/Agenda/RecuperaViagem",
@@ -2583,14 +2587,16 @@ function initViewer(viagemId)
         })
             .done(function (response)
             {
+                console.log('✅ Requisição AJAX concluída:', response);
                 try
                 {
                     const data = response && response.data ? response.data : {};
                     const relatorioNome = determinarRelatorio(data);
 
-                    console.log('Configurando Report Viewer com:', {
+                    console.log('📊 Configurando Report Viewer com:', {
                         relatorio: relatorioNome,
-                        viagemId: viagemId
+                        viagemId: viagemId,
+                        serviceUrl: '/api/reports/'
                     });
 
                     // AGUARDA O KENDO ESTAR TOTALMENTE PRONTO
@@ -2598,7 +2604,9 @@ function initViewer(viagemId)
 
                     try
                     {
-                        // Inicializa o Report Viewer - VERSÃO SIMPLIFICADA
+                        console.log('🔧 Chamando telerik_ReportViewer()...');
+
+                        // Inicializa o Report Viewer com callbacks de debug
                         $viewer.telerik_ReportViewer({
                             serviceUrl: "/api/reports/",
                             reportSource: {
@@ -2613,8 +2621,23 @@ function initViewer(viagemId)
                             enableAccessibility: false,
                             sendEmail: {
                                 enabled: false
+                            },
+                            error: function (e, args)
+                            {
+                                console.error('❌ Erro no Report Viewer:', args);
+                                kendo.ui.progress($viewer, false);
+                                const errorMsg = args.message || 'Erro desconhecido ao carregar relatório';
+                                console.error('Mensagem de erro:', errorMsg);
+                                $("#reportViewer1").html('<div class="alert alert-danger"><strong>Erro:</strong> ' + errorMsg + '</div>');
+                            },
+                            ready: function ()
+                            {
+                                console.log('✅ Report Viewer carregado com sucesso!');
+                                kendo.ui.progress($viewer, false);
                             }
                         });
+
+                        console.log('✅ telerik_ReportViewer() chamado com sucesso');
 
                         //    // Inicializa o Report Viewer
                         //    $viewer.telerik_ReportViewer({
@@ -2665,9 +2688,12 @@ function initViewer(viagemId)
             })
             .fail(function (xhr)
             {
-                console.error("Erro ao carregar dados da viagem:", xhr);
+                console.error("❌ Erro ao carregar dados da viagem:", xhr);
+                console.error("Status:", xhr.status);
+                console.error("Status Text:", xhr.statusText);
+                console.error("Response:", xhr.responseText);
                 const errorMsg = xhr.responseJSON?.message || 'Não foi possível carregar os dados da viagem';
-                $("#reportViewer1").html('<div class="alert alert-danger">' + errorMsg + '</div>');
+                $("#reportViewer1").html('<div class="alert alert-danger"><strong>Erro na API:</strong> ' + errorMsg + '</div>');
             });
     } catch (error)
     {
@@ -2705,27 +2731,38 @@ $(function ()
 
         $modal.on("shown.bs.modal", function ()
         {
+            console.log('📊 Evento shown.bs.modal disparado');
+
             // Fix para conflito entre Bootstrap e Kendo
             $(document).off("focusin.modal");
 
             const viagemId = $("#txtViagemId").val();
+            console.log('📊 ViagemId no shown:', viagemId);
 
             if (!viagemId)
             {
+                console.error('❌ ID da viagem não encontrado no shown.bs.modal');
                 $("#reportViewer1").html('<div class="alert alert-warning">ID da viagem não informado.</div>');
                 return;
             }
+
+            console.log('🔍 Verificando dependências...');
+            console.log('  - jQuery:', typeof $ !== 'undefined' ? '✅' : '❌');
+            console.log('  - Kendo:', typeof kendo !== 'undefined' ? '✅' : '❌');
+            console.log('  - telerikReportViewer:', typeof telerikReportViewer !== 'undefined' ? '✅' : '❌');
 
             setTimeout(function ()
             {
                 if (typeof kendo !== 'undefined' && typeof telerikReportViewer !== 'undefined')
                 {
+                    console.log('✅ Dependências OK. Chamando initViewer...');
                     initViewer(viagemId);
                 } else
                 {
-                    console.error('Dependências não carregadas. Aguardando...');
+                    console.error('⚠️ Dependências não carregadas. Aguardando mais 1 segundo...');
                     setTimeout(function ()
                     {
+                        console.log('🔄 Segunda tentativa de inicializar o viewer...');
                         initViewer(viagemId);
                     }, 1000);
                 }
