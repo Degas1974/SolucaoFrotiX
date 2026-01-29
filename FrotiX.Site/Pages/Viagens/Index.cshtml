@@ -566,6 +566,43 @@
 		align-items: center !important;
 		gap: 0.5rem;
 	}
+
+	/* ================================================================
+	   CORREÇÃO PAGINAÇÃO - Especificidade máxima para esta página
+	   Garante que os caracteres fiquem BRANCOS em todos os botões
+	   ================================================================ */
+
+	/* Botão atual/ativo - FORÇA texto branco */
+	#tblViagem_wrapper .dataTables_paginate .paginate_button.current,
+	#tblViagem_wrapper .dataTables_paginate .paginate_button.current *,
+	#tblViagem_wrapper .dataTables_paginate .paginate_button.current a,
+	#tblViagem_wrapper .dataTables_paginate .paginate_button.current span,
+	#tblViagem_wrapper .dataTables_paginate .paginate_button.current:hover,
+	#tblViagem_wrapper .dataTables_paginate .paginate_button.current:hover *,
+	#tblViagem_wrapper .dataTables_paginate .paginate_button.current:hover a,
+	#tblViagem_wrapper .dataTables_paginate .paginate_button.current:hover span {
+		color: #ffffff !important;
+	}
+
+	/* Todos os botões não desabilitados - FORÇA texto branco */
+	#tblViagem_wrapper .dataTables_paginate .paginate_button:not(.disabled),
+	#tblViagem_wrapper .dataTables_paginate .paginate_button:not(.disabled) *,
+	#tblViagem_wrapper .dataTables_paginate .paginate_button:not(.disabled) a,
+	#tblViagem_wrapper .dataTables_paginate .paginate_button:not(.disabled) span,
+	#tblViagem_wrapper .dataTables_paginate .paginate_button:not(.disabled):hover,
+	#tblViagem_wrapper .dataTables_paginate .paginate_button:not(.disabled):hover *,
+	#tblViagem_wrapper .dataTables_paginate .paginate_button:not(.disabled):hover a,
+	#tblViagem_wrapper .dataTables_paginate .paginate_button:not(.disabled):hover span {
+		color: #ffffff !important;
+	}
+
+	/* Botões desabilitados também ficam brancos */
+	#tblViagem_wrapper .dataTables_paginate .paginate_button.disabled,
+	#tblViagem_wrapper .dataTables_paginate .paginate_button.disabled *,
+	#tblViagem_wrapper .dataTables_paginate .paginate_button.disabled a,
+	#tblViagem_wrapper .dataTables_paginate .paginate_button.disabled span {
+		color: #ffffff !important;
+	}
 </style>
 
 <script>
