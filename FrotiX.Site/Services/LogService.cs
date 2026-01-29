@@ -1,15 +1,13 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Services/LogService.cs                                         ║
- * ║  Descrição: Implementação de ILogService. Grava logs em arquivos diários  ║
- * ║             na pasta /Logs (frotix_log_yyyy-MM-dd.txt).                   ║
- * ║             Métodos: Info, Warning, Error, ErrorJS, Debug, Operation*,   ║
- * ║             UserAction, HttpError, GetStats, ClearLogs.                  ║
- * ║             Evento OnErrorOccurred para notificações real-time.          ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: LogService.cs                                                                           ║
+   ║ 📂 CAMINHO: /Services                                                                               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Implementação ILogService. Grava logs em /Logs (frotix_log_yyyy-MM-dd.txt).            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: Info, Warning, Error, ErrorJS, Debug, Operation*, UserAction, HttpError, GetStats        ║
+   ║ 🔗 DEPS: IWebHostEnvironment, IHttpContextAccessor | 📅 29/01/2026 | 👤 Copilot | 📝 v2.0           ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using System;
 using System.Collections.Generic;

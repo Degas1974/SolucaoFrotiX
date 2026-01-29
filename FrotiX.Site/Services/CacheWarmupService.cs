@@ -1,3 +1,14 @@
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: CacheWarmupService.cs                                                                   ║
+   ║ 📂 CAMINHO: /Services                                                                               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: IHostedService que pré-carrega cache IMemoryCache no startup. Refresh a cada 10min.    ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: StartAsync, StopAsync, WarmupAsync, RefreshLoopAsync (TTL: 30min, Refresh: 10min)        ║
+   ║ 🔗 DEPS: IMemoryCache, IUnitOfWork, CacheKeys | 📅 29/01/2026 | 👤 Copilot | 📝 v2.0                ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
+
 // Services/CacheWarmupService.cs
 using System;
 using System.Collections.Generic;

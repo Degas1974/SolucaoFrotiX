@@ -1,13 +1,13 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Services/ILogService.cs                                        ║
- * ║  Descrição: Interface de logging centralizado. Métodos: Info, Warning,   ║
- * ║             Error, ErrorJS (client-side), Debug, OperationStart/Success/ ║
- * ║             Failed, UserAction, HttpError. DTOs: LogFileInfo, LogStats.  ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ILogService.cs                                                                          ║
+   ║ 📂 CAMINHO: /Services                                                                               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Interface de logging centralizado FrotiX. Erros de Pages, Controllers, Services, JS.   ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: Info, Warning, Error, ErrorJS, Debug, OperationStart/Success/Failed, UserAction, HttpErr ║
+   ║ 🔗 DEPS: Nenhuma (interface) | 📅 29/01/2026 | 👤 Copilot | 📝 v2.0                                 ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using System;
 using System.Collections.Generic;
