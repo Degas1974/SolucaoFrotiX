@@ -1,14 +1,13 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║                                                                          ║
- * ║  📚 CLASSE BASE PARA PROVEDORES DE IA - DOCGENERATOR                    ║
- * ║                                                                          ║
- * ║  Centraliza lógica comum de parsing, prompts e ícones                   ║
- * ║                                                                          ║
- * ║  Última atualização: 15/01/2026                                          ║
- * ║                                                                          ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: BaseDocProvider.cs                                                                      ║
+   ║ 📂 CAMINHO: /Services/DocGenerator/Providers                                                        ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Classe base abstrata para provedores de IA. Prompts, parsing, catálogo de ícones.      ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: IconCatalog (dics), BuildPrompt(), ParseResponse(), GetIconForCategory()                 ║
+   ║ 🔗 DEPS: ILogger, Models | 📅 15/01/2026 | 👤 Copilot | 📝 v2.0                                     ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using System;
 using System.Collections.Generic;
