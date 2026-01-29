@@ -1,19 +1,12 @@
-/*
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Arquivo    : OcorrenciaViagemController.Upsert.cs                            ║
-║ Projeto    : FrotiX.Site                                                     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ DESCRICAO                                                                    ║
-║ Partial class para baixa de ocorrencia especifica da tela de Nova Viagem.    ║
-║ Separado para manter organizacao do codigo.                                  ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ ENDPOINTS                                                                    ║
-║ - POST /api/OcorrenciaViagem/BaixarUpsert : Baixa da tela de Nova Viagem     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: OcorrenciaViagemController.Upsert.cs                                                    ║
+   ║ 📂 CAMINHO: /Controllers                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Partial para baixa de ocorrência específica da tela de Nova Viagem.                    ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: BaixarUpsert() - baixa ocorrência durante criação/edição de viagem                       ║
+   ║ 🔗 DEPS: IUnitOfWork, TextNormalizationHelper | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
 */
 
 using FrotiX.Models;
