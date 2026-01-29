@@ -1180,6 +1180,99 @@
 	</div>
 </div>
 
+@*=========================================================================
+   MODAL FICHA DE VISTORIA
+   =========================================================================*@
+<div class="modal fade" id="modalFicha" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="true" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header modal-header-azul">
+				<h5 class="modal-title d-flex align-items-center gap-2">
+					<i class="fa-duotone fa-file-image" aria-hidden="true"></i>
+					<span>Ficha de Vistoria</span>
+				</h5>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+			</div>
+
+			<div class="modal-body">
+				<input type="hidden" id="hiddenViagemId" />
+
+				<!-- Loading Spinner -->
+				<div id="loadingSpinner" style="display: none; text-align: center; padding: 2rem;">
+					<div class="spinner-border text-primary" role="status">
+						<span class="visually-hidden">Carregando...</span>
+					</div>
+					<p class="mt-2 text-muted">Carregando ficha...</p>
+				</div>
+
+				<!-- Container de Upload -->
+				<div id="uploadContainer" style="display: none;">
+					<div class="mb-3">
+						<label for="txtFile" class="form-label fw-semibold">
+							<i class="fa-duotone fa-upload me-1"></i> Selecionar Ficha de Vistoria
+						</label>
+						<input type="file" class="form-control" id="txtFile" accept="image/*" />
+						<small class="form-text text-muted">Formatos aceitos: JPG, PNG, GIF (máx. 5MB)</small>
+					</div>
+					<button type="button" class="btn btn-success w-100" id="btnSalvarFicha" onclick="salvarFichaVistoria()" style="display: none;">
+						<i class="fa-duotone fa-save me-1"></i> Salvar Ficha
+					</button>
+				</div>
+
+				<!-- Container de Imagem -->
+				<div id="imageContainer">
+					<img id="imgFichaViewer" class="img-fluid" src="" alt="Ficha de Vistoria" style="display: none; max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px;" />
+
+					<div id="noImageContainer" style="display: none; text-align: center; padding: 3rem 1rem;">
+						<i class="fa-duotone fa-file-slash fa-4x text-muted mb-3"></i>
+						<p class="text-muted mb-0">Nenhuma ficha de vistoria cadastrada</p>
+						<small class="text-muted">Faça upload de uma imagem para registrar a ficha</small>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" id="btnAlterarFicha" style="display: none;" onclick="$('#uploadContainer').show(); $('#btnSalvarFicha').show();">
+					<i class="fa-duotone fa-edit me-1"></i> Alterar Ficha
+				</button>
+				<button type="button" class="btn btn-vinho" data-bs-dismiss="modal">
+					<i class="fa-duotone fa-times me-1"></i> Fechar
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+@*=========================================================================
+   MODAL IMPRESSÃO DA FICHA DA VIAGEM
+   =========================================================================*@
+<div class="modal fade" id="modalPrint" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="true" aria-hidden="true">
+	<div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header modal-header-roxo">
+				<h5 class="modal-title d-flex align-items-center gap-2">
+					<i class="fa-duotone fa-print" aria-hidden="true"></i>
+					<span>Ficha da Viagem - Impressão</span>
+				</h5>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+			</div>
+
+			<div class="modal-body">
+				<input type="hidden" id="txtViagemId" />
+				<div id="ReportContainer" style="min-height: 700px;">
+					<div id="reportViewer1" style="width: 100%;">Loading...</div>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-vinho" data-bs-dismiss="modal">
+					<i class="fa-duotone fa-times me-1"></i> Fechar
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 @section ScriptsBlock {
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>

@@ -1,11 +1,14 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Models/Cadastros/NotaFiscal.cs                                 ║
- * ║  Descrição: Entidade e ViewModels para notas fiscais de contratos        ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: NotaFiscal.cs                                                                           ║
+   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Entidade e ViewModels para notas fiscais de contratos (número, data, empenho).        ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 CLASSES: NotaFiscal (NotaFiscalId, NumeroNF, EmpenhoId), NotaFiscalViewModel (EmpenhoList)       ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPS: FrotiX.Validations, SelectListItem                                                         ║
+   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
 using System.Collections.Generic;
