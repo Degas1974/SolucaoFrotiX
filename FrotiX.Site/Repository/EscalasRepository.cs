@@ -1,27 +1,23 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ║ ARQUIVO    : EscalasRepository.cs                                            ║
-// ║ LOCALIZAÇÃO: Repository/                                                     ║
-// ║ LOTE       : 24 — Repository                                                 ║
-// ║ DATA       : 29/01/2026                                                      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ FINALIDADE                                                                   ║
-// ║ Arquivo composto com vários repositórios do módulo de Escalas de Motoristas.  ║
-// ║ Gerencia escalas diárias, turnos, folgas, férias e coberturas.                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ REPOSITÓRIOS INCLUÍDOS                                                       ║
-// ║ • TipoServicoRepository → Tipos de serviço (Viagem, Transporte, etc)          ║
-// ║ • TurnoRepository → Turnos de trabalho (Manhã, Tarde, Noite)                  ║
-// ║ • VAssociadoRepository → Vínculo Motorista-Veículo                             ║
-// ║ • EscalaDiariaRepository → Escalas diárias dos motoristas                    ║
-// ║ • FolgaRecessoRepository → Folgas e recessos                                 ║
-// ║ • FeriasRepository → Períodos de férias                                       ║
-// ║ • CoberturaFolgaRepository → Coberturas de folgas                            ║
-// ║ • ObservacoesEscalaRepository → Observações diárias                          ║
-// ║ • ViewEscalasCompletasRepository → View consolidada de escalas               ║
-// ║ • ViewMotoristasVezRepository → View de motoristas da vez                    ║
-// ║ • ViewStatusMotoristasRepository → View de status atual                      ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: EscalasRepository.cs                                                                               ║
+   ║ 📂 CAMINHO: FrotiX.Site/Repository/                                                                            ║
+   ║ 🎯 OBJETIVO: Arquivo composto com repositórios do módulo de Escalas (turnos, folgas, férias, coberturas)      ║
+   ║ 📋 REPOSITÓRIOS:                                                                                               ║
+   ║    • TipoServicoRepository → Tipos de serviço (Viagem, Transporte, etc)                                       ║
+   ║    • TurnoRepository → Turnos de trabalho (Manhã, Tarde, Noite)                                               ║
+   ║    • VAssociadoRepository → Vínculo Motorista-Veículo                                                         ║
+   ║    • EscalaDiariaRepository → Escalas diárias dos motoristas                                                  ║
+   ║    • FolgaRecessoRepository → Folgas e recessos                                                               ║
+   ║    • FeriasRepository → Períodos de férias                                                                    ║
+   ║    • CoberturaFolgaRepository → Coberturas de folgas                                                          ║
+   ║    • ObservacoesEscalaRepository → Observações diárias                                                        ║
+   ║    • ViewEscalasCompletasRepository → View consolidada de escalas                                             ║
+   ║    • ViewMotoristasVezRepository → View de motoristas da vez                                                  ║
+   ║    • ViewStatusMotoristasRepository → View de status atual                                                    ║
+   ║ 🔗 DEPS: Repository<T>, FrotiXDbContext, SelectListItem, Expression, Task, AsNoTracking                       ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📅 Atualizado: 29/01/2026  |  👤 Team: FrotiX Development  |  📝 Versão: 2.0                                  ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 using System;
 using System.Collections.Generic;
 using System.Linq;
