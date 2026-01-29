@@ -1,19 +1,12 @@
-/*
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Arquivo    : EditorController.cs                                             ║
-║ Projeto    : FrotiX.Site                                                     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ DESCRICAO                                                                    ║
-║ Controller para operacoes do editor de texto (Syncfusion). Converte          ║
-║ documentos DOCX em imagens PNG para visualizacao/preview.                    ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ ENDPOINTS                                                                    ║
-║ - POST /Editor/DownloadImagemDocx : Converte DOCX para imagem PNG            ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: EditorController.cs                                                                     ║
+   ║ 📂 CAMINHO: /Controllers                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Operações do editor de texto (Syncfusion). Converte DOCX para imagens PNG.             ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: DownloadImagemDocx() - POST recebe DOCX e retorna PNG para preview                       ║
+   ║ 🔗 DEPS: Syncfusion.DocIO, System.Drawing | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                    ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
 */
 
 using Microsoft.AspNetCore.Http;

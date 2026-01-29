@@ -1,11 +1,13 @@
-/*
- ╔══════════════════════════════════════════════════════════════════════════╗
- ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
- ║  Arquivo: DashboardVeiculosController.cs                                 ║
- ║  Caminho: /Controllers/DashboardVeiculosController.cs                    ║
- ║  Documentado em: 2026-01-26                                              ║
- ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: DashboardVeiculosController.cs                                                          ║
+   ║ 📂 CAMINHO: /Controllers                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Estatísticas e análises da frota de veículos. Idade média, ativos, locados.            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: GetEstatisticas(), GetPorTipo(), GetPorStatus(), GetIdadeMedia() - geral da frota        ║
+   ║ 🔗 DEPS: IUnitOfWork, ViewVeiculos | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0                           ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
