@@ -1056,7 +1056,7 @@ namespace FrotiX.Pages.Viagens
                 }
                 else
                 {
-                    //ViagemObj.Viagem.Status = "Realizada";
+                    ViagemObj.Viagem.Status = "Realizada";
                     //ViagemObj.Viagem.CustoCombustivel = Servicos.CalculaCustoCombustivel(
                     //ViagemObj.Viagem ,
                     //_unitOfWork

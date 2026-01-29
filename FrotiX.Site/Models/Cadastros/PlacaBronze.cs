@@ -1,11 +1,14 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Models/Cadastros/PlacaBronze.cs                                ║
- * ║  Descrição: Entidade e ViewModels para placas bronze (versão anterior)  ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: PlacaBronze.cs                                                                          ║
+   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Entidade e ViewModels para placas bronze (modelo antigo de placas de veículos).       ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 CLASSES: PlacaBronze (PlacaBronzeId), PlacaBronzeViewModel (VeiculoId)                           ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPS: System.ComponentModel.DataAnnotations, ValidateNever                                       ║
+   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System;
