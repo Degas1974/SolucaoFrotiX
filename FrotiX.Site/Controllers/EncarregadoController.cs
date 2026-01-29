@@ -1,22 +1,14 @@
-/****************************************************************************************
- * ⚡ CONTROLLER: EncarregadoController
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Gerenciar encarregados de contratos (supervisores de serviços terceirizados)
- *                   CRUD completo, controle de status, upload de fotos, vínculos com contratos
- * 📥 ENTRADAS     : Encarregados, IDs, Filtros (via API REST)
- * 📤 SAÍDAS       : JSON com dados de encarregados, status, fotos em Base64
- * 🔗 CHAMADA POR  : Pages/Encarregados/Index, Pages/Contratos (modal de vínculo)
- * 🔄 CHAMA        : IUnitOfWork (Repositories), Alerta.TratamentoErroComLinha
- * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework, System.Convert (Base64)
- *
- * 📄 DOCUMENTAÇÃO COMPLETA: Documentacao/Pages/Encarregado - Index.md
- *
- * 💡 CONCEITOS:
- *    - Encarregado: Supervisor responsável por fiscalizar serviços de um contrato
- *    - ContratoId: Contrato principal do encarregado
- *    - EncarregadoContrato: Permite que um encarregado atue em múltiplos contratos
- *    - Foto: Armazenada como byte[] no banco, convertida para Base64 para exibição
- ****************************************************************************************/
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: EncarregadoController.cs                                                                ║
+   ║ 📂 CAMINHO: /Controllers                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: CRUD de encarregados (supervisores de serviços terceirizados). Fotos, vínculos.        ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: GetAll(), GetById(), Upsert(), Delete(), UploadFoto() - vínculo com múltiplos contratos  ║
+   ║ 🔗 DEPS: IUnitOfWork, Encarregado, EncarregadoContrato | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0       ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;

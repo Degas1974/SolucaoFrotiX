@@ -1,22 +1,12 @@
-/*
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Arquivo    : GlosaController.cs                                              ║
-║ Projeto    : FrotiX.Site                                                     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ DESCRICAO                                                                    ║
-║ Controller para gestao de glosas de notas fiscais (descontos por             ║
-║ descumprimento contratual). Suporta grids Syncfusion EJ2 com paginacao       ║
-║ server-side e exportacao de relatorios em Excel.                             ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ ENDPOINTS                                                                    ║
-║ - GET  /glosa/resumo           : Lista resumo de glosas agregadas            ║
-║ - GET  /glosa/detalhes         : Lista detalhada de glosas                   ║
-║ - POST /glosa/exportar-excel   : Exporta dados para arquivo Excel            ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: GlosaController.cs                                                                      ║
+   ║ 📂 CAMINHO: /Controllers                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Gestão de glosas de NFs (descontos por descumprimento contratual). Grid server-side.   ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: Resumo(), Detalhes(), ExportarExcel() - Syncfusion EJ2 + ClosedXML                       ║
+   ║ 🔗 DEPS: IGlosaService, ClosedXML, Syncfusion EJ2 | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0            ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
 */
 
 /****************************************************************************************
