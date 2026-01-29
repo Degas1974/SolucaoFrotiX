@@ -1,39 +1,13 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ ARQUIVO    : ViagemEstatisticaService.cs                                     ║
-// ║ LOCALIZAÇÃO: Services/                                                       ║
-// ║ FINALIDADE : Serviço de cálculo e cache de estatísticas diárias de viagens.  ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO FUNCIONAL                                                          ║
-// ║ • Calcula estatísticas consolidadas de viagens para uma data específica:     ║
-// ║   - Contagens por status (Total, Finalizadas, Em Andamento, Agendadas,       ║
-// ║     Canceladas)                                                              ║
-// ║   - Custos totais e médios (Veículo, Motorista, Operador, Lavador,           ║
-// ║     Combustível)                                                             ║
-// ║   - Quilometragem total e média das viagens realizadas                       ║
-// ║ • Agrega dados em JSON para dashboards e relatórios:                         ║
-// ║   - Top 10 motoristas, veículos, requisitantes, setores                      ║
-// ║   - Viagens por finalidade e por status                                      ║
-// ║   - Custos e km por veículo/motorista                                        ║
-// ║ • Persiste resultados na tabela ViagemEstatistica (cache em banco)           ║
-// ║ • ObterEstatisticasPeriodoAsync: LEITURA RÁPIDA sem recálculo                ║
-// ║ • RecalcularEstatisticasAsync: Força recálculo ignorando cache               ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DEPENDÊNCIAS                                                                 ║
-// ║ • FrotiXDbContext: Acesso às tabelas Viagem, Motorista, Veiculo, etc.        ║
-// ║ • IViagemEstatisticaRepository: Repository para ViagemEstatistica            ║
-// ║ • System.Text.Json: Serialização dos dados agrupados                         ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ MÉTODOS PRINCIPAIS                                                           ║
-// ║ • ObterEstatisticasAsync(DateTime): Calcula ou atualiza estatísticas do dia  ║
-// ║ • ObterEstatisticasPeriodoAsync(DateTime, DateTime): Lê cache de período     ║
-// ║ • RecalcularEstatisticasAsync(DateTime): Força recálculo completo            ║
-// ║ • AtualizarEstatisticasDiaAsync(DateTime): Usa após CRUD de viagens          ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ LOTE        : 22 — Services                                                  ║
-// ║ DATA        : 29/01/2026                                                     ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ViagemEstatisticaService.cs                                                             ║
+   ║ 📂 CAMINHO: /Services                                                                               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Cálculo e cache de estatísticas diárias de viagens. Persiste em ViagemEstatistica.     ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: ObterEstatisticasAsync(), ObterEstatisticasPeriodoAsync(), RecalcularEstatisticasAsync() ║
+   ║ 🔗 DEPS: FrotiXDbContext, IViagemEstatisticaRepository | 📅 29/01/2026 | 👤 Copilot | 📝 v2.0       ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using System;
 using System.Collections.Generic;

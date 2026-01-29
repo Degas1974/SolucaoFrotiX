@@ -1,13 +1,13 @@
-﻿/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Services/GlosaDtos.cs                                          ║
- * ║  Descrição: DTOs para cálculo de glosa contratual.                       ║
- * ║             GlosaResumoItemDto: Consolidado por item (valores, glosa).   ║
- * ║             GlosaDetalheItemDto: Linhas individuais (placas, datas).     ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: GlosaDtos.cs                                                                            ║
+   ║ 📂 CAMINHO: /Services                                                                               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: DTOs para cálculo de glosa contratual. Usados por GlosaService.                        ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: GlosaResumoItemDto (consolidado), GlosaDetalheItemDto (linhas individuais)               ║
+   ║ 🔗 DEPS: Nenhuma (POCOs) | 📅 29/01/2026 | 👤 Copilot | 📝 v2.0                                     ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using System;
 
