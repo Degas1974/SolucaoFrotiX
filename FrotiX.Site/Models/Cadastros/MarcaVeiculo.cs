@@ -1,11 +1,14 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Models/Cadastros/MarcaVeiculo.cs                               ║
- * ║  Descrição: Entidade e ViewModels para cadastro de marcas de veículos   ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: MarcaVeiculo.cs                                                                         ║
+   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Entidade e ViewModels para cadastro de marcas de veículos (Ford, Fiat, etc.).         ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 CLASSES: MarcaVeiculo (MarcaId, DescricaoMarca, Status), MarcaVeiculoViewModel                   ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPS: System.ComponentModel.DataAnnotations                                                      ║
+   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
 using System.Collections.Generic;

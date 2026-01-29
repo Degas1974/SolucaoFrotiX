@@ -1,11 +1,14 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Models/Cadastros/ModeloVeiculo.cs                              ║
- * ║  Descrição: Entidade e ViewModels para cadastro de modelos de veículos  ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ModeloVeiculo.cs                                                                        ║
+   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Entidade e ViewModels para cadastro de modelos de veículos (Ka, Uno, Onix, etc.).     ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 CLASSES: ModeloVeiculo (ModeloId, DescricaoModelo, MarcaId), ModeloVeiculoViewModel (MarcaList)  ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPS: FrotiX.Validations, SelectListItem                                                         ║
+   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using FrotiX.Validations;
 using Microsoft.AspNetCore.Mvc.Rendering;
