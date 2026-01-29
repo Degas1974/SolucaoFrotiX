@@ -1,35 +1,20 @@
-/*
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Arquivo    : ViagemController.CalculoCustoBatch.cs                           ║
-║ Projeto    : FrotiX.Site                                                     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ DESCRICAO                                                                    ║
-║ Partial class do ViagemController com algoritmo otimizado de cálculo de      ║
-║ custos em batch. Carrega todos os dados necessários UMA VEZ em cache e       ║
-║ processa viagens em lotes de 500 registros para melhor performance.          ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ ENDPOINTS                                                                    ║
-║ - POST /api/Viagem/ExecutarCalculoCustoBatch      : Executa cálculo batch    ║
-║ - GET  /api/Viagem/ObterProgressoCalculoCustoBatch: Obtém progresso          ║
-║ - POST /api/Viagem/LimparProgressoCalculoCustoBatch: Limpa cache progresso   ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ CLASSES AUXILIARES                                                           ║
-║ - DadosCalculoCache : Cache de dados para cálculo (veículos, motoristas)     ║
-║ - MotoristaInfo     : Informações do motorista (terceirizado, valor)         ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ METODOS DE CALCULO                                                           ║
-║ - CalcularCustosViagem           : Calcula todos os custos de uma viagem     ║
-║ - CalcularCustoCombustivelCache  : Custo combustível via cache               ║
-║ - CalcularCustoVeiculoCache      : Custo veículo (valor/43200 × minutos)     ║
-║ - CalcularCustoMotoristaCache    : Custo motorista (valor × min/13200)       ║
-║ - CalcularCustoOperadorDinamico  : Custo operador (mensal/média viagens)     ║
-║ - CalcularCustoLavadorDinamico   : Custo lavador (mensal/média viagens)      ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ViagemController.CalculoCustoBatch.cs                                                   ║
+   ║ 📂 CAMINHO: /Controllers                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Algoritmo otimizado de cálculo de custos em batch. Carrega dados em cache e processa  ║
+   ║    viagens em lotes de 500 registros para melhor performance.                                       ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ENDPOINTS: [POST] /ExecutarCalculoCustoBatch → Executa cálculo batch                            ║
+   ║    [GET] /ObterProgressoCalculoCustoBatch → Obtém progresso                                        ║
+   ║    [POST] /LimparProgressoCalculoCustoBatch → Limpa cache progresso                                ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ ⚙️ CÁLCULOS: CustoVeiculo=valor/43200×min | CustoMotorista=valor×min/13200                         ║
+   ║    CustoOperador/Lavador=mensal/média viagens | CustoCombustível via cache                         ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPS: FrotiXDbContext, IUnitOfWork, IMemoryCache, DadosCalculoCache, MotoristaInfo              ║
+   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using FrotiX.Data;
 using FrotiX.Models;

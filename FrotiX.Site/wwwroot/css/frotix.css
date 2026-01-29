@@ -5182,3 +5182,48 @@ div.dataTables_paginate a:active:not(.disabled) {
     color: #ffffff !important;
     text-decoration: none !important;
 }
+
+/* Botões de navegação específicos (Previous, Next, First, Last) */
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous:not(.disabled),
+.dataTables_wrapper .dataTables_paginate .paginate_button.next:not(.disabled),
+.dataTables_wrapper .dataTables_paginate .paginate_button.first:not(.disabled),
+.dataTables_wrapper .dataTables_paginate .paginate_button.last:not(.disabled),
+div.dataTables_paginate .paginate_button.previous:not(.disabled),
+div.dataTables_paginate .paginate_button.next:not(.disabled),
+div.dataTables_paginate .paginate_button.first:not(.disabled),
+div.dataTables_paginate .paginate_button.last:not(.disabled) {
+    background: linear-gradient(135deg, #cc5200 0%, #b34700 100%) !important;
+    color: #ffffff !important;
+}
+
+/* Links dentro dos botões de navegação */
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous:not(.disabled) a,
+.dataTables_wrapper .dataTables_paginate .paginate_button.next:not(.disabled) a,
+.dataTables_wrapper .dataTables_paginate .paginate_button.first:not(.disabled) a,
+.dataTables_wrapper .dataTables_paginate .paginate_button.last:not(.disabled) a,
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous:not(.disabled) span,
+.dataTables_wrapper .dataTables_paginate .paginate_button.next:not(.disabled) span,
+.dataTables_wrapper .dataTables_paginate .paginate_button.first:not(.disabled) span,
+.dataTables_wrapper .dataTables_paginate .paginate_button.last:not(.disabled) span,
+div.dataTables_paginate .paginate_button.previous:not(.disabled) a,
+div.dataTables_paginate .paginate_button.next:not(.disabled) a,
+div.dataTables_paginate .paginate_button.first:not(.disabled) a,
+div.dataTables_paginate .paginate_button.last:not(.disabled) a,
+div.dataTables_paginate .paginate_button.previous:not(.disabled) span,
+div.dataTables_paginate .paginate_button.next:not(.disabled) span,
+div.dataTables_paginate .paginate_button.first:not(.disabled) span,
+div.dataTables_paginate .paginate_button.last:not(.disabled) span {
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
+
+/* REGRA ULTRA ESPECÍFICA - Pega qualquer link ou span dentro de qualquer botão de paginação */
+.dataTables_wrapper .dataTables_paginate .paginate_button:not(.disabled) > a,
+.dataTables_wrapper .dataTables_paginate .paginate_button:not(.disabled) > span,
+div.dataTables_paginate .paginate_button:not(.disabled) > a,
+div.dataTables_paginate .paginate_button:not(.disabled) > span,
+.dataTables_wrapper .dataTables_paginate span .paginate_button:not(.disabled) a,
+div.dataTables_paginate span .paginate_button:not(.disabled) a {
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
