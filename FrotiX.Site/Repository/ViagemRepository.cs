@@ -1,3 +1,31 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ║ ARQUIVO    : ViagemRepository.cs                                             ║
+// ║ LOCALIZAÇÃO: Repository/                                                     ║
+// ║ LOTE       : 24 — Repository                                                 ║
+// ║ DATA       : 29/01/2026                                                      ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ FINALIDADE                                                                   ║
+// ║ Repositório especializado para entidade Viagem. Herda Repository<Viagem>     ║
+// ║ e implementa IViagemRepository. Gerencia operações CRUD e queries complexas  ║
+// ║ relacionadas a viagens no sistema de gestão de frota.                        ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ PRINCIPAIS MÉTODOS                                                           ║
+// ║ • GetViagemListForDropDown() → SelectList para dropdowns                     ║
+// ║ • GetDistinctOrigensAsync() → Lista de origens únicas                        ║
+// ║ • GetDistinctDestinosAsync() → Lista de destinos únicos                      ║
+// ║ • CorrigirOrigemAsync() → Corrige origens em lote                            ║
+// ║ • CorrigirDestinoAsync() → Corrige destinos em lote                          ║
+// ║ • BuscarViagensRecorrenciaAsync() → Busca viagens de mesmo EventoId          ║
+// ║ • GetViagensEventoPaginadoAsync() → Query otimizada usando ViewViagens       ║
+// ║ • GetQuery() → IQueryable para composição de queries                         ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ OTIMIZAÇÕES                                                                  ║
+// ║ • Usa ViewViagens em vez de JOINs complexos para paginação                   ║
+// ║ • Paginação server-side com COUNT separado                                   ║
+// ║ • AsNoTracking() para queries read-only                                      ║
+// ║ • Logs de performance com Stopwatch para diagnóstico                         ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using FrotiX.Data;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

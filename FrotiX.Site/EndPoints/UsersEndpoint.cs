@@ -1,23 +1,21 @@
-﻿/*
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Arquivo    : UsersEndpoint.cs                                                ║
-║ Projeto    : FrotiX.Site                                                     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ DESCRICAO                                                                    ║
-║ API Endpoint para gerenciamento de Usuarios do ASP.NET Identity.             ║
-║ CRUD completo via UserManager com criacao de senha padrao.                   ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ ENDPOINTS                                                                    ║
-║ - GET    /api/users      : Lista todos os usuarios                           ║
-║ - GET    /api/users/{id} : Busca usuario por ID                              ║
-║ - POST   /api/users      : Cria novo usuario (senha padrao)                  ║
-║ - PUT    /api/users      : Atualiza usuario existente                        ║
-║ - DELETE /api/users      : Remove usuario (bloqueia usuario principal)       ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: UsersEndpoint.cs                                                                       ║
+   ║ 📂 CAMINHO: /EndPoints                                                                             ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    API Endpoint para gerenciamento de Usuários do ASP.NET Identity.                                ║
+   ║    CRUD completo via UserManager com criação de senha padrão.                                      ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE DE FUNÇÕES (Entradas -> Saídas):                                                         ║
+   ║ 1. [Get]    : Lista todos os usuários........... () -> ActionResult<IEnumerable<IdentityUser>>    ║
+   ║ 2. [Get]    : Busca usuário por ID.............. (string id) -> ActionResult<IdentityUser>        ║
+   ║ 3. [Create] : Cria novo usuário................. (IdentityUser model) -> IActionResult            ║
+   ║ 4. [Update] : Atualiza usuário existente........ (IdentityUser model) -> IActionResult            ║
+   ║ 5. [Delete] : Remove usuário (bloqueia principal) (IdentityUser model) -> IActionResult           ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ ⚠️ MANUTENÇÃO:                                                                                     ║
+   ║    Qualquer alteração neste código exige atualização imediata deste Card e do Header da Função.    ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
 */
 
 using System;
@@ -32,94 +30,186 @@ using FrotiX.Extensions;
 using FrotiX.Models;
 
 namespace FrotiX.EndPoints
-    {
+{
     [ApiController]
     [Route("api/users")]
     public class UsersEndpoint : ControllerBase
-        {
+    {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _manager;
         private readonly SmartSettings _settings;
 
         public UsersEndpoint(ApplicationDbContext context, UserManager<IdentityUser> manager, SmartSettings settings)
-            {
+        {
             _context = context;
             _manager = manager;
             _settings = settings;
-            }
+        }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ FUNCIONALIDADE: Get (Lista)                                                        │
+        /// │───────────────────────────────────────────────────────────────────────────────────────│
+        /// │ 🎯 DESCRIÇÃO: Lista todos os usuários do sistema para DataTable.                     │
+        /// │───────────────────────────────────────────────────────────────────────────────────────│
+        /// │ 📤 OUTPUTS: { data, recordsTotal, recordsFiltered }                                  │
+        /// │───────────────────────────────────────────────────────────────────────────────────────│
+        /// │ 🔗 RASTREABILIDADE:                                                                   │
+        /// │    ⬅️ CHAMADO POR : GET /api/users (Pages/Users.cshtml)                               │
+        /// │    ➡️ CHAMA       : UserManager.Users                                                 │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        /// </summary>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<IdentityUser>>> Get()
+        {
+            try
             {
-            var users = await _manager.Users.AsNoTracking().ToListAsync();
+                // [DB] Busca todos os usuários sem tracking
+                var users = await _manager.Users.AsNoTracking().ToListAsync();
 
-            return Ok(new { data = users, recordsTotal = users.Count, recordsFiltered = users.Count });
+                // [DADOS] Retorna formato DataTable
+                return Ok(new { data = users, recordsTotal = users.Count, recordsFiltered = users.Count });
             }
+            catch (Exception error)
+            {
+                Alerta.TratamentoErroComLinha("UsersEndpoint.cs", "Get", error);
+                return StatusCode(500, new { success = false, message = error.Message });
+            }
+        }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ FUNCIONALIDADE: Get (Por ID)                                                       │
+        /// │───────────────────────────────────────────────────────────────────────────────────────│
+        /// │ 🎯 DESCRIÇÃO: Busca um usuário específico pelo ID.                                   │
+        /// │───────────────────────────────────────────────────────────────────────────────────────│
+        /// │ 📥 INPUTS: • id [string]: ID do usuário (GUID)                                       │
+        /// │ 📤 OUTPUTS: IdentityUser                                                             │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        /// </summary>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IdentityUser>> Get([FromRoute] string id) => Ok(await _manager.FindByIdAsync(id));
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ FUNCIONALIDADE: Create                                                             │
+        /// │───────────────────────────────────────────────────────────────────────────────────────│
+        /// │ 🎯 DESCRIÇÃO: Cria um novo usuário com senha padrão "Password123!".                  │
+        /// │               Gera GUID automaticamente e define UserName = Email.                   │
+        /// │───────────────────────────────────────────────────────────────────────────────────────│
+        /// │ 📥 INPUTS: • model [IdentityUser]: Dados do novo usuário                             │
+        /// │ 📤 OUTPUTS: 201 Created ou BadRequest                                                │
+        /// │───────────────────────────────────────────────────────────────────────────────────────│
+        /// │ ⚠️ ATENÇÃO: Senha padrão deve ser alterada em produção!                              │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        /// </summary>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<IActionResult> Create([FromForm] IdentityUser model)
+        {
+            try
             {
-            model.Id = Guid.NewGuid().ToString();
-            model.UserName = model.Email;
+                // [DADOS] Gerar ID e definir UserName
+                model.Id = Guid.NewGuid().ToString();
+                model.UserName = model.Email;
 
-            var result = await _manager.CreateAsync(model);
-
-            if (result.Succeeded)
-                {
-                // HACK: This password is just for demonstration purposes!
-                // Please do NOT keep it as-is for your own project!
-                result = await _manager.AddPasswordAsync(model, "Password123!");
+                // [DB] Criar usuário via Identity
+                var result = await _manager.CreateAsync(model);
 
                 if (result.Succeeded)
+                {
+                    // [SEGURANCA] Adicionar senha padrão (ALTERAR EM PRODUÇÃO!)
+                    result = await _manager.AddPasswordAsync(model, "Password123!");
+
+                    if (result.Succeeded)
                     {
-                    return CreatedAtAction("Get", new { id = model.Id }, model);
+                        return CreatedAtAction("Get", new { id = model.Id }, model);
                     }
                 }
 
-            return BadRequest(result);
+                return BadRequest(result);
             }
+            catch (Exception error)
+            {
+                Alerta.TratamentoErroComLinha("UsersEndpoint.cs", "Create", error);
+                return StatusCode(500, new { success = false, message = error.Message });
+            }
+        }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ FUNCIONALIDADE: Update                                                             │
+        /// │───────────────────────────────────────────────────────────────────────────────────────│
+        /// │ 🎯 DESCRIÇÃO: Atualiza dados de um usuário existente.                                │
+        /// │───────────────────────────────────────────────────────────────────────────────────────│
+        /// │ 📥 INPUTS: • model [IdentityUser]: Dados atualizados                                 │
+        /// │ 📤 OUTPUTS: 204 NoContent ou BadRequest                                              │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        /// </summary>
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Update([FromForm] IdentityUser model)
+        {
+            try
             {
-            var result = await _context.UpdateAsync(model, model.Id);
+                // [DB] Atualizar usuário via extension
+                var result = await _context.UpdateAsync(model, model.Id);
 
-            if (result.Succeeded)
+                if (result.Succeeded)
                 {
-                return NoContent();
+                    return NoContent();
                 }
 
-            return BadRequest(result);
+                return BadRequest(result);
             }
+            catch (Exception error)
+            {
+                Alerta.TratamentoErroComLinha("UsersEndpoint.cs", "Update", error);
+                return StatusCode(500, new { success = false, message = error.Message });
+            }
+        }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ FUNCIONALIDADE: Delete                                                             │
+        /// │───────────────────────────────────────────────────────────────────────────────────────│
+        /// │ 🎯 DESCRIÇÃO: Remove um usuário. Bloqueia exclusão do usuário principal.             │
+        /// │───────────────────────────────────────────────────────────────────────────────────────│
+        /// │ 📥 INPUTS: • model [IdentityUser]: Usuário a ser removido                            │
+        /// │ 📤 OUTPUTS: 204 NoContent ou BadRequest (se for usuário principal)                   │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        /// </summary>
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Delete([FromForm] IdentityUser model)
+        {
+            try
             {
-            // HACK: The code below is just for demonstration purposes!
-            // Please use a different method of preventing the currently logged in user from being removed
-            if (model.UserName == _settings.Theme.Email)
+                // [REGRA] Impedir exclusão do usuário principal
+                if (model.UserName == _settings.Theme.Email)
                 {
-                return BadRequest(SmartError.Failed("Please do not delete the main user! =)"));
+                    return BadRequest(SmartError.Failed("Please do not delete the main user! =)"));
                 }
 
-            var result = await _context.DeleteAsync<IdentityUser>(model.Id);
+                // [DB] Deletar usuário via extension
+                var result = await _context.DeleteAsync<IdentityUser>(model.Id);
 
-            if (result.Succeeded)
+                if (result.Succeeded)
                 {
-                return NoContent();
+                    return NoContent();
                 }
 
-            return BadRequest(result);
+                return BadRequest(result);
+            }
+            catch (Exception error)
+            {
+                Alerta.TratamentoErroComLinha("UsersEndpoint.cs", "Delete", error);
+                return StatusCode(500, new { success = false, message = error.Message });
             }
         }
     }
+}
 
 

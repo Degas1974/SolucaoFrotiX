@@ -1,3 +1,18 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ║ ARQUIVO    : CombustivelRepository.cs                                        ║
+// ║ LOCALIZAÇÃO: Repository/                                                     ║
+// ║ LOTE       : 24 — Repository                                                 ║
+// ║ DATA       : 29/01/2026                                                      ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ FINALIDADE                                                                   ║
+// ║ Repositório especializado para entidade Combustivel. Gerencia tipos de       ║
+// ║ combustíveis cadastrados no sistema (gasolina, diesel, etanol, etc).          ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ PRINCIPAIS MÉTODOS                                                           ║
+// ║ • GetCombustivelListForDropDown() → SelectList de combustíveis ativos        ║
+// ║ • Update() → Atualização da entidade Combustivel                             ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.Linq;

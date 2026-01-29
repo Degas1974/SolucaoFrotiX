@@ -1,3 +1,28 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ ARQUIVO    : Repository.cs                                                   ║
+// ║ LOCALIZAÇÃO: Repository/                                                     ║
+// ║ FINALIDADE : Implementação genérica do padrão Repository para EF Core.       ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO FUNCIONAL                                                          ║
+// ║ Classe base Repository<T> que implementa IRepository<T>:                     ║
+// ║ • PrepareQuery: Monta query com filtro, Includes (CSV), AsNoTracking         ║
+// ║ • Get(id): Busca por chave primária via Find()                               ║
+// ║ • GetFirstOrDefault/Async: Primeiro registro com filtro opcional             ║
+// ║ • GetAll/Async: Lista com filtro, ordenação, includes e paginação (take)     ║
+// ║ • GetAllReduced: Projeção Select<TResult> para DTOs (materializada)          ║
+// ║ • GetAllReducedIQueryable: Projeção como IQueryable (lazy)                   ║
+// ║ • Add/AddAsync, Update, Remove: Operações CRUD básicas                       ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ PADRÃO DE CONFIGURAÇÃO                                                       ║
+// ║ DbContext configurado globalmente como NoTracking. PrepareQuery força        ║
+// ║ AsTracking quando asNoTracking=false para permitir persistência.             ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ LOTE        : 24 — Repository                                                ║
+// ║ DATA        : 29/01/2026                                                     ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 // Repository.cs
 using System;
 using System.Collections.Generic;

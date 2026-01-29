@@ -1,3 +1,18 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ║ ARQUIVO    : LavadorContratoRepository.cs                                    ║
+// ║ LOCALIZAÇÃO: Repository/                                                     ║
+// ║ LOTE       : 24 — Repository                                                 ║
+// ║ DATA       : 29/01/2026                                                      ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ FINALIDADE                                                                   ║
+// ║ Repositório para vínculo entre lavadores e contratos terceirizados.          ║
+// ║ Gerencia a associação de lavadores aos contratos de lavagem de veículos.     ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ PRINCIPAIS MÉTODOS                                                           ║
+// ║ • GetLavadorContratoListForDropDown() → Lista vínculos para dropdown         ║
+// ║ • Update() → Atualiza vínculo lavador-contrato (chave composta)              ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,3 +1,28 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ║ ARQUIVO    : IEscalasRepository.cs                                           ║
+// ║ LOCALIZAÇÃO: Repository/IRepository/                                         ║
+// ║ LOTE       : 24 — Repository/IRepository                                     ║
+// ║ DATA       : 29/01/2026                                                      ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ FINALIDADE                                                                   ║
+// ║ Arquivo consolidado com múltiplas interfaces para o módulo de Escalas:       ║
+// ║ TipoServico, Turno, VAssociado, EscalaDiaria, FolgaRecesso, Ferias,          ║
+// ║ CoberturaFolga, ObservacoesEscala e Views relacionadas.                      ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ INTERFACES CONTIDAS                                                          ║
+// ║ • ITipoServicoRepository → Tipos de serviço de transporte                    ║
+// ║ • ITurnoRepository → Turnos de trabalho (manhã, tarde, noite)                ║
+// ║ • IVAssociadoRepository → Associação motorista-veículo                        ║
+// ║ • IEscalaDiariaRepository → Escalas de motoristas por dia                    ║
+// ║ • IFolgaRecessoRepository → Folgas e recessos de motoristas                  ║
+// ║ • IFeriasRepository → Férias de motoristas                                   ║
+// ║ • ICoberturaFolgaRepository → Coberturas de folga                            ║
+// ║ • IObservacoesEscalaRepository → Observações diárias                         ║
+// ║ • IViewEscalasCompletasRepository → View consolidada de escalas             ║
+// ║ • IViewMotoristasVezRepository → Motoristas da vez                          ║
+// ║ • IViewStatusMotoristasRepository → Status atual dos motoristas             ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -7,6 +32,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository.IRepository
 {
+    /// <summary>
+    /// Interface do repositório de TipoServico. Estende IRepository&lt;TipoServico&gt;.
+    /// </summary>
     // Interface para TipoServico
     public interface ITipoServicoRepository : IRepository<TipoServico>
     {

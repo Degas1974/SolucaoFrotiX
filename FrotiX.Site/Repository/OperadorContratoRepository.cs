@@ -1,3 +1,18 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ║ ARQUIVO    : OperadorContratoRepository.cs                                   ║
+// ║ LOCALIZAÇÃO: Repository/                                                     ║
+// ║ LOTE       : 24 — Repository                                                 ║
+// ║ DATA       : 29/01/2026                                                      ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ FINALIDADE                                                                   ║
+// ║ Repositório para vínculo entre operadores e contratos de abastecimento.      ║
+// ║ Gerencia a associação de operadores aos contratos de postos de combustível.  ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ PRINCIPAIS MÉTODOS                                                           ║
+// ║ • GetOperadorContratoListForDropDown() → Lista vínculos para dropdown        ║
+// ║ • Update() → Atualiza vínculo operador-contrato (chave composta)             ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.Linq;

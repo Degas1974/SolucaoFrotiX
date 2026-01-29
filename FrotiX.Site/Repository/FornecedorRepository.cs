@@ -1,3 +1,18 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ║ ARQUIVO    : FornecedorRepository.cs                                         ║
+// ║ LOCALIZAÇÃO: Repository/                                                     ║
+// ║ LOTE       : 24 — Repository                                                 ║
+// ║ DATA       : 29/01/2026                                                      ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ FINALIDADE                                                                   ║
+// ║ Repositório especializado para entidade Fornecedor. Gerencia fornecedores    ║
+// ║ de contratos (combustível, veículos, manutenção, etc).                        ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ PRINCIPAIS MÉTODOS                                                           ║
+// ║ • GetFornecedorListForDropDown() → SelectList apenas ativos (Status=true)    ║
+// ║ • Update() → Atualização da entidade Fornecedor                              ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using System;
 using System.Collections.Generic;
 using System.Linq;

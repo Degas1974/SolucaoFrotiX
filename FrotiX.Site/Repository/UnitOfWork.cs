@@ -1,3 +1,28 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ ARQUIVO    : UnitOfWork.cs                                                   ║
+// ║ LOCALIZAÇÃO: Repository/                                                     ║
+// ║ FINALIDADE : Implementação central do padrão Unit of Work para FrotiX.       ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO FUNCIONAL                                                          ║
+// ║ Classe UnitOfWork que implementa IUnitOfWork — ponto central de acesso a     ║
+// ║ todos os repositórios do sistema. Injetada via DI em Controllers e Pages.    ║
+// ║ • Instancia todos os repositórios específicos (Veiculo, Motorista, etc.)     ║
+// ║ • Repositórios de Views SQL (ViewMotoristas, ViewViagens, etc.)              ║
+// ║ • Repositórios de Escalas (TipoServico, Turno, EscalaDiaria, etc.)           ║
+// ║ • Sistema de Alertas (AlertasFrotiX, AlertasUsuario)                         ║
+// ║ • Repositório genérico para AbastecimentoPendente                            ║
+// ║ • GetDbContext(): Acesso ao FrotiXDbContext para operações avançadas         ║
+// ║ • Save/SaveAsync: Persiste todas as alterações pendentes                     ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ CLASSE PARTIAL                                                               ║
+// ║ Extensões em: UnitOfWork.OcorrenciaViagem.cs, UnitOfWork.RepactuacaoVeiculo  ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ LOTE        : 24 — Repository                                                ║
+// ║ DATA        : 29/01/2026                                                     ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using FrotiX.Data;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

@@ -1,3 +1,21 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ║ ARQUIVO    : AlertasUsuarioRepository.cs                                     ║
+// ║ LOCALIZAÇÃO: Repository/                                                     ║
+// ║ LOTE       : 24 — Repository                                                 ║
+// ║ DATA       : 29/01/2026                                                      ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ FINALIDADE                                                                   ║
+// ║ Repositório especializado para entidade AlertasUsuario. Gerencia a tabela    ║
+// ║ de relação N:N entre alertas e usuários (marcação de leitura, etc).           ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ PRINCIPAIS MÉTODOS                                                           ║
+// ║ • ObterAlertasPorUsuarioAsync() → Lista alertas de um usuário               ║
+// ║ • ObterUsuariosPorAlertaAsync() → Lista usuários de um alerta               ║
+// ║ • UsuarioTemAlertaAsync() → Verifica vínculo existente                       ║
+// ║ • RemoverAlertasDoUsuarioAsync() → Remove todos alertas do usuário          ║
+// ║ • RemoverUsuariosDoAlertaAsync() → Remove todos usuários do alerta          ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using FrotiX.Data;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

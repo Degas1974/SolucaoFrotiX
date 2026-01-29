@@ -1,14 +1,20 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Middlewares/ErrorLoggingMiddleware.cs                          ║
- * ║  Descrição: Middleware ASP.NET que intercepta exceções não tratadas e    ║
- * ║             erros HTTP (4xx/5xx). Registra via ILogService com extração  ║
- * ║             de arquivo/método/linha do stack trace. Extension method     ║
- * ║             UseErrorLogging para facilitar registro no pipeline.         ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ErrorLoggingMiddleware.cs                                                              ║
+   ║ 📂 CAMINHO: /Middlewares                                                                           ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Middleware ASP.NET que intercepta exceções não tratadas e erros HTTP (4xx/5xx).                 ║
+   ║    Registra via ILogService com extração de arquivo/método/linha do stack trace.                   ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE DE FUNÇÕES (Entradas -> Saídas):                                                         ║
+   ║ 1. [InvokeAsync]       : Intercepta requisição.............. (HttpContext) -> Task                 ║
+   ║ 2. [GetStatusMessage]  : Traduz código HTTP................. (int statusCode) -> string            ║
+   ║ 3. [UseErrorLogging]   : Extension para registrar middleware (IApplicationBuilder) -> builder      ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ ⚠️ MANUTENÇÃO:                                                                                     ║
+   ║    Qualquer alteração neste código exige atualização imediata deste Card e do Header da Função.    ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using System;
 using System.Text.RegularExpressions;
@@ -21,8 +27,17 @@ using Microsoft.Extensions.Logging;
 namespace FrotiX.Middlewares;
 
 /// <summary>
-/// Middleware para capturar e registrar erros HTTP em toda a aplicação
-/// Intercepta exceções não tratadas e erros de status HTTP
+/// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+/// │ ⚡ CLASSE: ErrorLoggingMiddleware                                                     │
+/// │───────────────────────────────────────────────────────────────────────────────────────│
+/// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+/// │    Middleware para capturar e registrar erros HTTP em toda a aplicação.               │
+/// │    Intercepta exceções não tratadas e erros de status HTTP (4xx e 5xx).               │
+/// │───────────────────────────────────────────────────────────────────────────────────────│
+/// │ 🔗 RASTREABILIDADE:                                                                   │
+/// │    ⬅️ CHAMADO POR : Program.cs (via UseErrorLogging)                                  │
+/// │    ➡️ CHAMA       : ILogService.Error(), ILogService.HttpError(), ILogService.Warning()│
+/// ╰───────────────────────────────────────────────────────────────────────────────────────╯
 /// </summary>
 public class ErrorLoggingMiddleware
 {
@@ -35,33 +50,48 @@ public class ErrorLoggingMiddleware
         _logger = logger;
     }
 
+    /// <summary>
+    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    /// │ ⚡ FUNCIONALIDADE: InvokeAsync                                                        │
+    /// │───────────────────────────────────────────────────────────────────────────────────────│
+    /// │ 🎯 DESCRIÇÃO: Intercepta cada requisição HTTP e captura erros/exceções.              │
+    /// │    Registra erros HTTP (4xx/5xx) e exceções não tratadas no LogService.              │
+    /// │───────────────────────────────────────────────────────────────────────────────────────│
+    /// │ 📥 INPUTS: • context [HttpContext], logService [ILogService]                         │
+    /// │ 📤 OUTPUTS: • [Task] - Continua pipeline ou re-lança exceção                         │
+    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    /// </summary>
     public async Task InvokeAsync(HttpContext context, ILogService logService)
     {
         try
         {
+            // [LOGICA] Executar próximo middleware no pipeline
             await _next(context);
 
-            // Registra erros de status HTTP (4xx e 5xx)
+            // [LOGICA] Registrar erros de status HTTP (4xx e 5xx)
             if (context.Response.StatusCode >= 400)
             {
+                // [DADOS] Extrair informações da requisição
                 var statusCode = context.Response.StatusCode;
                 var path = context.Request.Path.Value ?? "";
                 var method = context.Request.Method;
                 var message = GetStatusMessage(statusCode);
 
+                // [DEBUG] Registrar erro HTTP
                 logService.HttpError(statusCode, path, method, message);
             }
         }
         catch (Exception ex)
         {
+            // [DEBUG] Log via ILogger padrão
             _logger.LogError(ex, "Erro não tratado na requisição");
 
-            // Extrai informações do erro
+            // [DADOS] Extrair informações do erro
             var arquivo = ex.TargetSite?.DeclaringType?.FullName ?? "Desconhecido";
             var metodo = ex.TargetSite?.Name ?? "Desconhecido";
             int? linha = null;
 
-            // Tenta extrair linha do StackTrace
+            // [HELPER] Tenta extrair linha do StackTrace
             if (!string.IsNullOrEmpty(ex.StackTrace))
             {
                 var match = System.Text.RegularExpressions.Regex.Match(ex.StackTrace, @":line (\d+)");
@@ -71,6 +101,7 @@ public class ErrorLoggingMiddleware
                 }
             }
 
+            // [DEBUG] Registrar exceção detalhada
             logService.Error(
                 $"Exceção não tratada: {ex.Message}",
                 ex,
@@ -79,7 +110,7 @@ public class ErrorLoggingMiddleware
                 linha
             );
 
-            // Registra também como erro HTTP 500
+            // [DEBUG] Registrar também como erro HTTP 500
             logService.HttpError(
                 500,
                 context.Request.Path.Value ?? "",
@@ -87,11 +118,21 @@ public class ErrorLoggingMiddleware
                 ex.Message
             );
 
-            // Re-lança a exceção para o handler padrão do ASP.NET
+            // [LOGICA] Re-lança a exceção para o handler padrão do ASP.NET
             throw;
         }
     }
 
+    /// <summary>
+    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    /// │ ⚡ FUNCIONALIDADE: GetStatusMessage                                                   │
+    /// │───────────────────────────────────────────────────────────────────────────────────────│
+    /// │ 🎯 DESCRIÇÃO: Traduz código HTTP para mensagem legível em português.                 │
+    /// │───────────────────────────────────────────────────────────────────────────────────────│
+    /// │ 📥 INPUTS: • statusCode [int]: Código HTTP (400, 404, 500, etc)                      │
+    /// │ 📤 OUTPUTS: • [string]: Mensagem descritiva do erro                                  │
+    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    /// </summary>
     private static string GetStatusMessage(int statusCode)
     {
         return statusCode switch
@@ -117,10 +158,28 @@ public class ErrorLoggingMiddleware
 }
 
 /// <summary>
-/// Extension method para facilitar o registro do middleware no pipeline
+/// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+/// │ ⚡ CLASSE: ErrorLoggingMiddlewareExtensions                                           │
+/// │───────────────────────────────────────────────────────────────────────────────────────│
+/// │ 🎯 DESCRIÇÃO: Extension method para facilitar o registro do middleware no pipeline.  │
+/// │───────────────────────────────────────────────────────────────────────────────────────│
+/// │ 🔗 RASTREABILIDADE:                                                                   │
+/// │    ⬅️ CHAMADO POR : Program.cs                                                        │
+/// │    ➡️ CHAMA       : IApplicationBuilder.UseMiddleware<T>()                            │
+/// ╰───────────────────────────────────────────────────────────────────────────────────────╯
 /// </summary>
 public static class ErrorLoggingMiddlewareExtensions
 {
+    /// <summary>
+    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    /// │ ⚡ FUNCIONALIDADE: UseErrorLogging                                                    │
+    /// │───────────────────────────────────────────────────────────────────────────────────────│
+    /// │ 🎯 DESCRIÇÃO: Registra o ErrorLoggingMiddleware no pipeline de requisições.          │
+    /// │───────────────────────────────────────────────────────────────────────────────────────│
+    /// │ 📥 INPUTS: • builder [IApplicationBuilder]                                           │
+    /// │ 📤 OUTPUTS: • [IApplicationBuilder] - Fluent API                                     │
+    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    /// </summary>
     public static IApplicationBuilder UseErrorLogging(this IApplicationBuilder builder)
     {
         return builder.UseMiddleware<ErrorLoggingMiddleware>();

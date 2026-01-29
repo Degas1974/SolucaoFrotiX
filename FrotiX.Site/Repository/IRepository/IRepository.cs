@@ -1,3 +1,25 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ ARQUIVO    : IRepository.cs                                                  ║
+// ║ LOCALIZAÇÃO: Repository/IRepository/                                         ║
+// ║ FINALIDADE : Interface genérica do padrão Repository para EF Core.           ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO FUNCIONAL                                                          ║
+// ║ Interface IRepository<T> que define contrato genérico para CRUD:             ║
+// ║ • Get(id): Busca por chave primária                                          ║
+// ║ • GetFirstOrDefault/Async: Primeiro registro com filtro opcional             ║
+// ║ • GetAll/Async: Lista com filtro, ordenação, includes, AsNoTracking, take    ║
+// ║ • GetAllReduced: Projeção Select<TResult> materializada (ToList)             ║
+// ║ • GetAllReducedIQueryable: Projeção como IQueryable (lazy)                   ║
+// ║ • Add/AddAsync, Update, Remove: Operações de persistência                    ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ IMPLEMENTAÇÃO: Repository<T> em Repository.cs                                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ LOTE        : 24 — Repository/IRepository                                    ║
+// ║ DATA        : 29/01/2026                                                     ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 // IRepository.cs
 using System;
 using System.Collections.Generic;

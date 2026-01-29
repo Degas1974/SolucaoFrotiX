@@ -1,8 +1,23 @@
-// ============================================================================
-// AlertasFrotiXRepository.cs - VERSÃO CORRIGIDA
-// Tratamento defensivo de NULLs nos Includes
-// ============================================================================
-
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ║ ARQUIVO    : AlertasFrotiXRepository.cs                                      ║
+// ║ LOCALIZAÇÃO: Repository/                                                     ║
+// ║ LOTE       : 24 — Repository                                                 ║
+// ║ DATA       : 29/01/2026                                                      ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ FINALIDADE                                                                   ║
+// ║ Repositório especializado para entidade AlertasFrotiX. Gerencia o sistema    ║
+// ║ de alertas e notificações do FrotiX para usuários.                            ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ PRINCIPAIS MÉTODOS                                                           ║
+// ║ • GetTodosAlertasAtivosAsync() → Lista alertas ativos sem Includes pesados   ║
+// ║ • GetTodosAlertasComLeituraAsync() → Alertas com pelo menos uma leitura      ║
+// ║ • GetQuantidadeAlertasNaoLidosAsync() → Contador para badge                  ║
+// ║ • MarcarComoLidoAsync() → Marca alerta como lido para usuário                ║
+// ║ • CriarAlertaAsync() → Cria alerta e vincula usuários                        ║
+// ║ • GetAlertaComDetalhesAsync() → Alerta com includes completos               ║
+// ║ • GetAlertasParaNotificarAsync() → Alertas por tipo exibição/horário        ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using FrotiX.Data;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

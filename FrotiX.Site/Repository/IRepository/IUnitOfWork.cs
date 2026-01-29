@@ -1,3 +1,25 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ ARQUIVO    : IUnitOfWork.cs                                                  ║
+// ║ LOCALIZAÇÃO: Repository/IRepository/                                         ║
+// ║ FINALIDADE : Interface central do padrão Unit of Work para FrotiX.           ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO FUNCIONAL                                                          ║
+// ║ Interface IUnitOfWork que expõe propriedades para todos os repositórios:     ║
+// ║ • Entidades principais: Veiculo, Motorista, Viagem, Contrato, Empenho, etc.  ║
+// ║ • Views SQL: ViewMotoristas, ViewViagens, ViewAbastecimentos, etc.           ║
+// ║ • Sistema de Escalas: TipoServico, Turno, EscalaDiaria, etc.                 ║
+// ║ • Sistema de Alertas: AlertasFrotiX, AlertasUsuario                          ║
+// ║ • GetDbContext(): Acesso direto ao DbContext se necessário                   ║
+// ║ • Save/SaveAsync: Persiste todas as alterações no banco via DbContext        ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ IMPLEMENTAÇÃO: UnitOfWork.cs + partials                                      ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ LOTE        : 24 — Repository/IRepository                                    ║
+// ║ DATA        : 29/01/2026                                                     ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using FrotiX.Models;
 using Microsoft.EntityFrameworkCore;
 using System;

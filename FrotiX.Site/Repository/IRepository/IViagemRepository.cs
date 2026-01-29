@@ -1,3 +1,22 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ║ ARQUIVO    : IViagemRepository.cs                                            ║
+// ║ LOCALIZAÇÃO: Repository/IRepository/                                         ║
+// ║ LOTE       : 24 — Repository/IRepository                                     ║
+// ║ DATA       : 29/01/2026                                                      ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ FINALIDADE                                                                   ║
+// ║ Interface do repositório de Viagem. Define contrato para operações com       ║
+// ║ viagens, incluindo queries otimizadas e correção de origens/destinos.        ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ MÉTODOS DEFINIDOS                                                            ║
+// ║ • GetViagemListForDropDown() → SelectList para dropdowns                     ║
+// ║ • GetDistinctOrigensAsync() / GetDistinctDestinosAsync()                     ║
+// ║ • CorrigirOrigemAsync() / CorrigirDestinoAsync() → Correção em lote          ║
+// ║ • BuscarViagensRecorrenciaAsync() → Viagens com mesmo EventoId               ║
+// ║ • GetViagensEventoPaginadoAsync() → Query otimizada para eventos             ║
+// ║ • GetQuery() → IQueryable para composição de queries                          ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 using FrotiX.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NPOI.SS.Formula.Functions;
