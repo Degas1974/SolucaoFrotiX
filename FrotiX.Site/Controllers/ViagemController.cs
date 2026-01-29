@@ -1,39 +1,18 @@
-/*
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Arquivo    : ViagemController.cs                                             ║
-║ Projeto    : FrotiX.Site                                                     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ DESCRICAO                                                                    ║
-║ Controller API principal para gerenciamento de Viagens. Classe parcial que   ║
-║ contém construtor, dependências e métodos base. Os demais métodos estão      ║
-║ distribuídos em arquivos parciais especializados.                            ║
-║ Endpoint: /api/Viagem                                                        ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ ARQUIVOS PARCIAIS                                                            ║
-║ - ViagemController.AtualizarDados.cs      : GetViagem, UpdateViagem          ║
-║ - ViagemController.AtualizarDadosViagem.cs: DTO e cálculo de jornada         ║
-║ - ViagemController.CalculoCustoBatch.cs   : Cálculo de custos em batch       ║
-║ - ViagemController.CustosViagem.cs        : ObterCustosViagem                ║
-║ - ViagemController.DashboardEconomildo.cs : Dashboard do Economildo          ║
-║ - ViagemController.DesassociarEvento.cs   : Desassociar viagem de evento     ║
-║ - ViagemController.HeatmapEconomildo.cs   : Heatmap de viagens Economildo    ║
-║ - ViagemController.ListaEventos.cs        : Lista eventos para dropdown      ║
-║ - ViagemController.MetodosEstatisticas.cs : Geração de estatísticas          ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ DEPENDENCIAS                                                                 ║
-║ - FrotiXDbContext             : Contexto EF Core para queries diretas        ║
-║ - IUnitOfWork                 : Padrão Repository para CRUD                  ║
-║ - IViagemRepository           : Repositório especializado de viagens         ║
-║ - MotoristaFotoService        : Serviço de fotos de motoristas               ║
-║ - IMemoryCache                : Cache em memória                             ║
-║ - ViagemEstatisticaService    : Serviço de estatísticas de viagens           ║
-║ - VeiculoEstatisticaService   : Serviço de estatísticas de veículos          ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ViagemController.cs                                                                     ║
+   ║ 📂 CAMINHO: /Controllers                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Controller API principal para gerenciamento de Viagens. Classe parcial com construtor ║
+   ║    e dependências. Métodos distribuídos em arquivos parciais especializados.                       ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ARQUIVOS PARCIAIS: AtualizarDados, AtualizarDadosViagem, CalculoCustoBatch, CustosViagem        ║
+   ║    DashboardEconomildo, DesassociarEvento, HeatmapEconomildo, HeatmapEconomildoPassageiros         ║
+   ║    ListaEventos, MetodosEstatisticas | ROTA: api/Viagem                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPS: FrotiXDbContext, IUnitOfWork, IViagemRepository, MotoristaFotoService, IMemoryCache       ║
+   ║    ViagemEstatisticaService, VeiculoEstatisticaService                                             ║
+   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using FrotiX.Data;
 using FrotiX.Models;
