@@ -1,3 +1,14 @@
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ToastService.cs                                                                         ║
+   ║ 📂 CAMINHO: /Services                                                                               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: IToastService + ToastService. Toast notifications via TempData.                        ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: Show, ShowSuccess, ShowError, ShowWarning, GetJavaScriptCall, ShowMultiple               ║
+   ║ 🔗 DEPS: IHttpContextAccessor, ITempDataDictionaryFactory | 📅 29/01/2026 | 👤 Copilot | 📝 v2.0    ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
+
 // Arquivo: Services/ToastService.cs
 
 using FrotiX.Models;
