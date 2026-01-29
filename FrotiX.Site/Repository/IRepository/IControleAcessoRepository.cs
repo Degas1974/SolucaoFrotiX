@@ -1,18 +1,14 @@
-﻿// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ║ ARQUIVO    : IControleAcessoRepository.cs                                    ║
-// ║ LOCALIZAÇÃO: Repository/IRepository/                                         ║
-// ║ LOTE       : 24 — Repository/IRepository                                     ║
-// ║ DATA       : 29/01/2026                                                      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ FINALIDADE                                                                   ║
-// ║ Interface do repositório de ControleAcesso, gerenciando registros de acesso  ║
-// ║ de veículos em portarias e áreas controladas.                                ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ MÉTODOS ADICIONAIS                                                           ║
-// ║ • GetControleAcessoListForDropDown() → DropDown de registros de acesso       ║
-// ║ • Update() → Atualização de controle de acesso                               ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  🚀 ARQUIVO: IControleAcessoRepository.cs                                                                        ║
+║  📂 CAMINHO: Repository/IRepository/                                                                             ║
+║  🎯 OBJETIVO: Interface do repositório de ControleAcesso, gerenciando registros de acesso de veículos em         ║
+║              portarias e áreas controladas.                                                                       ║
+║  📋 MÉTODOS ADICIONAIS:                                                                                          ║
+║     • GetControleAcessoListForDropDown() → DropDown de registros de acesso                                      ║
+║     • Update() → Atualização de controle de acesso                                                              ║
+║  🔗 DEPENDÊNCIAS: IRepository<ControleAcesso>, SelectListItem                                                  ║
+║  📅 Atualizado: 29/01/2026    👤 Team: FrotiX    📝 Versão: 2.0                                                 ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 using System;
 using System.Collections.Generic;
 using System.Linq;

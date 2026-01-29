@@ -1,18 +1,14 @@
-﻿// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ║ ARQUIVO    : IAtaRegistroPrecosRepository.cs                                 ║
-// ║ LOCALIZAÇÃO: Repository/IRepository/                                         ║
-// ║ LOTE       : 24 — Repository/IRepository                                     ║
-// ║ DATA       : 29/01/2026                                                      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ FINALIDADE                                                                   ║
-// ║ Interface do repositório de AtaRegistroPrecos, gerenciando Atas de Registro  ║
-// ║ de Preços para contratação de veículos terceirizados.                        ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ MÉTODOS ADICIONAIS                                                           ║
-// ║ • GetAtaListForDropDown(status) → DropDown filtrado por status da ata       ║
-// ║ • Update() → Atualização de ata                                              ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  🚀 ARQUIVO: IAtaRegistroPrecosRepository.cs                                                                     ║
+║  📂 CAMINHO: Repository/IRepository/                                                                             ║
+║  🎯 OBJETIVO: Interface do repositório de AtaRegistroPrecos, gerenciando Atas de Registro de Preços para         ║
+║              contratação de veículos terceirizados.                                                               ║
+║  📋 MÉTODOS ADICIONAIS:                                                                                          ║
+║     • GetAtaListForDropDown(status) → DropDown filtrado por status da ata                                      ║
+║     • Update() → Atualização de ata                                                                             ║
+║  🔗 DEPENDÊNCIAS: IRepository<AtaRegistroPrecos>, SelectListItem                                                ║
+║  📅 Atualizado: 29/01/2026    👤 Team: FrotiX    📝 Versão: 2.0                                                 ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 using System;
 using System.Collections.Generic;
 using System.Linq;
