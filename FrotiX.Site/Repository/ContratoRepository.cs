@@ -1,20 +1,14 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ║ ARQUIVO    : ContratoRepository.cs                                           ║
-// ║ LOCALIZAÇÃO: Repository/                                                     ║
-// ║ LOTE       : 24 — Repository                                                 ║
-// ║ DATA       : 29/01/2026                                                      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ FINALIDADE                                                                   ║
-// ║ Repositório especializado para entidade Contrato. Gerencia contratos de      ║
-// ║ fornecedores com dropdown filtrado por tipo (veículos, combustível, etc).     ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ PRINCIPAIS MÉTODOS                                                           ║
-// ║ • GetDropDown(tipoContrato?) → IQueryable<SelectListItem> filtrado por tipo  ║
-// ║   - Formato: "Ano/Numero - Fornecedor (Tipo)"                                ║
-// ║   - Filtra apenas contratos ativos (Status=true)                             ║
-// ║   - Ordena por Ano, Numero e Fornecedor descendente                          ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+    ║ 🚀 ARQUIVO: ContratoRepository.cs                                                                   ║
+    ║ 📂 CAMINHO: /Repository                                                                             ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 🎯 OBJETIVO: Repositório de Contrato (dropdown filtrado por tipo e contratos ativos).              ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 📋 MÉTODOS: GetDropDown(tipoContrato?) → IQueryable<SelectListItem>                                 ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 🔗 DEPS: FrotiX.Data, Repository<T>, SelectListItem, Microsoft.EntityFrameworkCore                  ║
+    ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 using System.Linq;
 using FrotiX.Data;
 using FrotiX.Models;
