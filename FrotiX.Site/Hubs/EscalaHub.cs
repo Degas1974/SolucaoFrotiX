@@ -1,14 +1,13 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Hubs/EscalaHub.cs                                              ║
- * ║  Descrição: SignalR Hub para escala de motoristas em tempo real.          ║
- * ║             Métodos: GetMotoristasVez, GetEscalasDia, NotificarAlteracao- ║
- * ║             Status, NotificarNovaViagem. Inclui EscalaMonitorService      ║
- * ║             (BackgroundService) que verifica viagens a cada 30s.         ║
- * ║  Data: 28/01/2026 | LOTE: 21                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: EscalaHub.cs                                                                           ║
+   ║ 📂 CAMINHO: /Hubs                                                                                  ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Hub SignalR para escala de motoristas em tempo real + EscalaMonitorService (30s).     ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: 1.[GetMotoristasVez] 2.[GetEscalasDia] 3.[NotificarAlteracaoStatus] 4.[NotificarNovaViagem]║
+   ║ 🔗 DEPS: IUnitOfWork, IHubContext, BackgroundService | 📅 29/01/2026 | 👤 Copilot | 📝 v2.0        ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using System;
 using System.Threading.Tasks;
