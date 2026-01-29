@@ -1,11 +1,14 @@
-﻿/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Models/Views/ViewContratoFornecedor.cs                         ║
- * ║  Descrição: Modelo mapeado da View de contratos com dados de fornecedor  ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+    ║ 🚀 ARQUIVO: ViewContratoFornecedor.cs                                                              ║
+    ║ 📂 CAMINHO: /Models/Views                                                                           ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 🎯 OBJETIVO: View SQL de contratos com dados de fornecedor (descrição, tipo).                      ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 📋 PROPS: ContratoId, Descricao, TipoContrato                                                       ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 🔗 DEPS: FrotiX.Services, FrotiX.Validations                                                        ║
+    ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
 using System.Collections.Generic;

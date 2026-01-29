@@ -1,11 +1,14 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Models/Views/ViewCustosViagem.cs                               ║
- * ║  Descrição: Modelo mapeado da View de custos calculados de viagens       ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+    ║ 🚀 ARQUIVO: ViewCustosViagem.cs                                                                    ║
+    ║ 📂 CAMINHO: /Models/Views                                                                           ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 🎯 OBJETIVO: View SQL de custos calculados de viagens (custos e métricas por viagem).              ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 📋 PROPS: ViagemId, MotoristaId, VeiculoId, DataInicial/Final, HoraInicio/Fim, etc.                ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 🔗 DEPS: FrotiX.Services, FrotiX.Validations                                                        ║
+    ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
 using System.Collections.Generic;
