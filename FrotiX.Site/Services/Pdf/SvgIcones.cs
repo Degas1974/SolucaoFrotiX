@@ -1,14 +1,13 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Services/Pdf/SvgIcones.cs                                      ║
- * ║  Descrição: SVGs FontAwesome Pro 7 Duotone para uso em PDFs (QuestPDF).  ║
- * ║             Ícones: Bus, CalendarDay, ChartLine, Clock, FilePdf,         ║
- * ║             Stopwatch, Users. Métodos: ComCores, EmCinza.                ║
- * ║             Cores padrão: Primary #667eea, Secondary #a0aec0.            ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: SvgIcones.cs                                                                            ║
+   ║ 📂 CAMINHO: /Services/Pdf                                                                           ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: SVGs FontAwesome Pro 7 Duotone para PDFs (QuestPDF). Ícones inline em strings.         ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: Bus, CalendarDay, ChartLine, Clock, FilePdf, Stopwatch, Users - ComCores, EmCinza        ║
+   ║ 🔗 DEPS: Nenhuma (constantes SVG) | 📅 29/01/2026 | 👤 Copilot | 📝 v2.0                            ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 namespace FrotiX.Services.Pdf;
 
