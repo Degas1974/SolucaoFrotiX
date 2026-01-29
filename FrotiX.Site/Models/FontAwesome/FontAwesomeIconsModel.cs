@@ -1,11 +1,14 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Models/FontAwesome/FontAwesomeIconsModel.cs                    ║
- * ║  Descrição: Modelos para manipulação de ícones FontAwesome traduzidos    ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+    ║ 🚀 ARQUIVO: FontAwesomeIconsModel.cs                                                                ║
+    ║ 📂 CAMINHO: /Models/FontAwesome                                                                     ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 🎯 OBJETIVO: Modelos para manipulação de ícones FontAwesome traduzidos (PT-BR).                    ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 📋 CLASSES: FontAwesomeCategoryPT, FontAwesomeIconPT                                                 ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 🔗 DEPS: System.Text.Json, System.Collections.Generic                                               ║
+    ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System.Collections.Generic;
 using System.Linq;
