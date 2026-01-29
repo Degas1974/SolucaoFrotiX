@@ -1,3 +1,25 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : ViagemController.AtualizarDados.cs                              ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Partial class do ViagemController com métodos para atualização de dados      ║
+║ de viagens. Usado pela página AjustaCustosViagem para ajustar dados.         ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET  /api/Viagem/GetViagem/{id}    : Busca dados completos de uma viagem   ║
+║ - POST /api/Viagem/AtualizarDadosViagem : Atualiza campos da viagem          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ CLASSES AUXILIARES                                                           ║
+║ - AtualizarDadosViagemRequest : DTO para request de atualização              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;
@@ -6,10 +28,6 @@ using System;
 
 namespace FrotiX.Controllers
 {
-    /// <summary>
-    /// ViagemController - Partial Class para API AtualizarDadosViagem
-    /// Usado pela página AjustaCustosViagem (Ajuste nos Dados das Viagens)
-    /// </summary>
     public partial class ViagemController
     {
         /// <summary>

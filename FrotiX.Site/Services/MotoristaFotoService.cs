@@ -1,4 +1,16 @@
-﻿using System;
+﻿/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Services/MotoristaFotoService.cs                               ║
+ * ║  Descrição: Serviço de cache e redimensionamento de fotos de motoristas. ║
+ * ║             ObterFotoBase64: Cache IMemoryCache (1h), resize se >50KB.   ║
+ * ║             RedimensionarImagem: System.Drawing para 60x60 JPEG.         ║
+ * ║             [SupportedOSPlatform("windows")]                             ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;

@@ -1,3 +1,23 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : OcorrenciaViagemController.Listar.cs                            ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Partial class para listagem e verificacao de ocorrencias (modal, veiculo,    ║
+║ exclusao). Operacoes de consulta e remocao.                                  ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET  /api/OcorrenciaViagem/ListarPorViagem  : Lista por viagem (modal)     ║
+║ - GET  /api/OcorrenciaViagem/VerificarVeiculo : Verifica por veiculo         ║
+║ - POST /api/OcorrenciaViagem/Excluir          : Exclui ocorrencia            ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;

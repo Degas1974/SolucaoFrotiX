@@ -1,4 +1,15 @@
-﻿using System;
+﻿/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Services/GlosaDtos.cs                                          ║
+ * ║  Descrição: DTOs para cálculo de glosa contratual.                       ║
+ * ║             GlosaResumoItemDto: Consolidado por item (valores, glosa).   ║
+ * ║             GlosaDetalheItemDto: Linhas individuais (placas, datas).     ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using System;
 
 namespace FrotiX.Services
     {

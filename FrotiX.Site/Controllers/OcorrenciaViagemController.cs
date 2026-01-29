@@ -1,3 +1,61 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : OcorrenciaViagemController.cs                                   ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller API (partial) para CRUD de ocorrências de viagem. Gerencia        ║
+║ o ciclo completo de ocorrências: criação, listagem, baixa, reabertura        ║
+║ e exclusão. Suporta upload de imagens/vídeos.                                ║
+║ Endpoint: /api/OcorrenciaViagem                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS - LISTAR                                                           ║
+║ - GET ListarPorViagem        : Lista ocorrências de uma viagem               ║
+║ - GET ListarAbertasPorVeiculo: Lista ocorrências abertas de um veículo       ║
+║ - GET ContarAbertasPorVeiculo: Conta ocorrências abertas de um veículo       ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS - CRIAR                                                            ║
+║ - POST Criar          : Cria nova ocorrência                                 ║
+║ - POST CriarMultiplas : Cria múltiplas ocorrências (finalização viagem)      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS - ATUALIZAR STATUS                                                 ║
+║ - POST DarBaixa : Marca ocorrência como "Baixada"                            ║
+║ - POST Reabrir  : Reabre ocorrência baixada                                  ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS - MODIFICAR                                                        ║
+║ - PUT Atualizar      : Atualiza dados da ocorrência                          ║
+║ - DELETE Excluir     : Exclui ocorrência                                     ║
+║ - POST UploadImagem  : Upload de imagem/vídeo da ocorrência                  ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ STATUS DE OCORRENCIA                                                         ║
+║ - Aberta  : Status inicial ao criar                                          ║
+║ - Baixada : Após resolução (registra DataBaixa e UsuarioBaixa)               ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ EXTENSOES PERMITIDAS (UploadImagem)                                          ║
+║ - Imagens: .jpg, .jpeg, .png, .gif, .webp                                    ║
+║ - Vídeos : .mp4, .webm                                                       ║
+║ - Destino: wwwroot/uploads/ocorrencias/                                      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DTO                                                                          ║
+║ - OcorrenciaViagemDTO : Transferência de dados para criar/atualizar          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ PARTIAL CLASSES (arquivos relacionados)                                      ║
+║ - OcorrenciaViagemController.Gestao.cs   : Gestão avançada                   ║
+║ - OcorrenciaViagemController.Listar.cs   : Endpoints de listagem             ║
+║ - OcorrenciaViagemController.Upsert.cs   : Insert/Update                     ║
+║ - OcorrenciaViagemController.Debug.cs    : Funções de debug                  ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DEPENDENCIAS                                                                 ║
+║ - IUnitOfWork                  : Acesso a repositórios                       ║
+║ - ViewOcorrenciasViagem        : View com dados enriquecidos                 ║
+║ - ViewOcorrenciasAbertasVeiculo: View filtrada por veículo                   ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using System;
 using System.Collections.Generic;
 using System.IO;

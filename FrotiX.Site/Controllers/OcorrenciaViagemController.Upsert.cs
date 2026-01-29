@@ -1,3 +1,21 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : OcorrenciaViagemController.Upsert.cs                            ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Partial class para baixa de ocorrencia especifica da tela de Nova Viagem.    ║
+║ Separado para manter organizacao do codigo.                                  ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - POST /api/OcorrenciaViagem/BaixarUpsert : Baixa da tela de Nova Viagem     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using FrotiX.TextNormalization;

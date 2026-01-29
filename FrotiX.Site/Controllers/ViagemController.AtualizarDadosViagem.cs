@@ -1,3 +1,33 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : ViagemController.AtualizarDadosViagem.cs                        ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Partial class do ViagemController para atualização de dados via Dashboard.   ║
+║ Contém lógica de cálculo de MinutosNormalizado considerando jornada de       ║
+║ trabalho de 8h/dia. O trigger tr_Viagem_CalculaCustos recalcula custos.      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - POST /api/Viagem/AtualizarDadosViagemDashboard : Atualiza via modal        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ METODOS AUXILIARES                                                           ║
+║ - CalcularMinutosNormalizadoComJornada : Calcula minutos com jornada 8h/dia  ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ CLASSES AUXILIARES                                                           ║
+║ - AtualizarViagemDashboardDTO : DTO para dados do modal de ajuste            ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ CONSTANTES                                                                   ║
+║ - MINUTOS_JORNADA_DIA : 480 (8 horas)                                        ║
+║ - INICIO_EXPEDIENTE   : 08:00                                                ║
+║ - FIM_EXPEDIENTE      : 18:00                                                ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -5,10 +35,6 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
-    /// <summary>
-    /// ViagemController - Partial Class para API AtualizarDadosViagemDashboard
-    /// O trigger tr_Viagem_CalculaCustos recalcula os custos automaticamente
-    /// </summary>
     public partial class ViagemController
     {
         // Constantes para cálculo de jornada

@@ -1,3 +1,12 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Models/SmartNavigation.cs                                      ║
+ * ║  Descrição: Classes para construção de navegação dinâmica via JSON        ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;

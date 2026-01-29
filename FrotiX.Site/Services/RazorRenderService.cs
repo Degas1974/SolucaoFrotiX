@@ -1,4 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Services/RazorRenderService.cs                                 ║
+ * ║  Descrição: Serviço para renderizar Razor Pages/Views para string HTML.  ║
+ * ║             Interface IRazorRenderService com método ToStringAsync<T>.   ║
+ * ║             Usa IRazorViewEngine, ITempDataProvider, IRazorPageActivator.║
+ * ║             Útil para e-mails HTML ou geração de PDFs via HTML.          ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;

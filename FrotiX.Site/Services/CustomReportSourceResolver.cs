@@ -1,3 +1,14 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Services/CustomReportSourceResolver.cs                         ║
+ * ║  Descrição: Implementação de IReportSourceResolver para Telerik Reports. ║
+ * ║             Resolve arquivos .trdp/.trdx do diretório /Reports.          ║
+ * ║             Passa parâmetros do frontend para o relatório.               ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using Microsoft.AspNetCore.Hosting;
 using System.Collections.Generic;
 using System.IO;

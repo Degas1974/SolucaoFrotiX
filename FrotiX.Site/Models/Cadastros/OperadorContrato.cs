@@ -1,3 +1,12 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Models/Cadastros/OperadorContrato.cs                           ║
+ * ║  Descrição: Entidade de relacionamento entre Operador e Contrato         ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

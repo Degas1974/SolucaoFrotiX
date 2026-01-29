@@ -1,3 +1,12 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Models/Cadastros/Lavagem.cs                                    ║
+ * ║  Descrição: Entidade e ViewModels para registros de lavagens de veículos║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

@@ -1,3 +1,15 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Middlewares/ErrorLoggingMiddleware.cs                          ║
+ * ║  Descrição: Middleware ASP.NET que intercepta exceções não tratadas e    ║
+ * ║             erros HTTP (4xx/5xx). Registra via ILogService com extração  ║
+ * ║             de arquivo/método/linha do stack trace. Extension method     ║
+ * ║             UseErrorLogging para facilitar registro no pipeline.         ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;

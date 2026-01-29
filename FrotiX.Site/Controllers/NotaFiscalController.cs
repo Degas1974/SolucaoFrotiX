@@ -1,3 +1,25 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : NotaFiscalController.cs                                         ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Partial class principal para gestao de notas fiscais. CRUD, validacao        ║
+║ de empenhos, calculo de glosas e controle de saldos.                         ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS PRINCIPAIS                                                         ║
+║ - GET  /api/NotaFiscal/GetAll    : Lista notas fiscais com filtros           ║
+║ - POST /api/NotaFiscal/Insere    : Insere NF e atualiza saldo empenho        ║
+║ - POST /api/NotaFiscal/Atualiza  : Atualiza NF e recalcula saldos            ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ PARTIAL CLASSES: NotaFiscalController.Partial.cs (Insere/Atualiza)           ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;

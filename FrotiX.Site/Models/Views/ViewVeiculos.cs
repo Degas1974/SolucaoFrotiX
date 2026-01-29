@@ -1,3 +1,12 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Models/Views/ViewVeiculos.cs                                   ║
+ * ║  Descrição: Modelo mapeado da View de veículos com dados consolidados     ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 
 namespace FrotiX.Models

@@ -1,3 +1,24 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : MultaController.cs                                              ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller para gestao de multas de transito (infracoes dos veiculos).       ║
+║ CRUD completo, upload de PDFs, filtros avancados. Controle de empenhos.      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS PRINCIPAIS                                                         ║
+║ - GET  /api/Multa/GetAll     : Lista multas com filtros avancados             ║
+║ - POST /api/Multa/Upsert     : Criar/atualizar multa                          ║
+║ - POST /api/Multa/Upload     : Upload de PDF da multa                         ║
+║ - GET  /api/Multa/GetEmpenho : Consulta saldo de empenho                      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 /****************************************************************************************
  * ⚡ CONTROLLER: MultaController
  * --------------------------------------------------------------------------------------

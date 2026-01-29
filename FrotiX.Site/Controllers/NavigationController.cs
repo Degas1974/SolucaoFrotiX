@@ -1,3 +1,23 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : NavigationController.cs                                         ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller para gerenciamento do menu de navegacao (sidebar). Estrutura      ║
+║ hierarquica de menus com controle de permissoes por role. Arquivo nav.json.  ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS PRINCIPAIS                                                         ║
+║ - GET  /Navigation/GetMenu    : Retorna arvore de menus (JSON)                ║
+║ - POST /Navigation/SaveMenu   : Salva alteracoes no nav.json                  ║
+║ - GET  /Navigation/GetIcons   : Lista icones FontAwesome disponiveis          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Filters;
 using FrotiX.Models;
 using FrotiX.Models.FontAwesome;

@@ -1,4 +1,15 @@
-// Helpers/Alerta.cs
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Helpers/Alerta.cs                                              ║
+ * ║  Descrição: Classe estática principal de alertas SweetAlert. Exibe       ║
+ * ║             Erro/Sucesso/Info/Warning/Confirmar via TempData. Inclui     ║
+ * ║             TratamentoErroComLinha com extração automática de stack      ║
+ * ║             trace e métodos auxiliares de prioridade (ícone/cor/hex).    ║
+ * ║  Data: 28/01/2026 | LOTE: 21                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;

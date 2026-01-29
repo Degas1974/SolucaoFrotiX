@@ -44,5 +44,6 @@
   "window.restoreWindows": "all",
   "workbench.editor.restoreViewState": true,
   "workbench.editor.tabActionCloseVisibility": false,
-  "terminal.integrated.hideOnStartup": "always"
+  "terminal.integrated.hideOnStartup": "always",
+  "chat.agent.maxRequests": 250000
 }

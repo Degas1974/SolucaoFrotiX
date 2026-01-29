@@ -1,3 +1,24 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : GridAtaController.cs                                            ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller para fornecer dados aos grids de itens de Atas de Registro        ║
+║ de Precos. Gerencia lista de veiculos/servicos incluidos nas atas.           ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - POST /api/GridAta/GetAll  : Lista itens da ata (Syncfusion Grid)           ║
+║ - POST /api/GridAta/Insert  : Adiciona item a lista temporaria               ║
+║ - POST /api/GridAta/Update  : Atualiza item na lista                         ║
+║ - POST /api/GridAta/Delete  : Remove item da lista                           ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 /****************************************************************************************
  * ⚡ CONTROLLER: GridAtaController
  * --------------------------------------------------------------------------------------

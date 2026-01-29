@@ -1,4 +1,23 @@
-﻿using System;
+﻿/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : ControleAcessoDbContext.cs                                      ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ DbContext para controle de acesso (recursos e permissoes). Gerencia          ║
+║ entidades Recurso e ControleAcesso com chaves compostas.                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DBSETS                                                                       ║
+║ - Recurso        : Recursos do sistema (menus, paginas, actions)             ║
+║ - ControleAcesso : Permissoes usuario x recurso                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using FrotiX.Models;

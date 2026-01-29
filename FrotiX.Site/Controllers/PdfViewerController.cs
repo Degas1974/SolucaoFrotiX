@@ -1,3 +1,43 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : PdfViewerController.cs                                          ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller API para visualização de PDFs usando Syncfusion EJ2 PdfViewer.    ║
+║ Suporta carregamento de arquivos por caminho ou Base64, renderização de      ║
+║ páginas, miniaturas, bookmarks, anotações e formulários.                     ║
+║ Endpoint: /api/PdfViewer                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - POST Load                   : Carrega PDF (arquivo ou Base64)              ║
+║ - POST Bookmarks              : Retorna estrutura de bookmarks               ║
+║ - POST RenderPdfPages         : Renderiza páginas do PDF                     ║
+║ - POST RenderPdfTexts         : Extrai texto do documento                    ║
+║ - POST RenderThumbnailImages  : Gera miniaturas das páginas                  ║
+║ - POST RenderAnnotationComments: Retorna comentários de anotações            ║
+║ - POST ExportAnnotations      : Exporta anotações                            ║
+║ - POST ImportAnnotations      : Importa anotações                            ║
+║ - POST ExportFormFields       : Exporta campos de formulário                 ║
+║ - POST ImportFormFields       : Importa campos de formulário                 ║
+║ - POST Unload                 : Limpa cache do documento                     ║
+║ - POST Download               : Retorna documento como Base64                ║
+║ - POST PrintImages            : Gera imagens para impressão                  ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ATRIBUTOS                                                                    ║
+║ - [EnableCors("AllowAllOrigins")] : CORS habilitado para todos endpoints     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DEPENDENCIAS                                                                 ║
+║ - Syncfusion.EJ2.PdfViewer : Biblioteca Syncfusion para visualização PDF     ║
+║ - IWebHostEnvironment      : Acesso ao caminho WebRootPath                   ║
+║ - Newtonsoft.Json          : Serialização JSON                               ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;

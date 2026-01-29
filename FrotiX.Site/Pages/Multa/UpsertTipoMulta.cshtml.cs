@@ -1,3 +1,33 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: UpsertTipoMulta.cshtml.cs (Pages/Multa)                                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para cadastro e edição de Tipos de Multa (infrações de trânsito).                             ║
+ * ║ Cada tipo de multa possui Artigo, Código DENATRAN, Desdobramento e Descrição.                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES BINDPROPERTY                                                                                 ║
+ * ║ • TipoMultaObj : TipoMulta - Entidade direta                                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id) : Carrega tipo de multa existente ou prepara novo                                           ║
+ * ║ • OnPostSubmit() : Insere ou atualiza tipo de multa                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES                                                                                                ║
+ * ║ • ModelState.IsValid                                                                                    ║
+ * ║ • Verificação de duplicidade por Artigo (case insensitive)                                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ║ • ILogger<UpsertTipoMultaModel> - Logging                                                               ║
+ * ║ • INotyfService - Notificações toast                                                                    ║
+ * ║ • AppToast - Notificações visuais                                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;

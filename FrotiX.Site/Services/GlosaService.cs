@@ -1,4 +1,16 @@
-﻿using System;
+﻿/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Services/GlosaService.cs                                       ║
+ * ║  Descrição: Implementação de IGlosaService para cálculo de glosas.       ║
+ * ║             ListarResumo: Consolida por item (GroupBy NumItem), calcula  ║
+ * ║             PrecoTotalMensal = Qtd * VlrUnit, soma glosas por O.S.       ║
+ * ║             ListarDetalhes: Retorna linhas individuais com datas.        ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FrotiX.Repository.IRepository;

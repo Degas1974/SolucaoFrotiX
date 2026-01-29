@@ -1,3 +1,15 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Services/DocGenerator/DocGeneratorServiceCollectionExtensions.cs║
+ * ║  Descrição: Extensions para registrar serviços DocGenerator no DI.       ║
+ * ║             Registra: FileDiscovery, DocExtraction, DocComposer,         ║
+ * ║             DocRender, DocCache, FileTrackingService (Singleton/Hosted), ║
+ * ║             e provedores de IA (OpenAI, Claude, Gemini).                 ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using FrotiX.Services.DocGenerator.Interfaces;

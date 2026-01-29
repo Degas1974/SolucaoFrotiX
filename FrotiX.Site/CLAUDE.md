@@ -6,6 +6,48 @@
 
 ---
 
+## 👋 MENSAGEM DE BOAS-VINDAS
+
+Bem-vindo à sessão de desenvolvimento FrotiX!
+
+**ANTES DE QUALQUER AÇÃO:**
+
+✅ Leia o arquivo `RegrasDesenvolvimentoFrotiX.md` antes de qualquer coisa.
+
+✅ Se for mexer em banco de dados, leia também o `FrotiX.sql`, que é nossa estrutura completa do SQL Server.
+
+**REGRA CRÍTICA PARA ALTERAÇÕES DE BANCO:**
+
+Se você for fazer algum acréscimo, decréscimo ou alteração de recursos no Banco:
+1. **Confrontar** seu código contra o `FrotiX.sql` para ver se não há nenhum tipo de incompatibilidade
+2. **Não havendo incompatibilidades**, atualizar o `FrotiX.sql` com suas alterações
+3. **Gerar** um `script.sql` separado para rodar tanto no banco de produção como no de desenvolvimento
+
+---
+
+## ✅ CONFIRMAÇÃO VISUAL OBRIGATÓRIA
+
+**AO INICIAR CADA NOVA SESSÃO/CHAT**, você DEVE exibir a seguinte mensagem de confirmação ANTES da primeira resposta ao usuário:
+
+```
+✅ FROTIX - CLAUDE CODE CONFIGURADO
+
+📚 Arquivos Carregados:
+  ✅ RegrasDesenvolvimentoFrotiX.md
+  ✅ FrotiX.sql (estrutura do banco - quando necessário)
+
+⚠️ Regras Críticas Ativas:
+  • Try-catch obrigatório em todas funções
+  • Usar Alerta.* (NUNCA alert())
+  • Usar fa-duotone (NUNCA fa-solid)
+  • Consultar FrotiX.sql antes de alterar banco
+  • Gerar script.sql para alterações de banco
+
+🚀 Pronto para começar! Como posso ajudar?
+```
+
+---
+
 ## 🚨 PROTOCOLO DE INICIALIZAÇÃO (LEIA PRIMEIRO)
 
 ### ✅ AÇÕES OBRIGATÓRIAS AO INICIAR SESSÃO
@@ -15,6 +57,7 @@ Antes de qualquer resposta ao usuário, você DEVE:
 1. ✅ **Ler completamente** o arquivo `RegrasDesenvolvimentoFrotiX.md`
 2. ✅ **Se a tarefa envolver banco de dados:** Ler `FrotiX.sql`
 3. ✅ **Confirmar mentalmente** que ambos arquivos foram lidos
+4. ✅ **EXIBIR** a mensagem de confirmação visual (seção acima)
 
 **IMPORTANTE:** Não prossiga sem ler `RegrasDesenvolvimentoFrotiX.md`. Ele contém TODAS as regras do projeto.
 

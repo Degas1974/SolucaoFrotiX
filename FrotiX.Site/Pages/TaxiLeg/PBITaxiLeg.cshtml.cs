@@ -1,3 +1,57 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: PBITaxiLeg.cshtml.cs (Pages/TaxiLeg)                                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para gestão de viagens do serviço TaxiLeg via PBI (tela de gestão operacional).               ║
+ * ║ Formulário completo para registro e edição de viagens com controle de km, combustível,                  ║
+ * ║ motorista, veículo, requisitante, setor e ficha de vistoria.                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ NOTA: Arquivo em Pages/TaxiLeg mas namespace FrotiX.Pages.Viagens                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES STATIC                                                                                       ║
+ * ║ • FichaVistoria : byte[] - Imagem da ficha de vistoria atual                                            ║
+ * ║ • viagemId : Guid - ID da viagem em edição                                                              ║
+ * ║ • dataCriacao, usuarioIdCriacao, usuarioCorrenteId/Nome : Controle de auditoria                         ║
+ * ║ • kmAtual, veiculoAtual : Preserva dados entre requests                                                 ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id) : Carrega viagem existente ou prepara nova, preenche dropdowns                              ║
+ * ║ • OnPostSubmit() : Insere nova viagem                                                                   ║
+ * ║ • OnPostEdit(Id) : Atualiza viagem existente                                                            ║
+ * ║ • OnPostInsereFicha(Id) : Upload de ficha de vistoria                                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ AJAX HANDLERS                                                                                             ║
+ * ║ • OnGetPegaKmAtualVeiculo(id) : Retorna quilometragem atual do veículo                                  ║
+ * ║ • OnGetPegaRamal(id) : Retorna ramal do requisitante                                                    ║
+ * ║ • OnGetPegaSetor(id) : Retorna setor do requisitante                                                    ║
+ * ║ • OnGetVerificaFicha(id) : Retorna último número de ficha de vistoria                                   ║
+ * ║ • OnGetVerificaMotoristaViagem(id) : Verifica se motorista está em viagem aberta                        ║
+ * ║ • OnGetVerificaVeiculoViagem(id) : Verifica se veículo está em viagem aberta                            ║
+ * ║ • OnGetAJAXPreencheListaRequisitantes() : Lista requisitantes para dropdown                             ║
+ * ║ • OnGetAJAXPreencheListaSetores() : Lista setores para TreeView hierárquico                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODOS PRIVADOS                                                                                          ║
+ * ║ • SetViewModel(), PreencheListaSetores(), PreencheListaRequisitantes()                                  ║
+ * ║ • PreencheListaMotoristas(), PreencheListaVeiculos(), PreencheListaCombustivel()                        ║
+ * ║ • PreencheListaFinalidade()                                                                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ REGRAS DE NEGÓCIO                                                                                         ║
+ * ║ • Viagem só pode ser finalizada com HoraFim E KmFinal preenchidos                                       ║
+ * ║ • Status: "Aberta" (sem HoraFim) ou "Realizada" (com HoraFim)                                           ║
+ * ║ • Ao finalizar, calcula custos: Combustível, Motorista, Veículo                                         ║
+ * ║ • Ficha de vistoria padrão: FichaAmarelaNova.jpg                                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork, INotyfService, IWebHostEnvironment, ILogger, HtmlAgilityPack                             ║
+ * ║ • FrotiX.Services.Servicos - Cálculos de custo                                                          ║
+ * ║ • NaturalStringComparer - Ordenação natural de strings                                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Generic;
 using System.IO;

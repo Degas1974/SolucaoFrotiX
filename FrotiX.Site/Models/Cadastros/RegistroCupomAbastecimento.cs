@@ -1,3 +1,12 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Models/Cadastros/RegistroCupomAbastecimento.cs                 ║
+ * ║  Descrição: Entidade para registro de cupons de abastecimento           ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

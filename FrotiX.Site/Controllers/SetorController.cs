@@ -1,3 +1,30 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: SetorController.cs (Controllers)                                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ API Controller para operações de Setores Patrimoniais. Gerencia CRUD de setores com detentor            ║
+ * ║ de carga patrimonial associado.                                                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ROTA BASE: api/Setor                                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ENDPOINTS                                                                                                 ║
+ * ║ • [GET]  /ListaSetores      : Lista setores com nome do detentor (JOIN AspNetUsers)                     ║
+ * ║ • [GET]  /UpdateStatusSetor : Toggle status Ativo/Inativo                                               ║
+ * ║ • [POST] /Delete            : Remove setor (verifica seções associadas)                                 ║
+ * ║ • [GET]  /ListaSetoresCombo : Lista setores ativos para dropdown (text, value)                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÃO DE EXCLUSÃO                                                                                     ║
+ * ║ • Não pode excluir se existem seções associadas (SecaoPatrimonial.SetorId)                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork (SetorPatrimonial, SecaoPatrimonial, AspNetUsers)                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using System;

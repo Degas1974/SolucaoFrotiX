@@ -1,4 +1,17 @@
-﻿using System;
+﻿/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Services/Validations.cs                                        ║
+ * ║  Descrição: Atributos de validação server-side customizados.             ║
+ * ║             ValidateStrings, OnlyUrls, OnlyDigits, OnlyCharacters,       ║
+ * ║             UpperCase, LowerCase, ValidateDate, DateRange, MinAge,       ║
+ * ║             ValidateDomainAtEnd, NumOrChars, ValidateDecimals/Amount,    ║
+ * ║             ValidaLista, ValidaZero, FormatCnpjCpf.                      ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;

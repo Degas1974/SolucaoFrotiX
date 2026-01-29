@@ -1,3 +1,21 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : NormalizeController.cs                                          ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller API para normalizacao de texto (acentos, caracteres especiais).   ║
+║ Usa NormalizationService para padronizar strings.                            ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - POST /api/Normalize/Text : Normaliza texto recebido no body                 ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.TextNormalization;
 using Microsoft.AspNetCore.Mvc;
 using System;

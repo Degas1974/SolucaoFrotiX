@@ -1,3 +1,26 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: SecaoController.cs (Controllers)                                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ API Controller para operações de Seções Patrimoniais. Seções são subdivisões de Setores                 ║
+ * ║ usadas para organização de patrimônio.                                                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ROTA BASE: api/Secao                                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ENDPOINTS                                                                                                 ║
+ * ║ • [GET] /ListaSecoes       : Lista seções com nome do setor pai (JOIN SetorPatrimonial)                 ║
+ * ║ • [GET] /ListaSecoesCombo  : Lista seções de um setor para dropdown (filtro por SetorId)                ║
+ * ║ • [GET] /UpdateStatusSecao : Toggle status Ativo/Inativo                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork (SecaoPatrimonial, SetorPatrimonial)                                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using System;

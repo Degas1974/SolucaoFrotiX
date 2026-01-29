@@ -1,3 +1,33 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: UpsertOrgaoAutuante.cshtml.cs (Pages/Multa)                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para cadastro e edição de Órgãos Autuantes (entidades que aplicam multas de trânsito).        ║
+ * ║ Exemplos: DETRAN, PRF, PM, DER, Prefeituras, etc.                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES BINDPROPERTY                                                                                 ║
+ * ║ • OrgaoAutuanteObj : OrgaoAutuante - Entidade direta (Nome, Sigla)                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id) : Carrega órgão existente ou prepara novo                                                   ║
+ * ║ • OnPostSubmit() : Insere ou atualiza órgão                                                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES                                                                                                ║
+ * ║ • ModelState.IsValid                                                                                    ║
+ * ║ • Verificação de duplicidade por Nome (case insensitive)                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ║ • ILogger<UpsertOrgaoAutuanteModel> - Logging                                                           ║
+ * ║ • INotyfService - Notificações toast                                                                    ║
+ * ║ • AppToast - Notificações visuais                                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;

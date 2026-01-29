@@ -1,4 +1,15 @@
-﻿using System;
+﻿/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Helpers/SfdtHelper.cs                                          ║
+ * ║  Descrição: Helper Syncfusion para conversão de documentos Word.          ║
+ * ║             SalvarImagemDeDocx: Converte DOCX → PDF → PNG (primeira      ║
+ * ║             página). Usa DocIO, DocIORenderer, PdfViewer, SkiaSharp.      ║
+ * ║  Data: 28/01/2026 | LOTE: 21                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using System;
 using System.IO;
 using System.Text;
 using Syncfusion.DocIO;

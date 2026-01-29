@@ -1,3 +1,21 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ ARQUIVO    : Registrar.cshtml.cs                                             ║
+// ║ LOCALIZAÇÃO: Pages/Usuarios/                                                 ║
+// ║ FINALIDADE : PageModel para registro de novos usuários no sistema.           ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO FUNCIONAL                                                          ║
+// ║ Tela de auto-cadastro de usuários com:                                       ║
+// ║ • InputModel: Ponto, NomeCompleto, Email (@camara.leg.br), Senha             ║
+// ║ • Validação de domínio de email via ValidateDomainAtEnd                      ║
+// ║ • Cria usuário com senha padrão "visual" e redireciona para confirmação      ║
+// ║ • Insere automaticamente registros de ControleAcesso para todos os Recursos  ║
+// ║ • AllowAnonymous + IgnoreAntiforgeryToken para acesso público                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ LOTE: 23 — Pages/Usuarios | DATA: 29/01/2026                                 ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;

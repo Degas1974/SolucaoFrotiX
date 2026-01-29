@@ -1,3 +1,30 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: UploadCNHController.cs (Controllers)                                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ API Controller para upload e remoção de CNH Digital (Carteira Nacional de Habilitação).                 ║
+ * ║ Armazena o arquivo diretamente no campo byte[] CNHDigital da tabela Motorista.                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ROTA BASE: api/UploadCNH                                                                                 ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ATRIBUTOS                                                                                                 ║
+ * ║ • [IgnoreAntiforgeryToken] - Permite upload sem token CSRF                                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ENDPOINTS                                                                                                 ║
+ * ║ • [POST] /Save           : Upload de arquivo CNH (query param: motoristaId)                             ║
+ * ║ • [POST] /Remove         : Remove CNH existente (query param: motoristaId)                              ║
+ * ║ • [POST] /UploadFeatures : Retorna view (funcionalidade não implementada)                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork (Motorista)                                                                               ║
+ * ║ • IWebHostEnvironment - Acesso ao ambiente de hospedagem                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

@@ -1,3 +1,28 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : VeiculosUnidadeController.cs                                    ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller para gerenciamento de veiculos vinculados a unidades. Lista       ║
+║ veiculos de uma unidade especifica com dados de marca, modelo, contrato      ║
+║ e fornecedor. Permite remover vinculo veiculo-unidade.                       ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET  /api/VeiculosUnidade?id={guid} : Lista veiculos da unidade            ║
+║ - POST /api/VeiculosUnidade/Delete    : Remove vinculo veiculo-unidade       ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DADOS RETORNADOS NO GET                                                      ║
+║ - VeiculoId, Placa, MarcaModelo, Sigla (unidade)                             ║
+║ - CombustivelDescricao, ContratoVeiculo, Status                              ║
+║ - DatadeAlteracao, NomeCompleto (usuario alteracao)                          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 20          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +38,13 @@ namespace FrotiX.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Construtor VeiculosUnidadeController
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar controller com injecao de dependencia do UnitOfWork
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork - Padrao Repository para acesso a dados
+         * 🔄 CHAMA        : Nenhum metodo adicional
+         ****************************************************************************************/
         public VeiculosUnidadeController(IUnitOfWork unitOfWork)
         {
             try
@@ -29,11 +61,29 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar todos veiculos vinculados a uma unidade especifica
+         * 📥 ENTRADAS     : [Guid] id - ID da unidade para filtrar veiculos
+         * 📤 SAÍDAS       : [IActionResult] JSON { data: [ veiculos... ] }
+         * 🔗 CHAMADA POR  : DataTable de veiculos na pagina de detalhes da unidade
+         * 🔄 CHAMA        : Veiculo, ModeloVeiculo, MarcaVeiculo, Unidade, Combustivel,
+         *                   Contrato, Fornecedor, AspNetUsers (JOINs)
+         *
+         * 📦 DADOS RETORNADOS:
+         *    - VeiculoId, Placa, MarcaModelo (concatenado)
+         *    - Sigla (unidade), CombustivelDescricao
+         *    - ContratoVeiculo (ano/numero + fornecedor)
+         *    - Status, DataAlteracao, NomeCompleto (usuario)
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get(Guid id)
         {
             try
             {
+                // [DOC] Consulta com multiplos JOINs para montar dados completos do veiculo
+                // [DOC] Relaciona: Veiculo -> Marca/Modelo, Unidade, Combustivel, Contrato/Fornecedor, Usuario
                 var result = (
                     from v in _unitOfWork.Veiculo.GetAll()
                     join m in _unitOfWork.ModeloVeiculo.GetAll() on v.ModeloId equals m.ModeloId
@@ -45,14 +95,16 @@ namespace FrotiX.Controllers
                     join f in _unitOfWork.Fornecedor.GetAll()
                         on ct.FornecedorId equals f.FornecedorId
                     join us in _unitOfWork.AspNetUsers.GetAll() on v.UsuarioIdAlteracao equals us.Id
-                    where v.UnidadeId == id
+                    where v.UnidadeId == id  // [DOC] Filtro pela unidade solicitada
                     select new
                     {
                         v.VeiculoId ,
                         v.Placa ,
+                        // [DOC] Concatena marca/modelo para exibicao unica
                         MarcaModelo = ma.DescricaoMarca + "/" + m.DescricaoModelo ,
                         u.Sigla ,
                         CombustivelDescricao = c.Descricao ,
+                        // [DOC] Formato contrato: "2024/1234 - Nome Fornecedor"
                         ContratoVeiculo = ct.AnoContrato
                             + "/"
                             + ct.NumeroContrato
@@ -81,19 +133,36 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover vinculo de veiculo com unidade (nao exclui o veiculo)
+         * 📥 ENTRADAS     : [VeiculoViewModel] model - DTO com VeiculoId
+         * 📤 SAÍDAS       : [IActionResult] JSON { success, message }
+         * 🔗 CHAMADA POR  : Botao excluir no DataTable de veiculos da unidade
+         * 🔄 CHAMA        : Veiculo.GetFirstOrDefault(), Update(), Save()
+         *
+         * 📝 COMPORTAMENTO:
+         *    - NAO exclui o veiculo do banco
+         *    - Apenas seta UnidadeId = Guid.Empty (desvincula da unidade)
+         *    - Veiculo fica disponivel para vincular a outra unidade
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(VeiculoViewModel model)
         {
             try
             {
+                // [DOC] Valida se recebeu ID valido do veiculo
                 if (model != null && model.VeiculoId != Guid.Empty)
                 {
+                    // [DOC] Busca veiculo no banco pelo ID
                     var objFromDb = _unitOfWork.Veiculo.GetFirstOrDefault(u =>
                         u.VeiculoId == model.VeiculoId
                     );
                     if (objFromDb != null)
                     {
+                        // [DOC] DESVINCULA: seta UnidadeId vazio (nao exclui veiculo)
                         objFromDb.UnidadeId = Guid.Empty;
                         _unitOfWork.Veiculo.Update(objFromDb);
                         _unitOfWork.Save();

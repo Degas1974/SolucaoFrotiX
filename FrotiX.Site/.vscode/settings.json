@@ -2,7 +2,7 @@
   "task.allowAutomaticTasks": "on",
   "github.copilot.chat.codeGeneration.instructions": [
     {
-      "text": "SEMPRE leia RegrasDesenvolvimentoFrotiX.md antes de gerar código. Siga TODAS as regras. Adicione novas regras APENAS neste arquivo."
+      "text": "CONFIRMAÇÃO VISUAL OBRIGATÓRIA: Ao iniciar chat, exiba: '✅ FROTIX - GITHUB COPILOT CONFIGURADO | 📚 Arquivos Carregados: ✅ RegrasDesenvolvimentoFrotiX.md ✅ FrotiX.sql (quando necessário) | ⚠️ Regras Críticas Ativas: • Try-catch obrigatório • Alerta.* (NUNCA alert()) • fa-duotone (NUNCA fa-solid) • Consultar FrotiX.sql antes de alterar banco • Gerar script.sql para alterações | 🚀 Pronto!' | INSTRUÇÕES: 1) Leia COMPLETAMENTE RegrasDesenvolvimentoFrotiX.md antes de qualquer sugestão. 2) Se mexer em banco, leia TAMBÉM FrotiX.sql (estrutura SQL Server). 3) REGRA CRÍTICA: Se alterar banco, confronte código contra FrotiX.sql, atualize FrotiX.sql e gere script.sql separado para produção e desenvolvimento. 4) SEMPRE: try-catch, Alerta.* (não alert()), fa-duotone (não fa-solid), FtxSpin.show() (não spinner Bootstrap), data-ejtip (não Bootstrap tooltips). 5) Atualize Documentacao/ antes de commitar. Siga TODAS as regras do RegrasDesenvolvimentoFrotiX.md."
     }
   ]
 }

@@ -1,15 +1,25 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║                                                                          ║
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║                                                                          ║
- * ║  Este arquivo está completamente documentado em:                         ║
- * ║  📄 Documentacao/Pages/Abastecimento - Index.md                           ║
- * ║                                                                          ║
- * ║  Última atualização: 08/01/2026                                          ║
- * ║                                                                          ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ ARQUIVO    : Index.cshtml.cs                                                 ║
+// ║ LOCALIZAÇÃO: Pages/Abastecimento/                                            ║
+// ║ FINALIDADE : PageModel para listagem e filtros de abastecimentos.            ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO FUNCIONAL                                                          ║
+// ║ Fornece providers de listas para filtros do grid de abastecimentos:          ║
+// ║ • ListaVeiculos: Dropdown de veículos com Placa - Marca/Modelo               ║
+// ║ • ListaCombustivel: Dropdown de tipos de combustível cadastrados             ║
+// ║ • ListaUnidade: Dropdown de unidades organizacionais                         ║
+// ║ • ListaMotorista: Dropdown de motoristas ativos                              ║
+// ║ O OnGet é vazio pois os dados do grid são carregados via AJAX.               ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DEPENDÊNCIAS                                                                 ║
+// ║ • IUnitOfWork: Repositories de Veiculo, Combustivel, Unidade, Motorista      ║
+// ║ • ViewMotoristas: View SQL para dados consolidados de motoristas             ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ LOTE        : 23 — Pages/Abastecimento                                       ║
+// ║ DATA        : 29/01/2026                                                     ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc.RazorPages;

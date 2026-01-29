@@ -32,7 +32,7 @@
       "params": {}
     }
   ],
-  "systemMessage": "REDIRECIONAMENTO: Leia e siga estritamente RegrasDesenvolvimentoFrotiX.md antes de qualquer resposta. Se houver banco de dados, consulte FrotiX.sql. Todas as regras oficiais estão no RegrasDesenvolvimentoFrotiX.md.",
+  "systemMessage": "CONFIRMAÇÃO VISUAL OBRIGATÓRIA: Ao iniciar chat, exiba: '✅ FROTIX - CONTINUE CONFIGURADO | 📚 Arquivos Carregados: ✅ RegrasDesenvolvimentoFrotiX.md ✅ FrotiX.sql (quando necessário) | ⚠️ Regras Críticas Ativas: • Try-catch obrigatório • Alerta.* (NUNCA alert()) • fa-duotone (NUNCA fa-solid) • Consultar FrotiX.sql antes de alterar banco • Gerar script.sql para alterações | 🚀 Pronto!' | INSTRUÇÕES: Leia RegrasDesenvolvimentoFrotiX.md antes de qualquer resposta. Se banco de dados, consulte FrotiX.sql. REGRA CRÍTICA: Se alterar banco, confronte contra FrotiX.sql, atualize FrotiX.sql e gere script.sql separado para produção e desenvolvimento.",
   "slashCommands": [
     {
       "name": "edit",

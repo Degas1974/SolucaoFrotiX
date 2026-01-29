@@ -1,4 +1,13 @@
-// Arquivo: Extensions/ToastExtensions.cs
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Extensions/ToastExtensions.cs                                  ║
+ * ║  Descrição: Métodos de extensão para exibir notificações Toast em        ║
+ * ║             PageModel e Controller. Integrado com IToastService.         ║
+ * ║             Suporta cores: Verde (sucesso), Vermelho (erro), Amarelo.    ║
+ * ║  Data: 28/01/2026 | LOTE: 21                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
 
 using FrotiX.Services;
 using Microsoft.AspNetCore.Mvc;

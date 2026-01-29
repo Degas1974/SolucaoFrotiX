@@ -1,3 +1,15 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ ARQUIVO    : _AlertasSino.cshtml.cs                                          ║
+// ║ LOCALIZAÇÃO: Pages/Shared/                                                   ║
+// ║ FINALIDADE : Partial do ícone de sino de alertas na barra superior.          ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO: PageModel vazio - renderização do sino via CSHTML/SignalR.         ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ LOTE: 23 — Pages/Shared | DATA: 29/01/2026                                   ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

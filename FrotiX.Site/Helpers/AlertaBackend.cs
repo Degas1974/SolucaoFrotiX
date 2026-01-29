@@ -1,3 +1,15 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Helpers/AlertaBackend.cs                                       ║
+ * ║  Descrição: Helper backend-only para logging de erros (sem JSInterop).   ║
+ * ║             TratamentoErroComLinha com CallerMemberName/FilePath/Line.   ║
+ * ║             Versões estáticas e instância. Extrai file/line do stack.    ║
+ * ║             Correlation ID via Activity.Current ou GUID.                 ║
+ * ║  Data: 28/01/2026 | LOTE: 21                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;

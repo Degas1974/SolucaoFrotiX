@@ -1,3 +1,35 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: ExibePDFPenalidade.cshtml.cs (Pages/Multa)                                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para exibição do PDF da notificação de penalidade de multa de trânsito.                       ║
+ * ║ Carrega a multa pelo ID e disponibiliza para visualização do documento de penalidade.                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES STATIC                                                                                       ║
+ * ║ • multaId : Guid - ID da multa sendo visualizada                                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES BINDPROPERTY                                                                                 ║
+ * ║ • MultaObj : MultaViewModel - Contém entidade Multa                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id) : Carrega multa pelo ID para exibição do PDF da penalidade                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES                                                                                                ║
+ * ║ • ID vazio: redireciona para ListaPenalidade com mensagem de erro                                       ║
+ * ║ • Multa não encontrada: redireciona para ListaPenalidade com mensagem                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ║ • INotyfService - Notificações toast                                                                    ║
+ * ║ • IWebHostEnvironment - Acesso a wwwroot                                                                ║
+ * ║ • AppToast - Notificações visuais                                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

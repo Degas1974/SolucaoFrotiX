@@ -1,3 +1,23 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : FornecedorController.cs                                         ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller para gestao de fornecedores (empresas contratadas). CRUD          ║
+║ basico com validacao de integridade (contratos vinculados).                  ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET  /api/Fornecedor/GetAll   : Lista todos fornecedores                   ║
+║ - POST /api/Fornecedor/Upsert   : Criar/atualizar fornecedor                 ║
+║ - POST /api/Fornecedor/Delete   : Excluir fornecedor (valida vinculos)       ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 /****************************************************************************************
  * ⚡ CONTROLLER: FornecedorController
  * --------------------------------------------------------------------------------------

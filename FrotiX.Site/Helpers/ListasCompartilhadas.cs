@@ -1,3 +1,16 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Helpers/ListasCompartilhadas.cs                                ║
+ * ║  Descrição: Provedores de listas para dropdowns e componentes.           ║
+ * ║             Inclui: ListaFinalidade, ListaNivelCombustivel, ListaVeiculos║
+ * ║             ListaMotorista, ListaRequisitante, ListaEvento, ListaSetores ║
+ * ║             (TreeView/Flat), ListaDias, ListaPeriodos, ListaStatus.      ║
+ * ║             Comparadores: PtBrComparer, NaturalStringComparer.           ║
+ * ║  Data: 28/01/2026 | LOTE: 21                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using System;

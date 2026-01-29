@@ -1,3 +1,12 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Models/Estatisticas/HeatmapAbastecimentoMensal.cs              ║
+ * ║  Descrição: Modelo para heatmap de abastecimentos mensais (dashboards)   ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 #nullable enable
 using System;
 using System.ComponentModel.DataAnnotations;

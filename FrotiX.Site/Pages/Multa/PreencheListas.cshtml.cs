@@ -1,3 +1,44 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: PreencheListas.cshtml.cs (Pages/Multa)                                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel e classes helper para preenchimento de dropdowns do módulo de multas.                         ║
+ * ║ Contém classes utilitárias para listar veículos, motoristas, órgãos autuantes,                          ║
+ * ║ tipos de multa e status de autuação/penalidade.                                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CLASSES                                                                                                   ║
+ * ║ • PreencheListasModel : PageModel com UnitOfWork estático para compartilhamento                         ║
+ * ║ • ListaVeiculos : Lista veículos (Placa - Marca/Modelo)                                                 ║
+ * ║ • ListaMotorista : Lista motoristas (MotoristaCondutor via ViewMotoristas)                              ║
+ * ║ • ListaOrgaoAutuanteMulta : Lista órgãos autuantes (Nome + Sigla)                                       ║
+ * ║ • ListaTipoMulta : Lista tipos de multa (Artigo + Código + Desdobramento + Descrição)                   ║
+ * ║ • ListaStatusAutuacao : Status para filtro de autuação (Todas, Pendente, Notificado, Reconhecido)       ║
+ * ║ • ListaStatusAutuacaoAlteracao : Status para alteração (sem "Todas")                                    ║
+ * ║ • ListaStatusPenalidade : Status para filtro de penalidade                                              ║
+ * ║ • ListaStatusPenalidadeAlteracao : Status para alteração de penalidade                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES STATIC                                                                                       ║
+ * ║ • _unitOfWork : IUnitOfWork estático para compartilhamento entre classes                                ║
+ * ║ • PDFAutuacao, PDFNotificacao : byte[] - PDFs carregados                                                ║
+ * ║ • MultaId : Guid - ID da multa em contexto                                                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ STATUS AUTUAÇÃO                                                                                           ║
+ * ║ Todas, Pendente, Notificado, Reconhecido                                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ STATUS PENALIDADE                                                                                         ║
+ * ║ Todas, À Pagar, Paga (Defin), Paga (Infrator), À Enviar Secle, Enviada Secle, Arquivada (Finalizada)    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ║ • FrotiX.Services.Servicos.ConvertHtml - Conversão HTML para texto                                      ║
+ * ║ • ViewMotoristas - View de motoristas                                                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;
 using Microsoft.AspNetCore.Mvc;

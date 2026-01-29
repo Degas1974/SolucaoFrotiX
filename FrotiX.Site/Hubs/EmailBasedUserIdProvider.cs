@@ -1,3 +1,14 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Hubs/EmailBasedUserIdProvider.cs                               ║
+ * ║  Descrição: Implementação de IUserIdProvider para SignalR.               ║
+ * ║             Extrai ID do usuário via Claims na ordem: Email, Name,        ║
+ * ║             NameIdentifier. Permite envio direcionado de mensagens.      ║
+ * ║  Data: 28/01/2026 | LOTE: 21                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 

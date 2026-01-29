@@ -1,3 +1,12 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Models/ViewOcorrenciasAbertasVeiculo.cs                        ║
+ * ║  Descrição: Modelo mapeado da View de ocorrências abertas por veículo    ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 #nullable enable
 using System;
 using System.ComponentModel.DataAnnotations;

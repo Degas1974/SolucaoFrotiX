@@ -1,3 +1,16 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Services/Servicos.cs                                           ║
+ * ║  Descrição: Serviços de cálculos e utilitários do FrotiX.                ║
+ * ║             CÁLCULOS: CalculaCustoCombustivel, CalculaCustoVeiculo,      ║
+ * ║             CalculaCustoMotorista, CalculaCustoOperador, CalculaCusto-   ║
+ * ║             Lavador. HTML: ConvertHtml (HtmlAgilityPack).                ║
+ * ║             UTIL: TiraAcento (normalização Unicode), TreeView helpers.   ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using HtmlAgilityPack;

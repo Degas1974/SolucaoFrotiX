@@ -1,3 +1,22 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : MultaUploadController.cs                                        ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller para upload de PDFs de multas usando Syncfusion EJ2 Uploader.     ║
+║ Validacao de formato, normalizacao de nomes, salvamento em disco.            ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - POST /api/MultaUpload/Save    : Upload e salvamento de PDF                  ║
+║ - POST /api/MultaUpload/Remove  : Remocao de arquivo temporario               ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 /****************************************************************************************
  * ⚡ CONTROLLER: MultaUploadController
  * --------------------------------------------------------------------------------------

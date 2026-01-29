@@ -1,3 +1,14 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Services/ILogService.cs                                        ║
+ * ║  Descrição: Interface de logging centralizado. Métodos: Info, Warning,   ║
+ * ║             Error, ErrorJS (client-side), Debug, OperationStart/Success/ ║
+ * ║             Failed, UserAction, HttpError. DTOs: LogFileInfo, LogStats.  ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Generic;
 

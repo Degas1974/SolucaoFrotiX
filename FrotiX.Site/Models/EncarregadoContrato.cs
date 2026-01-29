@@ -1,3 +1,12 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Models/EncarregadoContrato.cs                                  ║
+ * ║  Descrição: Entidade de relacionamento entre Encarregado e Contrato      ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 #nullable enable
 using System;
 using System.ComponentModel.DataAnnotations;

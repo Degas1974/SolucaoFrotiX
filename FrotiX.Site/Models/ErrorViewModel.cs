@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Models/ErrorViewModel.cs                                       ║
+ * ║  Descrição: ViewModel para exibição de erros e serviço de envio de email ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.UI.Services;
 

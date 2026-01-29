@@ -1,3 +1,15 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Hubs/AlertasHub.cs                                             ║
+ * ║  Descrição: SignalR Hub para sistema de alertas em tempo real.            ║
+ * ║             Gerencia grupos de usuário (user_{id}). Métodos:             ║
+ * ║             MarcarComoLido, OnConnectedAsync, OnDisconnectedAsync.        ║
+ * ║             Envia AlertaMarcadoComoLido para clientes.                    ║
+ * ║  Data: 28/01/2026 | LOTE: 21                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Threading.Tasks;

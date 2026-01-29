@@ -1,3 +1,42 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : RelatorioSetorSolicitanteController.cs                          ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller para relatórios de Setores Solicitantes usando Stimulsoft         ║
+║ Reports. Carrega e renderiza o relatório SetoresSolicitantes.mrt.            ║
+║ Endpoint: /SetorSolicitante/RelatorioSetorSolicitante                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ CONSTRUTOR ESTATICO                                                          ║
+║ - Inicializa licença Stimulsoft via StiLicense.Key                           ║
+║ - Chave de licença embutida no código                                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET Index       : Renderiza View principal do relatório                    ║
+║ - GET GetReport   : Carrega e retorna o relatório .mrt                       ║
+║   * Arquivo: Reports/SetoresSolicitantes.mrt                                 ║
+║   * Limpa DataStore antes de carregar                                        ║
+║ - POST ViewerEvent: Processa eventos do visualizador Stimulsoft              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ATRIBUTOS                                                                    ║
+║ - [IgnoreAntiforgeryToken] : Desabilita validação CSRF no Index              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DEPENDENCIAS                                                                 ║
+║ - Stimulsoft.Report     : Biblioteca de relatórios Stimulsoft                ║
+║ - Stimulsoft.Report.Mvc : Helpers MVC para Stimulsoft                        ║
+║ - StiNetCoreHelper      : Mapeamento de caminhos                             ║
+║ - StiNetCoreViewer      : Visualizador web de relatórios                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ARQUIVOS DE RELATORIO                                                        ║
+║ - Reports/SetoresSolicitantes.mrt : Template do relatório                    ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

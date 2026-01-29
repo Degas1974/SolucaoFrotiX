@@ -1,4 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
+﻿/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Models/TempDataExtensions.cs                                   ║
+ * ║  Descrição: Extensões para serialização de objetos em TempData          ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 
 

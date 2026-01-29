@@ -1,3 +1,12 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Models/Encarregado.cs                                          ║
+ * ║  Descrição: Entidade e ViewModel para gerenciamento de encarregados      ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 #nullable enable
 using FrotiX.Validations;
 using Microsoft.AspNetCore.Http;

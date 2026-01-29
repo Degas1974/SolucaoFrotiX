@@ -1,3 +1,12 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Models/Cadastros/Viagem.cs                                     ║
+ * ║  Descrição: Entidade e ViewModels para gerenciamento de viagens          ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;

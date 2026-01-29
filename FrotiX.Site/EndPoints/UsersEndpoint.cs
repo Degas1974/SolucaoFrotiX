@@ -1,4 +1,26 @@
-﻿using System;
+﻿/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : UsersEndpoint.cs                                                ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ API Endpoint para gerenciamento de Usuarios do ASP.NET Identity.             ║
+║ CRUD completo via UserManager com criacao de senha padrao.                   ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET    /api/users      : Lista todos os usuarios                           ║
+║ - GET    /api/users/{id} : Busca usuario por ID                              ║
+║ - POST   /api/users      : Cria novo usuario (senha padrao)                  ║
+║ - PUT    /api/users      : Atualiza usuario existente                        ║
+║ - DELETE /api/users      : Remove usuario (bloqueia usuario principal)       ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;

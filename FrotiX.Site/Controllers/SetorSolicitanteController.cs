@@ -1,3 +1,27 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: SetorSolicitanteController.cs (Controllers)                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ API Controller para exclusão de Setores Solicitantes (setores que solicitam viagens).                   ║
+ * ║ Estrutura hierárquica: Setor Pai → Setores Filho (SetorPaiId).                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ROTA BASE: api/SetorSolicitante                                                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ENDPOINTS                                                                                                 ║
+ * ║ • [POST] /Delete : Remove setor solicitante (verifica setores filhos)                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÃO DE EXCLUSÃO                                                                                     ║
+ * ║ • Não pode excluir se existem setores filhos (SetorPaiId = SetorSolicitanteId)                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork (SetorSolicitante)                                                                        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;

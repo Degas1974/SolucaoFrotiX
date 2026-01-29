@@ -1,3 +1,23 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : OcorrenciaViagemController.Gestao.cs                            ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Partial class para gestao de ocorrencias (listar, editar, baixar).           ║
+║ Filtros por veiculo, motorista, status e datas.                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET  /api/OcorrenciaViagem/ListarGestao : Lista para painel de gestao      ║
+║ - POST /api/OcorrenciaViagem/Editar       : Edita ocorrencia existente       ║
+║ - POST /api/OcorrenciaViagem/Baixar       : Baixa ocorrencia (resolve)       ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using FrotiX.TextNormalization;

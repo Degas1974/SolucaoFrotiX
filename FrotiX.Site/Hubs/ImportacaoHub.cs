@@ -1,3 +1,15 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Hubs/ImportacaoHub.cs                                          ║
+ * ║  Descrição: SignalR Hub para progresso de importação de planilhas em      ║
+ * ║             tempo real. Inclui DTO ProgressoImportacao com: Porcentagem, ║
+ * ║             Etapa, Detalhe, LinhaAtual/TotalLinhas, resumo da planilha   ║
+ * ║             e barras de progresso por etapa (XLSX, CSV, Process).        ║
+ * ║  Data: 28/01/2026 | LOTE: 21                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Threading.Tasks;

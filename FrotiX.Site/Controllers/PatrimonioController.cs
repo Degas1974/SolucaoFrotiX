@@ -1,3 +1,64 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : PatrimonioController.cs                                         ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller API para gerenciamento de Patrimônios (ativos patrimoniais) e     ║
+║ suas movimentações entre setores/seções. Sistema completo de rastreio        ║
+║ de ativos com conferência, filtros por marca/modelo/setor/situação.          ║
+║ Endpoint: /api/Patrimonio                                                    ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS - PATRIMONIO                                                       ║
+║ - GET Get               : Lista patrimônios com filtros múltiplos            ║
+║ - GET GetSingle         : Busca patrimônio individual por ID                 ║
+║ - GET ListaPatrimonios  : Dropdown de patrimônios ativos                     ║
+║ - GET ListaMarcas       : Lista marcas distintas                             ║
+║ - GET ListaModelos      : Lista modelos por marca                            ║
+║ - GET ListaMarcasModelos: Hierarquia marcas/modelos                          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS - MOVIMENTACAO                                                     ║
+║ - GET GetMovimentacao           : Busca movimentação por ID                  ║
+║ - POST CreateMovimentacao       : Cria movimentação com controle de bloqueio ║
+║ - POST UpdateMovimentacao       : Atualiza movimentação existente            ║
+║ - POST DeleteMovimentacaoPatrimonio: Exclui movimentação                     ║
+║ - GET MovimentacaoPatrimonioGrid: Grid de movimentações com filtros          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS - SETOR/SECAO                                                      ║
+║ - GET ListaSetores         : Dropdown de setores ativos                      ║
+║ - GET ListaSecoes          : Dropdown de seções por setor                    ║
+║ - GET ListaSetoresSecoes   : Hierarquia setores/seções                       ║
+║ - GET GetSetoresSecoesHierarquicos: Estrutura para TreeView                  ║
+║ - GET ListaSituacoes       : Opções de situação do patrimônio                ║
+║ - GET GetResponsaveisMovimentacoes: Lista de usuários responsáveis           ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ SITUACOES DE PATRIMONIO                                                      ║
+║ - Em Uso                  : Patrimônio em operação normal                    ║
+║ - Em Manutenção           : Em processo de manutenção                        ║
+║ - Não Localizado          : Não encontrado na conferência                    ║
+║ - Avariado/Inservível     : Danificado ou inutilizado                        ║
+║ - Transferido (baixado)   : Movido para outra instituição                    ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ MECANISMO ANTI-DUPLICACAO                                                    ║
+║ - HashSet _processandoRequests : Controle de requests em processamento       ║
+║ - lock (_lockObject)           : Thread-safety na verificação                ║
+║ - requestKey                   : Chave única PatrimonioId_DataMovimentacao   ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DTOS                                                                         ║
+║ - MovimentacaoPatrimonioDto : Dados para criar/editar movimentação           ║
+║ - DeleteMovimentacaoDto     : ID para exclusão                               ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DEPENDENCIAS                                                                 ║
+║ - IUnitOfWork      : Acesso a repositórios                                   ║
+║ - IMemoryCache     : Cache em memória                                        ║
+║ - ClaimsPrincipal  : Identificação do usuário logado                         ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;

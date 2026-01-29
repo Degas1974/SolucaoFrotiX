@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Models/Planilhas/ExcelViewModel.cs                             ║
+ * ║  Descrição: ViewModels para importação/exportação de planilhas Excel     ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;

@@ -1,3 +1,26 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : EscalaController.cs                                             ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Partial class principal para gestao de escalas diarias de motoristas.        ║
+║ Sistema tempo real com SignalR, controle de conflitos, ferias, folgas        ║
+║ e gestao de lotacao, servicos e indisponibilidades.                          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS VIEWS                                                              ║
+║ - GET /Escala/Index   : Pagina principal com calendario/grid                 ║
+║ - GET /Escala/Create  : Formulario de nova escala                            ║
+║ - GET /Escala/Edit    : Formulario de edicao                                 ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ PARTIAL CLASSES: EscalaController_Api.cs (endpoints DataTables)              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 /****************************************************************************************
  * ⚡ CONTROLLER: EscalaController (Partial Class)
  * --------------------------------------------------------------------------------------

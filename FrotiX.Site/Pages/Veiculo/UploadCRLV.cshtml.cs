@@ -1,3 +1,33 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: UploadCRLV.cshtml.cs (Pages/Veiculo)                                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para upload do CRLV (Certificado de Registro e Licenciamento de Veículo) digital.             ║
+ * ║ Permite visualizar e fazer upload do documento de licenciamento do veículo.                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES                                                                                              ║
+ * ║ • CRLV : int - Indicador se possui CRLV digital (0 = não, 1 = sim)                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES BINDPROPERTY                                                                                 ║
+ * ║ • VeiculoObj : VeiculoViewModel - Contém entidade Veiculo                                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id) : Carrega veículo e verifica se possui CRLV digital                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES                                                                                                ║
+ * ║ • ID vazio: retorna página de upload vazia                                                              ║
+ * ║ • Veículo não encontrado: retorna NotFound()                                                            ║
+ * ║ • CRLV != null: seta indicador CRLV = 1                                                                 ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Hosting;

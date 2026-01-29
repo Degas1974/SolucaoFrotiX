@@ -1,3 +1,39 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: VeiculoController.cs (Controllers)                                                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ API Controller para operações de Veículos. Fornece endpoints para listagem, exclusão,                    ║
+ * ║ toggle de status e gestão de vínculos com contratos e atas.                                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ROTA BASE: api/Veiculo                                                                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ENDPOINTS                                                                                                 ║
+ * ║ • [GET]  /                      : Lista todos os veículos via ViewVeiculos                              ║
+ * ║ • [POST] /Delete                : Remove veículo (verifica vínculos com contratos e viagens)            ║
+ * ║ • [GET]  /UpdateStatusVeiculo   : Toggle status Ativo/Inativo                                           ║
+ * ║ • [GET]  /VeiculoContratos      : Lista veículos de um contrato específico                              ║
+ * ║ • [GET]  /VeiculoContratosGlosa : Lista veículos elegíveis para glosa (manutenção > 0 dias)             ║
+ * ║ • [POST] /DeleteContrato        : Remove vínculo veículo-contrato                                       ║
+ * ║ • [GET]  /SelecionaValorMensalAta     : Retorna valor unitário do item da ata                           ║
+ * ║ • [GET]  /SelecionaValorMensalContrato: Retorna valor unitário do item contratual                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES DE EXCLUSÃO                                                                                    ║
+ * ║ • Não pode excluir se vinculado a VeiculoContrato                                                       ║
+ * ║ • Não pode excluir se vinculado a Viagens                                                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ REGRA GLOSA                                                                                               ║
+ * ║ Veículo elegível para glosa: (DataDevolucao - DataSolicitacao) > 0 dias em manutenção                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork (Veiculo, ViewVeiculos, VeiculoContrato, Viagem, ModeloVeiculo, MarcaVeiculo,             ║
+ * ║   Unidade, Combustivel, Manutencao, ItemVeiculoAta, ItemVeiculoContrato)                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;

@@ -1,3 +1,45 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: TaxiLegController.cs (Controllers)                                                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ API Controller para importação de corridas do serviço TaxiLeg via planilhas Excel.                      ║
+ * ║ Processa dados de corridas realizadas e canceladas com cálculo de glosa e tempo de espera.              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ROTA BASE: api/TaxiLeg                                                                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ENDPOINTS                                                                                                 ║
+ * ║ • [GET]  /        : Healthcheck (retorna true)                                                          ║
+ * ║ • [POST] /Import  : Importa planilha de corridas realizadas (.xls/.xlsx)                                ║
+ * ║ • [POST] /ImportCanceladas : Importa planilha de corridas canceladas                                    ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ IMPORTAÇÃO DE CORRIDAS                                                                                    ║
+ * ║ Colunas esperadas: QRU, DescSetor, Setor, Unidade, DescUnidade, QtdPassageiros, MotivoUso,              ║
+ * ║ DataAgenda, HoraAgenda, HoraAceite, HoraInicio, HoraLocal, HoraFinal, DataFinal, OrigemCorrida,         ║
+ * ║ DestinoCorrida, KmReal, QtdEstrelas, Avaliacao                                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CÁLCULOS AUTOMÁTICOS                                                                                      ║
+ * ║ • Duração: (HoraFinal - HoraInicio) em minutos                                                          ║
+ * ║ • Espera: (HoraLocal - HoraAceite) em minutos                                                           ║
+ * ║ • Glosa: true se Espera > 15 minutos                                                                    ║
+ * ║ • ValorGlosa: KmReal * 2.44 (se glosa aplicada)                                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES                                                                                                ║
+ * ║ • Verifica se mês/ano já foi importado (ICorridasTaxiLegRepository.ExisteCorridaNoMesAno)               ║
+ * ║ • Rejeita importação duplicada                                                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork (CorridasTaxiLeg, CorridasCanceladasTaxiLeg)                                              ║
+ * ║ • ICorridasTaxiLegRepository - Validação de mês/ano                                                     ║
+ * ║ • NPOI (HSSFWorkbook, XSSFWorkbook) - Leitura de Excel                                                  ║
+ * ║ • IWebHostEnvironment - Acesso a wwwroot                                                                ║
+ * ║ • ILogger - Logging                                                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Hosting;

@@ -1,3 +1,15 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ ARQUIVO    : UploadPDF.cshtml.cs                                             ║
+// ║ LOCALIZAÇÃO: Pages/Uploads/                                                  ║
+// ║ FINALIDADE : PageModel para upload de arquivos PDF genéricos.                ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO: Processa upload de arquivos PDF para o servidor.                  ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ LOTE: 23 — Pages/Uploads | DATA: 29/01/2026                                  ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

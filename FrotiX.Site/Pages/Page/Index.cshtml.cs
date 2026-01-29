@@ -1,3 +1,15 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ ARQUIVO    : Index.cshtml.cs                                                 ║
+// ║ LOCALIZAÇÃO: Pages/Page/                                                     ║
+// ║ FINALIDADE : PageModel genérico de índice (namespace Setor).                 ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ NOTA: Namespace FrotiX.Pages.Setor pode indicar arquivo movido ou legado.    ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ LOTE: 23 — Pages/Page | DATA: 29/01/2026                                     ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 

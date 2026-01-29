@@ -1,4 +1,15 @@
-﻿using System;
+﻿/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Middlewares/UiExceptionMiddleware.cs                           ║
+ * ║  Descrição: Middleware para tratamento de exceções com resposta          ║
+ * ║             diferenciada: JSON para AJAX/API, redirect /Erro para HTML.  ║
+ * ║             Verifica Accept header e X-Requested-With para decidir.      ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using System;
 using System.Linq; // ← Para .Any()
 using System.Net.Mime; // ← Para MediaTypeNames
 using System.Text.Json;

@@ -1,4 +1,16 @@
-﻿using System;
+﻿/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Helpers/ImageHelper.cs                                         ║
+ * ║  Descrição: Utilitários de manipulação de imagens (System.Drawing).       ║
+ * ║             IsImageValid verifica bytes válidos. ResizeImage             ║
+ * ║             redimensiona JPEG/PNG para dimensões especificadas.          ║
+ * ║             [SupportedOSPlatform("windows")]                              ║
+ * ║  Data: 28/01/2026 | LOTE: 21                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;

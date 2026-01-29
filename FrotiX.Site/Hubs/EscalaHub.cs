@@ -1,3 +1,15 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Hubs/EscalaHub.cs                                              ║
+ * ║  Descrição: SignalR Hub para escala de motoristas em tempo real.          ║
+ * ║             Métodos: GetMotoristasVez, GetEscalasDia, NotificarAlteracao- ║
+ * ║             Status, NotificarNovaViagem. Inclui EscalaMonitorService      ║
+ * ║             (BackgroundService) que verifica viagens a cada 30s.         ║
+ * ║  Data: 28/01/2026 | LOTE: 21                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;

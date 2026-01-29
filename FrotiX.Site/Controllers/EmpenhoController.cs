@@ -1,3 +1,26 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : EmpenhoController.cs                                            ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller para gestao de empenhos orcamentarios. Controla saldos,           ║
+║ movimentacoes (aportes/anulacoes) e vinculo com notas fiscais, contratos     ║
+║ e atas de registro de precos.                                                ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS PRINCIPAIS                                                         ║
+║ - GET  /api/Empenho/GetAll            : Lista empenhos com filtros           ║
+║ - GET  /api/Empenho/GetById           : Detalhes de um empenho               ║
+║ - POST /api/Empenho/Upsert            : Criar/atualizar empenho              ║
+║ - POST /api/Empenho/Movimentacao      : Aporte ou anulacao de saldo          ║
+║ - GET  /api/Empenho/GetSaldo          : Consulta saldo atual                 ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 /****************************************************************************************
  * ⚡ CONTROLLER: EmpenhoController
  * --------------------------------------------------------------------------------------

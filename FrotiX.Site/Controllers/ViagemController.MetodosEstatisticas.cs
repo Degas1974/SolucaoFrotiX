@@ -1,3 +1,37 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : ViagemController.MetodosEstatisticas.cs                         ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Partial class do ViagemController com metodos para geracao de estatisticas   ║
+║ de viagens em background. Processa viagens em lotes por data e atualiza      ║
+║ tabela ViagemEstatistica com dados agregados. Usa cache para progresso.      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - POST /api/Viagem/GerarEstatisticasViagens   : Inicia geracao em background ║
+║ - GET  /api/Viagem/ObterProgressoEstatisticas : Obtem progresso atual        ║
+║ - POST /api/Viagem/LimparProgressoEstatisticas: Limpa cache de progresso     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ CLASSES AUXILIARES                                                           ║
+║ - ProgressoEstatisticas : Controle de progresso (total, processado, %)       ║
+║   Propriedades: Total, Processado, Percentual, Concluido, Erro, Mensagem     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ METODOS AUXILIARES                                                           ║
+║ - ProcessarGeracaoEstatisticas : Task async que processa em background       ║
+║   Cria novo scope para DbContext independente e processa data por data       ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DEPENDENCIAS                                                                 ║
+║ - IMemoryCache (_cache)       : Cache para estado do progresso (30 min)      ║
+║ - IServiceScopeFactory        : Factory para criar scopes de DI              ║
+║ - ViagemEstatisticaService    : Service que recalcula estatisticas           ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Data;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -12,18 +46,20 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
-    /// <summary>
-    /// Classe parcial do ViagemController contendo métodos para geração de estatísticas de viagens
-    /// </summary>
     public partial class ViagemController
     {
         // ========================================
-        // MÉTODOS PARA GERAÇÃO DE ESTATÍSTICAS DE VIAGENS
+        // [DOC] MÉTODOS PARA GERAÇÃO DE ESTATÍSTICAS DE VIAGENS
+        // Processamento em background com controle de progresso via cache
         // ========================================
 
-        /// <summary>
-        /// Classe auxiliar para controlar o progresso da geração de estatísticas
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ CLASSE: ProgressoEstatisticas
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : DTO para controlar estado do processamento de estatísticas
+         *                   Armazenado em IMemoryCache para consulta do frontend
+         * 📦 PROPRIEDADES : Total, Processado, Percentual, Concluido, Erro, Mensagem, IniciadoEm
+         ****************************************************************************************/
         public class ProgressoEstatisticas
         {
             public int Total { get; set; }
@@ -35,6 +71,20 @@ namespace FrotiX.Controllers
             public DateTime IniciadoEm { get; set; }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GerarEstatisticasViagens
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Iniciar geração de estatísticas em background (fire-and-forget)
+         *                   Valida se já existe processamento em andamento antes de iniciar
+         * 📥 ENTRADAS     : Nenhuma (usa dados do banco)
+         * 📤 SAÍDAS       : [IActionResult] JSON com success e message
+         * 🔗 CHAMADA POR  : Botão "Gerar Estatísticas" no dashboard
+         * 🔄 CHAMA        : Task.Run(ProcessarGeracaoEstatisticas)
+         *
+         * ⚠️  VALIDAÇÕES:
+         *    - Bloqueia se já existe processamento em andamento (não concluído/erro)
+         *    - Usa cache para evitar processamentos duplicados
+         ****************************************************************************************/
         [Route("GerarEstatisticasViagens")]
         [HttpPost]
         public IActionResult GerarEstatisticasViagens()
@@ -43,7 +93,7 @@ namespace FrotiX.Controllers
             {
                 var cacheKey = "ProgressoEstatisticas";
 
-                // Verifica se já existe um processamento em andamento
+                // [DOC] Verifica se já existe um processamento em andamento
                 if (_cache.TryGetValue(cacheKey , out ProgressoEstatisticas progressoExistente))
                 {
                     if (!progressoExistente.Concluido && !progressoExistente.Erro)
@@ -56,7 +106,8 @@ namespace FrotiX.Controllers
                     }
                 }
 
-                // Inicia o processamento em background
+                // [DOC] Inicia o processamento em background (fire-and-forget)
+                // Task.Run garante que não bloqueia a resposta HTTP
                 Task.Run(async () => await ProcessarGeracaoEstatisticas());
 
                 return Json(new
@@ -76,6 +127,25 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ProcessarGeracaoEstatisticas (Private Async)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Processar estatísticas de todas as datas de viagens em background
+         *                   Cria novo scope DI para ter DbContext independente
+         * 📥 ENTRADAS     : Nenhuma (usa dados do banco)
+         * 📤 SAÍDAS       : Atualiza cache com progresso (sem retorno direto)
+         * 🔗 CHAMADA POR  : GerarEstatisticasViagens via Task.Run
+         * 🔄 CHAMA        : ViagemEstatisticaService.RecalcularEstatisticasAsync
+         *
+         * ⚡ PERFORMANCE:
+         *    - Processa data por data para evitar timeout
+         *    - Delay de 50ms a cada 10 iterações para não sobrecarregar
+         *    - Continua processando mesmo se uma data falhar
+         *
+         * 🔐 IMPORTANTE:
+         *    - Usa IServiceScopeFactory para criar novo scope (DbContext não é thread-safe)
+         *    - Cache expira em 30 minutos
+         ****************************************************************************************/
         private async Task ProcessarGeracaoEstatisticas()
         {
             var cacheKey = "ProgressoEstatisticas";
@@ -92,25 +162,26 @@ namespace FrotiX.Controllers
 
             try
             {
-                // Armazena progresso inicial no cache (30 minutos)
+                // [DOC] STEP 1: Armazena progresso inicial no cache (30 minutos)
                 _cache.Set(cacheKey , progresso , TimeSpan.FromMinutes(30));
 
-                // CRÍTICO: Criar um novo scope para ter um novo DbContext
+                // [DOC] STEP 2: CRÍTICO - Criar um novo scope para ter um novo DbContext
+                // DbContext não é thread-safe, então precisamos de uma instância separada
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    // Resolve dependências do scope
+                    // [DOC] Resolve dependências do scope
                     var context = scope.ServiceProvider.GetRequiredService<FrotiXDbContext>();
                     var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
                     var viagemEstatisticaRepository = scope.ServiceProvider.GetRequiredService<IViagemEstatisticaRepository>();
 
-                    // Cria novo service com as dependências do scope
+                    // [DOC] Cria novo service com as dependências do scope
                     var estatisticaService = new ViagemEstatisticaService(
                         context ,
                         viagemEstatisticaRepository ,
                         unitOfWork
                     );
 
-                    // Busca todas as datas únicas de viagens
+                    // [DOC] STEP 3: Busca todas as datas únicas de viagens
                     var datasUnicas = await context.Viagem
                         .Where(v => v.DataInicial.HasValue)
                         .Select(v => v.DataInicial.Value.Date)
@@ -124,14 +195,15 @@ namespace FrotiX.Controllers
 
                     int contador = 0;
 
+                    // [DOC] STEP 4: Processa cada data individualmente
                     foreach (var data in datasUnicas)
                     {
                         try
                         {
-                            // Gera/atualiza estatísticas para a data
+                            // [DOC] Gera/atualiza estatísticas para a data
                             await estatisticaService.RecalcularEstatisticasAsync(data);
 
-                            // Atualiza progresso
+                            // [DOC] Atualiza progresso no cache
                             contador++;
                             progresso.Processado = contador;
                             progresso.Percentual = progresso.Total > 0
@@ -141,7 +213,7 @@ namespace FrotiX.Controllers
 
                             _cache.Set(cacheKey , progresso , TimeSpan.FromMinutes(30));
 
-                            // Pequeno delay a cada 10 iterações para não sobrecarregar
+                            // [DOC] Pequeno delay a cada 10 iterações para não sobrecarregar
                             if (contador % 10 == 0)
                             {
                                 await Task.Delay(50);
@@ -149,12 +221,12 @@ namespace FrotiX.Controllers
                         }
                         catch (Exception ex)
                         {
-                            // Log do erro mas continua processando as outras datas
+                            // [DOC] Log do erro mas continua processando as outras datas
                             Console.WriteLine($"Erro ao processar estatísticas da data {data:dd/MM/yyyy}: {ex.Message}");
                         }
                     }
 
-                    // Finaliza com sucesso
+                    // [DOC] STEP 5: Finaliza com sucesso
                     progresso.Concluido = true;
                     progresso.Percentual = 100;
                     progresso.Mensagem = $"Processamento concluído! Estatísticas de {contador} datas geradas.";
@@ -163,6 +235,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
+                // [DOC] Tratamento de erro: marca como concluído com erro
                 Alerta.TratamentoErroComLinha("ViagemController.cs" , "ProcessarGeracaoEstatisticas" , error);
 
                 progresso.Erro = true;
@@ -172,6 +245,16 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ObterProgressoEstatisticas
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar estado atual do processamento de estatísticas
+         *                   Usado para atualizar barra de progresso no frontend
+         * 📥 ENTRADAS     : Nenhuma
+         * 📤 SAÍDAS       : [IActionResult] JSON com progresso (total, processado, %, etc)
+         * 🔗 CHAMADA POR  : JavaScript (polling a cada X segundos)
+         * 🔄 CHAMA        : IMemoryCache.TryGetValue
+         ****************************************************************************************/
         [Route("ObterProgressoEstatisticas")]
         [HttpGet]
         public IActionResult ObterProgressoEstatisticas()
@@ -180,6 +263,7 @@ namespace FrotiX.Controllers
             {
                 var cacheKey = "ProgressoEstatisticas";
 
+                // [DOC] Busca progresso no cache
                 if (_cache.TryGetValue(cacheKey , out ProgressoEstatisticas progresso))
                 {
                     return Json(new
@@ -197,7 +281,7 @@ namespace FrotiX.Controllers
                     });
                 }
 
-                // Não há processamento em andamento
+                // [DOC] Não há processamento em andamento - retorna valores zerados
                 return Json(new
                 {
                     success = true ,
@@ -223,6 +307,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: LimparProgressoEstatisticas
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Limpar cache de progresso (permite reiniciar processamento)
+         * 📥 ENTRADAS     : Nenhuma
+         * 📤 SAÍDAS       : [IActionResult] JSON com success e message
+         * 🔗 CHAMADA POR  : Botão "Limpar" ou após erro no frontend
+         * 🔄 CHAMA        : IMemoryCache.Remove
+         ****************************************************************************************/
         [Route("LimparProgressoEstatisticas")]
         [HttpPost]
         public IActionResult LimparProgressoEstatisticas()
@@ -230,6 +323,8 @@ namespace FrotiX.Controllers
             try
             {
                 var cacheKey = "ProgressoEstatisticas";
+                
+                // [DOC] Remove entrada do cache para permitir novo processamento
                 _cache.Remove(cacheKey);
 
                 return Json(new

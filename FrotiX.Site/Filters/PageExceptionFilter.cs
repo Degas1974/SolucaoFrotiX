@@ -1,3 +1,15 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Filters/PageExceptionFilter.cs                                 ║
+ * ║  Descrição: Filtro IPageFilter/IAsyncPageFilter para capturar exceções   ║
+ * ║             em Razor Pages (.cshtml.cs). Complementa GlobalExceptionFilter║
+ * ║             que funciona apenas para Controllers. Inclui também         ║
+ * ║             AsyncPageExceptionFilter para handlers assíncronos.          ║
+ * ║  Data: 28/01/2026 | LOTE: 21                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.IO;
 using System.Linq;

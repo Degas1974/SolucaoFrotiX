@@ -1,3 +1,31 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : AlertasFrotiXController.cs                                      ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller para gerenciamento de alertas do sistema FrotiX. Responsavel      ║
+║ por notificacoes em tempo real via SignalR, listagem de alertas por usuario, ║
+║ marcacao de leitura, exclusao e estatisticas de engajamento.                 ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET  /api/AlertasFrotiX/GetDetalhesAlerta/{id} : Detalhes de um alerta     ║
+║ - GET  /api/AlertasFrotiX/GetAlertasUsuario      : Alertas do usuario logado ║
+║ - POST /api/AlertasFrotiX/MarcarComoLido         : Marca alerta como lido    ║
+║ - POST /api/AlertasFrotiX/ApagarAlerta           : Apaga alerta do usuario   ║
+║ - GET  /api/AlertasFrotiX/GetContadorAlertas     : Contador nao lidos        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DEPENDENCIAS                                                                 ║
+║ - IUnitOfWork             : Acesso a repositorios                            ║
+║ - IAlertasFrotiXRepository: Repositorio especializado de alertas             ║
+║ - IHubContext<AlertasHub> : SignalR para notificacoes tempo real             ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 20          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Hubs;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -20,6 +48,16 @@ namespace FrotiX.Controllers
         private readonly IAlertasFrotiXRepository _alertasRepo;
         private readonly IHubContext<AlertasHub> _hubContext;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AlertasFrotiXController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependencias do sistema de alertas
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork - Repositorio unificado
+         *                   [IAlertasFrotiXRepository] alertasRepo - Repositorio especializado
+         *                   [IHubContext<AlertasHub>] hubContext - SignalR para tempo real
+         * 📤 SAÍDAS       : Instancia do controller configurada
+         * 🔗 CHAMADA POR  : ASP.NET Core Dependency Injection
+         ****************************************************************************************/
         public AlertasFrotiXController(
             IUnitOfWork unitOfWork ,
             IAlertasFrotiXRepository alertasRepo ,
@@ -41,11 +79,27 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetDetalhesAlerta
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Obter detalhes completos de um alerta incluindo estatisticas de
+         *                   leitura, usuarios notificados, tempo no ar e informacoes do criador
+         * 📥 ENTRADAS     : [Guid] id - ID do alerta
+         * 📤 SAÍDAS       : [IActionResult] JSON com detalhes completos do alerta
+         * 🔗 CHAMADA POR  : Modal de detalhes do alerta no frontend
+         * 🔄 CHAMA        : AlertasFrotiX, AspNetUsers, AlertasUsuarios
+         *
+         * 📊 METRICAS CALCULADAS:
+         *    - totalDestinatarios, totalNotificados, aguardandoNotificacao
+         *    - usuariosLeram, usuariosNaoLeram, usuariosApagaram
+         *    - percentualLeitura, tempoNoAr
+         ****************************************************************************************/
         [HttpGet("GetDetalhesAlerta/{id}")]
         public async Task<IActionResult> GetDetalhesAlerta(Guid id)
         {
             try
             {
+                // [DOC] Busca alerta com todos os relacionamentos necessarios
                 var alerta = await _unitOfWork.AlertasFrotiX.GetFirstOrDefaultAsync(
                     a => a.AlertasFrotiXId == id ,
                     includeProperties: "AlertasUsuarios,Viagem,Manutencao,Veiculo,Motorista"
@@ -60,6 +114,7 @@ namespace FrotiX.Controllers
                     });
                 }
 
+                // [DOC] Debug info para desenvolvimento - contagem de usuarios
                 var debugInfo = new
                 {
                     alertasUsuariosCount = alerta.AlertasUsuarios?.Count ?? 0 ,
@@ -67,6 +122,7 @@ namespace FrotiX.Controllers
                     totalLidosNoBanco = alerta.AlertasUsuarios?.Count(au => au.Lido) ?? 0
                 };
 
+                // [DOC] Monta lista de usuarios com status de cada um
                 var usuariosDetalhes = new List<object>();
 
                 foreach (var au in alerta.AlertasUsuarios)
@@ -89,6 +145,7 @@ namespace FrotiX.Controllers
                     });
                 }
 
+                // [DOC] Calcula metricas de engajamento do alerta
                 var totalDestinatarios = alerta.AlertasUsuarios.Count;
                 var totalNotificados = alerta.AlertasUsuarios.Count(au => au.Notificado);
                 var aguardandoNotificacao = alerta.AlertasUsuarios.Count(au => !au.Notificado);
@@ -99,10 +156,12 @@ namespace FrotiX.Controllers
                     ? Math.Round((double)usuariosLeram / totalNotificados * 100 , 1)
                     : 0;
 
+                // [DOC] Calcula tempo que o alerta esta/esteve no ar
                 var dataInicio = alerta.DataExibicao ?? alerta.DataInsercao;
                 var dataFim = alerta.DataExpiracao ?? DateTime.Now;
                 var tempoNoAr = dataFim - dataInicio;
 
+                // [DOC] Formata tempo no ar de forma legivel (min, h min, d h min)
                 string tempoNoArFormatado = "N/A";
 
                 if (tempoNoAr.HasValue && tempoNoAr.Value.TotalSeconds > 0)
@@ -132,6 +191,7 @@ namespace FrotiX.Controllers
                     }
                 }
 
+                // [DOC] Busca nome do criador do alerta (pode ser usuario ou Sistema)
                 string nomeCriador = "Sistema";
 
                 if (!string.IsNullOrEmpty(alerta.UsuarioCriadorId) &&
@@ -144,6 +204,7 @@ namespace FrotiX.Controllers
 
                     if (criador != null)
                     {
+                        // [DOC] Prioridade: NomeCompleto > Email (parte antes do @) > UserName
                         if (!string.IsNullOrWhiteSpace(criador.NomeCompleto))
                         {
                             nomeCriador = criador.NomeCompleto;
@@ -163,6 +224,7 @@ namespace FrotiX.Controllers
                     }
                 }
 
+                // [DOC] Obtem informacoes formatadas de tipo e prioridade
                 var tipoInfo = ObterInfoTipo(alerta.TipoAlerta);
                 var prioridadeInfo = ObterInfoPrioridade(alerta.Prioridade);
 
@@ -236,6 +298,13 @@ namespace FrotiX.Controllers
             };
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ObterInfoPrioridade (enum)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar nome e cor para exibicao de prioridade (enum PrioridadeAlerta)
+         * 📥 ENTRADAS     : [PrioridadeAlerta] prioridade - Enum de prioridade
+         * 📤 SAÍDAS       : (string Nome, string Cor) - Tupla com nome e cor hex
+         ****************************************************************************************/
         private (string Nome, string Cor) ObterInfoPrioridade(PrioridadeAlerta prioridade)
         {
             return prioridade switch
@@ -247,8 +316,16 @@ namespace FrotiX.Controllers
             };
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ObterInfoTipo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar nome, icone FontAwesome e cor para tipo de alerta
+         * 📥 ENTRADAS     : [int] tipo - Codigo do tipo (1=Agendamento, 2=Manutencao, etc)
+         * 📤 SAÍDAS       : (string Nome, string Icone, string Cor) - Tupla com info formatada
+         ****************************************************************************************/
         private (string Nome, string Icone, string Cor) ObterInfoTipo(int tipo)
         {
+            // [DOC] Tipos: 1=Agendamento, 2=Manutencao, 3=Motorista, 4=Veiculo, 5=Anuncio, 6=Diversos
             return tipo switch
             {
                 1 => ("Agendamento", "fa-duotone fa-calendar-check", "#0ea5e9"),
@@ -261,8 +338,16 @@ namespace FrotiX.Controllers
             };
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ObterInfoPrioridade (int)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar nome e cor para exibicao de prioridade (int)
+         * 📥 ENTRADAS     : [int] prioridade - Codigo da prioridade (1=Baixa a 4=Critica)
+         * 📤 SAÍDAS       : (string Nome, string Cor) - Tupla com nome e cor hex
+         ****************************************************************************************/
         private (string Nome, string Cor) ObterInfoPrioridade(int prioridade)
         {
+            // [DOC] Prioridades: 1=Baixa(azul), 2=Media(amarelo), 3=Alta(vermelho), 4=Critica(vermelho escuro)
             return prioridade switch
             {
                 1 => ("Baixa", "#0ea5e9"),
@@ -273,11 +358,27 @@ namespace FrotiX.Controllers
             };
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetAlertasAtivos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Buscar alertas ativos nao lidos do usuario logado e marca-los
+         *                   como notificados (primeira visualizacao)
+         * 📥 ENTRADAS     : Usuario identificado via Claims (JWT/Cookie)
+         * 📤 SAÍDAS       : [IActionResult] JSON com lista de alertas ativos nao lidos
+         * 🔗 CHAMADA POR  : Componente de notificacoes no header (polling ou SignalR)
+         * 🔄 CHAMA        : AlertasRepo.GetTodosAlertasAtivosAsync(), AlertasUsuario.Update()
+         *
+         * ⚡ COMPORTAMENTO:
+         *    - Filtra alertas do usuario que ainda nao foram lidos nem apagados
+         *    - Marca como Notificado=true na primeira visualizacao
+         *    - Retorna dados formatados para exibicao no frontend
+         ****************************************************************************************/
         [HttpGet("GetAlertasAtivos")]
         public async Task<IActionResult> GetAlertasAtivos()
         {
             try
             {
+                // [DOC] Identifica usuario logado - tenta varios claims possiveis
                 var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                                 ?? User.FindFirst("sub")?.Value
                                 ?? User.Identity?.Name;
@@ -287,6 +388,7 @@ namespace FrotiX.Controllers
                     return Ok(new List<object>());
                 }
 
+                // [DOC] Busca todos alertas ativos (dentro do periodo de vigencia)
                 var alertas = await _alertasRepo.GetTodosAlertasAtivosAsync();
 
                 if (alertas == null || !alertas.Any())
@@ -294,6 +396,7 @@ namespace FrotiX.Controllers
                     return Ok(new List<object>());
                 }
 
+                // [DOC] Filtra apenas alertas do usuario que ainda nao foram lidos nem apagados
                 var alertasDoUsuario = alertas
                     .Where(a => a.AlertasUsuarios != null &&
                                 a.AlertasUsuarios.Any(au =>
@@ -302,12 +405,14 @@ namespace FrotiX.Controllers
                                     !au.Apagado))
                     .ToList();
 
+                // [DOC] Identifica alertas que ainda nao foram notificados (primeira vez)
                 var alertasParaNotificar = alertasDoUsuario
                     .Where(a => a.AlertasUsuarios.Any(au =>
                         au.UsuarioId == usuarioId &&
                         !au.Notificado))
                     .ToList();
 
+                // [DOC] Marca como notificado - usuario esta vendo pela primeira vez
                 if (alertasParaNotificar.Any())
                 {
                     foreach (var alerta in alertasParaNotificar)
@@ -324,6 +429,7 @@ namespace FrotiX.Controllers
                     await _unitOfWork.SaveAsync();
                 }
 
+                // [DOC] Formata resultado para o frontend com icones, cores e badges
                 var resultado = alertasDoUsuario.Select(a => new
                 {
                     alertaId = a.AlertasFrotiXId ,
@@ -354,6 +460,14 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetQuantidadeNaoLidos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar quantidade de alertas nao lidos do usuario para badge
+         * 📥 ENTRADAS     : Usuario identificado via Claims
+         * 📤 SAÍDAS       : [IActionResult] JSON { quantidade: int }
+         * 🔗 CHAMADA POR  : Badge de notificacoes no header (polling)
+         ****************************************************************************************/
         [HttpGet("GetQuantidadeNaoLidos")]
         public async Task<IActionResult> GetQuantidadeNaoLidos()
         {
@@ -373,8 +487,6 @@ namespace FrotiX.Controllers
 
                 var quantidade = await _alertasRepo.GetQuantidadeAlertasNaoLidosAsync(usuarioId);
                 return Ok(new
-                {
-                    quantidade
                 });
             }
             catch (Exception error)
@@ -387,11 +499,25 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: MarcarComoLido
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Marcar um alerta como lido pelo usuario, atualizando data de leitura
+         * 📥 ENTRADAS     : [Guid] alertaId - ID do alerta
+         * 📤 SAÍDAS       : [IActionResult] JSON { success, message }
+         * 🔗 CHAMADA POR  : JavaScript quando usuario clica em um alerta
+         * 🔄 CHAMA        : AlertasUsuario.GetFirstOrDefaultAsync(), Update(), SaveAsync()
+         *
+         * ⚠️  VALIDAÇÕES:
+         *    - Usuario deve estar autenticado
+         *    - Alerta deve existir para este usuario especifico
+         ****************************************************************************************/
         [HttpPost("MarcarComoLido/{alertaId}")]
         public async Task<IActionResult> MarcarComoLido(Guid alertaId)
         {
             try
             {
+                // [DOC] Identifica usuario logado - tenta varios claims possiveis
                 var usuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier)
                                 ?? User.FindFirstValue("sub")
                                 ?? User.FindFirstValue(ClaimTypes.Name)
@@ -409,12 +535,14 @@ namespace FrotiX.Controllers
                     });
                 }
 
+                // [DOC] Busca registro AlertaUsuario (vinculo entre alerta e usuario)
                 var alertaUsuario = await _unitOfWork.AlertasUsuario.GetFirstOrDefaultAsync(
                     au => au.AlertasFrotiXId == alertaId && au.UsuarioId == usuarioId
                 );
 
                 if (alertaUsuario == null)
                 {
+                    // [DOC] Debug para identificar problema - log detalhado
                     Console.WriteLine($"❌ AlertaUsuario NÃO ENCONTRADO!");
                     Console.WriteLine($"   Buscando por AlertasFrotiXId={alertaId} e UsuarioId={usuarioId}");
 
@@ -444,6 +572,7 @@ namespace FrotiX.Controllers
                 Console.WriteLine($"✅ AlertaUsuario ENCONTRADO!");
                 Console.WriteLine($"✅ Lido antes: {alertaUsuario.Lido}");
 
+                // [DOC] Atualiza status para lido e registra data/hora da leitura
                 alertaUsuario.Lido = true;
                 alertaUsuario.DataLeitura = DateTime.Now;
 
@@ -478,6 +607,22 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Salvar
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Criar novo alerta ou atualizar existente (Upsert)
+         * 📥 ENTRADAS     : [AlertaDto] dto - DTO com dados do alerta via JSON Body
+         * 📤 SAÍDAS       : [IActionResult] JSON { success, alertaId, message }
+         * 🔗 CHAMADA POR  : Modal de criacao/edicao de alerta no frontend
+         * 🔄 CHAMA        : CriarAlertaBase(), GerarDatasRecorrencia(), NotificarUsuariosNovoAlerta()
+         *
+         * 📝 TIPOS SUPORTADOS:
+         *    - [1-3] Simples: Cria alerta unico
+         *    - [4-8] Recorrentes: Gera multiplos alertas conforme padrão
+         *    - 4=Diario, 5=Semanal, 6=Quinzenal, 7=Mensal, 8=Datas especificas
+         *
+         * 🔔 NOTIFICAÇÃO: Envia push via SignalR para usuarios destinatarios
+         ****************************************************************************************/
         [HttpPost("Salvar")]
         [Route("Salvar")]
         public async Task<IActionResult> Salvar([FromBody] AlertaDto dto)
@@ -974,6 +1119,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetHistoricoAlertas
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar historico completo de alertas com estatisticas de leitura
+         * 📥 ENTRADAS     : Nenhuma
+         * 📤 SAÍDAS       : [IActionResult] JSON { data: [ alertas com leituras ] }
+         * 🔗 CHAMADA POR  : DataTable de historico de alertas no painel admin
+         * 🔄 CHAMA        : _alertasRepo.GetTodosAlertasComLeituraAsync()
+         ****************************************************************************************/
         [HttpGet("GetHistoricoAlertas")]
         public async Task<IActionResult> GetHistoricoAlertas()
         {
@@ -1031,6 +1185,16 @@ namespace FrotiX.Controllers
             };
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetAlertasFinalizados
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar alertas que foram finalizados/baixados com paginacao
+         * 📥 ENTRADAS     : [int?] dias - Periodo em dias (default 30)
+         *                   [int] pagina - Numero da pagina (default 1)
+         *                   [int] tamanhoPagina - Registros por pagina (default 20)
+         * 📤 SAÍDAS       : [IActionResult] JSON paginado com alertas finalizados
+         * 🔗 CHAMADA POR  : DataTable de alertas finalizados
+         ****************************************************************************************/
         [HttpGet("GetAlertasFinalizados")]
         public async Task<IActionResult> GetAlertasFinalizados(
             [FromQuery] int? dias = 30 ,
@@ -1092,6 +1256,23 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DarBaixaAlerta
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Finalizar/Desativar um alerta ativo (dar baixa)
+         * 📥 ENTRADAS     : [Guid] alertaId - ID do alerta a finalizar
+         * 📤 SAÍDAS       : [IActionResult] JSON { success, mensagem }
+         * 🔗 CHAMADA POR  : Botao "Dar Baixa" no painel de gerenciamento de alertas
+         * 🔄 CHAMA        : AlertasFrotiX.Update(), SaveAsync()
+         *
+         * ⚠️  VALIDAÇÕES:
+         *    - Alerta deve existir
+         *    - Alerta deve estar ativo (Ativo=true)
+         *
+         * 📝 COMPORTAMENTO:
+         *    - Seta Ativo=false
+         *    - Registra DataDesativacao, DesativadoPor, MotivoDesativacao
+         ****************************************************************************************/
         [HttpPost("DarBaixaAlerta/{alertaId}")]
         public async Task<IActionResult> DarBaixaAlerta(Guid alertaId)
         {
@@ -1153,6 +1334,21 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetMeusAlertas
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar todos alertas destinados ao usuario logado
+         * 📥 ENTRADAS     : Usuario identificado via Claims
+         * 📤 SAÍDAS       : [IActionResult] JSON { data: [ alertas do usuario ] }
+         * 🔗 CHAMADA POR  : Pagina "Meus Alertas" do usuario
+         * 🔄 CHAMA        : AlertasUsuario.GetAllAsync() com include AlertasFrotiX
+         *
+         * 📊 DADOS RETORNADOS POR ALERTA:
+         *    - alertaId, titulo, descricao, tipo, icone
+         *    - notificado, dataNotificacao
+         *    - lido, dataLeitura
+         *    - prioridade, dataCriacao
+         ****************************************************************************************/
         [HttpGet("GetMeusAlertas")]
         public async Task<IActionResult> GetMeusAlertas()
         {
@@ -1224,6 +1420,18 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetAlertasInativos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar todos alertas que foram desativados (baixados)
+         * 📥 ENTRADAS     : Nenhuma
+         * 📤 SAÍDAS       : [IActionResult] JSON { data: [ alertas inativos com metricas ] }
+         * 🔗 CHAMADA POR  : DataTable de alertas inativos no painel admin
+         *
+         * 📊 METRICAS CALCULADAS POR ALERTA:
+         *    - totalUsuarios, totalNotificados, totalLeram
+         *    - percentualLeitura = totalLeram/totalNotificados * 100
+         ****************************************************************************************/
         [HttpGet("GetAlertasInativos")]
         public async Task<IActionResult> GetAlertasInativos()
         {
@@ -1279,6 +1487,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetTodosAlertasAtivosGestao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar todos alertas ativos para o painel de gestao (admin)
+         * 📥 ENTRADAS     : Nenhuma
+         * 📤 SAÍDAS       : [IActionResult] JSON [ alertas ativos com estatisticas ]
+         * 🔗 CHAMADA POR  : DataTable de gerenciamento de alertas ativos
+         *
+         * 📊 DADOS RETORNADOS POR ALERTA:
+         *    - alertaId, titulo, descricao, tipo, prioridade, icone
+         *    - dataInsercao, usuarioCriador
+         *    - totalUsuarios, usuariosLeram (para barra de progresso)
+         ****************************************************************************************/
         [HttpGet("GetTodosAlertasAtivosGestao")]
         public async Task<IActionResult> GetTodosAlertasAtivosGestao()
         {
@@ -1332,6 +1553,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: VerificarPermissaoBaixa
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Verificar se usuario logado pode dar baixa em um alerta
+         * 📥 ENTRADAS     : [Guid] alertaId - ID do alerta a verificar
+         * 📤 SAÍDAS       : [IActionResult] JSON { podeDarBaixa: bool }
+         * 🔗 CHAMADA POR  : Frontend antes de habilitar botao "Dar Baixa"
+         *
+         * 🔐 REGRAS DE PERMISSAO:
+         *    - Criador do alerta PODE dar baixa
+         *    - Administradores (Admin/Administrador) PODEM dar baixa
+         *    - Demais usuarios NAO podem dar baixa
+         ****************************************************************************************/
         [HttpGet("VerificarPermissaoBaixa/{alertaId}")]
         public async Task<IActionResult> VerificarPermissaoBaixa(Guid alertaId)
         {

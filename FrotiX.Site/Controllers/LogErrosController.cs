@@ -1,3 +1,22 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : LogErrosController.cs                                           ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller para receber e gerenciar logs de erro (JavaScript client-side     ║
+║ e C# server-side). Centraliza tratamento de erros para monitoramento.        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - POST /api/LogErros/LogJavaScript : Recebe erros do frontend JS             ║
+║ - GET  /api/LogErros/GetAll        : Lista todos os logs de erro             ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 /****************************************************************************************
  * ⚡ CONTROLLER: LogErrosController (Partial Class)
  * --------------------------------------------------------------------------------------

@@ -1,3 +1,51 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: TestGrid.cshtml.cs (Pages/Viagens)                                                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel de TESTE para gestão de viagens com TabStrip (componente de abas).                            ║
+ * ║ Similar ao TaxiLeg.cshtml.cs - formulário completo para registro e edição de viagens.                   ║
+ * ║ Nome da classe: TabstripModel (teste de interface com tabs)                                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES STATIC                                                                                       ║
+ * ║ • FichaVistoria : byte[] - Imagem da ficha de vistoria atual                                            ║
+ * ║ • viagemId : Guid - ID da viagem em edição                                                              ║
+ * ║ • dataCriacao, usuarioIdCriacao, usuarioCorrenteId/Nome : Controle de auditoria                         ║
+ * ║ • kmAtual, veiculoAtual : Preserva dados entre requests                                                 ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id) : Carrega viagem existente ou prepara nova, preenche dropdowns                              ║
+ * ║ • OnPostSubmit() : Insere nova viagem                                                                   ║
+ * ║ • OnPostEdit(Id) : Atualiza viagem existente                                                            ║
+ * ║ • OnPostInsereFicha(Id) : Upload de ficha de vistoria                                                   ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ AJAX HANDLERS                                                                                             ║
+ * ║ • OnGetPegaKmAtualVeiculo(id), OnGetPegaRamal(id), OnGetPegaSetor(id)                                   ║
+ * ║ • OnGetVerificaFicha(id), OnGetVerificaMotoristaViagem(id), OnGetVerificaVeiculoViagem(id)              ║
+ * ║ • OnGetAJAXPreencheListaRequisitantes(), OnGetAJAXPreencheListaSetores()                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODOS PRIVADOS                                                                                          ║
+ * ║ • SetViewModel(), PreencheListaSetores(), PreencheListaRequisitantes()                                  ║
+ * ║ • PreencheListaMotoristas(), PreencheListaVeiculos(), PreencheListaCombustivel()                        ║
+ * ║ • PreencheListaFinalidade()                                                                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CONVERSÃO HTML                                                                                            ║
+ * ║ • ConvertHtml(html), ConvertTo(node, writer), ConvertContentTo(node, writer)                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ REGRAS DE NEGÓCIO                                                                                         ║
+ * ║ • Viagem finalizada requer HoraFim E KmFinal                                                            ║
+ * ║ • Status: "Aberta" ou "Realizada"                                                                       ║
+ * ║ • Cálculo de custos ao finalizar (Combustível, Motorista, Veículo)                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork, INotyfService, IWebHostEnvironment, ILogger, HtmlAgilityPack                             ║
+ * ║ • FrotiX.Services.Servicos - Cálculos de custo                                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Generic;
 using System.IO;

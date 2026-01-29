@@ -1,3 +1,33 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : ViagemEventoController.cs                                       ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller API para gerenciamento de Viagens associadas a Eventos.           ║
+║ Permite buscar viagens do tipo "Evento", listar viagens por evento,          ║
+║ associar viagens a eventos e gerenciar status de agendamento.                ║
+║ Endpoint: /api/ViagemEvento                                                  ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS PRINCIPAIS                                                         ║
+║ - GET  /                    : Lista viagens com Finalidade="Evento"          ║
+║ - GET  /ViagemEventos       : Lista todas as viagens de eventos              ║
+║ - POST /AssociarEvento      : Associa viagem a um evento                     ║
+║ - POST /UpdateStatus        : Atualiza status de agendamento                 ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ARQUIVOS PARCIAIS                                                            ║
+║ - ViagemEventoController.UpdateStatus.cs : Métodos de atualização de status  ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DEPENDENCIAS                                                                 ║
+║ - IUnitOfWork          : Acesso aos repositórios                             ║
+║ - IWebHostEnvironment  : Ambiente de hospedagem                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;

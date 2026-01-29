@@ -1,4 +1,16 @@
-﻿using System;
+﻿/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Settings/GlobalVariables.cs                                    ║
+ * ║  Descrição: Variáveis globais estáticas da aplicação. Inclui             ║
+ * ║             VeiculoID (Guid), gPontoUsuario (string), ConnectionString.  ║
+ * ║             ATENÇÃO: Uso de variáveis globais estáticas - considerar     ║
+ * ║             migração para IOptions<T> ou scoped services.                ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

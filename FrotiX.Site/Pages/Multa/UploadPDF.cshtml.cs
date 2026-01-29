@@ -1,3 +1,28 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: UploadPDF.cshtml.cs (Pages/Multa)                                                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para upload e remoção de arquivos PDF de multas de trânsito.                                  ║
+ * ║ Armazena os PDFs na pasta wwwroot/Upload.                                                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet() : Handler vazio                                                                               ║
+ * ║ • OnPostSave(files) : Salva arquivos PDF no diretório Upload                                            ║
+ * ║ • OnPostRemove(fileNames) : Remove arquivos do diretório Upload                                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES                                                                                                ║
+ * ║ • Somente arquivos .pdf são aceitos (retorna ERROR:INVALID_EXTENSION)                                   ║
+ * ║ • Cria diretório Upload se não existir                                                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IWebHostEnvironment - Acesso a wwwroot                                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

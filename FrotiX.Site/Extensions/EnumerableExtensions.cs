@@ -1,3 +1,15 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Extensions/EnumerableExtensions.cs                             ║
+ * ║  Descrição: Métodos de extensão para IEnumerable<T>, incluindo           ║
+ * ║             verificações de nulidade (HasItems, IsNullOrEmpty),          ║
+ * ║             conversão segura para lista e mapeamento JSON via            ║
+ * ║             serialização/desserialização para transferência de dados.    ║
+ * ║  Data: 28/01/2026 | LOTE: 21                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;

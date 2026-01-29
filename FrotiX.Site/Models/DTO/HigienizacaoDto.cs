@@ -1,4 +1,13 @@
-﻿using System.Collections.Generic;
+﻿/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Models/DTO/HigienizacaoDto.cs                                  ║
+ * ║  Descrição: DTO para operações de higienização de dados                  ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using System.Collections.Generic;
 
 
 namespace FrotiX.Models.DTO

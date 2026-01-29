@@ -1,3 +1,16 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Services/LogService.cs                                         ║
+ * ║  Descrição: Implementação de ILogService. Grava logs em arquivos diários  ║
+ * ║             na pasta /Logs (frotix_log_yyyy-MM-dd.txt).                   ║
+ * ║             Métodos: Info, Warning, Error, ErrorJS, Debug, Operation*,   ║
+ * ║             UserAction, HttpError, GetStats, ClearLogs.                  ║
+ * ║             Evento OnErrorOccurred para notificações real-time.          ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Generic;
 using System.IO;

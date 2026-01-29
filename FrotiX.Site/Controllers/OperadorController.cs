@@ -1,3 +1,24 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : OperadorController.cs                                           ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller API CRUD para operadores (funcionarios de fornecedores).          ║
+║ Inclui associacao com contratos e upload de fotos.                           ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET  /api/Operador/GetAll      : Lista todos operadores                    ║
+║ - POST /api/Operador/Upsert      : Criar/atualizar operador                  ║
+║ - POST /api/Operador/Delete      : Excluir operador                          ║
+║ - POST /api/Operador/UploadFoto  : Upload de foto do operador                ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;

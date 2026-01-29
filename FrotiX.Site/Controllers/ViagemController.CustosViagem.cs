@@ -1,3 +1,22 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : ViagemController.CustosViagem.cs                                ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Partial class do ViagemController para consulta detalhada de custos de       ║
+║ viagens. Retorna custos individuais (combustível, veículo, motorista,        ║
+║ operador, lavador), duração, km percorrido e consumo estimado.               ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET /api/Viagem/ObterCustosViagem?viagemId={guid} : Custos detalhados      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Data;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -22,9 +41,6 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
-    /// <summary>
-    /// ViagemController - Partial Class para API ObterCustosViagem
-    /// </summary>
     public partial class ViagemController
     {
         /// <summary>

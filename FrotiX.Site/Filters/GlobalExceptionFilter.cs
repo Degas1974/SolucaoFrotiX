@@ -1,3 +1,15 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Filters/GlobalExceptionFilter.cs                               ║
+ * ║  Descrição: Filtro global IExceptionFilter para Controllers MVC e API.   ║
+ * ║             Extrai arquivo/método/linha do stack trace. Retorna JSON     ║
+ * ║             para AJAX/API. Inclui também AsyncExceptionFilter para ops   ║
+ * ║             assíncronas e tratamento de TaskCanceledException.            ║
+ * ║  Data: 28/01/2026 | LOTE: 21                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.IO;
 using System.Linq;

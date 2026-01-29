@@ -1,3 +1,39 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: UpsertEmpenhosMulta.cshtml.cs (Pages/Multa)                                                     ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para cadastro e edição de Notas de Empenho para pagamento de multas de trânsito.              ║
+ * ║ Cada empenho está vinculado a um Órgão Autuante e possui saldo inicial e atual.                         ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ PROPRIEDADES BINDPROPERTY                                                                                 ║
+ * ║ • EmpenhoMultaObj : EmpenhoMultaViewModel - Contém EmpenhoMulta + OrgaoList                             ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGet(id) : Carrega empenho existente ou prepara novo                                                 ║
+ * ║ • OnPostSubmit() : Insere ou atualiza empenho                                                           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ VALIDAÇÕES                                                                                                ║
+ * ║ • OrgaoAutuanteId obrigatório                                                                           ║
+ * ║ • NotaEmpenho obrigatória e com exatamente 12 dígitos                                                   ║
+ * ║ • AnoVigencia obrigatório                                                                               ║
+ * ║ • SaldoInicial obrigatório                                                                              ║
+ * ║ • Verificação de duplicidade por NotaEmpenho                                                            ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ REGRAS DE NEGÓCIO                                                                                         ║
+ * ║ • Ao criar empenho novo, SaldoAtual = SaldoInicial                                                      ║
+ * ║ • SaldoAtual é decrementado automaticamente ao vincular multas                                          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • IUnitOfWork - Repository pattern                                                                       ║
+ * ║ • INotyfService - Notificações toast                                                                    ║
+ * ║ • AppToast - Notificações visuais                                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

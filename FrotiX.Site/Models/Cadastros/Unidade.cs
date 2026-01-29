@@ -1,3 +1,12 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Models/Cadastros/Unidade.cs                                    ║
+ * ║  Descrição: Entidade e ViewModels para cadastro de unidades             ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Validations;
 using System;
 using System.ComponentModel.DataAnnotations;

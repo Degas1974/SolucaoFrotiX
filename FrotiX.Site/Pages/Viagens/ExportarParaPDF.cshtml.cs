@@ -1,3 +1,63 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+ * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
+ * ║ Arquivo: ExportarParaPDF.cshtml.cs (Pages/Viagens)                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DESCRIÇÃO                                                                                                 ║
+ * ║ PageModel para exportação do Dashboard de Viagens em formato PDF usando Syncfusion.Pdf.                 ║
+ * ║ Gera relatório completo de 3 páginas com estatísticas, rankings e informações complementares.           ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ HANDLERS                                                                                                  ║
+ * ║ • OnGetAsync(dataInicio, dataFim) : Gera PDF sem gráficos (fallback)                                    ║
+ * ║ • OnPostAsync(request) : Gera PDF COM gráficos Base64 enviados do frontend                              ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ ESTRUTURA DO PDF (3 PÁGINAS)                                                                              ║
+ * ║ Página 1 - Estatísticas Gerais:                                                                         ║
+ * ║   • Cards: Total Viagens, Custo Total, Custo Médio, KM Total                                            ║
+ * ║   • Tabela de viagens por status (Finalizadas, Em Andamento, Agendadas, Canceladas)                     ║
+ * ║   • Gráfico de status (se disponível)                                                                   ║
+ * ║ Página 2 - Rankings:                                                                                     ║
+ * ║   • Top 10 Motoristas por número de viagens                                                             ║
+ * ║   • Top 10 Veículos por número de viagens (usa ViewVeiculos)                                            ║
+ * ║   • Top 10 Finalidades por número de viagens                                                            ║
+ * ║ Página 3 - Complementos:                                                                                 ║
+ * ║   • Top 10 Viagens mais caras (Combustível + Lavador + Motorista)                                       ║
+ * ║   • Top 10 Requisitantes (exclui "Coordenação de Transportes (Ctran)")                                  ║
+ * ║   • Top 10 Setores (exclui "Coordenação de Transportes")                                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODOS PRIVADOS - COM GRÁFICOS                                                                           ║
+ * ║ • CriarPagina1EstatisticasComGraficos() : Estatísticas com gráfico de pizza                             ║
+ * ║ • CriarPagina2RankingsComGraficos() : Rankings com gráficos de barra                                    ║
+ * ║ • CriarPagina3ComplementosComGraficos() : Complementos com gráficos                                     ║
+ * ║ • DesenharRankingComGrafico() : Tabela + gráfico lado a lado                                            ║
+ * ║ • DesenharRankingComGraficoSimples() : Ranking simples com gráfico                                      ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODOS PRIVADOS - SEM GRÁFICOS (FALLBACK)                                                                ║
+ * ║ • CriarPagina1Estatisticas() : Estatísticas apenas texto                                                ║
+ * ║ • CriarPagina2Rankings() : Rankings em tabelas                                                          ║
+ * ║ • CriarPagina3Complementos() : Complementos em tabelas                                                  ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ MÉTODOS HELPER                                                                                            ║
+ * ║ • DesenharCard() : Desenha card colorido com título e valor                                             ║
+ * ║ • ApplyGridStyle() : Aplica estilos às grids (header, linhas alternadas)                                ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CÁLCULO DE CUSTO                                                                                          ║
+ * ║ CustoViagem = CustoCombustivel + CustoLavador + CustoMotorista                                          ║
+ * ║ (NÃO inclui CustoVeiculo)                                                                               ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ CLASSES INTERNAS                                                                                          ║
+ * ║ • ExportarPDFRequest : Request para OnPostAsync com DataInicio, DataFim, Graficos (Dictionary)          ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ DEPENDÊNCIAS                                                                                              ║
+ * ║ • FrotiXDbContext - Entity Framework Core direto                                                        ║
+ * ║ • Syncfusion.Pdf - Geração de PDF                                                                       ║
+ * ║ • Syncfusion.Drawing - Cores e gráficos                                                                 ║
+ * ║ • ViewVeiculos - View para descrição Marca/Modelo                                                       ║
+ * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+ * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
+ * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+ */
+
 using FrotiX.Data;
 using FrotiX.Models;
 using Microsoft.AspNetCore.Authorization;

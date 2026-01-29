@@ -1,3 +1,15 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Logging/FrotiXLoggerProvider.cs                                ║
+ * ║  Descrição: Provider ILoggerProvider customizado que integra com         ║
+ * ║             LogService do FrotiX. Captura logs ASP.NET Core (Warning+).  ║
+ * ║             Inclui FrotiXLogger (ILogger) e extension AddFrotiXLogger.   ║
+ * ║             Filtra categorias verbosas (Routing, StaticFiles, EF Query). ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Collections.Concurrent;
 using FrotiX.Services;

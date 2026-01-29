@@ -1,3 +1,15 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Services/AlertasBackgroundService.cs                           ║
+ * ║  Descrição: BackgroundService que verifica alertas a cada minuto.        ║
+ * ║             Envia notificações via SignalR (AlertasHub), desativa        ║
+ * ║             alertas expirados. Métodos auxiliares: ObterIconePorTipo,    ║
+ * ║             ObterCorPorTipo, ObterTextoPorTipo (mapeamento TipoAlerta).  ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Linq;
 using System.Threading;

@@ -1,3 +1,14 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Filters/DisableModelValidationAttribute.cs                     ║
+ * ║  Descrição: Atributo IResourceFilter que desabilita validação           ║
+ * ║             automática do ModelState ANTES que [ApiController] execute.  ║
+ * ║             Útil para endpoints que requerem validação manual.           ║
+ * ║  Data: 28/01/2026 | LOTE: 21                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;

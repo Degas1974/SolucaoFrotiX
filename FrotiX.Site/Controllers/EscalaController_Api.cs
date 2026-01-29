@@ -1,3 +1,23 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : EscalaController_Api.cs                                         ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Partial class com endpoints API para DataTables Server-Side. Separado        ║
+║ do EscalaController principal para melhor organizacao do codigo.             ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - POST /api/Escala/GetAll      : Lista paginada para DataTables              ║
+║ - GET  /api/Escala/GetByDate   : Escalas por data especifica                 ║
+║ - POST /api/Escala/UpdateStatus: Alterna status de escala                    ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 /****************************************************************************************
  * ⚡ CONTROLLER: EscalaController_Api (Partial Class)
  * --------------------------------------------------------------------------------------

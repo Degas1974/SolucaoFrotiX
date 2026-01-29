@@ -1,4 +1,15 @@
-﻿using System;
+﻿/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Helpers/ErroHelper.cs                                          ║
+ * ║  Descrição: Geração de scripts JavaScript para SweetAlert Interop.       ║
+ * ║             Métodos: MontarScriptErro, MontarScriptAviso, MontarScriptInfo║
+ * ║             e MontarScriptConfirmacao. Sanitiza strings para JS.         ║
+ * ║  Data: 28/01/2026 | LOTE: 21                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using System;
 
 namespace FrotiX.Helpers
     {

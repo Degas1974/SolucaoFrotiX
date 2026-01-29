@@ -1,3 +1,12 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Models/RepactuacaoVeiculo.cs                                   ║
+ * ║  Descrição: Entidade para registro de repactuações de veículos/contratos ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 #nullable enable
 using System;
 using System.ComponentModel.DataAnnotations;

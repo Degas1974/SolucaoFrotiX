@@ -1,3 +1,26 @@
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ ARQUIVO    : Dtos.cs                                                         ║
+// ║ LOCALIZAÇÃO: Services/WhatsApp/                                              ║
+// ║ FINALIDADE : DTOs para integração com WhatsApp via Evolution API.            ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ DESCRIÇÃO FUNCIONAL                                                          ║
+// ║ Define as classes de transferência de dados para comunicação WhatsApp:       ║
+// ║ • StartSessionRequest: Identificador da sessão a iniciar                     ║
+// ║ • SendTextRequest: Mensagem de texto (Session, PhoneE164, Message)           ║
+// ║ • SendMediaRequest: Envio de mídia (FileName, Caption, Base64Data)           ║
+// ║ • ApiResult: Resultado genérico com Success/Message e métodos Ok/Fail        ║
+// ║ • SessionStatusDto: Status da sessão (CONNECTED, QRCODE, DISCONNECTED)       ║
+// ║   com QrCodeBase64 para exibir QR de pareamento                              ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ FORMATO DO TELEFONE                                                          ║
+// ║ PhoneE164 no formato internacional: 5591988887777 (sem +, sem espaços)       ║
+// ╠══════════════════════════════════════════════════════════════════════════════╣
+// ║ LOTE        : 22 — Services                                                  ║
+// ║ DATA        : 29/01/2026                                                     ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 using System;
 
 namespace FrotiX.Services.WhatsApp

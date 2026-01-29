@@ -1,3 +1,29 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : ViagemLimpezaController.cs                                      ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller API para limpeza e correção de dados de viagens.                  ║
+║ Permite corrigir inconsistências em campos de Origem e Destino,              ║
+║ padronizando nomes de locais em lote (batch update).                         ║
+║ Endpoint: /api/ViagemLimpeza                                                 ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET  /origens         : Lista origens distintas para seleção               ║
+║ - GET  /destinos        : Lista destinos distintos para seleção              ║
+║ - POST /corrigir-origem : Corrige/padroniza origem em múltiplas viagens      ║
+║ - POST /corrigir-destino: Corrige/padroniza destino em múltiplas viagens     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DEPENDENCIAS                                                                 ║
+║ - IViagemRepository : Repositório especializado com métodos de correção      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using System;

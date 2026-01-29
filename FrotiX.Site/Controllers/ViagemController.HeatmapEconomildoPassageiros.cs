@@ -1,3 +1,33 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : ViagemController.HeatmapEconomildoPassageiros.cs                ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Partial class do ViagemController para geracao de Heatmap de PASSAGEIROS do  ║
+║ Economildo. Retorna matriz 7x24 com SOMA de passageiros por dia/hora.        ║
+║ Diferente do HeatmapEconomildo que conta VIAGENS, este soma PASSAGEIROS.     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET /api/Viagem/HeatmapEconomildoPassageiros : Matriz de passageiros       ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ PARAMETROS                                                                   ║
+║ - mob : Filtra por MOB especifica                                            ║
+║ - mes : Filtra por mes (1-12)                                                ║
+║ - ano : Filtra por ano                                                       ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DADOS RETORNADOS                                                             ║
+║ - data[7]       : Array com 7 dias (Segunda a Domingo)                       ║
+║ - horas[24]     : Array com soma de passageiros por hora                     ║
+║ - maxValor      : Valor maximo para escala do heatmap                        ║
+║ - totalPassageiros : Total geral de passageiros no periodo                   ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;
@@ -13,25 +43,41 @@ namespace FrotiX.Controllers
     {
         #region Heatmap Economildo Passageiros
 
-        /// <summary>
-        /// Retorna matriz 7x24 com quantidade de PASSAGEIROS Economildo por dia da semana e hora
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: HeatmapEconomildoPassageiros
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Gerar matriz 7x24 com SOMA de passageiros por dia da semana e hora
+         *                   Diferente do HeatmapEconomildo que conta VIAGENS, este soma PASSAGEIROS
+         * 📥 ENTRADAS     : [string?] mob - Filtra por MOB específica
+         *                   [string?] mes - Filtra por mês (1-12)
+         *                   [string?] ano - Filtra por ano
+         * 📤 SAÍDAS       : [IActionResult] JSON com matriz heatmap, maxValor e totalPassageiros
+         * 🔗 CHAMADA POR  : Dashboard Economildo (JavaScript)
+         * 🔄 CHAMA        : ViewFluxoEconomildo.GetAll()
+         *
+         * 📊 ESTRUTURA DO RETORNO:
+         *    - data[7]: Array com 7 dias (Segunda=0 a Domingo=6)
+         *    - horas[24]: Array com soma de passageiros por hora (0-23)
+         *    - maxValor: Valor máximo para escala de cores do heatmap
+         *    - totalPassageiros: Total geral de passageiros no período filtrado
+         ****************************************************************************************/
         [HttpGet]
         [Route("HeatmapEconomildoPassageiros")]
         public IActionResult HeatmapEconomildoPassageiros(string? mob, string? mes, string? ano)
         {
             try
             {
-                // Usar ViewFluxoEconomildo que já tem os dados necessários
+                // [DOC] STEP 1: Buscar dados da View otimizada de fluxo Economildo
                 var viagens = _unitOfWork.ViewFluxoEconomildo.GetAll();
 
-                // Filtro por MOB
+                // [DOC] STEP 2: Aplicar filtros opcionais
+                // Filtro por MOB (Mobilização específica)
                 if (!string.IsNullOrEmpty(mob))
                 {
                     viagens = viagens.Where(v => v.MOB == mob);
                 }
 
-                // Filtro por mês
+                // Filtro por mês (1-12)
                 if (!string.IsNullOrEmpty(mes) && int.TryParse(mes, out int mesInt))
                 {
                     viagens = viagens.Where(v => v.Data.HasValue && v.Data.Value.Month == mesInt);
@@ -43,23 +89,28 @@ namespace FrotiX.Controllers
                     viagens = viagens.Where(v => v.Data.HasValue && v.Data.Value.Year == anoInt);
                 }
 
-                // Materializar a query
+                // [DOC] STEP 3: Materializar query (executa SQL)
                 var listaViagens = viagens.ToList();
 
-                // Criar matriz 7x24 (dias x horas) - SOMA DE PASSAGEIROS
+                // [DOC] STEP 4: Criar matriz 7x24 (dias x horas) - SOMA DE PASSAGEIROS
+                // Índices: [0]=Segunda, [1]=Terça, ..., [6]=Domingo
+                // Horas: [0]=00:00, [1]=01:00, ..., [23]=23:00
                 var heatmap = new int[7, 24];
                 int maxValor = 0;
 
                 foreach (var v in listaViagens)
                 {
+                    // [DOC] Ignora registros sem data ou hora de início
                     if (!v.Data.HasValue || string.IsNullOrEmpty(v.HoraInicio))
                         continue;
 
-                    // Converter DayOfWeek para índice (0=Segunda, 6=Domingo)
+                    // [DOC] Converter DayOfWeek para índice (0=Segunda, 6=Domingo)
+                    // .NET: Sunday=0, Monday=1, ..., Saturday=6
+                    // Nosso: Segunda=0, Terça=1, ..., Domingo=6
                     int diaSemana = (int)v.Data.Value.DayOfWeek;
-                    int diaIndex = diaSemana == 0 ? 6 : diaSemana - 1; // Sunday(0) vai para 6
+                    int diaIndex = diaSemana == 0 ? 6 : diaSemana - 1; // Sunday(0) vai para índice 6
 
-                    // Extrair hora do campo HoraInicio (formato esperado: "HH:mm" ou "HH:mm:ss")
+                    // [DOC] Extrair hora do campo HoraInicio (formato esperado: "HH:mm" ou "HH:mm:ss")
                     int horaIndex = 0;
                     if (TimeSpan.TryParse(v.HoraInicio, out TimeSpan horaTimeSpan))
                     {
@@ -70,17 +121,19 @@ namespace FrotiX.Controllers
                         horaIndex = Math.Clamp(horaInt, 0, 23);
                     }
 
-                    // Somar passageiros ao invés de contar viagens
+                    // [DOC] DIFERENÇA PRINCIPAL: Somar passageiros ao invés de contar viagens
                     heatmap[diaIndex, horaIndex] += v.QtdPassageiros ?? 0;
 
+                    // [DOC] Atualizar valor máximo para escala de cores
                     if (heatmap[diaIndex, horaIndex] > maxValor)
                         maxValor = heatmap[diaIndex, horaIndex];
                 }
 
-                // Converter para lista de objetos para JSON
+                // [DOC] STEP 5: Converter matriz para lista de objetos JSON
                 var dados = new List<object>();
                 var diasNomes = new[] { "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo" };
 
+                // [DOC] STEP 6: Montar estrutura final para cada dia da semana
                 for (int dia = 0; dia < 7; dia++)
                 {
                     var horasArray = new int[24];
@@ -97,6 +150,7 @@ namespace FrotiX.Controllers
                     });
                 }
 
+                // [DOC] STEP 7: Retornar JSON com dados, valor máximo e total
                 return Json(new
                 {
                     success = true,
@@ -107,6 +161,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
+                // [DOC] Tratamento de erro padronizado com log
                 Alerta.TratamentoErroComLinha("ViagemController.cs", "HeatmapEconomildoPassageiros", error);
                 return Json(new { success = false, message = error.Message });
             }

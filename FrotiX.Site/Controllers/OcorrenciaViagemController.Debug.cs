@@ -1,3 +1,22 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : OcorrenciaViagemController.Debug.cs                             ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Partial class DEBUG para diagnosticar problemas de filtros e status.         ║
+║ TEMPORARIO - Remover apos resolver problemas de status de ocorrencias.       ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS DEBUG                                                              ║
+║ - GET /api/OcorrenciaViagem/DebugListar    : Dados brutos para debug         ║
+║ - GET /api/OcorrenciaViagem/DebugAbertas   : Estatisticas de status          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;

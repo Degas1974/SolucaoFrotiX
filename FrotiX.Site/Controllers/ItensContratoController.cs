@@ -1,3 +1,23 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : ItensContratoController.cs                                      ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller para gestao de itens de contratos (veiculos, servicos, valores).  ║
+║ Fornece listas para dropdowns e CRUD de itens vinculados a contratos/atas.   ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET  /api/ItensContrato/GetContratos  : Lista contratos para dropdown      ║
+║ - GET  /api/ItensContrato/GetAtas       : Lista atas para dropdown           ║
+║ - GET  /api/ItensContrato/GetItens      : Lista itens de contrato/ata        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 /****************************************************************************************
  * ⚡ CONTROLLER: ItensContratoController (Partial Class)
  * --------------------------------------------------------------------------------------

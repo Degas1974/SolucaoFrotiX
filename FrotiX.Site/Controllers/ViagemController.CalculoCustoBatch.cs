@@ -1,3 +1,36 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : ViagemController.CalculoCustoBatch.cs                           ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Partial class do ViagemController com algoritmo otimizado de cálculo de      ║
+║ custos em batch. Carrega todos os dados necessários UMA VEZ em cache e       ║
+║ processa viagens em lotes de 500 registros para melhor performance.          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - POST /api/Viagem/ExecutarCalculoCustoBatch      : Executa cálculo batch    ║
+║ - GET  /api/Viagem/ObterProgressoCalculoCustoBatch: Obtém progresso          ║
+║ - POST /api/Viagem/LimparProgressoCalculoCustoBatch: Limpa cache progresso   ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ CLASSES AUXILIARES                                                           ║
+║ - DadosCalculoCache : Cache de dados para cálculo (veículos, motoristas)     ║
+║ - MotoristaInfo     : Informações do motorista (terceirizado, valor)         ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ METODOS DE CALCULO                                                           ║
+║ - CalcularCustosViagem           : Calcula todos os custos de uma viagem     ║
+║ - CalcularCustoCombustivelCache  : Custo combustível via cache               ║
+║ - CalcularCustoVeiculoCache      : Custo veículo (valor/43200 × minutos)     ║
+║ - CalcularCustoMotoristaCache    : Custo motorista (valor × min/13200)       ║
+║ - CalcularCustoOperadorDinamico  : Custo operador (mensal/média viagens)     ║
+║ - CalcularCustoLavadorDinamico   : Custo lavador (mensal/média viagens)      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Data;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -15,9 +48,6 @@ namespace FrotiX.Controllers
 {
     public partial class ViagemController : Controller
     {
-        // =============================================
-        // CLASSE DE CACHE PARA DADOS COMPARTILHADOS
-        // =============================================
         private class DadosCalculoCache
         {
             public List<DateTime> TodasDatasViagens { get; set; } = new List<DateTime>();

@@ -1,11 +1,30 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : ViagemController.DesassociarEvento.cs                           ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Partial class do ViagemController para desassociação de viagens de eventos.  ║
+║ Permite remover a vinculação de uma viagem a um evento, alterando sua        ║
+║ finalidade para outro tipo (ex: Administrativa, Operacional).                ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - POST /api/Viagem/DesassociarViagemEvento : Desassocia viagem de evento     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ CLASSES AUXILIARES                                                           ║
+║ - DesassociarViagemRequest : DTO com ViagemId e NovaFinalidade               ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using Microsoft.AspNetCore.Mvc;
 using System;
 
 namespace FrotiX.Controllers
 {
-    /// <summary>
-    /// ViagemController - Partial Class para API DesassociarViagemEvento
-    /// </summary>
     public partial class ViagemController
     {
         /// <summary>

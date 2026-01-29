@@ -1,3 +1,69 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : RelatoriosController.cs                                         ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller para exportação de PDFs do Dashboard Economildo (serviço de       ║
+║ transporte coletivo). Gera relatórios visuais com heatmaps, gráficos de      ║
+║ barras, pizza e comparativos entre unidades MOB (PGR, Rodoviária, Cefor).    ║
+║ Endpoint: /api/Relatorios/ExportarEconomildo?tipo=XXX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET ExportarEconomildo : Exporta PDF do tipo especificado                  ║
+║   * Parâmetros: tipo (enum), mob, mes, ano                                   ║
+║   * Retorna: PDF com nome Economildo_{tipo}_{timestamp}.pdf                  ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ TIPOS DE RELATORIO (TipoRelatorioEconomildo enum)                            ║
+║ - HeatmapViagens     : Mapa de calor - distribuição de viagens               ║
+║ - HeatmapPassageiros : Mapa de calor - distribuição de passageiros           ║
+║ - UsuariosMes        : Gráfico de barras - usuários por mês                  ║
+║ - UsuariosTurno      : Gráfico de pizza - usuários por turno (M/T/N)         ║
+║ - ComparativoMob     : Gráfico comparativo mensal entre MOBs                 ║
+║ - UsuariosDiaSemana  : Gráfico de barras - usuários por dia da semana        ║
+║ - DistribuicaoHorario: Gráfico de barras - distribuição por horário          ║
+║ - TopVeiculos        : Ranking dos 10 veículos mais utilizados               ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ METODOS PRIVADOS                                                             ║
+║ - BuscarViagensEconomildo : Filtra viagens por MOB, mês e ano                ║
+║ - MontarDadosHeatmap      : Monta matriz 7x24 (dias x horas)                 ║
+║ - GerarHeatmapViagens     : Gera PDF heatmap de viagens                      ║
+║ - GerarHeatmapPassageiros : Gera PDF heatmap de passageiros                  ║
+║ - GerarUsuariosMes        : Gera PDF gráfico por mês                         ║
+║ - GerarUsuariosTurno      : Gera PDF pizza por turno                         ║
+║ - GerarComparativoMob     : Gera PDF comparativo entre MOBs                  ║
+║ - GerarUsuariosDiaSemana  : Gera PDF gráfico por dia da semana               ║
+║ - GerarDistribuicaoHorario: Gera PDF gráfico por horário                     ║
+║ - GerarTopVeiculos        : Gera PDF ranking veículos                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ METODOS AUXILIARES                                                           ║
+║ - ClassificarTurno        : Classifica horário em Manhã/Tarde/Noite          ║
+║ - ExtrairHora             : Extrai hora de string TimeSpan                   ║
+║ - ObterNomeDiaAbreviado   : Retorna Seg/Ter/Qua/...                          ║
+║ - ObterNomeMes            : Retorna Jan/Fev/Mar/...                          ║
+║ - ObterNomeDiaSemana      : DayOfWeek para nome abreviado                    ║
+║ - OrdemDiaSemana          : Ordem numérica do dia da semana                  ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DEPENDENCIAS                                                                 ║
+║ - FrotiXDbContext : Acesso direto ao contexto EF (ViagensEconomildo)         ║
+║ - IUnitOfWork     : Acesso a ViewVeiculos para buscar placas                 ║
+║ - RelatorioEconomildoPdfService : Serviço de geração de PDFs                 ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DTOS UTILIZADOS                                                              ║
+║ - FiltroEconomildoDto  : Filtros (Mob, Mes, Ano, NomeVeiculo)                ║
+║ - HeatmapDto           : Dados para heatmap                                  ║
+║ - GraficoBarrasDto     : Dados para gráficos de barras                       ║
+║ - GraficoPizzaDto      : Dados para gráficos de pizza                        ║
+║ - GraficoComparativoDto: Dados para gráficos comparativos                    ║
+║ - ItemGraficoDto       : Item individual (Label, Valor, Percentual)          ║
+║ - SerieGraficoDto      : Série para gráficos multi-série                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

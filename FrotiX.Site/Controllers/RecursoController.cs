@@ -1,3 +1,41 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : RecursoController.cs                                            ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller API para gerenciamento de Recursos do sistema (permissões/menus). ║
+║ Recursos representam funcionalidades do sistema que podem ser atribuídas     ║
+║ a usuários via ControleAcesso.                                               ║
+║ Endpoint: /api/Recurso                                                       ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET /api/Recurso : Lista todos os recursos ordenados por Ordem             ║
+║   * Retorna: { data: [{ RecursoId, Nome, NomeMenu, Descricao, Ordem }] }     ║
+║ - POST Delete      : Remove um recurso do sistema                            ║
+║   * Validação: Não permite excluir se houver ControleAcesso vinculado        ║
+║   * Retorna mensagem específica se recurso está associado a usuários         ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ CAMPOS DO RECURSO                                                            ║
+║ - RecursoId : Identificador único (GUID)                                     ║
+║ - Nome      : Nome interno do recurso                                        ║
+║ - NomeMenu  : Nome exibido no menu do sistema                                ║
+║ - Descricao : Descrição detalhada do recurso                                 ║
+║ - Ordem     : Posição de ordenação no menu                                   ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ REGRAS DE NEGOCIO                                                            ║
+║ - Recurso só pode ser excluído se não estiver vinculado a nenhum usuário     ║
+║ - Verificação via tabela ControleAcesso antes da exclusão                    ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DEPENDENCIAS                                                                 ║
+║ - IUnitOfWork      : Acesso a repositórios Recurso e ControleAcesso          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;

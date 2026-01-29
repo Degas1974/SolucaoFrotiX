@@ -1,3 +1,48 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : PdfViewerCNHController.cs                                       ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller API especializado para visualização de CNH (Carteira Nacional     ║
+║ de Habilitação) digital armazenada na tabela Motorista. Utiliza Syncfusion   ║
+║ EJ2 PdfViewer com cache em memória para melhor performance.                  ║
+║ Endpoint: /api/PdfViewerCNH                                                  ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET PdfViewerFeatures       : Renderiza View de funcionalidades            ║
+║ - POST Load                   : Carrega PDF (arquivo ou Base64)              ║
+║ - POST RenderPdfPages         : Renderiza páginas do PDF                     ║
+║ - POST RenderAnnotationComments: Retorna comentários de anotações            ║
+║ - POST Unload                 : Limpa cache do documento                     ║
+║ - POST RenderThumbnailImages  : Gera miniaturas das páginas                  ║
+║ - POST Bookmarks              : Retorna estrutura de bookmarks               ║
+║ - POST Download               : Retorna documento como Base64                ║
+║ - POST PrintImages            : Gera imagens para impressão                  ║
+║ - POST ExportAnnotations      : Exporta anotações                            ║
+║ - POST ImportAnnotations      : Importa anotações                            ║
+║ - POST ExportFormFields       : Exporta campos de formulário                 ║
+║ - POST ImportFormFields       : Importa campos de formulário                 ║
+║ - POST GetDocument            : Busca CNHDigital do motorista pelo ID        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ METODOS AUXILIARES                                                           ║
+║ - GetDocumentPath : Resolve caminho do documento (scripts/pdfviewer/)        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ATRIBUTOS                                                                    ║
+║ - [IgnoreAntiforgeryToken] : Desabilita validação CSRF                       ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DEPENDENCIAS                                                                 ║
+║ - Syncfusion.EJ2.PdfViewer : Biblioteca Syncfusion para visualização PDF     ║
+║ - IMemoryCache             : Cache em memória para PdfRenderer               ║
+║ - IWebHostEnvironment      : Acesso ao caminho WebRootPath                   ║
+║ - IUnitOfWork              : Acesso ao repositório Motorista                 ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;

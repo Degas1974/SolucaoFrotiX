@@ -22,10 +22,10 @@ Documentar todos os arquivos do projeto FrotiX (C#, JavaScript, CSHTML) inserind
 
 ### Estatísticas
 - **Total de Diretórios**: 22
-- **Diretórios Concluídos**: 2 (Analises, Areas/Identity/Pages/Account)
-- **Arquivos Documentados**: 100 (Lote 1: 8 + Lote 2: 20 + Lote 3: 21 + Lote 4: 11 + Lote 5 parcial: 5 = 72 Controllers + 28 Identity)
-- **Progresso**: ~10.82% do projeto total (924 arquivos) - ATINGIMOS 10%! 🎯
-- **Arquivos Pendentes**: ~824 (aprox.)
+- **Diretórios Concluídos**: 14 (Analises, Areas/Identity/Pages/Account, Controllers, Data, EndPoints, Extensions, Filters, Helpers, Hubs, Infrastructure, Logging, Middlewares, Settings, Services)
+- **Arquivos Documentados**: 155 (Lotes 1-4: 72 Controllers + 28 Identity + Lote 21: 24 arquivos + Lote 22: 31 arquivos)
+- **Progresso**: ~16.77% do projeto total (924 arquivos)
+- **Arquivos Pendentes**: ~769 (Models: 138, Pages: 150, Repository: 209, outros)
 
 ---
 
@@ -150,50 +150,95 @@ Documentar todos os arquivos do projeto FrotiX (C#, JavaScript, CSHTML) inserind
 - [x] /FrotiX.Site/Controllers/OcorrenciaViagemController.Upsert.cs - Finalizado em 2026-01-26 (Partial: baixa em tela Upsert)
 - [x] /FrotiX.Site/Controllers/OperadorController.cs - Finalizado em 2026-01-26 (CRUD operadores, contratos, foto)
 
-### 4️⃣ Data
-- [ ] A listar...
+### 4️⃣ Data (Lote 21 - 28/01/2026)
+- [x] /FrotiX.Site/Data/ApplicationDbContext.cs - Finalizado em 2026-01-28 (DbContext ASP.NET Identity)
+- [x] /FrotiX.Site/Data/ControleAcessoDbContext.cs - Finalizado em 2026-01-28 (DbContext controle permissões)
+- [x] /FrotiX.Site/Data/FrotiXDbContext.cs - Finalizado em 2026-01-28 (DbContext principal 774 linhas)
+- [x] /FrotiX.Site/Data/FrotiXDbContext.OcorrenciaViagem.cs - Finalizado em 2026-01-28 (Partial: ocorrências viagem)
+- [x] /FrotiX.Site/Data/FrotiXDbContext.RepactuacaoVeiculo.cs - Finalizado em 2026-01-28 (Partial: repactuação veículo)
 
-### 5️⃣ EndPoints
-- [ ] A listar...
+### 5️⃣ EndPoints (Lote 21 - 28/01/2026)
+- [x] /FrotiX.Site/EndPoints/RolesEndpoint.cs - Finalizado em 2026-01-28 (MinimalAPI gestão Roles)
+- [x] /FrotiX.Site/EndPoints/UsersEndpoint.cs - Finalizado em 2026-01-28 (MinimalAPI gestão Usuários)
 
-### 6️⃣ Extensions
-- [ ] A listar...
+### 6️⃣ Extensions (Lote 21 - 28/01/2026)
+- [x] /FrotiX.Site/Extensions/EnumerableExtensions.cs - Finalizado em 2026-01-28 (HasItems, IsNullOrEmpty, MapTo)
+- [x] /FrotiX.Site/Extensions/IdentityExtensions.cs - Finalizado em 2026-01-28 (HasRole, AuthorizeFor, UpdateAsync)
+- [x] /FrotiX.Site/Extensions/ToastExtensions.cs - Finalizado em 2026-01-28 (ShowToast, ShowSuccess, ShowError)
 
-### 7️⃣ Filters
-- [ ] A listar...
+### 7️⃣ Filters (Lote 21 - 28/01/2026)
+- [x] /FrotiX.Site/Filters/DisableModelValidationAttribute.cs - Finalizado em 2026-01-28 (IResourceFilter)
+- [x] /FrotiX.Site/Filters/GlobalExceptionFilter.cs - Finalizado em 2026-01-28 (IExceptionFilter MVC/API)
+- [x] /FrotiX.Site/Filters/PageExceptionFilter.cs - Finalizado em 2026-01-28 (IPageFilter Razor Pages)
+- [x] /FrotiX.Site/Filters/SkipModelValidationAttribute.cs - Finalizado em 2026-01-28 (IActionFilter)
 
-### 8️⃣ Helpers
-- [ ] A listar...
+### 8️⃣ Helpers (Lote 21 - 28/01/2026)
+- [x] /FrotiX.Site/Helpers/Alerta.cs - Finalizado em 2026-01-28 (SweetAlert + TratamentoErroComLinha)
+- [x] /FrotiX.Site/Helpers/AlertaBackend.cs - Finalizado em 2026-01-28 (Backend-only logging)
+- [x] /FrotiX.Site/Helpers/ErroHelper.cs - Finalizado em 2026-01-28 (Scripts JS para SweetAlert)
+- [x] /FrotiX.Site/Helpers/ImageHelper.cs - Finalizado em 2026-01-28 (IsImageValid, ResizeImage)
+- [x] /FrotiX.Site/Helpers/ListasCompartilhadas.cs - Finalizado em 2026-01-28 (Provedores de dropdowns)
+- [x] /FrotiX.Site/Helpers/SfdtHelper.cs - Finalizado em 2026-01-28 (Syncfusion DOCX→PDF→PNG)
 
-### 9️⃣ Hubs
-- [ ] A listar...
+### 9️⃣ Hubs (Lote 21 - 28/01/2026)
+- [x] /FrotiX.Site/Hubs/AlertasHub.cs - Finalizado em 2026-01-28 (SignalR alertas real-time)
+- [x] /FrotiX.Site/Hubs/DocGenerationHub.cs - Documentação prévia (já tinha cabeçalho)
+- [x] /FrotiX.Site/Hubs/EmailBasedUserIdProvider.cs - Finalizado em 2026-01-28 (IUserIdProvider SignalR)
+- [x] /FrotiX.Site/Hubs/EscalaHub.cs - Finalizado em 2026-01-28 (SignalR escala + BackgroundService)
+- [x] /FrotiX.Site/Hubs/ImportacaoHub.cs - Finalizado em 2026-01-28 (SignalR progresso importação)
 
-### 🔟 Infrastructure
-- [ ] A listar...
+### 🔟 Infrastructure (Lote 22 - 29/01/2026)
+- [x] /FrotiX.Site/Infrastructure/CacheKeys.cs - Já documentado (constantes de cache do sistema)
 
-### 1️⃣1️⃣ Logging
-- [ ] A listar...
+### 1️⃣1️⃣ Logging (Lote 22 - 29/01/2026)
+- [x] /FrotiX.Site/Logging/FrotiXLoggerProvider.cs - Já documentado (ILoggerProvider customizado)
 
-### 1️⃣2️⃣ Middlewares
-- [ ] A listar...
+### 1️⃣2️⃣ Middlewares (Lote 22 - 29/01/2026)
+- [x] /FrotiX.Site/Middlewares/ErrorLoggingMiddleware.cs - Já documentado (middleware de log de erros)
+- [x] /FrotiX.Site/Middlewares/UiExceptionMiddleware.cs - Já documentado (middleware de UI/Toast para exceções)
 
 ### 1️⃣3️⃣ Models
-- [ ] A listar...
+- [ ] A documentar (138 arquivos)
 
 ### 1️⃣4️⃣ Pages
-- [ ] A listar...
+- [ ] A documentar (150 arquivos)
 
-### 1️⃣5️⃣ Properties
-- [ ] A listar...
+### 1️⃣5️⃣ Properties (Lote 22 - 29/01/2026)
+- [x] /FrotiX.Site/Properties/Resources.Designer.cs - Auto-gerado (pulado)
 
 ### 1️⃣6️⃣ Repository
-- [ ] A listar...
+- [ ] A documentar (209 arquivos)
 
-### 1️⃣7️⃣ Services
-- [ ] A listar...
+### 1️⃣7️⃣ Services (Lote 22 - 29/01/2026)
+- [x] /FrotiX.Site/Services/AlertasBackgroundService.cs - Finalizado em 2026-01-29 (BackgroundService alertas 1/min)
+- [x] /FrotiX.Site/Services/CustomReportSourceResolver.cs - Finalizado em 2026-01-29 (Telerik Reports resolver)
+- [x] /FrotiX.Site/Services/DocGenerator/DocGeneratorServiceCollectionExtensions.cs - Finalizado em 2026-01-29 (DI DocGenerator)
+- [x] /FrotiX.Site/Services/GlosaDtos.cs - Finalizado em 2026-01-29 (DTOs de glosa)
+- [x] /FrotiX.Site/Services/GlosaService.cs - Finalizado em 2026-01-29 (Cálculo de glosa por contrato)
+- [x] /FrotiX.Site/Services/IGlosaService.cs - Finalizado em 2026-01-29 (Interface glosa)
+- [x] /FrotiX.Site/Services/ILogService.cs - Finalizado em 2026-01-29 (Interface logging)
+- [x] /FrotiX.Site/Services/IMailService.cs - Finalizado em 2026-01-29 (Interface email)
+- [x] /FrotiX.Site/Services/IReCaptchaService.cs - Finalizado em 2026-01-29 (Interface reCAPTCHA)
+- [x] /FrotiX.Site/Services/LogService.cs - Finalizado em 2026-01-29 (Log em arquivo diário)
+- [x] /FrotiX.Site/Services/MailService.cs - Finalizado em 2026-01-29 (SMTP via MailKit)
+- [x] /FrotiX.Site/Services/MotoristaFotoService.cs - Finalizado em 2026-01-29 (Cache fotos motoristas)
+- [x] /FrotiX.Site/Services/Pdf/SvgIcones.cs - Finalizado em 2026-01-29 (SVG FontAwesome para QuestPDF)
+- [x] /FrotiX.Site/Services/RazorRenderService.cs - Finalizado em 2026-01-29 (Render Razor to string)
+- [x] /FrotiX.Site/Services/ReCaptchaService.cs - Finalizado em 2026-01-29 (Validação Google reCAPTCHA)
+- [x] /FrotiX.Site/Services/Servicos.cs - Finalizado em 2026-01-29 (Utilitários: custos, texto, etc.)
+- [x] /FrotiX.Site/Services/Validations.cs - Finalizado em 2026-01-29 (ValidationAttributes customizados)
+- [x] /FrotiX.Site/Services/VeiculoEstatisticaService.cs - Finalizado em 2026-01-29 (Stats veículos para IA)
+- [x] /FrotiX.Site/Services/ViagemEstatisticaService.cs - Finalizado em 2026-01-29 (Stats viagens diárias)
+- [x] /FrotiX.Site/Services/WhatsApp/Dtos.cs - Finalizado em 2026-01-29 (DTOs WhatsApp)
+- [x] /FrotiX.Site/Services/WhatsApp/EvolutionApiOptions.cs - Finalizado em 2026-01-29 (Config Evolution API)
+- [x] /FrotiX.Site/Services/WhatsApp/EvolutionApiWhatsAppService.cs - Finalizado em 2026-01-29 (Implementação WhatsApp)
+- [x] /FrotiX.Site/Services/WhatsApp/IWhatsAppService.cs - Finalizado em 2026-01-29 (Interface WhatsApp)
 
-### 1️⃣8️⃣ Settings
-- [ ] A listar...
+### 1️⃣8️⃣ Settings (Lote 22 - 29/01/2026)
+- [x] /FrotiX.Site/Settings/GlobalVariables.cs - Finalizado em 2026-01-29 (Variáveis globais estáticas)
+- [x] /FrotiX.Site/Settings/MailSettings.cs - Finalizado em 2026-01-29 (DTO config SMTP)
+- [x] /FrotiX.Site/Settings/ReCaptchaSettings.cs - Finalizado em 2026-01-29 (DTO config reCAPTCHA)
+- [x] /FrotiX.Site/Settings/RecorrenciaToggleSettings.cs - Finalizado em 2026-01-29 (Feature toggles)
 
 ### 1️⃣9️⃣ Tools
 - [ ] A listar...
@@ -201,6 +246,33 @@ Documentar todos os arquivos do projeto FrotiX (C#, JavaScript, CSHTML) inserind
 ---
 
 ## 🔄 Atualizações e Observações
+
+### 2026-01-29 - LOTE 22: Infrastructure, Logging, Middlewares, Settings, Services ✅
+- **Lote 22 finalizado**: 31 arquivos documentados com cabeçalhos ASCII
+- **Diretórios concluídos**:
+  - Infrastructure: 1 arquivo (CacheKeys.cs - já documentado anteriormente)
+  - Logging: 1 arquivo (FrotiXLoggerProvider.cs - já documentado)
+  - Middlewares: 2 arquivos (ErrorLoggingMiddleware, UiExceptionMiddleware - já documentados)
+  - Properties: 1 arquivo auto-gerado (Resources.Designer.cs - pulado)
+  - Settings: 4 arquivos (GlobalVariables, MailSettings, ReCaptchaSettings, RecorrenciaToggleSettings)
+  - Services: 23 arquivos (AlertasBackgroundService, GlosaService, LogService, MailService, ReCaptchaService, etc.)
+  - Services/WhatsApp: 4 arquivos (Dtos, EvolutionApiOptions, EvolutionApiWhatsAppService, IWhatsAppService)
+- **Total documentado até agora**: 155 arquivos
+- **Progresso**: ~16.77% do projeto total
+- **Próximo**: Models (138 arquivos)
+
+### 2026-01-28 - LOTE 21: Data, EndPoints, Extensions, Filters, Helpers, Hubs ✅
+- **Lote 21 finalizado**: 24 arquivos documentados com cabeçalhos ASCII
+- **Diretórios concluídos**:
+  - Data: 5 arquivos (ApplicationDbContext, ControleAcessoDbContext, FrotiXDbContext e partials)
+  - EndPoints: 2 arquivos (RolesEndpoint, UsersEndpoint - MinimalAPI)
+  - Extensions: 3 arquivos (EnumerableExtensions, IdentityExtensions, ToastExtensions)
+  - Filters: 4 arquivos (DisableModelValidation, GlobalException, PageException, SkipModelValidation)
+  - Helpers: 6 arquivos (Alerta, AlertaBackend, ErroHelper, ImageHelper, ListasCompartilhadas, SfdtHelper)
+  - Hubs: 4 arquivos (AlertasHub, EmailBasedUserIdProvider, EscalaHub, ImportacaoHub) + 1 já documentado (DocGenerationHub)
+- **Total documentado até agora**: 124 arquivos
+- **Progresso**: ~13.42% do projeto total
+- **Próximo**: Infrastructure, Logging, Middlewares
 
 ### 2026-01-26 - MARCO: 10% DO PROJETO CONCLUÍDO! 🎯
 - **Lote 4 (parcial) finalizado**: 6 arquivos Controllers documentados
@@ -251,4 +323,4 @@ Lista de arquivos que já tinham documentação e foram atualizados:
 
 ---
 
-**Última Atualização**: 2026-01-26 (Início do processo)
+**Última Atualização**: 2026-01-29 (Lote 22 finalizado)

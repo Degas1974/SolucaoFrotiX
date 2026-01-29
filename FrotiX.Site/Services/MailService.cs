@@ -1,4 +1,15 @@
-﻿using System;
+﻿/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Services/MailService.cs                                        ║
+ * ║  Descrição: Implementação de IMailService usando MailKit/MimeKit.        ║
+ * ║             SendEmailAsync: Conecta SMTP via StartTLS, autentica e envia.║
+ * ║             Configurações via IOptions<MailSettings> (appsettings.json). ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

@@ -1,3 +1,24 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : GridContratoController.cs                                       ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller para fornecer dados aos grids de itens de Contratos. Gerencia     ║
+║ lista de veiculos/servicos incluidos nos contratos durante edicao.           ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - POST /api/GridContrato/GetAll  : Lista itens do contrato                   ║
+║ - POST /api/GridContrato/Insert  : Adiciona item a lista temporaria          ║
+║ - POST /api/GridContrato/Update  : Atualiza item na lista                    ║
+║ - POST /api/GridContrato/Delete  : Remove item da lista                      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 /****************************************************************************************
  * ⚡ CONTROLLER: GridContratoController
  * --------------------------------------------------------------------------------------

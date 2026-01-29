@@ -1,4 +1,26 @@
-﻿using System;
+﻿/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : RolesEndpoint.cs                                                ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ API Endpoint para gerenciamento de Roles (perfis/grupos) do ASP.NET Identity.║
+║ CRUD completo via RoleManager.                                               ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET    /api/roles      : Lista todas as roles                              ║
+║ - GET    /api/roles/{id} : Busca role por ID                                 ║
+║ - POST   /api/roles      : Cria nova role                                    ║
+║ - PUT    /api/roles      : Atualiza role existente                           ║
+║ - DELETE /api/roles      : Remove role (bloqueia role padrao)                ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;

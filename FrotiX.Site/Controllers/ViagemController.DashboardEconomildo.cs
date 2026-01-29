@@ -1,3 +1,30 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : ViagemController.DashboardEconomildo.cs                         ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Partial class do ViagemController para Dashboard do Economildo (transporte   ║
+║ de funcionários). Fornece estatísticas de uso, médias mensais/diárias,       ║
+║ ranking de MOBs e gráficos de evolução.                                      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET /api/Viagem/DashboardEconomildo : Dashboard com filtros (mob,mes,ano)  ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DADOS RETORNADOS                                                             ║
+║ - totalUsuarios   : Soma de passageiros                                      ║
+║ - totalViagens    : Quantidade de viagens                                    ║
+║ - mediaMensal     : Média de usuários por mês                                ║
+║ - mediaDiaria     : Média de usuários por dia                                ║
+║ - rankingMOBs     : Ranking de MOBs por quantidade de usuários               ║
+║ - evolucaoMensal  : Evolução mensal de viagens e usuários                    ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Data;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

@@ -1,3 +1,12 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Models/FontAwesome/FontAwesomeIconsModel.cs                    ║
+ * ║  Descrição: Modelos para manipulação de ícones FontAwesome traduzidos    ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;

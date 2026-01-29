@@ -1,4 +1,16 @@
-﻿using System;
+﻿/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Services/ReCaptchaService.cs                                   ║
+ * ║  Descrição: Implementação de IReCaptchaService para validação Google.    ║
+ * ║             ValidateReCaptcha: Chama API siteverify com secret e token.  ║
+ * ║             Configs: Expõe ReCaptchaSettings (Key, Secret).              ║
+ * ║             NOTA: Validação comentada - sempre retorna false atualmente. ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;

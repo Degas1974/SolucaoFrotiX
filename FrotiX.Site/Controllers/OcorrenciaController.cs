@@ -1,3 +1,49 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : OcorrenciaController.cs                                         ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller API para consulta e gestão de ocorrências de viagens (problemas   ║
+║ reportados durante viagens). Suporta filtros por veículo, motorista, status, ║
+║ data única ou período. Usado pela tela de gestão de ocorrências.             ║
+║ Endpoint: /api/Ocorrencia                                                    ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS - CONSULTA                                                         ║
+║ - GET Get               : Lista ocorrências com filtros múltiplos            ║
+║ - GET Ocorrencias       : Lista ocorrências com status "Aberta"              ║
+║ - GET OcorrenciasVeiculos: Lista ocorrências de um veículo específico        ║
+║ - GET OcorrenciasMotoristas: Lista ocorrências de um motorista específico    ║
+║ - GET OcorrenciasStatus : Lista ocorrências por status                       ║
+║ - GET OcorrenciasData   : Lista ocorrências de uma data específica           ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS - ACOES                                                            ║
+║ - POST BaixarOcorrencia : Dá baixa em uma ocorrência (DESABILITADO)          ║
+║ - POST EditaOcorrencia  : Edita dados da ocorrência (DESABILITADO)           ║
+║ - POST FechaItemOS      : Fecha item de OS vinculado (DESABILITADO)          ║
+║ - POST SaveImage        : Salva imagem de ocorrência em disco                ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ FORMATOS DE DATA ACEITOS                                                     ║
+║ - dd/MM/yyyy, dd/MM/yyyy HH:mm, dd/MM/yyyy HH:mm:ss                          ║
+║ - yyyy-MM-dd, yyyy-MM-ddTHH:mm, yyyy-MM-ddTHH:mm:ss (ISO 8601)               ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ STATUS DE OCORRENCIA                                                         ║
+║ - Aberta  : Ocorrência pendente de resolução                                 ║
+║ - Baixada : Ocorrência resolvida e fechada                                   ║
+║ - Todas   : Filtro especial para listar todas                                ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DEPENDENCIAS                                                                 ║
+║ - IUnitOfWork          : Acesso a ViewViagens                                ║
+║ - IWebHostEnvironment  : Caminho para salvar imagens                         ║
+║ - TextNormalizationHelper: Normalização de texto (acentos, HTML)             ║
+║ - Servicos.ConvertHtml : Conversão de HTML para texto                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;

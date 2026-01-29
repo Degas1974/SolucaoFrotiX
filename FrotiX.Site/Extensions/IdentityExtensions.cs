@@ -1,4 +1,16 @@
-﻿using System.Collections.Generic;
+﻿/*
+ * ╔══════════════════════════════════════════════════════════════════════════╗
+ * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
+ * ║  Arquivo: Extensions/IdentityExtensions.cs                               ║
+ * ║  Descrição: Extensões para ASP.NET Identity e ClaimsPrincipal,           ║
+ * ║             incluindo verificação de roles, autorização de itens de      ║
+ * ║             menu, conversão de string para HtmlString, extração de       ║
+ * ║             nome de página e operações assíncronas de CRUD genérico.     ║
+ * ║  Data: 28/01/2026 | LOTE: 21                                             ║
+ * ╚══════════════════════════════════════════════════════════════════════════╝
+ */
+
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;

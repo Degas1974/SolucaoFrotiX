@@ -1,3 +1,23 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : ManutencaoController.cs                                         ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Controller para gestao de manutencoes de veiculos (preventivas, corretivas). ║
+║ Utiliza cache para otimizar consultas frequentes. Suporta upload de docs.    ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS PRINCIPAIS                                                         ║
+║ - GET  /api/Manutencao/GetAll   : Lista manutencoes com filtros              ║
+║ - POST /api/Manutencao/Upsert   : Criar/atualizar manutencao                 ║
+║ - POST /api/Manutencao/Upload   : Upload de documentos anexos                ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 /****************************************************************************************
  * ⚡ CONTROLLER: ManutencaoController
  * --------------------------------------------------------------------------------------

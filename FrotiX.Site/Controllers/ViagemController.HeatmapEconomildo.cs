@@ -1,3 +1,28 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Arquivo    : ViagemController.HeatmapEconomildo.cs                           ║
+║ Projeto    : FrotiX.Site                                                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DESCRICAO                                                                    ║
+║ Partial class do ViagemController para geração de Heatmap de viagens do      ║
+║ Economildo. Retorna matriz 7x24 (dias da semana x horas) com quantidade      ║
+║ de viagens para visualização de padrões de uso.                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ ENDPOINTS                                                                    ║
+║ - GET /api/Viagem/HeatmapEconomildo : Matriz de viagens por dia/hora         ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ DADOS RETORNADOS                                                             ║
+║ - heatmap[7,24]    : Matriz com quantidade de viagens                        ║
+║ - maxValor         : Valor máximo para escala de cores                       ║
+║ - diasSemana       : Labels dos dias (Segunda a Domingo)                     ║
+║ - horas            : Labels das horas (00:00 a 23:00)                        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+*/
+
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;
