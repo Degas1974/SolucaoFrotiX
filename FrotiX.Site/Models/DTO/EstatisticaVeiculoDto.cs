@@ -1,11 +1,14 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Models/DTO/EstatisticaVeiculoDto.cs                            ║
- * ║  Descrição: DTO com estatísticas de viagens por veículo para validação   ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: EstatisticaVeiculoDto.cs                                                                ║
+   ║ 📂 CAMINHO: /Models/DTO                                                                             ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: DTO com estatísticas de viagens por veículo para validação inteligente (IA evolutiva).║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 PROPS: VeiculoId, Placa, TotalViagens, KmMedio, KmDesvioPadrao, DuracaoMedia, etc.               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPS: System                                                                                     ║
+   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
 

@@ -3393,6 +3393,18 @@ button.btn-ocorrencias-viagem.disabled {
   color: #fff;
 }
 
+.modal-header-roxo {
+  background: linear-gradient(
+    135deg,
+    #5e35b1 0%,
+    #7e57c2 50%,
+    #5e35b1 100%
+  );
+  color: #fff;
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
+
 /* ===== TÍTULO DO MODAL ===== */
 .modal-title,
 h3.modal-title,
