@@ -1838,27 +1838,36 @@ function ListaTodasViagens()
                 },
                 { data: "descricaoVeiculo" },
                 // COLUNA: Status (badge compacto com ícones - padrão Manutenção)
+                // FIX 29/01/2026: Tratamento defensivo para Status vazio/null
                 {
                     data: "status",
                     render: function (data, type, row, meta)
                     {
                         try
                         {
-                            if (row.status === "Aberta")
+                            // Normaliza o status (trim e lowercase para comparação segura)
+                            const statusNormalizado = (row.status || "").trim().toLowerCase();
+                            
+                            // CANCELADA: apenas se explicitamente "cancelada"
+                            if (statusNormalizado === "cancelada")
                             {
-                                return `<span class="ftx-viagem-badge ftx-viagem-badge-aberta">
-                                            <i class="fa-solid fa-circle-check"></i> Aberta
+                                return `<span class="ftx-viagem-badge ftx-viagem-badge-cancelada">
+                                            <i class="fa-solid fa-xmark"></i> Cancelada
                                         </span>`;
                             }
-                            if (row.status === "Realizada")
+                            
+                            // REALIZADA: apenas se explicitamente "realizada"
+                            if (statusNormalizado === "realizada")
                             {
                                 return `<span class="ftx-viagem-badge ftx-viagem-badge-realizada">
                                             <i class="fa-solid fa-lock"></i> Realizada
                                         </span>`;
                             }
-                            // Cancelada
-                            return `<span class="ftx-viagem-badge ftx-viagem-badge-cancelada">
-                                        <i class="fa-solid fa-xmark"></i> Cancelada
+                            
+                            // DEFAULT (Aberta) - inclui status vazio, null ou "aberta"
+                            // Evita classificar erroneamente viagens com status inconsistente
+                            return `<span class="ftx-viagem-badge ftx-viagem-badge-aberta">
+                                        <i class="fa-solid fa-circle-check"></i> Aberta
                                     </span>`;
                         } catch (error)
                         {
@@ -1868,6 +1877,7 @@ function ListaTodasViagens()
                     }
                 },
                 // COLUNA: Ação (ícones em botões 28x28, Bootstrap 5)
+                // FIX 29/01/2026: Tratamento defensivo para Status vazio/null
                 {
                     data: "viagemId",
                     orderable: false,
@@ -1876,7 +1886,10 @@ function ListaTodasViagens()
                     {
                         try
                         {
-                            const isAberta = row.status === "Aberta";
+                            // FIX: Normalizar status para determinar se está aberta
+                            const statusNormalizado = (row.status || "").trim().toLowerCase();
+                            // Considera aberta apenas se explicitamente "aberta" ou se status estiver vazio/null
+                            const isAberta = statusNormalizado === "aberta" || statusNormalizado === "";
                             const disabledAttrs = isAberta ? "" : 'class="disabled" aria-disabled="true" tabindex="-1"';
                             const disabledClass = isAberta ? "" : "disabled";
 
@@ -2414,6 +2427,7 @@ function calcularDuracaoViagem()
 
 // ===============================================
 // CONFIGURAÇÃO DO TELERIK REPORT VIEWER - CORRIGIDO
+// FIX 29/01/2026: Tratamento defensivo para Status vazio/null
 // ===============================================
 
 // Função para determinar qual relatório usar
@@ -2424,19 +2438,41 @@ function determinarRelatorio(data)
         if (!data) return "FichaAberta.trdp";
 
         let relatorio = "FichaAberta.trdp";
+        
+        // FIX: Normalizar status - considerar campos de data se Status estiver vazio
+        let statusEfetivo = (data.status || "").trim().toLowerCase();
+        
+        // Se status estiver vazio, inferir do estado da viagem
+        if (!statusEfetivo || statusEfetivo === "")
+        {
+            if (data.dataCancelamento || data.DataCancelamento)
+            {
+                statusEfetivo = "cancelada";
+                console.warn('⚠️ Status vazio mas viagem tem DataCancelamento - inferido como Cancelada');
+            }
+            else if (data.dataFinalizacao || data.DataFinalizacao || data.dataFinal || data.DataFinal)
+            {
+                statusEfetivo = "realizada";
+                console.warn('⚠️ Status vazio mas viagem tem DataFinalizacao/DataFinal - inferido como Realizada');
+            }
+            else
+            {
+                statusEfetivo = "aberta";
+            }
+        }
 
-        if (data.status === "Cancelada")
+        if (statusEfetivo === "cancelada")
         {
             $("#btnCancela").hide();
             window.CarregandoViagemBloqueada = true;
             relatorio = data.finalidade !== "Evento" ? "FichaCancelada.trdp" : "FichaEventoCancelado.trdp";
-        } else if (data.finalidade === "Evento" && data.status !== "Cancelada")
+        } else if (data.finalidade === "Evento" && statusEfetivo !== "cancelada")
         {
             relatorio = "FichaEvento.trdp";
-        } else if (data.status === "Aberta" && data.finalidade !== "Evento")
+        } else if (statusEfetivo === "aberta" && data.finalidade !== "Evento")
         {
             relatorio = "FichaAberta.trdp";
-        } else if (data.status === "Realizada")
+        } else if (statusEfetivo === "realizada")
         {
             window.CarregandoViagemBloqueada = true;
             relatorio = data.finalidade !== "Evento" ? "FichaRealizada.trdp" : "FichaEventoRealizado.trdp";
@@ -2445,7 +2481,7 @@ function determinarRelatorio(data)
             relatorio = data.finalidade !== "Evento" ? "FichaAgendamento.trdp" : "FichaEventoAgendado.trdp";
         }
 
-        console.log('Relatório selecionado:', relatorio);
+        console.log('Relatório selecionado:', relatorio, '(statusEfetivo:', statusEfetivo, ')');
         return relatorio;
     } catch (error)
     {

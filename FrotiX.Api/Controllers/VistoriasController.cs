@@ -185,6 +185,7 @@ namespace FrotiXApi.Controllers
         /// <summary>
         /// PUT /api/vistorias/{id}
         /// Atualiza uma vistoria existente
+        /// FIX 29/01/2026: Garantir consistência do campo Status
         /// </summary>
         [HttpPut("{id:guid}")]
         public IActionResult Put(Guid id, [FromBody] Viagem viagem)
@@ -193,6 +194,18 @@ namespace FrotiXApi.Controllers
             {
                 if (viagem is null || id != viagem.ViagemId)
                     return BadRequest("ID inconsistente ou dados inválidos.");
+
+                // FIX: Garantir que o Status seja consistente com o estado da viagem
+                // Se Status estiver vazio/null, determinar baseado em DataFinal e DataCancelamento
+                if (string.IsNullOrWhiteSpace(viagem.Status))
+                {
+                    if (viagem.DataCancelamento != null)
+                        viagem.Status = "Cancelada";
+                    else if (viagem.DataFinal != null || viagem.DataFinalizacao != null)
+                        viagem.Status = "Realizada";
+                    else
+                        viagem.Status = "Aberta";
+                }
 
                 _unitOfWork.Viagem.Update(viagem);
                 _unitOfWork.Save();
