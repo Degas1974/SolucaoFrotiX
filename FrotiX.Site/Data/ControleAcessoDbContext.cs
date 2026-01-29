@@ -1,20 +1,12 @@
-﻿/*
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Arquivo    : ControleAcessoDbContext.cs                                      ║
-║ Projeto    : FrotiX.Site                                                     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ DESCRICAO                                                                    ║
-║ DbContext para controle de acesso (recursos e permissoes). Gerencia          ║
-║ entidades Recurso e ControleAcesso com chaves compostas.                     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ DBSETS                                                                       ║
-║ - Recurso        : Recursos do sistema (menus, paginas, actions)             ║
-║ - ControleAcesso : Permissoes usuario x recurso                              ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ControleAcessoDbContext.cs                                                              ║
+   ║ 📂 CAMINHO: /Data                                                                                   ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: DbContext para controle de acesso (recursos e permissões). Chaves compostas.           ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: DbSet<Recurso>, DbSet<ControleAcesso> | OnModelCreating com HasKey composta              ║
+   ║ 🔗 DEPS: EF Core, FrotiX.Models | 📅 29/01/2026 | 👤 Copilot | 📝 v2.0                              ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
 */
 
 using System;

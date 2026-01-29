@@ -1,24 +1,12 @@
-/*
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Arquivo    : FrotiXDbContext.cs                                              ║
-║ Projeto    : FrotiX.Site                                                     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ DESCRICAO                                                                    ║
-║ DbContext principal do sistema FrotiX. Contem todos os DbSets para           ║
-║ as entidades do sistema de gestao de frota.                                  ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ PRINCIPALES ENTIDADES                                                        ║
-║ - Veiculo, Motorista, Viagem, Abastecimento                                  ║
-║ - Contrato, Empenho, NotaFiscal, Multa                                       ║
-║ - Manutencao, Escala, Ocorrencia                                             ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ PARTIAL CLASSES: FrotiXDbContext.OcorrenciaViagem.cs,                        ║
-║                  FrotiXDbContext.RepactuacaoVeiculo.cs                       ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: FrotiXDbContext.cs                                                                      ║
+   ║ 📂 CAMINHO: /Data                                                                                   ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: DbContext PRINCIPAL do FrotiX. Todas as entidades de gestão de frota.                  ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: Veiculo, Motorista, Viagem, Abastecimento, Contrato, Empenho, NotaFiscal, Multa, etc.    ║
+   ║ 🔗 PARTIAL: .OcorrenciaViagem.cs, .RepactuacaoVeiculo.cs | 📅 29/01/2026 | 👤 Copilot | 📝 v2.0     ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
 */
 
 using FrotiX.Models;
