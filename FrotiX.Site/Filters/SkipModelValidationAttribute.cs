@@ -1,14 +1,19 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Filters/SkipModelValidationAttribute.cs                        ║
- * ║  Descrição: Atributo IActionFilter que limpa ModelState durante          ║
- * ║             OnActionExecuting. Usado quando propriedades nullable        ║
- * ║             podem vir null do frontend, mas [ApiController] tenta        ║
- * ║             validar como required.                                       ║
- * ║  Data: 28/01/2026 | LOTE: 21                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: SkipModelValidationAttribute.cs                                                         ║
+   ║ 📂 CAMINHO: /Filters                                                                                ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Atributo IActionFilter que limpa ModelState durante OnActionExecuting. Usado quando              ║
+   ║    propriedades nullable podem vir null do frontend, mas [ApiController] valida como required.      ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE DE FUNÇÕES (Entradas -> Saídas):                                                         ║
+   ║ 1. [OnActionExecuting] : Limpa ModelState.Clear()........... (context) -> void                     ║
+   ║ 2. [OnActionExecuted]  : Callback pós-action (não usado).... (context) -> void                     ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPENDÊNCIAS: Microsoft.AspNetCore.Mvc.Filters                                                  ║
+   ║ 📅 ATUALIZAÇÃO: 29/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using System;
 using Microsoft.AspNetCore.Mvc.Filters;

@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 0%
+█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 1.1%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 0 |
-| Percentual | 0% |
-| Última Atualização | 29/01/2026 |
+| Documentados | 10 |
+| Percentual | 1.1% |
+| Última Atualização | 29/01/2026 10:30 |
 
 ---
 
@@ -28,14 +28,14 @@
 | 1 | Areas | 43 | 0 | 0% | 🔴 Pendente |
 | 2 | Controllers | 93 | 0 | 0% | 🔴 Pendente |
 | 3 | Data | 5 | 0 | 0% | 🔴 Pendente |
-| 4 | EndPoints | 2 | 0 | 0% | 🔴 Pendente |
-| 5 | Extensions | 3 | 0 | 0% | 🔴 Pendente |
-| 6 | Filters | 4 | 0 | 0% | 🔴 Pendente |
+| 4 | EndPoints | 2 | 2 | 100% | ✅ Completo |
+| 5 | Extensions | 3 | 3 | 100% | ✅ Completo |
+| 6 | Filters | 4 | 1 | 25% | 🟡 Em Progresso |
 | 7 | Helpers | 6 | 0 | 0% | 🔴 Pendente |
 | 8 | Hubs | 5 | 0 | 0% | 🔴 Pendente |
-| 9 | Infrastructure | 1 | 0 | 0% | 🔴 Pendente |
-| 10 | Logging | 1 | 0 | 0% | 🔴 Pendente |
-| 11 | Middlewares | 2 | 0 | 0% | 🔴 Pendente |
+| 9 | Infrastructure | 1 | 1 | 100% | ✅ Completo |
+| 10 | Logging | 1 | 1 | 100% | ✅ Completo |
+| 11 | Middlewares | 2 | 2 | 100% | ✅ Completo |
 | 12 | Models | 139 | 0 | 0% | 🔴 Pendente |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
@@ -50,92 +50,99 @@
 
 ### 📂 Areas (0/43)
 ```
-(nenhum arquivo documentado ainda)
+(pendente)
 ```
 
 ### 📂 Controllers (0/93)
 ```
-(nenhum arquivo documentado ainda)
+(pendente)
 ```
 
 ### 📂 Data (0/5)
 ```
-(nenhum arquivo documentado ainda)
+(pendente)
 ```
 
-### 📂 EndPoints (0/2)
+### 📂 EndPoints (2/2) ✅
 ```
-(nenhum arquivo documentado ainda)
-```
-
-### 📂 Extensions (0/3)
-```
-(nenhum arquivo documentado ainda)
+✅ RolesEndpoint.cs
+✅ UsersEndpoint.cs
 ```
 
-### 📂 Filters (0/4)
+### 📂 Extensions (3/3) ✅
 ```
-(nenhum arquivo documentado ainda)
+✅ EnumerableExtensions.cs
+✅ IdentityExtensions.cs
+✅ ToastExtensions.cs
+```
+
+### 📂 Filters (1/4) 🟡
+```
+✅ GlobalExceptionFilter.cs
+⏳ DisableModelValidationAttribute.cs
+⏳ PageExceptionFilter.cs
+⏳ SkipModelValidationAttribute.cs
 ```
 
 ### 📂 Helpers (0/6)
 ```
-(nenhum arquivo documentado ainda)
+(pendente)
 ```
 
 ### 📂 Hubs (0/5)
 ```
-(nenhum arquivo documentado ainda)
+(pendente)
 ```
 
-### 📂 Infrastructure (0/1)
+### 📂 Infrastructure (1/1) ✅
 ```
-(nenhum arquivo documentado ainda)
-```
-
-### 📂 Logging (0/1)
-```
-(nenhum arquivo documentado ainda)
+✅ CacheKeys.cs
 ```
 
-### 📂 Middlewares (0/2)
+### 📂 Logging (1/1) ✅
 ```
-(nenhum arquivo documentado ainda)
+✅ FrotiXLoggerProvider.cs
+```
+
+### 📂 Middlewares (2/2) ✅
+```
+✅ ErrorLoggingMiddleware.cs
+✅ UiExceptionMiddleware.cs
 ```
 
 ### 📂 Models (0/139)
 ```
-(nenhum arquivo documentado ainda)
+(pendente)
 ```
 
 ### 📂 Pages (0/340)
 ```
-(nenhum arquivo documentado ainda)
+(pendente)
 ```
 
 ### 📂 Properties (0/1)
 ```
-(nenhum arquivo documentado ainda)
+(pendente)
 ```
 
 ### 📂 Repository (0/209)
 ```
-(nenhum arquivo documentado ainda)
+(pendente)
 ```
 
 ### 📂 Services (0/43)
 ```
-(nenhum arquivo documentado ainda)
+(pendente)
 ```
 
 ### 📂 Settings (0/4)
 ```
-(nenhum arquivo documentado ainda)
+(pendente)
 ```
 
 ### 📂 Tools (0/4)
 ```
-(nenhum arquivo documentado ainda)
+(pendente)
 ```
 
 ---
@@ -144,7 +151,7 @@
 
 | Data | Arquivos Processados | Commits | Observações |
 |------|---------------------|---------|-------------|
-| 29/01/2026 | 0 | 0 | Início do processo |
+| 29/01/2026 | 10 | 1 | Lote 1 - Pastas pequenas: Infrastructure, Logging, EndPoints, Extensions, Middlewares, Filters (parcial) |
 
 ---
 

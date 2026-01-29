@@ -1,14 +1,20 @@
-﻿/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Helpers/ImageHelper.cs                                         ║
- * ║  Descrição: Utilitários de manipulação de imagens (System.Drawing).       ║
- * ║             IsImageValid verifica bytes válidos. ResizeImage             ║
- * ║             redimensiona JPEG/PNG para dimensões especificadas.          ║
- * ║             [SupportedOSPlatform("windows")]                              ║
- * ║  Data: 28/01/2026 | LOTE: 21                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ImageHelper.cs                                                                          ║
+   ║ 📂 CAMINHO: /Helpers                                                                               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Utilitários de manipulação de imagens usando System.Drawing. IsImageValid verifica               ║
+   ║    bytes válidos como imagem. ResizeImage redimensiona JPEG/PNG para dimensões especificadas.      ║
+   ║    NOTA: [SupportedOSPlatform("windows")] - funciona apenas em Windows.                             ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE DE FUNÇÕES (Entradas -> Saídas):                                                         ║
+   ║ 1. [IsImageValid] : Verifica se byte[] é imagem válida....... (byte[]) -> bool                     ║
+   ║ 2. [ResizeImage]  : Redimensiona JPEG/PNG para width/height.. (byte[],w,h) -> byte[] ou null      ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPENDÊNCIAS: System.Drawing (Windows-only), System.Drawing.Drawing2D                          ║
+   ║ 📅 ATUALIZAÇÃO: 29/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using System;
 using System.Drawing;

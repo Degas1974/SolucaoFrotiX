@@ -1,14 +1,29 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Filters/PageExceptionFilter.cs                                 ║
- * ║  Descrição: Filtro IPageFilter/IAsyncPageFilter para capturar exceções   ║
- * ║             em Razor Pages (.cshtml.cs). Complementa GlobalExceptionFilter║
- * ║             que funciona apenas para Controllers. Inclui também         ║
- * ║             AsyncPageExceptionFilter para handlers assíncronos.          ║
- * ║  Data: 28/01/2026 | LOTE: 21                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: PageExceptionFilter.cs                                                                  ║
+   ║ 📂 CAMINHO: /Filters                                                                                ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Filtro IPageFilter/IAsyncPageFilter para capturar exceções em Razor Pages (.cshtml.cs).         ║
+   ║    Complementa GlobalExceptionFilter (Controllers). Inclui AsyncPageExceptionFilter (async).        ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE DE FUNÇÕES (Entradas -> Saídas):                                                         ║
+   ║ ── PageExceptionFilter ──                                                                          ║
+   ║ 1. [OnPageHandlerSelected]      : Callback seleção handler............ (context) -> void           ║
+   ║ 2. [OnPageHandlerExecuting]     : Callback pré-execução............... (context) -> void           ║
+   ║ 3. [OnPageHandlerExecuted]      : Captura exceção e loga.............. (context) -> void           ║
+   ║ 4. [OnPageHandlerSelectionAsync]: Versão async da seleção............. (context) -> Task           ║
+   ║ 5. [OnPageHandlerExecutionAsync]: Executa e captura exceção async..... (ctx,next) -> Task          ║
+   ║ 6. [LogPageException]           : Extrai detalhes e loga via ILogService (ex,ctx)  -> void         ║
+   ║ 7. [ExtractFileName]            : Extrai nome arquivo do stack........ (ex,fallback) -> string     ║
+   ║ 8. [ExtractLineNumber]          : Extrai número linha do stack........ (ex) -> int?                ║
+   ║ ── AsyncPageExceptionFilter ──                                                                     ║
+   ║ 9. [OnPageHandlerSelectionAsync]: Callback async seleção.............. (context) -> Task           ║
+   ║10. [OnPageHandlerExecutionAsync]: Try/catch com re-throw.............. (ctx,next) -> Task          ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPENDÊNCIAS: ILogService, ILogger<PageExceptionFilter>                                         ║
+   ║ 📅 ATUALIZAÇÃO: 29/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using System;
 using System.IO;

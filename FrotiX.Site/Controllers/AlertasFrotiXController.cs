@@ -486,8 +486,7 @@ namespace FrotiX.Controllers
                 }
 
                 var quantidade = await _alertasRepo.GetQuantidadeAlertasNaoLidosAsync(usuarioId);
-                return Ok(new
-                });
+                return Ok(new { quantidade });
             }
             catch (Exception error)
             {
@@ -1626,55 +1625,21 @@ namespace FrotiX.Controllers
             };
         }
     }
-}
 
-public class ExportarDetalhesDto
-{
-    public Guid AlertaId
+    public class ExportarDetalhesDto
     {
-        get; set;
+        public Guid AlertaId { get; set; }
+        public string Titulo { get; set; }
+        public List<UsuarioExportDto> Usuarios { get; set; }
     }
 
-    public string Titulo
+    public class UsuarioExportDto
     {
-        get; set;
-    }
-
-    public List<UsuarioExportDto> Usuarios
-    {
-        get; set;
-    }
-}
-
-public class UsuarioExportDto
-{
-    public string NomeUsuario
-    {
-        get; set;
-    }
-
-    public string Email
-    {
-        get; set;
-    }
-
-    public bool Lido
-    {
-        get; set;
-    }
-
-    public bool Apagado
-    {
-        get; set;
-    }
-
-    public DateTime? DataNotificacao
-    {
-        get; set;
-    }
-
-    public DateTime? DataLeitura
-    {
-        get; set;
+        public string NomeUsuario { get; set; }
+        public string Email { get; set; }
+        public bool Lido { get; set; }
+        public bool Apagado { get; set; }
+        public DateTime? DataNotificacao { get; set; }
+        public DateTime? DataLeitura { get; set; }
     }
 }

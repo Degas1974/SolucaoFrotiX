@@ -5,14 +5,16 @@
  * ║  Descrição: Classe estática principal de alertas SweetAlert. Exibe       ║
  * ║             Erro/Sucesso/Info/Warning/Confirmar via TempData. Inclui     ║
  * ║             TratamentoErroComLinha com extração automática de stack      ║
- * ║             trace e métodos auxiliares de prioridade (ícone/cor/hex).    ║
- * ║  Data: 28/01/2026 | LOTE: 21                                             ║
+ * ║             trace e integração com ILogService via Service Locator.      ║
+ * ║             ORIGEM: SERVER (para diferenciar de CLIENT_JS)               ║
+ * ║  Data: 29/01/2026 | LOTE: 22                                             ║
  * ╚══════════════════════════════════════════════════════════════════════════╝
  */
 
 using FrotiX.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
@@ -24,6 +26,8 @@ namespace FrotiX.Helpers
     /// <summary>
     /// Utilitário de tratamento/log de erros com indicação de arquivo e linha.
     /// Integrado com sistema de alertas SweetAlert personalizado.
+    /// Usa Service Locator pattern para obter ILogService e gravar erros no banco/arquivo
+    /// de forma unificada (origem: SERVER).
     /// </summary>
     public static class Alerta
     {
@@ -37,6 +41,15 @@ namespace FrotiX.Helpers
             get; set;
         }
         public static ILoggerFactory LoggerFactory
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Service Provider para obter ILogService via Service Locator pattern.
+        /// Preenchido no Startup/Program.
+        /// </summary>
+        public static IServiceProvider ServiceProvider
         {
             get; set;
         }
@@ -93,7 +106,10 @@ namespace FrotiX.Helpers
         #region Tratamento de Erro com Linha
 
         /// <summary>
-        /// Tratamento de erro com linha - Log + Alerta visual
+        /// Tratamento de erro com linha - Log unificado (ILogService) + Alerta visual.
+        /// Usa Service Locator para obter ILogService do container DI.
+        /// Se ILogService não estiver disponível (ex: thread background), faz fallback para ILogger/Console.
+        /// ORIGEM: SERVER (para diferenciar de erros CLIENT_JS)
         /// </summary>
         public static void TratamentoErroComLinha(
             string arquivo ,
@@ -105,7 +121,7 @@ namespace FrotiX.Helpers
             if (error == null)
                 throw new ArgumentNullException(nameof(error));
 
-            // Log normal no servidor
+            // Extrair informações de linha do stack trace
             var info = TentarObterLinha(error);
             string fileName = !string.IsNullOrWhiteSpace(arquivo)
                 ? Path.GetFileName(arquivo)
@@ -115,15 +131,59 @@ namespace FrotiX.Helpers
                 ? funcao
                 : (info.member ?? "função desconhecida");
 
-            string linhaText = info.line.HasValue ? $" (linha {info.line.Value})" : string.Empty;
-            string msg =
-                $"{fileName}::{member}{linhaText}: {error.GetType().Name} - {error.Message}";
+            int? lineNumber = info.line;
+            string msg = $"{fileName}::{member}: {error.GetType().Name} - {error.Message}";
 
-            var useLogger = logger ?? LoggerFactory?.CreateLogger("Alerta");
-            if (useLogger != null)
-                useLogger.LogError(error , msg);
-            else
-                Debug.WriteLine(msg);
+            // ===== TENTATIVA 1: Service Locator para ILogService (gravar no banco/arquivo unificado) =====
+            bool loggedViaLogService = false;
+            try
+            {
+                // Tentar obter ILogService via ServiceProvider estático
+                var logService = ServiceProvider?.GetService(typeof(FrotiX.Services.ILogService)) as FrotiX.Services.ILogService;
+                
+                // Se não conseguiu via ServiceProvider, tentar via HttpContext.RequestServices
+                if (logService == null && HttpCtx?.HttpContext?.RequestServices != null)
+                {
+                    logService = HttpCtx.HttpContext.RequestServices.GetService(typeof(FrotiX.Services.ILogService)) as FrotiX.Services.ILogService;
+                }
+
+                if (logService != null)
+                {
+                    // Gravar via ILogService (origem: SERVER)
+                    logService.Error(
+                        message: $"[SERVER] {error.Message}",
+                        exception: error,
+                        arquivo: fileName,
+                        metodo: member,
+                        linha: lineNumber
+                    );
+                    loggedViaLogService = true;
+                }
+            }
+            catch
+            {
+                // Silencioso - continua para fallback
+            }
+
+            // ===== FALLBACK: ILogger ou Debug.WriteLine =====
+            if (!loggedViaLogService)
+            {
+                string linhaText = lineNumber.HasValue ? $" (linha {lineNumber.Value})" : string.Empty;
+                string fullMsg = $"{fileName}::{member}{linhaText}: {error.GetType().Name} - {error.Message}";
+
+                var useLogger = logger ?? LoggerFactory?.CreateLogger("Alerta");
+                if (useLogger != null)
+                {
+                    useLogger.LogError(error, fullMsg);
+                }
+                else
+                {
+                    // Último recurso: Console/Debug
+                    Debug.WriteLine($"[ALERTA-FALLBACK] {fullMsg}");
+                    Debug.WriteLine($"[ALERTA-FALLBACK] Stack: {error.StackTrace}");
+                    Console.Error.WriteLine($"[ALERTA-FALLBACK] {fullMsg}");
+                }
+            }
 
             // Alerta visual usando ShowErrorUnexpected
             SetErrorUnexpectedAlert(fileName , member , error);

@@ -1,13 +1,18 @@
-﻿/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Helpers/SfdtHelper.cs                                          ║
- * ║  Descrição: Helper Syncfusion para conversão de documentos Word.          ║
- * ║             SalvarImagemDeDocx: Converte DOCX → PDF → PNG (primeira      ║
- * ║             página). Usa DocIO, DocIORenderer, PdfViewer, SkiaSharp.      ║
- * ║  Data: 28/01/2026 | LOTE: 21                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: SfdtHelper.cs                                                                           ║
+   ║ 📂 CAMINHO: /Helpers                                                                               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Helper Syncfusion para conversão de documentos Word (DOCX -> PDF -> PNG). Usa DocIO,             ║
+   ║    DocIORenderer para conversão, PdfViewer para renderização, e SkiaSharp para imagem final.       ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE DE FUNÇÕES (Entradas -> Saídas):                                                         ║
+   ║ 1. [SalvarImagemDeDocx] : Converte DOCX -> PDF -> PNG (1ª página)... (byte[]) -> byte[]            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPENDÊNCIAS: Syncfusion.DocIO, Syncfusion.DocIORenderer, Syncfusion.Pdf, SkiaSharp            ║
+   ║ 📅 ATUALIZAÇÃO: 29/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using System;
 using System.IO;

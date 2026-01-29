@@ -1,13 +1,22 @@
-﻿/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Helpers/ErroHelper.cs                                          ║
- * ║  Descrição: Geração de scripts JavaScript para SweetAlert Interop.       ║
- * ║             Métodos: MontarScriptErro, MontarScriptAviso, MontarScriptInfo║
- * ║             e MontarScriptConfirmacao. Sanitiza strings para JS.         ║
- * ║  Data: 28/01/2026 | LOTE: 21                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ErroHelper.cs                                                                           ║
+   ║ 📂 CAMINHO: /Helpers                                                                               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Geração de scripts JavaScript para SweetAlert Interop. Métodos para montar strings JS            ║
+   ║    que chamam ShowTratamentoErroComLinha, ShowWarning, ShowInfo, ShowConfirm. Sanitiza strings.    ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE DE FUNÇÕES (Entradas -> Saídas):                                                         ║
+   ║ 1. [MontarScriptErro]       : JS para SweetAlertInterop.ShowTratamentoErroComLinha (cls,mtd,ex)    ║
+   ║ 2. [MontarScriptAviso]      : JS para SweetAlertInterop.ShowWarning.... (titulo,msg) -> string     ║
+   ║ 3. [MontarScriptInfo]       : JS para SweetAlertInterop.ShowInfo....... (titulo,msg) -> string     ║
+   ║ 4. [MontarScriptConfirmacao]: JS para SweetAlertInterop.ShowConfirm.... (tit,msg,btns) -> string   ║
+   ║ 5. [Sanitize]               : Escapa aspas e quebras de linha.......... (input) -> string          ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPENDÊNCIAS: System (sem dependências externas - gera strings puras)                           ║
+   ║ 📅 ATUALIZAÇÃO: 29/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using System;
 

@@ -85,10 +85,8 @@ namespace FrotiX
                     options.Limits.MaxRequestBodySize = 104857600; // 100MB
                 });
 
-                services.Configure<IISServerOptions>(options =>
-                {
-                    options.MaxRequestBodySize = 104857600; // 100MB
-                });
+                // IISServerOptions removido - não disponível em .NET 10 fora do contexto IIS
+                // Se hospedando em IIS, configurar no web.config
 
                 // Adicionar compressão
                 services.AddResponseCompression(options =>
@@ -131,7 +129,8 @@ namespace FrotiX
                     });
 
                 // Habilitar IO síncrono (necessário para o Telerik Reporting)
-                services.Configure<IISServerOptions>(options =>
+                // Kestrel: AllowSynchronousIO
+                services.Configure<KestrelServerOptions>(options =>
                 {
                     options.AllowSynchronousIO = true;
                 });
@@ -457,6 +456,8 @@ namespace FrotiX
                 Alerta.TempFactory =
                     app.ApplicationServices.GetRequiredService<ITempDataDictionaryFactory>();
                 Alerta.LoggerFactory = loggerFactory;
+                // ⭐ Service Provider para Service Locator pattern (resolve ILogService em TratamentoErroComLinha)
+                Alerta.ServiceProvider = app.ApplicationServices;
                 // ================================================================================
 
                 app.UseResponseCompression();

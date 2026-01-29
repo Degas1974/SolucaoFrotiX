@@ -1,14 +1,24 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Helpers/AlertaBackend.cs                                       ║
- * ║  Descrição: Helper backend-only para logging de erros (sem JSInterop).   ║
- * ║             TratamentoErroComLinha com CallerMemberName/FilePath/Line.   ║
- * ║             Versões estáticas e instância. Extrai file/line do stack.    ║
- * ║             Correlation ID via Activity.Current ou GUID.                 ║
- * ║  Data: 28/01/2026 | LOTE: 21                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: AlertaBackend.cs                                                                        ║
+   ║ 📂 CAMINHO: /Helpers                                                                               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Helper backend-only para logging de erros (sem JSInterop). TratamentoErroComLinha com            ║
+   ║    CallerMemberName/FilePath/Line automáticos. Versões estáticas e instância. Extrai file/line     ║
+   ║    do stack. Correlation ID via Activity.Current ou GUID para rastreabilidade.                     ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE DE FUNÇÕES (Entradas -> Saídas):                                                         ║
+   ║ 1. [ConfigureLogger]           : Injeta ILogger opcional............. (logger) -> void             ║
+   ║ 2. [GetCorrelationId]          : Retorna Activity.Id ou GUID novo.... () -> string                 ║
+   ║ 3. [TratamentoErroComLinha]    : Log erro com contexto (instância)... (ctx,ex,...) -> ValueTask    ║
+   ║ 4. [TratamentoErroComLinhaStatic]: Log erro contexto estático........ <T>(ex,...) -> ValueTask     ║
+   ║ 5. [SendUnexpected]            : Log direto sem contexto de classe... (src,msg,ex) -> ValueTask    ║
+   ║ 6. [TryExtractFileLine]        : Extrai (arquivo,linha) do stack..... (Exception) -> tuple        ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPENDÊNCIAS: ILogger, System.Diagnostics.Activity, CallerMemberName/FilePath/LineNumber        ║
+   ║ 📅 ATUALIZAÇÃO: 29/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using System;
 using System.Diagnostics;

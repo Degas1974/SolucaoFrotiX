@@ -271,7 +271,67 @@
         console.log('  - Objeto completo:', erroObj);
         console.log('=== TratamentoErroComLinha ENVIANDO ===');
 
+        // ===== ENVIAR LOG PARA O SERVIDOR (fetch silencioso) =====
+        // Não bloqueia a exibição do SweetAlert, envia em background
+        _enviarLogParaServidor(classeOuArquivo, metodo, erroObj);
+
         return SweetAlertInterop.ShowErrorUnexpected(classeOuArquivo, metodo, erroObj);
+    }
+
+    /**
+     * Envia o erro para o servidor via POST /api/LogErros/LogJavaScript
+     * Executa em background, silenciosamente (não bloqueia nem exibe erro adicional)
+     * ORIGEM: CLIENT_JS
+     * @param {string} arquivo - Nome do arquivo JS
+     * @param {string} metodo - Nome da função/método
+     * @param {object} erroObj - Objeto de erro preparado
+     */
+    function _enviarLogParaServidor(arquivo, metodo, erroObj)
+    {
+        try
+        {
+            // Preparar payload para o endpoint
+            const payload = {
+                mensagem: erroObj.message || erroObj.erro || 'Erro JavaScript',
+                arquivo: arquivo || 'desconhecido.js',
+                metodo: metodo || 'desconhecido',
+                linha: erroObj.linha || erroObj.lineNumber || null,
+                coluna: erroObj.coluna || erroObj.columnNumber || null,
+                stack: erroObj.stack || null,
+                userAgent: navigator.userAgent,
+                url: window.location.href,
+                timestamp: new Date().toISOString()
+            };
+
+            // Fetch silencioso - não bloqueia nem exibe erro
+            fetch('/api/LogErros/LogJavaScript', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (response.ok)
+                {
+                    console.log('✅ [Alerta] Erro enviado para o servidor com sucesso');
+                }
+                else
+                {
+                    console.warn('⚠️ [Alerta] Falha ao enviar erro para servidor:', response.status);
+                }
+            })
+            .catch(err => {
+                // Silencioso - não propagamos erro de log
+                console.warn('⚠️ [Alerta] Não foi possível enviar erro para servidor:', err.message);
+            });
+        }
+        catch (ex)
+        {
+            // Silencioso - nunca deve atrapalhar o fluxo principal
+            console.warn('⚠️ [Alerta] Exceção ao preparar envio de log:', ex.message);
+        }
     }
 
     // Exportar a função

@@ -1,15 +1,36 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Helpers/ListasCompartilhadas.cs                                ║
- * ║  Descrição: Provedores de listas para dropdowns e componentes.           ║
- * ║             Inclui: ListaFinalidade, ListaNivelCombustivel, ListaVeiculos║
- * ║             ListaMotorista, ListaRequisitante, ListaEvento, ListaSetores ║
- * ║             (TreeView/Flat), ListaDias, ListaPeriodos, ListaStatus.      ║
- * ║             Comparadores: PtBrComparer, NaturalStringComparer.           ║
- * ║  Data: 28/01/2026 | LOTE: 21                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ListasCompartilhadas.cs                                                                  ║
+   ║ 📂 CAMINHO: /Helpers                                                                               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Provedores de listas para dropdowns e componentes EJ2 (DropDownList, TreeView). Inclui:         ║
+   ║    ListaFinalidade, ListaNivelCombustivel, ListaVeiculos, ListaMotorista, ListaRequisitante,       ║
+   ║    ListaEvento, ListaSetores (TreeView/Flat), ListaDias, ListaPeriodos, ListaStatus.               ║
+   ║    Comparadores: PtBrComparer (ignora acentos), NaturalStringComparer (ordenação natural).        ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE DE FUNÇÕES (Entradas -> Saídas):                                                         ║
+   ║ ── Comparadores ──                                                                                  ║
+   ║ 1. [PtBrComparer.Compare]        : pt-BR ignora case/acentos... (x,y) -> int                       ║
+   ║ 2. [NaturalStringComparer.Compare]: Ordenação natural numérica. (x,y) -> int                       ║
+   ║ ── Listas ──                                                                                       ║
+   ║ 3. [ListaFinalidade.FinalidadesList]    : Lista de finalidades viagem... () -> List                ║
+   ║ 4. [ListaNivelCombustivel.NivelCombustivelList]: Níveis do tanque.... () -> List                   ║
+   ║ 5. [ListaVeiculos.VeiculosList]         : Veículos ativos (placa/modelo) () -> IEnumerable         ║
+   ║ 6. [ListaMotorista.MotoristaList]       : Motoristas ativos com foto... () -> IEnumerable          ║
+   ║ 7. [ListaRequisitante.RequisitantesList]: Requisitantes ordenados..... () -> IEnumerable           ║
+   ║ 8. [ListaEvento.EventosList]            : Eventos ativos.............. () -> IEnumerable           ║
+   ║ 9. [ListaSetores.SetoresList]           : Setores hierárquicos TreeView () -> List                 ║
+   ║10. [ListaSetoresEvento.SetoresEventoList]: Setores flat para eventos.. () -> List                  ║
+   ║11. [ListaSetoresFlat.SetoresListFlat]   : Setores indentados dropdown. () -> List                  ║
+   ║12. [ListaDias.DiasList]                 : Dias da semana pt-BR........ () -> List                  ║
+   ║13. [ListaPeriodos.PeriodosList]         : Períodos (D/S/Q/M)........... () -> List                 ║
+   ║14. [ListaRecorrente.RecorrenteList]     : Sim/Não para recorrência.... () -> List                  ║
+   ║15. [ListaStatus.StatusList]             : Status de viagem............ () -> List                  ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPENDÊNCIAS: IUnitOfWork (Repository Pattern), System.Globalization                            ║
+   ║ 📅 ATUALIZAÇÃO: 29/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
