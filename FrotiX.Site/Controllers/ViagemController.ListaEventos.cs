@@ -1,38 +1,17 @@
-/*
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Arquivo    : ViagemController.ListaEventos.cs                                ║
-║ Projeto    : FrotiX.Site                                                     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ DESCRICAO                                                                    ║
-║ Partial class do ViagemController com endpoint ListaEventos SUPER OTIMIZADO. ║
-║ Implementa paginacao server-side (DataTables), carregando apenas 25          ║
-║ registros por vez. Performance: < 2 segundos (vs 30+ segundos timeout).      ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ ENDPOINTS                                                                    ║
-║ - GET /api/Viagem/ListaEventos : Lista eventos com paginacao server-side     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ PARAMETROS DATATABLES                                                        ║
-║ - draw        : Contador de requisicao (DataTables)                          ║
-║ - start       : Offset/inicio da pagina (0, 25, 50...)                       ║
-║ - length      : Quantidade de registros por pagina (padrao: 25)              ║
-║ - orderColumn : Indice da coluna para ordenacao (0-6)                        ║
-║ - orderDir    : Direcao da ordenacao (asc/desc)                              ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ OTIMIZACOES IMPLEMENTADAS                                                    ║
-║ - Paginacao server-side (25 registros por vez)                               ║
-║ - Agregacao de custos apenas da pagina atual                                 ║
-║ - Queries com AsNoTracking para melhor performance                           ║
-║ - Ordenacao por coluna de custos feita em memoria                            ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ COLUNAS ORDENÁVEIS                                                           ║
-║ 0=Nome, 1=DataInicial, 2=DataFinal, 3=QtdParticipantes,                      ║
-║ 4=NomeSetor, 5=CustoViagem(memoria), 6=Status                                ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ViagemController.ListaEventos.cs                                                        ║
+   ║ 📂 CAMINHO: /Controllers                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Partial com endpoint ListaEventos SUPER OTIMIZADO. Paginação server-side (DataTables) ║
+   ║    carregando 25 registros por vez. Performance: <2s (vs 30+s timeout anterior).                   ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ENDPOINTS: [GET] /api/Viagem/ListaEventos → Lista eventos com paginação server-side             ║
+   ║    PARAMS: draw, start, length, orderColumn (0-6), orderDir (asc/desc)                             ║
+   ║    COLUNAS: Nome, DataInicial, DataFinal, QtdParticipantes, NomeSetor, CustoViagem, Status         ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPS: FrotiXDbContext, IUnitOfWork (Evento), AsNoTracking otimizado                              ║
+   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

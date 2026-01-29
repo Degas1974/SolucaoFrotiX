@@ -1,36 +1,18 @@
-/*
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Arquivo    : ViagemController.MetodosEstatisticas.cs                         ║
-║ Projeto    : FrotiX.Site                                                     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ DESCRICAO                                                                    ║
-║ Partial class do ViagemController com metodos para geracao de estatisticas   ║
-║ de viagens em background. Processa viagens em lotes por data e atualiza      ║
-║ tabela ViagemEstatistica com dados agregados. Usa cache para progresso.      ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ ENDPOINTS                                                                    ║
-║ - POST /api/Viagem/GerarEstatisticasViagens   : Inicia geracao em background ║
-║ - GET  /api/Viagem/ObterProgressoEstatisticas : Obtem progresso atual        ║
-║ - POST /api/Viagem/LimparProgressoEstatisticas: Limpa cache de progresso     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ CLASSES AUXILIARES                                                           ║
-║ - ProgressoEstatisticas : Controle de progresso (total, processado, %)       ║
-║   Propriedades: Total, Processado, Percentual, Concluido, Erro, Mensagem     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ METODOS AUXILIARES                                                           ║
-║ - ProcessarGeracaoEstatisticas : Task async que processa em background       ║
-║   Cria novo scope para DbContext independente e processa data por data       ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ DEPENDENCIAS                                                                 ║
-║ - IMemoryCache (_cache)       : Cache para estado do progresso (30 min)      ║
-║ - IServiceScopeFactory        : Factory para criar scopes de DI              ║
-║ - ViagemEstatisticaService    : Service que recalcula estatisticas           ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Data Documentacao: 28/01/2026                              LOTE: 19          ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ViagemController.MetodosEstatisticas.cs                                                 ║
+   ║ 📂 CAMINHO: /Controllers                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Partial com métodos para geração de estatísticas de viagens em background. Processa   ║
+   ║    em lotes por data e atualiza ViagemEstatistica com dados agregados. Usa cache para progresso.   ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ENDPOINTS: [POST] /GerarEstatisticasViagens → Inicia geração em background                      ║
+   ║    [GET] /ObterProgressoEstatisticas → Progresso atual                                             ║
+   ║    [POST] /LimparProgressoEstatisticas → Limpa cache                                               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPS: IMemoryCache (30min), IServiceScopeFactory, ViagemEstatisticaService                       ║
+   ║    CLASSES: ProgressoEstatisticas (Total, Processado, Percentual, Concluido, Erro, Mensagem)       ║
+   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using FrotiX.Data;
 using FrotiX.Models;
