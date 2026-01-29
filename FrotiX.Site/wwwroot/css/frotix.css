@@ -5116,3 +5116,69 @@ div.dataTables_paginate .pagination .page-item .page-link * {
 .dataTables_wrapper .page-item .page-link * {
     color: #ffffff !important;
 }
+
+/* ==========================================================================
+   CORREÇÃO DEFINITIVA - Força cor branca em TODOS os estados dos botões
+   Especificidade máxima para sobrescrever qualquer CSS do DataTables/Bootstrap
+   ========================================================================== */
+
+/* Estado NORMAL - Força cor branca em links e spans dentro dos botões */
+.dataTables_wrapper .dataTables_paginate .paginate_button:not(.disabled) a,
+.dataTables_wrapper .dataTables_paginate .paginate_button:not(.disabled) span,
+.dataTables_wrapper .dataTables_paginate .paginate_button:not(.disabled),
+div.dataTables_paginate .paginate_button:not(.disabled) a,
+div.dataTables_paginate .paginate_button:not(.disabled) span,
+div.dataTables_paginate .paginate_button:not(.disabled),
+.page-item:not(.disabled) .page-link,
+.page-item:not(.disabled) .page-link a,
+.page-item:not(.disabled) .page-link span {
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
+
+/* Estado HOVER - Mantém cor branca no hover */
+.dataTables_wrapper .dataTables_paginate .paginate_button:not(.disabled):hover a,
+.dataTables_wrapper .dataTables_paginate .paginate_button:not(.disabled):hover span,
+.dataTables_wrapper .dataTables_paginate .paginate_button:not(.disabled):hover,
+div.dataTables_paginate .paginate_button:not(.disabled):hover a,
+div.dataTables_paginate .paginate_button:not(.disabled):hover span,
+div.dataTables_paginate .paginate_button:not(.disabled):hover,
+.page-item:not(.disabled) .page-link:hover,
+.page-item:not(.disabled) .page-link:hover a,
+.page-item:not(.disabled) .page-link:hover span {
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
+
+/* Estado ATIVO/CURRENT - Mantém cor branca no estado ativo */
+.dataTables_wrapper .dataTables_paginate .paginate_button.current a,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current span,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.active a,
+.dataTables_wrapper .dataTables_paginate .paginate_button.active span,
+.dataTables_wrapper .dataTables_paginate .paginate_button.active,
+div.dataTables_paginate .paginate_button.current a,
+div.dataTables_paginate .paginate_button.current span,
+div.dataTables_paginate .paginate_button.current,
+div.dataTables_paginate .paginate_button.active a,
+div.dataTables_paginate .paginate_button.active span,
+div.dataTables_paginate .paginate_button.active,
+.page-item.active .page-link,
+.page-item.active .page-link a,
+.page-item.active .page-link span {
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
+
+/* Links específicos - Força cor branca em TODOS os estados de link */
+.dataTables_wrapper .dataTables_paginate a:link:not(.disabled),
+.dataTables_wrapper .dataTables_paginate a:visited:not(.disabled),
+.dataTables_wrapper .dataTables_paginate a:hover:not(.disabled),
+.dataTables_wrapper .dataTables_paginate a:active:not(.disabled),
+div.dataTables_paginate a:link:not(.disabled),
+div.dataTables_paginate a:visited:not(.disabled),
+div.dataTables_paginate a:hover:not(.disabled),
+div.dataTables_paginate a:active:not(.disabled) {
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
