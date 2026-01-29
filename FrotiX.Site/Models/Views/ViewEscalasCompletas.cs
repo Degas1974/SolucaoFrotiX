@@ -1,11 +1,14 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Models/Views/ViewEscalasCompletas.cs                           ║
- * ║  Descrição: Modelo mapeado da View de escalas completas de motoristas    ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+    ║ 🚀 ARQUIVO: ViewEscalasCompletas.cs                                                                ║
+    ║ 📂 CAMINHO: /Models/Views                                                                           ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 🎯 OBJETIVO: View SQL de escalas completas de motoristas (turnos, veículo, lotação).               ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 📋 PROPS: EscalaDiaId, DataEscala, HoraInicio/Fim, MotoristaId, VeiculoId, Lotacao, etc.           ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 🔗 DEPS: System.ComponentModel.DataAnnotations                                                      ║
+    ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
 using System.Collections.Generic;

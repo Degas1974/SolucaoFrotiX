@@ -1,11 +1,14 @@
-﻿/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Models/Views/ViewEmpenhoMulta.cs                               ║
- * ║  Descrição: Modelo mapeado da View de empenhos de multas                 ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+    ║ 🚀 ARQUIVO: ViewEmpenhoMulta.cs                                                                    ║
+    ║ 📂 CAMINHO: /Models/Views                                                                           ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 🎯 OBJETIVO: View SQL de empenhos de multas (saldos e movimentações).                              ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 📋 PROPS: EmpenhoMultaId, OrgaoAutuanteId, NotaEmpenho, SaldoInicial/Atual, Movimentacoes          ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 🔗 DEPS: FrotiX.Validations                                                                         ║
+    ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
 using System.Collections.Generic;

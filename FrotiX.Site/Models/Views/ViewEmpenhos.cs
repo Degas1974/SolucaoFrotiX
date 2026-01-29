@@ -1,11 +1,14 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Models/Views/ViewEmpenhos.cs                                   ║
- * ║  Descrição: Modelo mapeado da View de empenhos de contratos              ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+    ║ 🚀 ARQUIVO: ViewEmpenhos.cs                                                                        ║
+    ║ 📂 CAMINHO: /Models/Views                                                                           ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 🎯 OBJETIVO: View SQL de empenhos de contratos (saldos, vigência, dados financeiros).             ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 📋 PROPS: EmpenhoId, NotaEmpenho, DataEmissao, AnoVigencia, SaldoInicial/Final                     ║
+    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+    ║ 🔗 DEPS: FrotiX.Validations                                                                         ║
+    ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
 using System.Collections.Generic;
