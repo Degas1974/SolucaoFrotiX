@@ -159,19 +159,37 @@ $(document).on('click', '#tblViagem .btn-imprimir', function (e)
 {
     e.preventDefault();
     e.stopPropagation();
-    
+
     const viagemId = $(this).data('viagem-id');
+    console.log('🖨️ Abrindo modal de impressão para viagem:', viagemId);
+
     const modalEl = document.getElementById('modalPrint');
-    if (!modalEl || !viagemId) return;
+    if (!modalEl)
+    {
+        console.error('❌ Modal #modalPrint não encontrado!');
+        return;
+    }
+
+    if (!viagemId)
+    {
+        console.error('❌ ID da viagem não informado!');
+        return;
+    }
 
     // guarda o id no modal
     modalEl.setAttribute('data-viagem-id', String(viagemId));
     // também injeta no hidden
     $('#txtViagemId').val(viagemId);
-    
+
+    console.log('✅ ID armazenado:', {
+        modal: modalEl.getAttribute('data-viagem-id'),
+        hidden: $('#txtViagemId').val()
+    });
+
     // Abre o modal via Bootstrap 5
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     modal.show();
+    console.log('✅ Modal aberto');
 });
 
 /* =========================================================================================
