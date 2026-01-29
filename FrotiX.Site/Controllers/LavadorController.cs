@@ -1,21 +1,12 @@
-/*
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Arquivo    : LavadorController.cs                                            ║
-║ Projeto    : FrotiX.Site                                                     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ DESCRICAO                                                                    ║
-║ Controller para gestao de lavadores (funcionarios responsaveis por limpeza   ║
-║ de veiculos). CRUD completo com vinculos a contratos e fornecedores.         ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ ENDPOINTS                                                                    ║
-║ - GET  /api/Lavador/GetAll   : Lista todos lavadores                         ║
-║ - POST /api/Lavador/Upsert   : Criar/atualizar lavador                       ║
-║ - POST /api/Lavador/Delete   : Excluir lavador                               ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: LavadorController.cs                                                                    ║
+   ║ 📂 CAMINHO: /Controllers                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Gestão de lavadores (funcionários de limpeza de veículos). CRUD + vínculos contratos.  ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: GetAll(), Upsert(), Delete() - vínculos com Contrato, Fornecedor, AspNetUsers            ║
+   ║ 🔗 DEPS: IUnitOfWork, Entity Framework | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                       ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
 */
 
 /****************************************************************************************
