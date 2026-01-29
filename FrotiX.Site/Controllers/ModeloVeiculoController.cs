@@ -1,21 +1,12 @@
-/*
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    DOCUMENTACAO INTRA-CODIGO - FROTIX                        ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Arquivo    : ModeloVeiculoController.cs                                      ║
-║ Projeto    : FrotiX.Site                                                     ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ DESCRICAO                                                                    ║
-║ Controller para gestao de modelos de veiculos vinculados a marcas. CRUD      ║
-║ basico com relacionamento MarcaVeiculo (JOIN).                               ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ ENDPOINTS                                                                    ║
-║ - GET  /api/ModeloVeiculo/GetAll  : Lista modelos com marca                   ║
-║ - POST /api/ModeloVeiculo/Upsert  : Criar/atualizar modelo                    ║
-║ - POST /api/ModeloVeiculo/Delete  : Excluir modelo                            ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║ Data Documentacao: 28/01/2026                              LOTE: 21          ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ModeloVeiculoController.cs                                                              ║
+   ║ 📂 CAMINHO: /Controllers                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Gerenciar modelos de veículos vinculados a marcas. CRUD básico com JOIN MarcaVeiculo.  ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: GetAll(), Upsert(), Delete() - ModeloVeiculoViewModel para dropdowns                     ║
+   ║ 🔗 DEPS: IUnitOfWork (ModeloVeiculo, MarcaVeiculo) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0           ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
 */
 
 /****************************************************************************************
