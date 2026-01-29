@@ -1,43 +1,18 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
- * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
- * ║ Arquivo: UnidadeController.cs (Controllers)                                                              ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ DESCRIÇÃO                                                                                                 ║
- * ║ API Controller para operações de Unidades e gestão de Lotação de Motoristas.                            ║
- * ║ Gerencia CRUD de unidades e controle completo de lotações com coberturas.                               ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ ROTA BASE: api/Unidade                                                                                   ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ ENDPOINTS - UNIDADE                                                                                       ║
- * ║ • [GET]  /              : Lista todas as unidades                                                       ║
- * ║ • [POST] /Delete        : Remove unidade (verifica vínculos com veículos)                               ║
- * ║ • [GET]  /UpdateStatus  : Toggle status Ativo/Inativo                                                   ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ ENDPOINTS - LOTAÇÃO MOTORISTA                                                                             ║
- * ║ • [GET]  /ListaLotacao                    : Lista lotações de um motorista                              ║
- * ║ • [GET]  /LotaMotorista                   : Cria nova lotação                                           ║
- * ║ • [GET]  /EditaLotacao                    : Edita lotação existente                                     ║
- * ║ • [GET]  /DeleteLotacao                   : Remove lotação                                              ║
- * ║ • [GET]  /AtualizaMotoristaLotacaoAtual   : Transfere motorista entre unidades                          ║
- * ║ • [GET]  /AlocaMotoristaCobertura         : Aloca motorista para cobertura (férias)                     ║
- * ║ • [GET]  /ListaLotacoes                   : Lista todas lotações por categoria                          ║
- * ║ • [GET]  /RemoveLotacoes                  : Desativa lotações anteriores                                ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ REGRAS DE NEGÓCIO - COBERTURA                                                                             ║
- * ║ Quando motorista entra em férias:                                                                       ║
- * ║ 1. Desabilita lotação atual do motorista de férias                                                      ║
- * ║ 2. Cria nova lotação "Férias" para o motorista                                                          ║
- * ║ 3. Remove motorista cobertura da sua lotação atual                                                      ║
- * ║ 4. Cria nova lotação "Cobertura" para o motorista cobertura                                             ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ DEPENDÊNCIAS                                                                                              ║
- * ║ • IUnitOfWork (Unidade, Veiculo, LotacaoMotorista, Motorista, ViewLotacaoMotorista, ViewLotacoes)       ║
- * ║ • INotyfService - Notificações toast                                                                    ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
- * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: UnidadeController.cs                                                                    ║
+   ║ 📂 CAMINHO: /Controllers                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: API Controller para operações de Unidades e gestão de Lotação de Motoristas.          ║
+   ║    Gerencia CRUD de unidades e controle completo de lotações com coberturas.                       ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ENDPOINTS UNIDADE: [GET] / → Lista | [POST] /Delete → Remove | [GET] /UpdateStatus → Toggle     ║
+   ║    LOTAÇÃO: ListaLotacao, LotaMotorista, EditaLotacao, DeleteLotacao, AtualizaMotoristaLotacaoAtual║
+   ║    AlocaMotoristaCobertura (férias→cobertura), ListaLotacoes, RemoveLotacoes                       ║
+   ║    ROTA BASE: api/Unidade                                                                           ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPS: IUnitOfWork (Unidade, Veiculo, LotacaoMotorista, Motorista), INotyfService                ║
+   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;

@@ -1,29 +1,17 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
- * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
- * ║ Arquivo: UploadCRLVController.cs (Controllers)                                                           ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ DESCRIÇÃO                                                                                                 ║
- * ║ API Controller para upload e remoção de CRLV (Certificado de Registro e Licenciamento de Veículo).      ║
- * ║ Armazena o arquivo diretamente no campo byte[] CRLV da tabela Veiculo.                                  ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ ROTA BASE: api/UploadCRLV                                                                                ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ ATRIBUTOS                                                                                                 ║
- * ║ • [IgnoreAntiforgeryToken] - Permite upload sem token CSRF                                              ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ ENDPOINTS                                                                                                 ║
- * ║ • [POST] /Save           : Upload de arquivo CRLV (query param: veiculoId)                              ║
- * ║ • [POST] /Remove         : Remove CRLV existente (query param: veiculoId)                               ║
- * ║ • [POST] /UploadFeatures : Retorna view (funcionalidade não implementada)                               ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ DEPENDÊNCIAS                                                                                              ║
- * ║ • IUnitOfWork (Veiculo)                                                                                 ║
- * ║ • IWebHostEnvironment - Acesso ao ambiente de hospedagem                                                ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
- * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: UploadCRLVController.cs                                                                 ║
+   ║ 📂 CAMINHO: /Controllers                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: API Controller para upload e remoção de CRLV (Certificado de Registro e               ║
+   ║    Licenciamento de Veículo). Armazena arquivo no campo byte[] CRLV da tabela Veiculo.             ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ENDPOINTS: [POST] /Save → Upload CRLV (veiculoId) | [POST] /Remove → Remove CRLV existente      ║
+   ║    [POST] /UploadFeatures → View (não implementado) | ROTA BASE: api/UploadCRLV                    ║
+   ║    ATRIBUTO: [IgnoreAntiforgeryToken] - Permite upload sem token CSRF                              ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPS: IUnitOfWork (Veiculo), IWebHostEnvironment                                                 ║
+   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Hosting;

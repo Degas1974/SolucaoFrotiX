@@ -1,41 +1,20 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
- * ║ FROTIX - SISTEMA DE GESTÃO DE FROTAS                                                                     ║
- * ║ Arquivo: UsuarioController.cs (Controllers)                                                              ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ DESCRIÇÃO                                                                                                 ║
- * ║ API Controller para operações de Usuários (AspNetUsers) e Controle de Acesso. Gerencia CRUD de usuários,║
- * ║ toggle de status, gestão de permissões por recurso e carga patrimonial.                                 ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ ROTA BASE: api/Usuario                                                                                   ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ ENDPOINTS                                                                                                 ║
- * ║ • [GET]  /                       : Lista usuários com flag PodeExcluir                                  ║
- * ║ • [POST] /Delete                 : Remove usuário (verifica vínculos extensivos)                        ║
- * ║ • [GET]  /UpdateStatusUsuario    : Toggle status Ativo/Inativo                                          ║
- * ║ • [GET]  /UpdateCargaPatrimonial : Toggle DetentorCargaPatrimonial                                      ║
- * ║ • [GET]  /UpdateStatusAcesso     : Toggle acesso a recurso específico (IDS = "usuarioId|recursoId")     ║
- * ║ • [GET]  /PegaRecursosUsuario    : Lista recursos de um usuário                                         ║
- * ║ • [GET]  /PegaUsuariosRecurso    : Lista usuários de um recurso                                         ║
- * ║ • [POST] /InsereRecursosUsuario  : Cria ControleAcesso para todos usuários x recursos (inicial)         ║
- * ║ • [GET]  /listaUsuariosDetentores: Lista usuários ativos com DetentorCargaPatrimonial = true            ║
- * ║ • [POST] /DeleteRecurso          : Remove recurso (verifica vínculos em ControleAcesso)                 ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ VALIDAÇÕES DE EXCLUSÃO USUÁRIO                                                                            ║
- * ║ Não pode excluir se vinculado a:                                                                        ║
- * ║ • ControleAcesso (como UsuarioId)                                                                       ║
- * ║ • Viagens (como UsuarioIdCriacao ou UsuarioIdFinalizacao)                                               ║
- * ║ • Manutenções (Alteração, Criação, Finalização, Cancelamento)                                           ║
- * ║ • MovimentacaoPatrimonio (como ResponsavelMovimentacao)                                                 ║
- * ║ • SetorPatrimonial (como DetentorId)                                                                    ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ DEPENDÊNCIAS                                                                                              ║
- * ║ • IUnitOfWork (AspNetUsers, ControleAcesso, ViewControleAcesso, Recurso, Viagem, Manutencao,            ║
- * ║   MovimentacaoPatrimonio, SetorPatrimonial)                                                             ║
- * ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════╣
- * ║ Documentação: 28/01/2026 | LOTE: 19                                                                      ║
- * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: UsuarioController.cs                                                                    ║
+   ║ 📂 CAMINHO: /Controllers                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: API Controller para operações de Usuários (AspNetUsers) e Controle de Acesso.         ║
+   ║    Gerencia CRUD de usuários, toggle de status, gestão de permissões por recurso e carga patrimonial║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ENDPOINTS: [GET] / → Lista usuários | [POST] /Delete → Remove usuário                           ║
+   ║    [GET] /UpdateStatusUsuario → Toggle Ativo | [GET] /UpdateCargaPatrimonial → Toggle detentor     ║
+   ║    [GET] /UpdateStatusAcesso → Toggle acesso recurso | [GET] /PegaRecursosUsuario → Lista recursos ║
+   ║    [GET] /PegaUsuariosRecurso → Lista usuários recurso | [POST] /InsereRecursosUsuario → Inicial   ║
+   ║    [GET] /listaUsuariosDetentores → Detentores ativos | [POST] /DeleteRecurso → Remove recurso     ║
+   ║    ROTA BASE: api/Usuario                                                                           ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPS: IUnitOfWork (AspNetUsers, ControleAcesso, Recurso, Viagem, Manutencao, SetorPatrimonial)   ║
+   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
