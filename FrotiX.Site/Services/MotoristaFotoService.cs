@@ -1,14 +1,14 @@
-﻿/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Services/MotoristaFotoService.cs                               ║
- * ║  Descrição: Serviço de cache e redimensionamento de fotos de motoristas. ║
- * ║             ObterFotoBase64: Cache IMemoryCache (1h), resize se >50KB.   ║
- * ║             RedimensionarImagem: System.Drawing para 60x60 JPEG.         ║
- * ║             [SupportedOSPlatform("windows")]                             ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: MotoristaFotoService.cs                                                                 ║
+   ║ 📂 CAMINHO: /Services                                                                               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Cache e resize de fotos motoristas. IMemoryCache (1h), resize >50KB para 60x60 JPEG.   ║
+   ║ ⚠️ NOTA: [SupportedOSPlatform("windows")] - System.Drawing requer Windows.                          ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: ObterFotoBase64, RedimensionarImagem                                                     ║
+   ║ 🔗 DEPS: IMemoryCache, System.Drawing | 📅 29/01/2026 | 👤 Copilot | 📝 v2.0                        ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using System;
 using System.Collections.Generic;

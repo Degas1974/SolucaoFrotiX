@@ -1,7 +1,13 @@
-// ============================================================================
-// SERVICOSASYNC.CS - VERSÃO CORRIGIDA
-// Substitua o arquivo ServicosAsync.cs completo por este
-// ============================================================================
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ServicosAsync.cs                                                                        ║
+   ║ 📂 CAMINHO: /Services                                                                               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO: Versões async dos cálculos de custo (Combustível, Veículo, Motorista, etc.).           ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 ÍNDICE: CalculaCusto*Async (todas as versões Task-based)                                         ║
+   ║ 🔗 DEPS: IUnitOfWork | 📅 29/01/2026 | 👤 Copilot | 📝 v2.0                                         ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
