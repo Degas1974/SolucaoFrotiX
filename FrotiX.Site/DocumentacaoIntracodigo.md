@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-█████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 18.6%
+██████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 19.1%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 168 |
-| Percentual | 18.6% |
-| Última Atualização | 30/01/2026 23:50 |
+| Documentados | 173 |
+| Percentual | 19.1% |
+| Última Atualização | 30/01/2026 15:00 |
 
 ---
 
@@ -39,7 +39,7 @@
 | 12 | Models | 139 | 48 | 34.5% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
-| 15 | Repository | 209 | 142 | 67.9% | 🟡 Em Progresso |
+| 15 | Repository | 209 | 147 | 70.3% | 🟡 Em Progresso |
 | 16 | Services | 43 | 0 | 0% | 🔴 Pendente |
 | 17 | Settings | 4 | 0 | 0% | 🔴 Pendente |
 | 18 | Tools | 4 | 0 | 0% | 🔴 Pendente |
@@ -129,7 +129,7 @@
 (pendente)
 ```
 
-### 📂 Repository (142/209) 🟡
+### 📂 Repository (147/209) 🟡
 ```
 ✅ Repository/ - Classes Principais (13 arquivos - Lotes 61-64):
    • AbastecimentoRepository.cs
@@ -286,7 +286,14 @@
    • OrgaoAutuanteRepository.cs
    • PatrimonioRepository.cs
 
-⏳ Pendente: ~67 arquivos restantes
+✅ Repository/ - Classes de Implementação (Lote 90 - novo padrão visual):
+   • PlacaBronzeRepository.cs
+   • RecursoRepository.cs
+   • RegistroCupomAbastecimentoRepository.cs
+   • RepactuacaoAtaRepository.cs
+   • RepactuacaoContratoRepository.cs
+
+⏳ Pendente: ~62 arquivos restantes
 ```
 
 ### 📂 Services (0/43)
@@ -348,10 +355,11 @@
 | 30/01/2026 | 5 | 1 | Lote 87 - Repository novo padrão visual (5 arquivos) |
 | 30/01/2026 | 5 | 1 | Lote 88 - Repository novo padrão visual (5 arquivos) |
 | 30/01/2026 | 5 | 1 | Lote 89 - Repository novo padrão visual (5 arquivos) |
+| 30/01/2026 | 5 | 1 | Lote 90 - Repository novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 38
-**Total de Commits:** 36
-**Total de Arquivos Documentados:** 168
+**Total de Lotes:** 39
+**Total de Commits:** 37
+**Total de Arquivos Documentados:** 173
 
 ---
 

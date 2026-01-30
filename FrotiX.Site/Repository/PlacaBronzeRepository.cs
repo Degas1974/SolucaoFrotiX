@@ -1,18 +1,20 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ║ ARQUIVO    : PlacaBronzeRepository.cs                                        ║
-// ║ LOCALIZAÇÃO: Repository/                                                     ║
-// ║ LOTE       : 24 — Repository                                                 ║
-// ║ DATA       : 29/01/2026                                                      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ FINALIDADE                                                                   ║
-// ║ Repositório para placas de bronze (identificação patrimonial de veículos).   ║
-// ║ Gerencia cadastro de placas metálicas com numeração patrimonial.             ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ PRINCIPAIS MÉTODOS                                                           ║
-// ║ • GetPlacaBronzeListForDropDown() → Lista placas ativas ordenadas            ║
-// ║ • Update() → Atualiza registro de placa de bronze                            ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: PlacaBronzeRepository.cs                                                               ║
+   ║ 📂 CAMINHO: Repository/                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Repositório para placas de bronze vinculadas ao patrimônio veicular.                            ║
+   ║    Fornece listagens para UI e atualização de cadastros de placas metálicas.                       ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • PlacaBronzeRepository(FrotiXDbContext db)                                                      ║
+   ║    • GetPlacaBronzeListForDropDown()                                                               ║
+   ║    • Update(PlacaBronze placaBronze)                                                               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ ⚠️ OBSERVAÇÕES:                                                                                     ║
+   ║    A listagem filtra Status == true e ordena por DescricaoPlaca.                                    ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,16 +26,65 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
 {
+    /// <summary>
+    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    /// │ 🎯 CLASSE: PlacaBronzeRepository                                                               │
+    /// │ 📦 HERDA DE: Repository<PlacaBronze>                                                           │
+    /// │ 🔌 IMPLEMENTA: IPlacaBronzeRepository                                                          │
+    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    ///
+    /// Repositório responsável pelo cadastro de placas de bronze (identificação patrimonial).
+    /// Centraliza consultas para listagem e atualização de registros.
+    /// </summary>
     public class PlacaBronzeRepository : Repository<PlacaBronze>, IPlacaBronzeRepository
     {
         private new readonly FrotiXDbContext _db;
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: PlacaBronzeRepository                                                         │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
+        /// │    ➡️ CHAMA       : base(db)                                                             │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Inicializar o repositório com o contexto de dados do EF Core.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    db - Contexto do banco de dados da aplicação.
+        /// </para>
+        /// </summary>
+        /// <param name="db">Instância de <see cref="FrotiXDbContext"/>.</param>
         public PlacaBronzeRepository(FrotiXDbContext db)
             : base(db)
         {
             _db = db;
         }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: GetPlacaBronzeListForDropDown                                                  │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
+        /// │    ➡️ CHAMA       : DbContext.PlacaBronze, Where, OrderBy, Select                         │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Obter lista de placas de bronze ativas para composição de dropdowns.
+        ///    Ordena os registros pela descrição da placa.
+        /// </para>
+        ///
+        /// <para>
+        /// 📤 <b>RETORNO:</b><br/>
+        ///    IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
+        /// </para>
+        /// </summary>
+        /// <returns>Lista de itens de seleção com placas de bronze ativas.</returns>
         public IEnumerable<SelectListItem> GetPlacaBronzeListForDropDown()
         {
             return _db
@@ -46,6 +97,25 @@ namespace FrotiX.Repository
                 });
         }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: Update                                                                        │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
+        /// │    ➡️ CHAMA       : DbContext.PlacaBronze.FirstOrDefault, _db.Update, _db.SaveChanges     │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Atualizar os dados de uma placa de bronze no banco de dados.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    placaBronze - Entidade contendo os dados atualizados da placa.
+        /// </para>
+        /// </summary>
+        /// <param name="placaBronze">Entidade <see cref="PlacaBronze"/> com dados atualizados.</param>
         public new void Update(PlacaBronze placaBronze)
         {
             var objFromDb = _db.PlacaBronze.FirstOrDefault(s =>

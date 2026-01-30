@@ -2618,6 +2618,8 @@ function initViewer(viagemId)
                             viewMode: telerikReportViewer.ViewModes.PRINT_PREVIEW,
                             scaleMode: telerikReportViewer.ScaleModes.SPECIFIC,
                             scale: 1.0,
+                            width: "100%",
+                            height: "640px",
                             enableAccessibility: false,
                             sendEmail: {
                                 enabled: false
