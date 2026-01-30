@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 16.4%
+████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 16.9%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 148 |
-| Percentual | 16.4% |
-| Última Atualização | 30/01/2026 22:00 |
+| Documentados | 153 |
+| Percentual | 16.9% |
+| Última Atualização | 30/01/2026 22:30 |
 
 ---
 
@@ -39,7 +39,7 @@
 | 12 | Models | 139 | 48 | 34.5% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
-| 15 | Repository | 209 | 122 | 58.4% | 🟡 Em Progresso |
+| 15 | Repository | 209 | 127 | 60.8% | 🟡 Em Progresso |
 | 16 | Services | 43 | 0 | 0% | 🔴 Pendente |
 | 17 | Settings | 4 | 0 | 0% | 🔴 Pendente |
 | 18 | Tools | 4 | 0 | 0% | 🔴 Pendente |
@@ -129,7 +129,7 @@
 (pendente)
 ```
 
-### 📂 Repository (117/209) 🟡
+### 📂 Repository (122/209) 🟡
 ```
 ✅ Repository/ - Classes Principais (13 arquivos - Lotes 61-64):
    • AbastecimentoRepository.cs
@@ -250,9 +250,22 @@
    • IViewViagensAgendaRepository.cs ⭐ Novo - Lote 84
    • IViewViagensAgendaTodosMesesRepository.cs ⭐ Novo - Lote 84
    • IViewViagensRepository.cs ⭐ Novo - Lote 84
-   • FornecedorRepository.cs (classe)
 
-⏳ Pendente: ~92 arquivos restantes
+✅ Repository/ - Classes de Implementação (Lote 85 - novo padrão visual):
+   • EncarregadoContratoRepository.cs
+   • EncarregadoRepository.cs
+   • ItemVeiculoAtaRepository.cs
+   • ItemVeiculoContratoRepository.cs
+   • FornecedorRepository.cs
+
+✅ Repository/ - Classes de Implementação (Lote 86 - novo padrão visual):
+   • LavadorRepository.cs
+   • LavadorContratoRepository.cs
+   • LavadoresLavagemRepository.cs
+   • LotacaoMotoristaRepository.cs
+   • MarcaVeiculoRepository.cs
+
+⏳ Pendente: ~87 arquivos restantes
 ```
 
 ### 📂 Services (0/43)
@@ -309,11 +322,12 @@
 | 30/01/2026 | 5 | 1 | Lote 82 - IRepository (5 arquivos) |
 | 30/01/2026 | 5 | 1 | Lote 83 - IRepository (5 arquivos) |
 | 30/01/2026 | 5 | 1 | Lote 84 - IRepository (5 arquivos) |
-| 30/01/2026 | 5 | 1 | Lote 85 - Repository (5 arquivos) |
+| 30/01/2026 | 5 | 1 | Lote 85 - Repository novo padrão visual (5 arquivos) |
+| 30/01/2026 | 5 | 1 | Lote 86 - Repository novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 34
-**Total de Commits:** 32
-**Total de Arquivos Documentados:** 148
+**Total de Lotes:** 35
+**Total de Commits:** 33
+**Total de Arquivos Documentados:** 153
 
 ---
 
