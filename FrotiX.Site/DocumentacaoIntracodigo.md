@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-███████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 21.3%
+███████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 21.9%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 193 |
-| Percentual | 21.3% |
-| Última Atualização | 30/01/2026 15:23 |
+| Documentados | 198 |
+| Percentual | 21.9% |
+| Última Atualização | 30/01/2026 15:26 |
 
 ---
 
@@ -39,7 +39,7 @@
 | 12 | Models | 139 | 48 | 34.5% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
-| 15 | Repository | 209 | 167 | 79.9% | 🟡 Em Progresso |
+| 15 | Repository | 209 | 172 | 82.3% | 🟡 Em Progresso |
 | 16 | Services | 43 | 0 | 0% | 🔴 Pendente |
 | 17 | Settings | 4 | 0 | 0% | 🔴 Pendente |
 | 18 | Tools | 4 | 0 | 0% | 🔴 Pendente |
@@ -129,7 +129,7 @@
 (pendente)
 ```
 
-### 📂 Repository (167/209) 🟡
+### 📂 Repository (172/209) 🟡
 ```
 ✅ Repository/ - Classes Principais (13 arquivos - Lotes 61-64):
    • AbastecimentoRepository.cs
@@ -321,7 +321,14 @@
    • ViewAtaFornecedorRepository.cs
    • ViewContratoFornecedorRepository.cs
 
-⏳ Pendente: ~42 arquivos restantes
+✅ Repository/ - Classes de Implementação (Lote 95 - novo padrão visual):
+   • ViewControleAcessoRepository.cs
+   • ViewCustosViagemRepository.cs
+   • ViewEmpenhoMultaRepository.cs
+   • ViewEmpenhosRepository.cs
+   • ViewEventosRepository.cs
+
+⏳ Pendente: ~37 arquivos restantes
 ```
 
 ### 📂 Services (0/43)
@@ -388,10 +395,11 @@
 | 30/01/2026 | 5 | 1 | Lote 92 - Repository novo padrão visual (5 arquivos) |
 | 30/01/2026 | 5 | 1 | Lote 93 - Repository novo padrão visual (5 arquivos) |
 | 30/01/2026 | 5 | 1 | Lote 94 - Repository novo padrão visual (5 arquivos) |
+| 30/01/2026 | 5 | 1 | Lote 95 - Repository novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 43
-**Total de Commits:** 41
-**Total de Arquivos Documentados:** 193
+**Total de Lotes:** 44
+**Total de Commits:** 42
+**Total de Arquivos Documentados:** 198
 
 ---
 
