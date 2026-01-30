@@ -1,13 +1,57 @@
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ViewPatrimonioConferenciaRepository.cs                                                 ║
+   ║ 📂 CAMINHO: Repository/                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Repositório para a SQL View ViewPatrimonioConferencia.                                          ║
+   ║    Centraliza acesso a dados consolidados de conferência patrimonial.                              ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • ViewPatrimonioConferenciaRepository(FrotiXDbContext db)                                       ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ ⚠️ OBSERVAÇÕES:                                                                                     ║
+   ║    Views são somente leitura; métodos de consulta são herdados de Repository<T>.                  ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 using FrotiX.Data;
 using FrotiX.Models.Views;
 using FrotiX.Repository.IRepository;
 
 namespace FrotiX.Repository
 {
+    /// <summary>
+    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    /// │ 🎯 CLASSE: ViewPatrimonioConferenciaRepository                                                │
+    /// │ 📦 HERDA DE: Repository<ViewPatrimonioConferencia>                                            │
+    /// │ 🔌 IMPLEMENTA: IViewPatrimonioConferenciaRepository                                           │
+    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    ///
+    /// Repositório responsável pela view de conferência patrimonial.
+    /// Utiliza os métodos genéricos herdados para consultas.
+    /// </summary>
     public class ViewPatrimonioConferenciaRepository :Repository<ViewPatrimonioConferencia>, IViewPatrimonioConferenciaRepository
     {
         private new readonly FrotiXDbContext _db;
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: ViewPatrimonioConferenciaRepository                                         │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
+        /// │    ➡️ CHAMA       : base(db)                                                             │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Inicializar o repositório com o contexto do banco de dados.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    db - Contexto do banco de dados da aplicação.
+        /// </para>
+        /// </summary>
+        /// <param name="db">Instância de <see cref="FrotiXDbContext"/>.</param>
         public ViewPatrimonioConferenciaRepository(FrotiXDbContext db) : base(db)
         {
             _db = db;
