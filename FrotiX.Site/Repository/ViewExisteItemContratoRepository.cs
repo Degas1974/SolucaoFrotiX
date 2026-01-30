@@ -1,3 +1,20 @@
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ViewExisteItemContratoRepository.cs                                                    ║
+   ║ 📂 CAMINHO: Repository/                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Repositório para a SQL View ViewExisteItemContrato.                                             ║
+   ║    Disponibiliza verificação/seleção de itens de contrato existentes.                               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • ViewExisteItemContratoRepository(FrotiXDbContext db)                                          ║
+   ║    • GetViewExisteItemContratoListForDropDown()                                                    ║
+   ║    • Update(ViewExisteItemContrato viewExisteItemContrato)                                         ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ ⚠️ OBSERVAÇÕES:                                                                                     ║
+   ║    Views são somente leitura; Update é mantido por compatibilidade.                                ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,15 +26,64 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
+    /// <summary>
+    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    /// │ 🎯 CLASSE: ViewExisteItemContratoRepository                                                   │
+    /// │ 📦 HERDA DE: Repository<ViewExisteItemContrato>                                               │
+    /// │ 🔌 IMPLEMENTA: IViewExisteItemContratoRepository                                              │
+    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    ///
+    /// Repositório responsável pela view de itens de contrato.
+    /// Fornece listagens para dropdowns e validações de existência.
+    /// </summary>
     public class ViewExisteItemContratoRepository : Repository<ViewExisteItemContrato>, IViewExisteItemContratoRepository
         {
         private new readonly FrotiXDbContext _db;
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: ViewExisteItemContratoRepository                                             │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
+        /// │    ➡️ CHAMA       : base(db)                                                             │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Inicializar o repositório com o contexto do banco de dados.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    db - Contexto do banco de dados da aplicação.
+        /// </para>
+        /// </summary>
+        /// <param name="db">Instância de <see cref="FrotiXDbContext"/>.</param>
         public ViewExisteItemContratoRepository(FrotiXDbContext db) : base(db)
             {
             _db = db;
             }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: GetViewExisteItemContratoListForDropDown                                      │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
+        /// │    ➡️ CHAMA       : DbContext.ViewExisteItemContrato, OrderBy, Select                    │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Obter lista de itens de contrato para composição de dropdowns.
+        ///    Ordena pelo número do item.
+        /// </para>
+        ///
+        /// <para>
+        /// 📤 <b>RETORNO:</b><br/>
+        ///    IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
+        /// </para>
+        /// </summary>
+        /// <returns>Lista de itens de seleção para itens de contrato.</returns>
         public IEnumerable<SelectListItem> GetViewExisteItemContratoListForDropDown()
             {
             return _db.ViewExisteItemContrato
@@ -29,6 +95,27 @@ namespace FrotiX.Repository
                 }); ; ;
             }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: Update                                                                        │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
+        /// │    ➡️ CHAMA       : DbContext.ViewExisteItemContrato.FirstOrDefault, _db.Update,         │
+        /// │                     _db.SaveChanges                                                     │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Manter compatibilidade com o padrão de repositórios.
+        ///    Views são somente leitura; operação não é recomendada.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    viewExisteItemContrato - Entidade com dados da view.
+        /// </para>
+        /// </summary>
+        /// <param name="viewExisteItemContrato">Entidade <see cref="ViewExisteItemContrato"/>.</param>
         public new void Update(ViewExisteItemContrato viewExisteItemContrato)
             {
             var objFromDb = _db.ViewExisteItemContrato.FirstOrDefault(v => v.RepactuacaoContratoId == viewExisteItemContrato.RepactuacaoContratoId);
@@ -41,5 +128,3 @@ namespace FrotiX.Repository
 
         }
     }
-
-
