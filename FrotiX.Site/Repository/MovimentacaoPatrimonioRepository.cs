@@ -1,18 +1,21 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ║ ARQUIVO    : MovimentacaoPatrimonioRepository.cs                             ║
-// ║ LOCALIZAÇÃO: Repository/                                                     ║
-// ║ LOTE       : 24 — Repository                                                 ║
-// ║ DATA       : 29/01/2026                                                      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ FINALIDADE                                                                   ║
-// ║ Repositório para movimentações de patrimônio (veículos próprios).            ║
-// ║ Registra transferências, baixas e alterações de situação patrimonial.        ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ PRINCIPAIS MÉTODOS                                                           ║
-// ║ • GetMovimentacaoPatrimonioListForDropDown() → Lista movimentações           ║
-// ║ • Update() → Atualiza registro de movimentação patrimonial                   ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: MovimentacaoPatrimonioRepository.cs                                                    ║
+   ║ 📂 CAMINHO: Repository/                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Repositório para movimentações patrimoniais de veículos próprios.                              ║
+   ║    Registra transferências entre setores, baixas e alterações de situação patrimonial.            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • MovimentacaoPatrimonioRepository(FrotiXDbContext db)                                          ║
+   ║    • IEnumerable<SelectListItem> GetMovimentacaoPatrimonioListForDropDown()                       ║
+   ║    • void Update(MovimentacaoPatrimonio movimentacaoPatrimonio)                                    ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ ⚠️ OBSERVAÇÕES:                                                                                     ║
+   ║    Controla histórico de movimentações patrimoniais para veículos próprios (não terceirizados).   ║
+   ║    Essencial para controle de transferências e baixas de patrimônio.                              ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +28,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
+    /// <summary>
+    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    /// │ 🎯 CLASSE: MovimentacaoPatrimonioRepository                                                   │
+    /// │ 📦 HERDA DE: Repository&lt;MovimentacaoPatrimonio&gt;                                                 │
+    /// │ 🔌 IMPLEMENTA: IMovimentacaoPatrimonioRepository                                              │
+    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    ///
+    /// Repositório especializado para gerenciamento de movimentações patrimoniais.
+    /// Controla transferências, baixas e mudanças de situação de veículos próprios.
+    /// </summary>
     public class MovimentacaoPatrimonioRepository : Repository<MovimentacaoPatrimonio>, IMovimentacaoPatrimonioRepository
         {
         private new readonly FrotiXDbContext _db;
@@ -34,6 +47,26 @@ namespace FrotiX.Repository
             _db = db;
             }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: GetMovimentacaoPatrimonioListForDropDown                                    │
+        /// │ 🔗 RASTREABILIDADE:                                                                    │
+        /// │    ⬅️ CHAMADO POR : Controllers de gerenciamento patrimonial                            │
+        /// │    ➡️ CHAMA       : DbContext.MovimentacaoPatrimonio, Linq OrderBy/Select               │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Retorna lista de movimentações patrimoniais para uso em DropDown.
+        ///    Ordenação por PatrimonioId, exibindo data da movimentação.
+        /// </para>
+        ///
+        /// <para>
+        /// 📤 <b>RETORNO:</b><br/>
+        ///    IEnumerable&lt;SelectListItem&gt; - Lista com Text=DataMovimentacao e Value=MovimentacaoPatrimonioId
+        /// </para>
+        /// </summary>
+        /// <returns>Lista de SelectListItem com movimentações ordenadas por patrimônio</returns>
         public IEnumerable<SelectListItem> GetMovimentacaoPatrimonioListForDropDown()
             {
             return _db.MovimentacaoPatrimonio
@@ -45,6 +78,26 @@ namespace FrotiX.Repository
                 }); ;
             }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: Update                                                                      │
+        /// │ 🔗 RASTREABILIDADE:                                                                    │
+        /// │    ⬅️ CHAMADO POR : Controllers de MovimentacaoPatrimonio, UnitOfWork                   │
+        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Atualiza dados de uma movimentação patrimonial existente.
+        ///    Permite correções em registros de transferência ou baixa de patrimônio.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    movimentacaoPatrimonio - Entidade com dados atualizados da movimentação
+        /// </para>
+        /// </summary>
+        /// <param name="movimentacaoPatrimonio">Entidade MovimentacaoPatrimonio com dados a serem persistidos</param>
         public new void Update(MovimentacaoPatrimonio movimentacaoPatrimonio)
             {
             var objFromDb = _db.MovimentacaoPatrimonio.FirstOrDefault(s => s.MovimentacaoPatrimonioId == movimentacaoPatrimonio.MovimentacaoPatrimonioId);

@@ -1,18 +1,21 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ║ ARQUIVO    : MovimentacaoEmpenhoMultaRepository.cs                           ║
-// ║ LOCALIZAÇÃO: Repository/                                                     ║
-// ║ LOTE       : 24 — Repository                                                 ║
-// ║ DATA       : 29/01/2026                                                      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ FINALIDADE                                                                   ║
-// ║ Repositório para movimentações financeiras de empenhos de multas.            ║
-// ║ Registra débitos/créditos nas notas de empenho de multas de trânsito.        ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ PRINCIPAIS MÉTODOS                                                           ║
-// ║ • GetMovimentacaoEmpenhoMultaListForDropDown() → Lista movimentações         ║
-// ║ • Update() → Atualiza registro de movimentação de empenho de multa           ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: MovimentacaoEmpenhoMultaRepository.cs                                                  ║
+   ║ 📂 CAMINHO: Repository/                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Repositório para movimentações financeiras em empenhos de multas de trânsito.                  ║
+   ║    Registra débitos e créditos nas notas de empenho específicas de multas.                        ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • MovimentacaoEmpenhoMultaRepository(FrotiXDbContext db)                                        ║
+   ║    • IEnumerable<SelectListItem> GetMovimentacaoEmpenhoMultaListForDropDown()                     ║
+   ║    • void Update(MovimentacaoEmpenhoMulta movimentacaoempenhomulta)                                ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ ⚠️ OBSERVAÇÕES:                                                                                     ║
+   ║    GetMovimentacaoEmpenhoMultaListForDropDown exibe Data + Valor para fácil identificação.        ║
+   ║    Essencial para controle financeiro de multas de trânsito.                                      ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +27,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
+    /// <summary>
+    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    /// │ 🎯 CLASSE: MovimentacaoEmpenhoMultaRepository                                                 │
+    /// │ 📦 HERDA DE: Repository&lt;MovimentacaoEmpenhoMulta&gt;                                               │
+    /// │ 🔌 IMPLEMENTA: IMovimentacaoEmpenhoMultaRepository                                            │
+    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    ///
+    /// Repositório especializado para controle de movimentações financeiras em empenhos de multas.
+    /// Gerencia lançamentos contábeis relacionados ao pagamento de multas de trânsito.
+    /// </summary>
     public class MovimentacaoEmpenhoMultaRepository : Repository<MovimentacaoEmpenhoMulta>, IMovimentacaoEmpenhoMultaRepository
         {
         private new readonly FrotiXDbContext _db;
@@ -33,6 +46,26 @@ namespace FrotiX.Repository
             _db = db;
             }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: GetMovimentacaoEmpenhoMultaListForDropDown                                  │
+        /// │ 🔗 RASTREABILIDADE:                                                                    │
+        /// │    ⬅️ CHAMADO POR : Controllers de gerenciamento financeiro de multas                  │
+        /// │    ➡️ CHAMA       : DbContext.MovimentacaoEmpenhoMulta, Linq OrderBy/Select             │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Retorna lista de movimentações de empenho de multa para uso em DropDown.
+        ///    Ordenação por data, exibindo data e valor concatenados para identificação.
+        /// </para>
+        ///
+        /// <para>
+        /// 📤 <b>RETORNO:</b><br/>
+        ///    IEnumerable&lt;SelectListItem&gt; - Lista com Text="DataMovimentacao(Valor)" e Value=MovimentacaoId
+        /// </para>
+        /// </summary>
+        /// <returns>Lista de SelectListItem com movimentações ordenadas por data</returns>
         public IEnumerable<SelectListItem> GetMovimentacaoEmpenhoMultaListForDropDown()
             {
             return _db.MovimentacaoEmpenhoMulta
@@ -44,6 +77,26 @@ namespace FrotiX.Repository
                 });
             }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: Update                                                                      │
+        /// │ 🔗 RASTREABILIDADE:                                                                    │
+        /// │    ⬅️ CHAMADO POR : Controllers de MovimentacaoEmpenhoMulta, UnitOfWork                 │
+        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Atualiza dados de uma movimentação de empenho de multa existente.
+        ///    Permite ajustes em lançamentos contábeis após registro inicial.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    movimentacaoempenhomulta - Entidade com dados atualizados da movimentação
+        /// </para>
+        /// </summary>
+        /// <param name="movimentacaoempenhomulta">Entidade MovimentacaoEmpenhoMulta com dados a serem persistidos</param>
         public new void Update(MovimentacaoEmpenhoMulta movimentacaoempenhomulta)
             {
             var objFromDb = _db.MovimentacaoEmpenhoMulta.FirstOrDefault(s => s.MovimentacaoId == movimentacaoempenhomulta.MovimentacaoId);
