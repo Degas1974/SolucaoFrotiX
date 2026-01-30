@@ -22,7 +22,7 @@ namespace FrotiX.Controllers
         public ReportsController(IReportServiceConfiguration reportServiceConfiguration)
             : base(reportServiceConfiguration)
         {
-            // Não precisa de código aqui - a configuração vem do Startup/Program.cs
+            System.Diagnostics.Debug.WriteLine("🔧 ReportsController inicializado!");
         }
     }
 }
