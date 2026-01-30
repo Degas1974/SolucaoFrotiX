@@ -1,3 +1,19 @@
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: VeiculoPadraoViagemRepository.cs                                                       ║
+   ║ 📂 CAMINHO: Repository/                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Repositório para padrões de viagem por veículo.                                                 ║
+   ║    Atualiza métricas agregadas e data de atualização do veículo.                                   ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • VeiculoPadraoViagemRepository(FrotiXDbContext db)                                              ║
+   ║    • Update(VeiculoPadraoViagem veiculoPadraoViagem)                                                ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ ⚠️ OBSERVAÇÕES:                                                                                     ║
+   ║    A atualização define DataAtualizacao com DateTime.Now.                                          ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,15 +24,64 @@ using FrotiX.Repository.IRepository;
 
 namespace FrotiX.Repository
 {
+    /// <summary>
+    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    /// │ 🎯 CLASSE: VeiculoPadraoViagemRepository                                                      │
+    /// │ 📦 HERDA DE: Repository<VeiculoPadraoViagem>                                                  │
+    /// │ 🔌 IMPLEMENTA: IVeiculoPadraoViagemRepository                                                 │
+    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    ///
+    /// Repositório responsável pelos padrões de viagem por veículo.
+    /// Atualiza métricas de uso e abastecimento registradas em VeiculoPadraoViagem.
+    /// </summary>
     public class VeiculoPadraoViagemRepository : Repository<VeiculoPadraoViagem>, IVeiculoPadraoViagemRepository
     {
         private new readonly FrotiXDbContext _db;
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: VeiculoPadraoViagemRepository                                                │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
+        /// │    ➡️ CHAMA       : base(db)                                                             │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Inicializar o repositório com o contexto do banco de dados.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    db - Contexto do banco de dados da aplicação.
+        /// </para>
+        /// </summary>
+        /// <param name="db">Instância de <see cref="FrotiXDbContext"/>.</param>
         public VeiculoPadraoViagemRepository(FrotiXDbContext db) : base(db)
         {
             _db = db;
         }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: Update                                                                        │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Services, Controllers                                                 │
+        /// │    ➡️ CHAMA       : DbContext.VeiculoPadraoViagem.FirstOrDefault, _db.SaveChanges         │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Atualizar métricas consolidadas de viagem para um veículo.
+        ///    Define DataAtualizacao com o horário corrente.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    veiculoPadraoViagem - Entidade contendo os dados atualizados.
+        /// </para>
+        /// </summary>
+        /// <param name="veiculoPadraoViagem">Entidade <see cref="VeiculoPadraoViagem"/> com dados atualizados.</param>
         public new void Update(VeiculoPadraoViagem veiculoPadraoViagem)
         {
             var objFromDb = _db.VeiculoPadraoViagem.FirstOrDefault(s => s.VeiculoId == veiculoPadraoViagem.VeiculoId);
