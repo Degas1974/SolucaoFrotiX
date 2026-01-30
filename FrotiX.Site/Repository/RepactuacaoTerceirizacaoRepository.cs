@@ -1,18 +1,20 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ║ ARQUIVO    : RepactuacaoTerceirizacaoRepository.cs                           ║
-// ║ LOCALIZAÇÃO: Repository/                                                     ║
-// ║ LOTE       : 24 — Repository                                                 ║
-// ║ DATA       : 29/01/2026                                                      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ FINALIDADE                                                                   ║
-// ║ Repositório para repactuações de valores de terceirização.                   ║
-// ║ Gerencia reajustes de valores de motoristas, operadores e encarregados.      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ PRINCIPAIS MÉTODOS                                                           ║
-// ║ • GetRepactuacaoTerceirizacaoListForDropDown() → Lista por valor encarregado ║
-// ║ • Update() → Atualiza registro de repactuação de terceirização               ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: RepactuacaoTerceirizacaoRepository.cs                                                  ║
+   ║ 📂 CAMINHO: Repository/                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Repositório para repactuações de valores de terceirização.                                      ║
+   ║    Gerencia reajustes de motoristas, operadores e encarregados em contratos.                       ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • RepactuacaoTerceirizacaoRepository(FrotiXDbContext db)                                         ║
+   ║    • GetRepactuacaoTerceirizacaoListForDropDown()                                                  ║
+   ║    • Update(RepactuacaoTerceirizacao repactuacaoTerceirizacao)                                     ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ ⚠️ OBSERVAÇÕES:                                                                                     ║
+   ║    A listagem usa ValorEncarregado como texto e RepactuacaoContratoId como identificador.          ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,15 +26,64 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
+    /// <summary>
+    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    /// │ 🎯 CLASSE: RepactuacaoTerceirizacaoRepository                                                  │
+    /// │ 📦 HERDA DE: Repository<RepactuacaoTerceirizacao>                                              │
+    /// │ 🔌 IMPLEMENTA: IRepactuacaoTerceirizacaoRepository                                             │
+    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    ///
+    /// Repositório responsável pelas repactuações de terceirização.
+    /// Centraliza listagens para UI e atualização de registros.
+    /// </summary>
     public class RepactuacaoTerceirizacaoRepository : Repository<RepactuacaoTerceirizacao>, IRepactuacaoTerceirizacaoRepository
         {
         private new readonly FrotiXDbContext _db;
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: RepactuacaoTerceirizacaoRepository                                             │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
+        /// │    ➡️ CHAMA       : base(db)                                                             │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Inicializar o repositório com o contexto do banco de dados.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    db - Contexto do banco de dados da aplicação.
+        /// </para>
+        /// </summary>
+        /// <param name="db">Instância de <see cref="FrotiXDbContext"/>.</param>
         public RepactuacaoTerceirizacaoRepository(FrotiXDbContext db) : base(db)
             {
             _db = db;
             }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: GetRepactuacaoTerceirizacaoListForDropDown                                     │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
+        /// │    ➡️ CHAMA       : DbContext.RepactuacaoTerceirizacao, Select                            │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Obter lista de repactuações de terceirização para composição de dropdowns.
+        ///    Exibe o valor do encarregado e usa o vínculo do contrato como chave.
+        /// </para>
+        ///
+        /// <para>
+        /// 📤 <b>RETORNO:</b><br/>
+        ///    IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
+        /// </para>
+        /// </summary>
+        /// <returns>Lista de itens de seleção para repactuações de terceirização.</returns>
         public IEnumerable<SelectListItem> GetRepactuacaoTerceirizacaoListForDropDown()
             {
             return _db.RepactuacaoTerceirizacao
@@ -43,11 +94,31 @@ namespace FrotiX.Repository
                     });
             }
 
-        public new void Update(RepactuacaoTerceirizacao RepactuacaoTerceirizacao)
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: Update                                                                        │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
+        /// │    ➡️ CHAMA       : DbContext.RepactuacaoTerceirizacao.FirstOrDefault, _db.Update,        │
+        /// │                     _db.SaveChanges                                                     │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Atualizar os dados de uma repactuação de terceirização no banco de dados.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    repactuacaoTerceirizacao - Entidade contendo os dados atualizados.
+        /// </para>
+        /// </summary>
+        /// <param name="repactuacaoTerceirizacao">Entidade <see cref="RepactuacaoTerceirizacao"/> com dados atualizados.</param>
+        public new void Update(RepactuacaoTerceirizacao repactuacaoTerceirizacao)
             {
-            var objFromDb = _db.RepactuacaoTerceirizacao.FirstOrDefault(s => s.RepactuacaoTerceirizacaoId == RepactuacaoTerceirizacao.RepactuacaoTerceirizacaoId);
+            var objFromDb = _db.RepactuacaoTerceirizacao.FirstOrDefault(s => s.RepactuacaoTerceirizacaoId == repactuacaoTerceirizacao.RepactuacaoTerceirizacaoId);
 
-            _db.Update(RepactuacaoTerceirizacao);
+            _db.Update(repactuacaoTerceirizacao);
             _db.SaveChanges();
 
             }
@@ -55,5 +126,3 @@ namespace FrotiX.Repository
 
         }
     }
-
-
