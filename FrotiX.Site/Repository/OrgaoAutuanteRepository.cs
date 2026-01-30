@@ -1,18 +1,21 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ║ ARQUIVO    : OrgaoAutuanteRepository.cs                                      ║
-// ║ LOCALIZAÇÃO: Repository/                                                     ║
-// ║ LOTE       : 24 — Repository                                                 ║
-// ║ DATA       : 29/01/2026                                                      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ FINALIDADE                                                                   ║
-// ║ Repositório especializado para entidade OrgaoAutuante. Gerencia órgãos       ║
-// ║ emissores de multas de trânsito (DETRAN, PRF, DER, etc).                      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ PRINCIPAIS MÉTODOS                                                           ║
-// ║ • GetOrgaoAutuanteListForDropDown() → SelectList "Nome (Sigla)"              ║
-// ║ • Update() → Atualização da entidade OrgaoAutuante                           ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: OrgaoAutuanteRepository.cs                                                             ║
+   ║ 📂 CAMINHO: Repository/                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Repositório especializado para entidade OrgaoAutuante.                                          ║
+   ║    Gerencia órgãos emissores de multas de trânsito (DETRAN, PRF, DER, Polícia Rodoviária, etc).  ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • OrgaoAutuanteRepository(FrotiXDbContext db)                                                   ║
+   ║    • IEnumerable<SelectListItem> GetOrgaoAutuanteListForDropDown()                                ║
+   ║    • void Update(OrgaoAutuante orgaoautuante)                                                      ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ ⚠️ OBSERVAÇÕES:                                                                                     ║
+   ║    GetOrgaoAutuanteListForDropDown exibe "Nome (Sigla)" para fácil identificação.                 ║
+   ║    Essencial para controle e registro correto de multas de trânsito da frota.                    ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +27,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
+    /// <summary>
+    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    /// │ 🎯 CLASSE: OrgaoAutuanteRepository                                                            │
+    /// │ 📦 HERDA DE: Repository&lt;OrgaoAutuante&gt;                                                          │
+    /// │ 🔌 IMPLEMENTA: IOrgaoAutuanteRepository                                                       │
+    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    ///
+    /// Repositório especializado para gerenciamento de órgãos autuantes.
+    /// Gerencia cadastro de entidades emissoras de multas de trânsito (DETRAN, PRF, DER, etc).
+    /// </summary>
     public class OrgaoAutuanteRepository : Repository<OrgaoAutuante>, IOrgaoAutuanteRepository
         {
         private new readonly FrotiXDbContext _db;
@@ -33,6 +46,27 @@ namespace FrotiX.Repository
             _db = db;
             }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: GetOrgaoAutuanteListForDropDown                                             │
+        /// │ 🔗 RASTREABILIDADE:                                                                    │
+        /// │    ⬅️ CHAMADO POR : Controllers que registram multas de trânsito                       │
+        /// │    ➡️ CHAMA       : DbContext.OrgaoAutuante, Linq OrderBy/Select                        │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Retorna lista de órgãos autuantes para uso em DropDown/SelectList.
+        ///    Formato de exibição: "Nome (Sigla)" - Ex: "DETRAN-PA (DETRAN)", "PRF (PRF)".
+        ///    Ordenação alfabética por nome do órgão.
+        /// </para>
+        ///
+        /// <para>
+        /// 📤 <b>RETORNO:</b><br/>
+        ///    IEnumerable&lt;SelectListItem&gt; - Lista com Text="Nome (Sigla)" e Value=OrgaoAutuanteId
+        /// </para>
+        /// </summary>
+        /// <returns>Lista de SelectListItem ordenada alfabeticamente por nome do órgão</returns>
         public IEnumerable<SelectListItem> GetOrgaoAutuanteListForDropDown()
             {
             return _db.OrgaoAutuante
@@ -44,6 +78,26 @@ namespace FrotiX.Repository
                     });
             }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: Update                                                                      │
+        /// │ 🔗 RASTREABILIDADE:                                                                    │
+        /// │    ⬅️ CHAMADO POR : Controllers de OrgaoAutuante, UnitOfWork                            │
+        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Atualiza dados de um órgão autuante existente no banco de dados.
+        ///    Permite correções em nome, sigla e demais informações cadastrais.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    orgaoautuante - Entidade OrgaoAutuante com dados atualizados
+        /// </para>
+        /// </summary>
+        /// <param name="orgaoautuante">Entidade OrgaoAutuante com dados a serem persistidos</param>
         public new void Update(OrgaoAutuante orgaoautuante)
             {
             var objFromDb = _db.OrgaoAutuante.FirstOrDefault(s => s.OrgaoAutuanteId == orgaoautuante.OrgaoAutuanteId);
