@@ -1,3 +1,20 @@
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ViewViagensAgendaRepository.cs                                                         ║
+   ║ 📂 CAMINHO: Repository/                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Repositório para a SQL View ViewViagensAgenda.                                                  ║
+   ║    Fornece visão consolidada de viagens para agenda.                                               ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • ViewViagensAgendaRepository(FrotiXDbContext db)                                               ║
+   ║    • GetViewViagensAgendaListForDropDown()                                                        ║
+   ║    • Update(ViewViagensAgenda viewViagensAgenda)                                                  ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ ⚠️ OBSERVAÇÕES:                                                                                     ║
+   ║    Views são somente leitura; Update é mantido por compatibilidade.                                ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,18 +27,67 @@ using NPOI.SS.Formula.Functions;
 
 namespace FrotiX.Repository
     {
+    /// <summary>
+    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    /// │ 🎯 CLASSE: ViewViagensAgendaRepository                                                        │
+    /// │ 📦 HERDA DE: Repository<ViewViagensAgenda>                                                    │
+    /// │ 🔌 IMPLEMENTA: IViewViagensAgendaRepository                                                   │
+    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    ///
+    /// Repositório responsável pela view de agenda de viagens.
+    /// Fornece listagens para UI com dados consolidados.
+    /// </summary>
     public class ViewViagensAgendaRepository
         : Repository<ViewViagensAgenda>,
             IViewViagensAgendaRepository
         {
         private new readonly FrotiXDbContext _db;
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: ViewViagensAgendaRepository                                                  │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
+        /// │    ➡️ CHAMA       : base(db)                                                             │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Inicializar o repositório com o contexto do banco de dados.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    db - Contexto do banco de dados da aplicação.
+        /// </para>
+        /// </summary>
+        /// <param name="db">Instância de <see cref="FrotiXDbContext"/>.</param>
         public ViewViagensAgendaRepository(FrotiXDbContext db)
             : base(db)
             {
             _db = db;
             }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: GetViewViagensAgendaListForDropDown                                           │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
+        /// │    ➡️ CHAMA       : DbContext.ViewViagensAgenda, OrderBy, Select                         │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Obter lista da view de agenda de viagens para dropdowns.
+        ///    Ordena pela data inicial.
+        /// </para>
+        ///
+        /// <para>
+        /// 📤 <b>RETORNO:</b><br/>
+        ///    IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
+        /// </para>
+        /// </summary>
+        /// <returns>Lista de itens de seleção para agenda de viagens.</returns>
         public IEnumerable<SelectListItem> GetViewViagensAgendaListForDropDown()
             {
             return _db
@@ -33,6 +99,26 @@ namespace FrotiX.Repository
                     });
             }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: Update                                                                        │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
+        /// │    ➡️ CHAMA       : DbContext.ViewViagensAgenda.FirstOrDefault, _db.Update, _db.SaveChanges│
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Manter compatibilidade com o padrão de repositórios.
+        ///    Views são somente leitura; operação não é recomendada.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    viewViagensAgenda - Entidade com dados da view.
+        /// </para>
+        /// </summary>
+        /// <param name="viewViagensAgenda">Entidade <see cref="ViewViagensAgenda"/>.</param>
         public new void Update(ViewViagensAgenda viewViagensAgenda)
             {
             var objFromDb = _db.ViewViagensAgenda.FirstOrDefault(s =>
@@ -44,5 +130,3 @@ namespace FrotiX.Repository
             }
         }
     }
-
-
