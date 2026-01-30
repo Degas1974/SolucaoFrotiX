@@ -1,10 +1,37 @@
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ 🚀 ARQUIVO: IViewPatrimonioConferenciaRepository.cs                                               ║
+║ 📂 CAMINHO: /Repository/IRepository                                                                ║
+╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+║    Interface do repositório de ViewPatrimonioConferencia, consultando conferências                ║
+║    patrimoniais consolidadas para auditoria e inventário.                                         ║
+╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║ 📋 ÍNDICE DE MÉTODOS (Entradas -> Saídas):                                                         ║
+║ 1. [Nenhum método adicional] : Usa apenas IRepository<ViewPatrimonioConferencia>                  ║
+╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║ ⚠️ MANUTENÇÃO:                                                                                     ║
+║    Qualquer alteração neste código exige atualização imediata deste Card e do Header do Método.   ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 using FrotiX.Models.Views;
 
 namespace FrotiX.Repository.IRepository
 {
-    public interface IViewPatrimonioConferenciaRepository :IRepository<ViewPatrimonioConferencia>
+    /// <summary>
+    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    /// │ ⚡ INTERFACE: IViewPatrimonioConferenciaRepository                                    │
+    /// │───────────────────────────────────────────────────────────────────────────────────────│
+    /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+    /// │    Interface do repositório de ViewPatrimonioConferencia. Centraliza consultas de       │
+    /// │    conferências patrimoniais, usando apenas operações genéricas do repositório.        │
+    /// │───────────────────────────────────────────────────────────────────────────────────────│
+    /// │ 🔗 RASTREABILIDADE:                                                                   │
+    /// │    ⬅️ CHAMADO POR : Controllers e relatórios de Patrimonio                             │
+    /// │    ➡️ CHAMA       : IRepository<ViewPatrimonioConferencia> (métodos base)             │
+    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    /// </summary>
+    public interface IViewPatrimonioConferenciaRepository : IRepository<ViewPatrimonioConferencia>
     {
-        // Métodos adicionais específicos podem ser adicionados aqui se necessário
-        // GetAll e GetFirstOrDefault já estão disponíveis via IRepository<T>
+        // Sem métodos adicionais: utiliza apenas as operações genéricas do IRepository.
     }
 }

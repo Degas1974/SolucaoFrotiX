@@ -9,14 +9,14 @@
 ## 📊 Progresso Geral
 
 ```
-███████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 14.1%
+████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 15.3%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 128 |
-| Percentual | 14.1% |
+| Documentados | 138 |
+| Percentual | 15.3% |
 | Última Atualização | 29/01/2026 20:15 |
 
 ---
@@ -39,7 +39,7 @@
 | 12 | Models | 139 | 48 | 34.5% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
-| 15 | Repository | 209 | 102 | 48.8% | 🟡 Em Progresso |
+| 15 | Repository | 209 | 112 | 53.6% | 🟡 Em Progresso |
 | 16 | Services | 43 | 0 | 0% | 🔴 Pendente |
 | 17 | Settings | 4 | 0 | 0% | 🔴 Pendente |
 | 18 | Tools | 4 | 0 | 0% | 🔴 Pendente |
@@ -129,7 +129,7 @@
 (pendente)
 ```
 
-### 📂 Repository (102/209) 🟡
+### 📂 Repository (112/209) 🟡
 ```
 ✅ Repository/ - Classes Principais (13 arquivos - Lotes 61-64):
    • AbastecimentoRepository.cs
@@ -146,7 +146,7 @@
    • EmpenhoMultaRepository.cs
    • EmpenhoRepository.cs
 
-✅ Repository/IRepository - Interfaces (89 arquivos - Lotes 65-81):
+✅ Repository/IRepository - Interfaces (99 arquivos - Lotes 65-83):
    • IAbastecimentoRepository.cs
    • IAlertasFrotiXRepository.cs
    • IAlertasUsuarioRepository.cs
@@ -235,9 +235,19 @@
    • IViewMotoristasRepository.cs ⭐ Novo - Lote 81
    • IViewMotoristasViagemRepository.cs ⭐ Novo - Lote 81
    • IViewMultasRepository.cs ⭐ Novo - Lote 81
+   • IViewNoFichaVistoriaRepository.cs ⭐ Novo - Lote 82
+   • IViewOcorrencia.cs ⭐ Novo - Lote 82
+   • IViewOcorrenciasAbertasVeiculoRepository.cs ⭐ Novo - Lote 82
+   • IViewOcorrenciasViagemRepository.cs ⭐ Novo - Lote 82
+   • IViewPatrimonioConferenciaRepository.cs ⭐ Novo - Lote 82
+   • IViewPendenciasManutencaoRepository.cs ⭐ Novo - Lote 83
+   • IViewProcuraFichaRepository.cs ⭐ Novo - Lote 83
+   • IViewRequisitantesRepository.cs ⭐ Novo - Lote 83
+   • IViewSetoresRepository.cs ⭐ Novo - Lote 83
+   • IViewVeiculosManutencaoRepository.cs ⭐ Novo - Lote 83
    • FornecedorRepository.cs (classe)
 
-⏳ Pendente: ~107 arquivos restantes
+⏳ Pendente: ~97 arquivos restantes
 ```
 
 ### 📂 Services (0/43)
@@ -291,10 +301,12 @@
 | 30/01/2026 | 5 | 1 | Lote 79 - IRepository (5 arquivos) |
 | 30/01/2026 | 5 | 1 | Lote 80 - IRepository (5 arquivos) |
 | 30/01/2026 | 5 | 1 | Lote 81 - IRepository (5 arquivos) |
+| 30/01/2026 | 5 | 1 | Lote 82 - IRepository (5 arquivos) |
+| 30/01/2026 | 5 | 1 | Lote 83 - IRepository (5 arquivos) |
 
-**Total de Lotes:** 30
-**Total de Commits:** 29
-**Total de Arquivos Documentados:** 128
+**Total de Lotes:** 32
+**Total de Commits:** 30
+**Total de Arquivos Documentados:** 138
 
 ---
 
