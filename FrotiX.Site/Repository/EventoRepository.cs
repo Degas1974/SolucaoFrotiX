@@ -1,24 +1,22 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ║ ARQUIVO    : EventoRepository.cs                                             ║
-// ║ LOCALIZAÇÃO: Repository/                                                     ║
-// ║ LOTE       : 24 — Repository                                                 ║
-// ║ DATA       : 29/01/2026                                                      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ FINALIDADE                                                                   ║
-// ║ Repositório especializado para entidade Evento. Gerencia eventos/solenidades ║
-// ║ com queries otimizadas para listagem paginada e cálculo de custos.           ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ PRINCIPAIS MÉTODOS                                                           ║
-// ║ • GetEventoListForDropDown() → SelectList ordenada por nome                  ║
-// ║ • GetEventosPaginadoAsync() → Query otimizada com JOIN e cálculo de custos   ║
-// ║ • Update() → Atualização direta da entidade Evento                           ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ OTIMIZAÇÕES                                                                  ║
-// ║ • Custos calculados em batch por GroupBy ao invés de N+1 queries              ║
-// ║ • AsNoTracking() para read-only operations                                   ║
-// ║ • Logs de performance com Stopwatch para diagnóstico                         ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: EventoRepository.cs                                                                    ║
+   ║ 📂 CAMINHO: Repository/                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Repositório para eventos/solenidades com consultas paginadas e cálculo de custos.              ║
+   ║    Inclui listagens para UI e atualização direta da entidade Evento.                              ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • EventoRepository(FrotiXDbContext db)                                                          ║
+   ║    • GetEventoListForDropDown()                                                                    ║
+   ║    • Update(Evento evento)                                                                         ║
+   ║    • GetEventosPaginadoAsync(int page, int pageSize, string filtroStatus = null)                  ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ ⚠️ OBSERVAÇÕES:                                                                                     ║
+   ║    Custos são calculados em batch (GroupBy) para evitar N+1 queries.                               ║
+   ║    AsNoTracking é aplicado em consultas de leitura e há logs com Stopwatch.                       ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,15 +30,64 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FrotiX.Repository
 {
+    /// <summary>
+    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    /// │ 🎯 CLASSE: EventoRepository                                                                  │
+    /// │ 📦 HERDA DE: Repository<Evento>                                                              │
+    /// │ 🔌 IMPLEMENTA: IEventoRepository                                                             │
+    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    ///
+    /// Repositório responsável por eventos/solenidades.
+    /// Fornece paginação otimizada e cálculo agregado de custos.
+    /// </summary>
     public class EventoRepository :Repository<Evento>, IEventoRepository
     {
         private new readonly FrotiXDbContext _db;
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: EventoRepository                                                             │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
+        /// │    ➡️ CHAMA       : base(db)                                                             │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Inicializar o repositório com o contexto do banco de dados.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    db - Contexto do banco de dados da aplicação.
+        /// </para>
+        /// </summary>
+        /// <param name="db">Instância de <see cref="FrotiXDbContext"/>.</param>
         public EventoRepository(FrotiXDbContext db) : base(db)
         {
         _db = db;
         }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: GetEventoListForDropDown                                                    │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
+        /// │    ➡️ CHAMA       : DbContext.Evento, OrderBy, Select                                    │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Obter lista de eventos para composição de dropdowns.
+        ///    Ordena pelo nome do evento.
+        /// </para>
+        ///
+        /// <para>
+        /// 📤 <b>RETORNO:</b><br/>
+        ///    IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
+        /// </para>
+        /// </summary>
+        /// <returns>Lista de itens de seleção para eventos.</returns>
         public IEnumerable<SelectListItem> GetEventoListForDropDown()
         {
         return _db.Evento
@@ -52,6 +99,25 @@ namespace FrotiX.Repository
             });
         }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: Update                                                                        │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
+        /// │    ➡️ CHAMA       : _db.Update, _db.SaveChanges                                           │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Atualizar os dados de um evento no banco de dados.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    evento - Entidade contendo os dados atualizados.
+        /// </para>
+        /// </summary>
+        /// <param name="evento">Entidade <see cref="Evento"/> com dados atualizados.</param>
         public new void Update(Evento evento)
         {
         _db.Update(evento);
@@ -59,8 +125,35 @@ namespace FrotiX.Repository
         }
 
         /// <summary>
-        /// ⚡ Query otimizada para listar eventos com paginação
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: GetEventosPaginadoAsync                                                      │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Services, Controllers                                                 │
+        /// │    ➡️ CHAMA       : DbContext.Evento, Viagem, GroupBy, AsNoTracking, Stopwatch           │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Buscar eventos com paginação e cálculo de custo total por evento.
+        ///    Usa JOINs com requisitante/setor e calcula custos em batch.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    page - Página atual (1-based)<br/>
+        ///    pageSize - Quantidade de registros por página<br/>
+        ///    filtroStatus - Filtro opcional por status
+        /// </para>
+        ///
+        /// <para>
+        /// 📤 <b>RETORNO:</b><br/>
+        ///    Task&lt;(List&lt;EventoListDto&gt; eventos, int totalItems)&gt; - Eventos paginados e total.
+        /// </para>
         /// </summary>
+        /// <param name="page">Página atual (1-based).</param>
+        /// <param name="pageSize">Tamanho da página.</param>
+        /// <param name="filtroStatus">Filtro opcional por status.</param>
+        /// <returns>Eventos paginados e total de itens.</returns>
         public async Task<(List<EventoListDto> eventos, int totalItems)> GetEventosPaginadoAsync(
             int page ,
             int pageSize ,
