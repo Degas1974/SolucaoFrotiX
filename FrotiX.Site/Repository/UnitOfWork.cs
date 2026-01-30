@@ -1,27 +1,23 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ ARQUIVO    : UnitOfWork.cs                                                   ║
-// ║ LOCALIZAÇÃO: Repository/                                                     ║
-// ║ FINALIDADE : Implementação central do padrão Unit of Work para FrotiX.       ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO FUNCIONAL                                                          ║
-// ║ Classe UnitOfWork que implementa IUnitOfWork — ponto central de acesso a     ║
-// ║ todos os repositórios do sistema. Injetada via DI em Controllers e Pages.    ║
-// ║ • Instancia todos os repositórios específicos (Veiculo, Motorista, etc.)     ║
-// ║ • Repositórios de Views SQL (ViewMotoristas, ViewViagens, etc.)              ║
-// ║ • Repositórios de Escalas (TipoServico, Turno, EscalaDiaria, etc.)           ║
-// ║ • Sistema de Alertas (AlertasFrotiX, AlertasUsuario)                         ║
-// ║ • Repositório genérico para AbastecimentoPendente                            ║
-// ║ • GetDbContext(): Acesso ao FrotiXDbContext para operações avançadas         ║
-// ║ • Save/SaveAsync: Persiste todas as alterações pendentes                     ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ CLASSE PARTIAL                                                               ║
-// ║ Extensões em: UnitOfWork.OcorrenciaViagem.cs, UnitOfWork.RepactuacaoVeiculo  ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ LOTE        : 24 — Repository                                                ║
-// ║ DATA        : 29/01/2026                                                     ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: UnitOfWork.cs                                                                         ║
+   ║ 📂 CAMINHO: Repository/                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Implementar o padrão Unit of Work como ponto central de acesso aos repositórios.               ║
+   ║    Orquestra repositórios de cadastros, views, escalas e alertas no contexto FrotiX.              ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • UnitOfWork(FrotiXDbContext db)                                                                ║
+   ║    • GetDbContext()                                                                                ║
+   ║    • Save()                                                                                        ║
+   ║    • SaveAsync()                                                                                   ║
+   ║    • Dispose()                                                                                     ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ ⚠️ OBSERVAÇÕES:                                                                                     ║
+   ║    Classe partial com extensões em UnitOfWork.OcorrenciaViagem.cs e UnitOfWork.RepactuacaoVeiculo. ║
+   ║    Propriedades expõem repositórios específicos e views do sistema.                                ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using FrotiX.Data;
 using FrotiX.Models;
@@ -31,6 +27,15 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Repository
 {
+    /// <summary>
+    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    /// │ 🎯 CLASSE: UnitOfWork                                                                       │
+    /// │ 📦 HERDA DE: IUnitOfWork                                                                     │
+    /// │ 🔌 IMPLEMENTA: Controle de repositórios e persistência                                       │
+    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    ///
+    /// Unidade de trabalho central que agrega repositórios e coordena a persistência no FrotiX.
+    /// </summary>
     public partial class UnitOfWork : IUnitOfWork
     {
         private new readonly FrotiXDbContext _db;
@@ -38,10 +43,45 @@ namespace FrotiX.Repository
         private VeiculoPadraoViagemRepository _veiculoPadraoViagemRepository;
 
         /// <summary>
-        /// Retorna o DbContext para operações avançadas (ChangeTracker, etc.)
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: GetDbContext                                                                │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Services, Controllers, Repositories especializados                   │
+        /// │    ➡️ CHAMA       : _db                                                                  │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Fornecer acesso ao DbContext para operações avançadas (ChangeTracker, etc.).
+        /// </para>
+        ///
+        /// <para>
+        /// 📤 <b>RETORNO:</b><br/>
+        ///    DbContext - Instância ativa do contexto de dados.
+        /// </para>
         /// </summary>
+        /// <returns>DbContext utilizado pela unidade de trabalho.</returns>
         public DbContext GetDbContext() => _db;
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: UnitOfWork                                                                 │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Dependency Injection, Controllers                                    │
+        /// │    ➡️ CHAMA       : Inicialização de repositórios                                         │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Inicializar a unidade de trabalho e instanciar os repositórios do sistema.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    db - Contexto de dados do FrotiX
+        /// </para>
+        /// </summary>
+        /// <param name="db">Instância do contexto de dados usada pelos repositórios.</param>
         public UnitOfWork(FrotiXDbContext db)
         {
             _db = db;
@@ -711,16 +751,61 @@ namespace FrotiX.Repository
             get; private set;
         }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: Dispose                                                                      │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Infrastructure, DI                                                    │
+        /// │    ➡️ CHAMA       : _db.Dispose                                                          │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Liberar recursos do contexto de dados associado à unidade de trabalho.
+        /// </para>
+        /// </summary>
         public void Dispose()
         {
             _db.Dispose();
         }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: Save                                                                         │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Services, Controllers                                                 │
+        /// │    ➡️ CHAMA       : _db.SaveChanges                                                      │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Persistir todas as alterações pendentes no contexto.
+        /// </para>
+        /// </summary>
         public void Save()
         {
             _db.SaveChanges();
         }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: SaveAsync                                                                    │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Services, Controllers                                                 │
+        /// │    ➡️ CHAMA       : _db.SaveChangesAsync                                                 │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Persistir todas as alterações pendentes de forma assíncrona.
+        /// </para>
+        ///
+        /// <para>
+        /// 📤 <b>RETORNO:</b><br/>
+        ///    Task - Operação assíncrona de persistência.
+        /// </para>
+        /// </summary>
+        /// <returns>Task que representa a operação de persistência.</returns>
         public async Task SaveAsync()
         {
             await _db.SaveChangesAsync();
