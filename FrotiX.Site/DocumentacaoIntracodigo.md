@@ -9,14 +9,14 @@
 ## 📊 Progresso Geral
 
 ```
-███░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 6.9%
+████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 8.6%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 63 |
-| Percentual | 6.9% |
+| Documentados | 78 |
+| Percentual | 8.6% |
 | Última Atualização | 29/01/2026 20:15 |
 
 ---
@@ -39,7 +39,7 @@
 | 12 | Models | 139 | 48 | 34.5% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
-| 15 | Repository | 209 | 37 | 17.7% | 🟡 Em Progresso |
+| 15 | Repository | 209 | 52 | 24.9% | 🟡 Em Progresso |
 | 16 | Services | 43 | 0 | 0% | 🔴 Pendente |
 | 17 | Settings | 4 | 0 | 0% | 🔴 Pendente |
 | 18 | Tools | 4 | 0 | 0% | 🔴 Pendente |
@@ -129,7 +129,7 @@
 (pendente)
 ```
 
-### 📂 Repository (37/209) 🟡
+### 📂 Repository (52/209) 🟡
 ```
 ✅ Repository/ - Classes Principais (13 arquivos - Lotes 61-64):
    • AbastecimentoRepository.cs
@@ -146,7 +146,7 @@
    • EmpenhoMultaRepository.cs
    • EmpenhoRepository.cs
 
-✅ Repository/IRepository - Interfaces (24 arquivos - Lotes 65-68):
+✅ Repository/IRepository - Interfaces (39 arquivos - Lotes 65-71):
    • IAbastecimentoRepository.cs
    • IAlertasFrotiXRepository.cs
    • IAlertasUsuarioRepository.cs
@@ -170,9 +170,24 @@
    • IItensManutencaoRepository.cs ⭐ Novo - Lote 68
    • ILavadorContratoRepository.cs ⭐ Novo - Lote 68
    • ILavadorRepository.cs ⭐ Novo - Lote 68
+   • ILavadoresLavagemRepository.cs ⭐ Novo - Lote 69
+   • ILavagemRepository.cs ⭐ Novo - Lote 69
+   • ILotacaoMotoristaRepository.cs ⭐ Novo - Lote 69
+   • IManutencaoRepository.cs ⭐ Novo - Lote 69
+   • IMarcaVeiculoRepository.cs ⭐ Novo - Lote 69
+   • IMediaCombustivelRepository.cs ⭐ Novo - Lote 70
+   • IModeloVeiculoRepository.cs ⭐ Novo - Lote 70
+   • IMotoristaContratoRepository.cs ⭐ Novo - Lote 70
+   • IMotoristaRepository.cs ⭐ Novo - Lote 70
+   • IMovimentacaoEmpenhoMultaRepository.cs ⭐ Novo - Lote 70
+   • IMovimentacaoEmpenhoRepository.cs ⭐ Novo - Lote 71
+   • IMovimentacaoPatrimonioRepository.cs ⭐ Novo - Lote 71
+   • IMultaRepository.cs ⭐ Novo - Lote 71
+   • INotaFiscalRepository.cs ⭐ Novo - Lote 71
+   • IOcorrenciaViagemRepository.cs ⭐ Novo - Lote 71
    • FornecedorRepository.cs (classe)
 
-⏳ Pendente: ~172 arquivos restantes
+⏳ Pendente: ~157 arquivos restantes
 ```
 
 ### 📂 Services (0/43)
@@ -215,10 +230,11 @@
 | 29/01/2026 | 5 | 1 | Lote 66 - IRepository (5 arquivos) |
 | 29/01/2026 | 5 | 1 | Lote 67 - IRepository (5 arquivos) |
 | 29/01/2026 | 5 | 1 | Lote 68 - IRepository (5 arquivos - Novo Padrão Visual) |
+| 29/01/2026 | 5 | 1 | Lote 71 - IRepository (5 arquivos) |
 
-**Total de Lotes:** 19
-**Total de Commits:** 19
-**Total de Arquivos Documentados:** 63
+**Total de Lotes:** 20
+**Total de Commits:** 20
+**Total de Arquivos Documentados:** 78
 
 ---
 
