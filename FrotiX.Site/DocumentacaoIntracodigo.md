@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 16.9%
+████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 17.5%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 153 |
-| Percentual | 16.9% |
-| Última Atualização | 30/01/2026 22:30 |
+| Documentados | 158 |
+| Percentual | 17.5% |
+| Última Atualização | 30/01/2026 23:00 |
 
 ---
 
@@ -39,7 +39,7 @@
 | 12 | Models | 139 | 48 | 34.5% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
-| 15 | Repository | 209 | 127 | 60.8% | 🟡 Em Progresso |
+| 15 | Repository | 209 | 132 | 63.2% | 🟡 Em Progresso |
 | 16 | Services | 43 | 0 | 0% | 🔴 Pendente |
 | 17 | Settings | 4 | 0 | 0% | 🔴 Pendente |
 | 18 | Tools | 4 | 0 | 0% | 🔴 Pendente |
@@ -129,7 +129,7 @@
 (pendente)
 ```
 
-### 📂 Repository (122/209) 🟡
+### 📂 Repository (127/209) 🟡
 ```
 ✅ Repository/ - Classes Principais (13 arquivos - Lotes 61-64):
    • AbastecimentoRepository.cs
@@ -265,7 +265,14 @@
    • LotacaoMotoristaRepository.cs
    • MarcaVeiculoRepository.cs
 
-⏳ Pendente: ~87 arquivos restantes
+✅ Repository/ - Classes de Implementação (Lote 87 - novo padrão visual):
+   • ManutencaoRepository.cs
+   • MediaCombustivelRepository.cs
+   • ModeloVeiculoRepository.cs
+   • MotoristaContratoRepository.cs
+   • MotoristaRepository.cs
+
+⏳ Pendente: ~82 arquivos restantes
 ```
 
 ### 📂 Services (0/43)
@@ -324,10 +331,11 @@
 | 30/01/2026 | 5 | 1 | Lote 84 - IRepository (5 arquivos) |
 | 30/01/2026 | 5 | 1 | Lote 85 - Repository novo padrão visual (5 arquivos) |
 | 30/01/2026 | 5 | 1 | Lote 86 - Repository novo padrão visual (5 arquivos) |
+| 30/01/2026 | 5 | 1 | Lote 87 - Repository novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 35
-**Total de Commits:** 33
-**Total de Arquivos Documentados:** 153
+**Total de Lotes:** 36
+**Total de Commits:** 34
+**Total de Arquivos Documentados:** 158
 
 ---
 
