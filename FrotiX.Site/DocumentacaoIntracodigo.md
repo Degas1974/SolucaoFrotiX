@@ -9,14 +9,14 @@
 ## 📊 Progresso Geral
 
 ```
-███████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 13.0%
+███████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 14.1%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 118 |
-| Percentual | 13.0% |
+| Documentados | 128 |
+| Percentual | 14.1% |
 | Última Atualização | 29/01/2026 20:15 |
 
 ---
@@ -39,7 +39,7 @@
 | 12 | Models | 139 | 48 | 34.5% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
-| 15 | Repository | 209 | 92 | 44.0% | 🟡 Em Progresso |
+| 15 | Repository | 209 | 102 | 48.8% | 🟡 Em Progresso |
 | 16 | Services | 43 | 0 | 0% | 🔴 Pendente |
 | 17 | Settings | 4 | 0 | 0% | 🔴 Pendente |
 | 18 | Tools | 4 | 0 | 0% | 🔴 Pendente |
@@ -129,7 +129,7 @@
 (pendente)
 ```
 
-### 📂 Repository (92/209) 🟡
+### 📂 Repository (102/209) 🟡
 ```
 ✅ Repository/ - Classes Principais (13 arquivos - Lotes 61-64):
    • AbastecimentoRepository.cs
@@ -146,7 +146,7 @@
    • EmpenhoMultaRepository.cs
    • EmpenhoRepository.cs
 
-✅ Repository/IRepository - Interfaces (79 arquivos - Lotes 65-79):
+✅ Repository/IRepository - Interfaces (89 arquivos - Lotes 65-81):
    • IAbastecimentoRepository.cs
    • IAlertasFrotiXRepository.cs
    • IAlertasUsuarioRepository.cs
@@ -225,9 +225,19 @@
    • IViewFluxoEconomildo.cs ⭐ Novo - Lote 79
    • IViewFluxoEconomildoDataRepository.cs ⭐ Novo - Lote 79
    • IViewGlosaRepository.cs ⭐ Novo - Lote 79
+   • IViewItensManutencaoRepository.cs ⭐ Novo - Lote 80
+   • IViewLavagemRepository.cs ⭐ Novo - Lote 80
+   • IViewLotacaoMotorista.cs ⭐ Novo - Lote 80
+   • IViewLotacoesRepository.cs ⭐ Novo - Lote 80
+   • IViewManutencaoRepository.cs ⭐ Novo - Lote 80
+   • IViewMediaConsumoRepository.cs ⭐ Novo - Lote 81
+   • IViewMotoristaFluxo.cs ⭐ Novo - Lote 81
+   • IViewMotoristasRepository.cs ⭐ Novo - Lote 81
+   • IViewMotoristasViagemRepository.cs ⭐ Novo - Lote 81
+   • IViewMultasRepository.cs ⭐ Novo - Lote 81
    • FornecedorRepository.cs (classe)
 
-⏳ Pendente: ~117 arquivos restantes
+⏳ Pendente: ~107 arquivos restantes
 ```
 
 ### 📂 Services (0/43)
@@ -279,10 +289,12 @@
 | 30/01/2026 | 5 | 1 | Lote 77 - IRepository (5 arquivos) |
 | 30/01/2026 | 5 | 1 | Lote 78 - IRepository (5 arquivos) |
 | 30/01/2026 | 5 | 1 | Lote 79 - IRepository (5 arquivos) |
+| 30/01/2026 | 5 | 1 | Lote 80 - IRepository (5 arquivos) |
+| 30/01/2026 | 5 | 1 | Lote 81 - IRepository (5 arquivos) |
 
-**Total de Lotes:** 28
-**Total de Commits:** 28
-**Total de Arquivos Documentados:** 118
+**Total de Lotes:** 30
+**Total de Commits:** 29
+**Total de Arquivos Documentados:** 128
 
 ---
 
