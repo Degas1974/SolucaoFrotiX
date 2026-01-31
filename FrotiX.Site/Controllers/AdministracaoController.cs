@@ -1,13 +1,20 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: AdministracaoController.cs                                                              ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Fornecer dados de resumo geral da frota para dashboards administrativos.               ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: ResumoGeral(), EstatisticasVeiculos(), EstatisticasMotoristas(), EstatisticasViagens()   ║
-   ║ 🔗 DEPS: FrotiXDbContext, IUnitOfWork | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0                        ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: AdministracaoController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Fornecer dados de resumo geral da frota para dashboards administrativos.
+ *
+ * 📥 ENTRADAS     : Filtros de data (dataInicio/dataFim) e parâmetros de consulta.
+ *
+ * 📤 SAÍDAS       : JSON com estatísticas de veículos, motoristas e viagens.
+ *
+ * 🔗 CHAMADA POR  : Frontend de dashboards administrativos.
+ *
+ * 🔄 CHAMA        : FrotiXDbContext, IUnitOfWork e consultas LINQ.
+ *
+ * 📦 DEPENDÊNCIAS : EF Core, FrotiXDbContext, IUnitOfWork.
+ *
+ * 📝 OBSERVAÇÕES  : Aplica janela padrão de 30 dias quando não há filtro.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;

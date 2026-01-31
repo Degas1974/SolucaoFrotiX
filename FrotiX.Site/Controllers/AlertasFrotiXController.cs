@@ -1,13 +1,20 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: AlertasFrotiXController.cs                                                              ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Gerenciamento de alertas do sistema. Notificações tempo real via SignalR.              ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetDetalhesAlerta(), GetAlertasUsuario(), MarcarComoLido(), ApagarAlerta(), Contador()   ║
-   ║ 🔗 DEPS: IAlertasFrotiXRepository, AlertasHub (SignalR) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0      ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: AlertasFrotiXController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar alertas do sistema e notificações em tempo real via SignalR.
+ *
+ * 📥 ENTRADAS     : Identificadores de usuário, filtros de status e ações de leitura.
+ *
+ * 📤 SAÍDAS       : JSON com alertas, contador de não lidos e status das operações.
+ *
+ * 🔗 CHAMADA POR  : Frontend de alertas e notificações.
+ *
+ * 🔄 CHAMA        : IAlertasFrotiXRepository, AlertasHub (SignalR).
+ *
+ * 📦 DEPENDÊNCIAS : IUnitOfWork, SignalR, repositório de alertas.
+ *
+ * 📝 OBSERVAÇÕES  : Controller ignora antiforgery por operar como API.
+ **************************************************************************************** */
 
 using FrotiX.Hubs;
 using FrotiX.Models;

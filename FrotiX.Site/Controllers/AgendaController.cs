@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: AgendaController.cs                                                                     ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: API para calendário de eventos e viagens. Agendamentos recorrentes, conflitos.         ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetEventos(), CreateEvento(), UpdateEvento(), DeleteEvento(), ValidarConflitos()         ║
-   ║ 🔗 DEPS: FrotiXDbContext, IUnitOfWork, ViagemRepository | 📅 08/01/2026 | 👤 Copilot | 📝 v2.0      ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: AgendaController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : API para calendário de eventos e viagens, incluindo agendamentos
+ *                   recorrentes e validação de conflitos.
+ *
+ * 📥 ENTRADAS     : DTOs de eventos, filtros de data e parâmetros de validação.
+ *
+ * 📤 SAÍDAS       : JSON com eventos, status de criação/edição e validações.
+ *
+ * 🔗 CHAMADA POR  : Frontend do calendário e módulos de viagem.
+ *
+ * 🔄 CHAMA        : IUnitOfWork, serviços de estatística e consultas no DbContext.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiXDbContext, IUnitOfWork, ViagemEstatisticaService.
+ *
+ * 📝 OBSERVAÇÕES  : Opera como API (ControllerBase) com rota api/[controller].
+ **************************************************************************************** */
 
 using FrotiX.Data;
 using FrotiX.Models;

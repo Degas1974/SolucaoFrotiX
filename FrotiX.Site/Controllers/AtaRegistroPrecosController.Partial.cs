@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: AtaRegistroPrecosController.Partial.cs                                                  ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial para verificar dependências antes de excluir Ata de Registro de Preços.        ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: VerificarDependencias() - conta itens e veículos vinculados antes da exclusão            ║
-   ║ 🔗 DEPS: IUnitOfWork, ItemVeiculoAta, VeiculoAta | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0             ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: AtaRegistroPrecosController.Partial.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Verificar dependências antes de excluir Ata de Registro de Preços,
+ *                   retornando contadores de itens e veículos vinculados.
+ *
+ * 📥 ENTRADAS     : id (Guid) da Ata.
+ *
+ * 📤 SAÍDAS       : JSON com contagem de itens/veículos e mensagens de validação.
+ *
+ * 🔗 CHAMADA POR  : Frontend de exclusão de Ata de Registro de Preços.
+ *
+ * 🔄 CHAMA        : Repositórios ItemVeiculoAta e VeiculoAta via IUnitOfWork.
+ *
+ * 📦 DEPENDÊNCIAS : IUnitOfWork, LINQ, ControllerBase.
+ *
+ * 📝 OBSERVAÇÕES  : Classe parcial auxiliar do CRUD principal.
+ **************************************************************************************** */
 
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;

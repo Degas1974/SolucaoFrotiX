@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: AtaRegistroPrecosController.cs                                                          ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: CRUD de Atas de Registro de Preços. Join com Fornecedor para descrição completa.       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetAll(), GetById(), Create(), Update(), Delete() - partial: VerificarDependencias       ║
-   ║ 🔗 DEPS: IUnitOfWork, AtaRegistroPrecos, Fornecedor | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0          ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: AtaRegistroPrecosController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : CRUD de Atas de Registro de Preços, com join de Fornecedor para
+ *                   exibição de descrições completas.
+ *
+ * 📥 ENTRADAS     : Model AtaRegistroPrecos, filtros de busca e parâmetros de rota.
+ *
+ * 📤 SAÍDAS       : JSON com listas e detalhes de Atas.
+ *
+ * 🔗 CHAMADA POR  : Frontend de cadastro de Atas de Registro de Preços.
+ *
+ * 🔄 CHAMA        : Repositórios AtaRegistroPrecos e Fornecedor via IUnitOfWork.
+ *
+ * 📦 DEPENDÊNCIAS : IUnitOfWork, LINQ, ControllerBase.
+ *
+ * 📝 OBSERVAÇÕES  : Possui classe parcial .Partial.cs para verificação de dependências.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
