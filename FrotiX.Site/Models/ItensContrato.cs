@@ -1,14 +1,12 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ItensContrato.cs                                                                        ║
+   ║ 📌 ARQUIVO: ItensContrato.cs                                                                        ║
    ║ 📂 CAMINHO: /Models                                                                                 ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: ViewModels para gerenciamento de itens de contratos e atas (prefixo "IC").            ║
+   ║ 🧭 OBJETIVO: ViewModels para gerenciamento de itens de contratos e atas (prefixo "IC").            ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 CLASSES: ICPageViewModel (tela principal), ICPlaceholder, ICItemViewModel, ICListItemDTO        ║
-   ║    DROPDOWNS: ContratoList, AtaList                                                                 ║
+   ║ 🗂️  CONTÉM: ICPageViewModel, ICPlaceholder, VMs de inclusão/remoção                                 ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: Microsoft.AspNetCore.Mvc.Rendering                                                         ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: SelectListItem                                                                      ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
@@ -23,29 +21,32 @@ namespace FrotiX.Models
     // Prefixo "IC" para evitar conflitos com classes existentes
     // ============================================================
     
-    /// <summary>
-    /// ViewModel principal para a página ItensContrato
-    /// </summary>
+    // ViewModel principal para a página ItensContrato.
     public class ICPageViewModel
     {
+        // Contrato selecionado.
         public Guid ContratoId { get; set; }
+        // Ata selecionada.
         public Guid AtaId { get; set; }
 
+        // Placeholder para itens.
         public ICPlaceholder ItensContrato { get; set; }
 
         // Listas para Dropdowns
+        // Lista de contratos.
         public IEnumerable<SelectListItem> ContratoList { get; set; }
+        // Lista de atas.
         public IEnumerable<SelectListItem> AtaList { get; set; }
     }
 
-    /// <summary>
-    /// Placeholder para PageModel
-    /// </summary>
+    // Placeholder para PageModel.
     public class ICPlaceholder
     {
+        // Contrato selecionado (não mapeado).
         [NotMapped]
         public Guid ContratoId { get; set; }
 
+        // Ata selecionada (não mapeado).
         [NotMapped]
         public Guid AtaId { get; set; }
     }
@@ -54,59 +55,61 @@ namespace FrotiX.Models
     // VIEWMODELS PARA MODAL DE INCLUSÃO
     // ============================================================
 
-    /// <summary>
-    /// ViewModel para inclusão de Veículo no Contrato
-    /// </summary>
+    // ViewModel para inclusão de Veículo no Contrato.
     public class ICIncluirVeiculoContratoVM
     {
+        // Veículo a incluir.
         public Guid VeiculoId { get; set; }
+        // Contrato de destino.
         public Guid ContratoId { get; set; }
+        // Item veicular associado (opcional).
         public Guid? ItemVeiculoId { get; set; }
     }
 
-    /// <summary>
-    /// ViewModel para inclusão de Veículo na Ata
-    /// </summary>
+    // ViewModel para inclusão de Veículo na Ata.
     public class ICIncluirVeiculoAtaVM
     {
+        // Veículo a incluir.
         public Guid VeiculoId { get; set; }
+        // Ata de destino.
         public Guid AtaId { get; set; }
+        // Item de ata associado (opcional).
         public Guid? ItemVeiculoAtaId { get; set; }
     }
 
-    /// <summary>
-    /// ViewModel para inclusão de Encarregado no Contrato
-    /// </summary>
+    // ViewModel para inclusão de Encarregado no Contrato.
     public class ICIncluirEncarregadoContratoVM
     {
+        // Encarregado a incluir.
         public Guid EncarregadoId { get; set; }
+        // Contrato de destino.
         public Guid ContratoId { get; set; }
     }
 
-    /// <summary>
-    /// ViewModel para inclusão de Operador no Contrato
-    /// </summary>
+    // ViewModel para inclusão de Operador no Contrato.
     public class ICIncluirOperadorContratoVM
     {
+        // Operador a incluir.
         public Guid OperadorId { get; set; }
+        // Contrato de destino.
         public Guid ContratoId { get; set; }
     }
 
-    /// <summary>
-    /// ViewModel para inclusão de Motorista no Contrato
-    /// </summary>
+    // ViewModel para inclusão de Motorista no Contrato.
     public class ICIncluirMotoristaContratoVM
     {
+        // Motorista a incluir.
         public Guid MotoristaId { get; set; }
+        // Contrato de destino.
         public Guid ContratoId { get; set; }
     }
 
-    /// <summary>
-    /// ViewModel para inclusão de Lavador no Contrato
-    /// </summary>
+    // ViewModel para inclusão de Lavador no Contrato.
     public class ICIncluirLavadorContratoVM
     {
+        // Lavador a incluir.
         public Guid LavadorId { get; set; }
+        // Contrato de destino.
         public Guid ContratoId { get; set; }
     }
 
@@ -114,57 +117,57 @@ namespace FrotiX.Models
     // VIEWMODELS PARA REMOÇÃO
     // ============================================================
 
-    /// <summary>
-    /// ViewModel para remoção de Veículo do Contrato
-    /// </summary>
+    // ViewModel para remoção de Veículo do Contrato.
     public class ICRemoverVeiculoContratoVM
     {
+        // Veículo a remover.
         public Guid VeiculoId { get; set; }
+        // Contrato de origem.
         public Guid ContratoId { get; set; }
     }
 
-    /// <summary>
-    /// ViewModel para remoção de Veículo da Ata
-    /// </summary>
+    // ViewModel para remoção de Veículo da Ata.
     public class ICRemoverVeiculoAtaVM
     {
+        // Veículo a remover.
         public Guid VeiculoId { get; set; }
+        // Ata de origem.
         public Guid AtaId { get; set; }
     }
 
-    /// <summary>
-    /// ViewModel para remoção de Encarregado do Contrato
-    /// </summary>
+    // ViewModel para remoção de Encarregado do Contrato.
     public class ICRemoverEncarregadoContratoVM
     {
+        // Encarregado a remover.
         public Guid EncarregadoId { get; set; }
+        // Contrato de origem.
         public Guid ContratoId { get; set; }
     }
 
-    /// <summary>
-    /// ViewModel para remoção de Operador do Contrato
-    /// </summary>
+    // ViewModel para remoção de Operador do Contrato.
     public class ICRemoverOperadorContratoVM
     {
+        // Operador a remover.
         public Guid OperadorId { get; set; }
+        // Contrato de origem.
         public Guid ContratoId { get; set; }
     }
 
-    /// <summary>
-    /// ViewModel para remoção de Motorista do Contrato
-    /// </summary>
+    // ViewModel para remoção de Motorista do Contrato.
     public class ICRemoverMotoristaContratoVM
     {
+        // Motorista a remover.
         public Guid MotoristaId { get; set; }
+        // Contrato de origem.
         public Guid ContratoId { get; set; }
     }
 
-    /// <summary>
-    /// ViewModel para remoção de Lavador do Contrato
-    /// </summary>
+    // ViewModel para remoção de Lavador do Contrato.
     public class ICRemoverLavadorContratoVM
     {
+        // Lavador a remover.
         public Guid LavadorId { get; set; }
+        // Contrato de origem.
         public Guid ContratoId { get; set; }
     }
 }
