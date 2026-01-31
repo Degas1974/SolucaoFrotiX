@@ -1,11 +1,22 @@
-﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: ForgotPassword.cshtml.cs                                                                ║
-   ║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: PageModel para recuperação de senha.                                                   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: ForgotPasswordModel                                                                     ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+﻿/* ****************************************************************************************
+ * ⚡ ARQUIVO: ForgotPassword.cshtml.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : PageModel para recuperação de senha com geração de token e envio
+ *                   de email contendo link de reset.
+ *
+ * 📥 ENTRADAS     : Input.Email (string).
+ *
+ * 📤 SAÍDAS       : IActionResult (RedirectToPage/Page) e envio de email via IEmailSender.
+ *
+ * 🔗 CHAMADA POR  : Motor Razor (GET/POST /Account/ForgotPassword).
+ *
+ * 🔄 CHAMA        : UserManager.FindByEmailAsync(), GeneratePasswordResetTokenAsync(),
+ *                   IEmailSender.SendEmailAsync().
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, IEmailSender, ILogger, Razor Pages.
+ *
+ * 📝 OBSERVAÇÕES  : Por segurança, não revela se usuário existe ou email não confirmado.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CLASSE: ForgotPasswordModel (PageModel)

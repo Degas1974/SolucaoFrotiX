@@ -17,7 +17,7 @@
 | Total de Arquivos | 905 |
 | Documentados | 380 |
 | Percentual | 42.0% |
-| Última Atualização | 31/01/2026 13:56 |
+| Última Atualização | 31/01/2026 13:59 |
 
 ---
 
@@ -305,6 +305,13 @@
    • _ViewStart.cshtml
    • ConfirmEmail.cshtml
    • ConfirmEmail.cshtml.cs
+
+✅ Areas/Identity - Pages (Lote 134 - revisão cards completos):
+   • ConfirmEmailChange.cshtml
+   • ConfirmEmailChange.cshtml.cs
+   • ForgotPassword.cshtml
+   • ForgotPassword.cshtml.cs
+   • ForgotPasswordConfirmation.cshtml
 
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
@@ -750,9 +757,10 @@
 | 31/01/2026 | 5 | 1 | Lote 131 - Areas/Identity novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 132 - Areas/Authorization revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 133 - Areas/Authorization + Areas/Identity revisão cards completos (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 134 - Areas/Identity revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 82
-**Total de Commits:** 80
+**Total de Lotes:** 83
+**Total de Commits:** 81
 **Total de Arquivos Documentados:** 380
 
 ---

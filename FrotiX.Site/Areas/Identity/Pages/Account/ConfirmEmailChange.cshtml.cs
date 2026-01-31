@@ -1,11 +1,22 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: ConfirmEmailChange.cshtml.cs                                                            ║
-   ║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: PageModel para confirmação de alteração de email.                                      ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: ConfirmEmailChangeModel                                                                 ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ConfirmEmailChange.cshtml.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : PageModel para confirmar alteração de email, validando token e
+ *                   atualizando email/username do usuário no Identity.
+ *
+ * 📥 ENTRADAS     : userId (string), email (string), code (string) via query string.
+ *
+ * 📤 SAÍDAS       : StatusMessage e IActionResult (Page/Redirect/NotFound).
+ *
+ * 🔗 CHAMADA POR  : Motor Razor (GET /Account/ConfirmEmailChange).
+ *
+ * 🔄 CHAMA        : UserManager.ChangeEmailAsync(), SetUserNameAsync(),
+ *                   SignInManager.RefreshSignInAsync().
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, WebUtilities, Razor Pages.
+ *
+ * 📝 OBSERVAÇÕES  : Sistema usa email como username; ambos são atualizados.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CLASSE: ConfirmEmailChangeModel (PageModel)
