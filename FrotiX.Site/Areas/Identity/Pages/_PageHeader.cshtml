@@ -1,22 +1,21 @@
 ﻿@*****************************************************************************************
- * ⚡ PARTIAL: _PageHeader
+ * ⚡ ARQUIVO: _PageHeader.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Renderiza o cabeçalho das páginas da área Identity com logo e links
- *                   contextuais (Login ou Register) dependendo da página atual.
+ * 🎯 OBJETIVO     : Partial de cabeçalho da área Identity, exibindo logo e link de ação
+ *                   contextual (Login ou Register) conforme a página atual.
  *
- * 📥 ENTRADAS     : ViewBag.PageName (string) - Nome da página atual para lógica condicional.
+ * 📥 ENTRADAS     : ViewBag.PageName (string) para decidir qual link exibir.
  *
- * 📤 SAÍDAS       : HTML - Cabeçalho com logo e link apropriado (Login ou Register).
+ * 📤 SAÍDAS       : HTML com layout do header e links de navegação.
  *
- * 🔗 CHAMADA POR  : Layouts que incluem este partial (ex: _Layout.cshtml).
+ * 🔗 CHAMADA POR  : Layouts da área Identity (ex: _Layout.cshtml).
  *
  * 🔄 CHAMA        : Partial _Logo, páginas /account/login e /account/register.
  *
- * 📦 DEPENDÊNCIAS : ASP.NET Core Tag Helpers (asp-area, asp-page), Bootstrap 4+.
+ * 📦 DEPENDÊNCIAS : Razor Pages, Tag Helpers (asp-area/asp-page), Bootstrap.
  *
- * 📝 OBSERVAÇÕES  : Lógica condicional: se página está em lista ["register", "forgotpassword",
- *                   "lockout", "logout"], mostra link "Secure Login". Caso contrário, mostra
- *                   "Register account".
+ * 📝 OBSERVAÇÕES  : Lista de páginas (register, forgotpassword, lockout, logout) define
+ *                   quando mostrar "Secure Login".
  *****************************************************************************************@
 @{
     // [DOC] Captura nome da página atual do ViewBag para determinar contexto

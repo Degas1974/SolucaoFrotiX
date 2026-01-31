@@ -1,22 +1,20 @@
 ﻿@*****************************************************************************************
- * ⚡ ARQUIVO: _ViewStart
+ * ⚡ ARQUIVO: _ViewStart.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Define o layout padrão (_Layout.cshtml) para todas as páginas Razor
- *                   da área Identity, evitando necessidade de declarar Layout em cada
- *                   página individualmente.
+ * 🎯 OBJETIVO     : Definir o layout padrão (_Layout.cshtml) para páginas Razor da área
+ *                   Identity, evitando repetição de Layout em cada view.
  *
  * 📥 ENTRADAS     : Nenhuma (arquivo de configuração Razor).
  *
- * 📤 SAÍDAS       : Configuração global de layout.
+ * 📤 SAÍDAS       : Atribuição do Layout padrão da área.
  *
- * 🔗 CHAMADA POR  : Motor Razor (automático para todas as páginas da área Identity).
+ * 🔗 CHAMADA POR  : Motor Razor (executado antes de cada view na área Identity).
  *
  * 🔄 CHAMA        : _Layout.cshtml.
  *
- * 📦 DEPENDÊNCIAS : _Layout.cshtml deve existir em Areas/Identity/Pages/.
+ * 📦 DEPENDÊNCIAS : Layout da área Identity em /Areas/Identity/Pages/_Layout.cshtml.
  *
- * 📝 OBSERVAÇÕES  : Este arquivo é executado ANTES de cada página Razor na área Identity.
- *                   Páginas podem sobrescrever o layout definindo Layout em @{}.
+ * 📝 OBSERVAÇÕES  : Páginas podem sobrescrever o layout definindo Layout localmente.
  *****************************************************************************************@
 @{
     // [DOC] Define layout padrão para todas as páginas da área Identity

@@ -1,11 +1,21 @@
-@*
-╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║ 📌 ARQUIVO: _LoginLayout.cshtml                                                                      ║
-║ 📂 CAMINHO: /Areas/Identity/Pages                                                                   ║
-╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-║ 🧭 OBJETIVO: Layout de login com processamento de logo e tema Neon.                                 ║
-╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*@
+@*****************************************************************************************
+ * ⚡ ARQUIVO: _LoginLayout.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Layout da página de login do FrotiX com tema Neon, incluindo
+ *                   processamento de logo via Canvas e barra de progresso visual.
+ *
+ * 📥 ENTRADAS     : @RenderBody() - conteúdo do formulário de login.
+ *
+ * 📤 SAÍDAS       : HTML completo com recursos do tema Neon e scripts de login.
+ *
+ * 🔗 CHAMADA POR  : LoginFrotiX.cshtml (Layout = "_LoginLayout").
+ *
+ * 🔄 CHAMA        : trimTransparentPNG(), neon-login.js, neon-register.js, neon-custom.js.
+ *
+ * 📦 DEPENDÊNCIAS : Bootstrap 3, jQuery 1.11.3, GSAP/TweenMax, Neon Theme, Canvas API.
+ *
+ * 📝 OBSERVAÇÕES  : Logo é recortado (trim) e redimensionado para 800px de largura.
+ *****************************************************************************************@
 <!DOCTYPE html>
 <html lang="en">
 <head>

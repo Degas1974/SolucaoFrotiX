@@ -1,11 +1,21 @@
-﻿@*
-╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║ 📌 ARQUIVO: _ConfirmacaoLayout.cshtml                                                               ║
-║ 📂 CAMINHO: /Areas/Identity/Pages                                                                   ║
-╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-║ 🧭 OBJETIVO: Layout para confirmação de senha (tema Neon).                                          ║
-╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*@
+﻿@*****************************************************************************************
+ * ⚡ ARQUIVO: _ConfirmacaoLayout.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Layout da página de confirmação de senha (tema Neon), com cabeçalho,
+ *                   barra de progresso visual e container de formulário.
+ *
+ * 📥 ENTRADAS     : @RenderBody() - conteúdo das páginas que usam este layout.
+ *
+ * 📤 SAÍDAS       : HTML completo com estrutura, CSS e JS do tema Neon.
+ *
+ * 🔗 CHAMADA POR  : ConfirmarSenha.cshtml e outras páginas que definem Layout = "_ConfirmacaoLayout".
+ *
+ * 🔄 CHAMA        : neon-confirmaemail.js, neon-custom.js, neon-demo.js (scripts do tema).
+ *
+ * 📦 DEPENDÊNCIAS : Bootstrap 3, jQuery 1.11.3, GSAP/TweenMax, Neon Theme, FontAwesome.
+ *
+ * 📝 OBSERVAÇÕES  : Barra de progresso é fixa em 3% (efeito visual).
+ *****************************************************************************************@
 <!DOCTYPE html>
 <html lang="en">
 <head>
