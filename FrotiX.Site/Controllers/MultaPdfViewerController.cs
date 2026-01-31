@@ -1,28 +1,35 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: MultaPdfViewerController.cs                                                             ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Visualizar PDFs de multas via Syncfusion PDF Viewer. Cache otimizado de arquivos.      ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Load(), Download() - arquivos de wwwroot/DadosEditaveis/Multas + IMemoryCache            ║
-   ║ 🔗 DEPS: Syncfusion EJ2 PdfViewer, IMemoryCache | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: MultaPdfViewerController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Servir PDFs de multas para o componente Syncfusion PDF Viewer,
+ *                   com cache em memória para otimizar o carregamento.
+ *
+ * 📥 ENTRADAS     : Payload JSON do Syncfusion (document, isFileName, etc.).
+ *
+ * 📤 SAÍDAS       : JSON com páginas, textos, miniaturas e anotações; downloads e prints.
+ *
+ * 🔗 CHAMADA POR  : Frontend (Syncfusion PDF Viewer) nas telas de multas.
+ *
+ * 🔄 CHAMA        : PdfRenderer (Syncfusion), File System, IMemoryCache.
+ *
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 PDF Viewer, IMemoryCache, IWebHostEnvironment.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: MultaPdfViewerController
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Visualizar PDFs de multas usando componente Syncfusion PDF Viewer
- *                   Carrega PDFs de wwwroot/DadosEditaveis/Multas com cache otimizado
- * 📥 ENTRADAS     : JsonFileName (nome do arquivo PDF a visualizar)
- * 📤 SAÍDAS       : Content (PDF), JSON (operações Syncfusion)
- * 🔗 CHAMADA POR  : Syncfusion PDF Viewer (JavaScript) das páginas de multas
- * 🔄 CHAMA        : Syncfusion.EJ2.PdfViewer, IWebHostEnvironment, IMemoryCache
- * 📦 DEPENDÊNCIAS : Syncfusion EJ2 PDF Viewer, IMemoryCache, File System
+ * 🎯 OBJETIVO     : Controlar operações de visualização, renderização e exportação
+ *                   de PDFs de multas.
  *
- * ⚡ PERFORMANCE:
- *    - IMemoryCache: Cache de PDFs para melhorar performance
- *    - Carregamento de arquivos do disco apenas quando necessário
+ * 📥 ENTRADAS     : Dicionários JSON enviados pelo PDF Viewer.
+ *
+ * 📤 SAÍDAS       : JSON/Content para páginas, textos, miniaturas e arquivos.
+ *
+ * 🔗 CHAMADA POR  : Componentes JS do Syncfusion PDF Viewer.
+ *
+ * 🔄 CHAMA        : PdfRenderer, ResolveDocumentStream, File IO.
+ *
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 PDF Viewer, IMemoryCache, File System.
  ****************************************************************************************/
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -45,7 +52,13 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ FUNÇÃO: MultaPdfViewerController (Construtor)
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Injetar dependências (Hosting, Cache)
+         * 🎯 OBJETIVO     : Injetar dependências de ambiente e cache.
+         *
+         * 📥 ENTRADAS     : env, cache.
+         *
+         * 📤 SAÍDAS       : Instância configurada.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
          ****************************************************************************************/
         public MultaPdfViewerController(
             IWebHostEnvironment env ,
@@ -127,6 +140,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Load
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Carregar documento PDF no viewer a partir do payload recebido.
+         *
+         * 📥 ENTRADAS     : json (document, isFileName, etc.).
+         *
+         * 📤 SAÍDAS       : JSON do Syncfusion com metadados do documento.
+         *
+         * 🔗 CHAMADA POR  : Syncfusion PDF Viewer (Load).
+         *
+         * 🔄 CHAMA        : PdfRenderer.Load(), ResolveDocumentStream().
+         ****************************************************************************************/
         [HttpPost("Load")]
         public IActionResult Load([FromBody] Dictionary<string , string> json)
         {
@@ -151,6 +177,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RenderPdfPages
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Renderizar páginas do PDF sob demanda.
+         *
+         * 📥 ENTRADAS     : json com parâmetros de página.
+         *
+         * 📤 SAÍDAS       : JSON com imagens/streams das páginas.
+         *
+         * 🔗 CHAMADA POR  : Syncfusion PDF Viewer (page rendering).
+         *
+         * 🔄 CHAMA        : PdfRenderer.GetPage().
+         ****************************************************************************************/
         [HttpPost("RenderPdfPages")]
         public IActionResult RenderPdfPages([FromBody] Dictionary<string , string> json)
         {
@@ -171,6 +210,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RenderPdfTexts
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Extrair textos do PDF para busca e seleção.
+         *
+         * 📥 ENTRADAS     : json com parâmetros do documento.
+         *
+         * 📤 SAÍDAS       : JSON com textos do documento.
+         *
+         * 🔗 CHAMADA POR  : Syncfusion PDF Viewer (text extraction).
+         *
+         * 🔄 CHAMA        : PdfRenderer.GetDocumentText().
+         ****************************************************************************************/
         [HttpPost("RenderPdfTexts")]
         public IActionResult RenderPdfTexts([FromBody] Dictionary<string , string> json)
         {
@@ -191,6 +243,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RenderThumbnailImages
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Gerar miniaturas das páginas do PDF.
+         *
+         * 📥 ENTRADAS     : json com parâmetros do documento.
+         *
+         * 📤 SAÍDAS       : JSON com miniaturas.
+         *
+         * 🔗 CHAMADA POR  : Syncfusion PDF Viewer (thumbnails).
+         *
+         * 🔄 CHAMA        : PdfRenderer.GetThumbnailImages().
+         ****************************************************************************************/
         [HttpPost("RenderThumbnailImages")]
         public IActionResult RenderThumbnailImages([FromBody] Dictionary<string , string> json)
         {
@@ -211,6 +276,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Bookmarks
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar bookmarks do PDF.
+         *
+         * 📥 ENTRADAS     : json com parâmetros do documento.
+         *
+         * 📤 SAÍDAS       : JSON com bookmarks.
+         *
+         * 🔗 CHAMADA POR  : Syncfusion PDF Viewer (bookmarks).
+         *
+         * 🔄 CHAMA        : PdfRenderer.GetBookmarks().
+         ****************************************************************************************/
         [HttpPost("Bookmarks")]
         public IActionResult Bookmarks([FromBody] Dictionary<string , string> json)
         {
@@ -231,6 +309,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RenderAnnotationComments
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Renderizar comentários/anotações do PDF.
+         *
+         * 📥 ENTRADAS     : json com parâmetros do documento.
+         *
+         * 📤 SAÍDAS       : JSON com anotações.
+         *
+         * 🔗 CHAMADA POR  : Syncfusion PDF Viewer (annotations).
+         *
+         * 🔄 CHAMA        : PdfRenderer.GetAnnotationComments().
+         ****************************************************************************************/
         [HttpPost("RenderAnnotationComments")]
         public IActionResult RenderAnnotationComments([FromBody] Dictionary<string , string> json)
         {
@@ -251,6 +342,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Unload
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Liberar recursos do documento no viewer.
+         *
+         * 📥 ENTRADAS     : json com parâmetros do documento.
+         *
+         * 📤 SAÍDAS       : JSON com status de unload.
+         *
+         * 🔗 CHAMADA POR  : Syncfusion PDF Viewer (unload).
+         *
+         * 🔄 CHAMA        : PdfRenderer.ClearCache().
+         ****************************************************************************************/
         [HttpPost("Unload")]
         public IActionResult Unload([FromBody] Dictionary<string , string> json)
         {
@@ -270,6 +374,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ExportAnnotations
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Exportar anotações do PDF.
+         *
+         * 📥 ENTRADAS     : json com parâmetros do documento.
+         *
+         * 📤 SAÍDAS       : JSON com anotações exportadas.
+         *
+         * 🔗 CHAMADA POR  : Syncfusion PDF Viewer (export annotations).
+         *
+         * 🔄 CHAMA        : PdfRenderer.ExportAnnotations().
+         ****************************************************************************************/
         [HttpPost("ExportAnnotations")]
         public IActionResult ExportAnnotations([FromBody] Dictionary<string , string> json)
         {
@@ -289,6 +406,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ImportAnnotations
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Importar anotações para o PDF.
+         *
+         * 📥 ENTRADAS     : json com anotações.
+         *
+         * 📤 SAÍDAS       : JSON com status da importação.
+         *
+         * 🔗 CHAMADA POR  : Syncfusion PDF Viewer (import annotations).
+         *
+         * 🔄 CHAMA        : PdfRenderer.ImportAnnotations().
+         ****************************************************************************************/
         [HttpPost("ImportAnnotations")]
         public IActionResult ImportAnnotations([FromBody] Dictionary<string , string> json)
         {
@@ -321,6 +451,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ExportFormFields
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Exportar campos de formulário do PDF.
+         *
+         * 📥 ENTRADAS     : json com parâmetros do documento.
+         *
+         * 📤 SAÍDAS       : JSON com campos exportados.
+         *
+         * 🔗 CHAMADA POR  : Syncfusion PDF Viewer (export form fields).
+         *
+         * 🔄 CHAMA        : PdfRenderer.ExportFormFields().
+         ****************************************************************************************/
         [HttpPost("ExportFormFields")]
         public IActionResult ExportFormFields([FromBody] Dictionary<string , string> json)
         {
@@ -340,6 +483,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ImportFormFields
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Importar campos de formulário no PDF.
+         *
+         * 📥 ENTRADAS     : json com campos do formulário.
+         *
+         * 📤 SAÍDAS       : JSON com status da importação.
+         *
+         * 🔗 CHAMADA POR  : Syncfusion PDF Viewer (import form fields).
+         *
+         * 🔄 CHAMA        : PdfRenderer.ImportFormFields().
+         ****************************************************************************************/
         [HttpPost("ImportFormFields")]
         public IActionResult ImportFormFields([FromBody] Dictionary<string , string> json)
         {
@@ -364,6 +520,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Download
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Gerar download do PDF.
+         *
+         * 📥 ENTRADAS     : json com parâmetros do documento.
+         *
+         * 📤 SAÍDAS       : Arquivo PDF para download.
+         *
+         * 🔗 CHAMADA POR  : Botão de download do viewer.
+         *
+         * 🔄 CHAMA        : PdfRenderer.GetDocumentAsBase64().
+         ****************************************************************************************/
         [HttpPost("Download")]
         public IActionResult Download([FromBody] Dictionary<string , string> json)
         {
@@ -383,6 +552,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PrintImages
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Gerar imagens para impressão do PDF.
+         *
+         * 📥 ENTRADAS     : json com parâmetros do documento.
+         *
+         * 📤 SAÍDAS       : JSON com imagens para impressão.
+         *
+         * 🔗 CHAMADA POR  : Botão de impressão do viewer.
+         *
+         * 🔄 CHAMA        : PdfRenderer.GetPrintImage().
+         ****************************************************************************************/
         [HttpPost("PrintImages")]
         public IActionResult PrintImages([FromBody] Dictionary<string , string> json)
         {

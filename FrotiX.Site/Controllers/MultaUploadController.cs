@@ -1,32 +1,36 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: MultaUploadController.cs                                                                ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Upload de PDFs de multas via Syncfusion Uploader. Validação + normalização de nomes.   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Save(), Remove() - salva em wwwroot/DadosEditaveis/Multas/, apenas .pdf aceito           ║
-   ║ 🔗 DEPS: Syncfusion Uploader, File System | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                    ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: MultaUploadController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar upload e remoção de PDFs de multas via Syncfusion Uploader,
+ *                   com validação de extensão e normalização de nomes.
+ *
+ * 📥 ENTRADAS     : IList<IFormFile> UploadFiles.
+ *
+ * 📤 SAÍDAS       : JSON de sucesso/erro compatível com Syncfusion.
+ *
+ * 🔗 CHAMADA POR  : Syncfusion Uploader nas páginas de multas.
+ *
+ * 🔄 CHAMA        : Servicos.TiraAcento(), File System.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core, Syncfusion EJ2 Uploader, FrotiX.Services.
+ *
+ * 📂 DESTINO      : wwwroot/DadosEditaveis/Multas/
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: MultaUploadController
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Gerenciar upload de PDFs de multas usando Syncfusion EJ2 Uploader
- *                   Validação de formato, normalização de nomes, salvamento em disco
- * 📥 ENTRADAS     : IList<IFormFile> UploadFiles - Arquivos PDF de multas
- * 📤 SAÍDAS       : JSON formato Syncfusion (success/error), nomes de arquivos salvos
- * 🔗 CHAMADA POR  : Syncfusion Uploader (JavaScript) das páginas de multas
- * 🔄 CHAMA        : FrotiX.Services (normalização de nomes), File System
- * 📦 DEPENDÊNCIAS : ASP.NET Core, Syncfusion EJ2 Uploader, FrotiX.Services, File System
+ * 🎯 OBJETIVO     : Expor endpoints de upload e remoção de PDFs de multas.
  *
- * ⚠️  VALIDAÇÕES:
- *    - Apenas PDFs são aceitos (.pdf)
- *    - Normalização de nomes de arquivo (remove caracteres especiais)
- *    - Verifica se pasta de destino existe (cria se não existir)
+ * 📥 ENTRADAS     : Arquivos enviados pelo uploader.
  *
- * 📂 DESTINO:
- *    - Arquivos salvos em: wwwroot/DadosEditaveis/Multas/
+ * 📤 SAÍDAS       : JSON com status individual de cada arquivo.
+ *
+ * 🔗 CHAMADA POR  : Frontend (Syncfusion Uploader).
+ *
+ * 🔄 CHAMA        : File IO e utilitários de normalização.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core, IWebHostEnvironment, FrotiX.Services.
  ****************************************************************************************/
 using FrotiX.Services;
 using Microsoft.AspNetCore.Hosting;
@@ -48,7 +52,13 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ FUNÇÃO: MultaUploadController (Construtor)
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Injetar dependências do hosting environment
+         * 🎯 OBJETIVO     : Injetar dependência de ambiente para acesso ao wwwroot.
+         *
+         * 📥 ENTRADAS     : [IWebHostEnvironment] hostingEnvironment.
+         *
+         * 📤 SAÍDAS       : Instância configurada.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
          ****************************************************************************************/
         public MultaUploadController(IWebHostEnvironment hostingEnvironment)
         {
@@ -62,6 +72,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Save
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Salvar arquivos PDF de multa no diretório configurado.
+         *
+         * 📥 ENTRADAS     : UploadFiles (lista de arquivos).
+         *
+         * 📤 SAÍDAS       : JSON com status e nomes salvos.
+         *
+         * 🔗 CHAMADA POR  : Syncfusion Uploader (upload).
+         *
+         * 🔄 CHAMA        : Servicos.TiraAcento(), FileStream, Directory.CreateDirectory().
+         ****************************************************************************************/
         [HttpPost("Save")]
         public IActionResult Save(IList<IFormFile> UploadFiles)
         {
@@ -169,6 +192,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Remove
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover arquivo PDF enviado anteriormente.
+         *
+         * 📥 ENTRADAS     : UploadFiles ou nome via Request.Form["fileName"].
+         *
+         * 📤 SAÍDAS       : JSON com status de remoção.
+         *
+         * 🔗 CHAMADA POR  : Syncfusion Uploader (remove).
+         *
+         * 🔄 CHAMA        : File.Delete(), Directory/Path.
+         ****************************************************************************************/
         [HttpPost("Remove")]
         public IActionResult Remove(IList<IFormFile> UploadFiles)
         {
@@ -298,6 +334,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetFileList
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar arquivos de multas existentes no diretório.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com lista de arquivos e metadados.
+         *
+         * 🔗 CHAMADA POR  : Tela/controle de arquivos de multas.
+         *
+         * 🔄 CHAMA        : Directory.GetFiles(), FileInfo.
+         ****************************************************************************************/
         [HttpGet("GetFileList")]
         public IActionResult GetFileList()
         {
@@ -343,6 +392,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Chunk
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Receber e armazenar partes (chunks) de arquivo.
+         *
+         * 📥 ENTRADAS     : chunkFile, fileName, chunkIndex.
+         *
+         * 📤 SAÍDAS       : JSON com status do chunk.
+         *
+         * 🔗 CHAMADA POR  : Uploader em modo chunked.
+         *
+         * 🔄 CHAMA        : FileStream, Directory.CreateDirectory().
+         ****************************************************************************************/
         [HttpPost("Chunk")]
         public IActionResult Chunk(IList<IFormFile> chunkFile , string fileName , string chunkIndex)
         {
@@ -384,6 +446,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: MergeChunks
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Mesclar chunks em um único arquivo final.
+         *
+         * 📥 ENTRADAS     : fileName, totalChunks.
+         *
+         * 📤 SAÍDAS       : JSON com nome final e status.
+         *
+         * 🔗 CHAMADA POR  : Uploader após envio completo.
+         *
+         * 🔄 CHAMA        : FileStream, Servicos.TiraAcento().
+         ****************************************************************************************/
         [HttpPost("MergeChunks")]
         public IActionResult MergeChunks(string fileName , string totalChunks)
         {

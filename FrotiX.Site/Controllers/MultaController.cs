@@ -1,30 +1,38 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: MultaController.cs                                                                      ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Gestão de multas de trânsito (infrações veículos). CRUD + upload PDFs + empenhos.      ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetAll(), Upsert(), Upload(), GetEmpenho() - fases, órgãos, movimentações empenho        ║
-   ║ 🔗 DEPS: IUnitOfWork (Multa, EmpenhoMulta, Veiculo) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0          ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: MultaController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar multas de trânsito (infrações de veículos), incluindo
+ *                   filtros, vinculação de viagens, pagamentos e empenhos.
+ *
+ * 📥 ENTRADAS     : Multa, MovimentacaoEmpenhoMulta e filtros (fase, veículo, órgão, etc.).
+ *
+ * 📤 SAÍDAS       : JSON com listas, detalhes, validações e saldos de empenhos.
+ *
+ * 🔗 CHAMADA POR  : Pages/Multas/Index, grids AJAX e modais de upload/pagamento.
+ *
+ * 🔄 CHAMA        : IUnitOfWork (Multa, EmpenhoMulta, Veiculo, Motorista, Orgao), Servicos.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework, FrotiX.Services.
+ *
+ * 📝 OBSERVAÇÕES  : Controller concentra regras de fase (Notificação/Penalidade) e
+ *                   movimentações de empenho (aporte/anulação).
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: MultaController
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Gerenciar multas de trânsito (infrações dos veículos)
- *                   CRUD, upload de PDFs, filtros avançados, empenhos de multas
- * 📥 ENTRADAS     : Multa, MovimentacaoEmpenhoMulta, Filtros (Fase, Veículo, Órgão, etc)
- * 📤 SAÍDAS       : JSON com multas formatadas, saldos, movimentações de empenho
- * 🔗 CHAMADA POR  : Pages/Multas/Index, JavaScript (AJAX), Modais de upload
- * 🔄 CHAMA        : IUnitOfWork (Multa, Veiculo, Motorista, EmpenhoMulta, Orgao)
- * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework, FrotiX.Services
+ * 🎯 OBJETIVO     : Expor endpoints de multas para listagem, manutenção, pagamentos,
+ *                   validações de vínculo e operações de empenho.
  *
- * 💡 CONCEITOS:
- *    - Fase: Estágio da multa (Notificação, Penalidade, Recurso, etc)
- *    - Empenho de Multa: Reserva orçamentária para pagamento de multas
- *    - Órgão: Entidade que emitiu a multa (DETRAN, PRF, etc)
- *    - Infração: Código/descrição da infração cometida
+ * 📥 ENTRADAS     : IDs, filtros de pesquisa e dados de pagamento/penalidade.
+ *
+ * 📤 SAÍDAS       : JSON com sucesso/erro e dados de apoio ao frontend.
+ *
+ * 🔗 CHAMADA POR  : Telas de Multas e integrações com viagens/ocorrências.
+ *
+ * 🔄 CHAMA        : Repositórios via IUnitOfWork e utilitários Servicos.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework.
  ****************************************************************************************/
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -53,7 +61,13 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ FUNÇÃO: MultaController (Construtor)
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Injetar dependências do Unit of Work
+         * 🎯 OBJETIVO     : Injetar dependências do UnitOfWork para acesso a dados de multas.
+         *
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
          ****************************************************************************************/
         public MultaController(IUnitOfWork unitOfWork)
         {
@@ -67,12 +81,36 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Test
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Verificar se o endpoint do controller está respondendo.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso.
+         *
+         * 🔗 CHAMADA POR  : Testes manuais/diagnóstico.
+         ****************************************************************************************/
         [HttpGet("Test")]
         public IActionResult Test()
         {
             return Ok(new { success = true , message = "MultaPdfViewer está funcionando!" });
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaMultas
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar multas filtrando por fase, veículo, órgão, motorista e status.
+         *
+         * 📥 ENTRADAS     : Fase, Veiculo, Orgao, Motorista, Infracao, Status.
+         *
+         * 📤 SAÍDAS       : JSON com lista de multas formatada para o grid.
+         *
+         * 🔗 CHAMADA POR  : Grid de Multas (AJAX).
+         *
+         * 🔄 CHAMA        : _unitOfWork.viewMultas.GetAll(), Servicos.ConvertHtml().
+         ****************************************************************************************/
         [Route("ListaMultas")]
         [HttpGet]
         public IActionResult ListaMultas(
@@ -171,6 +209,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaTipoMulta
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar lista de tipos de multa (artigo, denatran, descrição).
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com tipos de multa.
+         *
+         * 🔗 CHAMADA POR  : Dropdowns de infração.
+         *
+         * 🔄 CHAMA        : _unitOfWork.TipoMulta.GetAll().
+         ****************************************************************************************/
         [Route("PegaTipoMulta")]
         [HttpGet]
         public IActionResult PegaTipoMulta()
@@ -205,6 +256,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaOrgaoAutuante
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar órgãos autuantes cadastrados.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com órgãos autuantes.
+         *
+         * 🔗 CHAMADA POR  : Dropdowns de órgão autuante.
+         *
+         * 🔄 CHAMA        : _unitOfWork.OrgaoAutuante.GetAll().
+         ****************************************************************************************/
         [Route("PegaOrgaoAutuante")]
         [HttpGet]
         public IActionResult PegaOrgaoAutuante()
@@ -229,6 +293,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ CLASSE: TipoMultaAjax
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Payload simples para exclusão de tipo de multa.
+         *
+         * 📥 ENTRADAS     : TipoMultaId.
+         *
+         * 📤 SAÍDAS       : Objeto usado em DeleteTipoMulta.
+         ****************************************************************************************/
         public class TipoMultaAjax
         {
             public Guid TipoMultaId
@@ -237,6 +310,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DeleteTipoMulta
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover um tipo de multa (infração) pelo ID.
+         *
+         * 📥 ENTRADAS     : [TipoMultaAjax] model.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Tela de cadastro de tipos de multa.
+         *
+         * 🔄 CHAMA        : TipoMulta.GetFirstOrDefault(), TipoMulta.Remove(), Save().
+         ****************************************************************************************/
         [Route("DeleteTipoMulta")]
         [HttpPost]
         public IActionResult DeleteTipoMulta(TipoMultaAjax model)
@@ -278,6 +364,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ CLASSE: OrgaoAutuanteAjax
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Payload simples para exclusão de órgão autuante.
+         *
+         * 📥 ENTRADAS     : OrgaoAutuanteId.
+         *
+         * 📤 SAÍDAS       : Objeto usado em DeleteOrgaoAutuante.
+         ****************************************************************************************/
         public class OrgaoAutuanteAjax
         {
             public Guid OrgaoAutuanteId
@@ -286,6 +381,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DeleteOrgaoAutuante
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover órgão autuante pelo ID.
+         *
+         * 📥 ENTRADAS     : [OrgaoAutuanteAjax] Orgao.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Tela de cadastro de órgãos autuantes.
+         *
+         * 🔄 CHAMA        : OrgaoAutuante.GetFirstOrDefault(), Remove(), Save().
+         ****************************************************************************************/
         [Route("DeleteOrgaoAutuante")]
         [HttpPost]
         public IActionResult DeleteOrgaoAutuante(OrgaoAutuanteAjax Orgao)
@@ -324,6 +432,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaEmpenhos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar empenhos de multa por órgão autuante.
+         *
+         * 📥 ENTRADAS     : Id (Guid) do órgão autuante.
+         *
+         * 📤 SAÍDAS       : JSON com empenhos e saldos formatados.
+         *
+         * 🔗 CHAMADA POR  : Filtros/seleção de empenho.
+         *
+         * 🔄 CHAMA        : ViewEmpenhoMulta.GetAll().
+         ****************************************************************************************/
         [Route("PegaEmpenhos")]
         [HttpGet]
         public IActionResult PegaEmpenhos(Guid Id)
@@ -369,6 +490,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover multa e ajustar empenho/movimentação quando necessário.
+         *
+         * 📥 ENTRADAS     : [MultaViewModel] model.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de exclusão no grid de multas.
+         *
+         * 🔄 CHAMA        : Multa.GetFirstOrDefault(), EmpenhoMulta.Update(),
+         *                   MovimentacaoEmpenhoMulta.Add(), Save().
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(MultaViewModel model)
@@ -444,6 +579,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: TransformaPenalidade
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Transformar notificação em penalidade e atualizar valores.
+         *
+         * 📥 ENTRADAS     : MultaId, DataVencimento, ValorAteVencimento, Observacao,
+         *                   PenalidadePDF, ProcessoEDoc.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro e mensagens de validação.
+         *
+         * 🔗 CHAMADA POR  : Fluxo de emissão de penalidade.
+         *
+         * 🔄 CHAMA        : Multa.GetFirstOrDefault(), Multa.Update(), Save().
+         ****************************************************************************************/
         [Route("TransformaPenalidade")]
         [HttpGet]
         public IActionResult TransformaPenalidade(
@@ -552,6 +701,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ProcuraViagem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Localizar viagem e motorista a partir da data/hora da autuação.
+         *
+         * 📥 ENTRADAS     : Data, Hora, VeiculoId (form-data).
+         *
+         * 📤 SAÍDAS       : JSON com noFichaVistoria e motoristaId ou mensagem de erro.
+         *
+         * 🔗 CHAMADA POR  : Inclusão de multa vinculada a viagem.
+         *
+         * 🔄 CHAMA        : ViewProcuraFicha.GetAll().
+         ****************************************************************************************/
         [Route("ProcuraViagem")]
         [HttpPost]
         public IActionResult ProcuraViagem([FromForm] string Data, [FromForm] string Hora, [FromForm] Guid VeiculoId)
@@ -696,6 +858,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ProcuraFicha
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Buscar viagem por número da ficha de vistoria.
+         *
+         * 📥 ENTRADAS     : [ProcuraViagemViewModel] model.
+         *
+         * 📤 SAÍDAS       : JSON com viagemId ou erro.
+         *
+         * 🔗 CHAMADA POR  : Fluxo de vinculação de multa a ficha.
+         *
+         * 🔄 CHAMA        : Viagem.GetFirstOrDefault().
+         ****************************************************************************************/
         [Route("ProcuraFicha")]
         [HttpPost]
         public IActionResult ProcuraFicha([FromForm] ProcuraViagemViewModel model)
@@ -750,10 +925,19 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Busca a imagem da Ficha de Vistoria pelo número da ficha
-        /// Retorna a imagem em base64 para exibição no modal
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaImagemFichaVistoria
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Buscar imagem da ficha de vistoria e retornar em base64 para exibição.
+         *
+         * 📥 ENTRADAS     : noFicha (int) - número da ficha.
+         *
+         * 📤 SAÍDAS       : JSON com imagem em base64 e metadados, ou mensagem de erro.
+         *
+         * 🔗 CHAMADA POR  : Modal de visualização da ficha.
+         *
+         * 🔄 CHAMA        : Viagem.GetFirstOrDefault().
+         ****************************************************************************************/
         [Route("PegaImagemFichaVistoria")]
         [HttpGet]
         public IActionResult PegaImagemFichaVistoria(int noFicha)
@@ -837,6 +1021,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnGetMultaExistente
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Verificar se já existe multa com o número de infração informado.
+         *
+         * 📥 ENTRADAS     : NumInfracao (string).
+         *
+         * 📤 SAÍDAS       : JSON com { data = true/false }.
+         *
+         * 🔗 CHAMADA POR  : Validação no formulário de multas.
+         *
+         * 🔄 CHAMA        : Multa.GetFirstOrDefault().
+         ****************************************************************************************/
         [Route("MultaExistente")]
         [HttpGet]
         public JsonResult OnGetMultaExistente(string NumInfracao)
@@ -870,6 +1067,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnPostAlteraStatus
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Alterar status da multa.
+         *
+         * 📥 ENTRADAS     : MultaId, Status.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de atualização de status.
+         *
+         * 🔄 CHAMA        : Multa.GetFirstOrDefault(), Multa.Update(), Save().
+         ****************************************************************************************/
         [Route("AlteraStatus")]
         [HttpGet]
         public JsonResult OnPostAlteraStatus(string MultaId , string Status)
@@ -914,6 +1124,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnPostPegaStatus
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Obter dados básicos da multa e status atual.
+         *
+         * 📥 ENTRADAS     : Id (string) - MultaId.
+         *
+         * 📤 SAÍDAS       : JSON com campos da multa e status.
+         *
+         * 🔗 CHAMADA POR  : Modais de alteração de status.
+         *
+         * 🔄 CHAMA        : viewMultas.GetFirstOrDefault().
+         ****************************************************************************************/
         [Route("PegaStatus")]
         [HttpGet]
         public JsonResult OnPostPegaStatus(string Id)
@@ -976,6 +1199,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnPostPegaInstrumentoVeiculo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Determinar se o veículo está vinculado a contrato ou ata.
+         *
+         * 📥 ENTRADAS     : Id (string) - VeiculoId.
+         *
+         * 📤 SAÍDAS       : JSON com instrumento e ID correspondente.
+         *
+         * 🔗 CHAMADA POR  : Validações de vínculo no cadastro de multas.
+         *
+         * 🔄 CHAMA        : Veiculo.GetFirstOrDefault().
+         ****************************************************************************************/
         [Route("PegaInstrumentoVeiculo")]
         [HttpGet]
         public JsonResult OnPostPegaInstrumentoVeiculo(string Id)
@@ -1064,6 +1300,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnPostValidaContratoVeiculo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Validar se o veículo está vinculado ao contrato informado.
+         *
+         * 📥 ENTRADAS     : veiculoId, contratoId.
+         *
+         * 📤 SAÍDAS       : JSON com success true/false.
+         *
+         * 🔗 CHAMADA POR  : Validações de vínculo.
+         *
+         * 🔄 CHAMA        : Veiculo.GetFirstOrDefault().
+         ****************************************************************************************/
         [Route("ValidaContratoVeiculo")]
         [HttpGet]
         public JsonResult OnPostValidaContratoVeiculo(string veiculoId , string contratoId)
@@ -1109,6 +1358,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnPostValidaAtaVeiculo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Validar se o veículo está vinculado à ata informada.
+         *
+         * 📥 ENTRADAS     : veiculoId, ataId.
+         *
+         * 📤 SAÍDAS       : JSON com success true/false.
+         *
+         * 🔗 CHAMADA POR  : Validações de vínculo.
+         *
+         * 🔄 CHAMA        : Veiculo.GetFirstOrDefault().
+         ****************************************************************************************/
         [Route("ValidaAtaVeiculo")]
         [HttpGet]
         public JsonResult OnPostValidaAtaVeiculo(string veiculoId , string ataId)
@@ -1154,6 +1416,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnPostPegaContratoMotorista
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Recuperar contrato vinculado ao motorista informado.
+         *
+         * 📥 ENTRADAS     : Id (string) - MotoristaId.
+         *
+         * 📤 SAÍDAS       : JSON com contratoid ou erro.
+         *
+         * 🔗 CHAMADA POR  : Validações em cadastro de multa.
+         *
+         * 🔄 CHAMA        : Motorista.GetFirstOrDefault().
+         ****************************************************************************************/
         [Route("PegaContratoMotorista")]
         [HttpGet]
         public JsonResult OnPostPegaContratoMotorista(string Id)
@@ -1213,6 +1488,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnPostValidaContratoMotorista
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Validar se o motorista pertence ao contrato informado.
+         *
+         * 📥 ENTRADAS     : motoristaId, contratoId.
+         *
+         * 📤 SAÍDAS       : JSON com success true/false.
+         *
+         * 🔗 CHAMADA POR  : Validações de vínculo motorista-contrato.
+         *
+         * 🔄 CHAMA        : Motorista.GetFirstOrDefault().
+         ****************************************************************************************/
         [Route("ValidaContratoMotorista")]
         [HttpGet]
         public JsonResult OnPostValidaContratoMotorista(string motoristaId , string contratoId)
@@ -1259,6 +1547,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnPostPegaValor
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Obter valor da multa até o vencimento.
+         *
+         * 📥 ENTRADAS     : Id (string) - MultaId.
+         *
+         * 📤 SAÍDAS       : JSON com valor.
+         *
+         * 🔗 CHAMADA POR  : Tela de pagamento/consulta de multa.
+         *
+         * 🔄 CHAMA        : viewMultas.GetFirstOrDefault().
+         ****************************************************************************************/
         [Route("PegaValor")]
         [HttpGet]
         public JsonResult OnPostPegaValor(string Id)
@@ -1313,6 +1614,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnPostPegaEmpenhoMultaId
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Obter EmpenhoMultaId vinculado à multa.
+         *
+         * 📥 ENTRADAS     : Id (string) - MultaId.
+         *
+         * 📤 SAÍDAS       : JSON com empenhoMultaId.
+         *
+         * 🔗 CHAMADA POR  : Fluxos de pagamento e movimentação.
+         *
+         * 🔄 CHAMA        : Multa.GetFirstOrDefault().
+         ****************************************************************************************/
         [Route("PegaEmpenhoMultaId")]
         [HttpGet]
         public JsonResult OnPostPegaEmpenhoMultaId(string Id)
@@ -1373,6 +1687,21 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnPostRegistraPagamento
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Registrar pagamento da multa e atualizar saldo do empenho.
+         *
+         * 📥 ENTRADAS     : MultaId, DataPagamento, ValorPago, Status, FormaPagamento,
+         *                   ComprovantePDF, EmpenhoMultaId.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Modal de pagamento de multa.
+         *
+         * 🔄 CHAMA        : Multa.Update(), EmpenhoMulta.Update(),
+         *                   MovimentacaoEmpenhoMulta.Add(), Save().
+         ****************************************************************************************/
         [Route("RegistraPagamento")]
         [HttpGet]
         public JsonResult OnPostRegistraPagamento(
@@ -1459,6 +1788,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnPostPegaObservacao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar observação e dados da multa para exibição.
+         *
+         * 📥 ENTRADAS     : Id (string) - MultaId.
+         *
+         * 📤 SAÍDAS       : JSON com numInfracao, nomeMotorista e observacao.
+         *
+         * 🔗 CHAMADA POR  : Modais de observação.
+         *
+         * 🔄 CHAMA        : viewMultas.GetFirstOrDefault().
+         ****************************************************************************************/
         [Route("PegaObservacao")]
         [HttpGet]
         public JsonResult OnPostPegaObservacao(string Id)
@@ -1517,6 +1859,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: MultaEmpenho
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar multas vinculadas a um empenho específico.
+         *
+         * 📥 ENTRADAS     : id (Guid) - EmpenhoMultaId.
+         *
+         * 📤 SAÍDAS       : JSON com multas e valores.
+         *
+         * 🔗 CHAMADA POR  : Detalhe de empenhos.
+         *
+         * 🔄 CHAMA        : Multa.GetAll().
+         ****************************************************************************************/
         [Route("MultaEmpenho")]
         public IActionResult MultaEmpenho(Guid id)
         {
@@ -1552,6 +1907,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: MultaEmpenhoPagas
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar multas pagas vinculadas a um empenho.
+         *
+         * 📥 ENTRADAS     : id (Guid) - EmpenhoMultaId.
+         *
+         * 📤 SAÍDAS       : JSON com multas pagas.
+         *
+         * 🔗 CHAMADA POR  : Detalhe de empenhos (pagas).
+         *
+         * 🔄 CHAMA        : Multa.GetAll(filter).
+         ****************************************************************************************/
         [Route("MultaEmpenhoPagas")]
         public IActionResult MultaEmpenhoPagas(Guid id)
         {
@@ -1587,6 +1955,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SaldoMultas
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcular soma total de multas pagas de um empenho.
+         *
+         * 📥 ENTRADAS     : Id (Guid) - EmpenhoMultaId.
+         *
+         * 📤 SAÍDAS       : JSON com saldomultas.
+         *
+         * 🔗 CHAMADA POR  : Painel de saldos.
+         *
+         * 🔄 CHAMA        : Multa.GetAll().
+         ****************************************************************************************/
         [Route("SaldoMultas")]
         public IActionResult SaldoMultas(Guid Id)
         {
@@ -1617,6 +1998,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaAporte
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar movimentações de aporte do empenho.
+         *
+         * 📥 ENTRADAS     : Id (Guid) - EmpenhoMultaId.
+         *
+         * 📤 SAÍDAS       : JSON com aportes formatados.
+         *
+         * 🔗 CHAMADA POR  : Histórico de movimentações.
+         *
+         * 🔄 CHAMA        : MovimentacaoEmpenhoMulta.GetAll().
+         ****************************************************************************************/
         [Route("ListaAporte")]
         public IActionResult ListaAporte(Guid Id)
         {
@@ -1652,6 +2046,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaAnulacao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar movimentações de anulação do empenho.
+         *
+         * 📥 ENTRADAS     : Id (Guid) - EmpenhoMultaId.
+         *
+         * 📤 SAÍDAS       : JSON com anulações formatadas.
+         *
+         * 🔗 CHAMADA POR  : Histórico de movimentações.
+         *
+         * 🔄 CHAMA        : MovimentacaoEmpenhoMulta.GetAll().
+         ****************************************************************************************/
         [Route("ListaAnulacao")]
         public IActionResult ListaAnulacao(Guid Id)
         {
@@ -1687,6 +2094,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Aporte
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Registrar aporte no empenho de multas.
+         *
+         * 📥 ENTRADAS     : [MovimentacaoEmpenhoMulta] movimentacao (JSON).
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Modal de aporte do empenho.
+         *
+         * 🔄 CHAMA        : MovimentacaoEmpenhoMulta.Add(), EmpenhoMulta.Update(), Save().
+         ****************************************************************************************/
         [Route("Aporte")]
         [Consumes("application/json")]
         public IActionResult Aporte([FromBody] MovimentacaoEmpenhoMulta movimentacao)
@@ -1724,6 +2144,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Anulacao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Registrar anulação (glosa) no empenho de multas.
+         *
+         * 📥 ENTRADAS     : [MovimentacaoEmpenhoMulta] movimentacao (JSON).
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Modal de anulação do empenho.
+         *
+         * 🔄 CHAMA        : MovimentacaoEmpenhoMulta.Update(), EmpenhoMulta.Update(), Save().
+         ****************************************************************************************/
         [Route("Anulacao")]
         [Consumes("application/json")]
         public IActionResult Anulacao([FromBody] MovimentacaoEmpenhoMulta movimentacao)
@@ -1761,6 +2194,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: EditarAporte
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Editar aporte e recalcular saldo do empenho.
+         *
+         * 📥 ENTRADAS     : [MovimentacaoEmpenhoMulta] movimentacao (JSON).
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Edição de aporte.
+         *
+         * 🔄 CHAMA        : MovimentacaoEmpenhoMulta.Update(), EmpenhoMulta.Update(), Save().
+         ****************************************************************************************/
         [Route("EditarAporte")]
         [Consumes("application/json")]
         public IActionResult EditarAporte([FromBody] MovimentacaoEmpenhoMulta movimentacao)
@@ -1805,9 +2251,19 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Verifica se um arquivo PDF de autuação existe no servidor
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: VerificaPDFExiste
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Verificar existência de PDF de autuação no servidor.
+         *
+         * 📥 ENTRADAS     : nomeArquivo (string).
+         *
+         * 📤 SAÍDAS       : JSON com flag de existência e mensagem.
+         *
+         * 🔗 CHAMADA POR  : Validação de arquivos de multa.
+         *
+         * 🔄 CHAMA        : System.IO.File.Exists().
+         ****************************************************************************************/
         [Route("VerificaPDFExiste")]
         [HttpGet]
         public IActionResult VerificaPDFExiste(string nomeArquivo)
@@ -1851,6 +2307,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: EditarAnulacao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Editar anulação e recalcular saldo do empenho.
+         *
+         * 📥 ENTRADAS     : [MovimentacaoEmpenhoMulta] movimentacao (JSON).
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Edição de anulação.
+         *
+         * 🔄 CHAMA        : MovimentacaoEmpenhoMulta.Update(), EmpenhoMulta.Update(), Save().
+         ****************************************************************************************/
         [Route("EditarAnulacao")]
         [Consumes("application/json")]
         public IActionResult EditarAnulacao([FromBody] MovimentacaoEmpenhoMulta movimentacao)

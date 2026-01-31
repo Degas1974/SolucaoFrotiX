@@ -8,6 +8,22 @@
    ║ 🔗 DEPS: IUnitOfWork, IMemoryCache, nav.json | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                 ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
 */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: NavigationController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar menu de navegação (sidebar) com base em nav.json e
+ *                   permissões por roles.
+ *
+ * 📥 ENTRADAS     : Estruturas de árvore, itens de menu e filtros por role.
+ *
+ * 📤 SAÍDAS       : JSON com árvore, menus, ícones e confirmação de salvamento.
+ *
+ * 🔗 CHAMADA POR  : Tela de administração de navegação e layout do sistema.
+ *
+ * 🔄 CHAMA        : NavigationBuilder, JsonSerializer, IUnitOfWork, IMemoryCache.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, nav.json, FontAwesome, Entity Framework.
+ **************************************************************************************** */
 
 using FrotiX.Filters;
 using FrotiX.Models;
@@ -30,6 +46,21 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: NavigationController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Administrar a estrutura de navegação, ícones e permissões de menu.
+     *
+     * 📥 ENTRADAS     : Itens de árvore, filtros por roles e solicitações de ícones.
+     *
+     * 📤 SAÍDAS       : JSON com menus, categorias de ícones e feedback de operações.
+     *
+     * 🔗 CHAMADA POR  : Páginas administrativas e renderização do layout.
+     *
+     * 🔄 CHAMA        : IUnitOfWork, IMemoryCache, JsonSerializer, File IO.
+     *
+     * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, nav.json, FontAwesome.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class NavigationController : Controller
@@ -249,10 +280,23 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Atualiza item existente e sincroniza NomeMenu no BD
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Atualiza item existente e sincroniza NomeMenu no BD
+         ****************************************************************************************/
         [HttpPost]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateItem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Atualizar dados de um item de menu existente.
+         *
+         * 📥 ENTRADAS     : [NavigationItemDTO] item.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Tela de administração de navegação.
+         *
+         * 🔄 CHAMA        : Atualiza nav.json e sincroniza no banco quando necessário.
+         ****************************************************************************************/
         [Route("UpdateItem")]
         public IActionResult UpdateItem([FromBody] NavigationItemDTO item)
         {
@@ -287,10 +331,23 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Remove item e seus registros relacionados no BD
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Remove item e seus registros relacionados no BD
+         ****************************************************************************************/
         [HttpPost]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DeleteItem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover item do menu de navegação.
+         *
+         * 📥 ENTRADAS     : [DeleteNavigationItemRequest] request.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Tela de administração de navegação.
+         *
+         * 🔄 CHAMA        : Atualiza nav.json e remove registros relacionados.
+         ****************************************************************************************/
         [Route("DeleteItem")]
         public IActionResult DeleteItem([FromBody] DeleteNavigationItemRequest request)
         {
@@ -379,10 +436,21 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Retorna árvore completa para administração (sem filtro de acesso)
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Retorna árvore completa para administração (sem filtro de acesso)
+         ****************************************************************************************/
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetTreeAdmin
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar árvore de navegação completa para administração.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com árvore hierárquica.
+         *
+         * 🔗 CHAMADA POR  : Painel administrativo de navegação.
+         ****************************************************************************************/
         [Route("GetTreeAdmin")]
         public IActionResult GetTreeAdmin()
         {
@@ -403,10 +471,21 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// DEBUG: Endpoint para diagnóstico de problemas na carga da árvore
-        /// </summary>
+        /****************************************************************************************
+         * 📝 DEBUG: Endpoint para diagnóstico de problemas na carga da árvore
+         ****************************************************************************************/
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DebugTreeAdmin
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar informações de debug da árvore de navegação.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com informações de debug.
+         *
+         * 🔗 CHAMADA POR  : Suporte/diagnóstico de navegação.
+         ****************************************************************************************/
         [Route("DebugTreeAdmin")]
         public IActionResult DebugTreeAdmin()
         {
@@ -448,9 +527,9 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Classe auxiliar para armazenar dados de atualização
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Classe auxiliar para armazenar dados de atualização
+         ****************************************************************************************/
         private class RecursoUpdate
         {
             public Guid RecursoId { get; set; }
@@ -638,9 +717,9 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Processa a árvore e aplica mudanças diretamente nas entidades rastreadas
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Processa a árvore e aplica mudanças diretamente nas entidades rastreadas
+         ****************************************************************************************/
         private void ProcessarArvoreComTracking(
             List<RecursoTreeDTO> items, 
             Guid? parentId, 
@@ -698,9 +777,9 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Coleta todas as atualizações necessárias recursivamente (previne duplicatas)
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Coleta todas as atualizações necessárias recursivamente (previne duplicatas)
+         ****************************************************************************************/
         private void ColetarAtualizacoes(List<RecursoTreeDTO> items, Guid? parentId, int nivel, double ordemBase, List<RecursoUpdate> updates, HashSet<Guid> processedIds)
         {
             for (int i = 0; i < items.Count; i++)
@@ -805,10 +884,23 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Adiciona ou atualiza um recurso no banco (para a tela unificada)
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Adiciona ou atualiza um recurso no banco (para a tela unificada)
+         ****************************************************************************************/
         [HttpPost]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SaveRecurso
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Criar ou atualizar recurso de navegação no banco.
+         *
+         * 📥 ENTRADAS     : [RecursoTreeDTO] dto.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Tela de administração de recursos.
+         *
+         * 🔄 CHAMA        : IUnitOfWork.Recurso Add/Update.
+         ****************************************************************************************/
         [Route("SaveRecurso")]
         public IActionResult SaveRecurso([FromBody] RecursoTreeDTO dto)
         {
@@ -905,10 +997,23 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Remove um recurso e seus controles de acesso
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Remove um recurso e seus controles de acesso
+         ****************************************************************************************/
         [HttpPost]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DeleteRecurso
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover recurso e vínculos de acesso.
+         *
+         * 📥 ENTRADAS     : [DeleteRecursoRequest] request.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Tela de administração de recursos.
+         *
+         * 🔄 CHAMA        : IUnitOfWork.Recurso.Remove() e acessos relacionados.
+         ****************************************************************************************/
         [Route("DeleteRecurso")]
         public IActionResult DeleteRecurso([FromBody] DeleteRecursoRequest request)
         {
@@ -952,10 +1057,23 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Retorna lista de usuários com status de acesso para um recurso
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Retorna lista de usuários com status de acesso para um recurso
+         ****************************************************************************************/
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetUsuariosAcesso
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar usuários com acesso ao recurso informado.
+         *
+         * 📥 ENTRADAS     : recursoId (string).
+         *
+         * 📤 SAÍDAS       : JSON com lista de usuários e acessos.
+         *
+         * 🔗 CHAMADA POR  : Tela de permissões.
+         *
+         * 🔄 CHAMA        : RecursoUsuario, AspNetUsers.
+         ****************************************************************************************/
         [Route("GetUsuariosAcesso")]
         public IActionResult GetUsuariosAcesso(string recursoId)
         {
@@ -986,10 +1104,23 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Atualiza o acesso de um usuário a um recurso
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Atualiza o acesso de um usuário a um recurso
+         ****************************************************************************************/
         [HttpPost]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateAcesso
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Atualizar acesso de usuário a um recurso.
+         *
+         * 📥 ENTRADAS     : [UpdateAcessoRequest] request.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Tela de permissões.
+         *
+         * 🔄 CHAMA        : RecursoUsuario Add/Remove, Save().
+         ****************************************************************************************/
         [Route("UpdateAcesso")]
         public IActionResult UpdateAcesso([FromBody] UpdateAcessoRequest request)
         {
@@ -1030,10 +1161,23 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Habilita acesso para todos os usuários do sistema ao criar novo item
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Habilita acesso para todos os usuários do sistema ao criar novo item
+         ****************************************************************************************/
         [HttpPost]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: HabilitarAcessoTodosUsuarios
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Conceder acesso ao recurso para todos os usuários.
+         *
+         * 📥 ENTRADAS     : [HabilitarAcessoRequest] request.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ação administrativa de permissões.
+         *
+         * 🔄 CHAMA        : AspNetUsers.GetAll(), RecursoUsuario Add, Save().
+         ****************************************************************************************/
         [Route("HabilitarAcessoTodosUsuarios")]
         public IActionResult HabilitarAcessoTodosUsuarios([FromBody] HabilitarAcessoRequest request)
         {
@@ -1081,9 +1225,9 @@ namespace FrotiX.Controllers
 
         #region Métodos Auxiliares para Banco de Dados
 
-        /// <summary>
-        /// Monta árvore recursiva a partir de lista de recursos
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Monta árvore recursiva a partir de lista de recursos
+         ****************************************************************************************/
         private List<RecursoTreeDTO> MontarArvoreRecursiva(List<Recurso> recursos, Guid? parentId)
         {
             // ✅ Comparação explícita para NULL - necessário para funcionar corretamente
@@ -1103,9 +1247,9 @@ namespace FrotiX.Controllers
                 .ToList();
         }
 
-        /// <summary>
-        /// Atualiza recursos recursivamente a partir da árvore
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Atualiza recursos recursivamente a partir da árvore
+         ****************************************************************************************/
         private void AtualizarRecursosRecursivamente(List<RecursoTreeDTO> items, Guid? parentId, int nivel, double ordemBase)
         {
             for (int i = 0; i < items.Count; i++)
@@ -1163,10 +1307,10 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Processa itens do nav.json para migração
-        /// Usa ordenação hierárquica: Pai=1, Filhos=101-199, Netos=10101-10199
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Processa itens do nav.json para migração
+         * Usa ordenação hierárquica: Pai=1, Filhos=101-199, Netos=10101-10199
+         ****************************************************************************************/
         private void ProcessarItensParaMigracao(List<ListItem> items, Guid? parentId, int nivel, ref int ordem, ref int atualizados, ref int criados, double ordemPai = 0)
         {
             if (items == null) return;
@@ -1267,9 +1411,9 @@ namespace FrotiX.Controllers
 
         #region Métodos Auxiliares
 
-        /// <summary>
-        /// Transforma ListItem em NavigationTreeItem para a TreeView
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Transforma ListItem em NavigationTreeItem para a TreeView
+         ****************************************************************************************/
         private List<NavigationTreeItem> TransformToTreeData(List<ListItem> items, string parentId)
         {
             var result = new List<NavigationTreeItem>();
@@ -1307,9 +1451,9 @@ namespace FrotiX.Controllers
             return result;
         }
 
-        /// <summary>
-        /// Transforma NavigationTreeItem de volta para ListItem
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Transforma NavigationTreeItem de volta para ListItem
+         ****************************************************************************************/
         private List<object> TransformFromTreeData(List<NavigationTreeItem> items)
         {
             var result = new List<object>();
@@ -1345,9 +1489,9 @@ namespace FrotiX.Controllers
             return result;
         }
 
-        /// <summary>
-        /// Codifica caracteres especiais para HTML entities
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Codifica caracteres especiais para HTML entities
+         ****************************************************************************************/
         private string EncodeHtmlEntities(string text)
         {
             if (string.IsNullOrEmpty(text)) return text;
@@ -1379,9 +1523,9 @@ namespace FrotiX.Controllers
                 .Replace("Ç", "&Ccedil;");
         }
 
-        /// <summary>
-        /// Sincroniza itens da TreeView com a tabela Recurso
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Sincroniza itens da TreeView com a tabela Recurso
+         ****************************************************************************************/
         private void SincronizarRecursos(List<NavigationTreeItem> items)
         {
             foreach (var item in items)
@@ -1424,9 +1568,9 @@ namespace FrotiX.Controllers
             _unitOfWork.Save();
         }
 
-        /// <summary>
-        /// Obtém a próxima ordem disponível para recursos
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Obtém a próxima ordem disponível para recursos
+         ****************************************************************************************/
         private double GetNextOrdem()
         {
             var recursos = _unitOfWork.Recurso.GetAll().ToList();
@@ -1434,9 +1578,9 @@ namespace FrotiX.Controllers
             return recursos.Max(r => r.Ordem) + 1;
         }
 
-        /// <summary>
-        /// Cria ControleAcesso para todos os usuários ativos
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Cria ControleAcesso para todos os usuários ativos
+         ****************************************************************************************/
         private void CriarControleAcessoParaTodosUsuarios(Guid recursoId)
         {
             var usuarios = _unitOfWork.AspNetUsers.GetAll(u => u.Status == true);
@@ -1463,11 +1607,24 @@ namespace FrotiX.Controllers
 
         #region API - Ícones FontAwesome
 
-        /// <summary>
-        /// Lista ícones FontAwesome 7 Pro Duotone em estrutura HIERÁRQUICA por categorias
-        /// Carrega do arquivo fontawesome-icons.json (traduzido PT-BR) e transforma para formato DropDownTree
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Lista ícones FontAwesome 7 Pro Duotone em estrutura HIERÁRQUICA por categorias
+         * Carrega do arquivo fontawesome-icons.json (traduzido PT-BR) e transforma para formato DropDownTree
+         ****************************************************************************************/
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetIconesFontAwesomeHierarquico
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Obter ícones FontAwesome organizados hierarquicamente.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com árvore de ícones.
+         *
+         * 🔗 CHAMADA POR  : Seleção de ícones na tela de navegação.
+         *
+         * 🔄 CHAMA        : Cache de ícones e parsing de JSON.
+         ****************************************************************************************/
         [Route("GetIconesFontAwesomeHierarquico")]
         public IActionResult GetIconesFontAwesomeHierarquico()
         {
@@ -1499,9 +1656,9 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Carrega ícones do arquivo JSON traduzido e transforma para estrutura hierárquica do DropDownTree
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Carrega ícones do arquivo JSON traduzido e transforma para estrutura hierárquica do DropDownTree
+         ****************************************************************************************/
         private List<object> LoadFontAwesomeIconsFromJson()
         {
             // Verifica se arquivo existe
@@ -1556,6 +1713,19 @@ namespace FrotiX.Controllers
         #region API - Páginas do Sistema
 
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetPaginasHierarquico
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Obter páginas/rotas em formato hierárquico.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com páginas e caminhos.
+         *
+         * 🔗 CHAMADA POR  : Seleção de páginas na administração de menu.
+         *
+         * 🔄 CHAMA        : Leitura de rotas e organização hierárquica.
+         ****************************************************************************************/
         [Route("GetPaginasHierarquico")]
         public IActionResult GetPaginasHierarquico()
         {
@@ -1693,10 +1863,23 @@ namespace FrotiX.Controllers
             };
         }
 
-        /// <summary>
-        /// Retorna o HTML renderizado da navegação lateral para atualização dinâmica
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Retorna o HTML renderizado da navegação lateral para atualização dinâmica
+         ****************************************************************************************/
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetNavigationMenu
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar o menu de navegação filtrado por permissões.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com menu disponível ao usuário.
+         *
+         * 🔗 CHAMADA POR  : Renderização do menu no layout.
+         *
+         * 🔄 CHAMA        : IUnitOfWork, NavigationBuilder, cache.
+         ****************************************************************************************/
         [Route("GetNavigationMenu")]
         public async Task<IActionResult> GetNavigationMenu()
         {
@@ -1721,9 +1904,9 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Helper para invocar ViewComponent
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Helper para invocar ViewComponent
+         ****************************************************************************************/
         private async Task<IViewComponentResult> ViewComponentInvokeAsync(string componentName)
         {
             var viewComponent = new ViewComponents.NavigationViewComponent(
@@ -1743,9 +1926,9 @@ namespace FrotiX.Controllers
             return await Task.FromResult(viewComponent.Invoke());
         }
 
-        /// <summary>
-        /// Renderiza ViewComponent para string HTML
-        /// </summary>
+        /****************************************************************************************
+         * 📝 Renderiza ViewComponent para string HTML
+         ****************************************************************************************/
         private async Task<string> RenderViewComponentToStringAsync(ViewViewComponentResult viewResult)
         {
             try
@@ -1763,9 +1946,9 @@ namespace FrotiX.Controllers
         #endregion
     }
 
-    /// <summary>
-    /// Request para habilitar acesso de todos usuários a um recurso
-    /// </summary>
+        /****************************************************************************************
+         * 📝 Request para habilitar acesso de todos usuários a um recurso
+         ****************************************************************************************/
     public class HabilitarAcessoRequest
     {
         public string RecursoId { get; set; }

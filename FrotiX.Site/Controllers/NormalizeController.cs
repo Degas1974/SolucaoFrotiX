@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: NormalizeController.cs                                                                  ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: API para normalização de texto (acentos, caracteres especiais). NormalizationService.  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Text() - POST normaliza texto recebido no body                                           ║
-   ║ 🔗 DEPS: NormalizationService | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                                ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: NormalizeController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Expor API para normalização de textos (acentos e caracteres especiais).
+ *
+ * 📥 ENTRADAS     : Texto recebido via body.
+ *
+ * 📤 SAÍDAS       : Texto normalizado.
+ *
+ * 🔗 CHAMADA POR  : APIs e telas que precisam padronizar textos.
+ *
+ * 🔄 CHAMA        : NormalizationService.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.TextNormalization.
+ **************************************************************************************** */
 
 using FrotiX.TextNormalization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +21,21 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: NormalizeController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Normalizar textos recebidos via API.
+     *
+     * 📥 ENTRADAS     : Payload com texto.
+     *
+     * 📤 SAÍDAS       : Texto normalizado em JSON.
+     *
+     * 🔗 CHAMADA POR  : Integrações e formulários do sistema.
+     *
+     * 🔄 CHAMA        : NormalizationService.NormalizeAsync().
+     *
+     * 📦 DEPENDÊNCIAS : FrotiX.TextNormalization.
+     ****************************************************************************************/
     [ApiController]
     [Route("api/[controller]")]
     public class NormalizeController :ControllerBase
@@ -25,12 +45,13 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ FUNÇÃO: NormalizeController (Construtor)
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Inicializar dependência do serviço de normalização de texto
-         * 📥 ENTRADAS     : [NormalizationService] normalizer - Serviço de normalização
-         * 📤 SAÍDAS       : Instância inicializada do NormalizeController
-         * 🔗 CHAMADA POR  : ASP.NET Core Dependency Injection
-         * 🔄 CHAMA        : Alerta.TratamentoErroComLinha (em caso de erro)
-         * 📦 DEPENDÊNCIAS : NormalizationService (serviço customizado)
+         * 🎯 OBJETIVO     : Inicializar serviço de normalização de texto.
+         *
+         * 📥 ENTRADAS     : [NormalizationService] normalizer.
+         *
+         * 📤 SAÍDAS       : Instância configurada.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
          ****************************************************************************************/
         public NormalizeController(NormalizationService normalizer)
         {
@@ -44,20 +65,31 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ CLASSE: NormalizeRequest
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Representar o payload de normalização.
+         *
+         * 📥 ENTRADAS     : Text.
+         *
+         * 📤 SAÍDAS       : Objeto utilizado no endpoint Post.
+         ****************************************************************************************/
         public record NormalizeRequest(string Text);
 
         /****************************************************************************************
          * ⚡ FUNÇÃO: Post
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Normalizar texto (remover acentos, caracteres especiais, padronizar)
-         * 📥 ENTRADAS     : [NormalizeRequest] body - Objeto com propriedade Text
-         * 📤 SAÍDAS       : [ActionResult<string>] Texto normalizado
-         * 🔗 CHAMADA POR  : APIs/páginas que precisam normalizar texto
-         * 🔄 CHAMA        : _normalizer.NormalizeAsync
-         * 📦 DEPENDÊNCIAS : NormalizationService
+         * 🎯 OBJETIVO     : Normalizar texto removendo acentos e caracteres especiais.
          *
-         * [DOC] Valida se texto não é nulo/vazio antes de normalizar
-         * [DOC] Retorna BadRequest(400) se texto inválido, Ok(200) se sucesso
+         * 📥 ENTRADAS     : [NormalizeRequest] body.
+         *
+         * 📤 SAÍDAS       : [ActionResult<string>] texto normalizado.
+         *
+         * 🔗 CHAMADA POR  : APIs/páginas que precisam normalizar texto.
+         *
+         * 🔄 CHAMA        : _normalizer.NormalizeAsync().
+         *
+         * 📝 OBSERVAÇÕES  : Retorna BadRequest se o texto for nulo/vazio.
          ****************************************************************************************/
         [HttpPost]
         public async Task<ActionResult<string>> Post([FromBody] NormalizeRequest body)
