@@ -1,16 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: EscalaDiaria.cs                                                                       ║
-   ║ 📂 CAMINHO: Models/Cadastros/                                                                     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
-   ║    ViewModel para escalas diárias de motoristas (turnos e serviços).                              ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 CLASSES DISPONÍVEIS:                                                                           ║
-   ║    • EscalaDiariaViewModel                                                                        ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: System.ComponentModel.DataAnnotations, SelectListItem                              ║
-   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: FrotiX Team | 📝 VERSÃO: 2.0                                 ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: EscalaDiaria.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : ViewModel para escalas diárias de motoristas (turnos e serviços).
+ *
+ * 📥 ENTRADAS     : Motorista, veículo, turno, serviço, datas e observações.
+ *
+ * 📤 SAÍDAS       : ViewModel para telas de escala diária.
+ *
+ * 🔗 CHAMADA POR  : Controllers/Views de escala.
+ *
+ * 🔄 CHAMA        : DataAnnotations e SelectListItem.
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations, Microsoft.AspNetCore.Mvc.Rendering.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -21,17 +23,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace FrotiX.Models
 {
 
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: EscalaDiariaViewModel                                                             │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Representar dados de escala diária e listas auxiliares para UI.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Controllers/Views de escala
-    // ➡️ CHAMA       : SelectListItem
-    //
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: EscalaDiariaViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar dados de escala diária e listas auxiliares para UI.
+     *
+     * 📥 ENTRADAS     : Motorista, veículo, turno, serviço e status.
+     *
+     * 📤 SAÍDAS       : ViewModel utilizado em formulários de escala.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de escala.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     ****************************************************************************************/
     public class EscalaDiariaViewModel
     {
         public Guid EscalaDiaId { get; set; }
@@ -128,16 +132,19 @@ namespace FrotiX.Models
         public string? NomeRequisitante { get; set; }
         public string? NomeUsuarioAlteracao { get; set; }
 
-        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        // │ ⚡ MÉTODO: EscalaDiariaViewModel (ctor)                                            │
-        // │ 🔗 RASTREABILIDADE:                                                                      │
-        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
-        // │    ➡️ CHAMA       : DateTime.Today                                                      │
-        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        //
-        // 🎯 OBJETIVO:
-        // Inicializar valores padrão para data e status.
-        //
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: EscalaDiariaViewModel (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar valores padrão para data e status.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : DataEscala e StatusMotorista com valores iniciais.
+         *
+         * 🔗 CHAMADA POR  : DI e instanciação manual.
+         *
+         * 🔄 CHAMA        : DateTime.Today.
+         ****************************************************************************************/
         public EscalaDiariaViewModel()
         {
             DataEscala = DateTime.Today;

@@ -17,7 +17,7 @@
 | Total de Arquivos | 905 |
 | Documentados | 480 |
 | Percentual | 53.0% |
-| Última Atualização | 31/01/2026 20:15 |
+| Última Atualização | 31/01/2026 20:20 |
 
 ---
 
@@ -599,6 +599,13 @@
    • ControleAcesso.cs
    • CorridasTaxiLeg.cs
 
+✅ Models - Classes (Lote 162 - revisão cards completos):
+   • CorridasTaxiLegCanceladas.cs
+   • DeleteMovimentacaoWrapper.cs
+   • Empenho.cs
+   • EmpenhoMulta.cs
+   • EscalaDiaria.cs
+
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
    • _ViewImports.cshtml
@@ -1071,9 +1078,10 @@
 | 31/01/2026 | 5 | 1 | Lote 159 - Data + Models revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 160 - Models revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 161 - Models revisão cards completos (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 162 - Models revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 110
-**Total de Commits:** 108
+**Total de Lotes:** 111
+**Total de Commits:** 109
 **Total de Arquivos Documentados:** 480
 
 ---
