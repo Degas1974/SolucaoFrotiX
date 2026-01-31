@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: FornecedorController.cs                                                                 ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Gestão de fornecedores (empresas contratadas). CRUD com validação de integridade.      ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetAll(), Upsert(), Delete() - bloqueia exclusão se houver contratos vinculados          ║
-   ║ 🔗 DEPS: IUnitOfWork (Fornecedor, Contrato) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                  ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: FornecedorController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gestão de fornecedores (empresas contratadas), com validação de
+ *                   integridade antes de exclusão.
+ *
+ * 📥 ENTRADAS     : FornecedorViewModel, parâmetros de rota e IDs.
+ *
+ * 📤 SAÍDAS       : JSON com fornecedores e status das operações.
+ *
+ * 🔗 CHAMADA POR  : Frontend de fornecedores e contratos.
+ *
+ * 🔄 CHAMA        : IUnitOfWork (Fornecedor, Contrato) e Alerta.TratamentoErroComLinha.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, IUnitOfWork, Entity Framework.
+ *
+ * 📝 OBSERVAÇÕES  : Bloqueia exclusão quando existem contratos vinculados.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: FornecedorController

@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-██████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 44.8%
+███████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░ 45.3%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 405 |
-| Percentual | 44.8% |
-| Última Atualização | 31/01/2026 15:39 |
+| Documentados | 410 |
+| Percentual | 45.3% |
+| Última Atualização | 31/01/2026 15:48 |
 
 ---
 
@@ -26,7 +26,7 @@
 | # | Pasta | Total | Feitos | % | Status |
 |---|-------|-------|--------|---|--------|
 | 1 | Areas | 43 | 43 | 100% | ✅ Completo |
-| 2 | Controllers | 93 | 25 | 26.9% | 🟡 Em Progresso |
+| 2 | Controllers | 93 | 30 | 32.3% | 🟡 Em Progresso |
 | 3 | Data | 5 | 0 | 0% | 🔴 Pendente |
 | 4 | EndPoints | 2 | 2 | 100% | ✅ Completo |
 | 5 | Extensions | 3 | 3 | 100% | ✅ Completo |
@@ -95,7 +95,7 @@
 ✅ Areas/Identity/Pages/_ViewStart.cshtml
 ```
 
-### 📂 Controllers (25/93) 🟡
+### 📂 Controllers (30/93) 🟡
 ```
 ✅ Controllers/AbastecimentoController.cs
 ✅ Controllers/AbastecimentoController.DashboardAPI.cs
@@ -122,6 +122,11 @@
 ✅ Controllers/EditorController.cs
 ✅ Controllers/EmpenhoController.cs
 ✅ Controllers/EncarregadoController.cs
+✅ Controllers/EscalaController.cs
+✅ Controllers/EscalaController_Api.cs
+✅ Controllers/FornecedorController.cs
+✅ Controllers/GlosaController.cs
+✅ Controllers/GridAtaController.cs
 ```
 
 ### 📂 Data (0/5)
@@ -406,6 +411,13 @@
    • EditorController.cs
    • EmpenhoController.cs
    • EncarregadoController.cs
+
+✅ Controllers - Classes (Lote 145 - revisão cards completos):
+   • EscalaController.cs
+   • EscalaController_Api.cs
+   • FornecedorController.cs
+   • GlosaController.cs
+   • GridAtaController.cs
 
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
@@ -862,10 +874,11 @@
 | 31/01/2026 | 5 | 1 | Lote 142 - Controllers revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 143 - Controllers revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 144 - Controllers revisão cards completos (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 145 - Controllers revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 93
-**Total de Commits:** 91
-**Total de Arquivos Documentados:** 405
+**Total de Lotes:** 94
+**Total de Commits:** 92
+**Total de Arquivos Documentados:** 410
 
 ---
 

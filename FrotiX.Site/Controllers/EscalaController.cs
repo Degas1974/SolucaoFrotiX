@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: EscalaController.cs                                                                     ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial principal de escalas diárias de motoristas. SignalR tempo real, conflitos.     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Index(), Create(), Edit() - partial: EscalaController_Api.cs (DataTables endpoints)      ║
-   ║ 🔗 DEPS: SignalR AlertasHub, IUnitOfWork, EscalaDiaria | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0       ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: EscalaController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar escalas diárias de motoristas com atualização em tempo real
+ *                   e controle de conflitos.
+ *
+ * 📥 ENTRADAS     : ViewModels de escala, datas, IDs e ações de CRUD.
+ *
+ * 📤 SAÍDAS       : Views (Index/Create/Edit) e notificações SignalR.
+ *
+ * 🔗 CHAMADA POR  : Frontend de Escalas e chamadas AJAX.
+ *
+ * 🔄 CHAMA        : IUnitOfWork, IHubContext, EscalaController_Api.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, SignalR, Entity Framework.
+ *
+ * 📝 OBSERVAÇÕES  : Classe parcial complementada por EscalaController_Api.cs.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: EscalaController (Partial Class)
