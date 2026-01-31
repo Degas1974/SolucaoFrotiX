@@ -1,25 +1,11 @@
-@*****************************************************************************************
- * ⚡ PÁGINA: Lockout
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Página de bloqueio de conta por tentativas de login falhas. Exibe
- *                   formulário para desbloquear tela com senha, mostrando avatar e
- *                   informações do usuário bloqueado.
- *
- * 📥 ENTRADAS     : Input.Password (string) - Senha para desbloquear
- *                   ViewBag.User (string) - Nome do usuário bloqueado
- *                   ViewBag.Email (string) - Email do usuário bloqueado
- *
- * 📤 SAÍDAS       : HTML - Formulário de desbloqueio com avatar + validação JavaScript
- *
- * 🔗 CHAMADA POR  : Sistema de autenticação (após múltiplas tentativas de login falhas)
- *
- * 🔄 CHAMA        : LockoutModel (POST), _ValidationScriptsPartial
- *
- * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, jQuery, Bootstrap Validation
- *
- * 📝 OBSERVAÇÕES  : Senha pré-preenchida (Password123!) - deve ser removido em produção
- *                   por segurança. Usa btn-verde personalizado.
- *****************************************************************************************@
+@*
+╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ 📌 ARQUIVO: Lockout.cshtml                                                                          ║
+║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
+╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║ 🧭 OBJETIVO: Página de bloqueio de conta e desbloqueio via senha.                                   ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*@
 @page
 @model LockoutModel
 @{

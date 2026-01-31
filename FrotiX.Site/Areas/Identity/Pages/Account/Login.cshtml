@@ -1,26 +1,11 @@
-@*****************************************************************************************
- * ⚡ PÁGINA: Login
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Página de login do sistema. Permite autenticação via Ponto (username)
- *                   e senha da Redecamara. Exibe formulário com validação, opção de
- *                   "Lembrar-me" e link para recuperação de senha.
- *
- * 📥 ENTRADAS     : Input.Ponto (string) - Username/Ponto do usuário
- *                   Input.Password (string) - Senha da Redecamara
- *                   Input.RememberMe (bool) - Manter logado por 30 dias
- *
- * 📤 SAÍDAS       : HTML - Formulário de login + seção de marketing com links sociais
- *
- * 🔗 CHAMADA POR  : Usuário não autenticado tentando acessar sistema
- *
- * 🔄 CHAMA        : LoginModel (POST), ForgotPassword (link), _ValidationScriptsPartial
- *
- * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, jQuery, Bootstrap Validation, Font Awesome Brands
- *
- * 📝 OBSERVAÇÕES  : Página personalizada para integração com Redecamara. Contém seção de
- *                   marketing e links sociais (possivelmente template padrão não customizado).
- *                   BUG: Linha 82 usa "#js-logsin-btn" (typo) ao invés de "#js-login-btn".
- *****************************************************************************************@
+@*
+╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ 📌 ARQUIVO: Login.cshtml                                                                            ║
+║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
+╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║ 🧭 OBJETIVO: Página de login do sistema com autenticação via Ponto e senha.                         ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*@
 @page
 @model LoginModel
 @{

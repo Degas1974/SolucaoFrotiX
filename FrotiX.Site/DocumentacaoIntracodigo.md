@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-███████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 38.7%
+████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 39.2%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 350 |
-| Percentual | 38.7% |
-| Última Atualização | 31/01/2026 12:41 |
+| Documentados | 355 |
+| Percentual | 39.2% |
+| Última Atualização | 31/01/2026 12:46 |
 
 ---
 
@@ -25,7 +25,7 @@
 
 | # | Pasta | Total | Feitos | % | Status |
 |---|-------|-------|--------|---|--------|
-| 1 | Areas | 43 | 15 | 34.9% | 🟡 Em Progresso |
+| 1 | Areas | 43 | 20 | 46.5% | 🟡 Em Progresso |
 | 2 | Controllers | 93 | 0 | 0% | 🔴 Pendente |
 | 3 | Data | 5 | 0 | 0% | 🔴 Pendente |
 | 4 | EndPoints | 2 | 2 | 100% | ✅ Completo |
@@ -48,7 +48,7 @@
 
 ## ✅ Arquivos Documentados
 
-### 📂 Areas (15/43) 🟡
+### 📂 Areas (20/43) 🟡
 ```
 ✅ Areas/Authorization/Pages/Roles.cshtml
 ✅ Areas/Authorization/Pages/Roles.cshtml.cs
@@ -65,6 +65,11 @@
 ✅ Areas/Identity/Pages/Account/ForgotPassword.cshtml
 ✅ Areas/Identity/Pages/Account/ForgotPassword.cshtml.cs
 ✅ Areas/Identity/Pages/Account/ForgotPasswordConfirmation.cshtml
+✅ Areas/Identity/Pages/Account/ForgotPasswordConfirmation.cshtml.cs
+✅ Areas/Identity/Pages/Account/Lockout.cshtml
+✅ Areas/Identity/Pages/Account/Lockout.cshtml.cs
+✅ Areas/Identity/Pages/Account/Login.cshtml
+✅ Areas/Identity/Pages/Account/Login.cshtml.cs
 ```
 
 ### 📂 Controllers (0/93)
@@ -277,6 +282,13 @@
    • ForgotPassword.cshtml
    • ForgotPassword.cshtml.cs
    • ForgotPasswordConfirmation.cshtml
+
+✅ Areas/Identity - Pages (Lote 127 - novo padrão visual):
+   • ForgotPasswordConfirmation.cshtml.cs
+   • Lockout.cshtml
+   • Lockout.cshtml.cs
+   • Login.cshtml
+   • Login.cshtml.cs
 
 ### 📂 Infrastructure (1/1) ✅
 ```
@@ -666,10 +678,11 @@
 | 31/01/2026 | 5 | 1 | Lote 124 - Areas/Authorization novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 125 - Areas/Authorization + Areas/Identity novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 126 - Areas/Identity novo padrão visual (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 127 - Areas/Identity novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 75
-**Total de Commits:** 73
-**Total de Arquivos Documentados:** 350
+**Total de Lotes:** 76
+**Total de Commits:** 74
+**Total de Arquivos Documentados:** 355
 
 ---
 
