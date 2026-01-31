@@ -1,16 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ViagemController.HeatmapEconomildo.cs                                                   ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial para geração de Heatmap de viagens do Economildo. Retorna matriz 7x24         ║
-   ║    (dias da semana x horas) com quantidade de viagens para visualização de padrões de uso.         ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [GET] /api/Viagem/HeatmapEconomildo → Matriz de viagens por dia/hora                 ║
-   ║    DADOS: heatmap[7,24], maxValor, diasSemana (Segunda→Domingo), horas (00:00→23:00)               ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: IUnitOfWork (ViewFluxoEconomildo), ViagemController                                        ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViagemController.HeatmapEconomildo.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerar heatmap de viagens (matriz 7x24) do Economildo.
+ *
+ * 📥 ENTRADAS     : mob, mes, ano (filtros).
+ *
+ * 📤 SAÍDAS       : JSON com matriz, maxValor e total.
+ *
+ * 🔗 CHAMADA POR  : Dashboard Economildo.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.ViewFluxoEconomildo.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -23,13 +23,30 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: ViagemController.HeatmapEconomildo
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Implementar heatmap de viagens por dia/hora.
+     *
+     * 📥 ENTRADAS     : mob, mes, ano.
+     *
+     * 📤 SAÍDAS       : JSON com matriz 7x24.
+     ****************************************************************************************/
     public partial class ViagemController : Controller
     {
         #region Heatmap Economildo
 
-        /// <summary>
-        /// Retorna matriz 7x24 com quantidade de viagens Economildo por dia da semana e hora
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: HeatmapEconomildo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar matriz 7x24 com viagens por dia e hora.
+         *
+         * 📥 ENTRADAS     : mob, mes, ano.
+         *
+         * 📤 SAÍDAS       : JSON com data (heatmap), maxValor e totalViagens.
+         *
+         * 🔗 CHAMADA POR  : GET /api/Viagem/HeatmapEconomildo.
+         ****************************************************************************************/
         [HttpGet]
         [Route("HeatmapEconomildo")]
         public IActionResult HeatmapEconomildo(string? mob , string? mes , string? ano)

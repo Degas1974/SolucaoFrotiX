@@ -1,16 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ViagemController.CustosViagem.cs                                                        ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial class para consulta detalhada de custos de viagens. Retorna custos            ║
-   ║    individuais (combustível, veículo, motorista, operador, lavador), duração e km percorrido.      ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [GET] /api/Viagem/ObterCustosViagem?viagemId={guid} → Custos detalhados              ║
-   ║    DADOS: CustoCombustivel, CustoVeiculo, CustoMotorista, CustoOperador, CustoLavador, Duracao, Km ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: FrotiXDbContext, IUnitOfWork, ViagemController                                             ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViagemController.CustosViagem.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Consultar custos detalhados de viagens (combustível, veículo, equipe).
+ *
+ * 📥 ENTRADAS     : viagemId (Guid).
+ *
+ * 📤 SAÍDAS       : JSON com custos, duração e km percorrido.
+ *
+ * 🔗 CHAMADA POR  : Ajustes e detalhamento de custos de viagem.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.Viagem, Abastecimento, View/Relacionamentos.
+ **************************************************************************************** */
 
 using FrotiX.Data;
 using FrotiX.Models;
@@ -36,13 +36,28 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: ViagemController.CustosViagem
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Implementar consulta detalhada de custos de viagem.
+     *
+     * 📥 ENTRADAS     : ID da viagem.
+     *
+     * 📤 SAÍDAS       : JSON com custos e métricas.
+     ****************************************************************************************/
     public partial class ViagemController
     {
-        /// <summary>
-        /// Obtém os custos detalhados de uma viagem específica
-        /// Retorna: custos individuais, duração, km percorrido, consumo estimado
-        /// Rota: /api/Viagem/ObterCustosViagem?viagemId={guid}
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ObterCustosViagem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Obter custos detalhados de uma viagem específica.
+         *
+         * 📥 ENTRADAS     : viagemId (Guid).
+         *
+         * 📤 SAÍDAS       : JSON com custos individuais, duração, km e consumo.
+         *
+         * 🔗 CHAMADA POR  : GET /api/Viagem/ObterCustosViagem.
+         ****************************************************************************************/
         [Route("ObterCustosViagem")]
         [HttpGet]
         public async Task<IActionResult> ObterCustosViagem(Guid viagemId)

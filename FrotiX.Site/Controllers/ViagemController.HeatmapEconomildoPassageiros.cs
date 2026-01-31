@@ -1,16 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ViagemController.HeatmapEconomildoPassageiros.cs                                        ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial para Heatmap de PASSAGEIROS do Economildo. Retorna matriz 7x24 com SOMA       ║
-   ║    de passageiros por dia/hora. Diferente do HeatmapEconomildo que conta VIAGENS.                  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [GET] /api/Viagem/HeatmapEconomildoPassageiros → Matriz de passageiros               ║
-   ║    PARAMS: mob, mes, ano | DADOS: data[7], horas[24], maxValor, totalPassageiros                   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: IUnitOfWork (ViewFluxoEconomildo), ViagemController                                        ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViagemController.HeatmapEconomildoPassageiros.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerar heatmap de passageiros (matriz 7x24) do Economildo.
+ *
+ * 📥 ENTRADAS     : mob, mes, ano (filtros).
+ *
+ * 📤 SAÍDAS       : JSON com matriz, maxValor e totalPassageiros.
+ *
+ * 🔗 CHAMADA POR  : Dashboard Economildo.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.ViewFluxoEconomildo.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -23,6 +23,15 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: ViagemController.HeatmapEconomildoPassageiros
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Implementar heatmap de passageiros por dia/hora.
+     *
+     * 📥 ENTRADAS     : mob, mes, ano.
+     *
+     * 📤 SAÍDAS       : JSON com matriz 7x24.
+     ****************************************************************************************/
     public partial class ViagemController
     {
         #region Heatmap Economildo Passageiros

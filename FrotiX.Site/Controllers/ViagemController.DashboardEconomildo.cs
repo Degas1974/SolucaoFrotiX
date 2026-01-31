@@ -1,16 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ViagemController.DashboardEconomildo.cs                                                 ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial para Dashboard do Economildo (transporte de funcionários). Fornece             ║
-   ║    estatísticas de uso, médias mensais/diárias, ranking de MOBs e gráficos de evolução.            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [GET] /api/Viagem/DashboardEconomildo → Dashboard com filtros (mob, mes, ano)        ║
-   ║    DADOS: totalUsuarios, totalViagens, mediaMensal, mediaDiaria, rankingMOBs, evolucaoMensal       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: FrotiXDbContext (ViagensEconomildo), ViagemController                                      ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViagemController.DashboardEconomildo.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Fornecer indicadores do Dashboard Economildo (uso, médias e rankings).
+ *
+ * 📥 ENTRADAS     : Filtros de mob, mês e ano.
+ *
+ * 📤 SAÍDAS       : JSON com totais, médias e séries para gráficos.
+ *
+ * 🔗 CHAMADA POR  : Dashboard Economildo.
+ *
+ * 🔄 CHAMA        : FrotiXDbContext.ViagensEconomildo.
+ **************************************************************************************** */
 
 using FrotiX.Data;
 using FrotiX.Models;
@@ -25,8 +25,28 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: ViagemController.DashboardEconomildo
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Implementar endpoint de indicadores do Economildo.
+     *
+     * 📥 ENTRADAS     : mob, mes, ano.
+     *
+     * 📤 SAÍDAS       : JSON com métricas e séries.
+     ****************************************************************************************/
     public partial class ViagemController
     {
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DashboardEconomildo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar indicadores agregados do Economildo.
+         *
+         * 📥 ENTRADAS     : mob, mes, ano (filtros).
+         *
+         * 📤 SAÍDAS       : JSON com totais, médias e comparativos.
+         *
+         * 🔗 CHAMADA POR  : GET /api/Viagem/DashboardEconomildo.
+         ****************************************************************************************/
         [HttpGet]
         [Route("DashboardEconomildo")]
         public IActionResult DashboardEconomildo(string? mob, int? mes, int? ano)

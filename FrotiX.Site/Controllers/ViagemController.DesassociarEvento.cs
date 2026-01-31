@@ -1,28 +1,44 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ViagemController.DesassociarEvento.cs                                                   ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial para desassociação de viagens de eventos. Permite remover vinculação de        ║
-   ║    viagem a evento, alterando finalidade para tipo diferente (Administrativa, Operacional).        ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [POST] /api/Viagem/DesassociarViagemEvento → Desassocia viagem de evento             ║
-   ║    DTO: DesassociarViagemRequest (ViagemId, NovaFinalidade)                                        ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: IUnitOfWork (Viagem), ViagemController                                                     ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViagemController.DesassociarEvento.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Desassociar viagens de eventos e ajustar a finalidade.
+ *
+ * 📥 ENTRADAS     : DTO com ID da viagem e nova finalidade.
+ *
+ * 📤 SAÍDAS       : JSON com status da operação.
+ *
+ * 🔗 CHAMADA POR  : Ajustes administrativos de viagens.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.Viagem, IMemoryCache (limpeza de cache).
+ **************************************************************************************** */
 
 using Microsoft.AspNetCore.Mvc;
 using System;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: ViagemController.DesassociarEvento
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Implementar desassociação de viagens de eventos.
+     *
+     * 📥 ENTRADAS     : DTOs de desassociação.
+     *
+     * 📤 SAÍDAS       : JSON com sucesso/erro.
+     ****************************************************************************************/
     public partial class ViagemController
     {
-        /// <summary>
-        /// Desassocia uma viagem de um evento, alterando sua finalidade
-        /// Rota: /api/viagem/DesassociarViagemEvento
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DesassociarViagemEvento
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover vínculo da viagem com evento e atualizar finalidade.
+         *
+         * 📥 ENTRADAS     : request (DesassociarViagemRequest).
+         *
+         * 📤 SAÍDAS       : JSON com success e message.
+         *
+         * 🔗 CHAMADA POR  : POST /api/Viagem/DesassociarViagemEvento.
+         ****************************************************************************************/
         [Route("DesassociarViagemEvento")]
         [HttpPost]
         public IActionResult DesassociarViagemEvento([FromBody] DesassociarViagemRequest request)
@@ -97,9 +113,17 @@ namespace FrotiX.Controllers
         }
     }
 
-    /// <summary>
-    /// Request para desassociar viagem de evento
-    /// </summary>
+    /****************************************************************************************
+     * ⚡ DTO: DesassociarViagemRequest
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar dados para desassociação de evento.
+     *
+     * 📥 ENTRADAS     : ViagemId, NovaFinalidade.
+     *
+     * 📤 SAÍDAS       : Nenhuma (apenas transporte de dados).
+     *
+     * 🔗 CHAMADA POR  : DesassociarViagemEvento.
+     ****************************************************************************************/
     public class DesassociarViagemRequest
     {
         public Guid ViagemId { get; set; }

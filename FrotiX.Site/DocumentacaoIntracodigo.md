@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-█████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░ 50.8%
+██████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░ 51.4%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 460 |
-| Percentual | 50.8% |
-| Última Atualização | 31/01/2026 18:56 |
+| Documentados | 465 |
+| Percentual | 51.4% |
+| Última Atualização | 31/01/2026 19:01 |
 
 ---
 
@@ -26,7 +26,7 @@
 | # | Pasta | Total | Feitos | % | Status |
 |---|-------|-------|--------|---|--------|
 | 1 | Areas | 43 | 43 | 100% | ✅ Completo |
-| 2 | Controllers | 93 | 80 | 86.0% | 🟡 Em Progresso |
+| 2 | Controllers | 93 | 85 | 91.4% | 🟡 Em Progresso |
 | 3 | Data | 5 | 0 | 0% | 🔴 Pendente |
 | 4 | EndPoints | 2 | 2 | 100% | ✅ Completo |
 | 5 | Extensions | 3 | 3 | 100% | ✅ Completo |
@@ -95,7 +95,7 @@
 ✅ Areas/Identity/Pages/_ViewStart.cshtml
 ```
 
-### 📂 Controllers (80/93) 🟡
+### 📂 Controllers (85/93) 🟡
 ```
 ✅ Controllers/AbastecimentoController.cs
 ✅ Controllers/AbastecimentoController.DashboardAPI.cs
@@ -177,6 +177,11 @@
 ✅ Controllers/ViagemController.AtualizarDados.cs
 ✅ Controllers/ViagemController.AtualizarDadosViagem.cs
 ✅ Controllers/ViagemController.CalculoCustoBatch.cs
+✅ Controllers/ViagemController.CustosViagem.cs
+✅ Controllers/ViagemController.DashboardEconomildo.cs
+✅ Controllers/ViagemController.DesassociarEvento.cs
+✅ Controllers/ViagemController.HeatmapEconomildo.cs
+✅ Controllers/ViagemController.HeatmapEconomildoPassageiros.cs
 ```
 
 ### 📂 Data (0/5)
@@ -538,6 +543,13 @@
    • ViagemController.AtualizarDados.cs
    • ViagemController.AtualizarDadosViagem.cs
    • ViagemController.CalculoCustoBatch.cs
+
+✅ Controllers - Classes (Lote 156 - revisão cards completos):
+   • ViagemController.CustosViagem.cs
+   • ViagemController.DashboardEconomildo.cs
+   • ViagemController.DesassociarEvento.cs
+   • ViagemController.HeatmapEconomildo.cs
+   • ViagemController.HeatmapEconomildoPassageiros.cs
 
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
@@ -1005,10 +1017,11 @@
 | 31/01/2026 | 5 | 1 | Lote 153 - Controllers revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 154 - Controllers revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 155 - Controllers revisão cards completos (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 156 - Controllers revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 104
-**Total de Commits:** 102
-**Total de Arquivos Documentados:** 460
+**Total de Lotes:** 105
+**Total de Commits:** 103
+**Total de Arquivos Documentados:** 465
 
 ---
 
