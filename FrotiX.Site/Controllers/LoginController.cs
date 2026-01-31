@@ -1,26 +1,37 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: LoginController.cs                                                                      ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Controller de login (legado). Sistema usa Identity para autenticação.                  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: (Ver Identity: Areas/Identity/Pages/Account/Login.cshtml.cs)                             ║
-   ║ 🔗 DEPS: IUnitOfWork, ILogger | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                                ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: LoginController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Fornecer endpoints legados de login e utilidades relacionadas ao
+ *                   usuário autenticado.
+ *
+ * 📥 ENTRADAS     : Requisições GET e acesso ao contexto de autenticação.
+ *
+ * 📤 SAÍDAS       : Views e JSON com dados do usuário corrente.
+ *
+ * 🔗 CHAMADA POR  : Navegação direta (legado) e componentes que consultam usuário atual.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.AspNetUsers, ClaimsPrincipal, Alerta.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, ILogger, IWebHostEnvironment, IUnitOfWork.
+ *
+ * ⚠️ ATENÇÃO      : O sistema utiliza Identity para login; este controller é legado.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: LoginController
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Controller de login (provavelmente legado, Identity é usado para autenticação)
- * 📥 ENTRADAS     : Nenhuma (retorna views)
- * 📤 SAÍDAS       : Views
- * 🔗 CHAMADA POR  : Navegação direta (provavelmente não utilizado)
- * 🔄 CHAMA        : IUnitOfWork, ILogger
- * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, ILogger, IWebHostEnvironment
+ * 🎯 OBJETIVO     : Manter compatibilidade com rotas antigas de login e fornecer dados
+ *                   do usuário autenticado.
  *
- * ⚠️  NOTA: Este controller parece ser legado. O sistema utiliza Identity para login
- *           (ver Areas/Identity/Pages/Account/Login.cshtml.cs)
+ * 📥 ENTRADAS     : Claims do usuário corrente.
+ *
+ * 📤 SAÍDAS       : Views e JSON com nome/ponto do usuário.
+ *
+ * 🔗 CHAMADA POR  : Rotas antigas e utilidades internas.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.AspNetUsers, ClaimsPrincipal.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, ILogger, IWebHostEnvironment.
  ****************************************************************************************/
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Hosting;
@@ -42,7 +53,13 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ FUNÇÃO: LoginController (Construtor)
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Injetar dependências
+         * 🎯 OBJETIVO     : Injetar dependências utilizadas por rotas legadas de login.
+         *
+         * 📥 ENTRADAS     : logger, hostingEnvironment, unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
          ****************************************************************************************/
         public LoginController(
             ILogger<AbastecimentoController> logger ,
@@ -68,6 +85,17 @@ namespace FrotiX.Controllers
             get; set;
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Index
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Renderizar a view principal de login (legado).
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : [IActionResult] View.
+         *
+         * 🔗 CHAMADA POR  : Navegação direta.
+         ****************************************************************************************/
         public IActionResult Index()
         {
             try
@@ -81,6 +109,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar view padrão de login (legado).
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : [IActionResult] View.
+         *
+         * 🔗 CHAMADA POR  : Chamadas GET simples para o controller.
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
@@ -95,8 +134,19 @@ namespace FrotiX.Controllers
             }
         }
 
-        //Recupera o nome do Usuário de Criação/Finalização
-        //=================================================
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RecuperaUsuarioAtual
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Obter nome e ponto do usuário autenticado no sistema.
+         *
+         * 📥 ENTRADAS     : Claims do usuário atual.
+         *
+         * 📤 SAÍDAS       : JSON com { nome, ponto }.
+         *
+         * 🔗 CHAMADA POR  : Telas que precisam exibir dados do usuário corrente.
+         *
+         * 🔄 CHAMA        : _unitOfWork.AspNetUsers.GetFirstOrDefault().
+         ****************************************************************************************/
         [Route("RecuperaUsuarioAtual")]
         public IActionResult RecuperaUsuarioAtual()
         {

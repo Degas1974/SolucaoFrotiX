@@ -1,25 +1,36 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: MotoristaController.cs                                                                  ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Gerenciar motoristas (funcionários condutores). CRUD + upload CNH/fotos + escalas.     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Get(), Upsert(), Upload() - vinculos Contrato, Fornecedor, CNH, VAssociado               ║
-   ║ 🔗 DEPS: IUnitOfWork, ViewMotoristas | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                         ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: MotoristaController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar motoristas (condutores), incluindo CRUD, fotos e vínculos
+ *                   com contratos, além de uso em escalas e viagens.
+ *
+ * 📥 ENTRADAS     : MotoristaViewModel, IDs, filtros e parâmetros de status.
+ *
+ * 📤 SAÍDAS       : JSON com motoristas, contratos e dados formatados.
+ *
+ * 🔗 CHAMADA POR  : Pages/Motoristas/Index, Escalas e Viagens (AJAX).
+ *
+ * 🔄 CHAMA        : IUnitOfWork (Motorista, Contrato, Fornecedor, CNH, VAssociado).
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework, File System.
+ *
+ * 📄 DOCUMENTAÇÃO : Documentacao/Pages/Motorista - Index.md
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: MotoristaController
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Gerenciar motoristas (funcionários que conduzem veículos)
- *                   CRUD completo, upload de CNH, fotos, controle de escalas/viagens
- * 📥 ENTRADAS     : MotoristaViewModel, IDs, Filtros, Arquivos (CNH, Fotos)
- * 📤 SAÍDAS       : JSON com motoristas, contratos, CNHs, fotos (Base64)
- * 🔗 CHAMADA POR  : Pages/Motoristas/Index, Escalas, Viagens, JavaScript (AJAX)
- * 🔄 CHAMA        : IUnitOfWork (Motorista, Contrato, Fornecedor, CNH, VAssociado)
- * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework, File System
- * 📄 DOCUMENTAÇÃO : Documentacao/Pages/Motorista - Index.md
+ * 🎯 OBJETIVO     : Expor operações de listagem, exclusão, status e vínculos de motoristas.
+ *
+ * 📥 ENTRADAS     : IDs e view models de motorista.
+ *
+ * 📤 SAÍDAS       : JSON com registros e mensagens de validação.
+ *
+ * 🔗 CHAMADA POR  : Telas de Motoristas e grids do sistema.
+ *
+ * 🔄 CHAMA        : IUnitOfWork (Motorista, MotoristaContrato, ViewMotoristas).
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework.
  ****************************************************************************************/
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -36,6 +47,17 @@ namespace FrotiX.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: MotoristaController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependências do UnitOfWork.
+         *
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public MotoristaController(IUnitOfWork unitOfWork)
         {
             try
@@ -52,6 +74,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar motoristas com dados de contrato, fornecedor e usuário.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com lista de motoristas formatada para grid.
+         *
+         * 🔗 CHAMADA POR  : Grid principal de Motoristas.
+         *
+         * 🔄 CHAMA        : _unitOfWork.ViewMotoristas.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
@@ -107,6 +142,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover motorista quando não há vínculos ativos com contratos.
+         *
+         * 📥 ENTRADAS     : [MotoristaViewModel] model (MotoristaId).
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de exclusão no grid.
+         *
+         * 🔄 CHAMA        : Motorista.GetFirstOrDefault(), MotoristaContrato.GetFirstOrDefault(),
+         *                   Motorista.Remove(), Save().
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(MotoristaViewModel model)
@@ -159,6 +208,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateStatusMotorista
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Alternar status (ativo/inativo) do motorista.
+         *
+         * 📥 ENTRADAS     : Id (Guid) - identificador do motorista.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso, mensagem e tipo.
+         *
+         * 🔗 CHAMADA POR  : Ações de ativação/inativação no grid.
+         *
+         * 🔄 CHAMA        : Motorista.GetFirstOrDefault(), Motorista.Update().
+         ****************************************************************************************/
         [Route("UpdateStatusMotorista")]
         public JsonResult UpdateStatusMotorista(Guid Id)
         {
@@ -225,6 +287,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaFoto
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar objeto de motorista com foto em byte[].
+         *
+         * 📥 ENTRADAS     : id (Guid) - identificador do motorista.
+         *
+         * 📤 SAÍDAS       : JSON com objeto e foto convertida, ou false.
+         *
+         * 🔗 CHAMADA POR  : Tela de edição/detalhes.
+         *
+         * 🔄 CHAMA        : Motorista.GetFirstOrDefault(), GetImage().
+         ****************************************************************************************/
         [HttpGet]
         [Route("PegaFoto")]
         public JsonResult PegaFoto(Guid id)
@@ -258,6 +333,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaFotoModal
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar apenas a foto do motorista para exibição em modal.
+         *
+         * 📥 ENTRADAS     : id (Guid) - identificador do motorista.
+         *
+         * 📤 SAÍDAS       : JSON com byte[] da foto ou false.
+         *
+         * 🔗 CHAMADA POR  : Modal de visualização de foto.
+         *
+         * 🔄 CHAMA        : Motorista.GetFirstOrDefault(), GetImage().
+         ****************************************************************************************/
         [HttpGet]
         [Route("PegaFotoModal")]
         public JsonResult PegaFotoModal(Guid id)
@@ -282,6 +370,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetImage
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Converter string base64 em array de bytes.
+         *
+         * 📥 ENTRADAS     : sBase64String (string).
+         *
+         * 📤 SAÍDAS       : [byte[]] imagem decodificada ou null.
+         *
+         * 🔗 CHAMADA POR  : PegaFoto(), PegaFotoModal().
+         ****************************************************************************************/
         public byte[] GetImage(string sBase64String)
         {
             try
@@ -300,6 +399,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: MotoristaContratos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar motoristas associados a um contrato específico.
+         *
+         * 📥 ENTRADAS     : Id (Guid) - identificador do contrato.
+         *
+         * 📤 SAÍDAS       : JSON com lista de motoristas vinculados.
+         *
+         * 🔗 CHAMADA POR  : Grid de motoristas do contrato.
+         *
+         * 🔄 CHAMA        : ViewMotoristas.GetAll(), MotoristaContrato.GetAll() (join).
+         ****************************************************************************************/
         [HttpGet]
         [Route("MotoristaContratos")]
         public IActionResult MotoristaContratos(Guid Id)
@@ -360,6 +472,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DeleteContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover vínculo do motorista com um contrato específico.
+         *
+         * 📥 ENTRADAS     : [MotoristaViewModel] model (MotoristaId, ContratoId).
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de remoção em grids de contrato.
+         *
+         * 🔄 CHAMA        : MotoristaContrato.GetFirstOrDefault(), MotoristaContrato.Remove(),
+         *                   Motorista.Update(), Save().
+         ****************************************************************************************/
         [Route("DeleteContrato")]
         [HttpPost]
         public IActionResult DeleteContrato(MotoristaViewModel model)

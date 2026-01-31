@@ -1,23 +1,34 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ModeloVeiculoController.cs                                                              ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Gerenciar modelos de veículos vinculados a marcas. CRUD básico com JOIN MarcaVeiculo.  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetAll(), Upsert(), Delete() - ModeloVeiculoViewModel para dropdowns                     ║
-   ║ 🔗 DEPS: IUnitOfWork (ModeloVeiculo, MarcaVeiculo) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0           ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ModeloVeiculoController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar modelos de veículos vinculados a marcas, com CRUD básico
+ *                   e retorno de dados para dropdowns.
+ *
+ * 📥 ENTRADAS     : ModeloVeiculoViewModel e IDs de modelo.
+ *
+ * 📤 SAÍDAS       : JSON com modelos e informações de marca (JOIN).
+ *
+ * 🔗 CHAMADA POR  : Pages/ModelosVeiculos/Index e cadastros de veículos.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.ModeloVeiculo, IUnitOfWork.MarcaVeiculo.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, IUnitOfWork.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: ModeloVeiculoController
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Gerenciar modelos de veículos vinculados a marcas - CRUD básico
- * 📥 ENTRADAS     : ModeloVeiculoViewModel, IDs
- * 📤 SAÍDAS       : JSON com modelos incluindo MarcaVeiculo (JOIN)
- * 🔗 CHAMADA POR  : Pages/ModelosVeiculos/Index, Dropdowns de cadastro de veículos
- * 🔄 CHAMA        : IUnitOfWork (ModeloVeiculo, MarcaVeiculo)
- * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, IUnitOfWork
+ * 🎯 OBJETIVO     : Expor endpoints para listar, excluir e alterar status de modelos.
+ *
+ * 📥 ENTRADAS     : IDs e dados do modelo.
+ *
+ * 📤 SAÍDAS       : JSON com listas e mensagens.
+ *
+ * 🔗 CHAMADA POR  : Telas administrativas e dropdowns de veículos.
+ *
+ * 🔄 CHAMA        : IUnitOfWork (ModeloVeiculo, MarcaVeiculo).
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, IUnitOfWork.
  ****************************************************************************************/
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -32,6 +43,17 @@ namespace FrotiX.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ModeloVeiculoController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependência de acesso aos repositórios.
+         *
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public ModeloVeiculoController(IUnitOfWork unitOfWork)
         {
             try
@@ -48,6 +70,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar todos os modelos com a marca associada.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com lista de modelos e marcas.
+         *
+         * 🔗 CHAMADA POR  : Grids e dropdowns de modelos.
+         *
+         * 🔄 CHAMA        : _unitOfWork.ModeloVeiculo.GetAll(..., include MarcaVeiculo).
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
@@ -67,6 +102,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover modelo quando não há veículos associados.
+         *
+         * 📥 ENTRADAS     : [ModeloVeiculoViewModel] model (ModeloId).
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de exclusão em grids.
+         *
+         * 🔄 CHAMA        : ModeloVeiculo.GetFirstOrDefault(), Veiculo.GetFirstOrDefault(),
+         *                   ModeloVeiculo.Remove(), Save().
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(ModeloVeiculoViewModel model)
@@ -119,6 +168,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateStatusModeloVeiculo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Alternar status (ativo/inativo) do modelo de veículo.
+         *
+         * 📥 ENTRADAS     : Id (Guid) - identificador do modelo.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso, mensagem e tipo.
+         *
+         * 🔗 CHAMADA POR  : Ações de ativação/inativação no grid.
+         *
+         * 🔄 CHAMA        : ModeloVeiculo.GetFirstOrDefault(), ModeloVeiculo.Update().
+         ****************************************************************************************/
         [Route("UpdateStatusModeloVeiculo")]
         public JsonResult UpdateStatusModeloVeiculo(Guid Id)
         {

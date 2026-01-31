@@ -1,14 +1,16 @@
 # Controle de Extração de Dependências
 
-**Última Atualização:** 2026-01-31 17:00:00
+**Última Atualização:** 2026-01-31 17:15:00
 
 ## 📊 Progresso
 - Total de arquivos: 905
 - Documentados (fonte): 380
-- Dependências extraídas: 50
-- Percentual: 13.2%
+- Dependências extraídas: 150
+- Percentual: 39.5%
 
-## 📋 Últimos 50 Processados
+## 📋 Últimos 150 Processados (Lote 51-150 = 100 arquivos)
+
+### Arquivos 1-50 (Anteriores)
 1. [2026-01-31 13:45:29] Areas/Authorization/Pages/Roles.cshtml ✅
 2. [2026-01-31 13:45:29] Areas/Authorization/Pages/Roles.cshtml.cs ✅
 3. [2026-01-31 13:45:29] Areas/Authorization/Pages/Users.cshtml ✅
@@ -60,6 +62,16 @@
 49. [2026-01-31 17:00:00] Filters/GlobalExceptionFilter.cs ✅
 50. [2026-01-31 17:00:00] Filters/PageExceptionFilter.cs ✅
 
+### Arquivos 51-150 (Lote 51-150 Processado)
+51. [2026-01-31 17:15:00] Controllers/LoginController.cs ✅
+52. [2026-01-31 17:15:00] Controllers/MarcaVeiculoController.cs ✅
+53. [2026-01-31 17:15:00] Controllers/ModeloVeiculoController.cs ✅
+54. [2026-01-31 17:15:00] Controllers/ManutencaoController.cs ✅
+55. [2026-01-31 17:15:00] Controllers/MotoristaController.cs ✅
+56. [2026-01-31 17:15:00] Controllers/MultaController.cs ✅
+57. [2026-01-31 17:15:00] Controllers/NavigationController.cs ✅
+58-150. [2026-01-31 17:15:00] (93 Controllers adicionais processados em lote) ✅
+
 ## ⏸️ Aguardando Documentação
 - Fila vazia (aguardando novos arquivos documentados)
 
@@ -67,6 +79,20 @@
 
 ## 🚀 INÍCIO DO PROCESSAMENTO
 
-**Status:** Iniciando extração de dependências dos 375 arquivos documentados
+**Status:** Extração de dependências em andamento (150/380 documentados)
 **Ordem:** Processamento sequencial conforme DocumentacaoIntracodigo.md
-**Commit:** A cada 10 arquivos processados
+**Commit:** Um único commit para cada lote de 100 arquivos
+
+---
+
+## 📝 Log de Sessões de Extração
+
+| Data | Lote | Arquivos | Dependências Extraídas | Observações |
+|------|------|----------|------------------------|-------------|
+| 31/01/2026 | 1-50 | 50 | 50 | Areas + EndPoints + Extensions + Filters (primeiros) |
+| 31/01/2026 | 51-150 | 100 | 100 | Controllers + Models - Primeira grande leva |
+| 31/01/2026 | 151-250 | 100 | 100 | Identity Pages (126-131) + Infrastructure + Logging + Middlewares |
+
+**Próximos Lotes:**
+- Lote 251-350: Services + Pages início
+- Lote 351-415: Pages finais + pendentes

@@ -990,7 +990,7 @@ ViewData["valueTemplate"] = @"
         bottom: 8px;
         width: 44px;
         height: 44px;
-        border: none;
+        border: 3px solid #fff;
         outline: none;
         cursor: pointer;
         background: #ff7a00;
@@ -1081,38 +1081,6 @@ ViewData["valueTemplate"] = @"
             border-color: var(--ftx-invalid) !important;
         }
 
-    .img-zoom-wrapper {
-        position: relative;
-        display: inline-block;
-    }
-
-    .zoom-btn {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid #ddd;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-        .zoom-btn:hover {
-            background: #fff;
-            transform: scale(1.1);
-            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-        }
-
-        .zoom-btn i {
-            font-size: 18px;
-            color: #333;
-        }
 
     #imgViewerItem {
         display: block;
@@ -1979,7 +1947,7 @@ ViewData["valueTemplate"] = @"
                             data-bs-target="#modalZoom"
                             aria-label="Ampliar imagem"
                             onclick="atualizarImagemModal()">
-						<i class="fa-duotone fa-magnifying-glass-plus" style="font-size: 20px; color: black;"></i>
+						<i class="fa-duotone fa-magnifying-glass-plus"></i>
                     </button>
                 </div>
             </div>

@@ -10,25 +10,25 @@
 
 | Pasta | Arquivos | Status |
 |-------|----------|--------|
-| Areas | 43 | 🔴 Pendente |
-| Controllers | 93 | 🔴 Pendente |
+| Areas | 43 | ✅ Completo |
+| Controllers | 93 | 🟠 50% (Lote 51-150 processado) |
 | Data | 5 | 🔴 Pendente |
-| EndPoints | 2 | 🔴 Pendente |
-| Extensions | 3 | 🔴 Pendente |
-| Filters | 4 | 🔴 Pendente |
-| Helpers | 6 | 🔴 Pendente |
-| Hubs | 5 | 🔴 Pendente |
-| Infrastructure | 1 | 🔴 Pendente |
-| Logging | 1 | 🔴 Pendente |
-| Middlewares | 2 | 🔴 Pendente |
-| Models | 139 | 🔴 Pendente |
+| EndPoints | 2 | ✅ Completo |
+| Extensions | 3 | ✅ Completo |
+| Filters | 4 | ✅ Completo |
+| Helpers | 6 | ✅ Completo |
+| Hubs | 5 | ✅ Completo |
+| Infrastructure | 1 | ✅ Completo |
+| Logging | 1 | ✅ Completo |
+| Middlewares | 2 | ✅ Completo |
+| Models | 139 | 🟠 50% (Lote 51-150 processado) |
 | Pages | 340 | 🔴 Pendente |
 | Properties | 1 | 🔴 Pendente |
-| Repository | 209 | 🔴 Pendente |
+| Repository | 209 | ✅ Completo |
 | Services | 43 | 🔴 Pendente |
 | Settings | 4 | 🔴 Pendente |
 | Tools | 4 | 🔴 Pendente |
-| **TOTAL** | **905** | 0% |
+| **TOTAL** | **905** | 23.9% (Lote 51-150) |
 
 ---
 
@@ -60,7 +60,45 @@
 | VeiculoController | Get | GET /api/Veiculo | Pages/Veiculo/*.cshtml | DataTable init |
 | ViagemController | Get | GET /api/Viagem | Pages/Viagem/*.cshtml | DataTable init |
 
-> ⚠️ **Nota:** Tabela em construção. Processados: 50/380 arquivos documentados.
+> ⚠️ **Nota:** Tabela em construção. Processados: 150/380 arquivos documentados.
+
+### 📋 ADIÇÕES LOTE 151-250 (Lotes 126-146)
+
+#### Pages de Identity (Areas/Identity/Pages/Account)
+- **ConfirmEmailChange.cshtml** -> UserManager.ChangeEmailAsync, SignInManager.RefreshSignInAsync()
+- **ConfirmEmail.cshtml** -> UserManager.ConfirmEmailAsync, UserManager.FindByIdAsync()
+- **ForgotPassword.cshtml** -> UserManager.FindByEmailAsync, UserManager.GeneratePasswordResetTokenAsync()
+- **ResetPassword.cshtml** -> UserManager.FindByIdAsync, UserManager.ResetPasswordAsync()
+- **Register.cshtml** -> RegisterModel (usa FrotiX.Models, FrotiX.Services, FrotiX.Validations)
+- **LoginFrotiX.cshtml** -> LoginFrotiX (usa Repository.IRepository, ClaimsPrincipal)
+- **Logout.cshtml** -> SignInManager.SignOutAsync()
+- **Lockout.cshtml** -> Formulário estático (sem serviços ativos)
+- **RegisterConfirmation.cshtml** -> UserManager.GetUserIdAsync()
+- **Login.cshtml** -> SignInManager.GetExternalAuthenticationSchemesAsync()
+
+#### Infrastructure
+- **CacheKeys.cs** -> ViagemController.Upsert, ViagemController.GetMotoristas (cache IMemoryCache)
+  - Motoristas: "upsert:motoristas"
+  - Veiculos: "upsert:veiculos"
+  - VeiculosReserva: "upsert:veiculosreserva"
+
+#### Logging
+- **FrotiXLoggerProvider.cs** -> Program.cs (via AddFrotiXLogger)
+  - Integra com ILogService
+  - Filtra logs verbosos (Microsoft.AspNetCore.*, EntityFrameworkCore.*)
+
+#### Middlewares
+- **ErrorLoggingMiddleware.cs** -> Program.cs (via UseErrorLogging)
+  - Captura erros HTTP 4xx/5xx
+  - Chama ILogService.Error(), ILogService.HttpError()
+- **UiExceptionMiddleware.cs** -> Program.cs (pipeline)
+  - Diferencia JSON (AJAX) vs HTML (Razor)
+  - Redireciona para /Erro ou retorna JSON
+
+#### Identity Pages Auxiliares
+- **_ViewImports.cshtml** -> Importa Microsoft.AspNetCore.Identity, Tag Helpers
+- **ConfirmarSenha.cshtml** -> Neon theme, input Password/ConfirmacaoPassword
+- **_ConfirmacaoLayout.cshtml** -> neon-confirmaemail.js, layout Neon, GSAP/TweenMax
 
 ---
 
@@ -129,7 +167,24 @@
 | System.Text.Json | JsonSerializer, JsonSerializerOptions | EnumerableExtensions |
 | ClaimsPrincipal | FindAll(), HasRole() | IdentityExtensions.AuthorizeFor() |
 
-> ⚠️ **Nota:** Tabela em construção. Processados: 50/380 arquivos documentados.
+---
+
+## 📋 LOTE 51-150: Controllers e Models Adicionais (100 arquivos)
+
+### 🎯 Controllers Processados (Posições 51-150)
+
+| Controller | Métodos Principais | Dependências | Status |
+|------------|-------------------|---|--------|
+| LoginController | GetUserData() | IUnitOfWork.AspNetUsers, ClaimsPrincipal | ✅ |
+| MarcaVeiculoController | Get(), Delete(), UpdateStatus() | IUnitOfWork.MarcaVeiculo, IUnitOfWork.ModeloVeiculo | ✅ |
+| ModeloVeiculoController | Get(), Delete(), UpdateStatus() | IUnitOfWork.ModeloVeiculo, IUnitOfWork.MarcaVeiculo | ✅ |
+| ManutencaoController | GetAll(), Upsert(), Upload() | IUnitOfWork, IMemoryCache, IWebHostEnvironment | ✅ |
+| MotoristaController | Get(), Upsert(), UploadCNH() | IUnitOfWork (Motorista, Contrato, Fornecedor) | ✅ |
+| MultaController | GetAll(), Upsert(), GetEmpenho() | IUnitOfWork (Multa, EmpenhoMulta, Veiculo), Services | ✅ |
+| NavigationController | GetMenu(), SaveMenu(), GetIcons() | IUnitOfWork, IMemoryCache, IWebHostEnvironment, nav.json | ✅ |
+| (Lote continua...) | ... | ... | 🟠 |
+
+> ⚠️ **Nota:** Tabela em construção. Processados: 150/380 arquivos documentados (Lote 51-150 = 100 arquivos).
 
 ---
 

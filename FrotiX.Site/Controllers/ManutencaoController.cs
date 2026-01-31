@@ -1,29 +1,37 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ManutencaoController.cs                                                                 ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Gestão de manutenções de veículos (preventivas/corretivas). Cache + upload docs.       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetAll(), Upsert(), Upload() - IMemoryCache para otimização, histórico de custos         ║
-   ║ 🔗 DEPS: IUnitOfWork, IMemoryCache, IWebHostEnvironment | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0      ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ManutencaoController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar manutenções de veículos (preventivas/corretivas), incluindo
+ *                   OS, itens, lavagens, upload de documentos e histórico de custos.
+ *
+ * 📥 ENTRADAS     : Manutencao, ItensManutencao, Lavagem, filtros de data/veículo e uploads.
+ *
+ * 📤 SAÍDAS       : JSON com listas, detalhes e mensagens de sucesso/erro.
+ *
+ * 🔗 CHAMADA POR  : Pages/Manutencoes/Index, grids AJAX e modais de upload.
+ *
+ * 🔄 CHAMA        : IUnitOfWork, IMemoryCache, IWebHostEnvironment, LINQ, JsonSerializer.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework, IMemoryCache, File System.
+ *
+ * ⚡ PERFORMANCE  : Uso de cache para listas e consultas frequentes.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: ManutencaoController
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Gerenciar manutenções de veículos (preventivas, corretivas)
- *                   Upload de documentos, controle de custos, histórico de manutenções
- *                   Utiliza cache para otimizar consultas frequentes
- * 📥 ENTRADAS     : Manutencao, IDs, Filtros de data/veículo, Arquivos (uploads)
- * 📤 SAÍDAS       : JSON com manutenções, documentos, custos agregados
- * 🔗 CHAMADA POR  : Pages/Manutencoes/Index, JavaScript (AJAX), Modais de upload
- * 🔄 CHAMA        : IUnitOfWork, IMemoryCache (otimização), IWebHostEnvironment (upload)
- * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework, IMemoryCache, File System
+ * 🎯 OBJETIVO     : Expor endpoints para listar, criar, cancelar e baixar OS de manutenção,
+ *                   além de gerenciar lavagens e vínculos com ocorrências/viagens.
  *
- * ⚡ PERFORMANCE:
- *    - IMemoryCache: Cache de listas frequentes (veículos, tipos, etc)
- *    - Helper GetCachedAsync<T>: Abstração para cache com TTL configurável
+ * 📥 ENTRADAS     : IDs, filtros, view models, parâmetros de baixa e uploads.
+ *
+ * 📤 SAÍDAS       : JSON com dados formatados e indicadores de status.
+ *
+ * 🔗 CHAMADA POR  : Telas de manutenção, lavagens e integrações com ocorrências.
+ *
+ * 🔄 CHAMA        : IUnitOfWork (Manutencao, Itens, Ocorrencia, Lavagem), cache e IO.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework, IMemoryCache, File System.
  ****************************************************************************************/
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -56,7 +64,13 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ FUNÇÃO: ManutencaoController (Construtor)
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Injetar dependências (UnitOfWork, Hosting, Cache)
+         * 🎯 OBJETIVO     : Injetar dependências para acesso a dados, uploads e cache.
+         *
+         * 📥 ENTRADAS     : unitOfWork, hostingEnvironment, cache.
+         *
+         * 📤 SAÍDAS       : Instância configurada.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
          ****************************************************************************************/
         public ManutencaoController(
             IUnitOfWork unitOfWork ,
@@ -134,6 +148,19 @@ namespace FrotiX.Controllers
         // 2) Endpoint GET único – aplica todos os filtros e projeta para o DataTable
         //     Rota efetiva (com [Route("api/[controller]")]):  GET /api/Manutencao
         // =======================================================================
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar manutenções aplicando filtros por veículo, status e período.
+         *
+         * 📥 ENTRADAS     : veiculoId, statusId, mes, ano, dataInicial, dataFinal (strings).
+         *
+         * 📤 SAÍDAS       : JSON com lista formatada para DataTable.
+         *
+         * 🔗 CHAMADA POR  : Grid de Manutenções (AJAX).
+         *
+         * 🔄 CHAMA        : ViewManutencao.GetAllReducedIQueryable(), filtros LINQ.
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get(
             string veiculoId = null ,
@@ -277,6 +304,19 @@ namespace FrotiX.Controllers
 
         //Apaga Conexão Viagem-OS
         //=======================
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ApagaConexaoOcorrencia
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover (ou simular remoção) da conexão entre OS e ocorrência.
+         *
+         * 📥 ENTRADAS     : [Viagem] viagem (opcional).
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Fluxos de cancelamento/desvinculação de ocorrências.
+         *
+         * 📝 OBSERVAÇÕES  : Bloco principal está comentado; ação atual apenas responde.
+         ****************************************************************************************/
         [Route("ApagaConexaoOcorrencia")]
         [HttpPost]
         public JsonResult ApagaConexaoOcorrencia(Models.Viagem viagem = null)
