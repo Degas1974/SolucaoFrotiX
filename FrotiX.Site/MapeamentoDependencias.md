@@ -60,7 +60,7 @@
 | VeiculoController | Get | GET /api/Veiculo | Pages/Veiculo/*.cshtml | DataTable init |
 | ViagemController | Get | GET /api/Viagem | Pages/Viagem/*.cshtml | DataTable init |
 
-> ⚠️ **Nota:** Tabela em construção. Processados: 40/380 arquivos documentados.
+> ⚠️ **Nota:** Tabela em construção. Processados: 50/380 arquivos documentados.
 
 ---
 
@@ -83,7 +83,7 @@
 | Neon/js/neon-confirmaemail.js | (confirmação email) | Formulário | _ConfirmacaoLayout.cshtml |
 | Canvas API (HTML5) | trimTransparentPNG() | Processamento de imagem | _LoginLayout.cshtml (processamento de logo) |
 
-> ⚠️ **Nota:** Tabela em construção. Processados: 40/380 arquivos documentados.
+> ⚠️ **Nota:** Tabela em construção. Processados: 50/380 arquivos documentados.
 
 ---
 
@@ -120,8 +120,16 @@
 | ViagemEstatisticaService | GerarEstatisticasAsync() | AgendaController, ViagemController |
 | IHubContext<ImportacaoHub> | SendAsync() | AbastecimentoController, AbastecimentoImportController |
 | IHubContext<AlertasHub> | SendAsync() | AlertasFrotiXController |
+| RoleManager<IdentityRole> | Roles, FindByIdAsync(), CreateAsync(), UpdateAsync(), DeleteAsync() | RolesEndpoint |
+| UserManager<IdentityUser> | Users, FindByIdAsync(), CreateAsync(), AddPasswordAsync() | UsersEndpoint |
+| ApplicationDbContext | UpdateAsync<T>(), DeleteAsync<T>(), FindAsync<T>() | UsersEndpoint, IdentityExtensions |
+| SmartSettings | Theme.Role, Theme.Email | RolesEndpoint, UsersEndpoint |
+| IToastService | Show() | ToastExtensions (PageModel/Controller) |
+| ILogService | Error(), Warning() | GlobalExceptionFilter, PageExceptionFilter, AsyncExceptionFilter |
+| System.Text.Json | JsonSerializer, JsonSerializerOptions | EnumerableExtensions |
+| ClaimsPrincipal | FindAll(), HasRole() | IdentityExtensions.AuthorizeFor() |
 
-> ⚠️ **Nota:** Tabela em construção. Processados: 40/380 arquivos documentados.
+> ⚠️ **Nota:** Tabela em construção. Processados: 50/380 arquivos documentados.
 
 ---
 
