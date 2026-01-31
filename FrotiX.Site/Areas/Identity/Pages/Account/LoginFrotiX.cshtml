@@ -1,25 +1,11 @@
-@*****************************************************************************************
- * ⚡ PÁGINA: LoginFrotiX
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Página de login customizada do FrotiX com design próprio. Interface
- *                   modernizada com SVG icons, efeitos visuais (brushed-effect) e validação.
- *                   Versão personalizada da página de login padrão.
- *
- * 📥 ENTRADAS     : Input.Ponto (string) - Username/Ponto do usuário
- *                   Input.Password (string) - Senha
- *
- * 📤 SAÍDAS       : HTML - Formulário de login com design customizado + mensagem de erro
- *
- * 🔗 CHAMADA POR  : Usuário não autenticado (página de login principal do FrotiX)
- *
- * 🔄 CHAMA        : LoginFrotiX (POST), _LoginLayout
- *
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, jQuery Validation, _LoginLayout
- *
- * 📝 OBSERVAÇÕES  : Layout customizado (_LoginLayout) diferente do Login.cshtml padrão.
- *                   Usa ícones SVG inline. Link "Esqueceu senha" aponta para página HTML
- *                   estática (extra-forgot-password.html) ao invés de Razor Page.
- *****************************************************************************************@
+@*
+╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ 📌 ARQUIVO: LoginFrotiX.cshtml                                                                      ║
+║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
+╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║ 🧭 OBJETIVO: Página de login customizada do FrotiX (layout próprio).                                ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*@
 @page
 @model FrotiX.Areas.Identity.Pages.Account.LoginFrotiX
 @{

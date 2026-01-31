@@ -1,22 +1,11 @@
-@*****************************************************************************************
- * ⚡ PÁGINA: Logout
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Página de confirmação de logout. Exibe mensagem de sucesso após
- *                   logout e oferece opções de navegação (Login, Register, Retornar).
- *
- * 📥 ENTRADAS     : returnUrl (query string) - URL de retorno codificada (opcional)
- *
- * 📤 SAÍDAS       : HTML - Mensagem de sucesso + botões de ação
- *
- * 🔗 CHAMADA POR  : LogoutModel (após SignOut bem-sucedido)
- *
- * 🔄 CHAMA        : /account/login, /account/register, returnUrl (links)
- *
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, System.Web (HttpUtility)
- *
- * 📝 OBSERVAÇÕES  : Usa HttpUtility.UrlDecode para processar returnUrl da query string.
- *                   Botões com cores customizadas (btn-azul, btn-verde, btn-vinho).
- *****************************************************************************************@
+@*
+╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ 📌 ARQUIVO: Logout.cshtml                                                                           ║
+║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
+╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║ 🧭 OBJETIVO: Página de confirmação de logout e navegação pós-saída.                                 ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*@
 @page
 @using System.Web
 @model LogoutModel
