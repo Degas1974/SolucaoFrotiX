@@ -1,16 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ViagemController.AtualizarDadosViagem.cs                                                ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial para atualização de dados via Dashboard. Calcula MinutosNormalizado           ║
-   ║    considerando jornada de trabalho de 8h/dia. Trigger tr_Viagem_CalculaCustos recalcula custos.   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [POST] /api/Viagem/AtualizarDadosViagemDashboard → Atualiza via modal                ║
-   ║    DTO: AtualizarViagemDashboardDTO | CONSTANTES: MINUTOS_JORNADA_DIA=480, 08:00-18:00             ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: IUnitOfWork (Viagem), CalcularMinutosNormalizadoComJornada                                 ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViagemController.AtualizarDadosViagem.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Atualizar dados de viagem via Dashboard e recalcular campos normalizados.
+ *
+ * 📥 ENTRADAS     : DTOs de ajuste do dashboard.
+ *
+ * 📤 SAÍDAS       : JSON com status da operação.
+ *
+ * 🔗 CHAMADA POR  : Modal do Dashboard de viagens.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.Viagem, cálculo de minutos normalizados.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +19,15 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: ViagemController.AtualizarDadosViagem
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Implementar atualização de viagem via dashboard.
+     *
+     * 📥 ENTRADAS     : DTOs de ajuste.
+     *
+     * 📤 SAÍDAS       : JSON com sucesso/erro.
+     ****************************************************************************************/
     public partial class ViagemController
     {
         // Constantes para cálculo de jornada
@@ -26,9 +35,17 @@ namespace FrotiX.Controllers
         private static readonly TimeSpan INICIO_EXPEDIENTE = new TimeSpan(8, 0, 0);  // 08:00
         private static readonly TimeSpan FIM_EXPEDIENTE = new TimeSpan(18, 0, 0);    // 18:00
 
-        /// <summary>
-        /// DTO para receber dados do modal de ajuste do Dashboard
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ DTO: AtualizarViagemDashboardDTO
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Transportar dados do modal de ajuste do dashboard.
+         *
+         * 📥 ENTRADAS     : Campos de ficha, datas, horas, km e vínculos.
+         *
+         * 📤 SAÍDAS       : Nenhuma (apenas transporte de dados).
+         *
+         * 🔗 CHAMADA POR  : AtualizarDadosViagemDashboard.
+         ****************************************************************************************/
         public class AtualizarViagemDashboardDTO
         {
             public Guid ViagemId { get; set; }
@@ -48,11 +65,17 @@ namespace FrotiX.Controllers
             public string RamalRequisitante { get; set; }
         }
 
-        /// <summary>
-        /// Calcula minutos trabalhados considerando jornada de 8h/dia (Opção B)
-        /// - Mesmo dia: tempo real limitado a 480 min
-        /// - Múltiplos dias: primeiro dia (hora início → 18h) + dias intermediários (480) + último dia (08h → hora fim)
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalcularMinutosNormalizadoComJornada (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcular minutos normalizados com jornada de 8h/dia.
+         *
+         * 📥 ENTRADAS     : dataInicial, dataFinal, horaInicio, horaFim.
+         *
+         * 📤 SAÍDAS       : Total de minutos normalizados.
+         *
+         * 📝 OBSERVAÇÕES  : Mesmo dia limita a 480 min; múltiplos dias soma início, meio e fim.
+         ****************************************************************************************/
         private int CalcularMinutosNormalizadoComJornada(DateTime dataInicial, DateTime dataFinal, TimeSpan horaInicio, TimeSpan horaFim)
         {
             try
@@ -93,11 +116,19 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Atualiza dados da viagem a partir do modal do Dashboard
-        /// O trigger tr_Viagem_CalculaCustos recalcula os custos automaticamente
-        /// Rota: POST /api/Viagem/AtualizarDadosViagemDashboard
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AtualizarDadosViagemDashboard
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Atualizar dados de viagem via modal do dashboard.
+         *
+         * 📥 ENTRADAS     : dados (AtualizarViagemDashboardDTO).
+         *
+         * 📤 SAÍDAS       : JSON com success e message.
+         *
+         * 🔗 CHAMADA POR  : POST /api/Viagem/AtualizarDadosViagemDashboard.
+         *
+         * 📝 OBSERVAÇÕES  : Trigger tr_Viagem_CalculaCustos recalcula custos no banco.
+         ****************************************************************************************/
         [Route("AtualizarDadosViagemDashboard")]
         [HttpPost]
         public IActionResult AtualizarDadosViagemDashboard([FromBody] AtualizarViagemDashboardDTO dados)

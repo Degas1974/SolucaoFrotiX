@@ -1,20 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ViagemController.CalculoCustoBatch.cs                                                   ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Algoritmo otimizado de cálculo de custos em batch. Carrega dados em cache e processa  ║
-   ║    viagens em lotes de 500 registros para melhor performance.                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [POST] /ExecutarCalculoCustoBatch → Executa cálculo batch                            ║
-   ║    [GET] /ObterProgressoCalculoCustoBatch → Obtém progresso                                        ║
-   ║    [POST] /LimparProgressoCalculoCustoBatch → Limpa cache progresso                                ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ ⚙️ CÁLCULOS: CustoVeiculo=valor/43200×min | CustoMotorista=valor×min/13200                         ║
-   ║    CustoOperador/Lavador=mensal/média viagens | CustoCombustível via cache                         ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: FrotiXDbContext, IUnitOfWork, IMemoryCache, DadosCalculoCache, MotoristaInfo              ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViagemController.CalculoCustoBatch.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Executar cálculo de custos em batch com cache e processamento em lotes.
+ *
+ * 📥 ENTRADAS     : Requisições de execução/consulta de progresso.
+ *
+ * 📤 SAÍDAS       : JSON com progresso e status.
+ *
+ * 🔗 CHAMADA POR  : Rotinas administrativas de cálculo de custos.
+ *
+ * 🔄 CHAMA        : FrotiXDbContext, IUnitOfWork, IMemoryCache.
+ **************************************************************************************** */
 
 using FrotiX.Data;
 using FrotiX.Models;
@@ -31,8 +27,26 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: ViagemController.CalculoCustoBatch
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Implementar execução e monitoramento de cálculo de custos em batch.
+     *
+     * 📥 ENTRADAS     : Chamadas de execução e consulta.
+     *
+     * 📤 SAÍDAS       : JSON com progresso e resultado.
+     ****************************************************************************************/
     public partial class ViagemController : Controller
     {
+        /****************************************************************************************
+         * ⚡ DTO: DadosCalculoCache
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Agrupar dados de cache utilizados no cálculo em batch.
+         *
+         * 📥 ENTRADAS     : Listas e dicionários com valores de veículo, combustível e motorista.
+         *
+         * 📤 SAÍDAS       : Nenhuma (estrutura interna).
+         ****************************************************************************************/
         private class DadosCalculoCache
         {
             public List<DateTime> TodasDatasViagens { get; set; } = new List<DateTime>();
@@ -45,16 +59,32 @@ namespace FrotiX.Controllers
             public Dictionary<Guid, MotoristaInfo> InfoMotoristas { get; set; } = new Dictionary<Guid, MotoristaInfo>();
         }
 
+        /****************************************************************************************
+         * ⚡ DTO: MotoristaInfo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Armazenar dados de motorista para cálculo de custos.
+         *
+         * 📥 ENTRADAS     : EhTerceirizado, ValorMotorista.
+         *
+         * 📤 SAÍDAS       : Nenhuma (estrutura interna).
+         ****************************************************************************************/
         private class MotoristaInfo
         {
             public bool EhTerceirizado { get; set; }
             public double ValorMotorista { get; set; }
         }
 
-        /// <summary>
-        /// Executa cálculo de custos OTIMIZADO em BATCH (C#)
-        /// Carrega todos os dados necessários UMA VEZ e processa em lotes
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ExecutarCalculoCustoBatch
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar cálculo de custos em lotes, com cache para performance.
+         *
+         * 📥 ENTRADAS     : Nenhuma (usa dados do banco).
+         *
+         * 📤 SAÍDAS       : JSON com success, mensagem e métricas de execução.
+         *
+         * 🔗 CHAMADA POR  : POST /api/Viagem/ExecutarCalculoCustoBatch.
+         ****************************************************************************************/
         [HttpPost]
         [Route("ExecutarCalculoCustoBatch")]
         public async Task<IActionResult> ExecutarCalculoCustoBatch()
@@ -216,9 +246,15 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Atualiza o progresso do cálculo no cache
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AtualizarProgresso (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Atualizar o progresso do cálculo no cache.
+         *
+         * 📥 ENTRADAS     : chave, processado, total, mensagem, concluido, erro.
+         *
+         * 📤 SAÍDAS       : Nenhuma (efeito colateral no cache).
+         ****************************************************************************************/
         private void AtualizarProgresso(string chave, int processado, int total, string mensagem, bool concluido, string erro)
         {
             try
@@ -241,9 +277,17 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Obtém o progresso atual do cálculo
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ObterProgressoCalculoCustoBatch
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Consultar o progresso do cálculo em batch.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com percentuais e mensagens.
+         *
+         * 🔗 CHAMADA POR  : GET /api/Viagem/ObterProgressoCalculoCustoBatch.
+         ****************************************************************************************/
         [HttpGet]
         [Route("ObterProgressoCalculoCustoBatch")]
         public IActionResult ObterProgressoCalculoCustoBatch()
@@ -286,9 +330,17 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Limpa o progresso do cache
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: LimparProgressoCalculoCustoBatch
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Limpar progresso armazenado no cache do cálculo em batch.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com confirmação.
+         *
+         * 🔗 CHAMADA POR  : POST /api/Viagem/LimparProgressoCalculoCustoBatch.
+         ****************************************************************************************/
         [HttpPost]
         [Route("LimparProgressoCalculoCustoBatch")]
         public IActionResult LimparProgressoCalculoCustoBatch()
@@ -307,9 +359,15 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Carrega TODOS os dados necessários UMA ÚNICA VEZ em memória
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CarregarDadosCalculoCache (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Carregar dados necessários UMA ÚNICA VEZ em memória.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : DadosCalculoCache preenchido.
+         ****************************************************************************************/
         private async Task<DadosCalculoCache> CarregarDadosCalculoCache()
         {
             var cache = new DadosCalculoCache();
@@ -367,9 +425,15 @@ namespace FrotiX.Controllers
             return cache;
         }
 
-        /// <summary>
-        /// Carrega dados de veículos (valor unitário, consumo, combustível)
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CarregarDadosVeiculosCache (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Carregar dados de veículos (valor, consumo e combustível).
+         *
+         * 📥 ENTRADAS     : cache (DadosCalculoCache).
+         *
+         * 📤 SAÍDAS       : Cache populado com valores de veículos.
+         ****************************************************************************************/
         private async Task CarregarDadosVeiculosCache(DadosCalculoCache cache)
         {
             // Busca veículos com contratos
@@ -478,10 +542,17 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Carrega dados de motoristas (se é terceirizado e valor mensal do contrato)
-        /// CORRIGIDO: Usa Contrato.CustoMensalMotorista em vez de RepactuacaoTerceirizacao.ValorMotorista
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CarregarDadosMotoristasCache (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Carregar dados de motoristas e custo mensal (terceirização).
+         *
+         * 📥 ENTRADAS     : cache (DadosCalculoCache).
+         *
+         * 📤 SAÍDAS       : Cache populado com info de motoristas.
+         *
+         * 📝 OBSERVAÇÕES  : Usa Contrato.CustoMensalMotorista.
+         ****************************************************************************************/
         private async Task CarregarDadosMotoristasCache(DadosCalculoCache cache)
         {
             // Busca motoristas com seus contratos e o CustoMensalMotorista
@@ -520,9 +591,15 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Calcula TODOS os custos de uma viagem usando dados em cache
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalcularCustosViagem (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcular todos os custos de uma viagem usando cache.
+         *
+         * 📥 ENTRADAS     : viagem, cache.
+         *
+         * 📤 SAÍDAS       : Atualiza campos de custos na entidade.
+         ****************************************************************************************/
         private void CalcularCustosViagem(Viagem viagem, DadosCalculoCache cache)
         {
             try
@@ -588,11 +665,17 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Calcula a média DIÁRIA de viagens realizadas ANTES da data especificada
-        /// Usa cache para evitar recálculos
-        /// Lógica: totalViagensAnteriores / totalDiasDesdeInicio
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalcularMediaViagensParaData (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcular média mensal de viagens até a data informada.
+         *
+         * 📥 ENTRADAS     : dataViagem, cache.
+         *
+         * 📤 SAÍDAS       : Média mensal estimada.
+         *
+         * 📝 OBSERVAÇÕES  : Usa cache por data para evitar recálculo.
+         ****************************************************************************************/
         private double CalcularMediaViagensParaData(DateTime dataViagem, DadosCalculoCache cache)
         {
             try
@@ -636,9 +719,15 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Calcula custo operador dinamicamente com a média específica
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalcularCustoOperadorDinamico (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcular custo do operador com base na média de viagens.
+         *
+         * 📥 ENTRADAS     : mediaViagens.
+         *
+         * 📤 SAÍDAS       : Custo mensal distribuído por média.
+         ****************************************************************************************/
         private double CalcularCustoOperadorDinamico(double mediaViagens)
         {
             try
@@ -676,9 +765,15 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Calcula custo lavador dinamicamente com a média específica
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalcularCustoLavadorDinamico (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcular custo do lavador com base na média de viagens.
+         *
+         * 📥 ENTRADAS     : mediaViagens.
+         *
+         * 📤 SAÍDAS       : Custo mensal distribuído por média.
+         ****************************************************************************************/
         private double CalcularCustoLavadorDinamico(double mediaViagens)
         {
             try
@@ -728,9 +823,15 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Calcula custo de combustível usando cache
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalcularCustoCombustivelCache (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcular custo de combustível usando cache de preços e consumo.
+         *
+         * 📥 ENTRADAS     : viagem, cache.
+         *
+         * 📤 SAÍDAS       : Custo de combustível da viagem.
+         ****************************************************************************************/
         private double CalcularCustoCombustivelCache(Viagem viagem, DadosCalculoCache cache)
         {
             try
@@ -771,11 +872,17 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Calcula custo de veículo usando cache
-        /// Fórmula: (ValorUnitarioItem / 30 / 24 / 60) × Minutos
-        /// Com teto mensal (não pode ultrapassar ValorUnitario)
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalcularCustoVeiculoCache (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcular custo do veículo usando cache e minutos da viagem.
+         *
+         * 📥 ENTRADAS     : viagem, cache.
+         *
+         * 📤 SAÍDAS       : Custo do veículo limitado ao valor mensal.
+         *
+         * 📝 OBSERVAÇÕES  : Fórmula: (ValorUnitario / 43200) × Minutos.
+         ****************************************************************************************/
         private double CalcularCustoVeiculoCache(Viagem viagem, DadosCalculoCache cache)
         {
             try
@@ -807,13 +914,17 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Calcula custo de motorista usando cache
-        /// CORRIGIDO: 
-        /// - Usa viagem.Minutos diretamente (calculado pelo trigger)
-        /// - Usa fórmula igual à SP: CustoMensalMotorista × (Minutos / 13200)
-        /// - Mantém teto mensal (não pode ultrapassar CustoMensalMotorista)
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalcularCustoMotoristaCache (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcular custo do motorista usando cache e minutos da viagem.
+         *
+         * 📥 ENTRADAS     : viagem, cache.
+         *
+         * 📤 SAÍDAS       : Custo do motorista limitado ao valor mensal.
+         *
+         * 📝 OBSERVAÇÕES  : Fórmula: CustoMensalMotorista × (Minutos / 13200).
+         ****************************************************************************************/
         private double CalcularCustoMotoristaCache(Viagem viagem, DadosCalculoCache cache)
         {
             try
@@ -851,9 +962,15 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Formata TimeSpan para exibição amigável
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: FormatarTempo (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Formatar TimeSpan para exibição amigável.
+         *
+         * 📥 ENTRADAS     : tempo.
+         *
+         * 📤 SAÍDAS       : String formatada (h/min/s).
+         ****************************************************************************************/
         private string FormatarTempo(TimeSpan tempo)
         {
             if (tempo.TotalHours >= 1)

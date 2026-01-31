@@ -1,17 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ViagemController.AtualizarDados.cs                                                      ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial class do ViagemController com métodos para atualização de dados de viagens.   ║
-   ║    Usado pela página AjustaCustosViagem para ajustar dados.                                        ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [GET] /api/Viagem/GetViagem/{id} → Busca dados completos de uma viagem               ║
-   ║    [POST] /api/Viagem/AtualizarDadosViagem → Atualiza campos da viagem                             ║
-   ║    DTO: AtualizarDadosViagemRequest                                                                 ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: IUnitOfWork (Viagem), ViagemController                                                     ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViagemController.AtualizarDados.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Atualizar dados de viagens e fornecer detalhes para ajuste.
+ *
+ * 📥 ENTRADAS     : IDs de viagem e DTOs de atualização.
+ *
+ * 📤 SAÍDAS       : JSON com dados e mensagens de status.
+ *
+ * 🔗 CHAMADA POR  : Página AjustaCustosViagem.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.Viagem.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -21,12 +20,28 @@ using System;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: ViagemController.AtualizarDados
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Implementar endpoints de consulta e atualização de dados de viagem.
+     *
+     * 📥 ENTRADAS     : IDs e DTOs de ajuste.
+     *
+     * 📤 SAÍDAS       : JSON com dados detalhados.
+     ****************************************************************************************/
     public partial class ViagemController
     {
-        /// <summary>
-        /// Busca os dados completos de uma viagem pelo ID
-        /// Rota: GET /api/Viagem/GetViagem/{id}
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetViagem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Buscar dados completos de uma viagem pelo ID.
+         *
+         * 📥 ENTRADAS     : id (Guid da viagem).
+         *
+         * 📤 SAÍDAS       : JSON com success e dados da viagem.
+         *
+         * 🔗 CHAMADA POR  : GET /api/Viagem/GetViagem/{id}.
+         ****************************************************************************************/
         [Route("GetViagem/{id}")]
         [HttpGet]
         public IActionResult GetViagem(Guid id)
@@ -78,10 +93,19 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Atualiza os dados de uma viagem
-        /// Rota: POST /api/Viagem/AtualizarDadosViagem
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AtualizarDadosViagem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Atualizar campos da viagem a partir de ajustes manuais.
+         *
+         * 📥 ENTRADAS     : request (AtualizarDadosViagemRequest).
+         *
+         * 📤 SAÍDAS       : JSON com success e message.
+         *
+         * 🔗 CHAMADA POR  : POST /api/Viagem/AtualizarDadosViagem.
+         *
+         * 🔄 CHAMA        : Viagem.GetFirstOrDefault(), Viagem.Update(), UnitOfWork.Save().
+         ****************************************************************************************/
         [Route("AtualizarDadosViagem")]
         [HttpPost]
         public IActionResult AtualizarDadosViagem([FromBody] AtualizarDadosViagemRequest request)
@@ -208,9 +232,17 @@ namespace FrotiX.Controllers
         }
     }
 
-    /// <summary>
-    /// Request para atualização de dados da viagem
-    /// </summary>
+    /****************************************************************************************
+     * ⚡ DTO: AtualizarDadosViagemRequest
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar dados de ajuste da viagem.
+     *
+     * 📥 ENTRADAS     : Campos de ficha, datas, horários, km e vínculos.
+     *
+     * 📤 SAÍDAS       : Nenhuma (apenas transporte de dados).
+     *
+     * 🔗 CHAMADA POR  : AtualizarDadosViagem.
+     ****************************************************************************************/
     public class AtualizarDadosViagemRequest
     {
         public Guid ViagemId { get; set; }

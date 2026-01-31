@@ -1,19 +1,17 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: VeiculoController.cs                                                                    ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: API Controller para operações de Veículos. Listagem, exclusão, toggle de status       ║
-   ║    e gestão de vínculos com contratos e atas. Inclui validação de glosa por manutenção.            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [GET] / → Lista ViewVeiculos | [POST] /Delete → Remove (verifica vínculos)           ║
-   ║    [GET] /UpdateStatusVeiculo → Toggle Ativo | [GET] /VeiculoContratos → Veículos do contrato      ║
-   ║    [GET] /VeiculoContratosGlosa → Elegíveis glosa | [POST] /DeleteContrato → Remove vínculo        ║
-   ║    [GET] /SelecionaValorMensalAta, /SelecionaValorMensalContrato → Valores unitários               ║
-   ║    ROTA BASE: api/Veiculo                                                                           ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: IUnitOfWork (Veiculo, ViewVeiculos, VeiculoContrato, Viagem, ItemVeiculoAta/Contrato)      ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: VeiculoController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar veículos, vínculos com contratos/atas e status de ativação.
+ *
+ * 📥 ENTRADAS     : IDs e modelos de veículo/contrato.
+ *
+ * 📤 SAÍDAS       : JSON com listas e status das operações.
+ *
+ * 🔗 CHAMADA POR  : Telas de veículos e contratos.
+ *
+ * 🔄 CHAMA        : IUnitOfWork (Veiculo, ViewVeiculos, VeiculoContrato, Viagem,
+ *                   ItemVeiculoAta/Contrato).
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -24,12 +22,32 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: VeiculoController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints para listar, excluir e gerenciar vínculos de veículos.
+     *
+     * 📥 ENTRADAS     : IDs e modelos de veículo/contrato.
+     *
+     * 📤 SAÍDAS       : JSON com dados e mensagens.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class VeiculoController :Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: VeiculoController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependência do UnitOfWork.
+         *
+         * 📥 ENTRADAS     : unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada do controller.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public VeiculoController(IUnitOfWork unitOfWork)
         {
             try
@@ -42,6 +60,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar veículos a partir da view ViewVeiculos.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com data (lista de veículos).
+         *
+         * 🔗 CHAMADA POR  : Grid de veículos.
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
@@ -83,6 +112,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover veículo quando não houver vínculos de contrato ou viagem.
+         *
+         * 📥 ENTRADAS     : model (VeiculoViewModel).
+         *
+         * 📤 SAÍDAS       : JSON com success e message.
+         *
+         * 🔗 CHAMADA POR  : Ação de exclusão no grid.
+         *
+         * 🔄 CHAMA        : Veiculo.GetFirstOrDefault(), VeiculoContrato.GetFirstOrDefault(),
+         *                   Viagem.GetFirstOrDefault(), Veiculo.Remove(), UnitOfWork.Save().
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(VeiculoViewModel model)
@@ -152,6 +195,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateStatusVeiculo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Alternar status ativo/inativo do veículo.
+         *
+         * 📥 ENTRADAS     : Id (Guid do veículo).
+         *
+         * 📤 SAÍDAS       : JSON com success, message e type.
+         *
+         * 🔗 CHAMADA POR  : Toggle de status no grid de veículos.
+         ****************************************************************************************/
         [Route("UpdateStatusVeiculo")]
         public JsonResult UpdateStatusVeiculo(Guid Id)
         {
@@ -209,6 +263,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: VeiculoContratos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar veículos vinculados a um contrato específico.
+         *
+         * 📥 ENTRADAS     : Id (Guid do contrato).
+         *
+         * 📤 SAÍDAS       : JSON com data (lista de veículos).
+         *
+         * 🔗 CHAMADA POR  : Tela de contratos.
+         ****************************************************************************************/
         [HttpGet]
         [Route("VeiculoContratos")]
         public IActionResult VeiculoContratos(Guid Id)
@@ -255,6 +320,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: VeiculosDoContrato (Glosa)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar veículos do contrato elegíveis a glosa por manutenção.
+         *
+         * 📥 ENTRADAS     : id (Guid do contrato).
+         *
+         * 📤 SAÍDAS       : JSON com data (lista de veículos elegíveis).
+         *
+         * 🔗 CHAMADA POR  : Processo de glosa.
+         *
+         * 🔄 CHAMA        : Manutencao.GetAll(), VeiculoContrato.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         [Route("VeiculoContratosGlosa")]
         public IActionResult VeiculosDoContrato(Guid id)
@@ -314,6 +392,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DeleteContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover vínculo veículo-contrato.
+         *
+         * 📥 ENTRADAS     : model (VeiculoViewModel).
+         *
+         * 📤 SAÍDAS       : JSON com success e message.
+         *
+         * 🔗 CHAMADA POR  : Ação de desvincular veículo do contrato.
+         *
+         * 🔄 CHAMA        : VeiculoContrato.GetFirstOrDefault(), Remove(), UnitOfWork.Save().
+         ****************************************************************************************/
         [Route("DeleteContrato")]
         [HttpPost]
         public IActionResult DeleteContrato(VeiculoViewModel model)
@@ -376,6 +467,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SelecionaValorMensalAta
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Buscar valor mensal do item de ata para cálculo de veículo.
+         *
+         * 📥 ENTRADAS     : itemAta (Guid).
+         *
+         * 📤 SAÍDAS       : JSON com valor mensal.
+         *
+         * 🔗 CHAMADA POR  : Seleção de item de ata.
+         ****************************************************************************************/
         [Route("SelecionaValorMensalAta")]
         [HttpGet]
         public JsonResult SelecionaValorMensalAta(Guid itemAta)
@@ -405,6 +507,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SelecionaValorMensalContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Buscar valor mensal do item de contrato para cálculo de veículo.
+         *
+         * 📥 ENTRADAS     : itemContrato (Guid).
+         *
+         * 📤 SAÍDAS       : JSON com valor mensal.
+         *
+         * 🔗 CHAMADA POR  : Seleção de item de contrato.
+         ****************************************************************************************/
         [Route("SelecionaValorMensalContrato")]
         [HttpGet]
         public JsonResult SelecionaValorMensalContrato(Guid itemContrato)
