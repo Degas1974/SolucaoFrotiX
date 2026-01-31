@@ -92,7 +92,8 @@
 | 31/01/2026 | 1-50 | 50 | 50 | Areas + EndPoints + Extensions + Filters (primeiros) |
 | 31/01/2026 | 51-150 | 100 | 100 | Controllers + Models - Primeira grande leva |
 | 31/01/2026 | 151-250 | 100 | 100 | Identity Pages (126-131) + Infrastructure + Logging + Middlewares |
+| 31/01/2026 | 251-350 | 100 | 100 | Controllers (Manutencao-ViagemLimpeza) + Data + Models/Views |
 
 **Próximos Lotes:**
-- Lote 251-350: Services + Pages início
-- Lote 351-415: Pages finais + pendentes
+- Lote 351-415: Services + Pages + Helpers + Repository finais
+- Lote 416+: Complementares conforme documentacao
