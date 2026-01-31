@@ -11,8 +11,8 @@
 | Pasta | Arquivos | Status |
 |-------|----------|--------|
 | Areas | 43 | ✅ Completo |
-| Controllers | 93 | 🟠 50% (Lote 51-150 processado) |
-| Data | 5 | 🔴 Pendente |
+| Controllers | 93 | 🟠 70% (Lotes 51-150, 251-350 processados) |
+| Data | 5 | ✅ Completo (Lote 251-350) |
 | EndPoints | 2 | ✅ Completo |
 | Extensions | 3 | ✅ Completo |
 | Filters | 4 | ✅ Completo |
@@ -21,14 +21,14 @@
 | Infrastructure | 1 | ✅ Completo |
 | Logging | 1 | ✅ Completo |
 | Middlewares | 2 | ✅ Completo |
-| Models | 139 | 🟠 50% (Lote 51-150 processado) |
+| Models | 139 | 🟠 75% (Lotes 51-150, 251-350 processados) |
 | Pages | 340 | 🔴 Pendente |
 | Properties | 1 | 🔴 Pendente |
 | Repository | 209 | ✅ Completo |
 | Services | 43 | 🔴 Pendente |
 | Settings | 4 | 🔴 Pendente |
 | Tools | 4 | 🔴 Pendente |
-| **TOTAL** | **905** | 23.9% (Lote 51-150) |
+| **TOTAL** | **905** | 42.8% (Lotes 1-350) |
 
 ---
 
@@ -60,7 +60,7 @@
 | VeiculoController | Get | GET /api/Veiculo | Pages/Veiculo/*.cshtml | DataTable init |
 | ViagemController | Get | GET /api/Viagem | Pages/Viagem/*.cshtml | DataTable init |
 
-> ⚠️ **Nota:** Tabela em construção. Processados: 150/380 arquivos documentados.
+> ⚠️ **Nota:** Tabela em construção. Processados: 250/380 arquivos documentados (Lotes 1-350).
 
 ### 📋 ADIÇÕES LOTE 151-250 (Lotes 126-146)
 
@@ -258,11 +258,135 @@
 
 ---
 
+### 📋 ADIÇÕES LOTE 251-350 (Controllers Manutencao-ViagemLimpeza + Data + Models Views)
+
+#### Controllers (Manutencao até ViagemLimpeza)
+- **ManutencaoController.cs** -> IUnitOfWork, IMemoryCache, IWebHostEnvironment
+  - GetAll() -> IUnitOfWork.Manutencao.GetAllAsync()
+  - Upsert() -> IUnitOfWork.SaveChangesAsync()
+  - Upload() -> File System, IWebHostEnvironment.WebRootPath
+
+- **ModeloVeiculoController.cs** -> IUnitOfWork
+  - Get() -> IUnitOfWork.ModeloVeiculo.GetAllAsync()
+  - Delete() -> IUnitOfWork.ModeloVeiculo.RemoveAsync()
+  - UpdateStatus() -> IUnitOfWork.SaveChangesAsync()
+
+- **MotoristaController.cs** -> IUnitOfWork, ViewMotoristas
+  - Get() -> IUnitOfWork.Motorista.GetAllAsync(), IUnitOfWork.Contrato, IUnitOfWork.Fornecedor
+  - Upsert() -> IUnitOfWork.MotoristaContrato.AddAsync()
+  - Upload() -> File System, CNH digital storage
+
+- **MultaController.cs** -> IUnitOfWork, FrotiX.Services
+  - GetAll() -> IUnitOfWork.Multa.GetAllAsync(), IUnitOfWork.Veiculo, IUnitOfWork.OrgaoAutuante
+  - Upsert() -> IUnitOfWork.EmpenhoMulta.AddAsync(), IUnitOfWork.SaveChangesAsync()
+  - GetEmpenho() -> IUnitOfWork.MovimentacaoEmpenhoMulta.GetAllAsync()
+
+- **MultaPdfViewerController.cs** -> Syncfusion.EJ2.PdfViewer, IMemoryCache
+  - Load() -> IMemoryCache, IWebHostEnvironment (wwwroot/DadosEditaveis/Multas)
+
+- **MultaUploadController.cs** -> File System
+  - Upload() -> Multipart file handling, PDF validation
+
+- **NavigationController.cs** -> IUnitOfWork (Recurso)
+  - GetNavigation() -> IUnitOfWork.Recurso.GetAllAsync()
+
+- **NormalizeController.cs** -> TextNormalization Services
+  - Normalize() -> SentenceCaseNormalizer
+
+- **NotaFiscalController.cs, NotaFiscalController.Partial.cs** -> IUnitOfWork
+  - Get() -> IUnitOfWork.NotaFiscal.GetAllAsync()
+  - Upsert() -> IUnitOfWork.NotaFiscal.AddAsync()
+
+- **OcorrenciaViagemController.cs + Partials** -> IUnitOfWork, ViewOcorrenciasViagem
+  - Criar() -> IUnitOfWork.OcorrenciaViagem.AddAsync()
+  - DarBaixa() -> IUnitOfWork.SaveChangesAsync()
+  - UploadImagem() -> File System (Imagens/Vídeos)
+
+- **OperadorController.cs** -> IUnitOfWork (Operador, Contrato, Fornecedor)
+  - GetAll() -> IUnitOfWork.Operador.GetAllAsync()
+  - UploadFoto() -> File System
+
+- **PatrimonioController.cs** -> IUnitOfWork, IMemoryCache
+  - Get() -> IUnitOfWork.Patrimonio.GetAllAsync()
+  - CreateMovimentacao() -> IUnitOfWork.MovimentacaoPatrimonio.AddAsync()
+
+- **PdfViewerCNHController.cs** -> Syncfusion.EJ2.PdfViewer, IUnitOfWork
+  - Load() -> CNH Digital from Motorista.CNHDigital
+
+- **PdfViewerController.cs** -> Syncfusion.EJ2.PdfViewer
+  - Load() -> File System (wwwroot PDFs)
+  - RenderPdfPages() -> Syncfusion PDF rendering
+
+- **PlacaBronzeController.cs** -> IUnitOfWork (PlacaBronze, Veiculo)
+  - Delete() -> IUnitOfWork.PlacaBronze.RemoveAsync()
+  - UpdateStatus() -> IUnitOfWork.SaveChangesAsync()
+
+- **RecursoController.cs** -> IUnitOfWork (Recurso, ControleAcesso)
+  - Get() -> IUnitOfWork.Recurso.GetAllAsync()
+  - Delete() -> Validates IUnitOfWork.ControleAcesso antes remover
+
+- **RelatorioSetorSolicitanteController.cs** -> Stimulsoft.Report
+  - GetReport() -> Stimulsoft report template (SetoresSolicitantes.mrt)
+
+- **RelatoriosController.cs** -> RelatorioEconomildoPdfService, FrotiXDbContext
+  - ExportarEconomildo() -> Genera PDFs: Heatmap, UsuariosMes, TopVeiculos
+
+- **RequisitanteController.cs** -> IUnitOfWork (Requisitante)
+  - Get() -> IUnitOfWork.Requisitante.GetAllAsync()
+
+- **SecaoController.cs, SetorController.cs** -> IUnitOfWork
+  - Get() -> IUnitOfWork.SecaoPatrimonial/SetorPatrimonial
+
+- **SetorSolicitanteController.cs + Partials** -> IUnitOfWork
+  - GetAll() -> IUnitOfWork.SetorSolicitante.GetAllAsync()
+  - UpdateStatus() -> Toggle ativo/inativo
+
+- **TaxiLegController.cs** -> IUnitOfWork (CorridasTaxiLeg)
+  - Get() -> IUnitOfWork.CorridasTaxiLeg.GetAllAsync()
+
+- **UnidadeController.cs** -> IUnitOfWork (Unidade)
+  - Get() -> IUnitOfWork.Unidade.GetAllAsync()
+
+- **UploadCNHController.cs, UploadCRLVController.cs** -> File System
+  - Upload() -> Validates CNH/CRLV document formats
+
+- **UsuarioController.cs, UsuarioController.Usuarios.cs** -> UserManager, AspNetUsers
+  - GetAll() -> IUnitOfWork.AspNetUsers.GetAllAsync()
+  - UpdateUsuario() -> UserManager.UpdateAsync()
+
+- **VeiculoController.cs** -> IUnitOfWork (Veiculo, MarcaVeiculo, ModeloVeiculo)
+  - Get() -> IUnitOfWork.Veiculo.GetAllAsync()
+  - GetPadraoViagem() -> IUnitOfWork.VeiculoPadraoViagem
+
+- **VeiculosUnidadeController.cs** -> IUnitOfWork
+  - Get() -> IUnitOfWork.Veiculo by Unidade
+
+- **ViagemController.cs + Partials** -> IUnitOfWork, ViagemEstatisticaService
+  - Get() -> IUnitOfWork.Viagem.GetAllAsync()
+  - CalculoCustoBatch() -> Bulk cost recalculation
+  - DashboardEconomildo() -> KPI aggregation
+
+#### Data Layer (FrotiXDbContext)
+- **ApplicationDbContext.cs** -> ASP.NET Core Identity DbSet
+- **ControleAcessoDbContext.cs** -> Acesso/Permissões DbSet
+- **FrotiXDbContext.cs** -> Principal EF DbContext (60+ DbSet<T>)
+- **FrotiXDbContext.OcorrenciaViagem.cs** -> Partial para OcorrenciaViagem queries
+- **FrotiXDbContext.RepactuacaoVeiculo.cs** -> Partial para RepactuacaoVeiculo
+
+#### Models - Estatísticas e Views
+- **EstatisticaAbastecimentoXXX.cs** (7 modelos) -> Agregação dados combustível
+- **EstatisticaMotoristaMensal.cs, EstatisticaViagemMensal.cs** -> Series temporais
+- **ViewXXX.cs** (50+ modelos) -> DTO para Views SQL (carregamento otimizado)
+  - ViewAbastecimentos, ViewEventos, ViewMultas, ViewMotoristasViagem, etc.
+
+---
+
 ## 📝 Log de Atualizações
 
 | Data | Alteração | Autor |
 |------|-----------|-------|
 | 29/01/2026 | Criação inicial do mapeamento | Arquiteto IA |
+| 31/01/2026 | Adição Lote 251-350 (Controllers + Data + Models/Views) | Claude Code |
 
 ---
 
