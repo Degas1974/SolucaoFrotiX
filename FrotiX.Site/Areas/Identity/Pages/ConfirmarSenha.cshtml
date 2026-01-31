@@ -1,11 +1,21 @@
-@*
-╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║ 📌 ARQUIVO: ConfirmarSenha.cshtml                                                                    ║
-║ 📂 CAMINHO: /Areas/Identity/Pages                                                                   ║
-╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-║ 🧭 OBJETIVO: Página de confirmação de senha após cadastro via Redecamara.                           ║
-╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*@
+@*****************************************************************************************
+ * ⚡ ARQUIVO: ConfirmarSenha.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de confirmação de senha após cadastro via Redecamara,
+ *                   exibindo formulário de senha e confirmação.
+ *
+ * 📥 ENTRADAS     : Model.Password, Model.ConfirmacaoPassword, AntiForgeryToken.
+ *
+ * 📤 SAÍDAS       : POST para ConfirmarSenhaModel (validação e redirecionamento).
+ *
+ * 🔗 CHAMADA POR  : Rota Razor Pages /ConfirmarSenha.
+ *
+ * 🔄 CHAMA        : ConfirmarSenhaModel.OnPostAsync(), _ConfirmacaoLayout.
+ *
+ * 📦 DEPENDÊNCIAS : Razor Pages, layout _ConfirmacaoLayout, scripts Neon.
+ *
+ * 📝 OBSERVAÇÕES  : Fluxo inicial de autenticação; mensagens de erro exibidas em #error_msg.
+ *****************************************************************************************@
 @page
 @model FrotiX.Areas.Identity.Pages.ConfirmarSenha.ConfirmarSenhaModel
 @{

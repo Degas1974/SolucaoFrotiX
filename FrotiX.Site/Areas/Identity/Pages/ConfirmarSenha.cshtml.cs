@@ -1,11 +1,21 @@
-﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: ConfirmarSenha.cshtml.cs                                                               ║
-   ║ 📂 CAMINHO: /Areas/Identity/Pages                                                                   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: PageModel para confirmação de senha no primeiro acesso.                               ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: ConfirmarSenha, ConfirmarSenhaModel                                                     ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+﻿/* ****************************************************************************************
+ * ⚡ ARQUIVO: ConfirmarSenha.cshtml.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : PageModel para confirmação de senha no primeiro acesso, validando
+ *                   senha e confirmação antes do redirecionamento.
+ *
+ * 📥 ENTRADAS     : Input.Password, Input.ConfirmacaoPassword, returnUrl.
+ *
+ * 📤 SAÍDAS       : IActionResult (Redirect/JsonResult/Page) e mensagens de erro.
+ *
+ * 🔗 CHAMADA POR  : Motor Razor (GET/POST /ConfirmarSenha).
+ *
+ * 🔄 CHAMA        : HttpContext.SignOutAsync(), SignInManager.PasswordSignInAsync() (comentado).
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, ILogger, Razor Pages.
+ *
+ * 📝 OBSERVAÇÕES  : Lógica de autenticação está comentada e precisa ser finalizada.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CLASSE: ConfirmarSenha (PageModel)
