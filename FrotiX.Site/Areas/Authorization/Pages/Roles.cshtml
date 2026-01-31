@@ -1,13 +1,22 @@
-@*
-╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║ 📌 ARQUIVO: Roles.cshtml                                                                            ║
-║ 📂 CAMINHO: /Areas/Authorization/Pages                                                              ║
-╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-║ 🧭 OBJETIVO: Página de gerenciamento de roles com DataTable editável.                               ║
-╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-║ 🗂️  CONTÉM: Tabela de roles + scripts de CRUD via /api/roles                                          ║
-╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*@
+@*****************************************************************************************
+ * ⚡ ARQUIVO: Roles.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de gerenciamento de perfis (Roles) do Identity com DataTable
+ *                   editável, permitindo CRUD completo via AJAX.
+ *
+ * 📥 ENTRADAS     : Interações do usuário no grid (criar/editar/excluir),
+ *                   filtros/ordenação/paginação do DataTables.
+ *
+ * 📤 SAÍDAS       : HTML + JavaScript que renderiza tabela e consome a API /api/roles.
+ *
+ * 🔗 CHAMADA POR  : Rota Razor Pages /Authorization/Roles.
+ *
+ * 🔄 CHAMA        : /api/roles (GET/POST/PUT/DELETE), plugin DataTableEdit.
+ *
+ * 📦 DEPENDÊNCIAS : DataTables, datatables.bundle.js, plugin DataTableEdit, alerta (JS).
+ *
+ * 📝 OBSERVAÇÕES  : Colunas Id e ConcurrencyStamp são ocultas na grid.
+ *****************************************************************************************@
 
 @page
 @model RoleModel

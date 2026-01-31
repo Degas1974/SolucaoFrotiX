@@ -1,13 +1,23 @@
-@*
-╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║ 📌 ARQUIVO: Users.cshtml                                                                            ║
-║ 📂 CAMINHO: /Areas/Authorization/Pages                                                              ║
-╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-║ 🧭 OBJETIVO: Página de gerenciamento de usuários com DataTable editável.                            ║
-╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-║ 🗂️  CONTÉM: Tabela de usuários + scripts de CRUD via /api/users                                      ║
-╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*@
+@*****************************************************************************************
+ * ⚡ ARQUIVO: Users.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de gerenciamento de usuários do Identity com DataTable
+ *                   editável, permitindo CRUD via AJAX e visualização de status.
+ *
+ * 📥 ENTRADAS     : Interações do usuário no grid (criar/editar/excluir),
+ *                   filtros/ordenação/paginação do DataTables.
+ *
+ * 📤 SAÍDAS       : HTML + JavaScript que renderiza tabela e consome a API /api/users.
+ *
+ * 🔗 CHAMADA POR  : Rota Razor Pages /Authorization/Users.
+ *
+ * 🔄 CHAMA        : /api/users (GET/POST/PUT/DELETE), plugin DataTableEdit.
+ *
+ * 📦 DEPENDÊNCIAS : DataTables, datatables.bundle.js, plugin DataTableEdit, alerta (JS).
+ *
+ * 📝 OBSERVAÇÕES  : Colunas Id e ConcurrencyStamp ficam ocultas; EmailConfirmed e
+ *                   LockoutEnabled são exibidos como checkbox desabilitado.
+ *****************************************************************************************@
 
 @page
 @model UserModel

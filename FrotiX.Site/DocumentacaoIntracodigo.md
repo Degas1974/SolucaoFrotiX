@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-█████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 41.4%
+█████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 42.0%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 375 |
-| Percentual | 41.4% |
-| Última Atualização | 31/01/2026 13:29 |
+| Documentados | 380 |
+| Percentual | 42.0% |
+| Última Atualização | 31/01/2026 13:53 |
 
 ---
 
@@ -25,8 +25,8 @@
 
 | # | Pasta | Total | Feitos | % | Status |
 |---|-------|-------|--------|---|--------|
-| 1 | Areas | 43 | 40 | 93.0% | 🟡 Em Progresso |
-| 2 | Controllers | 93 | 0 | 0% | 🔴 Pendente |
+| 1 | Areas | 43 | 43 | 100% | ✅ Completo |
+| 2 | Controllers | 93 | 2 | 2.2% | 🟡 Em Progresso |
 | 3 | Data | 5 | 0 | 0% | 🔴 Pendente |
 | 4 | EndPoints | 2 | 2 | 100% | ✅ Completo |
 | 5 | Extensions | 3 | 3 | 100% | ✅ Completo |
@@ -48,7 +48,7 @@
 
 ## ✅ Arquivos Documentados
 
-### 📂 Areas (40/43) 🟡
+### 📂 Areas (43/43) ✅
 ```
 ✅ Areas/Authorization/Pages/Roles.cshtml
 ✅ Areas/Authorization/Pages/Roles.cshtml.cs
@@ -90,6 +90,9 @@
 ✅ Areas/Identity/Pages/_LoginLayout.cshtml
 ✅ Areas/Identity/Pages/_Logo.cshtml
 ✅ Areas/Identity/Pages/_PageFooter.cshtml
+✅ Areas/Identity/Pages/_PageHeader.cshtml
+✅ Areas/Identity/Pages/_ViewImports.cshtml
+✅ Areas/Identity/Pages/_ViewStart.cshtml
 ```
 
 ### 📂 Controllers (0/93)
@@ -283,6 +286,13 @@
    • ViagemCalendarDTO.cs
 
 ✅ Areas/Authorization - Pages (Lote 124 - novo padrão visual):
+   • Roles.cshtml
+   • Roles.cshtml.cs
+   • Users.cshtml
+   • Users.cshtml.cs
+   • Usuarios.cshtml
+
+✅ Areas/Authorization - Pages (Lote 132 - revisão cards completos):
    • Roles.cshtml
    • Roles.cshtml.cs
    • Users.cshtml
@@ -731,10 +741,11 @@
 | 31/01/2026 | 5 | 1 | Lote 129 - Areas/Identity novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 130 - Areas/Identity novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 131 - Areas/Identity novo padrão visual (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 132 - Areas/Authorization revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 80
-**Total de Commits:** 78
-**Total de Arquivos Documentados:** 375
+**Total de Lotes:** 81
+**Total de Commits:** 79
+**Total de Arquivos Documentados:** 380
 
 ---
 

@@ -1,13 +1,22 @@
-@*
-╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║ 📌 ARQUIVO: Usuarios.cshtml                                                                         ║
-║ 📂 CAMINHO: /Areas/Authorization/Pages                                                              ║
-╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-║ 🧭 OBJETIVO: Página de gerenciamento de usuários com DataTable (usuarios.js).                       ║
-╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-║ 🗂️  CONTÉM: Tabela de usuários + ações de CRUD via script externo                                   ║
-╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*@
+@*****************************************************************************************
+ * ⚡ ARQUIVO: Usuarios.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de gerenciamento de usuários (cadastros) com DataTable
+ *                   configurada via script externo (usuarios.js).
+ *
+ * 📥 ENTRADAS     : Interações no grid (ações de CRUD, filtros e paginação),
+ *                   eventos disparados por usuarios.js.
+ *
+ * 📤 SAÍDAS       : HTML com tabela e scripts que consomem endpoints de usuários.
+ *
+ * 🔗 CHAMADA POR  : Rota Razor Pages /Authorization/Usuarios.
+ *
+ * 🔄 CHAMA        : usuarios.js, endpoints de API consumidos via AJAX.
+ *
+ * 📦 DEPENDÊNCIAS : DataTables (CDN), usuarios.js, Bootstrap, jQuery.
+ *
+ * 📝 OBSERVAÇÕES  : Possui botão "Adicionar Usuário" e tabela #tblUser no layout.
+ *****************************************************************************************@
 
 @page
 @model UsuariosModel
