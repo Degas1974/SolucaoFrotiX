@@ -1,13 +1,19 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: OcorrenciaController.cs                                                                 ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Consulta/gestão de ocorrências de viagens. Filtros veículo, motorista, status, data.   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Get(), Ocorrencias(), OcorrenciasVeiculos(), SaveImage() - status Aberta/Baixada         ║
-   ║ 🔗 DEPS: IUnitOfWork, ViewViagens, IWebHostEnvironment | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0       ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: OcorrenciaController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Consultar e gerir ocorrências de viagens com filtros por veículo,
+ *                   motorista, status e datas.
+ *
+ * 📥 ENTRADAS     : Parâmetros de filtro e uploads de imagens.
+ *
+ * 📤 SAÍDAS       : JSON com ocorrências e mensagens de operação.
+ *
+ * 🔗 CHAMADA POR  : Páginas de ocorrências e manutenção.
+ *
+ * 🔄 CHAMA        : IUnitOfWork, ViewViagens, File System.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework, IWebHostEnvironment.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -25,6 +31,17 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: OcorrenciaController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints para consulta, filtros e atualização de ocorrências.
+     *
+     * 📥 ENTRADAS     : IDs, parâmetros de filtro e uploads.
+     *
+     * 📤 SAÍDAS       : JSON com dados e status.
+     *
+     * 🔗 CHAMADA POR  : Telas de ocorrências e manutenção.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     [IgnoreAntiforgeryToken]
@@ -36,12 +53,13 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ FUNÇÃO: OcorrenciaController (Construtor)
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Inicializar dependências do controller (UnitOfWork e Ambiente)
-         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork, [IWebHostEnvironment] env
-         * 📤 SAÍDAS       : Instância inicializada do OcorrenciaController
-         * 🔗 CHAMADA POR  : ASP.NET Core Dependency Injection
-         * 🔄 CHAMA        : Alerta.TratamentoErroComLinha (em caso de erro)
-         * 📦 DEPENDÊNCIAS : IUnitOfWork, IWebHostEnvironment
+         * 🎯 OBJETIVO     : Injetar dependências do UnitOfWork e ambiente web.
+         *
+         * 📥 ENTRADAS     : unitOfWork, env.
+         *
+         * 📤 SAÍDAS       : Instância configurada.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
          ****************************************************************************************/
         public OcorrenciaController(IUnitOfWork unitOfWork , IWebHostEnvironment env)
         {
@@ -59,16 +77,17 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ FUNÇÃO: Get
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Listar ocorrências de viagens com filtros múltiplos
-         * 📥 ENTRADAS     : [string] veiculoId, motoristaId, statusId, data, dataInicial, dataFinal, debug
-         * 📤 SAÍDAS       : [JSON] { data } - Lista de ocorrências filtradas
-         * 🔗 CHAMADA POR  : Tela de consulta de ocorrências
-         * 🔄 CHAMA        : _unitOfWork.ViewViagens.GetAllReducedIQueryable
-         * 📦 DEPENDÊNCIAS : ViewViagens (view do banco)
+         * 🎯 OBJETIVO     : Listar ocorrências de viagens com filtros múltiplos.
          *
-         * [DOC] Aceita múltiplos formatos de data: dd/MM/yyyy, yyyy-MM-dd, ISO 8601
-         * [DOC] Filtros: VeículoId, MotoristaId, StatusOcorrencia, Data única ou período
-         * [DOC] Debug=1 retorna echo dos parâmetros recebidos
+         * 📥 ENTRADAS     : veiculoId, motoristaId, statusId, data, dataInicial, dataFinal, debug.
+         *
+         * 📤 SAÍDAS       : JSON com lista filtrada.
+         *
+         * 🔗 CHAMADA POR  : Tela de consulta de ocorrências.
+         *
+         * 🔄 CHAMA        : ViewViagens.GetAllReducedIQueryable().
+         *
+         * 📝 OBSERVAÇÕES  : Aceita múltiplos formatos de data; debug retorna parâmetros.
          ****************************************************************************************/
         [HttpGet]
         public IActionResult Get(
@@ -253,6 +272,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Ocorrencias
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar ocorrências por ID de viagem.
+         *
+         * 📥 ENTRADAS     : Id (string) - ViagemId.
+         *
+         * 📤 SAÍDAS       : JSON com ocorrências da viagem.
+         *
+         * 🔗 CHAMADA POR  : Detalhes de viagem.
+         *
+         * 🔄 CHAMA        : ViewViagens.GetAllReducedIQueryable().
+         ****************************************************************************************/
         [Route("Ocorrencias")]
         [HttpGet]
         public IActionResult Ocorrencias(string Id)
@@ -299,6 +331,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OcorrenciasVeiculos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar ocorrências por veículo.
+         *
+         * 📥 ENTRADAS     : Id (string) - VeiculoId.
+         *
+         * 📤 SAÍDAS       : JSON com ocorrências do veículo.
+         *
+         * 🔗 CHAMADA POR  : Filtros por veículo.
+         *
+         * 🔄 CHAMA        : ViewViagens.GetAllReducedIQueryable().
+         ****************************************************************************************/
         [Route("OcorrenciasVeiculos")]
         [HttpGet]
         public IActionResult OcorrenciasVeiculos(string Id)
@@ -347,6 +392,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OcorrenciasMotoristas
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar ocorrências por motorista.
+         *
+         * 📥 ENTRADAS     : Id (string) - MotoristaId.
+         *
+         * 📤 SAÍDAS       : JSON com ocorrências do motorista.
+         *
+         * 🔗 CHAMADA POR  : Filtros por motorista.
+         *
+         * 🔄 CHAMA        : ViewViagens.GetAllReducedIQueryable().
+         ****************************************************************************************/
         [Route("OcorrenciasMotoristas")]
         [HttpGet]
         public IActionResult OcorrenciasMotoristas(string Id)
@@ -393,6 +451,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OcorrenciasStatus
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar ocorrências por status.
+         *
+         * 📥 ENTRADAS     : Id (string) - status.
+         *
+         * 📤 SAÍDAS       : JSON com ocorrências filtradas.
+         *
+         * 🔗 CHAMADA POR  : Filtros por status.
+         *
+         * 🔄 CHAMA        : ViewViagens.GetAllReducedIQueryable().
+         ****************************************************************************************/
         [Route("OcorrenciasStatus")]
         [HttpGet]
         public IActionResult OcorrenciasStatus(string Id)
@@ -471,6 +542,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OcorrenciasData
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar ocorrências por data.
+         *
+         * 📥 ENTRADAS     : Id (string) - data.
+         *
+         * 📤 SAÍDAS       : JSON com ocorrências da data informada.
+         *
+         * 🔗 CHAMADA POR  : Filtros por data.
+         *
+         * 🔄 CHAMA        : ViewViagens.GetAllReducedIQueryable().
+         ****************************************************************************************/
         [Route("OcorrenciasData")]
         [HttpGet]
         public IActionResult OcorrenciasData(string Id)
@@ -527,6 +611,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: BaixarOcorrencia
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Baixar ocorrência e atualizar status na viagem.
+         *
+         * 📥 ENTRADAS     : [ViagemID] id.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de baixa de ocorrência.
+         *
+         * 🔄 CHAMA        : Viagem.Update(), Save().
+         ****************************************************************************************/
         [Route("BaixarOcorrencia")]
         [HttpPost]
         public IActionResult BaixarOcorrencia(ViagemID id)
@@ -563,6 +660,19 @@ namespace FrotiX.Controllers
         }
 
         [Route("SaveImage")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SaveImage
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Salvar imagens de ocorrências no diretório configurado.
+         *
+         * 📥 ENTRADAS     : UploadFiles (lista de arquivos).
+         *
+         * 📤 SAÍDAS       : Atualiza Response.StatusCode conforme sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Uploads de ocorrência.
+         *
+         * 🔄 CHAMA        : File IO, Directory.CreateDirectory().
+         ****************************************************************************************/
         public void SaveImage(IList<IFormFile> UploadFiles)
         {
             try
@@ -609,6 +719,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: EditaOcorrencia
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Atualizar dados de ocorrência (resumo/descrição/solução).
+         *
+         * 📥 ENTRADAS     : [FinalizacaoViagem] viagem (JSON).
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Tela de edição de ocorrência.
+         *
+         * 📝 OBSERVAÇÕES  : Trecho de atualização está comentado (verificação futura).
+         ****************************************************************************************/
         [Route("EditaOcorrencia")]
         [Consumes("application/json")]
         public async Task<IActionResult> EditaOcorrencia([FromBody] FinalizacaoViagem viagem)
@@ -655,6 +778,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: FechaItemOS
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Fechar item de OS e atualizar status relacionado.
+         *
+         * 📥 ENTRADAS     : [ItensManutencao] itensMmanutencao.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Fluxo de manutenção/OS.
+         *
+         * 🔄 CHAMA        : ItensManutencao.Update(), Save().
+         ****************************************************************************************/
         [Route("FechaItemOS")]
         [HttpPost]
         public JsonResult FechaItemOS(Models.ItensManutencao itensMmanutencao)

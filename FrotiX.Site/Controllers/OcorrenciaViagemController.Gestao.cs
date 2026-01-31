@@ -1,13 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: OcorrenciaViagemController.Gestao.cs                                                    ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial para gestão de ocorrências (listar, editar, baixar). Filtros vários.           ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: ListarGestao(), Editar(), Baixar() - filtros veículo, motorista, status, datas           ║
-   ║ 🔗 DEPS: IUnitOfWork, TextNormalizationHelper | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: OcorrenciaViagemController.Gestao.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar ocorrências (listar, editar, baixar) com filtros avançados.
+ *
+ * 📥 ENTRADAS     : Filtros de veículo, motorista, status e datas; DTOs de edição/baixa.
+ *
+ * 📤 SAÍDAS       : JSON com ocorrências e resultados das operações.
+ *
+ * 🔗 CHAMADA POR  : Páginas de gestão de ocorrências.
+ *
+ * 🔄 CHAMA        : IUnitOfWork, TextNormalizationHelper, LINQ.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -24,17 +27,14 @@ namespace FrotiX.Controllers
     /****************************************************************************************
      * ⚡ CONTROLLER PARTIAL: OcorrenciaViagemController.Gestao
      * --------------------------------------------------------------------------------------
-     * 🎯 OBJETIVO     : Métodos para gestão de ocorrências (listar, editar, baixar)
-     * 📥 ENTRADAS     : Filtros (veículo, motorista, status, datas), DTOs de edição/baixa
-     * 📤 SAÍDAS       : JsonResult com lista de ocorrências ou status de operação
-     * 🔗 CHAMADA POR  : Páginas de gestão de ocorrências, modals de edição
-     * 🔄 CHAMA        : Repository (OcorrenciaViagem, Viagem, ViewVeiculos, ViewMotoristas)
-     * 📦 DEPENDÊNCIAS : TextNormalizationHelper, Alerta.js, Repository Pattern
+     * 🎯 OBJETIVO     : Métodos para a página de gestão de ocorrências.
+     *
+     * 📥 ENTRADAS     : Filtros, DTOs de edição e baixa.
+     *
+     * 📤 SAÍDAS       : JSON com dados e status.
+     *
+     * 🔗 CHAMADA POR  : Telas de gestão e modais.
      ****************************************************************************************/
-
-    /// <summary>
-    /// Métodos para a página de Gestão de Ocorrências
-    /// </summary>
     public partial class OcorrenciaViagemController
     {
         #region LISTAR PARA GESTÃO
@@ -572,9 +572,9 @@ namespace FrotiX.Controllers
 
     #region DTOs
 
-    /// <summary>
-    /// DTO para edição de ocorrência
-    /// </summary>
+    /****************************************************************************************
+     * 📝 DTO para edição de ocorrência
+     ****************************************************************************************/
     public class EditarOcorrenciaDTO
     {
         public Guid OcorrenciaViagemId { get; set; }
@@ -585,17 +585,17 @@ namespace FrotiX.Controllers
         public string? ImagemOcorrencia { get; set; }
     }
 
-    /// <summary>
-    /// DTO para baixa de ocorrência
-    /// </summary>
+    /****************************************************************************************
+     * 📝 DTO para baixa de ocorrência
+     ****************************************************************************************/
     public class BaixarOcorrenciaDTO
     {
         public Guid OcorrenciaViagemId { get; set; }
     }
 
-    /// <summary>
-    /// DTO para baixa de ocorrência com solução
-    /// </summary>
+    /****************************************************************************************
+     * 📝 DTO para baixa de ocorrência com solução
+     ****************************************************************************************/
     public class BaixarComSolucaoDTO
     {
         public Guid OcorrenciaViagemId { get; set; }

@@ -1,13 +1,19 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: NotaFiscalController.Partial.cs                                                         ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial com inserção/atualização de NFs. Regras de cálculo de saldos de empenho.       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Insere() - debita saldo empenho, Atualiza() - recalcula saldos glosa                     ║
-   ║ 🔗 DEPS: IUnitOfWork (NotaFiscal, Empenho) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                   ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: NotaFiscalController.Partial.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Implementar operações de inserção e edição de Notas Fiscais,
+ *                   com regras de atualização de saldo de empenhos.
+ *
+ * 📥 ENTRADAS     : NotaFiscal (JSON).
+ *
+ * 📤 SAÍDAS       : JSON com sucesso/erro e IDs.
+ *
+ * 🔗 CHAMADA POR  : Telas de cadastro e edição de NFs.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.NotaFiscal, IUnitOfWork.Empenho.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -17,20 +23,33 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: NotaFiscalController.Partial
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Consolidar regras de negócio para inclusão/edição de NFs.
+     *
+     * 📥 ENTRADAS     : Dados de Nota Fiscal.
+     *
+     * 📤 SAÍDAS       : JSON com resultado da operação.
+     *
+     * 🔗 CHAMADA POR  : Fluxos de manutenção de NFs.
+     ****************************************************************************************/
     public partial class NotaFiscalController : Controller
     {
         /****************************************************************************************
          * ⚡ FUNÇÃO: Insere
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Inserir nova Nota Fiscal e atualizar saldo do empenho
-         * 📥 ENTRADAS     : [NotaFiscal] model - Dados da NF a inserir
-         * 📤 SAÍDAS       : [JSON] { success, message, notaFiscalId }
-         * 🔗 CHAMADA POR  : Tela de cadastro de Notas Fiscais
-         * 🔄 CHAMA        : _unitOfWork.NotaFiscal.Add, _unitOfWork.Empenho.Update
-         * 📦 DEPENDÊNCIAS : Tabelas NotaFiscal e Empenho
+         * 🎯 OBJETIVO     : Inserir nova Nota Fiscal e debitar saldo do empenho.
          *
-         * [DOC] REGRA DE NEGÓCIO: Ao inserir NF, DEBITA ValorLíquido (ValorNF - ValorGlosa) do SaldoFinal do Empenho
-         * [DOC] Validações: NumeroNF, EmpenhoId e ValorNF são obrigatórios
+         * 📥 ENTRADAS     : [NotaFiscal] model.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro e notaFiscalId.
+         *
+         * 🔗 CHAMADA POR  : Tela de cadastro de Notas Fiscais.
+         *
+         * 🔄 CHAMA        : NotaFiscal.Add(), Empenho.Update(), Save().
+         *
+         * 📝 OBSERVAÇÕES  : Debita ValorLíquido (ValorNF - ValorGlosa) no saldo do empenho.
          ****************************************************************************************/
         [Route("Insere")]
         [HttpPost]
@@ -101,17 +120,17 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ FUNÇÃO: Edita
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Editar Nota Fiscal e ajustar saldo do(s) empenho(s)
-         * 📥 ENTRADAS     : [NotaFiscal] model - Dados atualizados da NF
-         * 📤 SAÍDAS       : [JSON] { success, message }
-         * 🔗 CHAMADA POR  : Tela de edição de Notas Fiscais
-         * 🔄 CHAMA        : _unitOfWork.NotaFiscal.Update, _unitOfWork.Empenho.Update
-         * 📦 DEPENDÊNCIAS : Tabelas NotaFiscal e Empenho
+         * 🎯 OBJETIVO     : Editar Nota Fiscal e recalcular saldos dos empenhos.
          *
-         * [DOC] REGRA DE NEGÓCIO COMPLEXA:
-         * - Se mudou VALOR: Ajusta diferença no empenho
-         * - Se mudou EMPENHO: Reverte no antigo, debita no novo
-         * - Se mudou AMBOS: Combina as duas operações
+         * 📥 ENTRADAS     : [NotaFiscal] model.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Tela de edição de Notas Fiscais.
+         *
+         * 🔄 CHAMA        : NotaFiscal.Update(), Empenho.Update(), Save().
+         *
+         * 📝 OBSERVAÇÕES  : Ajusta saldos conforme mudança de valor e/ou empenho.
          ****************************************************************************************/
         [Route("Edita")]
         [HttpPost]

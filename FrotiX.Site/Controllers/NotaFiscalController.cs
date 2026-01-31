@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: NotaFiscalController.cs                                                                 ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Gestão de Notas Fiscais. CRUD + validação empenhos + cálculo glosas + saldos.          ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetAll(), Insere(), Atualiza() - Partial: NotaFiscalController.Partial.cs                ║
-   ║ 🔗 DEPS: IUnitOfWork (NotaFiscal, Empenho) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                   ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: NotaFiscalController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar Notas Fiscais, glosas e vínculos com empenhos/contratos.
+ *
+ * 📥 ENTRADAS     : IDs e payloads de Nota Fiscal/Glosa.
+ *
+ * 📤 SAÍDAS       : JSON com dados e mensagens de operação.
+ *
+ * 🔗 CHAMADA POR  : Telas de Notas Fiscais e controles relacionados.
+ *
+ * 🔄 CHAMA        : IUnitOfWork (NotaFiscal, Empenho, Contrato).
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -19,6 +24,17 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: NotaFiscalController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor operações de manutenção, glosa e consulta de NFs.
+     *
+     * 📥 ENTRADAS     : IDs de nota, empenho, contrato e payloads de glosa.
+     *
+     * 📤 SAÍDAS       : JSON com listas e confirmações.
+     *
+     * 🔗 CHAMADA POR  : Telas de gerenciamento de NFs.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     [IgnoreAntiforgeryToken]
@@ -29,12 +45,13 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ FUNÇÃO: NotaFiscalController (Construtor)
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Inicializar dependência do UnitOfWork para acesso ao banco
-         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork - Acesso aos repositórios
-         * 📤 SAÍDAS       : Instância inicializada do NotaFiscalController
-         * 🔗 CHAMADA POR  : ASP.NET Core Dependency Injection
-         * 🔄 CHAMA        : Alerta.TratamentoErroComLinha (em caso de erro)
-         * 📦 DEPENDÊNCIAS : IUnitOfWork
+         * 🎯 OBJETIVO     : Injetar dependência de acesso ao banco.
+         *
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
          ****************************************************************************************/
         public NotaFiscalController(IUnitOfWork unitOfWork)
         {
@@ -48,6 +65,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Endpoint placeholder (sem implementação).
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : Sem retorno (void).
+         *
+         * 🔗 CHAMADA POR  : Rotas de teste/compatibilidade.
+         ****************************************************************************************/
         [HttpGet]
         public void Get()
         {
@@ -63,14 +91,17 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ FUNÇÃO: Delete
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Excluir Nota Fiscal e devolver saldo líquido ao empenho
-         * 📥 ENTRADAS     : [NotaFiscalViewModel] model - Dados da NF a excluir
-         * 📤 SAÍDAS       : [JSON] { success, message }
-         * 🔗 CHAMADA POR  : Tela de gerenciamento de Notas Fiscais
-         * 🔄 CHAMA        : _unitOfWork.NotaFiscal.Remove, _unitOfWork.Empenho.Update
-         * 📦 DEPENDÊNCIAS : Tabelas NotaFiscal e Empenho
+         * 🎯 OBJETIVO     : Excluir Nota Fiscal e devolver saldo líquido ao empenho.
          *
-         * [DOC] REGRA DE NEGÓCIO: Ao excluir NF, devolve ValorLíquido (ValorNF - ValorGlosa) ao SaldoFinal do Empenho
+         * 📥 ENTRADAS     : [NotaFiscalViewModel] model.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Tela de gerenciamento de Notas Fiscais.
+         *
+         * 🔄 CHAMA        : NotaFiscal.Remove(), Empenho.Update(), Save().
+         *
+         * 📝 OBSERVAÇÕES  : Devolve ValorLíquido (ValorNF - ValorGlosa) ao saldo do empenho.
          ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
@@ -121,6 +152,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetGlosa
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Obter dados de glosa de uma Nota Fiscal específica.
+         *
+         * 📥 ENTRADAS     : id (Guid) - NotaFiscalId.
+         *
+         * 📤 SAÍDAS       : JSON com dados da NF ou erro.
+         *
+         * 🔗 CHAMADA POR  : Tela de glosa.
+         *
+         * 🔄 CHAMA        : NotaFiscal.GetFirstOrDefault().
+         ****************************************************************************************/
         [Route("GetGlosa")]
         [HttpGet]
         public IActionResult GetGlosa(Guid id)
@@ -177,6 +221,19 @@ namespace FrotiX.Controllers
          * [DOC] ModoGlosa: "somar" = soma à glosa existente | "substituir" = substitui valor
          * [DOC] Validação: Glosa não pode exceder ValorNF
          * [DOC] Conversão automática: Se valor parece estar em centavos, divide por 100
+         ****************************************************************************************/
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Glosa
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Registrar glosa em Nota Fiscal e ajustar saldo do empenho.
+         *
+         * 📥 ENTRADAS     : [GlosaNota] glosanota (JSON).
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Tela de glosa de NF.
+         *
+         * 🔄 CHAMA        : NotaFiscal.Update(), Empenho.Update(), Save().
          ****************************************************************************************/
         [Route("Glosa")]
         [HttpPost]
@@ -278,6 +335,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: EmpenhoList
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar empenhos vinculados ao contrato informado.
+         *
+         * 📥 ENTRADAS     : id (Guid) - ContratoId.
+         *
+         * 📤 SAÍDAS       : JSON com lista de empenhos.
+         *
+         * 🔗 CHAMADA POR  : Formulários de NF (seleção de empenho).
+         *
+         * 🔄 CHAMA        : Empenho.GetAll().
+         ****************************************************************************************/
         [Route("EmpenhoList")]
         public JsonResult EmpenhoList(Guid id)
         {
@@ -300,6 +370,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: EmpenhoListAta
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar empenhos vinculados à ata informada.
+         *
+         * 📥 ENTRADAS     : id (Guid) - AtaId.
+         *
+         * 📤 SAÍDAS       : JSON com lista de empenhos.
+         *
+         * 🔗 CHAMADA POR  : Formulários de NF (seleção de empenho para ata).
+         *
+         * 🔄 CHAMA        : Empenho.GetAll().
+         ****************************************************************************************/
         [Route("EmpenhoListAta")]
         public JsonResult EmpenhoListAta(Guid id)
         {
@@ -322,6 +405,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Obter contrato associado a um empenho.
+         *
+         * 📥 ENTRADAS     : id (Guid) - EmpenhoId.
+         *
+         * 📤 SAÍDAS       : JSON com contrato encontrado.
+         *
+         * 🔗 CHAMADA POR  : Tela de NF (carregar contrato).
+         *
+         * 🔄 CHAMA        : Empenho.GetFirstOrDefault(), Contrato.GetFirstOrDefault().
+         ****************************************************************************************/
         [Route("GetContrato")]
         public JsonResult GetContrato(Guid id)
         {
@@ -343,6 +439,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: NFContratos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar notas fiscais vinculadas a um contrato.
+         *
+         * 📥 ENTRADAS     : id (Guid) - ContratoId.
+         *
+         * 📤 SAÍDAS       : JSON com notas fiscais.
+         *
+         * 🔗 CHAMADA POR  : Consultas de NFs por contrato.
+         *
+         * 🔄 CHAMA        : NotaFiscal.GetAll().
+         ****************************************************************************************/
         [Route("NFContratos")]
         public IActionResult NFContratos(Guid id)
         {
@@ -382,6 +491,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: NFEmpenhos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar notas fiscais vinculadas a um empenho.
+         *
+         * 📥 ENTRADAS     : id (Guid) - EmpenhoId.
+         *
+         * 📤 SAÍDAS       : JSON com notas fiscais do empenho.
+         *
+         * 🔗 CHAMADA POR  : Consultas de NFs por empenho.
+         *
+         * 🔄 CHAMA        : NotaFiscal.GetAll().
+         ****************************************************************************************/
         [Route("NFEmpenhos")]
         public IActionResult NFEmpenhos(Guid id)
         {

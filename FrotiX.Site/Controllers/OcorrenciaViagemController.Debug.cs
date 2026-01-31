@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: OcorrenciaViagemController.Debug.cs                                                     ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial DEBUG para diagnosticar filtros/status. TEMPORÁRIO - remover após resolver.    ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: DebugListar(), DebugAbertas() - dados brutos e estatísticas para diagnóstico             ║
-   ║ 🔗 DEPS: IUnitOfWork, ViewOcorrenciasViagem | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                  ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: OcorrenciaViagemController.Debug.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Endpoints de debug para diagnosticar filtros e status de ocorrências.
+ *
+ * 📥 ENTRADAS     : Parâmetros simples via GET.
+ *
+ * 📤 SAÍDAS       : JSON com dados brutos e estatísticas.
+ *
+ * 🔗 CHAMADA POR  : Debug manual via URL.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.OcorrenciaViagem, ViewVeiculos, ViewMotoristas.
+ *
+ * ⚠️ ATENÇÃO      : Arquivo temporário; remover após resolver problemas.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -21,19 +26,16 @@ namespace FrotiX.Controllers
     /****************************************************************************************
      * ⚡ CONTROLLER PARTIAL: OcorrenciaViagemController.Debug
      * --------------------------------------------------------------------------------------
-     * 🎯 OBJETIVO     : Métodos DEBUG para diagnosticar problemas de filtros e status
-     * 📥 ENTRADAS     : N/A (métodos GET sem parâmetros ou com IDs)
-     * 📤 SAÍDAS       : JsonResult com dados brutos e estatísticas
-     * 🔗 CHAMADA POR  : Debug manual via URL (endpoints /DebugListar, /DebugAbertas, etc)
-     * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem, _unitOfWork.Viagem, ViewVeiculos, ViewMotoristas
-     * 📦 DEPENDÊNCIAS : Repository Pattern, Models, Alerta.js
-     * ⚠️  ATENÇÃO     : ARQUIVO TEMPORÁRIO - Remover após resolver problemas de status
+     * 🎯 OBJETIVO     : Expor métodos de debug para gestão de ocorrências.
+     *
+     * 📥 ENTRADAS     : Nenhuma (GET).
+     *
+     * 📤 SAÍDAS       : JSON com métricas e dados de teste.
+     *
+     * 🔗 CHAMADA POR  : Debug manual via URL.
+     *
+     * ⚠️ ATENÇÃO      : Remover após resolver problemas.
      ****************************************************************************************/
-
-    /// <summary>
-    /// Métodos de DEBUG para a página de Gestão de Ocorrências
-    /// REMOVER APÓS RESOLVER O PROBLEMA
-    /// </summary>
     public partial class OcorrenciaViagemController
     {
         #region DEBUG - REMOVER DEPOIS
