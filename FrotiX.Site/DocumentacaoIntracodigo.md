@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-█████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 34.8%
+██████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 35.4%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 315 |
-| Percentual | 34.8% |
-| Última Atualização | 31/01/2026 12:06 |
+| Documentados | 320 |
+| Percentual | 35.4% |
+| Última Atualização | 31/01/2026 12:11 |
 
 ---
 
@@ -36,7 +36,7 @@
 | 9 | Infrastructure | 1 | 1 | 100% | ✅ Completo |
 | 10 | Logging | 1 | 1 | 100% | ✅ Completo |
 | 11 | Middlewares | 2 | 2 | 100% | ✅ Completo |
-| 12 | Models | 139 | 114 | 82.0% | 🟡 Em Progresso |
+| 12 | Models | 139 | 119 | 85.6% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
 | 15 | Repository | 209 | 209 | 100% | ✅ Completo |
@@ -215,6 +215,13 @@
    • INavigationModel.cs
    • ItensContrato.cs
 
+✅ Models - Classes (Lote 120 - novo padrão visual):
+   • LoginView.cs
+   • MailRequest.cs
+   • NavigationItemDTO.cs
+   • NavigationModel.cs
+   • OcorrenciaViagem.cs
+
 ### 📂 Infrastructure (1/1) ✅
 ```
 ✅ CacheKeys.cs
@@ -231,12 +238,12 @@
 ✅ UiExceptionMiddleware.cs
 ```
 
-### 📂 Models (114/139) 🟡
+### 📂 Models (119/139) 🟡
 ```
 ✅ Estatísticas (13 arquivos - Lotes 51-53)
 ✅ Views (38 arquivos - Lotes 54-61)
 ⏳ Cadastros (55 processados)
-⏳ Raiz (11 processados)
+⏳ Raiz (16 processados)
 ⏳ FontAwesome (1 processado)
 ⏳ Planilhas (1 processado)
 ```
@@ -595,10 +602,11 @@
 | 31/01/2026 | 5 | 1 | Lote 117 - Models/Cadastros + Models novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 118 - Models novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 119 - Models novo padrão visual (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 120 - Models novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 68
-**Total de Commits:** 66
-**Total de Arquivos Documentados:** 315
+**Total de Lotes:** 69
+**Total de Commits:** 67
+**Total de Arquivos Documentados:** 320
 
 ---
 

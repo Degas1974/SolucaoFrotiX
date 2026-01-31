@@ -1,14 +1,12 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: OcorrenciaViagem.cs                                                                     ║
+   ║ 📌 ARQUIVO: OcorrenciaViagem.cs                                                                     ║
    ║ 📂 CAMINHO: /Models                                                                                 ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Entidade para registro de ocorrências durante viagens (acidentes, problemas, etc).    ║
+   ║ 🧭 OBJETIVO: Registrar ocorrências durante viagens (acidentes, problemas, etc.).                   ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 PROPS: OcorrenciaViagemId, ViagemId, VeiculoId, MotoristaId?, Resumo, Descricao                  ║
-   ║    ImagemOcorrencia, Status (Aberta/Baixada), StatusOcorrencia, DataCriacao, DataBaixa              ║
+   ║ 🗂️  CONTÉM: OcorrenciaViagem                                                                        ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: System.ComponentModel.DataAnnotations                                                      ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core                                                           ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
@@ -20,45 +18,58 @@ namespace FrotiX.Models
     [Table("OcorrenciaViagem")]
     public class OcorrenciaViagem
     {
+        // Identificador da ocorrência.
         [Key]
         public Guid OcorrenciaViagemId { get; set; }
 
+        // Viagem associada.
         [Required]
         public Guid ViagemId { get; set; }
 
+        // Veículo associado.
         [Required]
         public Guid VeiculoId { get; set; }
 
+        // Motorista associado (opcional).
         public Guid? MotoristaId { get; set; }
 
+        // Resumo da ocorrência.
         [StringLength(200)]
         public string Resumo { get; set; } = "";
 
+        // Descrição detalhada.
         public string Descricao { get; set; } = "";
+        // Imagem da ocorrência (base64 ou caminho).
         public string ImagemOcorrencia { get; set; } = "";
 
+        // Status textual (Aberta/Baixada).
         [StringLength(20)]
         public string Status { get; set; } = "Aberta";
 
-        /// <summary>
-        /// Status da ocorrência: NULL ou true = Aberta, false = Baixada
-        /// </summary>
+        // Status lógico: null/true = aberta, false = baixada.
         public bool? StatusOcorrencia { get; set; }
 
+        // Data de criação.
         public DateTime DataCriacao { get; set; } = DateTime.Now;
+        // Data de baixa.
         public DateTime? DataBaixa { get; set; }
 
+        // Usuário que criou.
         [StringLength(100)]
         public string UsuarioCriacao { get; set; } = "";
 
+        // Usuário que baixou.
         [StringLength(100)]
         public string UsuarioBaixa { get; set; } = "";
 
+        // Item de manutenção relacionado.
         public Guid? ItemManutencaoId { get; set; }
 
+        // Observações adicionais.
         [StringLength(500)]
         public string Observacoes { get; set; } = "";
 
+        // Solução aplicada.
         [StringLength(500)]
         public string Solucao { get; set; } = "";
 
