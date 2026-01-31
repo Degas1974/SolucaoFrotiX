@@ -1,18 +1,17 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: UnidadeController.cs                                                                    ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: API Controller para operações de Unidades e gestão de Lotação de Motoristas.          ║
-   ║    Gerencia CRUD de unidades e controle completo de lotações com coberturas.                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS UNIDADE: [GET] / → Lista | [POST] /Delete → Remove | [GET] /UpdateStatus → Toggle     ║
-   ║    LOTAÇÃO: ListaLotacao, LotaMotorista, EditaLotacao, DeleteLotacao, AtualizaMotoristaLotacaoAtual║
-   ║    AlocaMotoristaCobertura (férias→cobertura), ListaLotacoes, RemoveLotacoes                       ║
-   ║    ROTA BASE: api/Unidade                                                                           ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: IUnitOfWork (Unidade, Veiculo, LotacaoMotorista, Motorista), INotyfService                ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: UnidadeController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar unidades e lotação de motoristas, incluindo coberturas.
+ *
+ * 📥 ENTRADAS     : IDs, filtros e parâmetros de lotação.
+ *
+ * 📤 SAÍDAS       : JSON com dados e status das operações.
+ *
+ * 🔗 CHAMADA POR  : Telas de unidades e lotações.
+ *
+ * 🔄 CHAMA        : IUnitOfWork (Unidade, Veiculo, LotacaoMotorista, Motorista, Views),
+ *                   INotyfService.
+ **************************************************************************************** */
 
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Models;
@@ -23,6 +22,15 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: UnidadeController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints para cadastro de unidades e gestão de lotações.
+     *
+     * 📥 ENTRADAS     : Parâmetros de unidade, lotação e coberturas.
+     *
+     * 📤 SAÍDAS       : JSON com dados e mensagens.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class UnidadeController :Controller
@@ -30,6 +38,17 @@ namespace FrotiX.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly INotyfService _notyf;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UnidadeController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar UnitOfWork e serviço de notificações.
+         *
+         * 📥 ENTRADAS     : unitOfWork, notyf.
+         *
+         * 📤 SAÍDAS       : Instância configurada do controller.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public UnidadeController(IUnitOfWork unitOfWork , INotyfService notyf)
         {
             try
@@ -43,6 +62,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar unidades cadastradas.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com data (lista de unidades).
+         *
+         * 🔗 CHAMADA POR  : Grid de unidades.
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
@@ -64,6 +94,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover unidade quando não houver veículos associados.
+         *
+         * 📥 ENTRADAS     : model (UnidadeViewModel).
+         *
+         * 📤 SAÍDAS       : JSON com success e message.
+         *
+         * 🔗 CHAMADA POR  : Ação de exclusão no grid.
+         *
+         * 🔄 CHAMA        : Unidade.GetFirstOrDefault(), Veiculo.GetFirstOrDefault(),
+         *                   Unidade.Remove(), UnitOfWork.Save().
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(UnidadeViewModel model)
@@ -118,6 +162,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateStatus
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Alternar status ativo/inativo da unidade.
+         *
+         * 📥 ENTRADAS     : Id (Guid da unidade).
+         *
+         * 📤 SAÍDAS       : JSON com success e type.
+         *
+         * 🔗 CHAMADA POR  : Toggle de status no grid.
+         ****************************************************************************************/
         [Route("UpdateStatus")]
         public JsonResult UpdateStatus(Guid Id)
         {
@@ -175,6 +230,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaLotacao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar lotações de motorista (todas ou por motorista).
+         *
+         * 📥 ENTRADAS     : motoristaId (string).
+         *
+         * 📤 SAÍDAS       : JSON com data (lista de lotações).
+         *
+         * 🔗 CHAMADA POR  : Tela de lotação de motoristas.
+         ****************************************************************************************/
         [HttpGet]
         [Route("ListaLotacao")]
         public IActionResult ListaLotacao(string motoristaId)
@@ -206,6 +272,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: LotaMotorista
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Criar nova lotação e atualizar unidade atual do motorista.
+         *
+         * 📥 ENTRADAS     : MotoristaId, UnidadeId, DataInicio, DataFim, Lotado, Motivo.
+         *
+         * 📤 SAÍDAS       : JSON com data, message e lotacaoId.
+         *
+         * 🔗 CHAMADA POR  : Cadastro de lotação.
+         *
+         * 🔄 CHAMA        : LotacaoMotorista.Add(), Motorista.Update(), UnitOfWork.Save().
+         ****************************************************************************************/
         [HttpGet]
         [Route("LotaMotorista")]
         public IActionResult LotaMotorista(
@@ -274,6 +353,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: EditaLotacao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Editar uma lotação existente e atualizar unidade do motorista.
+         *
+         * 📥 ENTRADAS     : LotacaoId, MotoristaId, UnidadeId, DataInicio, DataFim, Lotado, Motivo.
+         *
+         * 📤 SAÍDAS       : JSON com data e message.
+         *
+         * 🔗 CHAMADA POR  : Edição de lotação.
+         *
+         * 🔄 CHAMA        : LotacaoMotorista.Update(), Motorista.Update(), UnitOfWork.Save().
+         ****************************************************************************************/
         [HttpGet]
         [Route("EditaLotacao")]
         public IActionResult EditaLotacao(
@@ -333,6 +425,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DeleteLotacao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover lotação e desvincular unidade do motorista.
+         *
+         * 📥 ENTRADAS     : Id (string da lotação).
+         *
+         * 📤 SAÍDAS       : JSON com success, message e motoristaId.
+         *
+         * 🔗 CHAMADA POR  : Exclusão de lotação.
+         *
+         * 🔄 CHAMA        : LotacaoMotorista.Remove(), Motorista.Update(), UnitOfWork.Save().
+         ****************************************************************************************/
         [Route("DeleteLotacao")]
         [HttpGet]
         public IActionResult DeleteLotacao(string Id)
@@ -372,6 +477,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AtualizaMotoristaLotacaoAtual
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Encerrar lotação atual e atualizar unidade do motorista.
+         *
+         * 📥 ENTRADAS     : MotoristaId, UnidadeAtualId, UnidadeNovaId, DataFimLotacaoAnterior,
+         *                   DataInicioNovoMotivo, MotivoLotacaoAtual.
+         *
+         * 📤 SAÍDAS       : JSON com data e message.
+         *
+         * 🔗 CHAMADA POR  : Troca de lotação.
+         *
+         * 🔄 CHAMA        : Motorista.Update(), LotacaoMotorista.Update(), UnitOfWork.Save().
+         ****************************************************************************************/
         [HttpGet]
         [Route("AtualizaMotoristaLotacaoAtual")]
         public IActionResult AtualizaMotoristaLotacaoAtual(
@@ -449,6 +568,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AlocaMotoristaCobertura
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Alocar motorista de cobertura e ajustar lotações por período.
+         *
+         * 📥 ENTRADAS     : MotoristaId, MotoristaCoberturaId, Datas de lotação/cobertura, UnidadeId.
+         *
+         * 📤 SAÍDAS       : JSON com data e message.
+         *
+         * 🔗 CHAMADA POR  : Gestão de férias/coberturas.
+         *
+         * 🔄 CHAMA        : LotacaoMotorista.Add()/Update(), UnitOfWork.Save().
+         ****************************************************************************************/
         [HttpGet]
         [Route("AlocaMotoristaCobertura")]
         public IActionResult AlocaMotoristaCobertura(
@@ -544,6 +676,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaLotacoes
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar lotações por categoria (ou todas).
+         *
+         * 📥 ENTRADAS     : categoriaId (string).
+         *
+         * 📤 SAÍDAS       : JSON com data (lista de lotações).
+         *
+         * 🔗 CHAMADA POR  : Relatórios/visões de lotações.
+         ****************************************************************************************/
         [HttpGet]
         [Route("ListaLotacoes")]
         public IActionResult ListaLotacoes(string categoriaId)
@@ -581,6 +724,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DesativarLotacoes (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Marcar lotações anteriores como inativas para o motorista.
+         *
+         * 📥 ENTRADAS     : motoristaId, lotacaoAtualId.
+         *
+         * 📤 SAÍDAS       : Nenhuma (efeito colateral no banco).
+         ****************************************************************************************/
         private void DesativarLotacoes(string motoristaId , Guid lotacaoAtualId)
         {
             try
@@ -610,6 +762,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RemoveLotacoes
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Desativar lotações anteriores do motorista.
+         *
+         * 📥 ENTRADAS     : motoristaId, lotacaoAtualId.
+         *
+         * 📤 SAÍDAS       : JSON com success.
+         *
+         * 🔗 CHAMADA POR  : Ajustes de lotação.
+         *
+         * 🔄 CHAMA        : DesativarLotacoes().
+         ****************************************************************************************/
         [HttpGet]
         [Route("RemoveLotacoes")]
         public IActionResult RemoveLotacoes(string motoristaId , Guid lotacaoAtualId)

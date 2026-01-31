@@ -1,17 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: UploadCRLVController.cs                                                                 ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: API Controller para upload e remoção de CRLV (Certificado de Registro e               ║
-   ║    Licenciamento de Veículo). Armazena arquivo no campo byte[] CRLV da tabela Veiculo.             ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [POST] /Save → Upload CRLV (veiculoId) | [POST] /Remove → Remove CRLV existente      ║
-   ║    [POST] /UploadFeatures → View (não implementado) | ROTA BASE: api/UploadCRLV                    ║
-   ║    ATRIBUTO: [IgnoreAntiforgeryToken] - Permite upload sem token CSRF                              ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: IUnitOfWork (Veiculo), IWebHostEnvironment                                                 ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: UploadCRLVController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Fazer upload e remoção do CRLV digital do veículo (byte[] CRLV).
+ *
+ * 📥 ENTRADAS     : Arquivos enviados via multipart/form-data e veiculoId.
+ *
+ * 📤 SAÍDAS       : Content vazio com status HTTP correspondente.
+ *
+ * 🔗 CHAMADA POR  : Tela de upload de CRLV.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.Veiculo, IWebHostEnvironment.
+ **************************************************************************************** */
 
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Hosting;
@@ -24,6 +23,15 @@ using System.IO;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: UploadCRLVController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints para upload/remoção de CRLV digital.
+     *
+     * 📥 ENTRADAS     : Arquivos e IDs de veículo.
+     *
+     * 📤 SAÍDAS       : Content vazio com status.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     [IgnoreAntiforgeryToken]
@@ -32,6 +40,17 @@ namespace FrotiX.Controllers
         private IWebHostEnvironment hostingEnv;
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UploadCRLVController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar hosting e unit of work.
+         *
+         * 📥 ENTRADAS     : env, unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada do controller.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public UploadCRLVController(IWebHostEnvironment env , IUnitOfWork unitOfWork)
         {
             try
@@ -45,6 +64,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Save
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Salvar CRLV digital no cadastro do veículo.
+         *
+         * 📥 ENTRADAS     : UploadFiles (lista de arquivos), veiculoId (Guid).
+         *
+         * 📤 SAÍDAS       : Content vazio (200/500).
+         *
+         * 🔗 CHAMADA POR  : Upload de CRLV.
+         *
+         * 🔄 CHAMA        : Veiculo.GetFirstOrDefault(), Veiculo.Update(), UnitOfWork.Save().
+         ****************************************************************************************/
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("Save")]
@@ -82,6 +114,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Remove
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover CRLV digital do cadastro do veículo.
+         *
+         * 📥 ENTRADAS     : UploadFiles (ignorado), veiculoId (Guid).
+         *
+         * 📤 SAÍDAS       : Content vazio (200/500).
+         *
+         * 🔗 CHAMADA POR  : Ação de remoção de CRLV.
+         *
+         * 🔄 CHAMA        : Veiculo.GetFirstOrDefault(), Veiculo.Update(), UnitOfWork.Save().
+         ****************************************************************************************/
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("Remove")]
@@ -114,6 +159,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UploadFeatures
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar view de funcionalidades do upload (placeholder).
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : View padrão.
+         *
+         * 🔗 CHAMADA POR  : Navegação interna/placeholder.
+         ****************************************************************************************/
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("UploadFeatures")]

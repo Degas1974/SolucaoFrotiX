@@ -1,17 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: UploadCNHController.cs                                                                  ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: API Controller para upload e remoção de CNH Digital (Carteira Nacional de Habilitação)║
-   ║    Armazena arquivo diretamente no campo byte[] CNHDigital da tabela Motorista.                    ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [POST] /Save → Upload CNH (motoristaId) | [POST] /Remove → Remove CNH existente      ║
-   ║    [POST] /UploadFeatures → View (não implementado) | ROTA BASE: api/UploadCNH                     ║
-   ║    ATRIBUTO: [IgnoreAntiforgeryToken] - Permite upload sem token CSRF                              ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: IUnitOfWork (Motorista), IWebHostEnvironment                                               ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: UploadCNHController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Fazer upload e remoção da CNH digital do motorista (byte[] CNHDigital).
+ *
+ * 📥 ENTRADAS     : Arquivos enviados via multipart/form-data e motoristaId.
+ *
+ * 📤 SAÍDAS       : Content vazio com status HTTP correspondente.
+ *
+ * 🔗 CHAMADA POR  : Tela de upload de CNH.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.Motorista, IWebHostEnvironment.
+ **************************************************************************************** */
 
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Hosting;
@@ -24,6 +23,15 @@ using System.IO;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: UploadCNHController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints para upload/remoção de CNH digital.
+     *
+     * 📥 ENTRADAS     : Arquivos e IDs de motorista.
+     *
+     * 📤 SAÍDAS       : Content vazio com status.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     [IgnoreAntiforgeryToken]
@@ -32,6 +40,17 @@ namespace FrotiX.Controllers
         private IWebHostEnvironment hostingEnv;
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UploadCNHController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar hosting e unit of work.
+         *
+         * 📥 ENTRADAS     : env, unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada do controller.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public UploadCNHController(IWebHostEnvironment env , IUnitOfWork unitOfWork)
         {
             try
@@ -45,6 +64,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Save
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Salvar CNH digital no cadastro do motorista.
+         *
+         * 📥 ENTRADAS     : UploadFiles (lista de arquivos), motoristaId (Guid).
+         *
+         * 📤 SAÍDAS       : Content vazio (200/500).
+         *
+         * 🔗 CHAMADA POR  : Upload de CNH.
+         *
+         * 🔄 CHAMA        : Motorista.GetFirstOrDefault(), Motorista.Update(), UnitOfWork.Save().
+         ****************************************************************************************/
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("Save")]
@@ -82,6 +114,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Remove
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover CNH digital do cadastro do motorista.
+         *
+         * 📥 ENTRADAS     : UploadFiles (ignorado), motoristaId (Guid).
+         *
+         * 📤 SAÍDAS       : Content vazio (200/500).
+         *
+         * 🔗 CHAMADA POR  : Ação de remoção de CNH.
+         *
+         * 🔄 CHAMA        : Motorista.GetFirstOrDefault(), Motorista.Update(), UnitOfWork.Save().
+         ****************************************************************************************/
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("Remove")]
@@ -114,6 +159,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UploadFeatures
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar view de funcionalidades do upload (placeholder).
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : View padrão.
+         *
+         * 🔗 CHAMADA POR  : Navegação interna/placeholder.
+         ****************************************************************************************/
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("UploadFeatures")]

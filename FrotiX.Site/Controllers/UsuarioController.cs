@@ -1,20 +1,17 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: UsuarioController.cs                                                                    ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: API Controller para operações de Usuários (AspNetUsers) e Controle de Acesso.         ║
-   ║    Gerencia CRUD de usuários, toggle de status, gestão de permissões por recurso e carga patrimonial║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [GET] / → Lista usuários | [POST] /Delete → Remove usuário                           ║
-   ║    [GET] /UpdateStatusUsuario → Toggle Ativo | [GET] /UpdateCargaPatrimonial → Toggle detentor     ║
-   ║    [GET] /UpdateStatusAcesso → Toggle acesso recurso | [GET] /PegaRecursosUsuario → Lista recursos ║
-   ║    [GET] /PegaUsuariosRecurso → Lista usuários recurso | [POST] /InsereRecursosUsuario → Inicial   ║
-   ║    [GET] /listaUsuariosDetentores → Detentores ativos | [POST] /DeleteRecurso → Remove recurso     ║
-   ║    ROTA BASE: api/Usuario                                                                           ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: IUnitOfWork (AspNetUsers, ControleAcesso, Recurso, Viagem, Manutencao, SetorPatrimonial)   ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: UsuarioController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar usuários (AspNetUsers) e permissões de acesso por recurso.
+ *
+ * 📥 ENTRADAS     : IDs de usuário, recursos e operações de toggle.
+ *
+ * 📤 SAÍDAS       : JSON com dados, status e mensagens de retorno.
+ *
+ * 🔗 CHAMADA POR  : Telas administrativas de usuários e controle de acesso.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.AspNetUsers, ControleAcesso, Recurso, Viagem, Manutencao,
+ *                   SetorPatrimonial, MovimentacaoPatrimonio.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -25,12 +22,32 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: UsuarioController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints para listar, excluir e gerenciar acessos de usuários.
+     *
+     * 📥 ENTRADAS     : IDs e parâmetros de controle de acesso.
+     *
+     * 📤 SAÍDAS       : JSON com dados e mensagens.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public partial class UsuarioController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UsuarioController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependência do UnitOfWork.
+         *
+         * 📥 ENTRADAS     : unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada do controller.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public UsuarioController(IUnitOfWork unitOfWork)
         {
             try
@@ -43,6 +60,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar usuários com flag PodeExcluir baseada em vínculos.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com data (lista de usuários).
+         *
+         * 🔗 CHAMADA POR  : Grid de usuários.
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
@@ -128,6 +156,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Excluir usuário quando não houver vínculos impeditivos.
+         *
+         * 📥 ENTRADAS     : users (AspNetUsers com Id).
+         *
+         * 📤 SAÍDAS       : JSON com success e message.
+         *
+         * 🔗 CHAMADA POR  : Ação de exclusão no grid.
+         *
+         * 🔄 CHAMA        : AspNetUsers.GetFirstOrDefault(), ControleAcesso/Viagem/Manutencao/
+         *                   MovimentacaoPatrimonio/SetorPatrimonial, AspNetUsers.Remove(), Save().
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(AspNetUsers users)
@@ -234,6 +276,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateStatusUsuario
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Alternar status ativo/inativo do usuário.
+         *
+         * 📥 ENTRADAS     : Id (string do usuário).
+         *
+         * 📤 SAÍDAS       : JSON com success, message e type.
+         *
+         * 🔗 CHAMADA POR  : Toggle de status na tela de usuários.
+         ****************************************************************************************/
         [Route("UpdateStatusUsuario")]
         public JsonResult UpdateStatusUsuario(String Id)
         {
@@ -291,6 +344,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateCargaPatrimonial
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Alternar flag de detentor de carga patrimonial do usuário.
+         *
+         * 📥 ENTRADAS     : Id (string do usuário).
+         *
+         * 📤 SAÍDAS       : JSON com success, message e type.
+         *
+         * 🔗 CHAMADA POR  : Toggle de detentor patrimonial na tela de usuários.
+         ****************************************************************************************/
         [Route("UpdateCargaPatrimonial")]
         public JsonResult UpdateCargaPatrimonial(String Id)
         {
@@ -352,6 +416,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateStatusAcesso
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Alternar acesso do usuário a um recurso específico.
+         *
+         * 📥 ENTRADAS     : IDS (string com IDs de usuário/recurso).
+         *
+         * 📤 SAÍDAS       : JSON com success e message.
+         *
+         * 🔗 CHAMADA POR  : Gestão de permissões por recurso.
+         ****************************************************************************************/
         [Route("UpdateStatusAcesso")]
         public JsonResult UpdateStatusAcesso(String IDS)
         {
@@ -411,6 +486,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaRecursosUsuario
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar recursos associados a um usuário.
+         *
+         * 📥 ENTRADAS     : UsuarioId (string).
+         *
+         * 📤 SAÍDAS       : JSON com recursos do usuário.
+         *
+         * 🔗 CHAMADA POR  : Tela de permissões.
+         ****************************************************************************************/
         [Route("PegaRecursosUsuario")]
         [HttpGet]
         public IActionResult PegaRecursosUsuario(String UsuarioId)
@@ -437,6 +523,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaUsuariosRecurso
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar usuários vinculados a um recurso.
+         *
+         * 📥 ENTRADAS     : RecursoId (string).
+         *
+         * 📤 SAÍDAS       : JSON com usuários e flags de vínculo.
+         *
+         * 🔗 CHAMADA POR  : Tela de permissões por recurso.
+         ****************************************************************************************/
         [Route("PegaUsuariosRecurso")]
         [HttpGet]
         public IActionResult PegaUsuariosRecurso(String RecursoId)
@@ -463,6 +560,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: InsereRecursosUsuario
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar recursos para usuário (permite cadastro em lote).
+         *
+         * 📥 ENTRADAS     : Request.Form (UsuarioId, ListaRecursos).
+         *
+         * 📤 SAÍDAS       : JSON com success e message.
+         *
+         * 🔗 CHAMADA POR  : Ação de salvar permissões.
+         ****************************************************************************************/
         [Route("InsereRecursosUsuario")]
         [HttpPost]
         public IActionResult InsereRecursosUsuario()
@@ -519,6 +627,17 @@ namespace FrotiX.Controllers
         }
 
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: listaUsuariosDetentores
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar usuários detentores de carga patrimonial ativos.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com lista de usuários detentores.
+         *
+         * 🔗 CHAMADA POR  : Combos/seleções de detentor.
+         ****************************************************************************************/
         [Route("listaUsuariosDetentores")]
         public IActionResult listaUsuariosDetentores()
         {
@@ -556,6 +675,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DeleteRecurso
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover vínculo de recurso com usuário.
+         *
+         * 📥 ENTRADAS     : RecursoId (string).
+         *
+         * 📤 SAÍDAS       : JSON com success e message.
+         *
+         * 🔗 CHAMADA POR  : Remoção de permissões.
+         ****************************************************************************************/
         [Route("DeleteRecurso")]
         [HttpPost]
         public IActionResult DeleteRecurso([FromBody] string RecursoId)

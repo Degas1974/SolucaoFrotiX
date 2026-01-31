@@ -1,15 +1,17 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: UsuarioController.Usuarios.cs                                                           ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial para listagem de todos os usuários com foto Base64 e validação de vínculos.   ║
-   ║    Inclui flag PodeExcluir baseado em vínculos (ControleAcesso, Viagem, Manutencao, etc).          ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 MÉTODOS: GetAll() → Lista completa de usuários com foto e flag de exclusão                      ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: IUnitOfWork (AspNetUsers, ControleAcesso, Viagem, Manutencao, Patrimonio)                  ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: UsuarioController.Usuarios.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Listar usuários com foto Base64 e validar vínculos para exclusão.
+ *
+ * 📥 ENTRADAS     : IDs de usuário quando aplicável.
+ *
+ * 📤 SAÍDAS       : JSON com dados de usuários e flags de exclusão.
+ *
+ * 🔗 CHAMADA POR  : Telas administrativas de usuários.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.AspNetUsers, ControleAcesso, Viagem, Manutencao,
+ *                   MovimentacaoPatrimonio, SetorPatrimonial.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -20,12 +22,28 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: UsuarioController.Usuarios
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Implementar listagem avançada de usuários e foto em Base64.
+     *
+     * 📥 ENTRADAS     : IDs de usuário.
+     *
+     * 📤 SAÍDAS       : JSON com dados detalhados.
+     ****************************************************************************************/
     public partial class UsuarioController : Controller
     {
-        /// <summary>
-        /// Retorna todos os usuários com foto em Base64 para exibição na grid
-        /// Inclui validação de vínculos para desabilitar botão de exclusão preventivamente
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetAll
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar usuários com foto Base64 e flag PodeExcluir.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com data (lista de usuários + PodeExcluir).
+         *
+         * 🔗 CHAMADA POR  : Grid de usuários.
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetAll")]
         public IActionResult GetAll()
@@ -113,9 +131,17 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Retorna a foto de um usuário específico em Base64
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetFoto
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar a foto do usuário em Base64.
+         *
+         * 📥 ENTRADAS     : usuarioId (string).
+         *
+         * 📤 SAÍDAS       : JSON com success e dados da foto.
+         *
+         * 🔗 CHAMADA POR  : Exibição de foto em detalhes/perfil.
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetFoto")]
         public IActionResult GetFoto(string usuarioId)
