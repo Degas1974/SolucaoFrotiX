@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ContratoController.VerificarDependencias.cs                                             ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial para verificar dependências antes de excluir Contrato (7 tipos de relações).   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: VerificarDependencias() - conta VeiculosContrato, Encarregados, Motoristas, Empenhos...  ║
-   ║ 🔗 DEPS: IUnitOfWork (múltiplos Repositories) | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0                ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ContratoController.VerificarDependencias.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Verificar dependências antes de excluir Contrato, cobrindo múltiplas
+ *                   relações (veículos, pessoas, empenhos e notas fiscais).
+ *
+ * 📥 ENTRADAS     : id (Guid) do contrato.
+ *
+ * 📤 SAÍDAS       : JSON com contadores por dependência e flag possuiDependencias.
+ *
+ * 🔗 CHAMADA POR  : Frontend de exclusão de contratos.
+ *
+ * 🔄 CHAMA        : Repositórios de VeiculoContrato, Encarregados, Operadores, etc.
+ *
+ * 📦 DEPENDÊNCIAS : IUnitOfWork, múltiplos repositories.
+ *
+ * 📝 OBSERVAÇÕES  : Cada verificação usa try/catch para tolerar tabelas inexistentes.
+ **************************************************************************************** */
 
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -33,9 +41,7 @@ namespace FrotiX.Controllers
      ****************************************************************************************/
     public partial class ContratoController
     {
-        /// <summary>
-        /// Verifica se o contrato possui dependências que impedem sua exclusão
-        /// </summary>
+        // [DOC] Verifica se o contrato possui dependências que impedem sua exclusão
         [HttpGet]
         [Route("VerificarDependencias")]
         public IActionResult VerificarDependencias(Guid id)

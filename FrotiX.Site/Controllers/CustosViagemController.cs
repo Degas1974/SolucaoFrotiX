@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: CustosViagemController.cs                                                               ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Dados de custos detalhados de viagens via ViewCustosViagem (view do banco).            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetAll(), GetAllReduced(), GetById() - custos pré-calculados para dashboards             ║
-   ║ 🔗 DEPS: IUnitOfWork, ViewCustosViagem | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0                       ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: CustosViagemController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Fornecer dados de custos detalhados de viagens a partir da view
+ *                   ViewCustosViagem (dados pré-calculados no banco).
+ *
+ * 📥 ENTRADAS     : Id opcional da viagem e filtros de consulta.
+ *
+ * 📤 SAÍDAS       : JSON com custos agregados e detalhados.
+ *
+ * 🔗 CHAMADA POR  : Frontend de relatórios e dashboards de custos.
+ *
+ * 🔄 CHAMA        : ViewCustosViagem (GetAll/GetAllReduced) via IUnitOfWork.
+ *
+ * 📦 DEPENDÊNCIAS : IUnitOfWork, IWebHostEnvironment, ViewCustosViagem.
+ *
+ * 📝 OBSERVAÇÕES  : Método GetAllReduced retorna apenas campos essenciais para performance.
+ **************************************************************************************** */
 
 using FrotiX.Repository.IRepository;
 using FrotiX.Services;

@@ -1,13 +1,20 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ContratoController.cs                                                                   ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: CRUD principal de Contratos. Partials: VerificarDependencias, status para dropdowns.   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetAll(), GetById(), Create(), Update(), Delete(), VincularVeiculos(), VincularPessoas() ║
-   ║ 🔗 DEPS: IUnitOfWork, FrotiXDbContext, Contrato | 📅 08/01/2026 | 👤 Copilot | 📝 v2.0              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ContratoController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : CRUD principal de Contratos, incluindo vínculos de veículos e pessoas.
+ *
+ * 📥 ENTRADAS     : Model Contrato, parâmetros de rota e filtros de busca.
+ *
+ * 📤 SAÍDAS       : JSON com contratos, detalhes e respostas de operação.
+ *
+ * 🔗 CHAMADA POR  : Frontend de contratos e módulos associados.
+ *
+ * 🔄 CHAMA        : IUnitOfWork, FrotiXDbContext, repositórios auxiliares.
+ *
+ * 📦 DEPENDÊNCIAS : IUnitOfWork, FrotiXDbContext, Controller.
+ *
+ * 📝 OBSERVAÇÕES  : Possui parciais para verificação de dependências e dropdown por status.
+ **************************************************************************************** */
 
 using FrotiX.Data;
 using FrotiX.Models;

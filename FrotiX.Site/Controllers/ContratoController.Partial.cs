@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ContratoController.Partial.cs                                                           ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial com métodos auxiliares de Contrato (lista por status para dropdowns).          ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetContratosPorStatus() - lista contratos filtrados para dropdown de Nota Fiscal         ║
-   ║ 🔗 DEPS: IUnitOfWork, Contrato | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0                               ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ContratoController.Partial.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Métodos auxiliares de Contrato, incluindo listagem por status
+ *                   para preenchimento de dropdowns.
+ *
+ * 📥 ENTRADAS     : status (int) para filtro de contratos.
+ *
+ * 📤 SAÍDAS       : JSON com contratos formatados para seleção.
+ *
+ * 🔗 CHAMADA POR  : Frontend de Nota Fiscal e cadastros relacionados.
+ *
+ * 🔄 CHAMA        : Contrato.GetAll() via LINQ.
+ *
+ * 📦 DEPENDÊNCIAS : IUnitOfWork, LINQ, Controller.
+ *
+ * 📝 OBSERVAÇÕES  : Classe parcial complementar ao CRUD principal de Contratos.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -34,10 +42,8 @@ namespace FrotiX.Controllers
      ****************************************************************************************/
     public partial class ContratoController : Controller
     {
-        /// <summary>
-        /// Lista contratos filtrados por Status (para dropdown de Nota Fiscal)
-        /// </summary>
-        /// <param name="status">1 = Ativo, 0 = Inativo</param>
+        // [DOC] Lista contratos filtrados por Status (para dropdown de Nota Fiscal)
+        // [DOC] <param name="status">1 = Ativo, 0 = Inativo</param>
         [Route("ListaContratosPorStatus")]
         [HttpGet]
         public IActionResult ListaContratosPorStatus(int status)

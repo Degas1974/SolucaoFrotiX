@@ -1,13 +1,20 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: CombustivelController.cs                                                                ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: CRUD de Tipos de Combustível. Tabela base para abastecimentos.                         ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetAll(), GetById(), Create(), Update(), Delete() - modelo Combustivel                   ║
-   ║ 🔗 DEPS: IUnitOfWork, CombustivelRepository | 📅 08/01/2026 | 👤 Copilot | 📝 v2.0                  ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: CombustivelController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : CRUD de tipos de combustível, base para registros de abastecimento.
+ *
+ * 📥 ENTRADAS     : Model Combustivel e parâmetros de rota.
+ *
+ * 📤 SAÍDAS       : JSON com lista e detalhes de combustíveis.
+ *
+ * 🔗 CHAMADA POR  : Frontend de cadastros e módulos de abastecimento.
+ *
+ * 🔄 CHAMA        : Repositório de Combustível via IUnitOfWork.
+ *
+ * 📦 DEPENDÊNCIAS : IUnitOfWork, repository de Combustivel, Controller.
+ *
+ * 📝 OBSERVAÇÕES  : Controller atua como API (api/[controller]).
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

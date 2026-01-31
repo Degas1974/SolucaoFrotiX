@@ -9,14 +9,14 @@
 ## 📊 Progresso Geral
 
 ```
-█████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 43.1%
+█████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 43.6%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 390 |
-| Percentual | 43.1% |
+| Documentados | 395 |
+| Percentual | 43.6% |
 | Última Atualização | 31/01/2026 15:32 |
 
 ---
@@ -26,7 +26,7 @@
 | # | Pasta | Total | Feitos | % | Status |
 |---|-------|-------|--------|---|--------|
 | 1 | Areas | 43 | 43 | 100% | ✅ Completo |
-| 2 | Controllers | 93 | 10 | 10.8% | 🟡 Em Progresso |
+| 2 | Controllers | 93 | 15 | 16.1% | 🟡 Em Progresso |
 | 3 | Data | 5 | 0 | 0% | 🔴 Pendente |
 | 4 | EndPoints | 2 | 2 | 100% | ✅ Completo |
 | 5 | Extensions | 3 | 3 | 100% | ✅ Completo |
@@ -95,7 +95,7 @@
 ✅ Areas/Identity/Pages/_ViewStart.cshtml
 ```
 
-### 📂 Controllers (10/93) 🟡
+### 📂 Controllers (15/93) 🟡
 ```
 ✅ Controllers/AbastecimentoController.cs
 ✅ Controllers/AbastecimentoController.DashboardAPI.cs
@@ -107,6 +107,11 @@
 ✅ Controllers/AlertasFrotiXController.cs
 ✅ Controllers/AtaRegistroPrecosController.Partial.cs
 ✅ Controllers/AtaRegistroPrecosController.cs
+✅ Controllers/CombustivelController.cs
+✅ Controllers/ContratoController.Partial.cs
+✅ Controllers/ContratoController.VerificarDependencias.cs
+✅ Controllers/ContratoController.cs
+✅ Controllers/CustosViagemController.cs
 ```
 
 ### 📂 Data (0/5)
@@ -370,6 +375,13 @@
    • AlertasFrotiXController.cs
    • AtaRegistroPrecosController.Partial.cs
    • AtaRegistroPrecosController.cs
+
+✅ Controllers - Classes (Lote 142 - revisão cards completos):
+   • CombustivelController.cs
+   • ContratoController.Partial.cs
+   • ContratoController.VerificarDependencias.cs
+   • ContratoController.cs
+   • CustosViagemController.cs
 
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
@@ -823,10 +835,11 @@
 | 31/01/2026 | 5 | 1 | Lote 139 - Areas/Identity revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 140 - Controllers revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 141 - Controllers revisão cards completos (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 142 - Controllers revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 90
-**Total de Commits:** 88
-**Total de Arquivos Documentados:** 390
+**Total de Lotes:** 91
+**Total de Commits:** 89
+**Total de Arquivos Documentados:** 395
 
 ---
 
