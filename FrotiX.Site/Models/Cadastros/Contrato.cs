@@ -1,22 +1,20 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: Contrato.cs                                                                           ║
-   ║ 📂 CAMINHO: Models/Cadastros/                                                                     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
-   ║    Modelos para contratos, repactuações e itens vinculados.                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 CLASSES DISPONÍVEIS:                                                                           ║
-   ║    • ContratoViewModel                                                                            ║
-   ║    • Contrato                                                                                     ║
-   ║    • CustoMensalItensContrato                                                                     ║
-   ║    • RepactuacaoContrato                                                                          ║
-   ║    • ItemVeiculoContrato                                                                          ║
-   ║    • RepactuacaoTerceirizacao                                                                     ║
-   ║    • RepactuacaoServicos                                                                          ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: FrotiX.Validations, SelectListItem, NPOI                                          ║
-   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: FrotiX Team | 📝 VERSÃO: 2.0                                 ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: Contrato.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Modelar contratos, repactuações e itens vinculados.
+ *
+ * 📥 ENTRADAS     : Dados de contratos, vigência, valores e repactuações.
+ *
+ * 📤 SAÍDAS       : Entidades persistidas e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Módulos de contratos, repositórios e relatórios.
+ *
+ * 🔄 CHAMA        : DataAnnotations, ValidaZero, ForeignKey, SelectListItem.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.Validations, Microsoft.AspNetCore.Mvc.Rendering, NPOI.
+ *
+ * ⚠️ ATENÇÃO      : Existem chaves compostas (ver CustoMensalItensContrato).
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -30,17 +28,19 @@ using NPOI.SS.Formula.Functions;
 
 namespace FrotiX.Models
     {
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: ContratoViewModel                                                                 │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Agrupar contrato e lista de fornecedores para uso em views.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Controllers/Views de contratos
-    // ➡️ CHAMA       : SelectListItem
-    //
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: ContratoViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Agrupar contrato e lista de fornecedores para uso em views.
+     *
+     * 📥 ENTRADAS     : Entidade Contrato e lista de fornecedores.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas de cadastro/edição.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de contratos.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     ****************************************************************************************/
     public class ContratoViewModel
         {
         public Guid ContratoId { get; set; }
@@ -48,17 +48,19 @@ namespace FrotiX.Models
         public IEnumerable<SelectListItem> FornecedorList { get; set; }
         }
 
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: Contrato                                                                          │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Representar contrato de fornecedor com vigência, valores e vínculos.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Repositórios/Controllers
-    // ➡️ CHAMA       : DataAnnotations, ForeignKey
-    //
+    /****************************************************************************************
+     * ⚡ MODEL: Contrato
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar contrato de fornecedor com vigência, valores e vínculos.
+     *
+     * 📥 ENTRADAS     : Número, ano, vigência, valores e fornecedor.
+     *
+     * 📤 SAÍDAS       : Registro persistido e navegável.
+     *
+     * 🔗 CHAMADA POR  : Repositórios e controllers.
+     *
+     * 🔄 CHAMA        : DataAnnotations, ForeignKey, ValidaZero.
+     ****************************************************************************************/
     public class Contrato
         {
 
@@ -166,20 +168,21 @@ namespace FrotiX.Models
 
         }
 
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: CustoMensalItensContrato                                                           │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Registrar custo mensal por nota fiscal e período para itens de contrato.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Relatórios/estudos de custos
-    // ➡️ CHAMA       : DataAnnotations, Column(Order)
-    //
-    // ⚠️ ATENÇÃO:
-    // Chave composta: NotaFiscalId + Ano + Mes.
-    //
+    /****************************************************************************************
+     * ⚡ MODEL: CustoMensalItensContrato
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Registrar custo mensal por nota fiscal e período para itens de contrato.
+     *
+     * 📥 ENTRADAS     : NotaFiscalId, ano e mês.
+     *
+     * 📤 SAÍDAS       : Registro de custo mensal para análises.
+     *
+     * 🔗 CHAMADA POR  : Relatórios/estudos de custos.
+     *
+     * 🔄 CHAMA        : DataAnnotations, Column(Order).
+     *
+     * ⚠️ ATENÇÃO      : Chave composta: NotaFiscalId + Ano + Mes.
+     ****************************************************************************************/
     public class CustoMensalItensContrato
         {
         [Key, Column(Order = 0)]
@@ -200,17 +203,19 @@ namespace FrotiX.Models
         }
 
 
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: RepactuacaoContrato                                                                │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Representar repactuações associadas a um contrato.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Fluxos de repactuação
-    // ➡️ CHAMA       : ForeignKey, NotMapped
-    //
+    /****************************************************************************************
+     * ⚡ MODEL: RepactuacaoContrato
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar repactuações associadas a um contrato.
+     *
+     * 📥 ENTRADAS     : Datas, valores e percentuais.
+     *
+     * 📤 SAÍDAS       : Registro de repactuação do contrato.
+     *
+     * 🔗 CHAMADA POR  : Fluxos de repactuação.
+     *
+     * 🔄 CHAMA        : ForeignKey, NotMapped.
+     ****************************************************************************************/
     public class RepactuacaoContrato
     {
         [Key]
@@ -239,17 +244,19 @@ namespace FrotiX.Models
         public bool AtualizaContrato { get; set; }
     }
 
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: ItemVeiculoContrato                                                                │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Representar itens de veículos vinculados a uma repactuação de contrato.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Fluxos de repactuação/itens
-    // ➡️ CHAMA       : ForeignKey
-    //
+    /****************************************************************************************
+     * ⚡ MODEL: ItemVeiculoContrato
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar itens de veículos vinculados a uma repactuação de contrato.
+     *
+     * 📥 ENTRADAS     : Descrição, quantidade e valor unitário.
+     *
+     * 📤 SAÍDAS       : Registro de item associado à repactuação.
+     *
+     * 🔗 CHAMADA POR  : Fluxos de repactuação/itens.
+     *
+     * 🔄 CHAMA        : ForeignKey.
+     ****************************************************************************************/
     public class ItemVeiculoContrato
         {
         [Key]
@@ -271,17 +278,19 @@ namespace FrotiX.Models
         }
 
 
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: RepactuacaoTerceirizacao                                                           │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Registrar repactuação de serviços terceirizados (encarregado, operador, motorista, lavador).
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Fluxos de repactuação
-    // ➡️ CHAMA       : ForeignKey
-    //
+    /****************************************************************************************
+     * ⚡ MODEL: RepactuacaoTerceirizacao
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Registrar repactuação de serviços terceirizados.
+     *
+     * 📥 ENTRADAS     : Valores e quantidades por função.
+     *
+     * 📤 SAÍDAS       : Registro de repactuação de terceirização.
+     *
+     * 🔗 CHAMADA POR  : Fluxos de repactuação.
+     *
+     * 🔄 CHAMA        : ForeignKey.
+     ****************************************************************************************/
     public class RepactuacaoTerceirizacao
         {
         [Key]
@@ -313,17 +322,19 @@ namespace FrotiX.Models
         }
 
 
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: RepactuacaoServicos                                                                │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Registrar repactuação de serviços gerais do contrato.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Fluxos de repactuação
-    // ➡️ CHAMA       : ForeignKey
-    //
+    /****************************************************************************************
+     * ⚡ MODEL: RepactuacaoServicos
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Registrar repactuação de serviços gerais do contrato.
+     *
+     * 📥 ENTRADAS     : Datas e valores de repactuação.
+     *
+     * 📤 SAÍDAS       : Registro associado ao contrato.
+     *
+     * 🔗 CHAMADA POR  : Fluxos de repactuação.
+     *
+     * 🔄 CHAMA        : ForeignKey.
+     ****************************************************************************************/
     public class RepactuacaoServicos
         {
         [Key]

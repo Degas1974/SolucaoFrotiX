@@ -1,16 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: CoberturaFolga.cs                                                                     ║
-   ║ 📂 CAMINHO: Models/Cadastros/                                                                     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
-   ║    ViewModel para cobertura de folgas de motoristas (substituições).                              ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 CLASSES DISPONÍVEIS:                                                                           ║
-   ║    • CoberturaFolgaViewModel                                                                      ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: System.ComponentModel.DataAnnotations, SelectListItem                              ║
-   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: FrotiX Team | 📝 VERSÃO: 2.0                                 ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: CoberturaFolga.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : ViewModel para cobertura de folgas de motoristas (substituições).
+ *
+ * 📥 ENTRADAS     : Dados de período, motoristas envolvidos e observações.
+ *
+ * 📤 SAÍDAS       : ViewModel para telas de escala/agenda.
+ *
+ * 🔗 CHAMADA POR  : Controllers/Views de escala.
+ *
+ * 🔄 CHAMA        : DataAnnotations e SelectListItem.
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations, Microsoft.AspNetCore.Mvc.Rendering.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -20,17 +22,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: CoberturaFolgaViewModel                                                           │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Representar dados de cobertura de folga e listas de apoio para UI.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Controllers/Views de escala
-    // ➡️ CHAMA       : SelectListItem
-    //
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: CoberturaFolgaViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar cobertura de folga e listas de apoio para a UI.
+     *
+     * 📥 ENTRADAS     : Motoristas, período e motivo/observações.
+     *
+     * 📤 SAÍDAS       : Dados prontos para formulários e listagens.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de escala.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     ****************************************************************************************/
     public class CoberturaFolgaViewModel
     {
         public Guid CoberturaId { get; set; }
@@ -68,16 +72,19 @@ namespace FrotiX.Models
         public string? NomeMotoristaFolga { get; set; }
         public string? NomeMotoristaCobertor { get; set; }
 
-        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        // │ ⚡ MÉTODO: CoberturaFolgaViewModel (ctor)                                          │
-        // │ 🔗 RASTREABILIDADE:                                                                      │
-        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
-        // │    ➡️ CHAMA       : DateTime.Today                                                      │
-        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        //
-        // 🎯 OBJETIVO:
-        // Inicializar datas padrão com o dia atual.
-        //
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CoberturaFolgaViewModel (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar datas padrão com o dia atual.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : Datas preenchidas com DateTime.Today.
+         *
+         * 🔗 CHAMADA POR  : DI e instanciação manual.
+         *
+         * 🔄 CHAMA        : DateTime.Today.
+         ****************************************************************************************/
         public CoberturaFolgaViewModel()
         {
             DataInicio = DateTime.Today;

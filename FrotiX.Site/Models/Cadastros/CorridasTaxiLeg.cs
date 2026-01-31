@@ -1,17 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: CorridasTaxiLeg.cs                                                                    ║
-   ║ 📂 CAMINHO: Models/Cadastros/                                                                     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
-   ║    Modelos para corridas de táxi legítimas (integração TaxiLeg).                                  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 CLASSES DISPONÍVEIS:                                                                           ║
-   ║    • CorridasTaxiLegViewModel                                                                     ║
-   ║    • CorridasTaxiLeg                                                                              ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: FrotiX.Services, FrotiX.Validations, SelectListItem                                ║
-   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: FrotiX Team | 📝 VERSÃO: 2.0                                 ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: CorridasTaxiLeg.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Modelar corridas TaxiLeg e ViewModel de apoio.
+ *
+ * 📥 ENTRADAS     : Dados de corrida, horários, origem/destino e avaliações.
+ *
+ * 📤 SAÍDAS       : Entidade persistida e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Integração TaxiLeg, relatórios e telas de consulta.
+ *
+ * 🔄 CHAMA        : DataAnnotations e utilitários de UI.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.Services, FrotiX.Validations, Microsoft.AspNetCore.Mvc.Rendering.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -26,17 +27,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
     {
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: CorridasTaxiLegViewModel                                                          │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Agrupar filtros/dados auxiliares para consultas de corridas TaxiLeg.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Controllers/Views de corridas
-    // ➡️ CHAMA       : (sem chamadas internas)
-    //
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: CorridasTaxiLegViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Agrupar filtros/dados auxiliares para consultas de corridas TaxiLeg.
+     *
+     * 📥 ENTRADAS     : Identificadores de filtros.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas e consultas.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de corridas.
+     ****************************************************************************************/
     public class CorridasTaxiLegViewModel
         {
         public Guid AbastecimentoId { get; set; }
@@ -45,17 +46,19 @@ namespace FrotiX.Models
         public Guid CombustivelId { get; set; }
         }
 
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: CorridasTaxiLeg                                                                    │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Representar uma corrida de táxi legítima integrada ao sistema.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Integração TaxiLeg / Relatórios
-    // ➡️ CHAMA       : DataAnnotations
-    //
+    /****************************************************************************************
+     * ⚡ MODEL: CorridasTaxiLeg
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar uma corrida de táxi legítima integrada ao sistema.
+     *
+     * 📥 ENTRADAS     : Origem/destino, horários, avaliação e custos.
+     *
+     * 📤 SAÍDAS       : Registro persistido da corrida.
+     *
+     * 🔗 CHAMADA POR  : Integração TaxiLeg e relatórios.
+     *
+     * 🔄 CHAMA        : DataAnnotations.
+     ****************************************************************************************/
     public class CorridasTaxiLeg
         {
         [Key]
@@ -110,4 +113,3 @@ namespace FrotiX.Models
         public double? ValorGlosa { get; set; }
         }
     }
-

@@ -1,16 +1,20 @@
-﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ControleAcesso.cs                                                                     ║
-   ║ 📂 CAMINHO: Models/Cadastros/                                                                     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
-   ║    Entidade para controle de permissões de usuários a recursos do sistema.                        ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 CLASSES DISPONÍVEIS:                                                                           ║
-   ║    • ControleAcesso                                                                              ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: Microsoft.AspNetCore.Identity, System.ComponentModel.DataAnnotations              ║
-   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: FrotiX Team | 📝 VERSÃO: 2.0                                 ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+﻿/* ****************************************************************************************
+ * ⚡ ARQUIVO: ControleAcesso.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Modelar permissões de usuários para recursos do sistema.
+ *
+ * 📥 ENTRADAS     : Identificadores de usuário e recurso.
+ *
+ * 📤 SAÍDAS       : Registro de acesso (permitido/negado).
+ *
+ * 🔗 CHAMADA POR  : Fluxos de autorização e gestão de acesso.
+ *
+ * 🔄 CHAMA        : DataAnnotations e Column(Order).
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations, Microsoft.EntityFrameworkCore.
+ *
+ * ⚠️ ATENÇÃO      : Chave composta: UsuarioId + RecursoId.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -23,20 +27,21 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
     {
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: ControleAcesso                                                                    │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Representar permissões de acesso de usuários a recursos.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Fluxos de autorização
-    // ➡️ CHAMA       : DataAnnotations, Column(Order)
-    //
-    // ⚠️ ATENÇÃO:
-    // Chave composta: UsuarioId + RecursoId.
-    //
+    /****************************************************************************************
+     * ⚡ MODEL: ControleAcesso
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar permissões de acesso de usuários a recursos.
+     *
+     * 📥 ENTRADAS     : UsuarioId, RecursoId e flag de acesso.
+     *
+     * 📤 SAÍDAS       : Registro de permissão persistido.
+     *
+     * 🔗 CHAMADA POR  : Fluxos de autorização.
+     *
+     * 🔄 CHAMA        : DataAnnotations, Column(Order).
+     *
+     * ⚠️ ATENÇÃO      : Chave composta: UsuarioId + RecursoId.
+     ****************************************************************************************/
     public class ControleAcesso
         {
         [Key, Column(Order = 0)]
@@ -49,4 +54,3 @@ namespace FrotiX.Models
 
         }
     }
-
