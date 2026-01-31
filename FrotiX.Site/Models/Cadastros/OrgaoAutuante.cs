@@ -1,13 +1,12 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: OrgaoAutuante.cs                                                                        ║
+   ║ 📌 ARQUIVO: OrgaoAutuante.cs                                                                        ║
    ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Entidade e ViewModels para órgãos autuantes de multas (DETRAN, PRF, etc.).            ║
+   ║ 🧭 OBJETIVO: Manter cadastro de órgãos autuantes de multas (DETRAN, PRF, etc.).                    ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENTIDADE: OrgaoAutuante (OrgaoAutuanteId, Sigla, Nome)                                           ║
+   ║ 🗂️  CONTÉM: OrgaoAutuante                                                                           ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: System.ComponentModel.DataAnnotations                                                      ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: DataAnnotations                                                                     ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
@@ -21,16 +20,24 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
+    // ==================================================================================================
+    // ENTIDADE
+    // ==================================================================================================
+    // Representa um órgão autuante.
+    // ==================================================================================================
     public class OrgaoAutuante
     {
+        // Identificador único do órgão autuante.
         [Key]
         public Guid OrgaoAutuanteId { get; set; }
 
+        // Sigla do órgão.
         [StringLength(50, ErrorMessage = "A sigla não pode exceder 100 caracteres")]
         [Required(ErrorMessage = "(A sigla do órgão é obrigatória)")]
         [Display(Name = "Sigla")]
         public string? Sigla { get; set; }
 
+        // Nome completo do órgão.
         [StringLength(100, ErrorMessage = "A descrição não pode exceder 100 caracteres")]
         [Required(ErrorMessage = "(o nome do órgão é obrigatória)")]
         [Display(Name = "Nome")]

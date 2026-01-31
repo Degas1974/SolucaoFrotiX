@@ -1,13 +1,12 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: OperadorContrato.cs                                                                     ║
+   ║ 📌 ARQUIVO: OperadorContrato.cs                                                                     ║
    ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Entidade de relacionamento N:N entre Operador e Contrato (chave composta).            ║
+   ║ 🧭 OBJETIVO: Mapear vínculo N:N entre Operador e Contrato via chave composta.                       ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENTIDADE: OperadorContrato (OperadorId + ContratoId = PK composta), OperadorContratoViewModel    ║
+   ║ 🗂️  CONTÉM: OperadorContratoViewModel, OperadorContrato                                             ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: FrotiX.Services, FrotiX.Validations                                                        ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core                                                           ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
@@ -22,20 +21,36 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
+    // ==================================================================================================
+    // VIEW MODEL
+    // ==================================================================================================
+    // Finalidade: transportar vínculo Operador-Contrato nas telas de edição.
+    // ==================================================================================================
     public class OperadorContratoViewModel
     {
+        // Identificador do operador.
         public Guid OperadorId { get; set; }
+
+        // Identificador do contrato.
         public Guid ContratoId { get; set; }
+
+        // Entidade do vínculo.
         public OperadorContrato? OperadorContrato { get; set; }
     }
 
+    // ==================================================================================================
+    // ENTIDADE
+    // ==================================================================================================
+    // Representa o relacionamento N:N entre Operador e Contrato.
+    // ⚠️ ATENÇÃO: chave composta (OperadorId + ContratoId).
+    // ==================================================================================================
     public class OperadorContrato
     {
-        //2 Foreign Keys as Primary Key
-        //=============================
+        // Chave composta - FK para Operador.
         [Key, Column(Order = 0)]
         public Guid OperadorId { get; set; }
 
+        // Chave composta - FK para Contrato.
         [Key, Column(Order = 1)]
         public Guid ContratoId { get; set; }
     }

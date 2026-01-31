@@ -1,13 +1,12 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: PlacaBronze.cs                                                                          ║
+   ║ 📌 ARQUIVO: PlacaBronze.cs                                                                          ║
    ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Entidade e ViewModels para placas bronze (modelo antigo de placas de veículos).       ║
+   ║ 🧭 OBJETIVO: Cadastrar placas bronze (modelo antigo de placas de veículos).                         ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 CLASSES: PlacaBronze (PlacaBronzeId), PlacaBronzeViewModel (VeiculoId)                           ║
+   ║ 🗂️  CONTÉM: PlacaBronzeViewModel, PlacaBronze                                                       ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: System.ComponentModel.DataAnnotations, ValidateNever                                       ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, ValidateNever                                                     ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
@@ -17,17 +16,26 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models
 {
+    // ==================================================================================================
+    // VIEW MODEL
+    // ==================================================================================================
+    // Finalidade: transportar placa bronze e o veículo associado na UI.
+    // ==================================================================================================
     public class PlacaBronzeViewModel
     {
+        // Identificador da placa bronze.
         public Guid PlacaBronzeId
         {
             get; set;
         }
+
+        // Entidade principal do formulário.
         public PlacaBronze? PlacaBronze
         {
             get; set;
         }
 
+        // Veículo associado (não mapeado).
         [NotMapped]
         [ValidateNever]
         [Display(Name = "Veículo Associado")]
@@ -37,14 +45,21 @@ namespace FrotiX.Models
         }
     }
 
+    // ==================================================================================================
+    // ENTIDADE
+    // ==================================================================================================
+    // Representa a placa bronze (modelo antigo).
+    // ==================================================================================================
     public class PlacaBronze
     {
+        // Identificador único da placa.
         [Key]
         public Guid PlacaBronzeId
         {
             get; set;
         }
 
+        // Descrição da placa.
         [StringLength(100 , ErrorMessage = "A descrição não pode exceder 100 caracteres")]
         [Required(ErrorMessage = "(A descrição da placa é obrigatória)")]
         [Display(Name = "Placa de Bronze")]
@@ -53,6 +68,7 @@ namespace FrotiX.Models
             get; set;
         }
 
+        // Status ativo/inativo.
         [Display(Name = "Ativo/Inativo")]
         public bool Status
         {

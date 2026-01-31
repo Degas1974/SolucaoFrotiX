@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 31.5%
+████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 32.0%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 285 |
-| Percentual | 31.5% |
-| Última Atualização | 31/01/2026 11:35 |
+| Documentados | 290 |
+| Percentual | 32.0% |
+| Última Atualização | 31/01/2026 11:38 |
 
 ---
 
@@ -36,7 +36,7 @@
 | 9 | Infrastructure | 1 | 1 | 100% | ✅ Completo |
 | 10 | Logging | 1 | 1 | 100% | ✅ Completo |
 | 11 | Middlewares | 2 | 2 | 100% | ✅ Completo |
-| 12 | Models | 139 | 84 | 60.4% | 🟡 Em Progresso |
+| 12 | Models | 139 | 89 | 64.0% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
 | 15 | Repository | 209 | 209 | 100% | ✅ Completo |
@@ -173,6 +173,13 @@
    • NotaFiscal.cs
    • ObservacoesEscala.cs
 
+✅ Models/Cadastros - Classes (Lote 114 - novo padrão visual):
+   • Operador.cs
+   • OperadorContrato.cs
+   • OrgaoAutuante.cs
+   • Patrimonio.cs
+   • PlacaBronze.cs
+
 ### 📂 Infrastructure (1/1) ✅
 ```
 ✅ CacheKeys.cs
@@ -189,11 +196,11 @@
 ✅ UiExceptionMiddleware.cs
 ```
 
-### 📂 Models (84/139) 🟡
+### 📂 Models (89/139) 🟡
 ```
 ✅ Estatísticas (13 arquivos - Lotes 51-53)
 ✅ Views (38 arquivos - Lotes 54-61)
-⏳ Cadastros (36 processados)
+⏳ Cadastros (41 processados)
 ⏳ FontAwesome (1 processado)
 ⏳ Planilhas (1 processado)
 ```
@@ -546,10 +553,11 @@
 | 31/01/2026 | 5 | 1 | Lote 111 - Models/Cadastros novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 112 - Models/Cadastros novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 113 - Models/Cadastros novo padrão visual (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 114 - Models/Cadastros novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 62
-**Total de Commits:** 60
-**Total de Arquivos Documentados:** 285
+**Total de Lotes:** 63
+**Total de Commits:** 61
+**Total de Arquivos Documentados:** 290
 
 ---
 
