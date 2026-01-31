@@ -1,17 +1,20 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: Abastecimento.cs                                                                      ║
-   ║ 📂 CAMINHO: Models/Cadastros/                                                                     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
-   ║    Modelos para cadastro de abastecimentos de veículos (entidade e ViewModel).                    ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 CLASSES DISPONÍVEIS:                                                                           ║
-   ║    • AbastecimentoViewModel                                                                       ║
-   ║    • Abastecimento                                                                               ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: FrotiX.Services, FrotiX.Validations, SelectListItem                                ║
-   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: FrotiX Team | 📝 VERSÃO: 2.0                                 ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: Abastecimento.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Modelar abastecimentos de veículos e o ViewModel de apoio às telas.
+ *
+ * 📥 ENTRADAS     : Dados de abastecimento, listas de seleção e vínculos a entidades.
+ *
+ * 📤 SAÍDAS       : Entidade persistida e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Controllers/Views de abastecimento, repositórios e serviços.
+ *
+ * 🔄 CHAMA        : DataAnnotations, ForeignKey, SelectListItem.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.Services, FrotiX.Validations, Microsoft.AspNetCore.Mvc.Rendering.
+ *
+ * 📝 OBSERVAÇÕES  : A entidade referencia Veiculo, Combustivel e Motorista.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -27,17 +30,19 @@ using Microsoft.AspNetCore.Http;
 namespace FrotiX.Models
     {
     
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: AbastecimentoViewModel                                                            │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Agregar entidade Abastecimento e listas de seleção para uso em views.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Controllers e Views de cadastro
-    // ➡️ CHAMA       : SelectListItem (listas de apoio)
-    //
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: AbastecimentoViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Agregar entidade Abastecimento e listas de seleção para uso em views.
+     *
+     * 📥 ENTRADAS     : Entidade Abastecimento e listas de veículos/motoristas/combustíveis.
+     *
+     * 📤 SAÍDAS       : Payload completo para telas de cadastro/edição.
+     *
+     * 🔗 CHAMADA POR  : Controllers e Views de abastecimento.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     ****************************************************************************************/
     public class AbastecimentoViewModel
         {
         public Guid AbastecimentoId { get; set; }
@@ -52,17 +57,19 @@ namespace FrotiX.Models
         }
 
     
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: Abastecimento                                                                     │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Representar o registro de abastecimento de veículo com vínculos a Veiculo, Combustivel e Motorista.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Repositórios, Controllers, serviços de cadastro
-    // ➡️ CHAMA       : DataAnnotations, ForeignKey
-    //
+    /****************************************************************************************
+     * ⚡ MODEL: Abastecimento
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar o registro de abastecimento de veículo.
+     *
+     * 📥 ENTRADAS     : Litros, valor unitário, data/hora, hodômetro e vínculos.
+     *
+     * 📤 SAÍDAS       : Registro persistido e navegável via EF Core.
+     *
+     * 🔗 CHAMADA POR  : Repositórios, controllers e serviços de cadastro.
+     *
+     * 🔄 CHAMA        : DataAnnotations, ForeignKey.
+     ****************************************************************************************/
     public class Abastecimento
         {
 
@@ -129,4 +136,3 @@ namespace FrotiX.Models
 
         }
     }
-

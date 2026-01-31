@@ -1,13 +1,22 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: AlertasFrotiX.cs                                                                        ║
-   ║ 📂 CAMINHO: /Models                                                                                 ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Configurar e registrar alertas do sistema (prioridades, recorrência, vínculos).       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: AlertasFrotiX                                                                           ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core                                                           ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: AlertasFrotiX.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Modelar alertas do sistema, sua recorrência e vínculo com usuários.
+ *
+ * 📥 ENTRADAS     : Dados de alerta, vínculos (viagem/manutenção/motorista/veículo) e regras de agenda.
+ *
+ * 📤 SAÍDAS       : Entidades persistidas (AlertasFrotiX, AlertasUsuario) e enums de domínio.
+ *
+ * 🔗 CHAMADA POR  : Módulos de alertas, agenda e notificações do FrotiX.
+ *
+ * 🔄 CHAMA        : DataAnnotations/EF Core (mapeamento e validação).
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations, EF Core.
+ *
+ * ⚠️ ATENÇÃO      : Relacionamento N:N entre alertas e usuários via AlertasUsuario.
+ *
+ * 📝 OBSERVAÇÕES  : Suporta recorrência diária, semanal, mensal e datas específicas.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -16,11 +25,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa alertas configurados/gerados pelo sistema.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: AlertasFrotiX
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar alertas configurados/gerados pelo sistema.
+     *
+     * 📥 ENTRADAS     : Metadados, prioridade, recorrência e vínculos opcionais.
+     *
+     * 📤 SAÍDAS       : Registro de alerta persistido no banco.
+     *
+     * 🔗 CHAMADA POR  : Repositórios e serviços de alerta/agenda.
+     *
+     * 🔄 CHAMA        : Viagem, Manutencao, Motorista, Veiculo (navegação).
+     *
+     * ⚠️ ATENÇÃO      : Série recorrente usa RecorrenciaAlertaId/AlertasRecorrentes.
+     ****************************************************************************************/
     public class AlertasFrotiX
     {
         // Identificador do alerta.
@@ -230,7 +249,17 @@ namespace FrotiX.Models
             get; set;
         }
 
-        // Construtor
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AlertasFrotiX (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar IDs, datas e coleções de navegação.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : Instância pronta para uso/persistência.
+         *
+         * 🔗 CHAMADA POR  : EF Core e criação manual em serviços.
+         ****************************************************************************************/
         public AlertasFrotiX()
         {
             AlertasFrotiXId = Guid.NewGuid();
@@ -240,11 +269,21 @@ namespace FrotiX.Models
         }
     }
 
-    // ==================================================================================================
-    // RELACIONAMENTO ALERTA-USUÁRIO
-    // ==================================================================================================
-    // Tabela de relacionamento N:N entre alertas e usuários.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: AlertasUsuario
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar o vínculo N:N entre alertas e usuários.
+     *
+     * 📥 ENTRADAS     : IDs de alerta/usuário e flags de leitura/notificação.
+     *
+     * 📤 SAÍDAS       : Registro de relacionamento persistido.
+     *
+     * 🔗 CHAMADA POR  : Processos de notificação, leitura e exclusão lógica.
+     *
+     * 🔄 CHAMA        : AlertasFrotiX, AspNetUsers (navegação).
+     *
+     * ⚠️ ATENÇÃO      : É a tabela de relacionamento do N:N (não usar como entidade de negócio).
+     ****************************************************************************************/
     public class AlertasUsuario
     {
         // Identificador do relacionamento.
@@ -294,6 +333,17 @@ namespace FrotiX.Models
         // Indica se foi notificado.
         public bool Notificado { get; set; } = false;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AlertasUsuario (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar o identificador do relacionamento.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : Instância com GUID gerado.
+         *
+         * 🔗 CHAMADA POR  : EF Core e criação manual.
+         ****************************************************************************************/
         public AlertasUsuario()
         {
             AlertasUsuarioId = Guid.NewGuid();
@@ -319,7 +369,15 @@ namespace FrotiX.Models
         }
     }
 
-    // Enums
+    /****************************************************************************************
+     * ⚡ ENUM: TipoAlerta
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Classificar o alerta por natureza de negócio.
+     *
+     * 📥 ENTRADAS     : Valores definidos pelo domínio.
+     *
+     * 📤 SAÍDAS       : Enum utilizado por AlertasFrotiX.
+     ****************************************************************************************/
     public enum TipoAlerta
     {
         [Display(Name = "Agendamento")]
@@ -341,6 +399,15 @@ namespace FrotiX.Models
         Diversos = 6
     }
 
+    /****************************************************************************************
+     * ⚡ ENUM: PrioridadeAlerta
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Definir prioridade de exibição/ação do alerta.
+     *
+     * 📥 ENTRADAS     : Baixa, Media, Alta.
+     *
+     * 📤 SAÍDAS       : Enum utilizado por AlertasFrotiX.
+     ****************************************************************************************/
     public enum PrioridadeAlerta
     {
         [Display(Name = "Baixa")]
@@ -353,7 +420,17 @@ namespace FrotiX.Models
         Alta = 3
     }
 
-    // Tipo de exibição do alerta (1-3: única, 4-8: recorrente).
+    /****************************************************************************************
+     * ⚡ ENUM: TipoExibicaoAlerta
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Indicar quando e como o alerta deve ser exibido.
+     *
+     * 📥 ENTRADAS     : Valores de exibição única ou recorrente.
+     *
+     * 📤 SAÍDAS       : Enum utilizado por AlertasFrotiX.
+     *
+     * 📝 OBSERVAÇÕES  : 1-3 = única; 4-8 = recorrente.
+     ****************************************************************************************/
     public enum TipoExibicaoAlerta
     {
         [Display(Name = "Ao abrir o sistema")]

@@ -1,17 +1,20 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: AspNetUsers.cs                                                                        ║
-   ║ 📂 CAMINHO: Models/Cadastros/                                                                     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
-   ║    Extensão do IdentityUser e ViewModel para usuários do sistema.                                  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 CLASSES DISPONÍVEIS:                                                                           ║
-   ║    • UsuarioViewModel                                                                             ║
-   ║    • AspNetUsers (IdentityUser)                                                                   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: Microsoft.AspNetCore.Identity, System.ComponentModel.DataAnnotations              ║
-   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: FrotiX Team | 📝 VERSÃO: 2.0                                 ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: AspNetUsers.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Estender o IdentityUser e fornecer ViewModel para telas de usuários.
+ *
+ * 📥 ENTRADAS     : Dados de cadastro/autenticação e validações específicas do FrotiX.
+ *
+ * 📤 SAÍDAS       : Entidade Identity estendida e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Identity, controllers e telas administrativas.
+ *
+ * 🔄 CHAMA        : DataAnnotations para validações.
+ *
+ * 📦 DEPENDÊNCIAS : Microsoft.AspNetCore.Identity, System.ComponentModel.DataAnnotations.
+ *
+ * ⚠️ ATENÇÃO      : Vários campos são redefinidos como nullable por compatibilidade.
+ **************************************************************************************** */
 
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -19,17 +22,19 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FrotiX.Models
 {
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: UsuarioViewModel                                                                  │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Agrupar dados de usuário para uso em telas e operações administrativas.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Controllers/Views de usuários
-    // ➡️ CHAMA       : AspNetUsers
-    //
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: UsuarioViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Agrupar dados de usuário para uso em telas administrativas.
+     *
+     * 📥 ENTRADAS     : Id e entidade AspNetUsers.
+     *
+     * 📤 SAÍDAS       : ViewModel utilizado em views/relatórios.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de usuários.
+     *
+     * 🔄 CHAMA        : AspNetUsers.
+     ****************************************************************************************/
     public class UsuarioViewModel
     {
         public string? Id
@@ -42,21 +47,21 @@ namespace FrotiX.Models
         }
     }
 
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: AspNetUsers                                                                       │
-    // │ 📦 HERDA DE: IdentityUser                                                                    │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Estender o IdentityUser com campos adicionais do FrotiX.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Identity / Controllers / Repositórios
-    // ➡️ CHAMA       : DataAnnotations
-    //
-    // ⚠️ ATENÇÃO:
-    // Alguns campos são redefinidos como nullable para compatibilidade com dados legados.
-    //
+    /****************************************************************************************
+     * ⚡ MODEL: AspNetUsers
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Estender IdentityUser com campos adicionais do FrotiX.
+     *
+     * 📥 ENTRADAS     : Dados de autenticação, perfil e validações customizadas.
+     *
+     * 📤 SAÍDAS       : Entidade Identity persistida.
+     *
+     * 🔗 CHAMADA POR  : Identity, controllers e repositórios.
+     *
+     * 🔄 CHAMA        : DataAnnotations.
+     *
+     * ⚠️ ATENÇÃO      : Campos redefinidos como nullable para dados legados.
+     ****************************************************************************************/
     public class AspNetUsers :IdentityUser
     {
         [Key]

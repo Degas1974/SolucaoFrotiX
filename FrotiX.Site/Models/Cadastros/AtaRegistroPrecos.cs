@@ -1,19 +1,18 @@
-﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: AtaRegistroPrecos.cs                                                                  ║
-   ║ 📂 CAMINHO: Models/Cadastros/                                                                     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
-   ║    Modelos para Atas de Registro de Preços e seus itens/repactuações.                              ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 CLASSES DISPONÍVEIS:                                                                           ║
-   ║    • AtaRegistroPrecosViewModel                                                                   ║
-   ║    • AtaRegistroPrecos                                                                            ║
-   ║    • RepactuacaoAta                                                                               ║
-   ║    • ItemVeiculoAta                                                                               ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: FrotiX.Validations, SelectListItem                                                ║
-   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: FrotiX Team | 📝 VERSÃO: 2.0                                 ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+﻿/* ****************************************************************************************
+ * ⚡ ARQUIVO: AtaRegistroPrecos.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Modelar atas de registro de preços e seus itens/repactuações.
+ *
+ * 📥 ENTRADAS     : Dados de atas, fornecedores e itens vinculados.
+ *
+ * 📤 SAÍDAS       : Entidades persistidas e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Módulos de contratos/atas, controllers e repositórios.
+ *
+ * 🔄 CHAMA        : DataAnnotations, ValidaZero, ForeignKey, SelectListItem.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.Validations, Microsoft.AspNetCore.Mvc.Rendering.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -26,17 +25,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
     {
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: AtaRegistroPrecosViewModel                                                        │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Agrupar AtaRegistroPrecos com lista de fornecedores para uso em views.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Controllers/Views de atas
-    // ➡️ CHAMA       : SelectListItem
-    //
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: AtaRegistroPrecosViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Agrupar ata e lista de fornecedores para uso em views.
+     *
+     * 📥 ENTRADAS     : AtaRegistroPrecos e lista de fornecedores.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas de cadastro/edição.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de atas.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     ****************************************************************************************/
     public class AtaRegistroPrecosViewModel
         {
         public Guid AtaId { get; set; }
@@ -44,17 +45,19 @@ namespace FrotiX.Models
         public IEnumerable<SelectListItem> FornecedorList { get; set; }
         }
 
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: AtaRegistroPrecos                                                                 │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Representar uma Ata de Registro de Preços com vínculo a fornecedor.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Repositórios, Controllers
-    // ➡️ CHAMA       : DataAnnotations, ForeignKey
-    //
+    /****************************************************************************************
+     * ⚡ MODEL: AtaRegistroPrecos
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar uma ata de registro de preços com vínculo a fornecedor.
+     *
+     * 📥 ENTRADAS     : Dados de processo, vigência e valor.
+     *
+     * 📤 SAÍDAS       : Registro persistido e navegável.
+     *
+     * 🔗 CHAMADA POR  : Repositórios e controllers de atas.
+     *
+     * 🔄 CHAMA        : DataAnnotations, ForeignKey, ValidaZero.
+     ****************************************************************************************/
     public class AtaRegistroPrecos
         {
 
@@ -111,17 +114,19 @@ namespace FrotiX.Models
 
         }
 
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: RepactuacaoAta                                                                     │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Representar repactuações de uma ata de registro de preços.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Processos de repactuação
-    // ➡️ CHAMA       : ForeignKey
-    //
+    /****************************************************************************************
+     * ⚡ MODEL: RepactuacaoAta
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar repactuações vinculadas a uma ata.
+     *
+     * 📥 ENTRADAS     : Datas e descrição de repactuação.
+     *
+     * 📤 SAÍDAS       : Registro de histórico de repactuação.
+     *
+     * 🔗 CHAMADA POR  : Processos de repactuação.
+     *
+     * 🔄 CHAMA        : ForeignKey.
+     ****************************************************************************************/
     public class RepactuacaoAta
         {
         [Key]
@@ -140,17 +145,19 @@ namespace FrotiX.Models
         }
 
 
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: ItemVeiculoAta                                                                     │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Representar itens de veículos vinculados a uma repactuação de ata.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Processos de repactuação/itens
-    // ➡️ CHAMA       : ForeignKey
-    //
+    /****************************************************************************************
+     * ⚡ MODEL: ItemVeiculoAta
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar itens de veículos vinculados a uma repactuação de ata.
+     *
+     * 📥 ENTRADAS     : Descrição, quantidade, valor e vínculo à repactuação.
+     *
+     * 📤 SAÍDAS       : Registro de item de ata para consultas/relatórios.
+     *
+     * 🔗 CHAMADA POR  : Processos de repactuação e itens.
+     *
+     * 🔄 CHAMA        : ForeignKey.
+     ****************************************************************************************/
     public class ItemVeiculoAta
         {
         [Key]
@@ -174,4 +181,3 @@ namespace FrotiX.Models
 
 
     }
-
