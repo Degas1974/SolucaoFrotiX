@@ -358,6 +358,19 @@ namespace FrotiX.Controllers
 
         //Apaga Conexão Pendência-OS
         //=========================
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ApagaConexaoPendencia
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover (ou simular remoção) da conexão entre OS e pendência.
+         *
+         * 📥 ENTRADAS     : [ItensManutencao] itensManutencao (opcional).
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Fluxos de pendências vinculadas à OS.
+         *
+         * 📝 OBSERVAÇÕES  : Bloco principal está comentado; ação atual apenas responde.
+         ****************************************************************************************/
         [Route("ApagaConexaoPendencia")]
         [HttpPost]
         public JsonResult ApagaConexaoPendencia(Models.ItensManutencao itensManutencao = null)
@@ -399,6 +412,19 @@ namespace FrotiX.Controllers
 
         //Apaga Conexão Viagem-OS
         //=======================
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ApagaItens
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover itens de manutenção e liberar ocorrências vinculadas.
+         *
+         * 📥 ENTRADAS     : [ItensManutencao] itensManutencao (contém ManutencaoId).
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de exclusão de itens da OS.
+         *
+         * 🔄 CHAMA        : ItensManutencao.GetAll(), OcorrenciaViagem.Update(), Save().
+         ****************************************************************************************/
         [Route("ApagaItens")]
         [HttpPost]
         public JsonResult ApagaItens(Models.ItensManutencao itensManutencao = null)
@@ -446,6 +472,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ApagaLavagem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover registro de lavagem e seus vínculos com lavadores.
+         *
+         * 📥 ENTRADAS     : [Lavagem] lavagem (LavagemId).
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de exclusão de lavagens.
+         *
+         * 🔄 CHAMA        : Lavagem.GetFirstOrDefault(), LavadoresLavagem.GetAll(),
+         *                   LavadoresLavagem.Remove(), Lavagem.Remove(), Save().
+         ****************************************************************************************/
         [Route("ApagaLavagem")]
         [HttpPost]
         public IActionResult ApagaLavagem(Lavagem lavagem = null)
@@ -492,6 +532,20 @@ namespace FrotiX.Controllers
 
         //Apaga OS/Manutenção
         //===================
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CancelaOS
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Cancelar OS de manutenção e liberar ocorrências vinculadas.
+         *
+         * 📥 ENTRADAS     : Id (string) - identificador da manutenção (Guid).
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de cancelamento de OS.
+         *
+         * 🔄 CHAMA        : ItensManutencao.GetAll(), OcorrenciaViagem.Update(),
+         *                   Manutencao.Update(), Save().
+         ****************************************************************************************/
         [Route("CancelaOS")]
         [HttpGet]
         public JsonResult CancelaOS(string Id = null)
@@ -559,6 +613,19 @@ namespace FrotiX.Controllers
 
         //Fecha Manutenção/OS
         //======================
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: FechaOS
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Fechar OS de manutenção e registrar usuário/finalização.
+         *
+         * 📥 ENTRADAS     : [Manutencao] manutencao (ID, datas e resumo).
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Fluxos de finalização de OS.
+         *
+         * 🔄 CHAMA        : Manutencao.GetFirstOrDefault(), Manutencao.Update(), Save().
+         ****************************************************************************************/
         [Route("FechaOS")]
         [HttpPost]
         public JsonResult FechaOS(Models.Manutencao manutencao = null)
@@ -608,6 +675,19 @@ namespace FrotiX.Controllers
 
         //Baixa Manutenção/OS (chamado pelo ListaManutencao.js)
         //=====================================================
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: BaixaOS
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Baixar OS, atualizando status da manutenção e dos itens vinculados.
+         *
+         * 📥 ENTRADAS     : Parâmetros de formulário (IDs, datas, resumo, itens removidos).
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro e contadores de itens baixados/pendentes.
+         *
+         * 🔗 CHAMADA POR  : ListaManutencao.js (tela de manutenção).
+         *
+         * 🔄 CHAMA        : Manutencao.Update(), ItensManutencao.Update(), OcorrenciaViagem.Update(), Save().
+         ****************************************************************************************/
         [Route("BaixaOS")]
         [HttpPost]
         public JsonResult BaixaOS(
@@ -794,6 +874,19 @@ namespace FrotiX.Controllers
 
         //Insere Novo Item de  Manutenção
         //===============================
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: InsereItemOS
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inserir novo item de manutenção na OS e atualizar ocorrências.
+         *
+         * 📥 ENTRADAS     : [ItensManutencao] itensManutencao.
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Tela de manutenção (inclusão de itens).
+         *
+         * 🔄 CHAMA        : ItensManutencao.Add(), OcorrenciaViagem.Update(), Save().
+         ****************************************************************************************/
         [Route("InsereItemOS")]
         [HttpPost]
         public JsonResult InsereItemOS(Models.ItensManutencao itensManutencao = null)
@@ -853,6 +946,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: InsereLavadoresLavagem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Associar lavadores a uma lavagem específica.
+         *
+         * 📥 ENTRADAS     : [LavadoresLavagem] lavadoreslavagem.
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Tela de lavagens (associação de lavadores).
+         *
+         * 🔄 CHAMA        : LavadoresLavagem.Add(), Save().
+         ****************************************************************************************/
         [Route("InsereLavadoresLavagem")]
         [Consumes("application/json")]
         public IActionResult InsereLavadoresLavagem(
@@ -884,6 +990,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: InsereLavagem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inserir registro de lavagem de veículo.
+         *
+         * 📥 ENTRADAS     : [Lavagem] lavagem.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso e LavagemId.
+         *
+         * 🔗 CHAMADA POR  : Tela de lavagens.
+         *
+         * 🔄 CHAMA        : Lavagem.Add(), Save().
+         ****************************************************************************************/
         [Route("InsereLavagem")]
         [Consumes("application/json")]
         public IActionResult InsereLavagem([FromBody] Lavagem lavagem = null)
@@ -921,6 +1040,19 @@ namespace FrotiX.Controllers
 
         //Insere Nova Manutenção
         //======================
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: InsereOS
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inserir ou atualizar OS de manutenção.
+         *
+         * 📥 ENTRADAS     : [Manutencao] manutencao.
+         *
+         * 📤 SAÍDAS       : JSON com ID e mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Tela de manutenção (abertura/edição de OS).
+         *
+         * 🔄 CHAMA        : Manutencao.Add()/Update(), Save().
+         ****************************************************************************************/
         [Route("InsereOS")]
         [HttpPost]
         public JsonResult InsereOS(Models.Manutencao manutencao = null)
@@ -963,6 +1095,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ItensOS
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar itens de manutenção vinculados a uma OS.
+         *
+         * 📥 ENTRADAS     : id (string) - ManutencaoId.
+         *
+         * 📤 SAÍDAS       : JSON com itens filtrados (Manutenção ou Baixada).
+         *
+         * 🔗 CHAMADA POR  : Telas de detalhe da OS.
+         *
+         * 🔄 CHAMA        : ViewItensManutencao.GetAllReducedIQueryable(), ToListAsync().
+         ****************************************************************************************/
         [Route("ItensOS")]
         [HttpGet]
         public async Task<IActionResult> ItensOS(string id = null)
@@ -1012,6 +1157,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaLavagemLavadores
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar lavagens filtradas por lavador.
+         *
+         * 📥 ENTRADAS     : id (Guid) - identificador do lavador.
+         *
+         * 📤 SAÍDAS       : JSON com lavagens associadas ao lavador.
+         *
+         * 🔗 CHAMADA POR  : Consultas por lavador na tela de lavagens.
+         *
+         * 🔄 CHAMA        : ViewLavagem.GetAll(), Lavador.GetAll().
+         ****************************************************************************************/
         [Route("ListaLavagemLavadores")]
         [HttpGet]
         public IActionResult ListaLavagemLavadores(Guid id)
@@ -1071,6 +1229,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaLavagemMotoristas
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar lavagens filtradas por motorista.
+         *
+         * 📥 ENTRADAS     : id (Guid) - identificador do motorista.
+         *
+         * 📤 SAÍDAS       : JSON com lavagens associadas ao motorista.
+         *
+         * 🔗 CHAMADA POR  : Consultas por motorista na tela de lavagens.
+         *
+         * 🔄 CHAMA        : ViewLavagem.GetAll().
+         ****************************************************************************************/
         [Route("ListaLavagemMotoristas")]
         [HttpGet]
         public IActionResult ListaLavagemMotoristas(Guid id)
@@ -1104,6 +1275,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaLavagemVeiculos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar lavagens filtradas por veículo.
+         *
+         * 📥 ENTRADAS     : id (Guid) - identificador do veículo.
+         *
+         * 📤 SAÍDAS       : JSON com lavagens associadas ao veículo.
+         *
+         * 🔗 CHAMADA POR  : Consultas por veículo na tela de lavagens.
+         *
+         * 🔄 CHAMA        : ViewLavagem.GetAll().
+         ****************************************************************************************/
         [Route("ListaLavagemVeiculos")]
         [HttpGet]
         public IActionResult ListaLavagemVeiculos(Guid id)
@@ -1137,6 +1321,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaLavagens
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar todas as lavagens registradas.
+         *
+         * 📥 ENTRADAS     : id (string) - não utilizado.
+         *
+         * 📤 SAÍDAS       : JSON com todas as lavagens.
+         *
+         * 🔗 CHAMADA POR  : Listagens gerais de lavagens.
+         *
+         * 🔄 CHAMA        : ViewLavagem.GetAll().
+         ****************************************************************************************/
         [Route("ListaLavagens")]
         [HttpGet]
         public IActionResult ListaLavagens(string id = null)
@@ -1169,6 +1366,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaLavagensData
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar lavagens por data específica.
+         *
+         * 📥 ENTRADAS     : id (string) - data no formato esperado pela view.
+         *
+         * 📤 SAÍDAS       : JSON com lavagens da data informada.
+         *
+         * 🔗 CHAMADA POR  : Filtros de data na tela de lavagens.
+         *
+         * 🔄 CHAMA        : ViewLavagem.GetAll().
+         ****************************************************************************************/
         [Route("ListaLavagensData")]
         [HttpGet]
         public IActionResult ListaLavagensData(string id = null)
@@ -1202,6 +1412,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaManutencao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar manutenções abertas (status padrão).
+         *
+         * 📥 ENTRADAS     : id (string) - não utilizado.
+         *
+         * 📤 SAÍDAS       : JSON com manutenções filtradas.
+         *
+         * 🔗 CHAMADA POR  : Listagens gerais de manutenção.
+         *
+         * 🔄 CHAMA        : ViewManutencao.GetAllReducedIQueryable(), AsNoTracking().
+         ****************************************************************************************/
         [Route("ListaManutencao")]
         [HttpGet]
         public async Task<IActionResult> ListaManutencao(string id = null)
@@ -1229,6 +1452,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaManutencaoData
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar manutenções por data de solicitação.
+         *
+         * 📥 ENTRADAS     : id (string) - data a filtrar.
+         *
+         * 📤 SAÍDAS       : JSON com manutenções da data informada.
+         *
+         * 🔗 CHAMADA POR  : Filtros de data na tela de manutenção.
+         *
+         * 🔄 CHAMA        : ViewManutencao.GetAllReducedIQueryable().
+         ****************************************************************************************/
         [Route("ListaManutencaoData")]
         [HttpGet]
         public IActionResult ListaManutencaoData(string id = null)
@@ -1266,6 +1502,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaManutencaoIntervalo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar manutenções por mês/ano de devolução.
+         *
+         * 📥 ENTRADAS     : mes, ano (string).
+         *
+         * 📤 SAÍDAS       : JSON com manutenções filtradas.
+         *
+         * 🔗 CHAMADA POR  : Filtros mensais de manutenção.
+         *
+         * 🔄 CHAMA        : ViewManutencao.GetAllReducedIQueryable(), LINQ.
+         ****************************************************************************************/
         [Route("ListaManutencaoIntervalo")]
         [HttpGet]
         public IActionResult ListaManutencaoIntervalo(string mes = null , string ano = null)
@@ -1315,6 +1564,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaManutencaoStatus
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar manutenções por status (Aberta, Fechada, etc.).
+         *
+         * 📥 ENTRADAS     : Id (string) - status a filtrar.
+         *
+         * 📤 SAÍDAS       : JSON com manutenções filtradas.
+         *
+         * 🔗 CHAMADA POR  : Filtros de status na tela de manutenção.
+         *
+         * 🔄 CHAMA        : ViewManutencao.GetAllReducedIQueryable().
+         ****************************************************************************************/
         [Route("ListaManutencaoStatus")]
         [HttpGet]
         public IActionResult ListaManutencaoStatus(string Id = null)
@@ -1361,6 +1623,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaManutencaoVeiculo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar manutenções por veículo.
+         *
+         * 📥 ENTRADAS     : Id (Guid) - identificador do veículo.
+         *
+         * 📤 SAÍDAS       : JSON com manutenções do veículo.
+         *
+         * 🔗 CHAMADA POR  : Consultas por veículo na tela de manutenção.
+         *
+         * 🔄 CHAMA        : ViewManutencao.GetAllReducedIQueryable().
+         ****************************************************************************************/
         [Route("ListaManutencaoVeiculo")]
         [HttpGet]
         public IActionResult ListaManutencaoVeiculo(Guid Id)
@@ -1404,6 +1679,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OcorrenciasVeiculosManutencao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar ocorrências abertas do veículo para manutenção.
+         *
+         * 📥 ENTRADAS     : Id (Guid) - identificador do veículo.
+         *
+         * 📤 SAÍDAS       : JSON com ocorrências abertas.
+         *
+         * 🔗 CHAMADA POR  : Tela de criação de OS/itens.
+         *
+         * 🔄 CHAMA        : ViewOcorrenciasViagem.GetAll(), Servicos.ConvertHtml().
+         ****************************************************************************************/
         [Route("OcorrenciasVeiculosManutencao")]
         [HttpGet]
         public IActionResult OcorrenciasVeiculosManutencao(Guid Id)
@@ -1449,6 +1737,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OcorrenciasVeiculosPendencias
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar pendências do veículo para manutenção.
+         *
+         * 📥 ENTRADAS     : Id (Guid) - identificador do veículo.
+         *
+         * 📤 SAÍDAS       : JSON com pendências.
+         *
+         * 🔗 CHAMADA POR  : Tela de manutenção (itens pendentes).
+         *
+         * 🔄 CHAMA        : ViewPendenciasManutencao.GetAllReducedIQueryable().
+         ****************************************************************************************/
         [Route("OcorrenciasVeiculosPendencias")]
         [HttpGet]
         public IActionResult OcorrenciasVeiculosPendencias(Guid Id)
@@ -1491,6 +1792,19 @@ namespace FrotiX.Controllers
 
         //Recupera os nomes dos Lavadores
         //===============================
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RecuperaLavador
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar lavadores cadastrados.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com lista de lavadores.
+         *
+         * 🔗 CHAMADA POR  : Dropdowns e filtros de lavadores.
+         *
+         * 🔄 CHAMA        : Lavador.GetAll().
+         ****************************************************************************************/
         [Route("RecuperaLavador")]
         public IActionResult RecuperaLavador()
         {
@@ -1512,6 +1826,19 @@ namespace FrotiX.Controllers
 
         //Recupera o nome do Usuário de Criação/Finalização
         //=================================================
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RecuperaUsuario
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Recuperar nome completo do usuário pelo ID.
+         *
+         * 📥 ENTRADAS     : Id (string) - identificador do usuário.
+         *
+         * 📤 SAÍDAS       : JSON com nome do usuário ou string vazia.
+         *
+         * 🔗 CHAMADA POR  : Telas que exibem usuário de criação/finalização.
+         *
+         * 🔄 CHAMA        : AspNetUsers.GetFirstOrDefault().
+         ****************************************************************************************/
         [Route("RecuperaUsuario")]
         public IActionResult RecuperaUsuario(string Id = null)
         {
@@ -1541,6 +1868,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SaveImage
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Salvar imagens enviadas para o diretório de viagens.
+         *
+         * 📥 ENTRADAS     : UploadFiles (IList<IFormFile>).
+         *
+         * 📤 SAÍDAS       : Atualiza Response.StatusCode conforme sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Upload de imagens de ocorrência/viagem.
+         *
+         * 🔄 CHAMA        : File IO, Directory.CreateDirectory().
+         ****************************************************************************************/
         [Route("SaveImage")]
         public void SaveImage(IList<IFormFile> UploadFiles = null)
         {
@@ -1591,6 +1931,21 @@ namespace FrotiX.Controllers
 
         //Zera Itens Manutenção/OS (coloca como pendência)
         //================================================
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ZeraItensOS
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Zerar itens de manutenção (colocar como pendência).
+         *
+         * 📥 ENTRADAS     : [ItensManutencao] manutencao (ManutencaoId).
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Fluxos de reabertura de OS.
+         *
+         * 🔄 CHAMA        : ItensManutencao.GetAll(), Save().
+         *
+         * 📝 OBSERVAÇÕES  : Parte do processamento está comentada.
+         ****************************************************************************************/
         [Route("ZeraItensOS")]
         [HttpPost]
         public JsonResult ZeraItensOS(Models.ItensManutencao manutencao = null)
@@ -1646,9 +2001,15 @@ namespace FrotiX.Controllers
         }
     }
 
-    /// <summary>
-    /// DTO para deserializar os itens removidos do JSON enviado pelo ListaManutencao.js
-    /// </summary>
+    /* ****************************************************************************************
+     * ⚡ CLASSE: ItemRemovidoDTO
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar itens removidos enviados pelo ListaManutencao.js.
+     *
+     * 📥 ENTRADAS     : IDs e metadados do item removido (string).
+     *
+     * 📤 SAÍDAS       : Objeto utilizado na desserialização do JSON.
+     **************************************************************************************** */
     public class ItemRemovidoDTO
     {
         public string itemManutencaoId { get; set; }
