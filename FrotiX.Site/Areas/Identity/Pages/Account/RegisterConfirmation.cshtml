@@ -1,11 +1,20 @@
-﻿@*
-╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║ 📌 ARQUIVO: RegisterConfirmation.cshtml                                                             ║
-║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
-╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-║ 🧭 OBJETIVO: Página de confirmação de registro e instruções para validar email.                      ║
-╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*@
+﻿@*****************************************************************************************
+ * ⚡ ARQUIVO: RegisterConfirmation.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de confirmação de registro com instruções para validar email.
+ *
+ * 📥 ENTRADAS     : Model.DisplayConfirmAccountLink, Model.EmailConfirmationUrl.
+ *
+ * 📤 SAÍDAS       : HTML com link de confirmação ou mensagem para verificar email.
+ *
+ * 🔗 CHAMADA POR  : RegisterConfirmationModel.OnGetAsync().
+ *
+ * 🔄 CHAMA        : Nenhum (apenas renderização de conteúdo).
+ *
+ * 📦 DEPENDÊNCIAS : Razor Pages.
+ *
+ * 📝 OBSERVAÇÕES  : Exibe link direto quando IEmailSender não está configurado.
+ *****************************************************************************************@
 
 @page
 @model RegisterConfirmationModel

@@ -1,11 +1,22 @@
-﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: Register.cshtml.cs                                                                     ║
-   ║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: PageModel de registro de usuários FrotiX.                                             ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: RegisterModel, InputModel                                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+﻿/* ****************************************************************************************
+ * ⚡ ARQUIVO: Register.cshtml.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : PageModel de registro de novos usuários, com criação de conta,
+ *                   validação de domínio e login automático.
+ *
+ * 📥 ENTRADAS     : Input.Ponto, Input.NomeCompleto, Input.Email, Input.Senha,
+ *                   Input.ConfirmacaoSenha, returnUrl.
+ *
+ * 📤 SAÍDAS       : IActionResult (LocalRedirect ou Page) e mensagens de erro.
+ *
+ * 🔗 CHAMADA POR  : Motor Razor (GET/POST /Account/Register).
+ *
+ * 🔄 CHAMA        : UserManager.CreateAsync(), SignInManager.SignInAsync().
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, IEmailSender, ILogger, AspNetUsers.
+ *
+ * 📝 OBSERVAÇÕES  : Confirmação de email está comentada; valida domínio com ValidateDomainAtEnd.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CLASSE: RegisterModel (PageModel)

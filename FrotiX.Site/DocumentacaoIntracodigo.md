@@ -17,7 +17,7 @@
 | Total de Arquivos | 905 |
 | Documentados | 380 |
 | Percentual | 42.0% |
-| Última Atualização | 31/01/2026 15:07 |
+| Última Atualização | 31/01/2026 15:10 |
 
 ---
 
@@ -326,6 +326,13 @@
    • Logout.cshtml
    • Logout.cshtml.cs
    • Register.cshtml
+
+✅ Areas/Identity - Pages (Lote 137 - revisão cards completos):
+   • Register.cshtml.cs
+   • RegisterConfirmation.cshtml
+   • RegisterConfirmation.cshtml.cs
+   • ResetPassword.cshtml
+   • ResetPassword.cshtml.cs
 
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
@@ -774,9 +781,10 @@
 | 31/01/2026 | 5 | 1 | Lote 134 - Areas/Identity revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 135 - Areas/Identity revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 136 - Areas/Identity revisão cards completos (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 137 - Areas/Identity revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 85
-**Total de Commits:** 83
+**Total de Lotes:** 86
+**Total de Commits:** 84
 **Total de Arquivos Documentados:** 380
 
 ---

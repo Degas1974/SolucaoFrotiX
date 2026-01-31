@@ -1,11 +1,21 @@
-﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: RegisterConfirmation.cshtml.cs                                                         ║
-   ║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: PageModel para confirmação de registro e geração de link de email.                    ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: RegisterConfirmationModel                                                               ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+﻿/* ****************************************************************************************
+ * ⚡ ARQUIVO: RegisterConfirmation.cshtml.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : PageModel para confirmação de registro, gerando link de validação
+ *                   e exibindo instruções ao usuário.
+ *
+ * 📥 ENTRADAS     : email (string) via query string.
+ *
+ * 📤 SAÍDAS       : IActionResult (Page/Redirect/NotFound) e EmailConfirmationUrl.
+ *
+ * 🔗 CHAMADA POR  : Motor Razor (GET /Account/RegisterConfirmation).
+ *
+ * 🔄 CHAMA        : UserManager.FindByEmailAsync(), GenerateEmailConfirmationTokenAsync().
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, IEmailSender, WebEncoders, ILogger.
+ *
+ * 📝 OBSERVAÇÕES  : Exibe link direto quando IEmailSender não está configurado.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CLASSE: RegisterConfirmationModel (PageModel)
