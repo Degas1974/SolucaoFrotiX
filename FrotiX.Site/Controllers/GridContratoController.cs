@@ -1,29 +1,37 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: GridContratoController.cs                                                               ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Dados para grids de itens de Contratos. Lista veículos/serviços contratados.           ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetAll(), Insert(), Update(), Delete() - ItensVeiculo em memória durante edição          ║
-   ║ 🔗 DEPS: IUnitOfWork, Syncfusion Grid | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                        ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: GridContratoController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Expor endpoints para grids de itens de contrato e manter estruturas
+ *                   auxiliares em memória durante a edição de contratos.
+ *
+ * 📥 ENTRADAS     : Requisições HTTP (GET) e dados obtidos do repositório via UnitOfWork.
+ *
+ * 📤 SAÍDAS       : JSON com listas de itens/veículos vinculados a contratos.
+ *
+ * 🔗 CHAMADA POR  : Páginas de Contratos (grids Syncfusion) via chamadas AJAX.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.ItemVeiculoContrato, ItensVeiculo.GetAllRecords(), Alerta.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, IUnitOfWork, LINQ, Entity Framework.
+ *
+ * 📝 OBSERVAÇÕES  : Mantém lista estática para itens temporários enquanto o contrato é editado.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: GridContratoController
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Fornecer dados para grids de itens de Contratos
- *                   Gerencia lista de veículos/serviços incluídos nos contratos
- * 📥 ENTRADAS     : Nenhuma (utiliza dados estáticos/sessão)
- * 📤 SAÍDAS       : JSON com lista de ItensVeiculo
- * 🔗 CHAMADA POR  : JavaScript (grids Syncfusion) das páginas de Contratos via AJAX
- * 🔄 CHAMA        : ItensVeiculo.GetAllRecords(), IUnitOfWork
- * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, IUnitOfWork
+ * 🎯 OBJETIVO     : Fornecer dados para grids de itens de contrato (veículos/serviços)
+ *                   e centralizar a montagem das listas exibidas no frontend.
  *
- * 💡 CONCEITOS:
- *    - Itens de Contrato: Veículos/serviços contratados com quantidade e valores
- *    - Lista estática: Armazena itens temporariamente durante edição de contrato
- *    - Repactuação: Ajuste de valores contratuais ao longo do tempo
+ * 📥 ENTRADAS     : Nenhuma via corpo; utiliza dados do banco via UnitOfWork.
+ *
+ * 📤 SAÍDAS       : JSON com itens formatados para o grid.
+ *
+ * 🔗 CHAMADA POR  : JavaScript das páginas de Contratos (Syncfusion Grid).
+ *
+ * 🔄 CHAMA        : ItensVeiculo.GetAllRecords(), IUnitOfWork.ItemVeiculoContrato.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, IUnitOfWork.
  ****************************************************************************************/
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -46,7 +54,14 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ CLASSE: objItem (Helper)
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Wrapper para RepactuacaoContratoId (usado em operações de grid)
+         * 🎯 OBJETIVO     : Representar payload mínimo com RepactuacaoContratoId para operações
+         *                   específicas do grid (ex.: seleção/edição).
+         *
+         * 📥 ENTRADAS     : RepactuacaoContratoId (Guid).
+         *
+         * 📤 SAÍDAS       : Objeto simples para transporte de dados.
+         *
+         * 📝 OBSERVAÇÕES  : Classe interna usada como DTO leve.
          ****************************************************************************************/
         public class objItem
         {
@@ -59,10 +74,13 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ FUNÇÃO: GridContratoController (Construtor)
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Injetar dependências do Unit of Work
-         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork
-         * 📤 SAÍDAS       : Instância configurada
-         * 🔗 CHAMADA POR  : ASP.NET Core DI
+         * 🎯 OBJETIVO     : Injetar dependências do UnitOfWork.
+         *
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
          ****************************************************************************************/
         public GridContratoController(IUnitOfWork unitOfWork)
         {
@@ -80,6 +98,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DataSource
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar itens de veículos/serviços do contrato para o grid.
+         *
+         * 📥 ENTRADAS     : Nenhuma (requisição GET).
+         *
+         * 📤 SAÍDAS       : [IActionResult] JSON com itens formatados.
+         *
+         * 🔗 CHAMADA POR  : Grid Syncfusion (AJAX).
+         *
+         * 🔄 CHAMA        : ItensVeiculo.GetAllRecords().
+         ****************************************************************************************/
         [Route("DataSource")]
         [HttpGet]
         public IActionResult DataSource()
@@ -98,10 +129,35 @@ namespace FrotiX.Controllers
         }
     }
 
+    /****************************************************************************************
+     * ⚡ CLASSE: ItensVeiculo
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Modelar itens de veículos/serviços vinculados a contratos
+     *                   com campos esperados pelo grid.
+     *
+     * 📥 ENTRADAS     : Dados dos itens obtidos via repositórios.
+     *
+     * 📤 SAÍDAS       : Lista estática para consumo do frontend.
+     *
+     * 📝 OBSERVAÇÕES  : Utiliza lista estática para armazenar resultados em memória.
+     ****************************************************************************************/
     public class ItensVeiculo
     {
+        // [DOC] Lista estática para cachear itens carregados para o grid
         public static List<ItensVeiculo> veiculo = new List<ItensVeiculo>();
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ItensVeiculo (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar item de contrato com dados e valores calculados.
+         *
+         * 📥 ENTRADAS     : numitem, descricao, quantidade, valorunitario, valortotal,
+         *                   repactuacaoId.
+         *
+         * 📤 SAÍDAS       : Instância configurada.
+         *
+         * 🔗 CHAMADA POR  : ItensVeiculo.GetAllRecords().
+         ****************************************************************************************/
         public ItensVeiculo(
             int numitem ,
             string descricao ,
@@ -126,6 +182,21 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetAllRecords
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Carregar itens de veículos do contrato e preparar lista para o grid.
+         *
+         * 📥 ENTRADAS     : [IUnitOfWork] _unitOfWork.
+         *
+         * 📤 SAÍDAS       : [List<ItensVeiculo>] lista com itens formatados.
+         *
+         * 🔗 CHAMADA POR  : GridContratoController.DataSource().
+         *
+         * 🔄 CHAMA        : _unitOfWork.ItemVeiculoContrato.GetAll(), LINQ.
+         *
+         * 📝 OBSERVAÇÕES  : Limpa a lista estática antes de preencher novamente.
+         ****************************************************************************************/
         public static List<ItensVeiculo> GetAllRecords(IUnitOfWork _unitOfWork)
         {
             try

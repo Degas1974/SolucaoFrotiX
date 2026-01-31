@@ -1,24 +1,37 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ItensContratoController.cs                                                              ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Gestão de itens de contratos (veículos, serviços, valores). Listas para dropdowns.     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetContratos(), GetAtas(), GetItens() - CRUD itens vinculados a contratos/atas           ║
-   ║ 🔗 DEPS: IUnitOfWork, Entity Framework | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                       ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ItensContratoController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar itens e vínculos de contratos/atas (veículos, equipes e
+ *                   demais recursos) com endpoints de listagem e manutenção.
+ *
+ * 📥 ENTRADAS     : IDs de contrato/ata, filtros de status e modelos de inclusão/remoção.
+ *
+ * 📤 SAÍDAS       : JSON com listas, detalhes resumidos e mensagens de sucesso/erro.
+ *
+ * 🔗 CHAMADA POR  : Páginas de Contratos/Atas e chamadas AJAX do frontend.
+ *
+ * 🔄 CHAMA        : Repositórios via IUnitOfWork, serviços de alerta.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core, Entity Framework, IUnitOfWork, LINQ.
+ *
+ * 📝 OBSERVAÇÕES  : Classe parcial, podendo ser complementada por outros arquivos.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: ItensContratoController (Partial Class)
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Gerenciar itens de contratos (veículos, serviços, valores)
- *                   Fornece listas para dropdowns, CRUD de itens vinculados a contratos/atas
- * 📥 ENTRADAS     : IDs de contratos/atas, filtros de status
- * 📤 SAÍDAS       : JSON com itens de contrato formatados para dropdowns e grids
- * 🔗 CHAMADA POR  : JavaScript (AJAX) das páginas de Contratos e Atas
- * 🔄 CHAMA        : IUnitOfWork (Contrato, Ata, Fornecedor), Alerta
- * 📦 DEPENDÊNCIAS : ASP.NET Core, Entity Framework, IUnitOfWork
+ * 🎯 OBJETIVO     : Centralizar operações de listagem e manutenção de itens de contratos
+ *                   e atas (veículos, encarregados, operadores, motoristas, lavadores).
+ *
+ * 📥 ENTRADAS     : IDs, filtros e view models específicos de inclusão/remoção.
+ *
+ * 📤 SAÍDAS       : JSON estruturado para grids e dropdowns do frontend.
+ *
+ * 🔗 CHAMADA POR  : JavaScript (AJAX) das páginas de Contratos e Atas.
+ *
+ * 🔄 CHAMA        : IUnitOfWork (Contrato, Ata, Veiculo, RH), Alerta.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core, Entity Framework, IUnitOfWork.
  ****************************************************************************************/
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -39,7 +52,13 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ FUNÇÃO: ItensContratoController (Construtor)
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Injetar dependências do Unit of Work
+         * 🎯 OBJETIVO     : Injetar dependências do UnitOfWork para acesso a repositórios.
+         *
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
          ****************************************************************************************/
         public ItensContratoController(IUnitOfWork unitOfWork)
         {
@@ -57,6 +76,19 @@ namespace FrotiX.Controllers
         // CONTRATOS E ATAS - LISTAGEM PARA DROPDOWN
         // ============================================================
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaContratos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar contratos para dropdown, filtrando por status.
+         *
+         * 📥 ENTRADAS     : status (bool) - indica se retorna contratos ativos/inativos.
+         *
+         * 📤 SAÍDAS       : [IActionResult] Ok com { success, data }.
+         *
+         * 🔗 CHAMADA POR  : Telas de Contratos/Atas (seleção de contrato).
+         *
+         * 🔄 CHAMA        : _unitOfWork.Contrato.GetAll(), LINQ (OrderBy/Select).
+         ****************************************************************************************/
         [HttpGet]
         [Route("ListaContratos")]
         public IActionResult ListaContratos(bool status = true)
@@ -86,6 +118,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaAtas
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar atas de registro de preços para dropdown, filtrando por status.
+         *
+         * 📥 ENTRADAS     : status (bool) - indica se retorna atas ativas/inativas.
+         *
+         * 📤 SAÍDAS       : [IActionResult] Ok com { success, data }.
+         *
+         * 🔗 CHAMADA POR  : Telas de Contratos/Atas (seleção de ata).
+         *
+         * 🔄 CHAMA        : _unitOfWork.AtaRegistroPrecos.GetAll(), LINQ.
+         ****************************************************************************************/
         [HttpGet]
         [Route("ListaAtas")]
         public IActionResult ListaAtas(bool status = true)
@@ -118,6 +163,19 @@ namespace FrotiX.Controllers
         // DETALHES DO CONTRATO/ATA SELECIONADO
         // ============================================================
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetContratoDetalhes
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar resumo detalhado do contrato selecionado.
+         *
+         * 📥 ENTRADAS     : id (Guid) - Identificador do contrato.
+         *
+         * 📤 SAÍDAS       : JSON com dados resumidos ou mensagem de erro.
+         *
+         * 🔗 CHAMADA POR  : Frontend ao selecionar contrato.
+         *
+         * 🔄 CHAMA        : _unitOfWork.Contrato.GetFirstOrDefault().
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetContratoDetalhes")]
         public IActionResult GetContratoDetalhes(Guid id)
@@ -173,6 +231,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetAtaDetalhes
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar resumo detalhado da ata selecionada.
+         *
+         * 📥 ENTRADAS     : id (Guid) - Identificador da ata.
+         *
+         * 📤 SAÍDAS       : JSON com dados resumidos ou mensagem de erro.
+         *
+         * 🔗 CHAMADA POR  : Frontend ao selecionar ata.
+         *
+         * 🔄 CHAMA        : _unitOfWork.AtaRegistroPrecos.GetFirstOrDefault().
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetAtaDetalhes")]
         public IActionResult GetAtaDetalhes(Guid id)
@@ -216,6 +287,21 @@ namespace FrotiX.Controllers
         // VEÍCULOS DO CONTRATO
         // ============================================================
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetVeiculosContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar veículos vinculados ao contrato e mapear itens associados.
+         *
+         * 📥 ENTRADAS     : contratoId (Guid) - Contrato selecionado.
+         *
+         * 📤 SAÍDAS       : JSON com veículos, itens (num/descrição) e contadores de status.
+         *
+         * 🔗 CHAMADA POR  : Grid de veículos do contrato.
+         *
+         * 🔄 CHAMA        : RepactuacaoContrato, ItemVeiculoContrato, VeiculoContrato, ViewVeiculos.
+         *
+         * 📝 OBSERVAÇÕES  : Busca itens de todas as repactuações para localizar ItemVeiculoId.
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetVeiculosContrato")]
         public IActionResult GetVeiculosContrato(Guid contratoId)
@@ -294,6 +380,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetVeiculosDisponiveis
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar veículos ativos disponíveis (não vinculados ao contrato).
+         *
+         * 📥 ENTRADAS     : contratoId (Guid) - Contrato atual.
+         *
+         * 📤 SAÍDAS       : JSON com lista para dropdown.
+         *
+         * 🔗 CHAMADA POR  : Formulários de inclusão de veículos no contrato.
+         *
+         * 🔄 CHAMA        : VeiculoContrato.GetAll(), ViewVeiculos.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetVeiculosDisponiveis")]
         public IActionResult GetVeiculosDisponiveis(Guid contratoId)
@@ -324,6 +423,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetItensContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar itens do contrato com base na última repactuação.
+         *
+         * 📥 ENTRADAS     : contratoId (Guid) - Contrato selecionado.
+         *
+         * 📤 SAÍDAS       : JSON com lista de itens formatados para dropdown.
+         *
+         * 🔗 CHAMADA POR  : Frontend ao associar veículos/itens.
+         *
+         * 🔄 CHAMA        : RepactuacaoContrato.GetAll(), ItemVeiculoContrato.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetItensContrato")]
         public IActionResult GetItensContrato(Guid contratoId)
@@ -363,6 +475,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: IncluirVeiculoContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Vincular veículo ao contrato e (opcionalmente) ao item do contrato.
+         *
+         * 📥 ENTRADAS     : [ICIncluirVeiculoContratoVM] model.
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de inclusão de veículo no contrato.
+         *
+         * 🔄 CHAMA        : VeiculoContrato.Add(), Veiculo.Update(), Save().
+         ****************************************************************************************/
         [HttpPost]
         [Route("IncluirVeiculoContrato")]
         public IActionResult IncluirVeiculoContrato([FromBody] ICIncluirVeiculoContratoVM model)
@@ -407,6 +532,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RemoverVeiculoContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover vínculo do veículo com o contrato e limpar associações.
+         *
+         * 📥 ENTRADAS     : [ICRemoverVeiculoContratoVM] model.
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de remoção de veículo do contrato.
+         *
+         * 🔄 CHAMA        : VeiculoContrato.Remove(), Veiculo.Update(), Save().
+         ****************************************************************************************/
         [HttpPost]
         [Route("RemoverVeiculoContrato")]
         public IActionResult RemoverVeiculoContrato([FromBody] ICRemoverVeiculoContratoVM model)
@@ -447,6 +585,19 @@ namespace FrotiX.Controllers
         // ENCARREGADOS DO CONTRATO - Relacionamento 1:N via ContratoId
         // ============================================================
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetEncarregadosContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar encarregados vinculados ao contrato (relacionamento 1:N).
+         *
+         * 📥 ENTRADAS     : contratoId (Guid) - Contrato selecionado.
+         *
+         * 📤 SAÍDAS       : JSON com lista de encarregados.
+         *
+         * 🔗 CHAMADA POR  : Grid de encarregados do contrato.
+         *
+         * 🔄 CHAMA        : _unitOfWork.Encarregado.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetEncarregadosContrato")]
         public IActionResult GetEncarregadosContrato(Guid contratoId)
@@ -477,6 +628,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetEncarregadosDisponiveis
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar encarregados ativos sem contrato associado.
+         *
+         * 📥 ENTRADAS     : contratoId (Guid) - Contrato atual (não usado diretamente).
+         *
+         * 📤 SAÍDAS       : JSON com lista para dropdown.
+         *
+         * 🔗 CHAMADA POR  : Formulário de inclusão de encarregado.
+         *
+         * 🔄 CHAMA        : _unitOfWork.Encarregado.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetEncarregadosDisponiveis")]
         public IActionResult GetEncarregadosDisponiveis(Guid contratoId)
@@ -503,6 +667,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: IncluirEncarregadoContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Associar encarregado ao contrato selecionado.
+         *
+         * 📥 ENTRADAS     : [ICIncluirEncarregadoContratoVM] model.
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de inclusão de encarregado.
+         *
+         * 🔄 CHAMA        : Encarregado.Update(), Save().
+         ****************************************************************************************/
         [HttpPost]
         [Route("IncluirEncarregadoContrato")]
         public IActionResult IncluirEncarregadoContrato([FromBody] ICIncluirEncarregadoContratoVM model)
@@ -536,6 +713,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RemoverEncarregadoContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover vínculo do encarregado com o contrato (define Guid.Empty).
+         *
+         * 📥 ENTRADAS     : [ICRemoverEncarregadoContratoVM] model.
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de remoção de encarregado.
+         *
+         * 🔄 CHAMA        : Encarregado.Update(), Save().
+         ****************************************************************************************/
         [HttpPost]
         [Route("RemoverEncarregadoContrato")]
         public IActionResult RemoverEncarregadoContrato([FromBody] ICRemoverEncarregadoContratoVM model)
@@ -568,6 +758,19 @@ namespace FrotiX.Controllers
         // OPERADORES DO CONTRATO - Relacionamento 1:N via ContratoId
         // ============================================================
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetOperadoresContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar operadores vinculados ao contrato (relacionamento 1:N).
+         *
+         * 📥 ENTRADAS     : contratoId (Guid) - Contrato selecionado.
+         *
+         * 📤 SAÍDAS       : JSON com lista de operadores.
+         *
+         * 🔗 CHAMADA POR  : Grid de operadores do contrato.
+         *
+         * 🔄 CHAMA        : _unitOfWork.Operador.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetOperadoresContrato")]
         public IActionResult GetOperadoresContrato(Guid contratoId)
@@ -598,6 +801,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetOperadoresDisponiveis
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar operadores ativos sem contrato associado.
+         *
+         * 📥 ENTRADAS     : contratoId (Guid) - Contrato atual (não usado diretamente).
+         *
+         * 📤 SAÍDAS       : JSON com lista para dropdown.
+         *
+         * 🔗 CHAMADA POR  : Formulário de inclusão de operador.
+         *
+         * 🔄 CHAMA        : _unitOfWork.Operador.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetOperadoresDisponiveis")]
         public IActionResult GetOperadoresDisponiveis(Guid contratoId)
@@ -624,6 +840,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: IncluirOperadorContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Associar operador ao contrato selecionado.
+         *
+         * 📥 ENTRADAS     : [ICIncluirOperadorContratoVM] model.
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de inclusão de operador.
+         *
+         * 🔄 CHAMA        : Operador.Update(), Save().
+         ****************************************************************************************/
         [HttpPost]
         [Route("IncluirOperadorContrato")]
         public IActionResult IncluirOperadorContrato([FromBody] ICIncluirOperadorContratoVM model)
@@ -657,6 +886,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RemoverOperadorContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover vínculo do operador com o contrato (define Guid.Empty).
+         *
+         * 📥 ENTRADAS     : [ICRemoverOperadorContratoVM] model.
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de remoção de operador.
+         *
+         * 🔄 CHAMA        : Operador.Update(), Save().
+         ****************************************************************************************/
         [HttpPost]
         [Route("RemoverOperadorContrato")]
         public IActionResult RemoverOperadorContrato([FromBody] ICRemoverOperadorContratoVM model)
@@ -689,6 +931,19 @@ namespace FrotiX.Controllers
         // MOTORISTAS DO CONTRATO - Relacionamento 1:N via ContratoId
         // ============================================================
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetMotoristasContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar motoristas vinculados ao contrato (relacionamento 1:N).
+         *
+         * 📥 ENTRADAS     : contratoId (Guid) - Contrato selecionado.
+         *
+         * 📤 SAÍDAS       : JSON com lista de motoristas.
+         *
+         * 🔗 CHAMADA POR  : Grid de motoristas do contrato.
+         *
+         * 🔄 CHAMA        : _unitOfWork.Motorista.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetMotoristasContrato")]
         public IActionResult GetMotoristasContrato(Guid contratoId)
@@ -720,6 +975,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetMotoristasDisponiveis
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar motoristas ativos sem contrato associado.
+         *
+         * 📥 ENTRADAS     : contratoId (Guid) - Contrato atual (não usado diretamente).
+         *
+         * 📤 SAÍDAS       : JSON com lista para dropdown.
+         *
+         * 🔗 CHAMADA POR  : Formulário de inclusão de motorista.
+         *
+         * 🔄 CHAMA        : _unitOfWork.Motorista.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetMotoristasDisponiveis")]
         public IActionResult GetMotoristasDisponiveis(Guid contratoId)
@@ -746,6 +1014,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: IncluirMotoristaContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Associar motorista ao contrato selecionado.
+         *
+         * 📥 ENTRADAS     : [ICIncluirMotoristaContratoVM] model.
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de inclusão de motorista.
+         *
+         * 🔄 CHAMA        : Motorista.Update(), Save().
+         ****************************************************************************************/
         [HttpPost]
         [Route("IncluirMotoristaContrato")]
         public IActionResult IncluirMotoristaContrato([FromBody] ICIncluirMotoristaContratoVM model)
@@ -779,6 +1060,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RemoverMotoristaContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover vínculo do motorista com o contrato (define Guid.Empty).
+         *
+         * 📥 ENTRADAS     : [ICRemoverMotoristaContratoVM] model.
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de remoção de motorista.
+         *
+         * 🔄 CHAMA        : Motorista.Update(), Save().
+         ****************************************************************************************/
         [HttpPost]
         [Route("RemoverMotoristaContrato")]
         public IActionResult RemoverMotoristaContrato([FromBody] ICRemoverMotoristaContratoVM model)
@@ -811,6 +1105,19 @@ namespace FrotiX.Controllers
         // LAVADORES DO CONTRATO - Relacionamento 1:N via ContratoId
         // ============================================================
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetLavadoresContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar lavadores vinculados ao contrato (relacionamento 1:N).
+         *
+         * 📥 ENTRADAS     : contratoId (Guid) - Contrato selecionado.
+         *
+         * 📤 SAÍDAS       : JSON com lista de lavadores.
+         *
+         * 🔗 CHAMADA POR  : Grid de lavadores do contrato.
+         *
+         * 🔄 CHAMA        : _unitOfWork.Lavador.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetLavadoresContrato")]
         public IActionResult GetLavadoresContrato(Guid contratoId)
@@ -841,6 +1148,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetLavadoresDisponiveis
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar lavadores ativos sem contrato associado.
+         *
+         * 📥 ENTRADAS     : contratoId (Guid) - Contrato atual (não usado diretamente).
+         *
+         * 📤 SAÍDAS       : JSON com lista para dropdown.
+         *
+         * 🔗 CHAMADA POR  : Formulário de inclusão de lavador.
+         *
+         * 🔄 CHAMA        : _unitOfWork.Lavador.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetLavadoresDisponiveis")]
         public IActionResult GetLavadoresDisponiveis(Guid contratoId)
@@ -867,6 +1187,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: IncluirLavadorContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Associar lavador ao contrato selecionado.
+         *
+         * 📥 ENTRADAS     : [ICIncluirLavadorContratoVM] model.
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de inclusão de lavador.
+         *
+         * 🔄 CHAMA        : Lavador.Update(), Save().
+         ****************************************************************************************/
         [HttpPost]
         [Route("IncluirLavadorContrato")]
         public IActionResult IncluirLavadorContrato([FromBody] ICIncluirLavadorContratoVM model)
@@ -900,6 +1233,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RemoverLavadorContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover vínculo do lavador com o contrato (define Guid.Empty).
+         *
+         * 📥 ENTRADAS     : [ICRemoverLavadorContratoVM] model.
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de remoção de lavador.
+         *
+         * 🔄 CHAMA        : Lavador.Update(), Save().
+         ****************************************************************************************/
         [HttpPost]
         [Route("RemoverLavadorContrato")]
         public IActionResult RemoverLavadorContrato([FromBody] ICRemoverLavadorContratoVM model)
@@ -932,6 +1278,19 @@ namespace FrotiX.Controllers
         // VEÍCULOS DA ATA
         // ============================================================
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetVeiculosAta
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar veículos vinculados à ata e retornar contadores de status.
+         *
+         * 📥 ENTRADAS     : ataId (Guid) - Ata selecionada.
+         *
+         * 📤 SAÍDAS       : JSON com veículos e contagem de ativos/inativos.
+         *
+         * 🔗 CHAMADA POR  : Grid de veículos da ata.
+         *
+         * 🔄 CHAMA        : VeiculoAta.GetAll(), ViewVeiculos.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetVeiculosAta")]
         public IActionResult GetVeiculosAta(Guid ataId)
@@ -971,6 +1330,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetVeiculosDisponiveisAta
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar veículos ativos disponíveis (não vinculados à ata).
+         *
+         * 📥 ENTRADAS     : ataId (Guid) - Ata atual.
+         *
+         * 📤 SAÍDAS       : JSON com lista para dropdown.
+         *
+         * 🔗 CHAMADA POR  : Formulários de inclusão de veículos na ata.
+         *
+         * 🔄 CHAMA        : VeiculoAta.GetAll(), ViewVeiculos.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         [Route("GetVeiculosDisponiveisAta")]
         public IActionResult GetVeiculosDisponiveisAta(Guid ataId)
@@ -1001,6 +1373,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: IncluirVeiculoAta
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Vincular veículo à ata selecionada.
+         *
+         * 📥 ENTRADAS     : [ICIncluirVeiculoAtaVM] model.
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de inclusão de veículo na ata.
+         *
+         * 🔄 CHAMA        : VeiculoAta.Add(), Save().
+         ****************************************************************************************/
         [HttpPost]
         [Route("IncluirVeiculoAta")]
         public IActionResult IncluirVeiculoAta([FromBody] ICIncluirVeiculoAtaVM model)
@@ -1034,6 +1419,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RemoverVeiculoAta
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover vínculo do veículo com a ata e limpar associações.
+         *
+         * 📥 ENTRADAS     : [ICRemoverVeiculoAtaVM] model.
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de remoção de veículo da ata.
+         *
+         * 🔄 CHAMA        : VeiculoAta.Remove(), Veiculo.Update(), Save().
+         ****************************************************************************************/
         [HttpPost]
         [Route("RemoverVeiculoAta")]
         public IActionResult RemoverVeiculoAta([FromBody] ICRemoverVeiculoAtaVM model)

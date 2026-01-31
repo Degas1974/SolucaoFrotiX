@@ -1,24 +1,36 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: LavadorController.cs                                                                    ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Gestão de lavadores (funcionários de limpeza de veículos). CRUD + vínculos contratos.  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetAll(), Upsert(), Delete() - vínculos com Contrato, Fornecedor, AspNetUsers            ║
-   ║ 🔗 DEPS: IUnitOfWork, Entity Framework | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                       ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: LavadorController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar lavadores (equipe de limpeza de veículos), incluindo CRUD,
+ *                   consulta de vínculos com contratos e operações de status/foto.
+ *
+ * 📥 ENTRADAS     : ViewModels, IDs, filtros e parâmetros de atualização.
+ *
+ * 📤 SAÍDAS       : JSON com dados de lavadores, mensagens de sucesso/erro e imagens.
+ *
+ * 🔗 CHAMADA POR  : Pages/Lavadores/Index e chamadas AJAX do frontend.
+ *
+ * 🔄 CHAMA        : Repositórios via IUnitOfWork (Lavador, Contrato, Fornecedor, Users).
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework, LINQ.
+ *
+ * 📝 OBSERVAÇÕES  : Inclui endpoints para foto e manutenção de vínculos com contratos.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: LavadorController
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Gerenciar lavadores (funcionários responsáveis por limpeza de veículos)
- *                   CRUD completo com vínculos a contratos e fornecedores
- * 📥 ENTRADAS     : LavadorViewModel, IDs, Filtros
- * 📤 SAÍDAS       : JSON com lavadores, contratos e dados formatados
- * 🔗 CHAMADA POR  : Pages/Lavadores/Index, JavaScript (AJAX)
- * 🔄 CHAMA        : IUnitOfWork (Lavador, Contrato, Fornecedor, AspNetUsers)
- * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework
+ * 🎯 OBJETIVO     : Expor operações de listagem, exclusão, status e vínculos de lavadores.
+ *
+ * 📥 ENTRADAS     : LavadorViewModel, IDs e filtros de contrato.
+ *
+ * 📤 SAÍDAS       : JSON com registros e mensagens de validação.
+ *
+ * 🔗 CHAMADA POR  : Páginas de Lavadores e grids AJAX.
+ *
+ * 🔄 CHAMA        : IUnitOfWork (Lavador, Contrato, Fornecedor, AspNetUsers, LavadorContrato).
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework.
  ****************************************************************************************/
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -38,7 +50,13 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ FUNÇÃO: LavadorController (Construtor)
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Injetar dependências
+         * 🎯 OBJETIVO     : Injetar dependências do UnitOfWork.
+         *
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
          ****************************************************************************************/
         public LavadorController(IUnitOfWork unitOfWork)
         {
@@ -52,6 +70,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar lavadores com dados de contrato, fornecedor e usuário.
+         *
+         * 📥 ENTRADAS     : Nenhuma (requisição GET).
+         *
+         * 📤 SAÍDAS       : JSON com lista de lavadores formatada para grid.
+         *
+         * 🔗 CHAMADA POR  : Grid principal de Lavadores.
+         *
+         * 🔄 CHAMA        : IUnitOfWork.Lavador/Contrato/Fornecedor/AspNetUsers (joins).
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
@@ -113,6 +144,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover lavador quando não há vínculo ativo com contratos.
+         *
+         * 📥 ENTRADAS     : [LavadorViewModel] model (LavadorId).
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de exclusão no grid.
+         *
+         * 🔄 CHAMA        : Lavador.GetFirstOrDefault(), LavadorContrato.GetFirstOrDefault(),
+         *                   Lavador.Remove(), Save().
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(LavadorViewModel model)
@@ -165,6 +210,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateStatusLavador
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Alternar status (ativo/inativo) do lavador.
+         *
+         * 📥 ENTRADAS     : Id (Guid) - identificador do lavador.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso, mensagem e tipo.
+         *
+         * 🔗 CHAMADA POR  : Ações de ativação/inativação no grid.
+         *
+         * 🔄 CHAMA        : Lavador.GetFirstOrDefault(), Lavador.Update().
+         ****************************************************************************************/
         [Route("UpdateStatusLavador")]
         public JsonResult UpdateStatusLavador(Guid Id)
         {
@@ -225,6 +283,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaFoto
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar foto do lavador em formato byte[] (base64 convertido).
+         *
+         * 📥 ENTRADAS     : id (Guid) - identificador do lavador.
+         *
+         * 📤 SAÍDAS       : JSON com objeto de lavador e foto ou false.
+         *
+         * 🔗 CHAMADA POR  : Tela de detalhes/edição.
+         *
+         * 🔄 CHAMA        : Lavador.GetFirstOrDefault(), GetImage().
+         ****************************************************************************************/
         [HttpGet]
         [Route("PegaFoto")]
         public JsonResult PegaFoto(Guid id)
@@ -258,6 +329,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaFotoModal
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar apenas a foto do lavador para uso em modal.
+         *
+         * 📥 ENTRADAS     : id (Guid) - identificador do lavador.
+         *
+         * 📤 SAÍDAS       : JSON com byte[] da foto ou false.
+         *
+         * 🔗 CHAMADA POR  : Modal de visualização de foto.
+         *
+         * 🔄 CHAMA        : Lavador.GetFirstOrDefault(), GetImage().
+         ****************************************************************************************/
         [HttpGet]
         [Route("PegaFotoModal")]
         public JsonResult PegaFotoModal(Guid id)
@@ -282,6 +366,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetImage
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Converter string base64 em array de bytes.
+         *
+         * 📥 ENTRADAS     : sBase64String (string).
+         *
+         * 📤 SAÍDAS       : [byte[]] imagem decodificada ou null.
+         *
+         * 🔗 CHAMADA POR  : PegaFoto(), PegaFotoModal().
+         ****************************************************************************************/
         public byte[] GetImage(string sBase64String)
         {
             try
@@ -300,6 +395,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: LavadorContratos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar lavadores associados a um contrato específico.
+         *
+         * 📥 ENTRADAS     : Id (Guid) - identificador do contrato.
+         *
+         * 📤 SAÍDAS       : JSON com lista de lavadores vinculados.
+         *
+         * 🔗 CHAMADA POR  : Grid de lavadores do contrato.
+         *
+         * 🔄 CHAMA        : Lavador.GetAll(), LavadorContrato.GetAll() (join).
+         ****************************************************************************************/
         [HttpGet]
         [Route("LavadorContratos")]
         public IActionResult LavadorContratos(Guid Id)
@@ -336,6 +444,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DeleteContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover vínculo do lavador com um contrato específico.
+         *
+         * 📥 ENTRADAS     : [LavadorViewModel] model (LavadorId, ContratoId).
+         *
+         * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de remoção em grids de contrato.
+         *
+         * 🔄 CHAMA        : LavadorContrato.GetFirstOrDefault(), LavadorContrato.Remove(),
+         *                   Lavador.Update(), Save().
+         ****************************************************************************************/
         [Route("DeleteContrato")]
         [HttpPost]
         public IActionResult DeleteContrato(LavadorViewModel model)

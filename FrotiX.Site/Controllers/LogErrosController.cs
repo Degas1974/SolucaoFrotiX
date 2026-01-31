@@ -1,27 +1,38 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: LogErrosController.cs                                                                   ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Receber/gerenciar logs de erro (JS client + C# server). Monitoramento centralizado.    ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: LogJavaScript(), GetAll() - [AllowAnonymous] para capturar erros sem autenticação        ║
-   ║ 🔗 DEPS: ILogService, ILogger | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                                ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: LogErrosController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Centralizar o recebimento, consulta e limpeza de logs de erro
+ *                   (frontend JavaScript e backend C#).
+ *
+ * 📥 ENTRADAS     : LogJavaScriptRequest, filtros de data e parâmetros de limpeza.
+ *
+ * 📤 SAÍDAS       : JSON com confirmações, listas e estatísticas; arquivos para download.
+ *
+ * 🔗 CHAMADA POR  : window.onerror (JS), páginas administrativas de logs.
+ *
+ * 🔄 CHAMA        : ILogService, ILogger, JsonSerializer.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core, ILogService, Microsoft.Extensions.Logging.
+ *
+ * 📝 OBSERVAÇÕES  : Endpoints permitem acesso anônimo para registrar erros sem autenticação.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: LogErrosController (Partial Class)
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Receber e gerenciar logs de erro (JavaScript client-side e C# server-side)
- *                   Centraliza tratamento de erros para monitoramento e debug
- * 📥 ENTRADAS     : LogJavaScriptRequest (erros do frontend), Filtros de visualização
- * 📤 SAÍDAS       : JSON com confirmação de log salvo, listas de erros
- * 🔗 CHAMADA POR  : JavaScript (window.onerror), Alerta.TratamentoErroComLinha, Pages/LogErros
- * 🔄 CHAMA        : ILogService (salva logs no banco/arquivo), ILogger
- * 📦 DEPENDÊNCIAS : ASP.NET Core, ILogService, Microsoft.Extensions.Logging
+ * 🎯 OBJETIVO     : Expor endpoints para registrar, consultar, estatizar e limpar logs.
  *
- * 🔓 SEGURANÇA:
- *    - [AllowAnonymous]: Permite logs mesmo sem autenticação (para capturar todos os erros)
+ * 📥 ENTRADAS     : Logs JS, parâmetros de data e dias de retenção.
+ *
+ * 📤 SAÍDAS       : JSON com confirmação/erros e conteúdo de logs.
+ *
+ * 🔗 CHAMADA POR  : Frontend (JS), Pages/LogErros.
+ *
+ * 🔄 CHAMA        : ILogService (persistência), ILogger (erros), JsonSerializer.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core, ILogService, Microsoft.Extensions.Logging.
+ *
+ * 🔓 SEGURANÇA    : [AllowAnonymous] habilita captura de erros sem autenticação.
  ****************************************************************************************/
 using System;
 using System.Linq;
@@ -43,7 +54,13 @@ public partial class LogErrosController : ControllerBase
     /****************************************************************************************
      * ⚡ FUNÇÃO: LogErrosController (Construtor)
      * --------------------------------------------------------------------------------------
-     * 🎯 OBJETIVO     : Injetar serviços de log
+     * 🎯 OBJETIVO     : Injetar serviços de log e logger.
+     *
+     * 📥 ENTRADAS     : [ILogService] logService, [ILogger<LogErrosController>] logger.
+     *
+     * 📤 SAÍDAS       : Instância configurada.
+     *
+     * 🔗 CHAMADA POR  : ASP.NET Core DI.
      ****************************************************************************************/
     public LogErrosController(ILogService logService, ILogger<LogErrosController> logger)
     {
@@ -51,9 +68,19 @@ public partial class LogErrosController : ControllerBase
         _logger = logger;
     }
 
-    /// <summary>
-    /// Recebe logs de erro do JavaScript (client-side)
-    /// </summary>
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: LogJavaScript
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Receber logs de erro do JavaScript (client-side).
+     *
+     * 📥 ENTRADAS     : [LogJavaScriptRequest] request (mensagem, arquivo, linha, stack, etc).
+     *
+     * 📤 SAÍDAS       : JSON com sucesso ou erro de validação/processamento.
+     *
+     * 🔗 CHAMADA POR  : window.onerror / handlers de erro no frontend.
+     *
+     * 🔄 CHAMA        : _logService.ErrorJS().
+     ****************************************************************************************/
     [HttpPost]
     [Route("LogJavaScript")]
     public IActionResult LogJavaScript([FromBody] LogJavaScriptRequest request)
@@ -85,9 +112,21 @@ public partial class LogErrosController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Obtém todos os logs do dia atual
-    /// </summary>
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: ObterLogs
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Obter todos os logs do dia atual com estatísticas.
+     *
+     * 📥 ENTRADAS     : Nenhuma.
+     *
+     * 📤 SAÍDAS       : JSON com logs e contadores (Total, Error, Warning, Info, JS, HTTP).
+     *
+     * 🔗 CHAMADA POR  : Tela de monitoramento de logs.
+     *
+     * 🔄 CHAMA        : _logService.GetAllLogs(), _logService.GetStats().
+     *
+     * 📝 OBSERVAÇÕES  : Serialização manual para evitar conflitos com interceptadores.
+     ****************************************************************************************/
     [HttpGet]
     [Route("ObterLogs")]
     public IActionResult ObterLogs()
@@ -127,9 +166,19 @@ public partial class LogErrosController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Obtém logs de uma data específica
-    /// </summary>
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: ObterLogsPorData
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Obter logs de uma data específica.
+     *
+     * 📥 ENTRADAS     : data (DateTime) via query string.
+     *
+     * 📤 SAÍDAS       : JSON com logs e data formatada.
+     *
+     * 🔗 CHAMADA POR  : Filtros de data na tela de logs.
+     *
+     * 🔄 CHAMA        : _logService.GetLogsByDate().
+     ****************************************************************************************/
     [HttpGet]
     [Route("ObterLogsPorData")]
     public IActionResult ObterLogsPorData([FromQuery] DateTime data)
@@ -146,9 +195,19 @@ public partial class LogErrosController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Lista arquivos de log disponíveis
-    /// </summary>
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: ListarArquivos
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Listar arquivos de log disponíveis no armazenamento.
+     *
+     * 📥 ENTRADAS     : Nenhuma.
+     *
+     * 📤 SAÍDAS       : JSON com lista de arquivos (nome, data, tamanho).
+     *
+     * 🔗 CHAMADA POR  : Tela de logs (download/consulta).
+     *
+     * 🔄 CHAMA        : _logService.GetLogFiles().
+     ****************************************************************************************/
     [HttpGet]
     [Route("ListarArquivos")]
     public IActionResult ListarArquivos()
@@ -174,9 +233,19 @@ public partial class LogErrosController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Obtém estatísticas dos logs
-    /// </summary>
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: ObterEstatisticas
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Retornar estatísticas agregadas dos logs.
+     *
+     * 📥 ENTRADAS     : Nenhuma.
+     *
+     * 📤 SAÍDAS       : JSON com contadores totais e de erros.
+     *
+     * 🔗 CHAMADA POR  : Dashboard/indicadores de logs.
+     *
+     * 🔄 CHAMA        : _logService.GetStats(), _logService.GetErrorCount().
+     ****************************************************************************************/
     [HttpGet]
     [Route("ObterEstatisticas")]
     public IActionResult ObterEstatisticas()
@@ -208,9 +277,19 @@ public partial class LogErrosController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Limpa logs do dia atual
-    /// </summary>
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: LimparLogs
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Limpar logs do dia atual.
+     *
+     * 📥 ENTRADAS     : Nenhuma.
+     *
+     * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+     *
+     * 🔗 CHAMADA POR  : Ação administrativa de limpeza.
+     *
+     * 🔄 CHAMA        : _logService.ClearLogs(), _logService.UserAction().
+     ****************************************************************************************/
     [HttpPost]
     [Route("LimparLogs")]
     public IActionResult LimparLogs()
@@ -229,9 +308,19 @@ public partial class LogErrosController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Limpa logs anteriores a uma data
-    /// </summary>
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: LimparLogsAntigos
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Limpar logs anteriores a uma data limite (retenção).
+     *
+     * 📥 ENTRADAS     : diasManter (int) - quantidade de dias a manter.
+     *
+     * 📤 SAÍDAS       : JSON com mensagem de sucesso/erro.
+     *
+     * 🔗 CHAMADA POR  : Ação administrativa de limpeza por retenção.
+     *
+     * 🔄 CHAMA        : _logService.ClearLogsBefore(), _logService.UserAction().
+     ****************************************************************************************/
     [HttpPost]
     [Route("LimparLogsAntigos")]
     public IActionResult LimparLogsAntigos([FromQuery] int diasManter = 30)
@@ -251,9 +340,19 @@ public partial class LogErrosController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Download de arquivo de log específico
-    /// </summary>
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: DownloadLog
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Fazer download do arquivo de log de uma data específica.
+     *
+     * 📥 ENTRADAS     : data (DateTime) via query string.
+     *
+     * 📤 SAÍDAS       : Arquivo texto com os logs da data informada.
+     *
+     * 🔗 CHAMADA POR  : Ação de download na tela de logs.
+     *
+     * 🔄 CHAMA        : _logService.GetLogsByDate().
+     ****************************************************************************************/
     [HttpGet]
     [Route("DownloadLog")]
     public IActionResult DownloadLog([FromQuery] DateTime data)
@@ -274,9 +373,15 @@ public partial class LogErrosController : ControllerBase
     }
 }
 
-/// <summary>
-/// Request model para logs JavaScript
-/// </summary>
+/* ****************************************************************************************
+ * ⚡ CLASSE: LogJavaScriptRequest
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Transportar dados de erro capturados no JavaScript.
+ *
+ * 📥 ENTRADAS     : Mensagem, arquivo, método, linha, coluna, stack, user agent e URL.
+ *
+ * 📤 SAÍDAS       : Objeto usado no endpoint LogJavaScript.
+ **************************************************************************************** */
 public class LogJavaScriptRequest
 {
     public string Mensagem { get; set; } = "";

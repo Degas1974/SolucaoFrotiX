@@ -1,27 +1,38 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: HomeController.cs                                                                       ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Página inicial (Dashboard). Grids de exemplo/demonstração (OrdersDetails).             ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Index() - View inicial, GetAllOrders(), CRUD OrdersDetails (demonstração)                ║
-   ║ 🔗 DEPS: ASP.NET Core MVC, OrdersDetails | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                     ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: HomeController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Controlar a página inicial (Dashboard) e prover dados de demonstração
+ *                   para grids (OrdersDetails) usados em exemplos de UI.
+ *
+ * 📥 ENTRADAS     : Requisições GET/POST com parâmetros de paginação e CRUD.
+ *
+ * 📤 SAÍDAS       : Views (Index) e JSON com dados simulados.
+ *
+ * 🔗 CHAMADA POR  : Navegação principal do sistema e grids de teste no frontend.
+ *
+ * 🔄 CHAMA        : OrdersDetails.GetAllRecords(), LINQ (Skip/Take).
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, LINQ, classes auxiliares locais.
+ *
+ * 📝 OBSERVAÇÕES  : Código de demonstração; OrdersDetails não representa entidade real.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: HomeController
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Controller da página inicial (Home/Dashboard)
- *                   Fornece dados para grids de demonstração/testes (OrdersDetails)
- * 📥 ENTRADAS     : DataManagerRequest (paginação), CRUDModel (operações CRUD)
- * 📤 SAÍDAS       : Views (Index), JSON com dados de orders
- * 🔗 CHAMADA POR  : Navegação principal do sistema, JavaScript (grids de teste)
- * 🔄 CHAMA        : OrdersDetails.GetAllRecords() (classe auxiliar)
- * 📦 DEPENDÊNCIAS : ASP.NET Core MVC
+ * 🎯 OBJETIVO     : Exibir a Home/Dashboard e simular endpoints de grid para testes.
  *
- * ⚠️  NOTA: Este controller parece conter código de exemplo/demonstração
- *           OrdersDetails não é um modelo de negócio real do FrotiX
+ * 📥 ENTRADAS     : Data (paginação) e CRUDModel (operações CRUD do grid).
+ *
+ * 📤 SAÍDAS       : View Index e JSON com registros de OrdersDetails.
+ *
+ * 🔗 CHAMADA POR  : Rotas padrão (/) e JavaScript de grids de exemplo.
+ *
+ * 🔄 CHAMA        : OrdersDetails.GetAllRecords().
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC.
+ *
+ * ⚠️ ATENÇÃO      : Endpoints voltados para demo; não refletir regras de negócio reais.
  ****************************************************************************************/
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -41,10 +52,13 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ FUNÇÃO: Index
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Renderizar página inicial (Home/Dashboard)
-         * 📥 ENTRADAS     : Nenhuma
-         * 📤 SAÍDAS       : [IActionResult] View Index.cshtml
-         * 🔗 CHAMADA POR  : Navegação padrão (/)
+         * 🎯 OBJETIVO     : Renderizar a página inicial (Home/Dashboard).
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : [IActionResult] View Index.cshtml.
+         *
+         * 🔗 CHAMADA POR  : Navegação padrão (/).
          ****************************************************************************************/
         public IActionResult Index()
         {
@@ -59,6 +73,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DataSource
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar a lista completa de OrdersDetails para o grid de demonstração.
+         *
+         * 📥 ENTRADAS     : Nenhuma (requisição GET).
+         *
+         * 📤 SAÍDAS       : [IActionResult] JSON com lista de OrdersDetails.
+         *
+         * 🔗 CHAMADA POR  : Grids de teste no frontend.
+         *
+         * 🔄 CHAMA        : OrdersDetails.GetAllRecords().
+         ****************************************************************************************/
         [Route("DataSource")]
         [HttpGet]
         public IActionResult DataSource()
@@ -75,6 +102,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UrlDatasource
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar lista paginada e contagem opcional para grids.
+         *
+         * 📥 ENTRADAS     : [Data] dm - Parâmetros de paginação (requiresCounts, skip, take).
+         *
+         * 📤 SAÍDAS       : JSON com result e count (quando solicitado) ou lista simples.
+         *
+         * 🔗 CHAMADA POR  : Grids com paginação/virtualização.
+         *
+         * 🔄 CHAMA        : OrdersDetails.GetAllRecords(), LINQ Skip/Take.
+         ****************************************************************************************/
         public IActionResult UrlDatasource([FromBody] Data dm)
         {
             try
@@ -97,6 +137,21 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CrudUpdate
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Simular operações CRUD em memória para o grid de demonstração.
+         *
+         * 📥 ENTRADAS     : [CRUDModel<OrdersDetails>] value - Ação e dados do registro.
+         *
+         * 📤 SAÍDAS       : JSON com o registro processado.
+         *
+         * 🔗 CHAMADA POR  : Grids de teste com edição inline.
+         *
+         * 🔄 CHAMA        : OrdersDetails.GetAllRecords().
+         *
+         * 📝 OBSERVAÇÕES  : Não persiste em banco; atua sobre lista estática.
+         ****************************************************************************************/
         public ActionResult CrudUpdate([FromBody] CRUDModel<OrdersDetails> value)
         {
             try
@@ -129,6 +184,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ CLASSE: Data
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Transportar parâmetros de paginação e contagem para grids.
+         *
+         * 📥 ENTRADAS     : requiresCounts, skip, take.
+         *
+         * 📤 SAÍDAS       : Objeto de request.
+         ****************************************************************************************/
         public class Data
         {
             public bool requiresCounts
@@ -145,6 +209,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ CLASSE: CRUDModel<T>
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Representar payload de operações CRUD do grid (insert/update/delete).
+         *
+         * 📥 ENTRADAS     : ação, key, value e coleções added/changed/deleted.
+         *
+         * 📤 SAÍDAS       : Estrutura para processar alterações no grid.
+         ****************************************************************************************/
         public class CRUDModel<T>
             where T : class
         {
@@ -195,10 +268,30 @@ namespace FrotiX.Controllers
         }
     }
 
+    /****************************************************************************************
+     * ⚡ CLASSE: OrdersDetails
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Modelar registros de pedidos fictícios para demonstração de grids.
+     *
+     * 📥 ENTRADAS     : Dados simulados de pedido.
+     *
+     * 📤 SAÍDAS       : Lista estática com registros de demonstração.
+     *
+     * 📝 OBSERVAÇÕES  : Conteúdo usado apenas para testes/UX, não é dado real do FrotiX.
+     ****************************************************************************************/
     public class OrdersDetails
     {
         public static List<OrdersDetails> order = new List<OrdersDetails>();
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OrdersDetails (Construtor vazio)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar instância vazia para uso em grids de demonstração.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : Instância criada.
+         ****************************************************************************************/
         public OrdersDetails()
         {
             try
@@ -210,6 +303,16 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OrdersDetails (Construtor completo)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar instância com dados de pedido fictício.
+         *
+         * 📥 ENTRADAS     : orderid, customerid, employeeid, freight, verified, orderdate,
+         *                   shipcity, shipname, shipcountry, shippeddate, shipaddress.
+         *
+         * 📤 SAÍDAS       : Instância configurada.
+         ****************************************************************************************/
         public OrdersDetails(
             int orderid ,
             string customerid ,
@@ -244,6 +347,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetAllRecords
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Gerar e retornar lista de pedidos fictícios para o grid.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : [List<OrdersDetails>] lista com dados de demonstração.
+         *
+         * 📝 OBSERVAÇÕES  : Se a lista estiver vazia, cria um conjunto padrão de registros.
+         ****************************************************************************************/
         public static List<OrdersDetails> GetAllRecords()
         {
             try
