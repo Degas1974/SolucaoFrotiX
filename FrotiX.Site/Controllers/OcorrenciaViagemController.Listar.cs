@@ -1,13 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: OcorrenciaViagemController.Listar.cs                                                    ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial para listagem/verificação ocorrências (modal, veículo, exclusão).              ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: ListarPorViagem(), VerificarVeiculo(), Excluir() - consultas e remoção                   ║
-   ║ 🔗 DEPS: IUnitOfWork (OcorrenciaViagem) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                      ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: OcorrenciaViagemController.Listar.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Listar e verificar ocorrências de viagem (modal, veículo, exclusão).
+ *
+ * 📥 ENTRADAS     : IDs de viagem, veículo e ocorrência.
+ *
+ * 📤 SAÍDAS       : JSON com listas e status das operações.
+ *
+ * 🔗 CHAMADA POR  : Modais de viagem e verificações de disponibilidade.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.OcorrenciaViagem.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -20,12 +23,13 @@ namespace FrotiX.Controllers
     /****************************************************************************************
      * ⚡ CONTROLLER PARTIAL: OcorrenciaViagemController.Listar
      * --------------------------------------------------------------------------------------
-     * 🎯 OBJETIVO     : Métodos para listagem e verificação de ocorrências (modal, veículo, exclusão)
-     * 📥 ENTRADAS     : IDs de viagem/veículo/ocorrência
-     * 📤 SAÍDAS       : JsonResult com lista de ocorrências ou status de operação
-     * 🔗 CHAMADA POR  : Modais de viagem, verificações de veículo, exclusões
-     * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem
-     * 📦 DEPENDÊNCIAS : Repository Pattern, Alerta.TratamentoErroComLinha
+     * 🎯 OBJETIVO     : Métodos para listagem e verificação de ocorrências.
+     *
+     * 📥 ENTRADAS     : IDs de viagem/veículo/ocorrência.
+     *
+     * 📤 SAÍDAS       : JSON com listas e status.
+     *
+     * 🔗 CHAMADA POR  : Modais e verificações de veículo.
      ****************************************************************************************/
 
     public partial class OcorrenciaViagemController
@@ -260,12 +264,19 @@ namespace FrotiX.Controllers
         }
     }
 
-    /// <summary>
-    /// DTO para exclusão de ocorrência
-    /// </summary>
+    /****************************************************************************************
+     * ⚡ DTO: ExcluirOcorrenciaDTO
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar o ID da ocorrência de viagem a ser excluída.
+     *
+     * 📥 ENTRADAS     : OcorrenciaViagemId.
+     *
+     * 📤 SAÍDAS       : Nenhuma (apenas transporte de dados).
+     *
+     * 🔗 CHAMADA POR  : ExcluirOcorrencia (POST /ExcluirOcorrencia).
+     ****************************************************************************************/
     public class ExcluirOcorrenciaDTO
     {
         public Guid OcorrenciaViagemId { get; set; }
     }
 }
-

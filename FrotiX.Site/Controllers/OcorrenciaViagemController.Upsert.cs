@@ -1,13 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: OcorrenciaViagemController.Upsert.cs                                                    ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial para baixa de ocorrência específica da tela de Nova Viagem.                    ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: BaixarUpsert() - baixa ocorrência durante criação/edição de viagem                       ║
-   ║ 🔗 DEPS: IUnitOfWork, TextNormalizationHelper | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: OcorrenciaViagemController.Upsert.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Baixar ocorrência a partir da tela de Nova Viagem (Upsert).
+ *
+ * 📥 ENTRADAS     : BaixarOcorrenciaUpsertDTO.
+ *
+ * 📤 SAÍDAS       : JSON com sucesso/erro.
+ *
+ * 🔗 CHAMADA POR  : Modal de baixa na tela de Upsert.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.OcorrenciaViagem, TextNormalizationHelper.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -21,17 +24,12 @@ namespace FrotiX.Controllers
     /****************************************************************************************
      * ⚡ CONTROLLER PARTIAL: OcorrenciaViagemController.Upsert
      * --------------------------------------------------------------------------------------
-     * 🎯 OBJETIVO     : Método de baixa de ocorrência específico para tela de Nova Viagem
-     * 📥 ENTRADAS     : BaixarOcorrenciaUpsertDTO (OcorrenciaViagemId, SolucaoOcorrencia)
-     * 📤 SAÍDAS       : JSON com success e message
-     * 🔗 CHAMADA POR  : Tela Upsert de Viagem (botão baixar ocorrência)
-     * 🔄 CHAMA        : _unitOfWork.OcorrenciaViagem, TextNormalizationHelper
-     * 📦 DEPENDÊNCIAS : TextNormalizationHelper.NormalizeAsync, Alerta.TratamentoErroComLinha
+     * 🎯 OBJETIVO     : Métodos para baixa de ocorrência na tela de Upsert.
+     *
+     * 📥 ENTRADAS     : DTOs de baixa.
+     *
+     * 📤 SAÍDAS       : JSON com status da operação.
      ****************************************************************************************/
-
-    /// <summary>
-    /// Partial class para adicionar métodos de baixa na tela Upsert
-    /// </summary>
     public partial class OcorrenciaViagemController
     {
         #region Métodos para Tela Upsert (Nova Viagem)
@@ -123,9 +121,19 @@ namespace FrotiX.Controllers
 
     #region DTOs para Tela Upsert
 
-    /// <summary>
-    /// DTO para baixa de ocorrência na tela Upsert
-    /// </summary>
+    /****************************************************************************************
+     * ⚡ DTO: BaixarOcorrenciaUpsertDTO
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar dados necessários para baixar ocorrência na tela Upsert.
+     *
+     * 📥 ENTRADAS     : OcorrenciaViagemId, SolucaoOcorrencia (opcional).
+     *
+     * 📤 SAÍDAS       : Nenhuma (apenas transporte de dados).
+     *
+     * 🔗 CHAMADA POR  : BaixarOcorrenciaUpsert (POST /BaixarOcorrenciaUpsert).
+     *
+     * 📝 OBSERVAÇÕES  : Solução é normalizada antes de persistir.
+     ****************************************************************************************/
     public class BaixarOcorrenciaUpsertDTO
     {
         public Guid OcorrenciaViagemId { get; set; }

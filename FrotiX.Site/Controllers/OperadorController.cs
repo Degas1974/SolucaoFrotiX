@@ -1,13 +1,17 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: OperadorController.cs                                                                   ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: CRUD de operadores (funcionários de fornecedores). Associação contratos + upload foto. ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetAll(), Upsert(), Delete(), UploadFoto() - vínculos com contratos/fornecedores         ║
-   ║ 🔗 DEPS: IUnitOfWork (Operador, Contrato, Fornecedor) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0        ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: OperadorController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar operadores (funcionários de fornecedores) com CRUD,
+ *                   vínculos de contrato e upload de fotos.
+ *
+ * 📥 ENTRADAS     : ViewModels, IDs e parâmetros de status/foto.
+ *
+ * 📤 SAÍDAS       : JSON com dados e mensagens de operação.
+ *
+ * 🔗 CHAMADA POR  : Telas de operadores e grids AJAX.
+ *
+ * 🔄 CHAMA        : IUnitOfWork (Operador, Contrato, Fornecedor, OperadorContrato, AspNetUsers).
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -21,12 +25,13 @@ namespace FrotiX.Controllers
     /****************************************************************************************
      * ⚡ CONTROLLER: OperadorController
      * --------------------------------------------------------------------------------------
-     * 🎯 OBJETIVO     : API CRUD para operadores e associação com contratos
-     * 📥 ENTRADAS     : IDs, ViewModels de operador, dados de contrato
-     * 📤 SAÍDAS       : JsonResult com listas, status de operação, fotos
-     * 🔗 CHAMADA POR  : Grids de operadores, modais de gestão, associações de contratos
-     * 🔄 CHAMA        : Repository (Operador, Contrato, Fornecedor, OperadorContrato, AspNetUsers)
-     * 📦 DEPENDÊNCIAS : Repository Pattern, Alerta.TratamentoErroComLinha
+     * 🎯 OBJETIVO     : Expor endpoints de listagem, exclusão, status e vínculos de operadores.
+     *
+     * 📥 ENTRADAS     : IDs e view models.
+     *
+     * 📤 SAÍDAS       : JSON com registros e mensagens.
+     *
+     * 🔗 CHAMADA POR  : Páginas de operadores e modais de contrato.
      ****************************************************************************************/
 
     [Route("api/[controller]")]

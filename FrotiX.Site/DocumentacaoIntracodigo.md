@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░ 47.5%
+████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░ 48.1%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 430 |
-| Percentual | 47.5% |
-| Última Atualização | 31/01/2026 18:01 |
+| Documentados | 435 |
+| Percentual | 48.1% |
+| Última Atualização | 31/01/2026 18:15 |
 
 ---
 
@@ -26,7 +26,7 @@
 | # | Pasta | Total | Feitos | % | Status |
 |---|-------|-------|--------|---|--------|
 | 1 | Areas | 43 | 43 | 100% | ✅ Completo |
-| 2 | Controllers | 93 | 50 | 53.8% | 🟡 Em Progresso |
+| 2 | Controllers | 93 | 55 | 59.1% | 🟡 Em Progresso |
 | 3 | Data | 5 | 0 | 0% | 🔴 Pendente |
 | 4 | EndPoints | 2 | 2 | 100% | ✅ Completo |
 | 5 | Extensions | 3 | 3 | 100% | ✅ Completo |
@@ -95,7 +95,7 @@
 ✅ Areas/Identity/Pages/_ViewStart.cshtml
 ```
 
-### 📂 Controllers (50/93) 🟡
+### 📂 Controllers (55/93) 🟡
 ```
 ✅ Controllers/AbastecimentoController.cs
 ✅ Controllers/AbastecimentoController.DashboardAPI.cs
@@ -147,6 +147,11 @@
 ✅ Controllers/OcorrenciaController.cs
 ✅ Controllers/OcorrenciaViagemController.Debug.cs
 ✅ Controllers/OcorrenciaViagemController.Gestao.cs
+✅ Controllers/OcorrenciaViagemController.Listar.cs
+✅ Controllers/OcorrenciaViagemController.Upsert.cs
+✅ Controllers/OcorrenciaViagemController.cs
+✅ Controllers/OperadorController.cs
+✅ Controllers/PatrimonioController.cs
 ```
 
 ### 📂 Data (0/5)
@@ -466,6 +471,13 @@
    • OcorrenciaController.cs
    • OcorrenciaViagemController.Debug.cs
    • OcorrenciaViagemController.Gestao.cs
+
+✅ Controllers - Classes (Lote 150 - revisão cards completos):
+   • OcorrenciaViagemController.Listar.cs
+   • OcorrenciaViagemController.Upsert.cs
+   • OcorrenciaViagemController.cs
+   • OperadorController.cs
+   • PatrimonioController.cs
 
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
@@ -927,10 +939,11 @@
 | 31/01/2026 | 5 | 1 | Lote 147 - Controllers revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 148 - Controllers revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 149 - Controllers revisão cards completos (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 150 - Controllers revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 98
-**Total de Commits:** 96
-**Total de Arquivos Documentados:** 430
+**Total de Lotes:** 99
+**Total de Commits:** 97
+**Total de Arquivos Documentados:** 435
 
 ---
 

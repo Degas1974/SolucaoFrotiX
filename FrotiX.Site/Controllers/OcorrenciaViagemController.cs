@@ -1,13 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: OcorrenciaViagemController.cs                                                           ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: CRUD ocorrências de viagem (partial). Ciclo completo + upload imagens/vídeos.          ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Criar(), DarBaixa(), Reabrir(), UploadImagem() - Partials: Gestao, Listar, Upsert, Debug ║
-   ║ 🔗 DEPS: IUnitOfWork, ViewOcorrenciasViagem | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                  ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: OcorrenciaViagemController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : CRUD de ocorrências de viagem (listar, criar, baixar, reabrir, excluir).
+ *
+ * 📥 ENTRADAS     : IDs e DTOs de ocorrência.
+ *
+ * 📤 SAÍDAS       : JSON com dados e status.
+ *
+ * 🔗 CHAMADA POR  : Páginas e integrações de ocorrências.
+ *
+ * 🔄 CHAMA        : IUnitOfWork, ViewOcorrenciasViagem.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -21,6 +24,17 @@ using FrotiX.Models;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: OcorrenciaViagemController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints para gestão completa de ocorrências de viagem.
+     *
+     * 📥 ENTRADAS     : DTOs de ocorrência e IDs.
+     *
+     * 📤 SAÍDAS       : JSON com resultados.
+     *
+     * 🔗 CHAMADA POR  : Telas de ocorrências e integrações.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public partial class OcorrenciaViagemController : ControllerBase
@@ -30,14 +44,13 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ FUNÇÃO: OcorrenciaViagemController (Construtor)
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Inicializar dependência do UnitOfWork para gestão de ocorrências
-         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork - Acesso aos repositórios
-         * 📤 SAÍDAS       : Instância inicializada do OcorrenciaViagemController
-         * 🔗 CHAMADA POR  : ASP.NET Core Dependency Injection
-         * 🔄 CHAMA        : Nenhuma função (construtor simples)
-         * 📦 DEPENDÊNCIAS : IUnitOfWork
+         * 🎯 OBJETIVO     : Injetar dependência do UnitOfWork.
          *
-         * [DOC] ATENÇÃO: Este construtor NÃO tem try-catch pois é muito simples
+         * 📥 ENTRADAS     : [IUnitOfWork] unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
          ****************************************************************************************/
         public OcorrenciaViagemController(IUnitOfWork unitOfWork)
         {
@@ -49,14 +62,17 @@ namespace FrotiX.Controllers
         /****************************************************************************************
          * ⚡ FUNÇÃO: ListarPorViagem
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Listar todas as ocorrências de uma viagem específica
-         * 📥 ENTRADAS     : [Guid] viagemId - ID da viagem
-         * 📤 SAÍDAS       : [JSON] { success, data } - Lista de ocorrências
-         * 🔗 CHAMADA POR  : Tela de detalhes da viagem
-         * 🔄 CHAMA        : _unitOfWork.ViewOcorrenciasViagem.GetAll
-         * 📦 DEPENDÊNCIAS : ViewOcorrenciasViagem (view do banco)
+         * 🎯 OBJETIVO     : Listar ocorrências associadas a uma viagem específica.
          *
-         * [DOC] Retorna ocorrências ordenadas por DataCriacao (mais recentes primeiro)
+         * 📥 ENTRADAS     : viagemId (Guid).
+         *
+         * 📤 SAÍDAS       : JSON com lista de ocorrências.
+         *
+         * 🔗 CHAMADA POR  : Tela de detalhes da viagem.
+         *
+         * 🔄 CHAMA        : ViewOcorrenciasViagem.GetAll().
+         *
+         * 📝 OBSERVAÇÕES  : Ordena por DataCriacao desc (mais recentes primeiro).
          ****************************************************************************************/
         [HttpGet]
         [Route("ListarPorViagem")]
@@ -98,9 +114,19 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Lista ocorrências ABERTAS de um veículo específico (para popup)
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListarAbertasPorVeiculo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar ocorrências abertas de um veículo específico (popup).
+         *
+         * 📥 ENTRADAS     : veiculoId (Guid).
+         *
+         * 📤 SAÍDAS       : JSON com ocorrências abertas.
+         *
+         * 🔗 CHAMADA POR  : Popups de veículo.
+         *
+         * 🔄 CHAMA        : ViewOcorrenciasAbertasVeiculo.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         [Route("ListarAbertasPorVeiculo")]
         public IActionResult ListarAbertasPorVeiculo(Guid veiculoId)
@@ -136,9 +162,19 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Conta ocorrências abertas de um veículo
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ContarAbertasPorVeiculo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Contar ocorrências abertas de um veículo.
+         *
+         * 📥 ENTRADAS     : veiculoId (Guid).
+         *
+         * 📤 SAÍDAS       : JSON com quantidade.
+         *
+         * 🔗 CHAMADA POR  : Indicadores de ocorrência por veículo.
+         *
+         * 🔄 CHAMA        : ViewOcorrenciasAbertasVeiculo.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         [Route("ContarAbertasPorVeiculo")]
         public IActionResult ContarAbertasPorVeiculo(Guid veiculoId)
@@ -205,9 +241,19 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Cria múltiplas ocorrências de uma vez (ao finalizar viagem)
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CriarMultiplas
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Criar múltiplas ocorrências em lote (finalização de viagem).
+         *
+         * 📥 ENTRADAS     : [List<OcorrenciaViagemDTO>] dtos.
+         *
+         * 📤 SAÍDAS       : JSON com quantidade criada ou erro.
+         *
+         * 🔗 CHAMADA POR  : Finalização de viagem com múltiplas ocorrências.
+         *
+         * 🔄 CHAMA        : OcorrenciaViagem.Add(), Save().
+         ****************************************************************************************/
         [HttpPost]
         [Route("CriarMultiplas")]
         public IActionResult CriarMultiplas([FromBody] List<OcorrenciaViagemDTO> dtos)
@@ -286,9 +332,19 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Reabre uma ocorrência baixada
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Reabrir
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Reabrir ocorrência baixada.
+         *
+         * 📥 ENTRADAS     : ocorrenciaId (Guid).
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ação de reabertura.
+         *
+         * 🔄 CHAMA        : OcorrenciaViagem.Update(), Save().
+         ****************************************************************************************/
         [HttpPost]
         [Route("Reabrir")]
         public IActionResult Reabrir(Guid ocorrenciaId)
@@ -318,9 +374,19 @@ namespace FrotiX.Controllers
 
         #region EXCLUIR
 
-        /// <summary>
-        /// Exclui uma ocorrência
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Excluir
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Excluir ocorrência pelo ID.
+         *
+         * 📥 ENTRADAS     : ocorrenciaId (Guid).
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Ações de exclusão.
+         *
+         * 🔄 CHAMA        : OcorrenciaViagem.Remove(), Save().
+         ****************************************************************************************/
         [HttpDelete]
         [Route("Excluir")]
         public IActionResult Excluir(Guid ocorrenciaId)
@@ -346,9 +412,19 @@ namespace FrotiX.Controllers
 
         #region ATUALIZAR
 
-        /// <summary>
-        /// Atualiza uma ocorrência existente
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Atualizar
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Atualizar dados de ocorrência existente.
+         *
+         * 📥 ENTRADAS     : [OcorrenciaViagemDTO] dto.
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro.
+         *
+         * 🔗 CHAMADA POR  : Edição de ocorrência.
+         *
+         * 🔄 CHAMA        : OcorrenciaViagem.Update(), Save().
+         ****************************************************************************************/
         [HttpPut]
         [Route("Atualizar")]
         public IActionResult Atualizar([FromBody] OcorrenciaViagemDTO dto)
@@ -382,9 +458,19 @@ namespace FrotiX.Controllers
 
         #region UPLOAD IMAGEM
 
-        /// <summary>
-        /// Upload de imagem/vídeo da ocorrência
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UploadImagem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Upload de imagem/vídeo da ocorrência.
+         *
+         * 📥 ENTRADAS     : arquivo (IFormFile).
+         *
+         * 📤 SAÍDAS       : JSON com URL relativa do arquivo.
+         *
+         * 🔗 CHAMADA POR  : Upload de mídia em ocorrência.
+         *
+         * 🔄 CHAMA        : FileStream, Directory.CreateDirectory().
+         ****************************************************************************************/
         [HttpPost]
         [Route("UploadImagem")]
         public async Task<IActionResult> UploadImagem(IFormFile arquivo)
@@ -425,9 +511,18 @@ namespace FrotiX.Controllers
         #endregion UPLOAD IMAGEM
     }
 
-    /// <summary>
-    /// DTO para transferência de dados de ocorrência
-    /// </summary>
+    /****************************************************************************************
+     * ⚡ DTO: OcorrenciaViagemDTO
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar dados de ocorrência de viagem entre camadas.
+     *
+     * 📥 ENTRADAS     : IDs (Ocorrencia/Viagem/Veículo/Motorista/ItemManutencao) e campos
+     *                   descritivos (Resumo, Descricao, ImagemOcorrencia, Observacoes).
+     *
+     * 📤 SAÍDAS       : Nenhuma (apenas transporte de dados).
+     *
+     * 🔗 CHAMADA POR  : Criar, CriarMultiplas, Atualizar.
+     ****************************************************************************************/
     public class OcorrenciaViagemDTO
     {
         public Guid OcorrenciaViagemId { get; set; }
