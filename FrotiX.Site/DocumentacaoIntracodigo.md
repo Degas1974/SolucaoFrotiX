@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 32.6%
+█████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 33.1%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 295 |
-| Percentual | 32.6% |
-| Última Atualização | 31/01/2026 11:42 |
+| Documentados | 300 |
+| Percentual | 33.1% |
+| Última Atualização | 31/01/2026 11:46 |
 
 ---
 
@@ -36,7 +36,7 @@
 | 9 | Infrastructure | 1 | 1 | 100% | ✅ Completo |
 | 10 | Logging | 1 | 1 | 100% | ✅ Completo |
 | 11 | Middlewares | 2 | 2 | 100% | ✅ Completo |
-| 12 | Models | 139 | 94 | 67.6% | 🟡 Em Progresso |
+| 12 | Models | 139 | 99 | 71.2% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
 | 15 | Repository | 209 | 209 | 100% | ✅ Completo |
@@ -187,6 +187,13 @@
    • SecaoPatrimonial.cs
    • SetorPatrimonial.cs
 
+✅ Models/Cadastros - Classes (Lote 116 - novo padrão visual):
+   • SetorSolicitante.cs
+   • TipoMulta.cs
+   • Unidade.cs
+   • Veiculo.cs
+   • VeiculoAta.cs
+
 ### 📂 Infrastructure (1/1) ✅
 ```
 ✅ CacheKeys.cs
@@ -203,11 +210,11 @@
 ✅ UiExceptionMiddleware.cs
 ```
 
-### 📂 Models (94/139) 🟡
+### 📂 Models (99/139) 🟡
 ```
 ✅ Estatísticas (13 arquivos - Lotes 51-53)
 ✅ Views (38 arquivos - Lotes 54-61)
-⏳ Cadastros (46 processados)
+⏳ Cadastros (51 processados)
 ⏳ FontAwesome (1 processado)
 ⏳ Planilhas (1 processado)
 ```
@@ -562,10 +569,11 @@
 | 31/01/2026 | 5 | 1 | Lote 113 - Models/Cadastros novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 114 - Models/Cadastros novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 115 - Models/Cadastros novo padrão visual (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 116 - Models/Cadastros novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 64
-**Total de Commits:** 62
-**Total de Arquivos Documentados:** 295
+**Total de Lotes:** 65
+**Total de Commits:** 63
+**Total de Arquivos Documentados:** 300
 
 ---
 

@@ -1,13 +1,12 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: TipoMulta.cs                                                                            ║
+   ║ 📌 ARQUIVO: TipoMulta.cs                                                                            ║
    ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Entidade e ViewModels para tipos de multa de trânsito (artigos, códigos Denatran).    ║
+   ║ 🧭 OBJETIVO: Cadastrar tipos de multa com artigos, descrição e códigos Denatran.                   ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENTIDADE: TipoMulta (TipoMultaId, Artigo, Descricao, Infracao, CodigoDenatran)                   ║
+   ║ 🗂️  CONTÉM: TipoMulta                                                                              ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: System.ComponentModel.DataAnnotations                                                      ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: DataAnnotations                                                                     ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
@@ -21,27 +20,38 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
+    // ==================================================================================================
+    // ENTIDADE
+    // ==================================================================================================
+    // Representa um tipo de multa de trânsito.
+    // ==================================================================================================
     public class TipoMulta
     {
+        // Identificador único do tipo de multa.
         [Key]
         public Guid TipoMultaId { get; set; }
 
+        // Artigo/parágrafo/inciso.
         [StringLength(100, ErrorMessage = "O artigo não pode exceder 100 caracteres")]
         [Required(ErrorMessage = "(O artigo/parágrafo/inciso da multa é obrigatório)")]
         [Display(Name = "Artigo/Parágrafo/Inciso")]
         public string? Artigo { get; set; }
 
+        // Descrição da multa.
         [Required(ErrorMessage = "(A descrição da multa é obrigatório)")]
         [Display(Name = "Descrição")]
         public string? Descricao { get; set; }
 
+        // Infração associada.
         [Required(ErrorMessage = "(A infração da multa é obrigatória)")]
         [Display(Name = "Infração")]
         public string? Infracao { get; set; }
 
+        // Código Denatran.
         [Display(Name = "Código Denatran")]
         public string? CodigoDenatran { get; set; }
 
+        // Desdobramento Denatran.
         [Display(Name = "Desdobramento Denatran")]
         public string? Desdobramento { get; set; }
     }
