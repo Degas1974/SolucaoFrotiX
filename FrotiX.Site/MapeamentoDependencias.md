@@ -60,7 +60,7 @@
 | VeiculoController | Get | GET /api/Veiculo | Pages/Veiculo/*.cshtml | DataTable init |
 | ViagemController | Get | GET /api/Viagem | Pages/Viagem/*.cshtml | DataTable init |
 
-> ⚠️ **Nota:** Tabela em construção. Processados: 30/380 arquivos documentados.
+> ⚠️ **Nota:** Tabela em construção. Processados: 40/380 arquivos documentados.
 
 ---
 
@@ -79,8 +79,11 @@
 | wwwroot/js/datatables-config.js | DataTableEdit() | Grid Editável | Areas/Authorization/Pages/Roles.cshtml, Users.cshtml |
 | wwwroot/js/validacao.js | validarFormulario() | Validação | Forms de CRUD |
 | wwwroot/js/usuarios.js | (funções de CRUD) | CRUD Users | Areas/Authorization/Pages/Usuarios.cshtml |
+| Neon/js/neon-login.js | (validação login Neon) | Formulário | _LoginLayout.cshtml |
+| Neon/js/neon-confirmaemail.js | (confirmação email) | Formulário | _ConfirmacaoLayout.cshtml |
+| Canvas API (HTML5) | trimTransparentPNG() | Processamento de imagem | _LoginLayout.cshtml (processamento de logo) |
 
-> ⚠️ **Nota:** Tabela em construção. Processados: 30/380 arquivos documentados.
+> ⚠️ **Nota:** Tabela em construção. Processados: 40/380 arquivos documentados.
 
 ---
 
@@ -104,6 +107,9 @@
 | SignInManager<IdentityUser> | PasswordSignInAsync() | LockoutModel, LoginModel, LoginFrotiX |
 | SignInManager<IdentityUser> | GetExternalAuthenticationSchemesAsync() | LoginModel, LoginFrotiX |
 | SignInManager<IdentityUser> | SignInAsync() | RegisterModel |
+| SignInManager<IdentityUser> | PasswordSignInAsync() | ConfirmarSenha (comentado) |
+| ILogger<T> | LogInformation(), LogError(), LogWarning() | Todos os PageModels |
+| HttpContext | SignOutAsync() | ConfirmarSenha |
 | IEmailSender | SendEmailAsync() | ForgotPasswordModel, RegisterModel (comentado) |
 | IUnitOfWork | GetRepository<T>() | Todos (~80% dos controllers) |
 | IUnitOfWork | SaveChangesAsync() | Todos com operações de escrita |
@@ -115,7 +121,7 @@
 | IHubContext<ImportacaoHub> | SendAsync() | AbastecimentoController, AbastecimentoImportController |
 | IHubContext<AlertasHub> | SendAsync() | AlertasFrotiXController |
 
-> ⚠️ **Nota:** Tabela em construção. Processados: 30/380 arquivos documentados.
+> ⚠️ **Nota:** Tabela em construção. Processados: 40/380 arquivos documentados.
 
 ---
 
