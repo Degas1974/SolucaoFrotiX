@@ -1,11 +1,16 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ImportacaoHub.cs                                                                       ║
-   ║ 📂 CAMINHO: /Hubs                                                                                  ║
+   ║ 🚀 ARQUIVO: ImportacaoHub.cs                                                                      ║
+   ║ 📂 CAMINHO: Hubs/                                                                                ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Hub SignalR para progresso de importação de planilhas. Inclui DTO ProgressoImportacao.║
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Hub SignalR para progresso de importação de planilhas. Inclui DTO de progresso.                ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: 1.[OnConnectedAsync] 2.[OnDisconnectedAsync] + class ProgressoImportacao (DTO)          ║
-   ║ 🔗 DEPS: Microsoft.AspNetCore.SignalR, Alerta | 📅 29/01/2026 | 👤 Copilot | 📝 v2.0               ║
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • OnConnectedAsync()                                                                           ║
+   ║    • OnDisconnectedAsync(Exception exception)                                                     ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPENDÊNCIAS: Microsoft.AspNetCore.SignalR, Alerta                                              ║
+   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
 */
 
@@ -15,14 +20,34 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Hubs
 {
-    
-    // Hub SignalR para envio de progresso em tempo real durante importação de planilhas
-    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ImportacaoHub                                                                     │
+    // │ 📦 HERDA DE: Hub                                                                             │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    //
+    // 🎯 OBJETIVO:
+    // Enviar progresso em tempo real para importações de planilhas via SignalR.
+    //
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : Clientes SignalR / Pipeline Hub
+    // ➡️ CHAMA       : Clients.Caller.SendAsync(), Alerta.TratamentoErroComLinha()
+    //
     public class ImportacaoHub : Hub
     {
-        
-        // Chamado quando um cliente se conecta ao hub
-        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: OnConnectedAsync                                                         │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Pipeline SignalR                                                     │
+        // │    ➡️ CHAMA       : base.OnConnectedAsync(), Clients.Caller.SendAsync()                  │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        //
+        // 🎯 OBJETIVO:
+        // Registrar a conexão e notificar o cliente com o ConnectionId.
+        //
+        // 📤 RETORNO:
+        // Task - Operação assíncrona de conexão.
+        //
+        // Returns: Task de conexão do SignalR.
         public override async Task OnConnectedAsync()
         {
             try
@@ -36,9 +61,24 @@ namespace FrotiX.Hubs
             }
         }
 
-        
-        // Chamado quando um cliente se desconecta do hub
-        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: OnDisconnectedAsync                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Pipeline SignalR                                                     │
+        // │    ➡️ CHAMA       : base.OnDisconnectedAsync()                                          │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        //
+        // 🎯 OBJETIVO:
+        // Executar rotina padrão ao desconectar o cliente do hub.
+        //
+        // 📥 PARÂMETROS:
+        // exception - Exceção gerada durante a desconexão (se houver).
+        //
+        // 📤 RETORNO:
+        // Task - Operação assíncrona de desconexão.
+        //
+        // Param exception: Exceção gerada durante a desconexão (se houver).
+        // Returns: Task de desconexão do SignalR.
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             try
@@ -52,9 +92,14 @@ namespace FrotiX.Hubs
         }
     }
 
-    
-    // DTO para envio de progresso ao cliente
-    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ProgressoImportacao                                                               │
+    // │ 📦 TIPO: DTO                                                                                  │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    //
+    // 🎯 OBJETIVO:
+    // Transportar informações de progresso da importação para o cliente.
+    //
     public class ProgressoImportacao
     {
         public int Porcentagem { get; set; }

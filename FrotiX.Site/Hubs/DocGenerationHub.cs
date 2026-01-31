@@ -1,11 +1,18 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: DocGenerationHub.cs                                                                    ║
-   ║ 📂 CAMINHO: /Hubs                                                                                  ║
+   ║ 🚀 ARQUIVO: DocGenerationHub.cs                                                                   ║
+   ║ 📂 CAMINHO: Hubs/                                                                                ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Hub SignalR para progresso em tempo real durante geração de documentação.             ║
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Hub SignalR para progresso em tempo real durante geração de documentação.                      ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: 1.[OnConnectedAsync] 2.[OnDisconnectedAsync] 3.[SubscribeToJob] 4.[UnsubscribeFromJob]  ║
-   ║ 🔗 DEPS: Microsoft.AspNetCore.SignalR, Alerta | 📅 29/01/2026 | 👤 Copilot | 📝 v2.0               ║
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • OnConnectedAsync()                                                                           ║
+   ║    • OnDisconnectedAsync(Exception? exception)                                                    ║
+   ║    • SubscribeToJob(string jobId)                                                                 ║
+   ║    • UnsubscribeFromJob(string jobId)                                                             ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPENDÊNCIAS: Microsoft.AspNetCore.SignalR, Alerta                                              ║
+   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
 */
 
@@ -15,14 +22,33 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace FrotiX.Hubs
 {
-    
-    // Hub SignalR para envio de progresso em tempo real durante geração de documentação
-    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: DocGenerationHub                                                                  │
+    // │ 📦 HERDA DE: Hub                                                                             │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    //
+    // 🎯 OBJETIVO:
+    // Enviar progresso em tempo real durante geração de documentação via SignalR.
+    //
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : Clientes SignalR / Pipeline Hub
+    // ➡️ CHAMA       : Clients.Caller.SendAsync(), Groups.AddToGroupAsync(), Groups.RemoveFromGroupAsync()
+    //
     public class DocGenerationHub : Hub
     {
-        
-        // Chamado quando um cliente se conecta ao hub
-        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: OnConnectedAsync                                                         │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Pipeline SignalR                                                     │
+        // │    ➡️ CHAMA       : base.OnConnectedAsync(), Clients.Caller.SendAsync()                  │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        //
+        // 🎯 OBJETIVO:
+        // Registrar a conexão e notificar o cliente com o ConnectionId.
+        //
+        // 📤 RETORNO:
+        // Task - Operação assíncrona de conexão.
+        //
         public override async Task OnConnectedAsync()
         {
             try
@@ -36,9 +62,24 @@ namespace FrotiX.Hubs
             }
         }
 
-        
-        // Chamado quando um cliente se desconecta do hub
-        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: OnDisconnectedAsync                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Pipeline SignalR                                                     │
+        // │    ➡️ CHAMA       : base.OnDisconnectedAsync()                                          │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        //
+        // 🎯 OBJETIVO:
+        // Executar rotina padrão ao desconectar o cliente do hub.
+        //
+        // 📥 PARÂMETROS:
+        // exception - Exceção gerada durante a desconexão (se houver).
+        //
+        // 📤 RETORNO:
+        // Task - Operação assíncrona de desconexão.
+        //
+        // Param exception: Exceção gerada durante a desconexão (se houver).
+        // Returns: Task de desconexão do SignalR.
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             try
@@ -51,9 +92,24 @@ namespace FrotiX.Hubs
             }
         }
 
-        
-        // Permite que o cliente se inscreva em um job específico
-        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: SubscribeToJob                                                         │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Cliente SignalR                                                     │
+        // │    ➡️ CHAMA       : Groups.AddToGroupAsync(), Clients.Caller.SendAsync()                 │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        //
+        // 🎯 OBJETIVO:
+        // Inscrever a conexão atual no grupo do job e confirmar inscrição.
+        //
+        // 📥 PARÂMETROS:
+        // jobId - Identificador do job.
+        //
+        // 📤 RETORNO:
+        // Task - Operação assíncrona de inscrição.
+        //
+        // Param jobId: Identificador do job.
+        // Returns: Task da inscrição no grupo.
         public async Task SubscribeToJob(string jobId)
         {
             try
@@ -67,9 +123,24 @@ namespace FrotiX.Hubs
             }
         }
 
-        
-        // Permite que o cliente cancele a inscrição em um job
-        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: UnsubscribeFromJob                                                     │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Cliente SignalR                                                     │
+        // │    ➡️ CHAMA       : Groups.RemoveFromGroupAsync()                                      │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        //
+        // 🎯 OBJETIVO:
+        // Remover a conexão atual do grupo do job.
+        //
+        // 📥 PARÂMETROS:
+        // jobId - Identificador do job.
+        //
+        // 📤 RETORNO:
+        // Task - Operação assíncrona de cancelamento de inscrição.
+        //
+        // Param jobId: Identificador do job.
+        // Returns: Task do cancelamento de inscrição.
         public async Task UnsubscribeFromJob(string jobId)
         {
             try

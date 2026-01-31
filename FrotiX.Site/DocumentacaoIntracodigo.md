@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 27.1%
+██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 27.6%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 245 |
-| Percentual | 27.1% |
-| Última Atualização | 31/01/2026 08:44 |
+| Documentados | 250 |
+| Percentual | 27.6% |
+| Última Atualização | 31/01/2026 09:00 |
 
 ---
 
@@ -32,11 +32,11 @@
 | 5 | Extensions | 3 | 3 | 100% | ✅ Completo |
 | 6 | Filters | 4 | 4 | 100% | ✅ Completo |
 | 7 | Helpers | 6 | 6 | 100% | ✅ Completo |
-| 8 | Hubs | 5 | 1 | 20% | 🟡 Em Progresso |
+| 8 | Hubs | 5 | 5 | 100% | ✅ Completo |
 | 9 | Infrastructure | 1 | 1 | 100% | ✅ Completo |
 | 10 | Logging | 1 | 1 | 100% | ✅ Completo |
 | 11 | Middlewares | 2 | 2 | 100% | ✅ Completo |
-| 12 | Models | 139 | 48 | 34.5% | 🟡 Em Progresso |
+| 12 | Models | 139 | 49 | 35.3% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
 | 15 | Repository | 209 | 209 | 100% | ✅ Completo |
@@ -101,13 +101,13 @@
    • Alerta.cs
    • AlertaBackend.cs
 
-### 📂 Hubs (1/5) 🟡
+### 📂 Hubs (5/5) ✅
 ```
 ✅ AlertasHub.cs
-⏳ DocGenerationHub.cs
-⏳ EmailBasedUserIdProvider.cs
-⏳ EscalaHub.cs
-⏳ ImportacaoHub.cs
+✅ DocGenerationHub.cs
+✅ EmailBasedUserIdProvider.cs
+✅ EscalaHub.cs
+✅ ImportacaoHub.cs
 ```
 
 ✅ Helpers + Hubs - Classes (Lote 105 - novo padrão visual):
@@ -116,6 +116,13 @@
    • ListasCompartilhadas.cs
    • SfdtHelper.cs
    • AlertasHub.cs
+
+✅ Hubs + Models/Cadastros - Classes (Lote 106 - novo padrão visual):
+   • DocGenerationHub.cs
+   • EmailBasedUserIdProvider.cs
+   • EscalaHub.cs
+   • ImportacaoHub.cs
+   • Abastecimento.cs
 
 ### 📂 Infrastructure (1/1) ✅
 ```
@@ -133,11 +140,11 @@
 ✅ UiExceptionMiddleware.cs
 ```
 
-### 📂 Models (48/139) 🟡
+### 📂 Models (49/139) 🟡
 ```
 ✅ Estatísticas (13 arquivos - Lotes 51-53)
 ✅ Views (38 arquivos - Lotes 54-61)
-⏳ Cadastros (pendente)
+⏳ Cadastros (1 processado)
 ⏳ FontAwesome (1 processado)
 ⏳ Planilhas (1 processado)
 ```
@@ -482,10 +489,11 @@
 | 30/01/2026 | 2 | 1 | Lote 103 - Repository novo padrão visual (2 arquivos) |
 | 30/01/2026 | 5 | 1 | Lote 104 - Filters + Helpers novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 105 - Helpers + Hubs novo padrão visual (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 106 - Hubs + Models/Cadastros novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 54
-**Total de Commits:** 52
-**Total de Arquivos Documentados:** 245
+**Total de Lotes:** 55
+**Total de Commits:** 53
+**Total de Arquivos Documentados:** 250
 
 ---
 
