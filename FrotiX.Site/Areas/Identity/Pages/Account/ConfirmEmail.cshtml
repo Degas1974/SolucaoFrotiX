@@ -1,22 +1,11 @@
-﻿@*****************************************************************************************
- * ⚡ PÁGINA: ConfirmEmail
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Página de confirmação de email após registro. Exibe resultado da
- *                   confirmação através de mensagem de status (sucesso ou erro).
- *
- * 📥 ENTRADAS     : Model.StatusMessage (string) - Mensagem de status da confirmação
- *
- * 📤 SAÍDAS       : HTML - Página com título e mensagem de status
- *
- * 🔗 CHAMADA POR  : Link de confirmação enviado por email ao usuário
- *
- * 🔄 CHAMA        : Partial _StatusMessage
- *
- * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, Razor Pages
- *
- * 📝 OBSERVAÇÕES  : Página simples que apenas exibe resultado da confirmação processada
- *                   no backend (ConfirmEmailModel.OnGetAsync).
- *****************************************************************************************@
+﻿@*
+╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ 📌 ARQUIVO: ConfirmEmail.cshtml                                                                      ║
+║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                            ║
+╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║ 🧭 OBJETIVO: Exibir resultado da confirmação de email do usuário.                                    ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*@
 @page
 @model FrotiX.Identity.Pages.Account.ConfirmEmailModel
 @{

@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-███████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 37.6%
+███████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 38.1%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 340 |
-| Percentual | 37.6% |
-| Última Atualização | 31/01/2026 12:32 |
+| Documentados | 345 |
+| Percentual | 38.1% |
+| Última Atualização | 31/01/2026 12:37 |
 
 ---
 
@@ -25,7 +25,7 @@
 
 | # | Pasta | Total | Feitos | % | Status |
 |---|-------|-------|--------|---|--------|
-| 1 | Areas | 43 | 5 | 11.6% | 🟡 Em Progresso |
+| 1 | Areas | 43 | 10 | 23.3% | 🟡 Em Progresso |
 | 2 | Controllers | 93 | 0 | 0% | 🔴 Pendente |
 | 3 | Data | 5 | 0 | 0% | 🔴 Pendente |
 | 4 | EndPoints | 2 | 2 | 100% | ✅ Completo |
@@ -48,13 +48,18 @@
 
 ## ✅ Arquivos Documentados
 
-### 📂 Areas (5/43) 🟡
+### 📂 Areas (10/43) 🟡
 ```
 ✅ Areas/Authorization/Pages/Roles.cshtml
 ✅ Areas/Authorization/Pages/Roles.cshtml.cs
 ✅ Areas/Authorization/Pages/Users.cshtml
 ✅ Areas/Authorization/Pages/Users.cshtml.cs
 ✅ Areas/Authorization/Pages/Usuarios.cshtml
+✅ Areas/Authorization/Pages/Usuarios.cshtml.cs
+✅ Areas/Authorization/Pages/_ViewImports.cshtml
+✅ Areas/Authorization/Pages/_ViewStart.cshtml
+✅ Areas/Identity/Pages/Account/ConfirmEmail.cshtml
+✅ Areas/Identity/Pages/Account/ConfirmEmail.cshtml.cs
 ```
 
 ### 📂 Controllers (0/93)
@@ -253,6 +258,13 @@
    • Users.cshtml
    • Users.cshtml.cs
    • Usuarios.cshtml
+
+✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
+   • Usuarios.cshtml.cs
+   • _ViewImports.cshtml
+   • _ViewStart.cshtml
+   • ConfirmEmail.cshtml
+   • ConfirmEmail.cshtml.cs
 
 ### 📂 Infrastructure (1/1) ✅
 ```
@@ -640,10 +652,11 @@
 | 31/01/2026 | 5 | 1 | Lote 122 - Models novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 123 - Models + Models/DTO novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 124 - Areas/Authorization novo padrão visual (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 125 - Areas/Authorization + Areas/Identity novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 73
-**Total de Commits:** 71
-**Total de Arquivos Documentados:** 340
+**Total de Lotes:** 74
+**Total de Commits:** 72
+**Total de Arquivos Documentados:** 345
 
 ---
 
