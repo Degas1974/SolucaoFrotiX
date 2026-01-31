@@ -1,27 +1,11 @@
-@*****************************************************************************************
- * ⚡ LAYOUT: _LoginLayout
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Layout principal para a página de login do FrotiX. Fornece estrutura
- *                   visual com logo dinâmico (trim de transparência + redimensionamento),
- *                   mensagem de boas-vindas e barra de progresso visual.
- *
- * 📥 ENTRADAS     : @RenderBody() - Conteúdo do formulário de login.
- *
- * 📤 SAÍDAS       : HTML - Renderiza página de login completa com processamento de imagem
- *                   via Canvas API.
- *
- * 🔗 CHAMADA POR  : Páginas que usam Layout = "_LoginLayout" (ex: LoginFrotiX.cshtml)
- *
- * 🔄 CHAMA        : Scripts JS: trimTransparentPNG(), neon-login.js, neon-register.js,
- *                   neon-custom.js, neon-demo.js
- *
- * 📦 DEPENDÊNCIAS : Bootstrap 3, jQuery 1.11.3, jQuery UI, GSAP/TweenMax, Neon Theme,
- *                   FontAwesome Pro, Canvas API (HTML5)
- *
- * 📝 OBSERVAÇÕES  : Layout com processamento de imagem do logo (remove transparências
- *                   e redimensiona para 800px de largura mantendo proporção), barra de
- *                   progresso fixa em 3%, tema escuro (login-form-fall).
- *****************************************************************************************@
+@*
+╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ 📌 ARQUIVO: _LoginLayout.cshtml                                                                      ║
+║ 📂 CAMINHO: /Areas/Identity/Pages                                                                   ║
+╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║ 🧭 OBJETIVO: Layout de login com processamento de logo e tema Neon.                                 ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*@
 <!DOCTYPE html>
 <html lang="en">
 <head>

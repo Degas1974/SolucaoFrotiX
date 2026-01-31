@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 40.8%
+█████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 41.4%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 370 |
-| Percentual | 40.8% |
-| Última Atualização | 31/01/2026 13:15 |
+| Documentados | 375 |
+| Percentual | 41.4% |
+| Última Atualização | 31/01/2026 13:29 |
 
 ---
 
@@ -25,7 +25,7 @@
 
 | # | Pasta | Total | Feitos | % | Status |
 |---|-------|-------|--------|---|--------|
-| 1 | Areas | 43 | 35 | 81.4% | 🟡 Em Progresso |
+| 1 | Areas | 43 | 40 | 93.0% | 🟡 Em Progresso |
 | 2 | Controllers | 93 | 0 | 0% | 🔴 Pendente |
 | 3 | Data | 5 | 0 | 0% | 🔴 Pendente |
 | 4 | EndPoints | 2 | 2 | 100% | ✅ Completo |
@@ -48,7 +48,7 @@
 
 ## ✅ Arquivos Documentados
 
-### 📂 Areas (35/43) 🟡
+### 📂 Areas (40/43) 🟡
 ```
 ✅ Areas/Authorization/Pages/Roles.cshtml
 ✅ Areas/Authorization/Pages/Roles.cshtml.cs
@@ -85,6 +85,11 @@
 ✅ Areas/Identity/Pages/Account/_ViewImports.cshtml
 ✅ Areas/Identity/Pages/ConfirmarSenha.cshtml
 ✅ Areas/Identity/Pages/ConfirmarSenha.cshtml.cs
+✅ Areas/Identity/Pages/_ConfirmacaoLayout.cshtml
+✅ Areas/Identity/Pages/_Layout.cshtml
+✅ Areas/Identity/Pages/_LoginLayout.cshtml
+✅ Areas/Identity/Pages/_Logo.cshtml
+✅ Areas/Identity/Pages/_PageFooter.cshtml
 ```
 
 ### 📂 Controllers (0/93)
@@ -325,6 +330,13 @@
    • _ViewImports.cshtml
    • ConfirmarSenha.cshtml
    • ConfirmarSenha.cshtml.cs
+
+✅ Areas/Identity - Pages (Lote 131 - novo padrão visual):
+   • _ConfirmacaoLayout.cshtml
+   • _Layout.cshtml
+   • _LoginLayout.cshtml
+   • _Logo.cshtml
+   • _PageFooter.cshtml
 
 ### 📂 Infrastructure (1/1) ✅
 ```
@@ -718,10 +730,11 @@
 | 31/01/2026 | 5 | 1 | Lote 128 - Areas/Identity novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 129 - Areas/Identity novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 130 - Areas/Identity novo padrão visual (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 131 - Areas/Identity novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 79
-**Total de Commits:** 77
-**Total de Arquivos Documentados:** 370
+**Total de Lotes:** 80
+**Total de Commits:** 78
+**Total de Arquivos Documentados:** 375
 
 ---
 
