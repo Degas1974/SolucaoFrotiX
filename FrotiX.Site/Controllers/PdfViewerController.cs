@@ -1,13 +1,17 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: PdfViewerController.cs                                                                  ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Visualização de PDFs via Syncfusion EJ2 PdfViewer. Carrega arquivo ou Base64.          ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Load(), RenderPdfPages(), Bookmarks(), ExportAnnotations() - anotações e formulários     ║
-   ║ 🔗 DEPS: Syncfusion EJ2 PdfViewer, CORS AllowAllOrigins | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0      ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: PdfViewerController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Disponibilizar endpoints do Syncfusion PdfViewer para PDFs gerais,
+ *                   com suporte a arquivo físico ou conteúdo base64.
+ *
+ * 📥 ENTRADAS     : Payloads JSON do viewer.
+ *
+ * 📤 SAÍDAS       : JSON/Content com páginas, anotações, base64 e mensagens de erro.
+ *
+ * 🔗 CHAMADA POR  : Componentes PdfViewer via API.
+ *
+ * 🔄 CHAMA        : PdfRenderer (Syncfusion), IWebHostEnvironment.
+ **************************************************************************************** */
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -19,12 +23,34 @@ using System.IO;
 
 namespace FrotiX.Controllers.API
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: PdfViewerController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Servir operações do PdfViewer para PDFs gerais.
+     *
+     * 📥 ENTRADAS     : JSONs do viewer (document, isFileName etc).
+     *
+     * 📤 SAÍDAS       : JSON/Content com renderização, anotações e downloads.
+     *
+     * 🔗 CHAMADA POR  : PdfViewer em páginas diversas.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class PdfViewerController :ControllerBase
     {
         private readonly IWebHostEnvironment _hostingEnvironment;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PdfViewerController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar o hosting environment para resolver caminhos.
+         *
+         * 📥 ENTRADAS     : hostingEnvironment.
+         *
+         * 📤 SAÍDAS       : Instância configurada do controller.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public PdfViewerController(IWebHostEnvironment hostingEnvironment)
         {
             try
@@ -39,6 +65,17 @@ namespace FrotiX.Controllers.API
 
         [HttpPost("Load")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Load
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Carregar documento PDF (arquivo ou base64) para o viewer.
+         *
+         * 📥 ENTRADAS     : jsonObject (document, isFileName).
+         *
+         * 📤 SAÍDAS       : JSON serializado com resultado do PdfRenderer.Load().
+         *
+         * 🔗 CHAMADA POR  : PdfViewer (evento de load).
+         ****************************************************************************************/
         public IActionResult Load([FromBody] Dictionary<string , string> jsonObject)
         {
             try
@@ -89,6 +126,17 @@ namespace FrotiX.Controllers.API
 
         [HttpPost("Bookmarks")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Bookmarks
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar bookmarks do documento PDF.
+         *
+         * 📥 ENTRADAS     : jsonObject com referência do documento.
+         *
+         * 📤 SAÍDAS       : JSON serializado com bookmarks.
+         *
+         * 🔗 CHAMADA POR  : PdfViewer (bookmarks).
+         ****************************************************************************************/
         public IActionResult Bookmarks([FromBody] Dictionary<string , string> jsonObject)
         {
             try
@@ -109,6 +157,17 @@ namespace FrotiX.Controllers.API
 
         [HttpPost("RenderPdfPages")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RenderPdfPages
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Renderizar páginas do PDF para o viewer.
+         *
+         * 📥 ENTRADAS     : jsonObject com parâmetros de página.
+         *
+         * 📤 SAÍDAS       : JSON serializado com páginas renderizadas.
+         *
+         * 🔗 CHAMADA POR  : PdfViewer (render pages).
+         ****************************************************************************************/
         public IActionResult RenderPdfPages([FromBody] Dictionary<string , string> jsonObject)
         {
             try
@@ -129,6 +188,17 @@ namespace FrotiX.Controllers.API
 
         [HttpPost("RenderPdfTexts")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RenderPdfTexts
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Extrair texto do documento PDF.
+         *
+         * 📥 ENTRADAS     : jsonObject com referência do documento.
+         *
+         * 📤 SAÍDAS       : JSON serializado com texto extraído.
+         *
+         * 🔗 CHAMADA POR  : PdfViewer (render texts).
+         ****************************************************************************************/
         public IActionResult RenderPdfTexts([FromBody] Dictionary<string , string> jsonObject)
         {
             try
@@ -149,6 +219,17 @@ namespace FrotiX.Controllers.API
 
         [HttpPost("RenderThumbnailImages")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RenderThumbnailImages
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Gerar miniaturas de páginas do PDF.
+         *
+         * 📥 ENTRADAS     : jsonObject com parâmetros do viewer.
+         *
+         * 📤 SAÍDAS       : JSON serializado com miniaturas.
+         *
+         * 🔗 CHAMADA POR  : PdfViewer (thumbnails).
+         ****************************************************************************************/
         public IActionResult RenderThumbnailImages([FromBody] Dictionary<string , string> jsonObject)
         {
             try
@@ -169,6 +250,17 @@ namespace FrotiX.Controllers.API
 
         [HttpPost("RenderAnnotationComments")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RenderAnnotationComments
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Buscar comentários/anotações do PDF para o viewer.
+         *
+         * 📥 ENTRADAS     : jsonObject com parâmetros de anotação.
+         *
+         * 📤 SAÍDAS       : JSON serializado com anotações.
+         *
+         * 🔗 CHAMADA POR  : PdfViewer (annotations).
+         ****************************************************************************************/
         public IActionResult RenderAnnotationComments([FromBody] Dictionary<string , string> jsonObject)
         {
             try
@@ -189,6 +281,17 @@ namespace FrotiX.Controllers.API
 
         [HttpPost("ExportAnnotations")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ExportAnnotations
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Exportar anotações do documento.
+         *
+         * 📥 ENTRADAS     : jsonObject com referência do documento.
+         *
+         * 📤 SAÍDAS       : Content com JSON de anotações.
+         *
+         * 🔗 CHAMADA POR  : PdfViewer (export annotations).
+         ****************************************************************************************/
         public IActionResult ExportAnnotations([FromBody] Dictionary<string , string> jsonObject)
         {
             try
@@ -209,6 +312,17 @@ namespace FrotiX.Controllers.API
 
         [HttpPost("ImportAnnotations")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ImportAnnotations
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Importar anotações no documento.
+         *
+         * 📥 ENTRADAS     : jsonObject com dados de anotações.
+         *
+         * 📤 SAÍDAS       : JSON serializado com resultado.
+         *
+         * 🔗 CHAMADA POR  : PdfViewer (import annotations).
+         ****************************************************************************************/
         public IActionResult ImportAnnotations([FromBody] Dictionary<string , string> jsonObject)
         {
             try
@@ -229,6 +343,17 @@ namespace FrotiX.Controllers.API
 
         [HttpPost("ExportFormFields")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ExportFormFields
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Exportar campos de formulário do PDF.
+         *
+         * 📥 ENTRADAS     : jsonObject com referência do documento.
+         *
+         * 📤 SAÍDAS       : Content com JSON de campos.
+         *
+         * 🔗 CHAMADA POR  : PdfViewer (export form fields).
+         ****************************************************************************************/
         public IActionResult ExportFormFields([FromBody] Dictionary<string , string> jsonObject)
         {
             try
@@ -249,6 +374,17 @@ namespace FrotiX.Controllers.API
 
         [HttpPost("ImportFormFields")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ImportFormFields
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Importar campos de formulário no documento.
+         *
+         * 📥 ENTRADAS     : jsonObject com dados de formulário.
+         *
+         * 📤 SAÍDAS       : JSON serializado com resultado da importação.
+         *
+         * 🔗 CHAMADA POR  : PdfViewer (import form fields).
+         ****************************************************************************************/
         public IActionResult ImportFormFields([FromBody] Dictionary<string , string> jsonObject)
         {
             try
@@ -269,6 +405,17 @@ namespace FrotiX.Controllers.API
 
         [HttpPost("Unload")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Unload
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Limpar o cache do documento no PdfViewer.
+         *
+         * 📥 ENTRADAS     : jsonObject com identificador do documento.
+         *
+         * 📤 SAÍDAS       : Content com mensagem de status.
+         *
+         * 🔗 CHAMADA POR  : PdfViewer (unload).
+         ****************************************************************************************/
         public IActionResult Unload([FromBody] Dictionary<string , string> jsonObject)
         {
             try
@@ -289,6 +436,17 @@ namespace FrotiX.Controllers.API
 
         [HttpPost("Download")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Download
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Exportar o documento em base64 para download.
+         *
+         * 📥 ENTRADAS     : jsonObject com referência do documento.
+         *
+         * 📤 SAÍDAS       : Content com base64 do PDF.
+         *
+         * 🔗 CHAMADA POR  : PdfViewer (download).
+         ****************************************************************************************/
         public IActionResult Download([FromBody] Dictionary<string , string> jsonObject)
         {
             try
@@ -309,6 +467,17 @@ namespace FrotiX.Controllers.API
 
         [HttpPost("PrintImages")]
         [Microsoft.AspNetCore.Cors.EnableCors("AllowAllOrigins")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PrintImages
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Gerar imagens para impressão do PDF.
+         *
+         * 📥 ENTRADAS     : jsonObject com parâmetros de impressão.
+         *
+         * 📤 SAÍDAS       : JSON serializado com imagens.
+         *
+         * 🔗 CHAMADA POR  : PdfViewer (print).
+         ****************************************************************************************/
         public IActionResult PrintImages([FromBody] Dictionary<string , string> jsonObject)
         {
             try

@@ -1,13 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: PlacaBronzeController.cs                                                                ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Gerenciar Placas de Bronze (identificação patrimonial de veículos oficiais).           ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Get(), Delete(), UpdateStatus(), Desvincula() - vínculo com Veiculo, toggle status       ║
-   ║ 🔗 DEPS: IUnitOfWork (PlacaBronze, Veiculo) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                  ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: PlacaBronzeController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar placas de bronze e seus vínculos com veículos oficiais.
+ *
+ * 📥 ENTRADAS     : IDs e modelos de placa de bronze.
+ *
+ * 📤 SAÍDAS       : JSON com listas e status de operações.
+ *
+ * 🔗 CHAMADA POR  : Telas administrativas de patrimônio/veículos.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.PlacaBronze, IUnitOfWork.Veiculo.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -17,12 +20,33 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: PlacaBronzeController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints para listar, excluir, atualizar status e desvincular
+     *                   placas de bronze de veículos.
+     *
+     * 📥 ENTRADAS     : IDs e ViewModels de placa.
+     *
+     * 📤 SAÍDAS       : JSON com dados e mensagens de retorno.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class PlacaBronzeController :Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PlacaBronzeController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependência do UnitOfWork.
+         *
+         * 📥 ENTRADAS     : unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada do controller.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public PlacaBronzeController(IUnitOfWork unitOfWork)
         {
             try
@@ -39,6 +63,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar placas de bronze com placa do veículo vinculado (se houver).
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com data (lista de placas e vínculos).
+         *
+         * 🔗 CHAMADA POR  : Grid de placas de bronze.
+         *
+         * 🔄 CHAMA        : PlacaBronze.GetAll(), Veiculo.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
@@ -75,6 +112,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover placa de bronze quando não houver veículo associado.
+         *
+         * 📥 ENTRADAS     : model (PlacaBronzeViewModel).
+         *
+         * 📤 SAÍDAS       : JSON com success e message.
+         *
+         * 🔗 CHAMADA POR  : Ação de exclusão no grid.
+         *
+         * 🔄 CHAMA        : PlacaBronze.GetFirstOrDefault(), Veiculo.GetFirstOrDefault(),
+         *                   PlacaBronze.Remove(), UnitOfWork.Save().
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(PlacaBronzeViewModel model)
@@ -129,6 +180,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateStatusPlacaBronze
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Alternar o status ativo/inativo da placa de bronze.
+         *
+         * 📥 ENTRADAS     : Id (Guid da placa).
+         *
+         * 📤 SAÍDAS       : JSON com success, message e type.
+         *
+         * 🔗 CHAMADA POR  : Ação de ativar/desativar placa.
+         *
+         * 🔄 CHAMA        : PlacaBronze.GetFirstOrDefault(), PlacaBronze.Update().
+         ****************************************************************************************/
         [Route("UpdateStatusPlacaBronze")]
         public JsonResult UpdateStatusPlacaBronze(Guid Id)
         {
@@ -192,6 +256,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Desvincula
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover vínculo da placa de bronze do veículo associado.
+         *
+         * 📥 ENTRADAS     : model (PlacaBronzeViewModel).
+         *
+         * 📤 SAÍDAS       : JSON com success, message e type.
+         *
+         * 🔗 CHAMADA POR  : Ação de desvincular na tela de placas.
+         *
+         * 🔄 CHAMA        : Veiculo.GetFirstOrDefault(), Veiculo.Update().
+         ****************************************************************************************/
         [Route("Desvincula")]
         [HttpPost]
         public IActionResult Desvincula(PlacaBronzeViewModel model)

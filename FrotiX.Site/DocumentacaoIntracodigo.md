@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░ 48.1%
+████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░ 48.6%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 435 |
-| Percentual | 48.1% |
-| Última Atualização | 31/01/2026 18:15 |
+| Documentados | 440 |
+| Percentual | 48.6% |
+| Última Atualização | 31/01/2026 18:22 |
 
 ---
 
@@ -26,7 +26,7 @@
 | # | Pasta | Total | Feitos | % | Status |
 |---|-------|-------|--------|---|--------|
 | 1 | Areas | 43 | 43 | 100% | ✅ Completo |
-| 2 | Controllers | 93 | 55 | 59.1% | 🟡 Em Progresso |
+| 2 | Controllers | 93 | 60 | 64.5% | 🟡 Em Progresso |
 | 3 | Data | 5 | 0 | 0% | 🔴 Pendente |
 | 4 | EndPoints | 2 | 2 | 100% | ✅ Completo |
 | 5 | Extensions | 3 | 3 | 100% | ✅ Completo |
@@ -95,7 +95,7 @@
 ✅ Areas/Identity/Pages/_ViewStart.cshtml
 ```
 
-### 📂 Controllers (55/93) 🟡
+### 📂 Controllers (60/93) 🟡
 ```
 ✅ Controllers/AbastecimentoController.cs
 ✅ Controllers/AbastecimentoController.DashboardAPI.cs
@@ -152,6 +152,11 @@
 ✅ Controllers/OcorrenciaViagemController.cs
 ✅ Controllers/OperadorController.cs
 ✅ Controllers/PatrimonioController.cs
+✅ Controllers/PdfViewerCNHController.cs
+✅ Controllers/PdfViewerController.cs
+✅ Controllers/PlacaBronzeController.cs
+✅ Controllers/RecursoController.cs
+✅ Controllers/RelatorioSetorSolicitanteController.cs
 ```
 
 ### 📂 Data (0/5)
@@ -478,6 +483,13 @@
    • OcorrenciaViagemController.cs
    • OperadorController.cs
    • PatrimonioController.cs
+
+✅ Controllers - Classes (Lote 151 - revisão cards completos):
+   • PdfViewerCNHController.cs
+   • PdfViewerController.cs
+   • PlacaBronzeController.cs
+   • RecursoController.cs
+   • RelatorioSetorSolicitanteController.cs
 
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
@@ -940,10 +952,11 @@
 | 31/01/2026 | 5 | 1 | Lote 148 - Controllers revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 149 - Controllers revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 150 - Controllers revisão cards completos (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 151 - Controllers revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 99
-**Total de Commits:** 97
-**Total de Arquivos Documentados:** 435
+**Total de Lotes:** 100
+**Total de Commits:** 98
+**Total de Arquivos Documentados:** 440
 
 ---
 

@@ -1,13 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: RelatorioSetorSolicitanteController.cs                                                  ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Relatórios de Setores Solicitantes via Stimulsoft. Carrega SetoresSolicitantes.mrt.    ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Index(), GetReport(), ViewerEvent() - template Reports/SetoresSolicitantes.mrt           ║
-   ║ 🔗 DEPS: Stimulsoft.Report, StiNetCoreViewer | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                 ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: RelatorioSetorSolicitanteController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerar relatório de Setores Solicitantes via Stimulsoft.
+ *
+ * 📥 ENTRADAS     : Requisições da viewer (GetReport/ViewerEvent).
+ *
+ * 📤 SAÍDAS       : Views e respostas do Stimulsoft Viewer.
+ *
+ * 🔗 CHAMADA POR  : Módulo de relatórios de Setor Solicitante.
+ *
+ * 🔄 CHAMA        : Stimulsoft.Report, StiNetCoreViewer.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -19,9 +22,29 @@ using Stimulsoft.Report.Mvc;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: RelatorioSetorSolicitanteController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints do viewer Stimulsoft para relatório de setores.
+     *
+     * 📥 ENTRADAS     : Rotas de visualização e eventos do viewer.
+     *
+     * 📤 SAÍDAS       : Views e resultados do Stimulsoft.
+     ****************************************************************************************/
     [Route("SetorSolicitante/RelatorioSetorSolicitante")]
     public class RelatorioSetorSolicitanteController : Controller
     {
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RelatorioSetorSolicitanteController (Static)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Carregar/ativar a licença do Stimulsoft.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : Licença registrada no Stimulsoft.Base.
+         *
+         * 🔗 CHAMADA POR  : Runtime .NET (inicialização estática).
+         ****************************************************************************************/
         static RelatorioSetorSolicitanteController()
         {
             try
@@ -42,6 +65,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Index
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Exibir a página principal do relatório.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : View do relatório.
+         *
+         * 🔗 CHAMADA POR  : Navegação do módulo de relatórios.
+         ****************************************************************************************/
         [IgnoreAntiforgeryToken]
         public IActionResult Index()
         {
@@ -60,6 +94,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetReport
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Carregar o template .mrt e retornar o relatório ao viewer.
+         *
+         * 📥 ENTRADAS     : Nenhuma (parâmetros podem ser configurados no template).
+         *
+         * 📤 SAÍDAS       : Resultado do StiNetCoreViewer.GetReportResult.
+         *
+         * 🔗 CHAMADA POR  : Viewer do relatório.
+         *
+         * 🔄 CHAMA        : StiReport.Load(), StiNetCoreViewer.GetReportResult().
+         ****************************************************************************************/
         [Route("GetReport")]
         public IActionResult GetReport()
         {
@@ -85,6 +132,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ViewerEvent
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Processar eventos do viewer Stimulsoft (navegação, paginação etc).
+         *
+         * 📥 ENTRADAS     : Eventos enviados pelo viewer.
+         *
+         * 📤 SAÍDAS       : Resultado de StiNetCoreViewer.ViewerEventResult.
+         *
+         * 🔗 CHAMADA POR  : Stimulsoft Viewer.
+         ****************************************************************************************/
         [Route("ViewerEvent")]
         public IActionResult ViewerEvent()
         {

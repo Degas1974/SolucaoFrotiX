@@ -1,13 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: RecursoController.cs                                                                    ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Gerenciar Recursos do sistema (permissões/menus). Atribuídos via ControleAcesso.       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Get(), Delete() - ordenados por Ordem, valida vínculos ControleAcesso antes excluir      ║
-   ║ 🔗 DEPS: IUnitOfWork (Recurso, ControleAcesso) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0               ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: RecursoController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar recursos do sistema (menus/permissões) vinculados ao acesso.
+ *
+ * 📥 ENTRADAS     : Modelos de recurso e IDs.
+ *
+ * 📤 SAÍDAS       : JSON com listas e status de operações.
+ *
+ * 🔗 CHAMADA POR  : Telas administrativas de controle de acesso.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.Recurso, IUnitOfWork.ControleAcesso.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -17,12 +20,32 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: RecursoController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints para listar e excluir recursos do sistema.
+     *
+     * 📥 ENTRADAS     : Recurso (model) e IDs.
+     *
+     * 📤 SAÍDAS       : JSON com dados ou mensagens de erro.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class RecursoController :Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RecursoController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependência do UnitOfWork.
+         *
+         * 📥 ENTRADAS     : unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada do controller.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public RecursoController(IUnitOfWork unitOfWork)
         {
             try
@@ -35,6 +58,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar recursos ordenados por ordem de exibição.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com data (lista de recursos).
+         *
+         * 🔗 CHAMADA POR  : Grid de recursos.
+         *
+         * 🔄 CHAMA        : Recurso.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
@@ -68,6 +104,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover um recurso se não houver vínculo em ControleAcesso.
+         *
+         * 📥 ENTRADAS     : model (Recurso).
+         *
+         * 📤 SAÍDAS       : JSON com success e message.
+         *
+         * 🔗 CHAMADA POR  : Ação de exclusão no grid.
+         *
+         * 🔄 CHAMA        : Recurso.GetFirstOrDefault(), ControleAcesso.GetFirstOrDefault(),
+         *                   Recurso.Remove(), UnitOfWork.Save().
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(Recurso model)
