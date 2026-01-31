@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-██████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 35.9%
+██████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 36.5%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 325 |
-| Percentual | 35.9% |
-| Última Atualização | 31/01/2026 12:16 |
+| Documentados | 330 |
+| Percentual | 36.5% |
+| Última Atualização | 31/01/2026 12:21 |
 
 ---
 
@@ -36,7 +36,7 @@
 | 9 | Infrastructure | 1 | 1 | 100% | ✅ Completo |
 | 10 | Logging | 1 | 1 | 100% | ✅ Completo |
 | 11 | Middlewares | 2 | 2 | 100% | ✅ Completo |
-| 12 | Models | 139 | 124 | 89.2% | 🟡 Em Progresso |
+| 12 | Models | 139 | 129 | 92.8% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
 | 15 | Repository | 209 | 209 | 100% | ✅ Completo |
@@ -229,6 +229,13 @@
    • SmartSettings.cs
    • TempDataExtensions.cs
 
+✅ Models - Classes (Lote 122 - novo padrão visual):
+   • ToastMessage.cs
+   • VeiculoPadraoViagem.cs
+   • ViagemEstatistica.cs
+   • ViagemEventoDto.cs
+   • ViewOcorrenciasAbertasVeiculo.cs
+
 ### 📂 Infrastructure (1/1) ✅
 ```
 ✅ CacheKeys.cs
@@ -245,12 +252,12 @@
 ✅ UiExceptionMiddleware.cs
 ```
 
-### 📂 Models (124/139) 🟡
+### 📂 Models (129/139) 🟡
 ```
 ✅ Estatísticas (13 arquivos - Lotes 51-53)
 ✅ Views (38 arquivos - Lotes 54-61)
 ⏳ Cadastros (55 processados)
-⏳ Raiz (21 processados)
+⏳ Raiz (26 processados)
 ⏳ FontAwesome (1 processado)
 ⏳ Planilhas (1 processado)
 ```
@@ -611,10 +618,11 @@
 | 31/01/2026 | 5 | 1 | Lote 119 - Models novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 120 - Models novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 121 - Models novo padrão visual (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 122 - Models novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 70
-**Total de Commits:** 68
-**Total de Arquivos Documentados:** 325
+**Total de Lotes:** 71
+**Total de Commits:** 69
+**Total de Arquivos Documentados:** 330
 
 ---
 
