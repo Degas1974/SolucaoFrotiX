@@ -1,16 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: DocGeneratorController.cs                                                               ║
-   ║ 📂 CAMINHO: /Controllers/Api                                                                        ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Controller API para geração de documentação automática. Orquestra descoberta de       ║
-   ║    arquivos, geração em batch e cache de documentação do projeto.                                   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: Descoberta de arquivos, geração de docs, cache de documentação                       ║
-   ║    ROTA BASE: api/DocGenerator                                                                      ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: IFileDiscoveryService, IDocGeneratorOrchestrator, IDocCacheService, ILogger               ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: DocGeneratorController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerar documentação automática, com descoberta, jobs e cache.
+ *
+ * 📥 ENTRADAS     : Requisições de descoberta, geração e consulta de jobs.
+ *
+ * 📤 SAÍDAS       : JSON com status, métricas e resultados.
+ *
+ * 🔗 CHAMADA POR  : Módulo interno de geração de docs.
+ *
+ * 🔄 CHAMA        : IFileDiscoveryService, IDocGeneratorOrchestrator, IDocCacheService.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -24,9 +24,15 @@ using Microsoft.Extensions.Options;
 
 namespace FrotiX.Controllers.Api
 {
-    /// <summary>
-    /// Controller API para geração de documentação automática
-    /// </summary>
+    /****************************************************************************************
+     * ⚡ CONTROLLER: DocGeneratorController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints de geração e controle de documentação.
+     *
+     * 📥 ENTRADAS     : DTOs e parâmetros de job.
+     *
+     * 📤 SAÍDAS       : JSON com status e resultados.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     [IgnoreAntiforgeryToken]
@@ -37,6 +43,17 @@ namespace FrotiX.Controllers.Api
         private readonly IDocCacheService _cacheService;
         private readonly ILogger<DocGeneratorController> _logger;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DocGeneratorController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar serviços de descoberta, orquestração e cache.
+         *
+         * 📥 ENTRADAS     : discoveryService, orchestrator, cacheService, logger.
+         *
+         * 📤 SAÍDAS       : Instância configurada do controller.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public DocGeneratorController(
             IFileDiscoveryService discoveryService,
             IDocGeneratorOrchestrator orchestrator,
@@ -56,9 +73,17 @@ namespace FrotiX.Controllers.Api
             }
         }
 
-        /// <summary>
-        /// Descobre todos os arquivos documentáveis no projeto
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Discover
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Descobrir arquivos documentáveis no projeto.
+         *
+         * 📥 ENTRADAS     : ct (CancellationToken).
+         *
+         * 📤 SAÍDAS       : JSON com totais e árvore de arquivos.
+         *
+         * 🔗 CHAMADA POR  : GET /api/DocGenerator/discover.
+         ****************************************************************************************/
         [HttpGet("discover")]
         public async Task<IActionResult> Discover(CancellationToken ct)
         {
@@ -85,9 +110,17 @@ namespace FrotiX.Controllers.Api
             }
         }
 
-        /// <summary>
-        /// Obtém a árvore de pastas
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetTree
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Obter árvore de pastas do projeto.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com árvore de diretórios.
+         *
+         * 🔗 CHAMADA POR  : GET /api/DocGenerator/tree.
+         ****************************************************************************************/
         [HttpGet("tree")]
         public IActionResult GetTree()
         {
@@ -103,9 +136,17 @@ namespace FrotiX.Controllers.Api
             }
         }
 
-        /// <summary>
-        /// Inicia um job de geração de documentação
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Generate
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Iniciar job de geração de documentação.
+         *
+         * 📥 ENTRADAS     : request (DocGenerationRequest), ct.
+         *
+         * 📤 SAÍDAS       : JSON com jobId e status.
+         *
+         * 🔗 CHAMADA POR  : POST /api/DocGenerator/generate.
+         ****************************************************************************************/
         [HttpPost("generate")]
         public async Task<IActionResult> Generate([FromBody] DocGenerationRequest request, CancellationToken ct)
         {
@@ -153,9 +194,17 @@ namespace FrotiX.Controllers.Api
             }
         }
 
-        /// <summary>
-        /// Obtém status de um job
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetJobStatus
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Consultar status de um job de geração.
+         *
+         * 📥 ENTRADAS     : jobId, ct.
+         *
+         * 📤 SAÍDAS       : JSON com status e métricas do job.
+         *
+         * 🔗 CHAMADA POR  : GET /api/DocGenerator/job/{jobId}.
+         ****************************************************************************************/
         [HttpGet("job/{jobId}")]
         public async Task<IActionResult> GetJobStatus(string jobId, CancellationToken ct)
         {
@@ -194,9 +243,17 @@ namespace FrotiX.Controllers.Api
             }
         }
 
-        /// <summary>
-        /// Cancela um job em execução
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CancelJob
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Cancelar um job em execução.
+         *
+         * 📥 ENTRADAS     : jobId, ct.
+         *
+         * 📤 SAÍDAS       : JSON com confirmação.
+         *
+         * 🔗 CHAMADA POR  : POST /api/DocGenerator/job/{jobId}/cancel.
+         ****************************************************************************************/
         [HttpPost("job/{jobId}/cancel")]
         public async Task<IActionResult> CancelJob(string jobId, CancellationToken ct)
         {
@@ -212,9 +269,17 @@ namespace FrotiX.Controllers.Api
             }
         }
 
-        /// <summary>
-        /// Lista jobs recentes
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListJobs
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar jobs recentes de geração.
+         *
+         * 📥 ENTRADAS     : count, ct.
+         *
+         * 📤 SAÍDAS       : JSON com lista de jobs.
+         *
+         * 🔗 CHAMADA POR  : GET /api/DocGenerator/jobs.
+         ****************************************************************************************/
         [HttpGet("jobs")]
         public async Task<IActionResult> ListJobs([FromQuery] int count = 10, CancellationToken ct = default)
         {
@@ -245,9 +310,17 @@ namespace FrotiX.Controllers.Api
             }
         }
 
-        /// <summary>
-        /// Limpa o cache de documentação
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ClearCache
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Limpar cache de documentação.
+         *
+         * 📥 ENTRADAS     : ct.
+         *
+         * 📤 SAÍDAS       : JSON com confirmação.
+         *
+         * 🔗 CHAMADA POR  : POST /api/DocGenerator/cache/clear.
+         ****************************************************************************************/
         [HttpPost("cache/clear")]
         public async Task<IActionResult> ClearCache(CancellationToken ct)
         {
@@ -263,9 +336,17 @@ namespace FrotiX.Controllers.Api
             }
         }
 
-        /// <summary>
-        /// Obtém provedores de IA disponíveis
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetProviders
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar provedores de IA disponíveis e configurados.
+         *
+         * 📥 ENTRADAS     : options (DocGeneratorSettings).
+         *
+         * 📤 SAÍDAS       : JSON com providers e status de configuração.
+         *
+         * 🔗 CHAMADA POR  : GET /api/DocGenerator/providers.
+         ****************************************************************************************/
         [HttpGet("providers")]
         public IActionResult GetProviders([FromServices] IOptions<DocGeneratorSettings> options)
         {
@@ -344,9 +425,17 @@ namespace FrotiX.Controllers.Api
         #endregion
     }
 
-    /// <summary>
-    /// DTO para requisição de geração
-    /// </summary>
+    /****************************************************************************************
+     * ⚡ DTO: DocGenerationRequest
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar parâmetros de geração de documentação.
+     *
+     * 📥 ENTRADAS     : Flags de geração, provider/modelo e caminhos selecionados.
+     *
+     * 📤 SAÍDAS       : Nenhuma (estrutura de dados).
+     *
+     * 🔗 CHAMADA POR  : Generate.
+     ****************************************************************************************/
     public class DocGenerationRequest
     {
         public bool OnlyModified { get; set; }

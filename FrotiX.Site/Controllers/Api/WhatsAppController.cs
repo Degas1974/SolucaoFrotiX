@@ -1,17 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: WhatsAppController.cs                                                                   ║
-   ║ 📂 CAMINHO: /Controllers/Api                                                                        ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Gerenciar integração com WhatsApp Web para envio de mensagens. Controla sessões,      ║
-   ║    exibe QR Code para autenticação e envia mensagens para destinatários.                           ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [POST] /start → Iniciar sessão | [GET] /status → Status sessão                       ║
-   ║    [POST] /send → Enviar mensagem | ROTA BASE: api/WhatsApp                                        ║
-   ║    ATRIBUTO: [Authorize] - Requer autenticação                                                     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: IWhatsAppService, CancellationToken (async)                                                ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: WhatsAppController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Integrar WhatsApp Web para envio de mensagens e controle de sessão.
+ *
+ * 📥 ENTRADAS     : Sessão, destinatário e conteúdo da mensagem.
+ *
+ * 📤 SAÍDAS       : JSON com status, QR Code e confirmação de envio.
+ *
+ * 🔗 CHAMADA POR  : Módulo de comunicações.
+ *
+ * 🔄 CHAMA        : IWhatsAppService.
+ **************************************************************************************** */
 
 using FrotiX.Services.WhatsApp;
 using Microsoft.AspNetCore.Authorization;
@@ -25,17 +24,13 @@ namespace FrotiX.Controllers.Api
     /****************************************************************************************
      * ⚡ CONTROLLER: WhatsAppController
      * --------------------------------------------------------------------------------------
-     * 🎯 OBJETIVO     : Gerenciar integração com WhatsApp Web para envio de mensagens
-     * 📥 ENTRADAS     : StartSessionRequest (sessão), Mensagens (destinatário, texto)
-     * 📤 SAÍDAS       : JSON com status da sessão, QR Code, confirmação de envio
-     * 🔗 CHAMADA POR  : Frontend de notificações e comunicações
-     * 🔄 CHAMA        : IWhatsAppService (serviço de integração WhatsApp)
-     * 📦 DEPENDÊNCIAS : IWhatsAppService, CancellationToken (async)
-     * --------------------------------------------------------------------------------------
-     * [DOC] API REST para controle de sessões WhatsApp Web
-     * [DOC] Endpoints: Start (iniciar sessão), Status (verificar status), Send (enviar msg)
-     * [DOC] Usa CancellationToken para operações assíncronas que podem ser canceladas
-     * [DOC] Requer autorização para todos os endpoints
+     * 🎯 OBJETIVO     : Controlar sessões e envio de mensagens via WhatsApp.
+     *
+     * 📥 ENTRADAS     : Requests de sessão e mensagens.
+     *
+     * 📤 SAÍDAS       : JSON com status e resultados.
+     *
+     * 🔗 CHAMADA POR  : Endpoints de comunicações.
      ****************************************************************************************/
     [Authorize]
     [ApiController]
@@ -44,11 +39,31 @@ namespace FrotiX.Controllers.Api
     {
         private readonly IWhatsAppService _wa;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: WhatsAppController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar serviço de WhatsApp.
+         *
+         * 📥 ENTRADAS     : wa (IWhatsAppService).
+         *
+         * 📤 SAÍDAS       : Instância configurada do controller.
+         ****************************************************************************************/
         public WhatsAppController(IWhatsAppService wa)
         {
             _wa = wa;
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Start
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Iniciar sessão do WhatsApp.
+         *
+         * 📥 ENTRADAS     : req, ct.
+         *
+         * 📤 SAÍDAS       : JSON com status da sessão.
+         *
+         * 🔗 CHAMADA POR  : POST /api/WhatsApp/start.
+         ****************************************************************************************/
         [HttpPost("start")]
         public async Task<IActionResult> Start([FromBody] StartSessionRequest req , CancellationToken ct)
         {
@@ -65,6 +80,17 @@ namespace FrotiX.Controllers.Api
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Status
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Consultar status de uma sessão.
+         *
+         * 📥 ENTRADAS     : session, ct.
+         *
+         * 📤 SAÍDAS       : JSON com status.
+         *
+         * 🔗 CHAMADA POR  : GET /api/WhatsApp/status.
+         ****************************************************************************************/
         [HttpGet("status")]
         public async Task<IActionResult> Status([FromQuery] string session , CancellationToken ct)
         {
@@ -80,6 +106,17 @@ namespace FrotiX.Controllers.Api
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Qr
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Obter QR Code da sessão.
+         *
+         * 📥 ENTRADAS     : session, ct.
+         *
+         * 📤 SAÍDAS       : JSON com QR Code Base64.
+         *
+         * 🔗 CHAMADA POR  : GET /api/WhatsApp/qr.
+         ****************************************************************************************/
         [HttpGet("qr")]
         public async Task<IActionResult> Qr([FromQuery] string session , CancellationToken ct)
         {
@@ -102,6 +139,17 @@ namespace FrotiX.Controllers.Api
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SendText
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Enviar mensagem de texto.
+         *
+         * 📥 ENTRADAS     : req, ct.
+         *
+         * 📤 SAÍDAS       : JSON com confirmação de envio.
+         *
+         * 🔗 CHAMADA POR  : POST /api/WhatsApp/send-text.
+         ****************************************************************************************/
         [HttpPost("send-text")]
         public async Task<IActionResult> SendText([FromBody] SendTextRequest req , CancellationToken ct)
         {
@@ -117,6 +165,17 @@ namespace FrotiX.Controllers.Api
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SendMedia
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Enviar mídia via WhatsApp.
+         *
+         * 📥 ENTRADAS     : req, ct.
+         *
+         * 📤 SAÍDAS       : JSON com confirmação de envio.
+         *
+         * 🔗 CHAMADA POR  : POST /api/WhatsApp/send-media.
+         ****************************************************************************************/
         [HttpPost("send-media")]
         public async Task<IActionResult> SendMedia([FromBody] SendMediaRequest req , CancellationToken ct)
         {

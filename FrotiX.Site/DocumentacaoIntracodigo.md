@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-██████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░ 51.9%
+██████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░ 52.5%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 470 |
-| Percentual | 51.9% |
-| Última Atualização | 31/01/2026 19:11 |
+| Documentados | 475 |
+| Percentual | 52.5% |
+| Última Atualização | 31/01/2026 19:30 |
 
 ---
 
@@ -26,8 +26,8 @@
 | # | Pasta | Total | Feitos | % | Status |
 |---|-------|-------|--------|---|--------|
 | 1 | Areas | 43 | 43 | 100% | ✅ Completo |
-| 2 | Controllers | 93 | 90 | 96.8% | 🟡 Em Progresso |
-| 3 | Data | 5 | 0 | 0% | 🔴 Pendente |
+| 2 | Controllers | 94 | 94 | 100% | ✅ Completo |
+| 3 | Data | 5 | 1 | 20% | 🟡 Em Progresso |
 | 4 | EndPoints | 2 | 2 | 100% | ✅ Completo |
 | 5 | Extensions | 3 | 3 | 100% | ✅ Completo |
 | 6 | Filters | 4 | 4 | 100% | ✅ Completo |
@@ -95,7 +95,7 @@
 ✅ Areas/Identity/Pages/_ViewStart.cshtml
 ```
 
-### 📂 Controllers (90/93) 🟡
+### 📂 Controllers (94/94) ✅
 ```
 ✅ Controllers/AbastecimentoController.cs
 ✅ Controllers/AbastecimentoController.DashboardAPI.cs
@@ -105,6 +105,8 @@
 ✅ Controllers/AdministracaoController.cs
 ✅ Controllers/AgendaController.cs
 ✅ Controllers/AlertasFrotiXController.cs
+✅ Controllers/Api/DocGeneratorController.cs
+✅ Controllers/Api/WhatsAppController.cs
 ✅ Controllers/AtaRegistroPrecosController.Partial.cs
 ✅ Controllers/AtaRegistroPrecosController.cs
 ✅ Controllers/CombustivelController.cs
@@ -131,6 +133,7 @@
 ✅ Controllers/HomeController.cs
 ✅ Controllers/ItensContratoController.cs
 ✅ Controllers/LavadorController.cs
+✅ Controllers/LogErrosController.Dashboard.cs
 ✅ Controllers/LogErrosController.cs
 ✅ Controllers/LoginController.cs
 ✅ Controllers/ManutencaoController.cs
@@ -187,11 +190,12 @@
 ✅ Controllers/ViagemController.cs
 ✅ Controllers/ViagemEventoController.UpdateStatus.cs
 ✅ Controllers/ViagemEventoController.cs
+✅ Controllers/ViagemLimpezaController.cs
 ```
 
-### 📂 Data (0/5)
+### 📂 Data (1/5) 🟡
 ```
-(pendente)
+✅ Data/ApplicationDbContext.cs
 ```
 
 ### 📂 EndPoints (2/2) ✅
@@ -562,6 +566,13 @@
    • ViagemController.cs
    • ViagemEventoController.UpdateStatus.cs
    • ViagemEventoController.cs
+
+✅ Controllers + Data (Lote 158 - revisão cards completos):
+   • DocGeneratorController.cs
+   • WhatsAppController.cs
+   • LogErrosController.Dashboard.cs
+   • ViagemLimpezaController.cs
+   • ApplicationDbContext.cs
 
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
@@ -1031,10 +1042,11 @@
 | 31/01/2026 | 5 | 1 | Lote 155 - Controllers revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 156 - Controllers revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 157 - Controllers revisão cards completos (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 158 - Controllers + Data revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 106
-**Total de Commits:** 104
-**Total de Arquivos Documentados:** 470
+**Total de Lotes:** 107
+**Total de Commits:** 105
+**Total de Arquivos Documentados:** 475
 
 ---
 

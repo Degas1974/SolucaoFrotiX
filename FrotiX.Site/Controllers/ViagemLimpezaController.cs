@@ -1,17 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ViagemLimpezaController.cs                                                              ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Controller API para limpeza e correção de dados de viagens. Corrige inconsistências   ║
-   ║    em campos Origem/Destino, padronizando nomes de locais em lote (batch update).                  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [GET] /origens → Lista origens distintas | [GET] /destinos → Lista destinos          ║
-   ║    [POST] /corrigir-origem → Padroniza origem | [POST] /corrigir-destino → Padroniza destino       ║
-   ║    ROTA BASE: api/ViagemLimpeza                                                                     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: IViagemRepository (métodos de correção batch)                                              ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViagemLimpezaController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Corrigir e padronizar origens/destinos de viagens em lote.
+ *
+ * 📥 ENTRADAS     : Lista de valores anteriores e novo valor.
+ *
+ * 📤 SAÍDAS       : JSON/Status das operações.
+ *
+ * 🔗 CHAMADA POR  : Ferramentas de limpeza de dados.
+ *
+ * 🔄 CHAMA        : IViagemRepository.
+ **************************************************************************************** */
 
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -21,12 +20,32 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: ViagemLimpezaController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints de limpeza de origem/destino.
+     *
+     * 📥 ENTRADAS     : DTOs de correção.
+     *
+     * 📤 SAÍDAS       : JSON/Status HTTP.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class ViagemLimpezaController :ControllerBase
     {
         private readonly IViagemRepository _viagemRepo;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ViagemLimpezaController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependência do repositório de viagens.
+         *
+         * 📥 ENTRADAS     : viagemRepo.
+         *
+         * 📤 SAÍDAS       : Instância configurada do controller.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public ViagemLimpezaController(IViagemRepository viagemRepo)
         {
             try
@@ -43,6 +62,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetOrigens
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar origens distintas registradas nas viagens.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : Lista de origens.
+         *
+         * 🔗 CHAMADA POR  : Tela de limpeza de dados.
+         ****************************************************************************************/
         [HttpGet("origens")]
         public async Task<ActionResult<List<string>>> GetOrigens()
         {
@@ -62,6 +92,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetDestinos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar destinos distintos registrados nas viagens.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : Lista de destinos.
+         *
+         * 🔗 CHAMADA POR  : Tela de limpeza de dados.
+         ****************************************************************************************/
         [HttpGet("destinos")]
         public async Task<ActionResult<List<string>>> GetDestinos()
         {
@@ -81,6 +122,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CorrigirOrigem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Padronizar valores de origem em lote.
+         *
+         * 📥 ENTRADAS     : request (CorrecaoRequest).
+         *
+         * 📤 SAÍDAS       : Status HTTP (204/500).
+         *
+         * 🔗 CHAMADA POR  : Ação de correção de origem.
+         ****************************************************************************************/
         [HttpPost("corrigir-origem")]
         public async Task<IActionResult> CorrigirOrigem([FromBody] CorrecaoRequest request)
         {
@@ -104,6 +156,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CorrigirDestino
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Padronizar valores de destino em lote.
+         *
+         * 📥 ENTRADAS     : request (CorrecaoRequest).
+         *
+         * 📤 SAÍDAS       : Status HTTP (204/500).
+         *
+         * 🔗 CHAMADA POR  : Ação de correção de destino.
+         ****************************************************************************************/
         [HttpPost("corrigir-destino")]
         public async Task<IActionResult> CorrigirDestino([FromBody] CorrecaoRequest request)
         {
@@ -128,6 +191,15 @@ namespace FrotiX.Controllers
         }
     }
 
+    /****************************************************************************************
+     * ⚡ DTO: CorrecaoRequest
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar valores para correção em lote.
+     *
+     * 📥 ENTRADAS     : Anteriores, NovoValor.
+     *
+     * 📤 SAÍDAS       : Nenhuma (estrutura de dados).
+     ****************************************************************************************/
     public class CorrecaoRequest
     {
         public List<string> Anteriores
