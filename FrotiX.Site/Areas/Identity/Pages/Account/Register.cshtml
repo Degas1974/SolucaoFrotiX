@@ -1,11 +1,21 @@
-@*
-╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║ 📌 ARQUIVO: Register.cshtml                                                                         ║
-║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
-╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-║ 🧭 OBJETIVO: Página de registro de novos usuários do FrotiX.                                        ║
-╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*@
+@*****************************************************************************************
+ * ⚡ ARQUIVO: Register.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de registro de novos usuários do FrotiX com formulário completo.
+ *
+ * 📥 ENTRADAS     : Input.Ponto, Input.NomeCompleto, Input.Email, Input.Senha,
+ *                   Input.ConfirmacaoSenha, returnUrl.
+ *
+ * 📤 SAÍDAS       : POST para RegisterModel (criação de conta) e exibição de erros.
+ *
+ * 🔗 CHAMADA POR  : Rota Razor Pages /Account/Register.
+ *
+ * 🔄 CHAMA        : RegisterModel.OnPostAsync(), _ValidationScriptsPartial.
+ *
+ * 📦 DEPENDÊNCIAS : Razor Pages, Bootstrap, validações client-side.
+ *
+ * 📝 OBSERVAÇÕES  : Valida domínio @camara.leg.br via atributo no code-behind.
+ *****************************************************************************************@
 
 @page
 @model RegisterModel

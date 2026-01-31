@@ -17,7 +17,7 @@
 | Total de Arquivos | 905 |
 | Documentados | 380 |
 | Percentual | 42.0% |
-| Última Atualização | 31/01/2026 15:04 |
+| Última Atualização | 31/01/2026 15:07 |
 
 ---
 
@@ -319,6 +319,13 @@
    • Lockout.cshtml.cs
    • Login.cshtml
    • Login.cshtml.cs
+
+✅ Areas/Identity - Pages (Lote 136 - revisão cards completos):
+   • LoginFrotiX.cshtml
+   • LoginFrotiX.cshtml.cs
+   • Logout.cshtml
+   • Logout.cshtml.cs
+   • Register.cshtml
 
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
@@ -766,9 +773,10 @@
 | 31/01/2026 | 5 | 1 | Lote 133 - Areas/Authorization + Areas/Identity revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 134 - Areas/Identity revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 135 - Areas/Identity revisão cards completos (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 136 - Areas/Identity revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 84
-**Total de Commits:** 82
+**Total de Lotes:** 85
+**Total de Commits:** 83
 **Total de Arquivos Documentados:** 380
 
 ---

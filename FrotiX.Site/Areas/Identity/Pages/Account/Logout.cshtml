@@ -1,11 +1,20 @@
-@*
-╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║ 📌 ARQUIVO: Logout.cshtml                                                                           ║
-║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
-╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-║ 🧭 OBJETIVO: Página de confirmação de logout e navegação pós-saída.                                 ║
-╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*@
+@*****************************************************************************************
+ * ⚡ ARQUIVO: Logout.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de confirmação de logout com opções de navegação pós-saída.
+ *
+ * 📥 ENTRADAS     : returnUrl (query string) para retorno opcional.
+ *
+ * 📤 SAÍDAS       : HTML com mensagem de sucesso e botões (Login, Register, Retornar).
+ *
+ * 🔗 CHAMADA POR  : LogoutModel (GET/POST /Account/Logout).
+ *
+ * 🔄 CHAMA        : Links para /Account/Login, /Account/Register e returnUrl decodificada.
+ *
+ * 📦 DEPENDÊNCIAS : Razor Pages, System.Web (HttpUtility), Bootstrap.
+ *
+ * 📝 OBSERVAÇÕES  : returnUrl é decodificada e assume "/" quando ausente.
+ *****************************************************************************************@
 @page
 @using System.Web
 @model LogoutModel
