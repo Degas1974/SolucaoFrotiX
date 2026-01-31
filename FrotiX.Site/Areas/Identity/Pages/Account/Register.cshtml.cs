@@ -1,12 +1,32 @@
-﻿/*
- ╔══════════════════════════════════════════════════════════════════════════╗
- ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
- ║  Arquivo: Register.cshtml.cs                                             ║
- ║  Caminho: /Areas/Identity/Pages/Account/Register.cshtml.cs              ║
- ║  Documentado em: 2026-01-26                                              ║
- ╚══════════════════════════════════════════════════════════════════════════╝
- */
+﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 📌 ARQUIVO: Register.cshtml.cs                                                                     ║
+   ║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🧭 OBJETIVO: PageModel de registro de usuários FrotiX.                                             ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🗂️  CONTÉM: RegisterModel, InputModel                                                              ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
+/****************************************************************************************
+ * ⚡ CLASSE: RegisterModel (PageModel)
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : PageModel para registro de novos usuários no FrotiX. Cria conta,
+ *                   valida domínio de email e realiza login automático.
+ *
+ * 📥 ENTRADAS     : Input.Ponto, Input.NomeCompleto, Input.Email, Input.Senha,
+ *                   Input.ConfirmacaoSenha, returnUrl
+ *
+ * 📤 SAÍDAS       : IActionResult - LocalRedirect para LoginFrotiX ou Page() com erros
+ *
+ * 🔗 CHAMADA POR  : Motor Razor (GET/POST /Account/Register)
+ *
+ * 🔄 CHAMA        : UserManager.CreateAsync(), SignInManager.SignInAsync()
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, IEmailSender, ILogger, AspNetUsers
+ *
+ * 📝 OBSERVAÇÕES  : Confirmação de email está comentada; valida domínio via
+ *                   ValidateDomainAtEnd.
+ ****************************************************************************************/
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
@@ -31,6 +51,24 @@ namespace FrotiX.Areas.Identity.Pages.Account
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
 
+        /****************************************************************************************
+         * ⚡ CONSTRUTOR: RegisterModel
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar dependências de Identity e envio de email.
+         *
+         * 📥 ENTRADAS     : [UserManager<IdentityUser>] userManager - Gerenciador de usuários
+         *                   [SignInManager<IdentityUser>] signInManager - Gerenciador de autenticação
+         *                   [ILogger<RegisterModel>] logger - Logger para auditoria
+         *                   [IEmailSender] emailSender - Serviço de envio de email
+         *
+         * 📤 SAÍDAS       : Instância configurada de RegisterModel
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI Container
+         *
+         * 🔄 CHAMA        : Nenhum
+         *
+         * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, ILogger, IEmailSender
+         ****************************************************************************************/
         public RegisterModel(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, ILogger<RegisterModel> logger,
             IEmailSender emailSender)
             {
@@ -137,6 +175,21 @@ namespace FrotiX.Areas.Identity.Pages.Account
                 }
             }
 
+        /****************************************************************************************
+         * ⚡ CLASSE: InputModel
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Model de entrada para formulário de registro.
+         *
+         * 📥 ENTRADAS     : Ponto, NomeCompleto, Email, Senha, ConfirmacaoSenha
+         *
+         * 📤 SAÍDAS       : Objeto validado via Data Annotations
+         *
+         * 🔗 CHAMADA POR  : Razor Pages Model Binding
+         *
+         * 🔄 CHAMA        : Nenhum
+         *
+         * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations, ValidateDomainAtEnd
+         ****************************************************************************************/
         public class InputModel
             {
             [Required]

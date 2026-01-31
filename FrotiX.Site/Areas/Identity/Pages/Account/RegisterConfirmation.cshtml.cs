@@ -1,12 +1,31 @@
-﻿/*
- ╔══════════════════════════════════════════════════════════════════════════╗
- ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
- ║  Arquivo: RegisterConfirmation.cshtml.cs                                 ║
- ║  Caminho: /Areas/Identity/Pages/Account/RegisterConfirmation.cshtml.cs  ║
- ║  Documentado em: 2026-01-26                                              ║
- ╚══════════════════════════════════════════════════════════════════════════╝
- */
+﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 📌 ARQUIVO: RegisterConfirmation.cshtml.cs                                                         ║
+   ║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🧭 OBJETIVO: PageModel para confirmação de registro e geração de link de email.                    ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🗂️  CONTÉM: RegisterConfirmationModel                                                               ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
+/****************************************************************************************
+ * ⚡ CLASSE: RegisterConfirmationModel (PageModel)
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Processar confirmação de registro, gerando link de validação
+ *                   e exibindo instruções ao usuário.
+ *
+ * 📥 ENTRADAS     : email (string) - Email do usuário recém-registrado
+ *
+ * 📤 SAÍDAS       : IActionResult - Página com link de confirmação ou redirect
+ *
+ * 🔗 CHAMADA POR  : Motor Razor (GET /Account/RegisterConfirmation)
+ *
+ * 🔄 CHAMA        : UserManager.FindByEmailAsync(), GenerateEmailConfirmationTokenAsync()
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, IEmailSender, ILogger, WebEncoders
+ *
+ * 📝 OBSERVAÇÕES  : Exibe link direto de confirmação quando IEmailSender
+ *                   não está configurado no ambiente.
+ ****************************************************************************************/
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Text;
@@ -27,6 +46,23 @@ namespace FrotiX.Areas.Identity.Pages.Account
         private readonly IEmailSender _sender;
         private readonly ILogger<RegisterConfirmationModel> _logger;
 
+        /****************************************************************************************
+         * ⚡ CONSTRUTOR: RegisterConfirmationModel
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar dependências para validação e envio de email.
+         *
+         * 📥 ENTRADAS     : [UserManager<IdentityUser>] userManager - Gerenciador de usuários
+         *                   [IEmailSender] sender - Serviço de envio de email
+         *                   [ILogger<RegisterConfirmationModel>] logger - Logger para auditoria
+         *
+         * 📤 SAÍDAS       : Instância configurada de RegisterConfirmationModel
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI Container
+         *
+         * 🔄 CHAMA        : Nenhum
+         *
+         * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, IEmailSender, ILogger
+         ****************************************************************************************/
         public RegisterConfirmationModel(UserManager<IdentityUser> userManager, IEmailSender sender, ILogger<RegisterConfirmationModel> logger)
             {
             _userManager = userManager;
@@ -34,10 +70,13 @@ namespace FrotiX.Areas.Identity.Pages.Account
             _logger = logger;
             }
 
+        // [DOC] Email do usuário recém-registrado (query string)
         public string Email { get; set; }
 
+        // [DOC] Indica se deve exibir link direto de confirmação (sem IEmailSender)
         public bool DisplayConfirmAccountLink { get; set; }
 
+        // [DOC] URL completa para confirmar o email do usuário
         public string EmailConfirmationUrl { get; set; }
 
         /****************************************************************************************

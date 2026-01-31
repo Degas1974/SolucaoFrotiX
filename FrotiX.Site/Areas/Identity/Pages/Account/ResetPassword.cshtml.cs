@@ -1,12 +1,28 @@
-﻿/*
- ╔══════════════════════════════════════════════════════════════════════════╗
- ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
- ║  Arquivo: ResetPassword.cshtml.cs                                        ║
- ║  Caminho: /Areas/Identity/Pages/Account/ResetPassword.cshtml.cs         ║
- ║  Documentado em: 2026-01-26                                              ║
- ╚══════════════════════════════════════════════════════════════════════════╝
- */
+﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 📌 ARQUIVO: ResetPassword.cshtml.cs                                                                ║
+   ║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🧭 OBJETIVO: PageModel para redefinição de senha via token de recuperação.                          ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🗂️  CONTÉM: ResetPasswordModel, InputModel                                                          ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
+/****************************************************************************************
+ * ⚡ CLASSE: ResetPasswordModel (PageModel)
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Processar redefinição de senha com token. Valida código,
+ *                   atualiza credenciais e redireciona para confirmação.
+ *
+ * 📥 ENTRADAS     : Input.Email, Input.Password, Input.ConfirmPassword, Input.Code
+ *
+ * 📤 SAÍDAS       : IActionResult - RedirectToPage ou Page()
+ *
+ * 🔗 CHAMADA POR  : Motor Razor (GET/POST /Account/ResetPassword)
+ *
+ * 🔄 CHAMA        : UserManager.FindByEmailAsync(), ResetPasswordAsync()
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, ILogger
+ ****************************************************************************************/
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
@@ -24,6 +40,22 @@ namespace FrotiX.Areas.Identity.Pages.Account
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<ResetPasswordModel> _logger;
 
+        /****************************************************************************************
+         * ⚡ CONSTRUTOR: ResetPasswordModel
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar dependências de Identity e logging.
+         *
+         * 📥 ENTRADAS     : [UserManager<IdentityUser>] userManager - Gerenciador de usuários
+         *                   [ILogger<ResetPasswordModel>] logger - Logger para auditoria
+         *
+         * 📤 SAÍDAS       : Instância configurada de ResetPasswordModel
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI Container
+         *
+         * 🔄 CHAMA        : Nenhum
+         *
+         * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, ILogger
+         ****************************************************************************************/
         public ResetPasswordModel(UserManager<IdentityUser> userManager, ILogger<ResetPasswordModel> logger)
             {
             _userManager = userManager;
@@ -33,6 +65,21 @@ namespace FrotiX.Areas.Identity.Pages.Account
         [BindProperty]
         public InputModel Input { get; set; }
 
+        /****************************************************************************************
+         * ⚡ CLASSE: InputModel
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Model de entrada para redefinição de senha.
+         *
+         * 📥 ENTRADAS     : Email, Password, ConfirmPassword, Code
+         *
+         * 📤 SAÍDAS       : Objeto validado via Data Annotations
+         *
+         * 🔗 CHAMADA POR  : Razor Pages Model Binding
+         *
+         * 🔄 CHAMA        : Nenhum
+         *
+         * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations
+         ****************************************************************************************/
         public class InputModel
             {
             [Required]
