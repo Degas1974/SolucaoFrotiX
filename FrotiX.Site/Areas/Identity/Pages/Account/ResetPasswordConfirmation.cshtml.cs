@@ -1,12 +1,27 @@
-﻿/*
- ╔══════════════════════════════════════════════════════════════════════════╗
- ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO                                            ║
- ║  Arquivo: ResetPasswordConfirmation.cshtml.cs                            ║
- ║  Caminho: /Areas/Identity/Pages/Account/ResetPasswordConfirmation.cshtml.cs║
- ║  Documentado em: 2026-01-26                                              ║
- ╚══════════════════════════════════════════════════════════════════════════╝
- */
+﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 📌 ARQUIVO: ResetPasswordConfirmation.cshtml.cs                                                    ║
+   ║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🧭 OBJETIVO: PageModel para confirmação de reset de senha.                                         ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🗂️  CONTÉM: ResetPasswordConfirmationModel                                                          ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
+/****************************************************************************************
+ * ⚡ CLASSE: ResetPasswordConfirmationModel (PageModel)
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Exibir página de confirmação após reset de senha.
+ *
+ * 📥 ENTRADAS     : Nenhuma
+ *
+ * 📤 SAÍDAS       : Renderização da página
+ *
+ * 🔗 CHAMADA POR  : Motor Razor (GET /Account/ResetPasswordConfirmation)
+ *
+ * 🔄 CHAMA        : Nenhum
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, ILogger
+ ****************************************************************************************/
 using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -19,6 +34,21 @@ namespace FrotiX.Areas.Identity.Pages.Account
         {
         private readonly ILogger<ResetPasswordConfirmationModel> _logger;
 
+        /****************************************************************************************
+         * ⚡ CONSTRUTOR: ResetPasswordConfirmationModel
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar logger para auditoria.
+         *
+         * 📥 ENTRADAS     : [ILogger<ResetPasswordConfirmationModel>] logger - Logger para auditoria
+         *
+         * 📤 SAÍDAS       : Instância configurada de ResetPasswordConfirmationModel
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI Container
+         *
+         * 🔄 CHAMA        : Nenhum
+         *
+         * 📦 DEPENDÊNCIAS : ILogger
+         ****************************************************************************************/
         public ResetPasswordConfirmationModel(ILogger<ResetPasswordConfirmationModel> logger)
             {
             _logger = logger;
