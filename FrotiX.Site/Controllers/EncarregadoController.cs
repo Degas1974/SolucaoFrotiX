@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: EncarregadoController.cs                                                                ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: CRUD de encarregados (supervisores de serviços terceirizados). Fotos, vínculos.        ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetAll(), GetById(), Upsert(), Delete(), UploadFoto() - vínculo com múltiplos contratos  ║
-   ║ 🔗 DEPS: IUnitOfWork, Encarregado, EncarregadoContrato | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0       ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: EncarregadoController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : CRUD de encarregados (supervisores de serviços terceirizados),
+ *                   incluindo upload de foto e vínculos com contratos.
+ *
+ * 📥 ENTRADAS     : Model Encarregado, parâmetros de rota e uploads de imagem.
+ *
+ * 📤 SAÍDAS       : JSON com dados do encarregado e status das operações.
+ *
+ * 🔗 CHAMADA POR  : Frontend de cadastros de encarregados.
+ *
+ * 🔄 CHAMA        : Repositórios via IUnitOfWork (Encarregado, EncarregadoContrato).
+ *
+ * 📦 DEPENDÊNCIAS : IUnitOfWork, Controller, armazenamento de arquivos.
+ *
+ * 📝 OBSERVAÇÕES  : Upload de foto usa multipart/form-data.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

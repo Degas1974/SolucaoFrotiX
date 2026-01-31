@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: EditorController.cs                                                                     ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Operações do editor de texto (Syncfusion). Converte DOCX para imagens PNG.             ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: DownloadImagemDocx() - POST recebe DOCX e retorna PNG para preview                       ║
-   ║ 🔗 DEPS: Syncfusion.DocIO, System.Drawing | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                    ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: EditorController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Operações do editor de texto (Syncfusion), convertendo DOCX em
+ *                   imagens PNG para preview.
+ *
+ * 📥 ENTRADAS     : Arquivo DOCX via upload (IFormFile).
+ *
+ * 📤 SAÍDAS       : PNG gerado no servidor e resposta HTTP ao cliente.
+ *
+ * 🔗 CHAMADA POR  : Frontend que utiliza o editor Syncfusion.
+ *
+ * 🔄 CHAMA        : SfdtHelper.SalvarImagemDeDocx().
+ *
+ * 📦 DEPENDÊNCIAS : Syncfusion.DocIO, System.Drawing, ASP.NET Core MVC.
+ *
+ * 📝 OBSERVAÇÕES  : Endpoint trabalha com arquivos temporários no servidor.
+ **************************************************************************************** */
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

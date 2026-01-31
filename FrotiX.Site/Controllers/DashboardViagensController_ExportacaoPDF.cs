@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: DashboardViagensController_ExportacaoPDF.cs                                             ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial para exportação PDF do Dashboard de Viagens. Usa Syncfusion PDF.               ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: ExportarPDF() - gera relatório PDF completo com tabelas, gráficos e KPIs do período      ║
-   ║ 🔗 DEPS: Syncfusion.Pdf, FrotiXDbContext | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0                     ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: DashboardViagensController_ExportacaoPDF.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Exportar o dashboard de viagens para PDF, incluindo tabelas,
+ *                   gráficos e KPIs do período.
+ *
+ * 📥 ENTRADAS     : Filtros de data e parâmetros do relatório.
+ *
+ * 📤 SAÍDAS       : Arquivo PDF para download.
+ *
+ * 🔗 CHAMADA POR  : Frontend (botão exportar PDF no dashboard).
+ *
+ * 🔄 CHAMA        : Syncfusion.Pdf e métodos privados de montagem do documento.
+ *
+ * 📦 DEPENDÊNCIAS : Syncfusion.Pdf, Syncfusion.Drawing, FrotiXDbContext.
+ *
+ * 📝 OBSERVAÇÕES  : Classe parcial dedicada à exportação PDF de viagens.
+ **************************************************************************************** */
 
 using FrotiX.Data;
 using FrotiX.Models;

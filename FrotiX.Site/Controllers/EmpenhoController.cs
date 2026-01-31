@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: EmpenhoController.cs                                                                    ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Gestão de empenhos orçamentários. Saldos, movimentações (aportes/anulações), NFs.      ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetAll(), GetById(), Upsert(), Movimentacao(), GetSaldo() - vincula contratos e atas     ║
-   ║ 🔗 DEPS: IUnitOfWork, Empenho, MovimentacaoEmpenho | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0           ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: EmpenhoController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gestão de empenhos orçamentários, saldos e movimentações (aportes/
+ *                   anulações) vinculadas a contratos e atas.
+ *
+ * 📥 ENTRADAS     : Dados de empenho, movimentações e filtros de busca.
+ *
+ * 📤 SAÍDAS       : JSON com empenhos, movimentações e saldos formatados.
+ *
+ * 🔗 CHAMADA POR  : Frontend de Empenhos, Contratos e Atas.
+ *
+ * 🔄 CHAMA        : IUnitOfWork e Alerta.TratamentoErroComLinha.
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework, IUnitOfWork.
+ *
+ * 📝 OBSERVAÇÕES  : Possui endpoints para aporte e glosa de valores.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: EmpenhoController

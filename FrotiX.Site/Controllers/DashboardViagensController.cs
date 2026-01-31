@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: DashboardViagensController.cs                                                           ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Dashboard de Viagens. Estatísticas por status, setor, motorista. Partial: ExportPDF.   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetEstatisticas(), GetPorStatus(), GetPorSetor(), GetPorMotorista(), GetKmTotal()        ║
-   ║ 🔗 DEPS: FrotiXDbContext, UserManager, Syncfusion.Pdf | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0        ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: DashboardViagensController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Dashboard de viagens com estatísticas por status, setor, motorista
+ *                   e métricas agregadas do período.
+ *
+ * 📥 ENTRADAS     : Filtros de data e parâmetros de consulta.
+ *
+ * 📤 SAÍDAS       : JSON com indicadores, rankings e séries para gráficos.
+ *
+ * 🔗 CHAMADA POR  : Frontend do Dashboard de Viagens.
+ *
+ * 🔄 CHAMA        : FrotiXDbContext, UserManager e consultas EF Core.
+ *
+ * 📦 DEPENDÊNCIAS : EF Core, UserManager, Syncfusion (PDF).
+ *
+ * 📝 OBSERVAÇÕES  : Possui classe parcial _ExportacaoPDF.cs para relatório.
+ **************************************************************************************** */
 
 using FrotiX.Data;
 using FrotiX.Models;
