@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 27.6%
+██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 28.2%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 250 |
-| Percentual | 27.6% |
-| Última Atualização | 31/01/2026 09:00 |
+| Documentados | 255 |
+| Percentual | 28.2% |
+| Última Atualização | 31/01/2026 09:05 |
 
 ---
 
@@ -36,7 +36,7 @@
 | 9 | Infrastructure | 1 | 1 | 100% | ✅ Completo |
 | 10 | Logging | 1 | 1 | 100% | ✅ Completo |
 | 11 | Middlewares | 2 | 2 | 100% | ✅ Completo |
-| 12 | Models | 139 | 49 | 35.3% | 🟡 Em Progresso |
+| 12 | Models | 139 | 54 | 38.8% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
 | 15 | Repository | 209 | 209 | 100% | ✅ Completo |
@@ -124,6 +124,13 @@
    • ImportacaoHub.cs
    • Abastecimento.cs
 
+✅ Models/Cadastros - Classes (Lote 107 - novo padrão visual):
+   • Agenda.cs
+   • AspNetUsers.cs
+   • AtaRegistroPrecos.cs
+   • CoberturaFolga.cs
+   • Combustivel.cs
+
 ### 📂 Infrastructure (1/1) ✅
 ```
 ✅ CacheKeys.cs
@@ -140,11 +147,11 @@
 ✅ UiExceptionMiddleware.cs
 ```
 
-### 📂 Models (49/139) 🟡
+### 📂 Models (54/139) 🟡
 ```
 ✅ Estatísticas (13 arquivos - Lotes 51-53)
 ✅ Views (38 arquivos - Lotes 54-61)
-⏳ Cadastros (1 processado)
+⏳ Cadastros (6 processados)
 ⏳ FontAwesome (1 processado)
 ⏳ Planilhas (1 processado)
 ```
@@ -490,10 +497,11 @@
 | 30/01/2026 | 5 | 1 | Lote 104 - Filters + Helpers novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 105 - Helpers + Hubs novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 106 - Hubs + Models/Cadastros novo padrão visual (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 107 - Models/Cadastros novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 55
-**Total de Commits:** 53
-**Total de Arquivos Documentados:** 250
+**Total de Lotes:** 56
+**Total de Commits:** 54
+**Total de Arquivos Documentados:** 255
 
 ---
 
