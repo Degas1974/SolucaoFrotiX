@@ -1,17 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ViagemEventoController.cs                                                               ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Controller API para gerenciamento de Viagens associadas a Eventos. Busca, lista,      ║
-   ║    associa viagens a eventos e gerencia status de agendamento. ROTA: api/ViagemEvento              ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [GET] / → Viagens tipo "Evento" | [GET] /ViagemEventos → Lista todas                 ║
-   ║    [POST] /AssociarEvento → Associa viagem | [POST] /UpdateStatus → Status agendamento             ║
-   ║    PARTIAL: ViagemEventoController.UpdateStatus.cs                                                  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: IUnitOfWork, IWebHostEnvironment                                                           ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViagemEventoController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar viagens associadas a eventos e fluxo Economildo.
+ *
+ * 📥 ENTRADAS     : IDs e modelos de viagem/evento.
+ *
+ * 📤 SAÍDAS       : JSON com dados e status das operações.
+ *
+ * 🔗 CHAMADA POR  : Telas de eventos e fluxos.
+ *
+ * 🔄 CHAMA        : IUnitOfWork, IWebHostEnvironment.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -31,6 +30,15 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: ViagemEventoController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints para viagens de eventos e fluxo Economildo.
+     *
+     * 📥 ENTRADAS     : IDs e DTOs de viagem/evento.
+     *
+     * 📤 SAÍDAS       : JSON com dados e mensagens.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     [IgnoreAntiforgeryToken]
@@ -40,6 +48,17 @@ namespace FrotiX.Controllers
         private IWebHostEnvironment hostingEnv;
         private readonly IWebHostEnvironment webHostEnvironment;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ViagemEventoController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependências de dados e ambiente.
+         *
+         * 📥 ENTRADAS     : unitOfWork, env, webHostEnvironment.
+         *
+         * 📤 SAÍDAS       : Instância configurada do controller.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public ViagemEventoController(
             IUnitOfWork unitOfWork,
             IWebHostEnvironment env,
@@ -63,6 +82,17 @@ namespace FrotiX.Controllers
         }
 
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar Get.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult Get(string Id)
         {
             try
@@ -89,6 +119,17 @@ namespace FrotiX.Controllers
 
         [Route("ViagemEventos")]
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ViagemEventos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar ViagemEventos.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult ViagemEventos()
         {
             try
@@ -115,6 +156,17 @@ namespace FrotiX.Controllers
 
         [Route("Fluxo")]
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Fluxo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar Fluxo.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult Fluxo()
         {
             try
@@ -154,6 +206,17 @@ namespace FrotiX.Controllers
 
         [Route("FluxoVeiculos")]
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: FluxoVeiculos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar FluxoVeiculos.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult FluxoVeiculos(string Id)
         {
             try
@@ -194,6 +257,17 @@ namespace FrotiX.Controllers
 
         [Route("FluxoMotoristas")]
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: FluxoMotoristas
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar FluxoMotoristas.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult FluxoMotoristas(string Id)
         {
             try
@@ -234,6 +308,17 @@ namespace FrotiX.Controllers
 
         [Route("FluxoData")]
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: FluxoData
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar FluxoData.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult FluxoData(string Id)
         {
             try
@@ -276,6 +361,17 @@ namespace FrotiX.Controllers
 
         [Route("ApagaFluxoEconomildo")]
         [HttpPost]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ApagaFluxoEconomildo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar ApagaFluxoEconomildo.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult ApagaFluxoEconomildo(ViagensEconomildo viagensEconomildo)
         {
             try
@@ -304,6 +400,17 @@ namespace FrotiX.Controllers
 
         [Route("MyUploader")]
         [HttpPost]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: MyUploader
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar MyUploader.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult MyUploader(IFormFile MyUploader, [FromForm] string ViagemId)
         {
             try
@@ -344,6 +451,17 @@ namespace FrotiX.Controllers
 
         [Route("CalculaCustoViagens")]
         [HttpPost]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalculaCustoViagens
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar CalculaCustoViagens.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult CalculaCustoViagens()
         {
             try
@@ -403,6 +521,17 @@ namespace FrotiX.Controllers
 
         [Route("ViagemVeiculos")]
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ViagemVeiculos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar ViagemVeiculos.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult ViagemVeiculos(Guid Id)
         {
             try
@@ -429,6 +558,17 @@ namespace FrotiX.Controllers
 
         [Route("ViagemMotoristas")]
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ViagemMotoristas
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar ViagemMotoristas.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult ViagemMotoristas(Guid Id)
         {
             try
@@ -455,6 +595,17 @@ namespace FrotiX.Controllers
 
         [Route("ViagemStatus")]
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ViagemStatus
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar ViagemStatus.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult ViagemStatus(string Id)
         {
             try
@@ -481,6 +632,17 @@ namespace FrotiX.Controllers
 
         [Route("ViagemSetores")]
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ViagemSetores
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar ViagemSetores.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult ViagemSetores(Guid Id)
         {
             try
@@ -507,6 +669,17 @@ namespace FrotiX.Controllers
 
         [Route("ViagemData")]
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ViagemData
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar ViagemData.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult ViagemData(string Id)
         {
             try
@@ -543,6 +716,17 @@ namespace FrotiX.Controllers
 
         [Route("Ocorrencias")]
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Ocorrencias
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar Ocorrencias.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult Ocorrencias(Guid Id)
         {
             try
@@ -571,6 +755,17 @@ namespace FrotiX.Controllers
 
         [Route("Cancelar")]
         [HttpPost]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Cancelar
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar Cancelar.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult Cancelar(ViagemID id)
         {
             try
@@ -606,6 +801,17 @@ namespace FrotiX.Controllers
 
         [HttpGet]
         [Route("PegaFicha")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaFicha
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar PegaFicha.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public JsonResult PegaFicha(Guid id)
         {
             try
@@ -636,6 +842,17 @@ namespace FrotiX.Controllers
 
         [Route("AdicionarViagensEconomildo")]
         [Consumes("application/json")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AdicionarViagensEconomildo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar AdicionarViagensEconomildo.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public JsonResult AdicionarViagensEconomildo([FromBody] ViagensEconomildo viagensEconomildo)
         {
             try
@@ -662,6 +879,17 @@ namespace FrotiX.Controllers
 
         [Route("ExisteDataEconomildo")]
         [Consumes("application/json")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ExisteDataEconomildo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar ExisteDataEconomildo.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public JsonResult ExisteDataEconomildo([FromBody] ViagensEconomildo viagensEconomildo)
         {
             try
@@ -705,6 +933,17 @@ namespace FrotiX.Controllers
 
         [HttpGet]
         [Route("PegaFichaModal")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaFichaModal
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar PegaFichaModal.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public JsonResult PegaFichaModal(Guid id)
         {
             try
@@ -728,6 +967,17 @@ namespace FrotiX.Controllers
 
         [HttpGet]
         [Route("PegaCategoria")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaCategoria
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar PegaCategoria.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public JsonResult PegaCategoria(Guid id)
         {
             try
@@ -746,6 +996,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetImage
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar GetImage.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public byte[] GetImage(string sBase64String)
         {
             byte[] bytes = null;
@@ -758,6 +1019,17 @@ namespace FrotiX.Controllers
 
         [Route("AdicionarEvento")]
         [Consumes("application/json")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AdicionarEvento
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar AdicionarEvento.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public JsonResult AdicionarEvento([FromBody] Evento evento)
         {
             try
@@ -797,6 +1069,17 @@ namespace FrotiX.Controllers
 
         [Route("AdicionarRequisitante")]
         [Consumes("application/json")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AdicionarRequisitante
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar AdicionarRequisitante.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public JsonResult AdicionarRequisitante([FromBody] Requisitante requisitante)
         {
             try
@@ -847,6 +1130,17 @@ namespace FrotiX.Controllers
 
         [Route("AdicionarSetor")]
         [Consumes("application/json")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AdicionarSetor
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar AdicionarSetor.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public JsonResult AdicionarSetor([FromBody] SetorSolicitante setorSolicitante)
         {
             try
@@ -924,6 +1218,17 @@ namespace FrotiX.Controllers
         }
 
         [Route("SaveImage")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SaveImage
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar SaveImage.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public void SaveImage(IList<IFormFile> UploadFiles)
         {
             try
@@ -972,6 +1277,17 @@ namespace FrotiX.Controllers
 
         [Route("FinalizaViagem")]
         [Consumes("application/json")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: FinalizaViagem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar FinalizaViagem.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult FinalizaViagem([FromBody] FinalizacaoViagem viagem)
         {
             try
@@ -1041,6 +1357,17 @@ namespace FrotiX.Controllers
 
         [Route("AjustaViagem")]
         [Consumes("application/json")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AjustaViagem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar AjustaViagem.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult AjustaViagem([FromBody] AjusteViagem viagem)
         {
             try
@@ -1122,6 +1449,17 @@ namespace FrotiX.Controllers
                 get; set;
             }
 
+            /****************************************************************************************
+             * ⚡ FUNÇÃO: OnAuthorization
+             * --------------------------------------------------------------------------------------
+             * 🎯 OBJETIVO     : Executar OnAuthorization.
+             *
+             * 📥 ENTRADAS     : Conforme assinatura do método.
+             *
+             * 📤 SAÍDAS       : JSON/resultado da operação.
+             *
+             * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+             ****************************************************************************************/
             public void OnAuthorization(AuthorizationFilterContext context)
             {
                 var contextFeatures = context.HttpContext.Features;
@@ -1136,6 +1474,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ DTO: Objfile
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Encapsular dados de upload (arquivo e viagem).
+         *
+         * 📥 ENTRADAS     : file, viagemid.
+         *
+         * 📤 SAÍDAS       : Nenhuma (estrutura de dados).
+         ****************************************************************************************/
         public class Objfile
         {
             public string file
@@ -1148,12 +1495,19 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Obtém os dados completos de um evento por ID
-        /// Rota: /api/ViagemEvento/ObterPorId?id={guid}
-        /// </summary>
         [Route("ObterPorId")]
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ObterPorId
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar ObterPorId.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult ObterPorId(Guid id)
         {
             try
@@ -1210,6 +1564,17 @@ namespace FrotiX.Controllers
         [Route("FileUpload")]
         [HttpPost]
         [RequestSizeLimit(valueCountLimit: 1999483648)]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: FileUpload
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar FileUpload.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public JsonResult FileUpload(Objfile objFile)
         {
             try
@@ -1240,6 +1605,17 @@ namespace FrotiX.Controllers
 
         [Route("ObterDetalhamentoCustosViagem")]
         [HttpGet("ObterDetalhamentoCustosViagem")]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ObterDetalhamentoCustosViagem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar ObterDetalhamentoCustosViagem.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public async Task<IActionResult> ObterDetalhamentoCustosViagem(Guid viagemId)
         {
             try
@@ -1302,12 +1678,19 @@ namespace FrotiX.Controllers
         }
 
 
-        /// <summary>
-        /// Obtém o detalhamento de custos de um evento
-        /// Rota: /api/ViagemEvento/ObterDetalhamentoCustos?eventoId={guid}
-        /// </summary>
         [Route("ObterDetalhamentoCustos")]
         [HttpGet]
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ObterDetalhamentoCustos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Executar ObterDetalhamentoCustos.
+         *
+         * 📥 ENTRADAS     : Conforme assinatura do método.
+         *
+         * 📤 SAÍDAS       : JSON/resultado da operação.
+         *
+         * 🔗 CHAMADA POR  : Endpoints da API de eventos/viagens.
+         ****************************************************************************************/
         public IActionResult ObterDetalhamentoCustos(Guid eventoId)
         {
         try

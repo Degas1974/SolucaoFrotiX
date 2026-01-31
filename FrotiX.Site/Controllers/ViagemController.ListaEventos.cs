@@ -1,17 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ViagemController.ListaEventos.cs                                                        ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial com endpoint ListaEventos SUPER OTIMIZADO. Paginação server-side (DataTables) ║
-   ║    carregando 25 registros por vez. Performance: <2s (vs 30+s timeout anterior).                   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [GET] /api/Viagem/ListaEventos → Lista eventos com paginação server-side             ║
-   ║    PARAMS: draw, start, length, orderColumn (0-6), orderDir (asc/desc)                             ║
-   ║    COLUNAS: Nome, DataInicial, DataFinal, QtdParticipantes, NomeSetor, CustoViagem, Status         ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: FrotiXDbContext, IUnitOfWork (Evento), AsNoTracking otimizado                              ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViagemController.ListaEventos.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Listar eventos com paginação server-side para DataTables.
+ *
+ * 📥 ENTRADAS     : draw, start, length, orderColumn, orderDir.
+ *
+ * 📤 SAÍDAS       : JSON no formato DataTables.
+ *
+ * 🔗 CHAMADA POR  : Grid de eventos.
+ *
+ * 🔄 CHAMA        : FrotiXDbContext.Evento/Viagem (AsNoTracking).
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -24,6 +23,15 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: ViagemController.ListaEventos
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Implementar listagem otimizada de eventos.
+     *
+     * 📥 ENTRADAS     : Parâmetros do DataTables.
+     *
+     * 📤 SAÍDAS       : JSON paginado.
+     ****************************************************************************************/
     public partial class ViagemController : Controller
     {
         /****************************************************************************************

@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-██████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░ 51.4%
+██████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░ 51.9%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 465 |
-| Percentual | 51.4% |
-| Última Atualização | 31/01/2026 19:01 |
+| Documentados | 470 |
+| Percentual | 51.9% |
+| Última Atualização | 31/01/2026 19:11 |
 
 ---
 
@@ -26,7 +26,7 @@
 | # | Pasta | Total | Feitos | % | Status |
 |---|-------|-------|--------|---|--------|
 | 1 | Areas | 43 | 43 | 100% | ✅ Completo |
-| 2 | Controllers | 93 | 85 | 91.4% | 🟡 Em Progresso |
+| 2 | Controllers | 93 | 90 | 96.8% | 🟡 Em Progresso |
 | 3 | Data | 5 | 0 | 0% | 🔴 Pendente |
 | 4 | EndPoints | 2 | 2 | 100% | ✅ Completo |
 | 5 | Extensions | 3 | 3 | 100% | ✅ Completo |
@@ -95,7 +95,7 @@
 ✅ Areas/Identity/Pages/_ViewStart.cshtml
 ```
 
-### 📂 Controllers (85/93) 🟡
+### 📂 Controllers (90/93) 🟡
 ```
 ✅ Controllers/AbastecimentoController.cs
 ✅ Controllers/AbastecimentoController.DashboardAPI.cs
@@ -182,6 +182,11 @@
 ✅ Controllers/ViagemController.DesassociarEvento.cs
 ✅ Controllers/ViagemController.HeatmapEconomildo.cs
 ✅ Controllers/ViagemController.HeatmapEconomildoPassageiros.cs
+✅ Controllers/ViagemController.ListaEventos.cs
+✅ Controllers/ViagemController.MetodosEstatisticas.cs
+✅ Controllers/ViagemController.cs
+✅ Controllers/ViagemEventoController.UpdateStatus.cs
+✅ Controllers/ViagemEventoController.cs
 ```
 
 ### 📂 Data (0/5)
@@ -550,6 +555,13 @@
    • ViagemController.DesassociarEvento.cs
    • ViagemController.HeatmapEconomildo.cs
    • ViagemController.HeatmapEconomildoPassageiros.cs
+
+✅ Controllers - Classes (Lote 157 - revisão cards completos):
+   • ViagemController.ListaEventos.cs
+   • ViagemController.MetodosEstatisticas.cs
+   • ViagemController.cs
+   • ViagemEventoController.UpdateStatus.cs
+   • ViagemEventoController.cs
 
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
@@ -1018,10 +1030,11 @@
 | 31/01/2026 | 5 | 1 | Lote 154 - Controllers revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 155 - Controllers revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 156 - Controllers revisão cards completos (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 157 - Controllers revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 105
-**Total de Commits:** 103
-**Total de Arquivos Documentados:** 465
+**Total de Lotes:** 106
+**Total de Commits:** 104
+**Total de Arquivos Documentados:** 470
 
 ---
 

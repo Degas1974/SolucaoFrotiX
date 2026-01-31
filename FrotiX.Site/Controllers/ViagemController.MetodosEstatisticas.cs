@@ -1,18 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ViagemController.MetodosEstatisticas.cs                                                 ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial com métodos para geração de estatísticas de viagens em background. Processa   ║
-   ║    em lotes por data e atualiza ViagemEstatistica com dados agregados. Usa cache para progresso.   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [POST] /GerarEstatisticasViagens → Inicia geração em background                      ║
-   ║    [GET] /ObterProgressoEstatisticas → Progresso atual                                             ║
-   ║    [POST] /LimparProgressoEstatisticas → Limpa cache                                               ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: IMemoryCache (30min), IServiceScopeFactory, ViagemEstatisticaService                       ║
-   ║    CLASSES: ProgressoEstatisticas (Total, Processado, Percentual, Concluido, Erro, Mensagem)       ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViagemController.MetodosEstatisticas.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerar estatísticas de viagens em background com controle de progresso.
+ *
+ * 📥 ENTRADAS     : Requisições de iniciar/consultar/limpar processamento.
+ *
+ * 📤 SAÍDAS       : JSON com progresso e status.
+ *
+ * 🔗 CHAMADA POR  : Dashboard de estatísticas.
+ *
+ * 🔄 CHAMA        : IMemoryCache, IServiceScopeFactory, ViagemEstatisticaService.
+ **************************************************************************************** */
 
 using FrotiX.Data;
 using FrotiX.Models;
@@ -28,6 +26,15 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: ViagemController.MetodosEstatisticas
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Implementar geração de estatísticas e controle de progresso.
+     *
+     * 📥 ENTRADAS     : Chamadas do frontend.
+     *
+     * 📤 SAÍDAS       : JSON de progresso e mensagens.
+     ****************************************************************************************/
     public partial class ViagemController
     {
         // ========================================
