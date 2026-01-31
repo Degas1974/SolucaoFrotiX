@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 28.7%
+███████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 29.3%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 260 |
-| Percentual | 28.7% |
-| Última Atualização | 31/01/2026 09:10 |
+| Documentados | 265 |
+| Percentual | 29.3% |
+| Última Atualização | 31/01/2026 09:14 |
 
 ---
 
@@ -36,7 +36,7 @@
 | 9 | Infrastructure | 1 | 1 | 100% | ✅ Completo |
 | 10 | Logging | 1 | 1 | 100% | ✅ Completo |
 | 11 | Middlewares | 2 | 2 | 100% | ✅ Completo |
-| 12 | Models | 139 | 59 | 42.4% | 🟡 Em Progresso |
+| 12 | Models | 139 | 64 | 46.0% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
 | 15 | Repository | 209 | 209 | 100% | ✅ Completo |
@@ -138,6 +138,13 @@
    • CorridasTaxiLegCanceladas.cs
    • DeleteMovimentacaoWrapper.cs
 
+✅ Models/Cadastros - Classes (Lote 109 - novo padrão visual):
+   • Empenho.cs
+   • EmpenhoMulta.cs
+   • EscalaDiaria.cs
+   • Escalas.cs
+   • Evento.cs
+
 ### 📂 Infrastructure (1/1) ✅
 ```
 ✅ CacheKeys.cs
@@ -154,11 +161,11 @@
 ✅ UiExceptionMiddleware.cs
 ```
 
-### 📂 Models (59/139) 🟡
+### 📂 Models (64/139) 🟡
 ```
 ✅ Estatísticas (13 arquivos - Lotes 51-53)
 ✅ Views (38 arquivos - Lotes 54-61)
-⏳ Cadastros (11 processados)
+⏳ Cadastros (16 processados)
 ⏳ FontAwesome (1 processado)
 ⏳ Planilhas (1 processado)
 ```
@@ -506,10 +513,11 @@
 | 31/01/2026 | 5 | 1 | Lote 106 - Hubs + Models/Cadastros novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 107 - Models/Cadastros novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 108 - Models/Cadastros novo padrão visual (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 109 - Models/Cadastros novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 57
-**Total de Commits:** 55
-**Total de Arquivos Documentados:** 260
+**Total de Lotes:** 58
+**Total de Commits:** 56
+**Total de Arquivos Documentados:** 265
 
 ---
 
