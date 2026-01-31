@@ -15,14 +15,14 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace FrotiX.Hubs
 {
-    /// <summary>
-    /// Hub SignalR para envio de progresso em tempo real durante geração de documentação
-    /// </summary>
+    
+    // Hub SignalR para envio de progresso em tempo real durante geração de documentação
+    
     public class DocGenerationHub : Hub
     {
-        /// <summary>
-        /// Chamado quando um cliente se conecta ao hub
-        /// </summary>
+        
+        // Chamado quando um cliente se conecta ao hub
+        
         public override async Task OnConnectedAsync()
         {
             try
@@ -36,9 +36,9 @@ namespace FrotiX.Hubs
             }
         }
 
-        /// <summary>
-        /// Chamado quando um cliente se desconecta do hub
-        /// </summary>
+        
+        // Chamado quando um cliente se desconecta do hub
+        
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             try
@@ -51,9 +51,9 @@ namespace FrotiX.Hubs
             }
         }
 
-        /// <summary>
-        /// Permite que o cliente se inscreva em um job específico
-        /// </summary>
+        
+        // Permite que o cliente se inscreva em um job específico
+        
         public async Task SubscribeToJob(string jobId)
         {
             try
@@ -67,9 +67,9 @@ namespace FrotiX.Hubs
             }
         }
 
-        /// <summary>
-        /// Permite que o cliente cancele a inscrição em um job
-        /// </summary>
+        
+        // Permite que o cliente cancele a inscrição em um job
+        
         public async Task UnsubscribeFromJob(string jobId)
         {
             try

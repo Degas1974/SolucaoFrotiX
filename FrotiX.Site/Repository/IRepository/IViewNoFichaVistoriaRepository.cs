@@ -22,19 +22,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository.IRepository
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ INTERFACE: IViewNoFichaVistoriaRepository                                        │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-    /// │    Interface do repositório de ViewNoFichaVistoria. Centraliza consultas de veículos   │
-    /// │    sem ficha de vistoria, usando apenas operações genéricas de repositório.            │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🔗 RASTREABILIDADE:                                                                   │
-    /// │    ⬅️ CHAMADO POR : Controllers e relatórios de Vistoria                             │
-    /// │    ➡️ CHAMA       : IRepository<ViewNoFichaVistoria> (métodos base)                  │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ INTERFACE: IViewNoFichaVistoriaRepository                                        │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+    // │    Interface do repositório de ViewNoFichaVistoria. Centraliza consultas de veículos   │
+    // │    sem ficha de vistoria, usando apenas operações genéricas de repositório.            │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🔗 RASTREABILIDADE:                                                                   │
+    // │    ⬅️ CHAMADO POR : Controllers e relatórios de Vistoria                             │
+    // │    ➡️ CHAMA       : IRepository (métodos base)                  │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     public interface IViewNoFichaVistoriaRepository : IRepository<ViewNoFichaVistoria>
     {
         // Sem métodos adicionais: utiliza apenas as operações genéricas do IRepository.

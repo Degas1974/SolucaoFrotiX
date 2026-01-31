@@ -24,64 +24,64 @@ using System.Linq;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: ViewVeiculosManutencaoReservaRepository                                            │
-    /// │ 📦 HERDA DE: Repository<ViewVeiculosManutencaoReserva>                                        │
-    /// │ 🔌 IMPLEMENTA: IViewVeiculosManutencaoReservaRepository                                       │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório responsável pela view de veículos em manutenção/reserva.
-    /// Fornece listagens para UI com dados consolidados.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ViewVeiculosManutencaoReservaRepository                                            │
+    // │ 📦 HERDA DE: Repository                                        │
+    // │ 🔌 IMPLEMENTA: IViewVeiculosManutencaoReservaRepository                                       │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório responsável pela view de veículos em manutenção/reserva.
+    // Fornece listagens para UI com dados consolidados.
+    
     public class ViewVeiculosManutencaoReservaRepository : Repository<ViewVeiculosManutencaoReserva>, IViewVeiculosManutencaoReservaRepository
         {
         private new readonly FrotiXDbContext _db;
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: ViewVeiculosManutencaoReservaRepository                                      │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
-        /// │    ➡️ CHAMA       : base(db)                                                             │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Inicializar o repositório com o contexto do banco de dados.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    db - Contexto do banco de dados da aplicação.
-        /// </para>
-        /// </summary>
-        /// <param name="db">Instância de <see cref="FrotiXDbContext"/>.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ViewVeiculosManutencaoReservaRepository                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
+        // │    ➡️ CHAMA       : base(db)                                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Inicializar o repositório com o contexto do banco de dados.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // db - Contexto do banco de dados da aplicação.
+        
+        
+        // Param db: Instância de <see cref="FrotiXDbContext"/>.
         public ViewVeiculosManutencaoReservaRepository(FrotiXDbContext db) : base(db)
             {
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetViewVeiculosManutencaoReservaListForDropDown                               │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
-        /// │    ➡️ CHAMA       : DbContext.ViewVeiculosManutencaoReserva, OrderBy, Select            │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Obter lista da view de veículos em manutenção/reserva para dropdowns.
-        ///    Ordena pela descrição do veículo.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de itens de seleção para veículos em manutenção/reserva.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetViewVeiculosManutencaoReservaListForDropDown                               │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
+        // │    ➡️ CHAMA       : DbContext.ViewVeiculosManutencaoReserva, OrderBy, Select            │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Obter lista da view de veículos em manutenção/reserva para dropdowns.
+        // Ordena pela descrição do veículo.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
+        
+        
+        // Returns: Lista de itens de seleção para veículos em manutenção/reserva.
         public IEnumerable<SelectListItem> GetViewVeiculosManutencaoReservaListForDropDown()
             {
             return _db.ViewVeiculosManutencaoReserva
@@ -93,27 +93,27 @@ namespace FrotiX.Repository
                 }); ;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                        │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
-        /// │    ➡️ CHAMA       : DbContext.ViewVeiculosManutencaoReserva.FirstOrDefault, _db.Update,  │
-        /// │                     _db.SaveChanges                                                     │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Manter compatibilidade com o padrão de repositórios.
-        ///    Views são somente leitura; operação não é recomendada.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    viewVeiculosManutencaoReserva - Entidade com dados da view.
-        /// </para>
-        /// </summary>
-        /// <param name="viewVeiculosManutencaoReserva">Entidade <see cref="ViewVeiculosManutencaoReserva"/>.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                        │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
+        // │    ➡️ CHAMA       : DbContext.ViewVeiculosManutencaoReserva.FirstOrDefault, _db.Update,  │
+        // │                     _db.SaveChanges                                                     │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Manter compatibilidade com o padrão de repositórios.
+        // Views são somente leitura; operação não é recomendada.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // viewVeiculosManutencaoReserva - Entidade com dados da view.
+        
+        
+        // Param viewVeiculosManutencaoReserva: Entidade <see cref="ViewVeiculosManutencaoReserva"/>.
         public new void Update(ViewVeiculosManutencaoReserva viewVeiculosManutencaoReserva)
             {
             var objFromDb = _db.ViewVeiculosManutencaoReserva.FirstOrDefault(s => s.VeiculoId == viewVeiculosManutencaoReserva.VeiculoId);

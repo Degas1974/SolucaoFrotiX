@@ -26,64 +26,64 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: RepactuacaoAtaRepository                                                            │
-    /// │ 📦 HERDA DE: Repository<RepactuacaoAta>                                                        │
-    /// │ 🔌 IMPLEMENTA: IRepactuacaoAtaRepository                                                       │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório responsável pelas repactuações de atas de registro de preços.
-    /// Provê consultas para dropdowns e atualização de registros.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: RepactuacaoAtaRepository                                                            │
+    // │ 📦 HERDA DE: Repository                                                        │
+    // │ 🔌 IMPLEMENTA: IRepactuacaoAtaRepository                                                       │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório responsável pelas repactuações de atas de registro de preços.
+    // Provê consultas para dropdowns e atualização de registros.
+    
     public class RepactuacaoAtaRepository : Repository<RepactuacaoAta>, IRepactuacaoAtaRepository
         {
         private new readonly FrotiXDbContext _db;
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: RepactuacaoAtaRepository                                                       │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
-        /// │    ➡️ CHAMA       : base(db)                                                             │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Inicializar o repositório com o contexto do banco de dados.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    db - Contexto do banco de dados da aplicação.
-        /// </para>
-        /// </summary>
-        /// <param name="db">Instância de <see cref="FrotiXDbContext"/>.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: RepactuacaoAtaRepository                                                       │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
+        // │    ➡️ CHAMA       : base(db)                                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Inicializar o repositório com o contexto do banco de dados.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // db - Contexto do banco de dados da aplicação.
+        
+        
+        // Param db: Instância de <see cref="FrotiXDbContext"/>.
         public RepactuacaoAtaRepository(FrotiXDbContext db) : base(db)
             {
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetRepactuacaoAtaListForDropDown                                               │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
-        /// │    ➡️ CHAMA       : DbContext.RepactuacaoAta, OrderBy, Select                             │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Obter lista de repactuações de atas para composição de dropdowns.
-        ///    Ordena os registros pela descrição.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de itens de seleção para repactuações de atas.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetRepactuacaoAtaListForDropDown                                               │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
+        // │    ➡️ CHAMA       : DbContext.RepactuacaoAta, OrderBy, Select                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Obter lista de repactuações de atas para composição de dropdowns.
+        // Ordena os registros pela descrição.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
+        
+        
+        // Returns: Lista de itens de seleção para repactuações de atas.
         public IEnumerable<SelectListItem> GetRepactuacaoAtaListForDropDown()
             {
             return _db.RepactuacaoAta
@@ -95,25 +95,25 @@ namespace FrotiX.Repository
                     });
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                        │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
-        /// │    ➡️ CHAMA       : DbContext.RepactuacaoAta.FirstOrDefault, _db.Update, _db.SaveChanges   │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Atualizar os dados de uma repactuação de ata no banco de dados.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    repactuacaoitemveiculoata - Entidade contendo os dados atualizados.
-        /// </para>
-        /// </summary>
-        /// <param name="repactuacaoitemveiculoata">Entidade <see cref="RepactuacaoAta"/> com dados atualizados.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                        │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
+        // │    ➡️ CHAMA       : DbContext.RepactuacaoAta.FirstOrDefault, _db.Update, _db.SaveChanges   │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Atualizar os dados de uma repactuação de ata no banco de dados.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // repactuacaoitemveiculoata - Entidade contendo os dados atualizados.
+        
+        
+        // Param repactuacaoitemveiculoata: Entidade <see cref="RepactuacaoAta"/> com dados atualizados.
         public new void Update(RepactuacaoAta repactuacaoitemveiculoata)
             {
             var objFromDb = _db.RepactuacaoAta.FirstOrDefault(s => s.RepactuacaoAtaId == repactuacaoitemveiculoata.RepactuacaoAtaId);

@@ -32,207 +32,207 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Repository.IRepository
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ INTERFACE: IViagemRepository                                                       │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-    /// │    Interface do repositório de Viagem. Centraliza operações de consulta,               │
-    /// │    atualização, correção e recuperação de viagens, incluindo consultas otimizadas.    │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🔗 RASTREABILIDADE:                                                                   │
-    /// │    ⬅️ CHAMADO POR : Controllers de Viagem, UnitOfWork                                 │
-    /// │    ➡️ CHAMA       : IRepository<Viagem> (métodos base)                                │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ INTERFACE: IViagemRepository                                                       │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+    // │    Interface do repositório de Viagem. Centraliza operações de consulta,               │
+    // │    atualização, correção e recuperação de viagens, incluindo consultas otimizadas.    │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🔗 RASTREABILIDADE:                                                                   │
+    // │    ⬅️ CHAMADO POR : Controllers de Viagem, UnitOfWork                                 │
+    // │    ➡️ CHAMA       : IRepository (métodos base)                                │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     public interface IViagemRepository : IRepository<Viagem>
     {
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: GetViagemListForDropDown                                           │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-        /// │    Retorna a lista de viagens formatada para uso em DropDown (Select).               │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS (Entradas):                                                                 │
-        /// │    • Nenhum parâmetro                                                                 │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS (Saídas):                                                                  │
-        /// │    • [IEnumerable<SelectListItem>]: Lista de itens para seleção                       │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : Controllers de Viagem, ViewComponents                           │
-        /// │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: GetViagemListForDropDown                                           │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+        // │    Retorna a lista de viagens formatada para uso em DropDown (Select).               │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS (Entradas):                                                                 │
+        // │    • Nenhum parâmetro                                                                 │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS (Saídas):                                                                  │
+        // │    • [IEnumerable]: Lista de itens para seleção                       │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : Controllers de Viagem, ViewComponents                           │
+        // │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         IEnumerable<SelectListItem> GetViagemListForDropDown();
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: Update                                                             │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-        /// │    Atualiza um registro de Viagem no banco de dados, ajustando dados operacionais.   │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS (Entradas):                                                                 │
-        /// │    • viagem [Viagem]: Entidade com dados atualizados                                  │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS (Saídas):                                                                  │
-        /// │    • [void]: Método void - alterações aplicadas ao contexto EF Core                  │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : UnitOfWork.SaveAsync(), Controllers de Viagem                   │
-        /// │    ➡️ CHAMA       : DbContext.Update(), Entity State tracking                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: Update                                                             │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+        // │    Atualiza um registro de Viagem no banco de dados, ajustando dados operacionais.   │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS (Entradas):                                                                 │
+        // │    • viagem [Viagem]: Entidade com dados atualizados                                  │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS (Saídas):                                                                  │
+        // │    • [void]: Método void - alterações aplicadas ao contexto EF Core                  │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : UnitOfWork.SaveAsync(), Controllers de Viagem                   │
+        // │    ➡️ CHAMA       : DbContext.Update(), Entity State tracking                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         void Update(Viagem viagem);
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: GetDistinctOrigensAsync                                            │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-        /// │    Retorna lista de origens distintas registradas em viagens.                         │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS (Entradas):                                                                 │
-        /// │    • Nenhum parâmetro                                                                 │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS (Saídas):                                                                  │
-        /// │    • [Task<List<string>>]: Lista de origens                                           │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : Controllers, filtros e relatórios                               │
-        /// │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: GetDistinctOrigensAsync                                            │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+        // │    Retorna lista de origens distintas registradas em viagens.                         │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS (Entradas):                                                                 │
+        // │    • Nenhum parâmetro                                                                 │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS (Saídas):                                                                  │
+        // │    • [Task>]: Lista de origens                                           │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : Controllers, filtros e relatórios                               │
+        // │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         Task<List<string>> GetDistinctOrigensAsync();
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: GetDistinctDestinosAsync                                           │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-        /// │    Retorna lista de destinos distintos registrados em viagens.                        │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS (Entradas):                                                                 │
-        /// │    • Nenhum parâmetro                                                                 │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS (Saídas):                                                                  │
-        /// │    • [Task<List<string>>]: Lista de destinos                                          │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : Controllers, filtros e relatórios                               │
-        /// │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: GetDistinctDestinosAsync                                           │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+        // │    Retorna lista de destinos distintos registrados em viagens.                        │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS (Entradas):                                                                 │
+        // │    • Nenhum parâmetro                                                                 │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS (Saídas):                                                                  │
+        // │    • [Task>]: Lista de destinos                                          │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : Controllers, filtros e relatórios                               │
+        // │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         Task<List<string>> GetDistinctDestinosAsync();
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: CorrigirOrigemAsync                                               │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-        /// │    Corrige, em lote, origens antigas substituindo por uma nova origem.                │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS (Entradas):                                                                 │
-        /// │    • origensAntigas [List<string>]: Lista de origens a corrigir                       │
-        /// │    • novaOrigem [string]: Novo valor para origem                                      │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS (Saídas):                                                                  │
-        /// │    • [Task]: Operação assíncrona de correção                                           │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : Rotinas administrativas                                           │
-        /// │    ➡️ CHAMA       : DbContext, operações de atualização                               │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: CorrigirOrigemAsync                                               │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+        // │    Corrige, em lote, origens antigas substituindo por uma nova origem.                │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS (Entradas):                                                                 │
+        // │    • origensAntigas [List]: Lista de origens a corrigir                       │
+        // │    • novaOrigem [string]: Novo valor para origem                                      │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS (Saídas):                                                                  │
+        // │    • [Task]: Operação assíncrona de correção                                           │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : Rotinas administrativas                                           │
+        // │    ➡️ CHAMA       : DbContext, operações de atualização                               │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         Task CorrigirOrigemAsync(List<string> origensAntigas, string novaOrigem);
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: CorrigirDestinoAsync                                               │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-        /// │    Corrige, em lote, destinos antigos substituindo por um novo destino.              │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS (Entradas):                                                                 │
-        /// │    • destinosAntigos [List<string>]: Lista de destinos a corrigir                     │
-        /// │    • novoDestino [string]: Novo valor para destino                                    │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS (Saídas):                                                                  │
-        /// │    • [Task]: Operação assíncrona de correção                                           │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : Rotinas administrativas                                           │
-        /// │    ➡️ CHAMA       : DbContext, operações de atualização                               │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: CorrigirDestinoAsync                                               │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+        // │    Corrige, em lote, destinos antigos substituindo por um novo destino.              │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS (Entradas):                                                                 │
+        // │    • destinosAntigos [List]: Lista de destinos a corrigir                     │
+        // │    • novoDestino [string]: Novo valor para destino                                    │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS (Saídas):                                                                  │
+        // │    • [Task]: Operação assíncrona de correção                                           │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : Rotinas administrativas                                           │
+        // │    ➡️ CHAMA       : DbContext, operações de atualização                               │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         Task CorrigirDestinoAsync(List<string> destinosAntigos, string novoDestino);
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: BuscarViagensRecorrenciaAsync                                      │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-        /// │    Busca viagens de recorrência relacionadas a um mesmo evento.                      │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS (Entradas):                                                                 │
-        /// │    • id [Guid]: Identificador do evento                                               │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS (Saídas):                                                                  │
-        /// │    • [Task<List<Viagem>>]: Lista de viagens recorrentes                               │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : Controllers de Viagem e eventos                                   │
-        /// │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: BuscarViagensRecorrenciaAsync                                      │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+        // │    Busca viagens de recorrência relacionadas a um mesmo evento.                      │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS (Entradas):                                                                 │
+        // │    • id [Guid]: Identificador do evento                                               │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS (Saídas):                                                                  │
+        // │    • [Task>]: Lista de viagens recorrentes                               │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : Controllers de Viagem e eventos                                   │
+        // │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         Task<List<Viagem>> BuscarViagensRecorrenciaAsync(Guid id);
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: GetViagensEventoPaginadoAsync                                      │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-        /// │    Retorna viagens de um evento com paginação otimizada.                              │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS (Entradas):                                                                 │
-        /// │    • eventoId [Guid]: Identificador do evento                                         │
-        /// │    • page [int]: Página solicitada                                                    │
-        /// │    • pageSize [int]: Quantidade por página                                             │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS (Saídas):                                                                  │
-        /// │    • [Task<(List<ViagemEventoDto>, int)>]: Lista e total de itens                    │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : Controllers e relatórios de eventos                              │
-        /// │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: GetViagensEventoPaginadoAsync                                      │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+        // │    Retorna viagens de um evento com paginação otimizada.                              │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS (Entradas):                                                                 │
+        // │    • eventoId [Guid]: Identificador do evento                                         │
+        // │    • page [int]: Página solicitada                                                    │
+        // │    • pageSize [int]: Quantidade por página                                             │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS (Saídas):                                                                  │
+        // │    • [Task, int)>]: Lista e total de itens                    │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : Controllers e relatórios de eventos                              │
+        // │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         Task<(List<ViagemEventoDto> viagens, int totalItems)> GetViagensEventoPaginadoAsync(
             Guid eventoId,
             int page,
             int pageSize
         );
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: GetQuery                                                           │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-        /// │    Retorna uma query IQueryable de Viagem para composição de filtros avançados.      │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS (Entradas):                                                                 │
-        /// │    • filter [Expression<Func<Viagem, bool>>]: Filtro opcional                         │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS (Saídas):                                                                  │
-        /// │    • [IQueryable<Viagem>]: Consulta projetada                                         │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : Controllers e Services de Viagem                                 │
-        /// │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: GetQuery                                                           │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+        // │    Retorna uma query IQueryable de Viagem para composição de filtros avançados.      │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS (Entradas):                                                                 │
+        // │    • filter [Expression>]: Filtro opcional                         │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS (Saídas):                                                                  │
+        // │    • [IQueryable]: Consulta projetada                                         │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : Controllers e Services de Viagem                                 │
+        // │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         IQueryable<Viagem> GetQuery(Expression<Func<Viagem, bool>> filter = null);
     }
 }

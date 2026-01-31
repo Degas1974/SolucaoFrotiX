@@ -23,60 +23,60 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository.IRepository
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ INTERFACE: IViewFluxoEconomildoRepository                                          │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-    /// │    Interface do repositório de ViewFluxoEconomildo. Centraliza consultas consolidadas  │
-    /// │    do fluxo de viagens e movimentações do app Economildo.                               │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🔗 RASTREABILIDADE:                                                                   │
-    /// │    ⬅️ CHAMADO POR : Controllers e relatórios Economildo                               │
-    /// │    ➡️ CHAMA       : IRepository<ViewFluxoEconomildo> (métodos base)                    │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ INTERFACE: IViewFluxoEconomildoRepository                                          │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+    // │    Interface do repositório de ViewFluxoEconomildo. Centraliza consultas consolidadas  │
+    // │    do fluxo de viagens e movimentações do app Economildo.                               │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🔗 RASTREABILIDADE:                                                                   │
+    // │    ⬅️ CHAMADO POR : Controllers e relatórios Economildo                               │
+    // │    ➡️ CHAMA       : IRepository (métodos base)                    │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     public interface IViewFluxoEconomildoRepository : IRepository<ViewFluxoEconomildo>
     {
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: GetViewFluxoEconomildoListForDropDown                               │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-        /// │    Retorna a lista de itens do fluxo Economildo formatada para uso em DropDown.      │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS (Entradas):                                                                 │
-        /// │    • Nenhum parâmetro                                                                 │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS (Saídas):                                                                  │
-        /// │    • [IEnumerable<SelectListItem>]: Lista de itens para seleção                       │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : Controllers e relatórios Economildo                              │
-        /// │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: GetViewFluxoEconomildoListForDropDown                               │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+        // │    Retorna a lista de itens do fluxo Economildo formatada para uso em DropDown.      │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS (Entradas):                                                                 │
+        // │    • Nenhum parâmetro                                                                 │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS (Saídas):                                                                  │
+        // │    • [IEnumerable]: Lista de itens para seleção                       │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : Controllers e relatórios Economildo                              │
+        // │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         IEnumerable<SelectListItem> GetViewFluxoEconomildoListForDropDown();
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: Update                                                             │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-        /// │    Método presente para compatibilidade com o contrato. Como se trata de view,       │
-        /// │    não há atualização persistente em banco.                                           │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS (Entradas):                                                                 │
-        /// │    • viewFluxoEconomildo [ViewFluxoEconomildo]: Entidade de view                      │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS (Saídas):                                                                  │
-        /// │    • [void]: Método void - sem persistência (view somente leitura)                    │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : Services e compatibilidade de interface                           │
-        /// │    ➡️ CHAMA       : Não aplicável (view)                                              │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: Update                                                             │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+        // │    Método presente para compatibilidade com o contrato. Como se trata de view,       │
+        // │    não há atualização persistente em banco.                                           │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS (Entradas):                                                                 │
+        // │    • viewFluxoEconomildo [ViewFluxoEconomildo]: Entidade de view                      │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS (Saídas):                                                                  │
+        // │    • [void]: Método void - sem persistência (view somente leitura)                    │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : Services e compatibilidade de interface                           │
+        // │    ➡️ CHAMA       : Não aplicável (view)                                              │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         void Update(ViewFluxoEconomildo viewFluxoEconomildo);
     }
 }

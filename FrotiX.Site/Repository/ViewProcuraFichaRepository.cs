@@ -26,64 +26,64 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: ViewProcuraFichaRepository                                                         │
-    /// │ 📦 HERDA DE: Repository<ViewProcuraFicha>                                                     │
-    /// │ 🔌 IMPLEMENTA: IViewProcuraFichaRepository                                                    │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório responsável pela view de procura de fichas.
-    /// Fornece listagens para UI com dados consolidados.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ViewProcuraFichaRepository                                                         │
+    // │ 📦 HERDA DE: Repository                                                     │
+    // │ 🔌 IMPLEMENTA: IViewProcuraFichaRepository                                                    │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório responsável pela view de procura de fichas.
+    // Fornece listagens para UI com dados consolidados.
+    
     public class ViewProcuraFichaRepository : Repository<ViewProcuraFicha>, IViewProcuraFichaRepository
         {
         private new readonly FrotiXDbContext _db;
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: ViewProcuraFichaRepository                                                   │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
-        /// │    ➡️ CHAMA       : base(db)                                                             │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Inicializar o repositório com o contexto do banco de dados.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    db - Contexto do banco de dados da aplicação.
-        /// </para>
-        /// </summary>
-        /// <param name="db">Instância de <see cref="FrotiXDbContext"/>.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ViewProcuraFichaRepository                                                   │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
+        // │    ➡️ CHAMA       : base(db)                                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Inicializar o repositório com o contexto do banco de dados.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // db - Contexto do banco de dados da aplicação.
+        
+        
+        // Param db: Instância de <see cref="FrotiXDbContext"/>.
         public ViewProcuraFichaRepository(FrotiXDbContext db) : base(db)
             {
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetViewProcuraFichaListForDropDown                                           │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
-        /// │    ➡️ CHAMA       : DbContext.ViewProcuraFicha, OrderBy, Select                          │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Obter lista da view de procura de fichas para dropdowns.
-        ///    Ordena pela data inicial.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de itens de seleção para procura de fichas.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetViewProcuraFichaListForDropDown                                           │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
+        // │    ➡️ CHAMA       : DbContext.ViewProcuraFicha, OrderBy, Select                          │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Obter lista da view de procura de fichas para dropdowns.
+        // Ordena pela data inicial.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
+        
+        
+        // Returns: Lista de itens de seleção para procura de fichas.
         public IEnumerable<SelectListItem> GetViewProcuraFichaListForDropDown()
             {
             return _db.ViewProcuraFicha
@@ -95,26 +95,26 @@ namespace FrotiX.Repository
                 }); ; ;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                        │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
-        /// │    ➡️ CHAMA       : DbContext.ViewProcuraFicha.FirstOrDefault, _db.Update, _db.SaveChanges│
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Manter compatibilidade com o padrão de repositórios.
-        ///    Views são somente leitura; operação não é recomendada.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    viewProcuraFicha - Entidade com dados da view.
-        /// </para>
-        /// </summary>
-        /// <param name="viewProcuraFicha">Entidade <see cref="ViewProcuraFicha"/>.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                        │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
+        // │    ➡️ CHAMA       : DbContext.ViewProcuraFicha.FirstOrDefault, _db.Update, _db.SaveChanges│
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Manter compatibilidade com o padrão de repositórios.
+        // Views são somente leitura; operação não é recomendada.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // viewProcuraFicha - Entidade com dados da view.
+        
+        
+        // Param viewProcuraFicha: Entidade <see cref="ViewProcuraFicha"/>.
         public new void Update(ViewProcuraFicha viewProcuraFicha)
             {
             var objFromDb = _db.ViewProcuraFicha.FirstOrDefault(s => s.VeiculoId == viewProcuraFicha.VeiculoId);

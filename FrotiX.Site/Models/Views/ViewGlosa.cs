@@ -17,13 +17,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FrotiX.Models
     {
-    /// <summary>
-    /// Modelo para a ViewGlosa (resultado do SELECT fornecido).
-    /// Observações:
-    /// - Campos *Data* com formatação dd/MM/yyyy vêm como string.
-    /// - Campos "Raw" preservam os tipos de data originais do banco.
-    /// - Entidade sem chave (view/projeção).
-    /// </summary>
+    
+    // Modelo para a ViewGlosa (resultado do SELECT fornecido).
+    // Observações:
+    // - Campos *Data* com formatação dd/MM/yyyy vêm como string.
+    // - Campos "Raw" preservam os tipos de data originais do banco.
+    // - Entidade sem chave (view/projeção).
+    
     [Keyless]
     public class ViewGlosa
         {

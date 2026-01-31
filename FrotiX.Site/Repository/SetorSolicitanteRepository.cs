@@ -26,64 +26,64 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: SetorSolicitanteRepository                                                         │
-    /// │ 📦 HERDA DE: Repository<SetorSolicitante>                                                     │
-    /// │ 🔌 IMPLEMENTA: ISetorSolicitanteRepository                                                    │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório responsável pelos setores solicitantes de viagens.
-    /// Fornece consultas para dropdowns e atualização de registros.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: SetorSolicitanteRepository                                                         │
+    // │ 📦 HERDA DE: Repository                                                     │
+    // │ 🔌 IMPLEMENTA: ISetorSolicitanteRepository                                                    │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório responsável pelos setores solicitantes de viagens.
+    // Fornece consultas para dropdowns e atualização de registros.
+    
     public class SetorSolicitanteRepository : Repository<SetorSolicitante>, ISetorSolicitanteRepository
         {
         private new readonly FrotiXDbContext _db;
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: SetorSolicitanteRepository                                                    │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
-        /// │    ➡️ CHAMA       : base(db)                                                             │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Inicializar o repositório com o contexto do banco de dados.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    db - Contexto do banco de dados da aplicação.
-        /// </para>
-        /// </summary>
-        /// <param name="db">Instância de <see cref="FrotiXDbContext"/>.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: SetorSolicitanteRepository                                                    │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
+        // │    ➡️ CHAMA       : base(db)                                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Inicializar o repositório com o contexto do banco de dados.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // db - Contexto do banco de dados da aplicação.
+        
+        
+        // Param db: Instância de <see cref="FrotiXDbContext"/>.
         public SetorSolicitanteRepository(FrotiXDbContext db) : base(db)
             {
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetSetorSolicitanteListForDropDown                                             │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
-        /// │    ➡️ CHAMA       : DbContext.SetorSolicitante, OrderBy, Select                           │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Obter lista de setores solicitantes para composição de dropdowns.
-        ///    Ordena os registros pelo nome.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de itens de seleção para setores solicitantes.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetSetorSolicitanteListForDropDown                                             │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
+        // │    ➡️ CHAMA       : DbContext.SetorSolicitante, OrderBy, Select                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Obter lista de setores solicitantes para composição de dropdowns.
+        // Ordena os registros pelo nome.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
+        
+        
+        // Returns: Lista de itens de seleção para setores solicitantes.
         public IEnumerable<SelectListItem> GetSetorSolicitanteListForDropDown()
             {
             return _db.SetorSolicitante
@@ -95,26 +95,26 @@ namespace FrotiX.Repository
                 }); ;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                        │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
-        /// │    ➡️ CHAMA       : DbContext.SetorSolicitante.FirstOrDefault, _db.Update,                │
-        /// │                     _db.SaveChanges                                                     │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Atualizar os dados de um setor solicitante no banco de dados.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    setorSolicitante - Entidade contendo os dados atualizados.
-        /// </para>
-        /// </summary>
-        /// <param name="setorSolicitante">Entidade <see cref="SetorSolicitante"/> com dados atualizados.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                        │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
+        // │    ➡️ CHAMA       : DbContext.SetorSolicitante.FirstOrDefault, _db.Update,                │
+        // │                     _db.SaveChanges                                                     │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Atualizar os dados de um setor solicitante no banco de dados.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // setorSolicitante - Entidade contendo os dados atualizados.
+        
+        
+        // Param setorSolicitante: Entidade <see cref="SetorSolicitante"/> com dados atualizados.
         public new void Update(SetorSolicitante setorSolicitante)
             {
             var objFromDb = _db.SetorSolicitante.FirstOrDefault(s => s.SetorSolicitanteId == setorSolicitante.SetorSolicitanteId);

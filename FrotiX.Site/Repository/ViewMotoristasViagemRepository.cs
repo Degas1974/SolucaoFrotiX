@@ -27,64 +27,64 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: ViewMotoristasViagemRepository                                                     │
-    /// │ 📦 HERDA DE: Repository<ViewMotoristasViagem>                                                 │
-    /// │ 🔌 IMPLEMENTA: IViewMotoristasViagemRepository                                                │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório responsável pela view de motoristas por viagem.
-    /// Fornece listagens para UI com dados consolidados.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ViewMotoristasViagemRepository                                                     │
+    // │ 📦 HERDA DE: Repository                                                 │
+    // │ 🔌 IMPLEMENTA: IViewMotoristasViagemRepository                                                │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório responsável pela view de motoristas por viagem.
+    // Fornece listagens para UI com dados consolidados.
+    
     public class ViewMotoristasViagemRepository : Repository<ViewMotoristasViagem>, IViewMotoristasViagemRepository
         {
         private new readonly FrotiXDbContext _db;
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: ViewMotoristasViagemRepository                                               │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
-        /// │    ➡️ CHAMA       : base(db)                                                             │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Inicializar o repositório com o contexto do banco de dados.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    db - Contexto do banco de dados da aplicação.
-        /// </para>
-        /// </summary>
-        /// <param name="db">Instância de <see cref="FrotiXDbContext"/>.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ViewMotoristasViagemRepository                                               │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
+        // │    ➡️ CHAMA       : base(db)                                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Inicializar o repositório com o contexto do banco de dados.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // db - Contexto do banco de dados da aplicação.
+        
+        
+        // Param db: Instância de <see cref="FrotiXDbContext"/>.
         public ViewMotoristasViagemRepository(FrotiXDbContext db) : base(db)
             {
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetViewMotoristasViagemListForDropDown                                       │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
-        /// │    ➡️ CHAMA       : DbContext.ViewMotoristasViagem, OrderBy, Select                      │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Obter lista da view de motoristas por viagem para dropdowns.
-        ///    Ordena pelo nome.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de itens de seleção para motoristas por viagem.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetViewMotoristasViagemListForDropDown                                       │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
+        // │    ➡️ CHAMA       : DbContext.ViewMotoristasViagem, OrderBy, Select                      │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Obter lista da view de motoristas por viagem para dropdowns.
+        // Ordena pelo nome.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
+        
+        
+        // Returns: Lista de itens de seleção para motoristas por viagem.
         public IEnumerable<SelectListItem> GetViewMotoristasViagemListForDropDown()
             {
             return _db.ViewMotoristasViagem
@@ -96,27 +96,27 @@ namespace FrotiX.Repository
                 }); ;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                        │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
-        /// │    ➡️ CHAMA       : DbContext.ViewMotoristasViagem.FirstOrDefault, _db.Update,           │
-        /// │                     _db.SaveChanges                                                     │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Manter compatibilidade com o padrão de repositórios.
-        ///    Views são somente leitura; operação não é recomendada.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    viewMotoristasviagem - Entidade com dados da view.
-        /// </para>
-        /// </summary>
-        /// <param name="viewMotoristasviagem">Entidade <see cref="ViewMotoristasViagem"/>.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                        │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
+        // │    ➡️ CHAMA       : DbContext.ViewMotoristasViagem.FirstOrDefault, _db.Update,           │
+        // │                     _db.SaveChanges                                                     │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Manter compatibilidade com o padrão de repositórios.
+        // Views são somente leitura; operação não é recomendada.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // viewMotoristasviagem - Entidade com dados da view.
+        
+        
+        // Param viewMotoristasviagem: Entidade <see cref="ViewMotoristasViagem"/>.
         public new void Update(ViewMotoristasViagem viewMotoristasviagem)
             {
             var objFromDb = _db.ViewMotoristasViagem.FirstOrDefault(s => s.MotoristaId == viewMotoristasviagem.MotoristaId);

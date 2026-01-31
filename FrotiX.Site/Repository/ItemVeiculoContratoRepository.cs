@@ -27,15 +27,15 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: ItemVeiculoContratoRepository                                             │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ DESCRIÇÃO:                                                                             │
-    /// │    Repositório para gerenciar itens de veículos em contratos de locação.              │
-    /// │    Estende Repository&lt;ItemVeiculoContrato&gt; com métodos especializados.          │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ItemVeiculoContratoRepository                                             │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ DESCRIÇÃO:                                                                             │
+    // │    Repositório para gerenciar itens de veículos em contratos de locação.              │
+    // │    Estende Repository&lt;ItemVeiculoContrato&gt; com métodos especializados.          │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     public class ItemVeiculoContratoRepository : Repository<ItemVeiculoContrato>, IItemVeiculoContratoRepository
     {
         private new readonly FrotiXDbContext _db;
@@ -45,24 +45,24 @@ namespace FrotiX.Repository
             _db = db;
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetItemVeiculoContratoListForDropDown                                     │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO:                                                                          │
-        /// │    Retorna lista de itens de veículo contrato formatada para DropDown.                │
-        /// │    Ordenada por descrição para facilitar seleção.                                      │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS: Nenhum                                                                      │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS:                                                                            │
-        /// │    • IEnumerable&lt;SelectListItem&gt; - Lista para DropDown                           │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de Contrato, formulários de seleção                    │
-        /// │    ➡️ CHAMA       : DbContext.ItemVeiculoContrato (LINQ OrderBy, Select)               │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetItemVeiculoContratoListForDropDown                                     │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO:                                                                          │
+        // │    Retorna lista de itens de veículo contrato formatada para DropDown.                │
+        // │    Ordenada por descrição para facilitar seleção.                                      │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS: Nenhum                                                                      │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS:                                                                            │
+        // │    • IEnumerable&lt;SelectListItem&gt; - Lista para DropDown                           │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de Contrato, formulários de seleção                    │
+        // │    ➡️ CHAMA       : DbContext.ItemVeiculoContrato (LINQ OrderBy, Select)               │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         public IEnumerable<SelectListItem> GetItemVeiculoContratoListForDropDown()
         {
             return _db.ItemVeiculoContrato
@@ -74,23 +74,23 @@ namespace FrotiX.Repository
                 });
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                     │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO:                                                                          │
-        /// │    Atualiza um item de veículo contrato no banco de dados.                            │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS:                                                                             │
-        /// │    • itemveiculocontrato [ItemVeiculoContrato] - Item a ser atualizado                │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS: void                                                                       │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de ItemVeiculoContrato, UnitOfWork                     │
-        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                        │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                     │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO:                                                                          │
+        // │    Atualiza um item de veículo contrato no banco de dados.                            │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS:                                                                             │
+        // │    • itemveiculocontrato [ItemVeiculoContrato] - Item a ser atualizado                │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS: void                                                                       │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de ItemVeiculoContrato, UnitOfWork                     │
+        // │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                        │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         public new void Update(ItemVeiculoContrato itemveiculocontrato)
         {
             var objFromDb = _db.ItemVeiculoContrato.FirstOrDefault(s => s.ItemVeiculoId == itemveiculocontrato.ItemVeiculoId);

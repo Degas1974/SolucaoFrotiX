@@ -18,9 +18,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository.IRepository
     {
-    /// <summary>
-    /// Interface do repositório de CustoMensalItensContrato. Estende IRepository&lt;CustoMensalItensContrato&gt;.
-    /// </summary>
+    
+    // Interface do repositório de CustoMensalItensContrato. Estende IRepository&lt;CustoMensalItensContrato&gt;.
+    
     public interface ICustoMensalItensContratoRepository : IRepository<CustoMensalItensContrato>
         {
 

@@ -46,19 +46,19 @@ namespace FrotiX.EndPoints
             _settings = settings;
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: Get (Lista)                                                        │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO: Lista todos os usuários do sistema para DataTable.                     │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS: { data, recordsTotal, recordsFiltered }                                  │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : GET /api/users (Pages/Users.cshtml)                               │
-        /// │    ➡️ CHAMA       : UserManager.Users                                                 │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: Get (Lista)                                                        │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO: Lista todos os usuários do sistema para DataTable.                     │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS: { data, recordsTotal, recordsFiltered }                                  │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : GET /api/users (Pages/Users.cshtml)                               │
+        // │    ➡️ CHAMA       : UserManager.Users                                                 │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<IdentityUser>>> Get()
@@ -78,33 +78,33 @@ namespace FrotiX.EndPoints
             }
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: Get (Por ID)                                                       │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO: Busca um usuário específico pelo ID.                                   │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS: • id [string]: ID do usuário (GUID)                                       │
-        /// │ 📤 OUTPUTS: IdentityUser                                                             │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: Get (Por ID)                                                       │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO: Busca um usuário específico pelo ID.                                   │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS: • id [string]: ID do usuário (GUID)                                       │
+        // │ 📤 OUTPUTS: IdentityUser                                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IdentityUser>> Get([FromRoute] string id) => Ok(await _manager.FindByIdAsync(id));
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: Create                                                             │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO: Cria um novo usuário com senha padrão "Password123!".                  │
-        /// │               Gera GUID automaticamente e define UserName = Email.                   │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS: • model [IdentityUser]: Dados do novo usuário                             │
-        /// │ 📤 OUTPUTS: 201 Created ou BadRequest                                                │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ ⚠️ ATENÇÃO: Senha padrão deve ser alterada em produção!                              │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: Create                                                             │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO: Cria um novo usuário com senha padrão "Password123!".                  │
+        // │               Gera GUID automaticamente e define UserName = Email.                   │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS: • model [IdentityUser]: Dados do novo usuário                             │
+        // │ 📤 OUTPUTS: 201 Created ou BadRequest                                                │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ ⚠️ ATENÇÃO: Senha padrão deve ser alterada em produção!                              │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<IActionResult> Create([FromForm] IdentityUser model)
@@ -138,16 +138,16 @@ namespace FrotiX.EndPoints
             }
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: Update                                                             │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO: Atualiza dados de um usuário existente.                                │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS: • model [IdentityUser]: Dados atualizados                                 │
-        /// │ 📤 OUTPUTS: 204 NoContent ou BadRequest                                              │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: Update                                                             │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO: Atualiza dados de um usuário existente.                                │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS: • model [IdentityUser]: Dados atualizados                                 │
+        // │ 📤 OUTPUTS: 204 NoContent ou BadRequest                                              │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Update([FromForm] IdentityUser model)
@@ -171,16 +171,16 @@ namespace FrotiX.EndPoints
             }
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: Delete                                                             │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO: Remove um usuário. Bloqueia exclusão do usuário principal.             │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS: • model [IdentityUser]: Usuário a ser removido                            │
-        /// │ 📤 OUTPUTS: 204 NoContent ou BadRequest (se for usuário principal)                   │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: Delete                                                             │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO: Remove um usuário. Bloqueia exclusão do usuário principal.             │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS: • model [IdentityUser]: Usuário a ser removido                            │
+        // │ 📤 OUTPUTS: 204 NoContent ou BadRequest (se for usuário principal)                   │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Delete([FromForm] IdentityUser model)

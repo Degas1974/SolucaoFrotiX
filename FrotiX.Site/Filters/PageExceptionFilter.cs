@@ -34,122 +34,122 @@ using Microsoft.Extensions.Logging;
 
 namespace FrotiX.Filters;
 
-/// <summary>
-/// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-/// │ 🎯 CLASSE: PageExceptionFilter                                                                   │
-/// │ 🔌 IMPLEMENTA: IPageFilter, IAsyncPageFilter                                                     │
-/// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-///
-/// <para>
-/// 🎯 <b>OBJETIVO:</b><br/>
-///    Capturar exceções em Razor Pages e registrar detalhes com ILogService/ILogger.
-/// </para>
-///
-/// <para>
-/// 🔗 <b>RASTREABILIDADE:</b><br/>
-///    ⬅️ CHAMADO POR : Pipeline Razor Pages (IPageFilter/IAsyncPageFilter)<br/>
-///    ➡️ CHAMA       : ILogService.Error(), ILogger.LogError(), ExtractFileName(), ExtractLineNumber()
-/// </para>
-/// </summary>
+
+// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+// │ 🎯 CLASSE: PageExceptionFilter                                                                   │
+// │ 🔌 IMPLEMENTA: IPageFilter, IAsyncPageFilter                                                     │
+// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+
+
+// 🎯 OBJETIVO:
+// Capturar exceções em Razor Pages e registrar detalhes com ILogService/ILogger.
+
+
+
+// 🔗 RASTREABILIDADE:
+// ⬅️ CHAMADO POR : Pipeline Razor Pages (IPageFilter/IAsyncPageFilter)
+// ➡️ CHAMA       : ILogService.Error(), ILogger.LogError(), ExtractFileName(), ExtractLineNumber()
+
+
 public class PageExceptionFilter : IPageFilter, IAsyncPageFilter
 {
     private readonly ILogService _logService;
     private readonly ILogger<PageExceptionFilter> _logger;
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ MÉTODO: PageExceptionFilter                                                           │
-    /// │ 🔗 RASTREABILIDADE:                                                                      │
-    /// │    ⬅️ CHAMADO POR : DI / Program.cs / Startup                                             │
-    /// │    ➡️ CHAMA       : (injeção de dependências)                                             │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// <para>
-    /// 🎯 <b>OBJETIVO:</b><br/>
-    ///    Injetar serviços necessários para registro de exceções em Razor Pages.
-    /// </para>
-    ///
-    /// <para>
-    /// 📥 <b>PARÂMETROS:</b><br/>
-    ///    logService - Serviço de log unificado do FrotiX<br/>
-    ///    logger - Logger tipado para PageExceptionFilter
-    /// </para>
-    /// </summary>
-    /// <param name="logService">Serviço de log unificado do FrotiX.</param>
-    /// <param name="logger">Logger tipado para PageExceptionFilter.</param>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ MÉTODO: PageExceptionFilter                                                           │
+    // │ 🔗 RASTREABILIDADE:                                                                      │
+    // │    ⬅️ CHAMADO POR : DI / Program.cs / Startup                                             │
+    // │    ➡️ CHAMA       : (injeção de dependências)                                             │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Injetar serviços necessários para registro de exceções em Razor Pages.
+    
+    
+    
+    // 📥 PARÂMETROS:
+    // logService - Serviço de log unificado do FrotiX
+    // logger - Logger tipado para PageExceptionFilter
+    
+    
+    // Param logService: Serviço de log unificado do FrotiX.
+    // Param logger: Logger tipado para PageExceptionFilter.
     public PageExceptionFilter(ILogService logService, ILogger<PageExceptionFilter> logger)
     {
         _logService = logService;
         _logger = logger;
     }
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ MÉTODO: OnPageHandlerSelected                                                        │
-    /// │ 🔗 RASTREABILIDADE:                                                                      │
-    /// │    ⬅️ CHAMADO POR : Pipeline Razor Pages (IPageFilter)                                  │
-    /// │    ➡️ CHAMA       : (sem chamadas internas)                                             │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// <para>
-    /// 🎯 <b>OBJETIVO:</b><br/>
-    ///    Callback de seleção do handler. Mantido para cumprir o contrato do filtro.
-    /// </para>
-    ///
-    /// <para>
-    /// 📥 <b>PARÂMETROS:</b><br/>
-    ///    context - Contexto de seleção do handler da Razor Page.
-    /// </para>
-    /// </summary>
-    /// <param name="context">Contexto de seleção do handler da Razor Page.</param>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ MÉTODO: OnPageHandlerSelected                                                        │
+    // │ 🔗 RASTREABILIDADE:                                                                      │
+    // │    ⬅️ CHAMADO POR : Pipeline Razor Pages (IPageFilter)                                  │
+    // │    ➡️ CHAMA       : (sem chamadas internas)                                             │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Callback de seleção do handler. Mantido para cumprir o contrato do filtro.
+    
+    
+    
+    // 📥 PARÂMETROS:
+    // context - Contexto de seleção do handler da Razor Page.
+    
+    
+    // Param context: Contexto de seleção do handler da Razor Page.
     public void OnPageHandlerSelected(PageHandlerSelectedContext context)
     {
         // Não precisa fazer nada aqui
     }
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ MÉTODO: OnPageHandlerExecuting                                                       │
-    /// │ 🔗 RASTREABILIDADE:                                                                      │
-    /// │    ⬅️ CHAMADO POR : Pipeline Razor Pages (IPageFilter)                                  │
-    /// │    ➡️ CHAMA       : (sem chamadas internas)                                             │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// <para>
-    /// 🎯 <b>OBJETIVO:</b><br/>
-    ///    Callback pré-execução do handler. Mantido para cumprir o contrato do filtro.
-    /// </para>
-    ///
-    /// <para>
-    /// 📥 <b>PARÂMETROS:</b><br/>
-    ///    context - Contexto de execução do handler da Razor Page.
-    /// </para>
-    /// </summary>
-    /// <param name="context">Contexto de execução do handler da Razor Page.</param>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ MÉTODO: OnPageHandlerExecuting                                                       │
+    // │ 🔗 RASTREABILIDADE:                                                                      │
+    // │    ⬅️ CHAMADO POR : Pipeline Razor Pages (IPageFilter)                                  │
+    // │    ➡️ CHAMA       : (sem chamadas internas)                                             │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Callback pré-execução do handler. Mantido para cumprir o contrato do filtro.
+    
+    
+    
+    // 📥 PARÂMETROS:
+    // context - Contexto de execução do handler da Razor Page.
+    
+    
+    // Param context: Contexto de execução do handler da Razor Page.
     public void OnPageHandlerExecuting(PageHandlerExecutingContext context)
     {
         // Não precisa fazer nada aqui
     }
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ MÉTODO: OnPageHandlerExecuted                                                        │
-    /// │ 🔗 RASTREABILIDADE:                                                                      │
-    /// │    ⬅️ CHAMADO POR : Pipeline Razor Pages (IPageFilter)                                  │
-    /// │    ➡️ CHAMA       : LogPageException()                                                   │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// <para>
-    /// 🎯 <b>OBJETIVO:</b><br/>
-    ///    Capturar e registrar exceções geradas no handler da Razor Page.
-    /// </para>
-    ///
-    /// <para>
-    /// 📥 <b>PARÂMETROS:</b><br/>
-    ///    context - Contexto de execução com possível exceção.
-    /// </para>
-    /// </summary>
-    /// <param name="context">Contexto de execução com possível exceção.</param>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ MÉTODO: OnPageHandlerExecuted                                                        │
+    // │ 🔗 RASTREABILIDADE:                                                                      │
+    // │    ⬅️ CHAMADO POR : Pipeline Razor Pages (IPageFilter)                                  │
+    // │    ➡️ CHAMA       : LogPageException()                                                   │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Capturar e registrar exceções geradas no handler da Razor Page.
+    
+    
+    
+    // 📥 PARÂMETROS:
+    // context - Contexto de execução com possível exceção.
+    
+    
+    // Param context: Contexto de execução com possível exceção.
     public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
     {
         if (context.Exception != null && !context.ExceptionHandled)
@@ -158,63 +158,63 @@ public class PageExceptionFilter : IPageFilter, IAsyncPageFilter
         }
     }
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ MÉTODO: OnPageHandlerSelectionAsync                                                   │
-    /// │ 🔗 RASTREABILIDADE:                                                                      │
-    /// │    ⬅️ CHAMADO POR : Pipeline Razor Pages (IAsyncPageFilter)                              │
-    /// │    ➡️ CHAMA       : Task.CompletedTask                                                   │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// <para>
-    /// 🎯 <b>OBJETIVO:</b><br/>
-    ///    Implementação assíncrona da seleção do handler (sem ação específica).
-    /// </para>
-    ///
-    /// <para>
-    /// 📥 <b>PARÂMETROS:</b><br/>
-    ///    context - Contexto de seleção do handler da Razor Page.
-    /// </para>
-    ///
-    /// <para>
-    /// 📤 <b>RETORNO:</b><br/>
-    ///    Task concluída imediatamente.
-    /// </para>
-    /// </summary>
-    /// <param name="context">Contexto de seleção do handler da Razor Page.</param>
-    /// <returns>Task concluída imediatamente.</returns>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ MÉTODO: OnPageHandlerSelectionAsync                                                   │
+    // │ 🔗 RASTREABILIDADE:                                                                      │
+    // │    ⬅️ CHAMADO POR : Pipeline Razor Pages (IAsyncPageFilter)                              │
+    // │    ➡️ CHAMA       : Task.CompletedTask                                                   │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Implementação assíncrona da seleção do handler (sem ação específica).
+    
+    
+    
+    // 📥 PARÂMETROS:
+    // context - Contexto de seleção do handler da Razor Page.
+    
+    
+    
+    // 📤 RETORNO:
+    // Task concluída imediatamente.
+    
+    
+    // Param context: Contexto de seleção do handler da Razor Page.
+    // Returns: Task concluída imediatamente.
     public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context)
     {
         return Task.CompletedTask;
     }
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ MÉTODO: OnPageHandlerExecutionAsync                                                   │
-    /// │ 🔗 RASTREABILIDADE:                                                                      │
-    /// │    ⬅️ CHAMADO POR : Pipeline Razor Pages (IAsyncPageFilter)                              │
-    /// │    ➡️ CHAMA       : next(), LogPageException()                                           │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// <para>
-    /// 🎯 <b>OBJETIVO:</b><br/>
-    ///    Executar o handler e registrar exceções geradas na execução assíncrona.
-    /// </para>
-    ///
-    /// <para>
-    /// 📥 <b>PARÂMETROS:</b><br/>
-    ///    context - Contexto de execução do handler da Razor Page<br/>
-    ///    next - Delegate para executar o próximo estágio do pipeline
-    /// </para>
-    ///
-    /// <para>
-    /// 📤 <b>RETORNO:</b><br/>
-    ///    Task que representa a execução assíncrona do handler.
-    /// </para>
-    /// </summary>
-    /// <param name="context">Contexto de execução do handler da Razor Page.</param>
-    /// <param name="next">Delegate para executar o próximo estágio do pipeline.</param>
-    /// <returns>Task que representa a execução assíncrona do handler.</returns>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ MÉTODO: OnPageHandlerExecutionAsync                                                   │
+    // │ 🔗 RASTREABILIDADE:                                                                      │
+    // │    ⬅️ CHAMADO POR : Pipeline Razor Pages (IAsyncPageFilter)                              │
+    // │    ➡️ CHAMA       : next(), LogPageException()                                           │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Executar o handler e registrar exceções geradas na execução assíncrona.
+    
+    
+    
+    // 📥 PARÂMETROS:
+    // context - Contexto de execução do handler da Razor Page
+    // next - Delegate para executar o próximo estágio do pipeline
+    
+    
+    
+    // 📤 RETORNO:
+    // Task que representa a execução assíncrona do handler.
+    
+    
+    // Param context: Contexto de execução do handler da Razor Page.
+    // Param next: Delegate para executar o próximo estágio do pipeline.
+    // Returns: Task que representa a execução assíncrona do handler.
     public Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
     {
         return next().ContinueWith(task =>
@@ -311,112 +311,112 @@ public class PageExceptionFilter : IPageFilter, IAsyncPageFilter
     }
 }
 
-/// <summary>
-/// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-/// │ 🎯 CLASSE: AsyncPageExceptionFilter                                                              │
-/// │ 🔌 IMPLEMENTA: IAsyncPageFilter                                                                  │
-/// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-///
-/// <para>
-/// 🎯 <b>OBJETIVO:</b><br/>
-///    Capturar exceções em Razor Pages usando fluxo assíncrono com try/catch.
-/// </para>
-///
-/// <para>
-/// 🔗 <b>RASTREABILIDADE:</b><br/>
-///    ⬅️ CHAMADO POR : Pipeline Razor Pages (IAsyncPageFilter)<br/>
-///    ➡️ CHAMA       : ILogService.Error(), ILogger.LogError()
-/// </para>
-/// </summary>
+
+// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+// │ 🎯 CLASSE: AsyncPageExceptionFilter                                                              │
+// │ 🔌 IMPLEMENTA: IAsyncPageFilter                                                                  │
+// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+
+
+// 🎯 OBJETIVO:
+// Capturar exceções em Razor Pages usando fluxo assíncrono com try/catch.
+
+
+
+// 🔗 RASTREABILIDADE:
+// ⬅️ CHAMADO POR : Pipeline Razor Pages (IAsyncPageFilter)
+// ➡️ CHAMA       : ILogService.Error(), ILogger.LogError()
+
+
 public class AsyncPageExceptionFilter : IAsyncPageFilter
 {
     private readonly ILogService _logService;
     private readonly ILogger<AsyncPageExceptionFilter> _logger;
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ MÉTODO: AsyncPageExceptionFilter                                                    │
-    /// │ 🔗 RASTREABILIDADE:                                                                      │
-    /// │    ⬅️ CHAMADO POR : DI / Program.cs / Startup                                             │
-    /// │    ➡️ CHAMA       : (injeção de dependências)                                             │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// <para>
-    /// 🎯 <b>OBJETIVO:</b><br/>
-    ///    Injetar serviços necessários para registrar exceções assíncronas em Razor Pages.
-    /// </para>
-    ///
-    /// <para>
-    /// 📥 <b>PARÂMETROS:</b><br/>
-    ///    logService - Serviço de log unificado do FrotiX<br/>
-    ///    logger - Logger tipado para AsyncPageExceptionFilter
-    /// </para>
-    /// </summary>
-    /// <param name="logService">Serviço de log unificado do FrotiX.</param>
-    /// <param name="logger">Logger tipado para AsyncPageExceptionFilter.</param>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ MÉTODO: AsyncPageExceptionFilter                                                    │
+    // │ 🔗 RASTREABILIDADE:                                                                      │
+    // │    ⬅️ CHAMADO POR : DI / Program.cs / Startup                                             │
+    // │    ➡️ CHAMA       : (injeção de dependências)                                             │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Injetar serviços necessários para registrar exceções assíncronas em Razor Pages.
+    
+    
+    
+    // 📥 PARÂMETROS:
+    // logService - Serviço de log unificado do FrotiX
+    // logger - Logger tipado para AsyncPageExceptionFilter
+    
+    
+    // Param logService: Serviço de log unificado do FrotiX.
+    // Param logger: Logger tipado para AsyncPageExceptionFilter.
     public AsyncPageExceptionFilter(ILogService logService, ILogger<AsyncPageExceptionFilter> logger)
     {
         _logService = logService;
         _logger = logger;
     }
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ MÉTODO: OnPageHandlerSelectionAsync                                                   │
-    /// │ 🔗 RASTREABILIDADE:                                                                      │
-    /// │    ⬅️ CHAMADO POR : Pipeline Razor Pages (IAsyncPageFilter)                              │
-    /// │    ➡️ CHAMA       : Task.CompletedTask                                                   │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// <para>
-    /// 🎯 <b>OBJETIVO:</b><br/>
-    ///    Implementação assíncrona da seleção do handler (sem ação específica).
-    /// </para>
-    ///
-    /// <para>
-    /// 📥 <b>PARÂMETROS:</b><br/>
-    ///    context - Contexto de seleção do handler da Razor Page.
-    /// </para>
-    ///
-    /// <para>
-    /// 📤 <b>RETORNO:</b><br/>
-    ///    Task concluída imediatamente.
-    /// </para>
-    /// </summary>
-    /// <param name="context">Contexto de seleção do handler da Razor Page.</param>
-    /// <returns>Task concluída imediatamente.</returns>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ MÉTODO: OnPageHandlerSelectionAsync                                                   │
+    // │ 🔗 RASTREABILIDADE:                                                                      │
+    // │    ⬅️ CHAMADO POR : Pipeline Razor Pages (IAsyncPageFilter)                              │
+    // │    ➡️ CHAMA       : Task.CompletedTask                                                   │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Implementação assíncrona da seleção do handler (sem ação específica).
+    
+    
+    
+    // 📥 PARÂMETROS:
+    // context - Contexto de seleção do handler da Razor Page.
+    
+    
+    
+    // 📤 RETORNO:
+    // Task concluída imediatamente.
+    
+    
+    // Param context: Contexto de seleção do handler da Razor Page.
+    // Returns: Task concluída imediatamente.
     public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context)
     {
         return Task.CompletedTask;
     }
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ MÉTODO: OnPageHandlerExecutionAsync                                                   │
-    /// │ 🔗 RASTREABILIDADE:                                                                      │
-    /// │    ⬅️ CHAMADO POR : Pipeline Razor Pages (IAsyncPageFilter)                              │
-    /// │    ➡️ CHAMA       : next(), ILogService.Error(), ILogger.LogError()                       │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// <para>
-    /// 🎯 <b>OBJETIVO:</b><br/>
-    ///    Executar o handler e registrar exceções assíncronas com log unificado.
-    /// </para>
-    ///
-    /// <para>
-    /// 📥 <b>PARÂMETROS:</b><br/>
-    ///    context - Contexto de execução do handler da Razor Page<br/>
-    ///    next - Delegate para executar o próximo estágio do pipeline
-    /// </para>
-    ///
-    /// <para>
-    /// 📤 <b>RETORNO:</b><br/>
-    ///    Task que representa a execução assíncrona do handler.
-    /// </para>
-    /// </summary>
-    /// <param name="context">Contexto de execução do handler da Razor Page.</param>
-    /// <param name="next">Delegate para executar o próximo estágio do pipeline.</param>
-    /// <returns>Task que representa a execução assíncrona do handler.</returns>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ MÉTODO: OnPageHandlerExecutionAsync                                                   │
+    // │ 🔗 RASTREABILIDADE:                                                                      │
+    // │    ⬅️ CHAMADO POR : Pipeline Razor Pages (IAsyncPageFilter)                              │
+    // │    ➡️ CHAMA       : next(), ILogService.Error(), ILogger.LogError()                       │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Executar o handler e registrar exceções assíncronas com log unificado.
+    
+    
+    
+    // 📥 PARÂMETROS:
+    // context - Contexto de execução do handler da Razor Page
+    // next - Delegate para executar o próximo estágio do pipeline
+    
+    
+    
+    // 📤 RETORNO:
+    // Task que representa a execução assíncrona do handler.
+    
+    
+    // Param context: Contexto de execução do handler da Razor Page.
+    // Param next: Delegate para executar o próximo estágio do pipeline.
+    // Returns: Task que representa a execução assíncrona do handler.
     public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
     {
         try

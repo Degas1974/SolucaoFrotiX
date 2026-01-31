@@ -30,69 +30,69 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FrotiX.Repository
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: ViagemEstatisticaRepository                                                        │
-    /// │ 📦 HERDA DE: Repository<ViagemEstatistica>                                                    │
-    /// │ 🔌 IMPLEMENTA: IViagemEstatisticaRepository                                                   │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório responsável por estatísticas de viagens agregadas por data.
-    /// Disponibiliza consultas e rotinas de manutenção de histórico.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ViagemEstatisticaRepository                                                        │
+    // │ 📦 HERDA DE: Repository                                                    │
+    // │ 🔌 IMPLEMENTA: IViagemEstatisticaRepository                                                   │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório responsável por estatísticas de viagens agregadas por data.
+    // Disponibiliza consultas e rotinas de manutenção de histórico.
+    
     public class ViagemEstatisticaRepository : Repository<ViagemEstatistica>, IViagemEstatisticaRepository
     {
         private readonly FrotiXDbContext _context;
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: ViagemEstatisticaRepository                                                   │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : UnitOfWork, Services, Jobs                                            │
-        /// │    ➡️ CHAMA       : base(context)                                                        │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Inicializar o repositório com o contexto do banco de dados.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    context - Contexto do banco de dados da aplicação.
-        /// </para>
-        /// </summary>
-        /// <param name="context">Instância de <see cref="FrotiXDbContext"/>.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ViagemEstatisticaRepository                                                   │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UnitOfWork, Services, Jobs                                            │
+        // │    ➡️ CHAMA       : base(context)                                                        │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Inicializar o repositório com o contexto do banco de dados.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // context - Contexto do banco de dados da aplicação.
+        
+        
+        // Param context: Instância de <see cref="FrotiXDbContext"/>.
         public ViagemEstatisticaRepository(FrotiXDbContext context) : base(context)
         {
             _context = context;
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: ObterPorDataAsync                                                            │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Services, Jobs, Controllers                                          │
-        /// │    ➡️ CHAMA       : DbContext.ViagemEstatistica, AsNoTracking, FirstOrDefaultAsync        │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Buscar estatística por data de referência (ignora horário).
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    dataReferencia - Data de referência para consulta.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    Task&lt;ViagemEstatistica&gt; - Estatística encontrada ou null.
-        /// </para>
-        /// </summary>
-        /// <param name="dataReferencia">Data de referência.</param>
-        /// <returns>Estatística encontrada ou null.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ObterPorDataAsync                                                            │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Services, Jobs, Controllers                                          │
+        // │    ➡️ CHAMA       : DbContext.ViagemEstatistica, AsNoTracking, FirstOrDefaultAsync        │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Buscar estatística por data de referência (ignora horário).
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // dataReferencia - Data de referência para consulta.
+        
+        
+        
+        // 📤 RETORNO:
+        // Task&lt;ViagemEstatistica&gt; - Estatística encontrada ou null.
+        
+        
+        // Param dataReferencia: Data de referência.
+        // Returns: Estatística encontrada ou null.
         public async Task<ViagemEstatistica> ObterPorDataAsync(DateTime dataReferencia)
         {
             try
@@ -111,33 +111,33 @@ namespace FrotiX.Repository
             }
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: ObterPorPeriodoAsync                                                         │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Services, Jobs, Controllers                                          │
-        /// │    ➡️ CHAMA       : DbContext.ViagemEstatistica, Where, OrderBy, ToListAsync              │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Buscar estatísticas dentro de um período de datas (inclusivo).
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    dataInicio - Data inicial do período<br/>
-        ///    dataFim - Data final do período
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    Task&lt;List&lt;ViagemEstatistica&gt;&gt; - Lista de estatísticas do período.
-        /// </para>
-        /// </summary>
-        /// <param name="dataInicio">Data inicial.</param>
-        /// <param name="dataFim">Data final.</param>
-        /// <returns>Lista de estatísticas do período.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ObterPorPeriodoAsync                                                         │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Services, Jobs, Controllers                                          │
+        // │    ➡️ CHAMA       : DbContext.ViagemEstatistica, Where, OrderBy, ToListAsync              │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Buscar estatísticas dentro de um período de datas (inclusivo).
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // dataInicio - Data inicial do período
+        // dataFim - Data final do período
+        
+        
+        
+        // 📤 RETORNO:
+        // Task&lt;List&lt;ViagemEstatistica&gt;&gt; - Lista de estatísticas do período.
+        
+        
+        // Param dataInicio: Data inicial.
+        // Param dataFim: Data final.
+        // Returns: Lista de estatísticas do período.
         public async Task<List<ViagemEstatistica>> ObterPorPeriodoAsync(DateTime dataInicio , DateTime dataFim)
         {
             try
@@ -153,31 +153,31 @@ namespace FrotiX.Repository
             }
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: ExisteParaDataAsync                                                          │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Services, Jobs, Controllers                                          │
-        /// │    ➡️ CHAMA       : DbContext.ViagemEstatistica, AnyAsync                                 │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Verificar se existe estatística registrada para uma data.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    dataReferencia - Data de referência para consulta.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    Task&lt;bool&gt; - True se existir estatística, senão false.
-        /// </para>
-        /// </summary>
-        /// <param name="dataReferencia">Data de referência.</param>
-        /// <returns>Indicador de existência.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ExisteParaDataAsync                                                          │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Services, Jobs, Controllers                                          │
+        // │    ➡️ CHAMA       : DbContext.ViagemEstatistica, AnyAsync                                 │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Verificar se existe estatística registrada para uma data.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // dataReferencia - Data de referência para consulta.
+        
+        
+        
+        // 📤 RETORNO:
+        // Task&lt;bool&gt; - True se existir estatística, senão false.
+        
+        
+        // Param dataReferencia: Data de referência.
+        // Returns: Indicador de existência.
         public async Task<bool> ExisteParaDataAsync(DateTime dataReferencia)
         {
             try
@@ -192,31 +192,31 @@ namespace FrotiX.Repository
             }
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: RemoverEstatisticasAntigasAsync                                               │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Services, Jobs, Controllers                                          │
-        /// │    ➡️ CHAMA       : DbContext.ViagemEstatistica, RemoveRange, SaveChangesAsync            │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Remover estatísticas antigas (mais de X dias).
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    diasParaManter - Quantidade de dias a preservar no histórico.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    Task&lt;int&gt; - Quantidade de registros removidos.
-        /// </para>
-        /// </summary>
-        /// <param name="diasParaManter">Dias de histórico a manter.</param>
-        /// <returns>Quantidade de registros removidos.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: RemoverEstatisticasAntigasAsync                                               │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Services, Jobs, Controllers                                          │
+        // │    ➡️ CHAMA       : DbContext.ViagemEstatistica, RemoveRange, SaveChangesAsync            │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Remover estatísticas antigas (mais de X dias).
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // diasParaManter - Quantidade de dias a preservar no histórico.
+        
+        
+        
+        // 📤 RETORNO:
+        // Task&lt;int&gt; - Quantidade de registros removidos.
+        
+        
+        // Param diasParaManter: Dias de histórico a manter.
+        // Returns: Quantidade de registros removidos.
         public async Task<int> RemoverEstatisticasAntigasAsync(int diasParaManter = 365)
         {
             try
@@ -242,25 +242,25 @@ namespace FrotiX.Repository
             }
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: ObterEstatisticasDesatualizadasAsync                                          │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Services, Jobs, Controllers                                          │
-        /// │    ➡️ CHAMA       : DbContext.ViagemEstatistica, Where, OrderBy, ToListAsync              │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Buscar estatísticas desatualizadas (mais de 1 hora sem atualização).
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    Task&lt;List&lt;ViagemEstatistica&gt;&gt; - Lista de estatísticas desatualizadas.
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de estatísticas desatualizadas.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ObterEstatisticasDesatualizadasAsync                                          │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Services, Jobs, Controllers                                          │
+        // │    ➡️ CHAMA       : DbContext.ViagemEstatistica, Where, OrderBy, ToListAsync              │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Buscar estatísticas desatualizadas (mais de 1 hora sem atualização).
+        
+        
+        
+        // 📤 RETORNO:
+        // Task&lt;List&lt;ViagemEstatistica&gt;&gt; - Lista de estatísticas desatualizadas.
+        
+        
+        // Returns: Lista de estatísticas desatualizadas.
         public async Task<List<ViagemEstatistica>> ObterEstatisticasDesatualizadasAsync()
         {
             try

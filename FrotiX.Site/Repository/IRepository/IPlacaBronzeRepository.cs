@@ -23,61 +23,61 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository.IRepository
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ INTERFACE: IPlacaBronzeRepository                                                  │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-    /// │    Interface do repositório de PlacaBronze. Centraliza operações de consulta e         │
-    /// │    atualização de placas no sistema bronze, assegurando integração e histórico.       │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🔗 RASTREABILIDADE:                                                                   │
-    /// │    ⬅️ CHAMADO POR : Controllers de PlacaBronze, UnitOfWork                             │
-    /// │    ➡️ CHAMA       : IRepository<PlacaBronze> (métodos base)                           │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ INTERFACE: IPlacaBronzeRepository                                                  │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+    // │    Interface do repositório de PlacaBronze. Centraliza operações de consulta e         │
+    // │    atualização de placas no sistema bronze, assegurando integração e histórico.       │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🔗 RASTREABILIDADE:                                                                   │
+    // │    ⬅️ CHAMADO POR : Controllers de PlacaBronze, UnitOfWork                             │
+    // │    ➡️ CHAMA       : IRepository (métodos base)                           │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     public interface IPlacaBronzeRepository : IRepository<PlacaBronze>
     {
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: GetPlacaBronzeListForDropDown                                      │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-        /// │    Retorna a lista de placas bronze formatada para uso em DropDown (Select),         │
-        /// │    facilitando seleção em telas de consulta e sincronização.                         │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS (Entradas):                                                                 │
-        /// │    • Nenhum parâmetro                                                                 │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS (Saídas):                                                                  │
-        /// │    • [IEnumerable<SelectListItem>]: Lista de itens para seleção                       │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : Controllers de PlacaBronze, ViewComponents                        │
-        /// │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: GetPlacaBronzeListForDropDown                                      │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+        // │    Retorna a lista de placas bronze formatada para uso em DropDown (Select),         │
+        // │    facilitando seleção em telas de consulta e sincronização.                         │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS (Entradas):                                                                 │
+        // │    • Nenhum parâmetro                                                                 │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS (Saídas):                                                                  │
+        // │    • [IEnumerable]: Lista de itens para seleção                       │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : Controllers de PlacaBronze, ViewComponents                        │
+        // │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         IEnumerable<SelectListItem> GetPlacaBronzeListForDropDown();
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: Update                                                             │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-        /// │    Atualiza um registro de PlacaBronze no banco de dados, alterando dados             │
-        /// │    de importação, status de sincronização e informações da placa.                    │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS (Entradas):                                                                 │
-        /// │    • placaBronze [PlacaBronze]: Entidade com dados atualizados                        │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS (Saídas):                                                                  │
-        /// │    • [void]: Método void - alterações aplicadas ao contexto EF Core                  │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : UnitOfWork.SaveAsync(), Controllers de PlacaBronze               │
-        /// │    ➡️ CHAMA       : DbContext.Update(), Entity State tracking                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: Update                                                             │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+        // │    Atualiza um registro de PlacaBronze no banco de dados, alterando dados             │
+        // │    de importação, status de sincronização e informações da placa.                    │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS (Entradas):                                                                 │
+        // │    • placaBronze [PlacaBronze]: Entidade com dados atualizados                        │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS (Saídas):                                                                  │
+        // │    • [void]: Método void - alterações aplicadas ao contexto EF Core                  │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : UnitOfWork.SaveAsync(), Controllers de PlacaBronze               │
+        // │    ➡️ CHAMA       : DbContext.Update(), Entity State tracking                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         void Update(PlacaBronze placaBronze);
     }
 }

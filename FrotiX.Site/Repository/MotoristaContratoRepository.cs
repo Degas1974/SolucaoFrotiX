@@ -27,16 +27,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: MotoristaContratoRepository                                                        │
-    /// │ 📦 HERDA DE: Repository&lt;MotoristaContrato&gt;                                                      │
-    /// │ 🔌 IMPLEMENTA: IMotoristaContratoRepository                                                   │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório para relacionamento muitos-para-muitos entre Motorista e Contrato.
-    /// Controla quais motoristas estão autorizados a trabalhar em cada contrato terceirizado.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: MotoristaContratoRepository                                                        │
+    // │ 📦 HERDA DE: Repository&lt;MotoristaContrato&gt;                                                      │
+    // │ 🔌 IMPLEMENTA: IMotoristaContratoRepository                                                   │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório para relacionamento muitos-para-muitos entre Motorista e Contrato.
+    // Controla quais motoristas estão autorizados a trabalhar em cada contrato terceirizado.
+    
     public class MotoristaContratoRepository : Repository<MotoristaContrato>, IMotoristaContratoRepository
         {
         private new readonly FrotiXDbContext _db;
@@ -46,26 +46,26 @@ namespace FrotiX.Repository
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetMotoristaContratoListForDropDown                                         │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de gerenciamento de vínculos motorista-contrato        │
-        /// │    ➡️ CHAMA       : DbContext.MotoristaContrato, Linq Select                            │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retorna lista de vínculos motorista-contrato para uso em DropDown.
-        ///    Implementação pendente - retorna estrutura vazia.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Lista de vínculos (implementação incompleta)
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de SelectListItem com vínculos motorista-contrato</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetMotoristaContratoListForDropDown                                         │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de gerenciamento de vínculos motorista-contrato        │
+        // │    ➡️ CHAMA       : DbContext.MotoristaContrato, Linq Select                            │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retorna lista de vínculos motorista-contrato para uso em DropDown.
+        // Implementação pendente - retorna estrutura vazia.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Lista de vínculos (implementação incompleta)
+        
+        
+        // Returns: Lista de SelectListItem com vínculos motorista-contrato
         public IEnumerable<SelectListItem> GetMotoristaContratoListForDropDown()
             {
             return _db.MotoristaContrato.Select(i => new SelectListItem()
@@ -75,26 +75,26 @@ namespace FrotiX.Repository
                 }); ;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                      │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de MotoristaContrato, UnitOfWork                        │
-        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Atualiza registro de vínculo entre motorista e contrato.
-        ///    Utiliza chave composta (MotoristaId + ContratoId) para localizar registro.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    motoristaContrato - Entidade com chave composta e dados atualizados
-        /// </para>
-        /// </summary>
-        /// <param name="motoristaContrato">Entidade MotoristaContrato com dados a serem persistidos</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de MotoristaContrato, UnitOfWork                        │
+        // │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Atualiza registro de vínculo entre motorista e contrato.
+        // Utiliza chave composta (MotoristaId + ContratoId) para localizar registro.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // motoristaContrato - Entidade com chave composta e dados atualizados
+        
+        
+        // Param motoristaContrato: Entidade MotoristaContrato com dados a serem persistidos
         public new void Update(MotoristaContrato motoristaContrato)
             {
             var objFromDb = _db.MotoristaContrato.FirstOrDefault(s => (s.MotoristaId == motoristaContrato.MotoristaId) && (s.ContratoId == motoristaContrato.ContratoId));

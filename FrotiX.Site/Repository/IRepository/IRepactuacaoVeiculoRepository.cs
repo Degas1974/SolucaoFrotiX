@@ -21,62 +21,62 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository.IRepository
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ INTERFACE: IRepactuacaoVeiculoRepository                                            │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-    /// │    Interface do repositório de RepactuacaoVeiculo. Centraliza operações de             │
-    /// │    consulta e atualização de repactuações específicas por veículo, garantindo         │
-    /// │    histórico de reajustes contratuais.                                                 │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🔗 RASTREABILIDADE:                                                                   │
-    /// │    ⬅️ CHAMADO POR : Controllers de RepactuacaoVeiculo, UnitOfWork                      │
-    /// │    ➡️ CHAMA       : IRepository<RepactuacaoVeiculo> (métodos base)                     │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ INTERFACE: IRepactuacaoVeiculoRepository                                            │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+    // │    Interface do repositório de RepactuacaoVeiculo. Centraliza operações de             │
+    // │    consulta e atualização de repactuações específicas por veículo, garantindo         │
+    // │    histórico de reajustes contratuais.                                                 │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🔗 RASTREABILIDADE:                                                                   │
+    // │    ⬅️ CHAMADO POR : Controllers de RepactuacaoVeiculo, UnitOfWork                      │
+    // │    ➡️ CHAMA       : IRepository (métodos base)                     │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     public interface IRepactuacaoVeiculoRepository : IRepository<RepactuacaoVeiculo>
     {
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: GetRepactuacaoVeiculoListForDropDown                                │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-        /// │    Retorna a lista de repactuações por veículo formatada para uso em DropDown         │
-        /// │    (Select), facilitando seleção em cadastros e consultas.                            │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS (Entradas):                                                                 │
-        /// │    • Nenhum parâmetro                                                                 │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS (Saídas):                                                                  │
-        /// │    • [IEnumerable<SelectListItem>]: Lista de itens para seleção                       │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : Controllers de RepactuacaoVeiculo, ViewComponents                │
-        /// │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: GetRepactuacaoVeiculoListForDropDown                                │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+        // │    Retorna a lista de repactuações por veículo formatada para uso em DropDown         │
+        // │    (Select), facilitando seleção em cadastros e consultas.                            │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS (Entradas):                                                                 │
+        // │    • Nenhum parâmetro                                                                 │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS (Saídas):                                                                  │
+        // │    • [IEnumerable]: Lista de itens para seleção                       │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : Controllers de RepactuacaoVeiculo, ViewComponents                │
+        // │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         IEnumerable<SelectListItem> GetRepactuacaoVeiculoListForDropDown();
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: Update                                                             │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-        /// │    Atualiza uma repactuação de veículo no banco de dados, ajustando valores,          │
-        /// │    vigência e informações do reajuste.                                                │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS (Entradas):                                                                 │
-        /// │    • repactuacaoVeiculo [RepactuacaoVeiculo]: Entidade atualizada                      │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS (Saídas):                                                                  │
-        /// │    • [void]: Método void - alterações aplicadas ao contexto EF Core                  │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : UnitOfWork.SaveAsync(), Controllers de RepactuacaoVeiculo        │
-        /// │    ➡️ CHAMA       : DbContext.Update(), Entity State tracking                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: Update                                                             │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+        // │    Atualiza uma repactuação de veículo no banco de dados, ajustando valores,          │
+        // │    vigência e informações do reajuste.                                                │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS (Entradas):                                                                 │
+        // │    • repactuacaoVeiculo [RepactuacaoVeiculo]: Entidade atualizada                      │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS (Saídas):                                                                  │
+        // │    • [void]: Método void - alterações aplicadas ao contexto EF Core                  │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : UnitOfWork.SaveAsync(), Controllers de RepactuacaoVeiculo        │
+        // │    ➡️ CHAMA       : DbContext.Update(), Entity State tracking                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         void Update(RepactuacaoVeiculo repactuacaoVeiculo);
     }
 }

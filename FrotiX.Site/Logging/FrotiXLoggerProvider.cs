@@ -23,26 +23,26 @@ using Microsoft.Extensions.Logging;
 
 namespace FrotiX.Logging;
 
-/// <summary>
-/// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-/// │ ⚡ CLASSE: FrotiXLoggerProvider                                                       │
-/// │───────────────────────────────────────────────────────────────────────────────────────│
-/// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-/// │    Provider de logging customizado que integra com o LogService do FrotiX.            │
-/// │    Captura TODOS os logs do ASP.NET Core, incluindo erros de inicialização.           │
-/// │───────────────────────────────────────────────────────────────────────────────────────│
-/// │ 📥 INPUTS (Entradas):                                                                 │
-/// │    • logService [ILogService]: Serviço de log do FrotiX.                              │
-/// │    • minimumLevel [LogLevel]: Nível mínimo (default: Warning).                        │
-/// │───────────────────────────────────────────────────────────────────────────────────────│
-/// │ 📤 OUTPUTS (Saídas):                                                                  │
-/// │    • [ILogger]: Logger para a categoria especificada.                                 │
-/// │───────────────────────────────────────────────────────────────────────────────────────│
-/// │ 🔗 RASTREABILIDADE:                                                                   │
-/// │    ⬅️ CHAMADO POR : Program.cs (via AddFrotiXLogger)                                  │
-/// │    ➡️ CHAMA       : FrotiXLogger.Log()                                                │
-/// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-/// </summary>
+
+// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+// │ ⚡ CLASSE: FrotiXLoggerProvider                                                       │
+// │───────────────────────────────────────────────────────────────────────────────────────│
+// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+// │    Provider de logging customizado que integra com o LogService do FrotiX.            │
+// │    Captura TODOS os logs do ASP.NET Core, incluindo erros de inicialização.           │
+// │───────────────────────────────────────────────────────────────────────────────────────│
+// │ 📥 INPUTS (Entradas):                                                                 │
+// │    • logService [ILogService]: Serviço de log do FrotiX.                              │
+// │    • minimumLevel [LogLevel]: Nível mínimo (default: Warning).                        │
+// │───────────────────────────────────────────────────────────────────────────────────────│
+// │ 📤 OUTPUTS (Saídas):                                                                  │
+// │    • [ILogger]: Logger para a categoria especificada.                                 │
+// │───────────────────────────────────────────────────────────────────────────────────────│
+// │ 🔗 RASTREABILIDADE:                                                                   │
+// │    ⬅️ CHAMADO POR : Program.cs (via AddFrotiXLogger)                                  │
+// │    ➡️ CHAMA       : FrotiXLogger.Log()                                                │
+// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+
 public class FrotiXLoggerProvider : ILoggerProvider
 {
     private readonly ILogService _logService;
@@ -55,16 +55,16 @@ public class FrotiXLoggerProvider : ILoggerProvider
         _minimumLevel = minimumLevel;
     }
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ FUNCIONALIDADE: CreateLogger                                                       │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO: Cria ou retorna logger cacheado para a categoria especificada.         │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 📥 INPUTS: • categoryName [string]: Nome da categoria (ex: "FrotiX.Controllers")     │
-    /// │ 📤 OUTPUTS: • [ILogger]: Instância do FrotiXLogger                                   │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ FUNCIONALIDADE: CreateLogger                                                       │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO: Cria ou retorna logger cacheado para a categoria especificada.         │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 📥 INPUTS: • categoryName [string]: Nome da categoria (ex: "FrotiX.Controllers")     │
+    // │ 📤 OUTPUTS: • [ILogger]: Instância do FrotiXLogger                                   │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     public ILogger CreateLogger(string categoryName)
     {
         return _loggers.GetOrAdd(categoryName, name => new FrotiXLogger(name, _logService, _minimumLevel));
@@ -76,19 +76,19 @@ public class FrotiXLoggerProvider : ILoggerProvider
     }
 }
 
-/// <summary>
-/// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-/// │ ⚡ CLASSE: FrotiXLogger                                                               │
-/// │───────────────────────────────────────────────────────────────────────────────────────│
-/// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-/// │    Logger customizado que envia logs para o LogService do FrotiX.                     │
-/// │    Implementa filtros inteligentes para evitar logs verbosos.                         │
-/// │───────────────────────────────────────────────────────────────────────────────────────│
-/// │ 🔗 RASTREABILIDADE:                                                                   │
-/// │    ⬅️ CHAMADO POR : FrotiXLoggerProvider.CreateLogger()                               │
-/// │    ➡️ CHAMA       : ILogService.Error(), ILogService.Warning(), ILogService.Info()    │
-/// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-/// </summary>
+
+// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+// │ ⚡ CLASSE: FrotiXLogger                                                               │
+// │───────────────────────────────────────────────────────────────────────────────────────│
+// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+// │    Logger customizado que envia logs para o LogService do FrotiX.                     │
+// │    Implementa filtros inteligentes para evitar logs verbosos.                         │
+// │───────────────────────────────────────────────────────────────────────────────────────│
+// │ 🔗 RASTREABILIDADE:                                                                   │
+// │    ⬅️ CHAMADO POR : FrotiXLoggerProvider.CreateLogger()                               │
+// │    ➡️ CHAMA       : ILogService.Error(), ILogService.Warning(), ILogService.Info()    │
+// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+
 public class FrotiXLogger : ILogger
 {
     private readonly string _categoryName;
@@ -112,16 +112,16 @@ public class FrotiXLogger : ILogger
         return logLevel >= _minimumLevel;
     }
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ FUNCIONALIDADE: Log                                                                │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO: Processa e registra logs no LogService conforme nível e categoria.     │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 📥 INPUTS: logLevel, eventId, state, exception, formatter                            │
-    /// │ 📤 OUTPUTS: void - Registra no LogService                                            │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ FUNCIONALIDADE: Log                                                                │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO: Processa e registra logs no LogService conforme nível e categoria.     │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 📥 INPUTS: logLevel, eventId, state, exception, formatter                            │
+    // │ 📤 OUTPUTS: void - Registra no LogService                                            │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
         // [LOGICA] Verificar se o nível está habilitado
@@ -180,13 +180,13 @@ public class FrotiXLogger : ILogger
         }
     }
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ FUNCIONALIDADE: ExtractCategoryFile                                                │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO: Extrai o nome do arquivo/classe da categoria de log.                   │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ FUNCIONALIDADE: ExtractCategoryFile                                                │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO: Extrai o nome do arquivo/classe da categoria de log.                   │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     private static string ExtractCategoryFile(string categoryName)
     {
         // [HELPER] Extrai o nome do arquivo/classe da categoria
@@ -199,13 +199,13 @@ public class FrotiXLogger : ILogger
         return categoryName;
     }
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ FUNCIONALIDADE: ShouldIgnore                                                       │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO: Determina se um log deve ser ignorado (filtro de ruído).               │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ FUNCIONALIDADE: ShouldIgnore                                                       │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO: Determina se um log deve ser ignorado (filtro de ruído).               │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     private static bool ShouldIgnore(string category, string message)
     {
         // [PERFORMANCE] Ignora categorias muito verbosas
@@ -233,13 +233,13 @@ public class FrotiXLogger : ILogger
         return false;
     }
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ FUNCIONALIDADE: IsImportantInfo                                                    │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO: Determina se uma mensagem INFO é importante o suficiente para logar.   │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ FUNCIONALIDADE: IsImportantInfo                                                    │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO: Determina se uma mensagem INFO é importante o suficiente para logar.   │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     private static bool IsImportantInfo(string category, string message)
     {
         // [REGRA] Loga INFO apenas para categorias importantes
@@ -254,29 +254,29 @@ public class FrotiXLogger : ILogger
     }
 }
 
-/// <summary>
-/// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-/// │ ⚡ CLASSE: FrotiXLoggerExtensions                                                     │
-/// │───────────────────────────────────────────────────────────────────────────────────────│
-/// │ 🎯 DESCRIÇÃO: Extension methods para registrar o FrotiXLoggerProvider no DI.         │
-/// │───────────────────────────────────────────────────────────────────────────────────────│
-/// │ 🔗 RASTREABILIDADE:                                                                   │
-/// │    ⬅️ CHAMADO POR : Program.cs                                                        │
-/// │    ➡️ CHAMA       : ILoggingBuilder.AddProvider()                                     │
-/// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-/// </summary>
+
+// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+// │ ⚡ CLASSE: FrotiXLoggerExtensions                                                     │
+// │───────────────────────────────────────────────────────────────────────────────────────│
+// │ 🎯 DESCRIÇÃO: Extension methods para registrar o FrotiXLoggerProvider no DI.         │
+// │───────────────────────────────────────────────────────────────────────────────────────│
+// │ 🔗 RASTREABILIDADE:                                                                   │
+// │    ⬅️ CHAMADO POR : Program.cs                                                        │
+// │    ➡️ CHAMA       : ILoggingBuilder.AddProvider()                                     │
+// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+
 public static class FrotiXLoggerExtensions
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ FUNCIONALIDADE: AddFrotiXLogger                                                    │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO: Registra o FrotiXLoggerProvider no pipeline de logging.                │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 📥 INPUTS: builder [ILoggingBuilder], logService [ILogService], minimumLevel         │
-    /// │ 📤 OUTPUTS: [ILoggingBuilder] - Fluent API                                           │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ FUNCIONALIDADE: AddFrotiXLogger                                                    │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO: Registra o FrotiXLoggerProvider no pipeline de logging.                │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 📥 INPUTS: builder [ILoggingBuilder], logService [ILogService], minimumLevel         │
+    // │ 📤 OUTPUTS: [ILoggingBuilder] - Fluent API                                           │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     public static ILoggingBuilder AddFrotiXLogger(this ILoggingBuilder builder, ILogService logService, LogLevel minimumLevel = LogLevel.Warning)
     {
         builder.AddProvider(new FrotiXLoggerProvider(logService, minimumLevel));

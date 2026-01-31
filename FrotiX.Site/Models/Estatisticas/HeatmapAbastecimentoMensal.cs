@@ -27,25 +27,25 @@ namespace FrotiX.Models.Estatisticas
 
         public int Mes { get; set; }
 
-        /// <summary>
-        /// NULL = todos os veículos
-        /// </summary>
+        
+        // NULL = todos os veículos
+        
         public Guid? VeiculoId { get; set; }
 
-        /// <summary>
-        /// NULL = todos os tipos
-        /// </summary>
+        
+        // NULL = todos os tipos
+        
         [StringLength(100)]
         public string? TipoVeiculo { get; set; }
 
-        /// <summary>
-        /// 0=Domingo, 1=Segunda, ... 6=Sábado
-        /// </summary>
+        
+        // 0=Domingo, 1=Segunda, ... 6=Sábado
+        
         public int DiaSemana { get; set; }
 
-        /// <summary>
-        /// 0-23
-        /// </summary>
+        
+        // 0-23
+        
         public int Hora { get; set; }
 
         public int TotalAbastecimentos { get; set; }

@@ -34,76 +34,76 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: Repository<T>                                                                      │
-    /// │ 📦 HERDA DE: IRepository<T>                                                                   │
-    /// │ 🔌 IMPLEMENTA: IRepository<T>                                                                 │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Implementação genérica de repositório para EF Core.
-    /// Fornece operações de consulta e persistência sem lógica específica de domínio.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: Repository                                                                      │
+    // │ 📦 HERDA DE: IRepository                                                                   │
+    // │ 🔌 IMPLEMENTA: IRepository                                                                 │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Implementação genérica de repositório para EF Core.
+    // Fornece operações de consulta e persistência sem lógica específica de domínio.
+    
     public class Repository<T> :IRepository<T>
         where T : class
         {
         protected readonly DbContext _db;
         protected readonly DbSet<T> dbSet;
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Repository                                                                    │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Repositórios derivados, UnitOfWork                                    │
-        /// │    ➡️ CHAMA       : DbContext.Set<T>()                                                    │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Inicializar o repositório genérico com o contexto do banco de dados.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    db - Contexto do banco de dados do EF Core.
-        /// </para>
-        /// </summary>
-        /// <param name="db">Instância de <see cref="DbContext"/>.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Repository                                                                    │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Repositórios derivados, UnitOfWork                                    │
+        // │    ➡️ CHAMA       : DbContext.Set()                                                    │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Inicializar o repositório genérico com o contexto do banco de dados.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // db - Contexto do banco de dados do EF Core.
+        
+        
+        // Param db: Instância de <see cref="DbContext"/>.
         public Repository(DbContext db)
             {
             _db = db ?? throw new ArgumentNullException(nameof(db));
             dbSet = _db.Set<T>();
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: PrepareQuery                                                                  │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : GetFirstOrDefault, GetAll, GetAllAsync, GetAllReduced                 │
-        /// │    ➡️ CHAMA       : AsNoTracking, AsTracking, Where, Include                              │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Montar a query base aplicando filtro, includes (CSV) e modo de tracking.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    filter - Filtro opcional a ser aplicado na consulta<br/>
-        ///    includeProperties - Propriedades de navegação (CSV) para Include<br/>
-        ///    asNoTracking - Define se a consulta será sem tracking
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IQueryable&lt;T&gt; - Consulta base montada com os critérios informados.
-        /// </para>
-        /// </summary>
-        /// <param name="filter">Filtro opcional para a consulta.</param>
-        /// <param name="includeProperties">Lista CSV de propriedades de navegação.</param>
-        /// <param name="asNoTracking">Define se a consulta será sem tracking.</param>
-        /// <returns>Consulta base pronta para composição.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: PrepareQuery                                                                  │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : GetFirstOrDefault, GetAll, GetAllAsync, GetAllReduced                 │
+        // │    ➡️ CHAMA       : AsNoTracking, AsTracking, Where, Include                              │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Montar a query base aplicando filtro, includes (CSV) e modo de tracking.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // filter - Filtro opcional a ser aplicado na consulta
+        // includeProperties - Propriedades de navegação (CSV) para Include
+        // asNoTracking - Define se a consulta será sem tracking
+        
+        
+        
+        // 📤 RETORNO:
+        // IQueryable&lt;T&gt; - Consulta base montada com os critérios informados.
+        
+        
+        // Param filter: Filtro opcional para a consulta.
+        // Param includeProperties: Lista CSV de propriedades de navegação.
+        // Param asNoTracking: Define se a consulta será sem tracking.
+        // Returns: Consulta base pronta para composição.
         protected IQueryable<T> PrepareQuery(
             Expression<Func<T , bool>> filter = null ,
             string includeProperties = null ,
@@ -140,31 +140,31 @@ namespace FrotiX.Repository
             return query;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Get                                                                           │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
-        /// │    ➡️ CHAMA       : DbSet.Find                                                           │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Buscar uma entidade pela chave primária usando Find().
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    id - Chave primária da entidade.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    T - Entidade encontrada ou null quando inexistente.
-        /// </para>
-        /// </summary>
-        /// <param name="id">Chave primária.</param>
-        /// <returns>Entidade encontrada ou null.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Get                                                                           │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
+        // │    ➡️ CHAMA       : DbSet.Find                                                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Buscar uma entidade pela chave primária usando Find().
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // id - Chave primária da entidade.
+        
+        
+        
+        // 📤 RETORNO:
+        // T - Entidade encontrada ou null quando inexistente.
+        
+        
+        // Param id: Chave primária.
+        // Returns: Entidade encontrada ou null.
         public T Get(object id)
             {
             if (id == null)
@@ -172,34 +172,34 @@ namespace FrotiX.Repository
             return dbSet.Find(id);
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetFirstOrDefault                                                             │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
-        /// │    ➡️ CHAMA       : PrepareQuery, FirstOrDefault                                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retornar o primeiro registro que atende ao filtro informado.
-        ///    Executa consulta em modo NoTracking por padrão.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    filter - Filtro opcional<br/>
-        ///    includeProperties - Propriedades de navegação (CSV)
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    T - Primeiro registro encontrado ou null.
-        /// </para>
-        /// </summary>
-        /// <param name="filter">Filtro opcional.</param>
-        /// <param name="includeProperties">Includes em CSV.</param>
-        /// <returns>Registro encontrado ou null.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetFirstOrDefault                                                             │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
+        // │    ➡️ CHAMA       : PrepareQuery, FirstOrDefault                                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retornar o primeiro registro que atende ao filtro informado.
+        // Executa consulta em modo NoTracking por padrão.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // filter - Filtro opcional
+        // includeProperties - Propriedades de navegação (CSV)
+        
+        
+        
+        // 📤 RETORNO:
+        // T - Primeiro registro encontrado ou null.
+        
+        
+        // Param filter: Filtro opcional.
+        // Param includeProperties: Includes em CSV.
+        // Returns: Registro encontrado ou null.
         public T GetFirstOrDefault(
             Expression<Func<T , bool>> filter = null ,
             string includeProperties = null
@@ -222,34 +222,34 @@ namespace FrotiX.Repository
                 }
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetFirstOrDefaultAsync                                                        │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
-        /// │    ➡️ CHAMA       : PrepareQuery, FirstOrDefaultAsync                                    │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retornar o primeiro registro que atende ao filtro informado (assíncrono).
-        ///    Executa consulta em modo NoTracking por padrão.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    filter - Filtro opcional<br/>
-        ///    includeProperties - Propriedades de navegação (CSV)
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    Task&lt;T&gt; - Primeiro registro encontrado ou null.
-        /// </para>
-        /// </summary>
-        /// <param name="filter">Filtro opcional.</param>
-        /// <param name="includeProperties">Includes em CSV.</param>
-        /// <returns>Registro encontrado ou null.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetFirstOrDefaultAsync                                                        │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
+        // │    ➡️ CHAMA       : PrepareQuery, FirstOrDefaultAsync                                    │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retornar o primeiro registro que atende ao filtro informado (assíncrono).
+        // Executa consulta em modo NoTracking por padrão.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // filter - Filtro opcional
+        // includeProperties - Propriedades de navegação (CSV)
+        
+        
+        
+        // 📤 RETORNO:
+        // Task&lt;T&gt; - Primeiro registro encontrado ou null.
+        
+        
+        // Param filter: Filtro opcional.
+        // Param includeProperties: Includes em CSV.
+        // Returns: Registro encontrado ou null.
         public async Task<T> GetFirstOrDefaultAsync(
             Expression<Func<T , bool>> filter = null ,
             string includeProperties = null
@@ -273,37 +273,37 @@ namespace FrotiX.Repository
                 }
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetAll                                                                        │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
-        /// │    ➡️ CHAMA       : PrepareQuery, OrderBy, ToList                                        │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retornar lista de entidades com filtro, ordenação e includes opcionais.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    filter - Filtro opcional<br/>
-        ///    orderBy - Função de ordenação opcional<br/>
-        ///    includeProperties - Propriedades de navegação (CSV)<br/>
-        ///    asNoTracking - Define se a consulta será sem tracking
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;T&gt; - Lista materializada.
-        /// </para>
-        /// </summary>
-        /// <param name="filter">Filtro opcional.</param>
-        /// <param name="orderBy">Ordenação opcional.</param>
-        /// <param name="includeProperties">Includes em CSV.</param>
-        /// <param name="asNoTracking">Define se a consulta será sem tracking.</param>
-        /// <returns>Lista de entidades.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetAll                                                                        │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
+        // │    ➡️ CHAMA       : PrepareQuery, OrderBy, ToList                                        │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retornar lista de entidades com filtro, ordenação e includes opcionais.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // filter - Filtro opcional
+        // orderBy - Função de ordenação opcional
+        // includeProperties - Propriedades de navegação (CSV)
+        // asNoTracking - Define se a consulta será sem tracking
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;T&gt; - Lista materializada.
+        
+        
+        // Param filter: Filtro opcional.
+        // Param orderBy: Ordenação opcional.
+        // Param includeProperties: Includes em CSV.
+        // Param asNoTracking: Define se a consulta será sem tracking.
+        // Returns: Lista de entidades.
         public IEnumerable<T> GetAll(
             Expression<Func<T , bool>> filter = null ,
             Func<IQueryable<T> , IOrderedQueryable<T>> orderBy = null ,
@@ -317,40 +317,40 @@ namespace FrotiX.Repository
             return q.ToList();
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetAllAsync                                                                   │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
-        /// │    ➡️ CHAMA       : PrepareQuery, OrderBy, Take, ToListAsync                             │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retornar lista de entidades de forma assíncrona.
-        ///    Suporta filtro, ordenação, includes e limite de itens.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    filter - Filtro opcional<br/>
-        ///    orderBy - Função de ordenação opcional<br/>
-        ///    includeProperties - Propriedades de navegação (CSV)<br/>
-        ///    asNoTracking - Define se a consulta será sem tracking<br/>
-        ///    take - Limite opcional de registros
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    Task&lt;IEnumerable&lt;T&gt;&gt; - Lista materializada.
-        /// </para>
-        /// </summary>
-        /// <param name="filter">Filtro opcional.</param>
-        /// <param name="orderBy">Ordenação opcional.</param>
-        /// <param name="includeProperties">Includes em CSV.</param>
-        /// <param name="asNoTracking">Define se a consulta será sem tracking.</param>
-        /// <param name="take">Limite opcional de registros.</param>
-        /// <returns>Lista de entidades.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetAllAsync                                                                   │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
+        // │    ➡️ CHAMA       : PrepareQuery, OrderBy, Take, ToListAsync                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retornar lista de entidades de forma assíncrona.
+        // Suporta filtro, ordenação, includes e limite de itens.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // filter - Filtro opcional
+        // orderBy - Função de ordenação opcional
+        // includeProperties - Propriedades de navegação (CSV)
+        // asNoTracking - Define se a consulta será sem tracking
+        // take - Limite opcional de registros
+        
+        
+        
+        // 📤 RETORNO:
+        // Task&lt;IEnumerable&lt;T&gt;&gt; - Lista materializada.
+        
+        
+        // Param filter: Filtro opcional.
+        // Param orderBy: Ordenação opcional.
+        // Param includeProperties: Includes em CSV.
+        // Param asNoTracking: Define se a consulta será sem tracking.
+        // Param take: Limite opcional de registros.
+        // Returns: Lista de entidades.
         public async Task<IEnumerable<T>> GetAllAsync(
             Expression<Func<T , bool>> filter = null ,
             Func<IQueryable<T> , IOrderedQueryable<T>> orderBy = null ,
@@ -367,39 +367,39 @@ namespace FrotiX.Repository
             return await q.ToListAsync();
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetAllReduced                                                                 │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
-        /// │    ➡️ CHAMA       : GetAllReducedIQueryable, ToList                                      │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retornar lista projetada e materializada (compat com páginas antigas).
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    selector - Expressão de projeção (DTO)<br/>
-        ///    filter - Filtro opcional<br/>
-        ///    orderBy - Função de ordenação opcional<br/>
-        ///    includeProperties - Propriedades de navegação (CSV)<br/>
-        ///    asNoTracking - Define se a consulta será sem tracking
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;TResult&gt; - Lista projetada e materializada.
-        /// </para>
-        /// </summary>
-        /// <param name="selector">Expressão de projeção.</param>
-        /// <param name="filter">Filtro opcional.</param>
-        /// <param name="orderBy">Ordenação opcional.</param>
-        /// <param name="includeProperties">Includes em CSV.</param>
-        /// <param name="asNoTracking">Define se a consulta será sem tracking.</param>
-        /// <returns>Lista projetada e materializada.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetAllReduced                                                                 │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
+        // │    ➡️ CHAMA       : GetAllReducedIQueryable, ToList                                      │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retornar lista projetada e materializada (compat com páginas antigas).
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // selector - Expressão de projeção (DTO)
+        // filter - Filtro opcional
+        // orderBy - Função de ordenação opcional
+        // includeProperties - Propriedades de navegação (CSV)
+        // asNoTracking - Define se a consulta será sem tracking
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;TResult&gt; - Lista projetada e materializada.
+        
+        
+        // Param selector: Expressão de projeção.
+        // Param filter: Filtro opcional.
+        // Param orderBy: Ordenação opcional.
+        // Param includeProperties: Includes em CSV.
+        // Param asNoTracking: Define se a consulta será sem tracking.
+        // Returns: Lista projetada e materializada.
         public IEnumerable<TResult> GetAllReduced<TResult>(
             Expression<Func<T , TResult>> selector ,
             Expression<Func<T , bool>> filter = null ,
@@ -418,39 +418,39 @@ namespace FrotiX.Repository
                 .ToList();
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetAllReducedIQueryable                                                       │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : GetAllReduced, Repositórios derivados, Services                       │
-        /// │    ➡️ CHAMA       : PrepareQuery, OrderBy, Select                                        │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retornar consulta projetada como IQueryable (lazy).
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    selector - Expressão de projeção (DTO)<br/>
-        ///    filter - Filtro opcional<br/>
-        ///    orderBy - Função de ordenação opcional<br/>
-        ///    includeProperties - Propriedades de navegação (CSV)<br/>
-        ///    asNoTracking - Define se a consulta será sem tracking
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IQueryable&lt;TResult&gt; - Consulta projetada.
-        /// </para>
-        /// </summary>
-        /// <param name="selector">Expressão de projeção.</param>
-        /// <param name="filter">Filtro opcional.</param>
-        /// <param name="orderBy">Ordenação opcional.</param>
-        /// <param name="includeProperties">Includes em CSV.</param>
-        /// <param name="asNoTracking">Define se a consulta será sem tracking.</param>
-        /// <returns>Consulta projetada.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetAllReducedIQueryable                                                       │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : GetAllReduced, Repositórios derivados, Services                       │
+        // │    ➡️ CHAMA       : PrepareQuery, OrderBy, Select                                        │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retornar consulta projetada como IQueryable (lazy).
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // selector - Expressão de projeção (DTO)
+        // filter - Filtro opcional
+        // orderBy - Função de ordenação opcional
+        // includeProperties - Propriedades de navegação (CSV)
+        // asNoTracking - Define se a consulta será sem tracking
+        
+        
+        
+        // 📤 RETORNO:
+        // IQueryable&lt;TResult&gt; - Consulta projetada.
+        
+        
+        // Param selector: Expressão de projeção.
+        // Param filter: Filtro opcional.
+        // Param orderBy: Ordenação opcional.
+        // Param includeProperties: Includes em CSV.
+        // Param asNoTracking: Define se a consulta será sem tracking.
+        // Returns: Consulta projetada.
         public IQueryable<TResult> GetAllReducedIQueryable<TResult>(
             Expression<Func<T , TResult>> selector ,
             Expression<Func<T , bool>> filter = null ,
@@ -469,25 +469,25 @@ namespace FrotiX.Repository
             return q.Select(selector);
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Add                                                                           │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
-        /// │    ➡️ CHAMA       : DbSet.Add                                                            │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Adicionar uma entidade ao contexto de forma síncrona.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    entity - Entidade a ser adicionada.
-        /// </para>
-        /// </summary>
-        /// <param name="entity">Entidade a adicionar.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Add                                                                           │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
+        // │    ➡️ CHAMA       : DbSet.Add                                                            │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Adicionar uma entidade ao contexto de forma síncrona.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // entity - Entidade a ser adicionada.
+        
+        
+        // Param entity: Entidade a adicionar.
         public void Add(T entity)
             {
             if (entity == null)
@@ -495,26 +495,26 @@ namespace FrotiX.Repository
             dbSet.Add(entity);
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: AddAsync                                                                      │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
-        /// │    ➡️ CHAMA       : DbSet.AddAsync                                                       │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Adicionar uma entidade ao contexto de forma assíncrona.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    entity - Entidade a ser adicionada.
-        /// </para>
-        /// </summary>
-        /// <param name="entity">Entidade a adicionar.</param>
-        /// <returns>Task representando a operação assíncrona.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: AddAsync                                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
+        // │    ➡️ CHAMA       : DbSet.AddAsync                                                       │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Adicionar uma entidade ao contexto de forma assíncrona.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // entity - Entidade a ser adicionada.
+        
+        
+        // Param entity: Entidade a adicionar.
+        // Returns: Task representando a operação assíncrona.
         public async Task AddAsync(T entity)
             {
             if (entity == null)
@@ -522,25 +522,25 @@ namespace FrotiX.Repository
             await dbSet.AddAsync(entity);
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                        │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
-        /// │    ➡️ CHAMA       : DbSet.Update                                                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Atualizar uma entidade no contexto.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    entity - Entidade a ser atualizada.
-        /// </para>
-        /// </summary>
-        /// <param name="entity">Entidade a atualizar.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                        │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
+        // │    ➡️ CHAMA       : DbSet.Update                                                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Atualizar uma entidade no contexto.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // entity - Entidade a ser atualizada.
+        
+        
+        // Param entity: Entidade a atualizar.
         public new void Update(T entity)
             {
             if (entity == null)
@@ -548,25 +548,25 @@ namespace FrotiX.Repository
             dbSet.Update(entity);
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Remove                                                                        │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
-        /// │    ➡️ CHAMA       : DbSet.Find, DbSet.Remove                                              │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Remover uma entidade a partir da chave primária.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    id - Chave primária da entidade.
-        /// </para>
-        /// </summary>
-        /// <param name="id">Chave primária da entidade.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Remove                                                                        │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
+        // │    ➡️ CHAMA       : DbSet.Find, DbSet.Remove                                              │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Remover uma entidade a partir da chave primária.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // id - Chave primária da entidade.
+        
+        
+        // Param id: Chave primária da entidade.
         public void Remove(object id)
             {
             if (id == null)
@@ -576,25 +576,25 @@ namespace FrotiX.Repository
                 dbSet.Remove(entity);
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Remove                                                                        │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
-        /// │    ➡️ CHAMA       : DbSet.Remove                                                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Remover uma entidade diretamente pelo objeto.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    entity - Entidade a ser removida.
-        /// </para>
-        /// </summary>
-        /// <param name="entity">Entidade a remover.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Remove                                                                        │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Repositórios derivados, Services, Controllers                         │
+        // │    ➡️ CHAMA       : DbSet.Remove                                                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Remover uma entidade diretamente pelo objeto.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // entity - Entidade a ser removida.
+        
+        
+        // Param entity: Entidade a remover.
         public void Remove(T entity)
             {
             if (entity == null)

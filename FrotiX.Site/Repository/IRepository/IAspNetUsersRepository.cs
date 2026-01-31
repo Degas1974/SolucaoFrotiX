@@ -18,9 +18,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository.IRepository
     {
-    /// <summary>
-    /// Interface do repositório de AspNetUsers. Estende IRepository&lt;AspNetUsers&gt;.
-    /// </summary>
+    
+    // Interface do repositório de AspNetUsers. Estende IRepository&lt;AspNetUsers&gt;.
+    
     public interface IAspNetUsersRepository : IRepository<AspNetUsers>
         {
 

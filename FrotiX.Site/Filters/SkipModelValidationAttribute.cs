@@ -20,51 +20,51 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace FrotiX.Filters
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: SkipModelValidationAttribute                                                        │
-    /// │ 📦 HERDA DE: Attribute                                                                         │
-    /// │ 🔌 IMPLEMENTA: IActionFilter                                                                   │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// <para>
-    /// 🎯 <b>OBJETIVO:</b><br/>
-    ///    Desabilitar a validação automática de ModelState em endpoints específicos.
-    /// </para>
-    ///
-    /// <para>
-    /// 🔗 <b>RASTREABILIDADE:</b><br/>
-    ///    ⬅️ CHAMADO POR : Pipeline MVC (IActionFilter) / Controllers e Actions com atributo<br/>
-    ///    ➡️ CHAMA       : context.ModelState.Clear()
-    /// </para>
-    /// </summary>
-    /// <example>
-    /// [HttpPost]
-    /// [SkipModelValidation]
-    /// public IActionResult SaveData([FromBody] MyDto dto)
-    /// </example>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: SkipModelValidationAttribute                                                        │
+    // │ 📦 HERDA DE: Attribute                                                                         │
+    // │ 🔌 IMPLEMENTA: IActionFilter                                                                   │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Desabilitar a validação automática de ModelState em endpoints específicos.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : Pipeline MVC (IActionFilter) / Controllers e Actions com atributo
+    // ➡️ CHAMA       : context.ModelState.Clear()
+    
+    
+    
+    // [HttpPost]
+    // [SkipModelValidation]
+    // public IActionResult SaveData([FromBody] MyDto dto)
+    
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
     public class SkipModelValidationAttribute : Attribute, IActionFilter
     {
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: OnActionExecuting                                                            │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Pipeline MVC (IActionFilter)                                         │
-        /// │    ➡️ CHAMA       : context.ModelState.Clear()                                          │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Limpar erros de validação do ModelState antes da execução da action.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    context - Contexto da execução do filtro de action.
-        /// </para>
-        /// </summary>
-        /// <param name="context">Contexto da execução do filtro de action.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: OnActionExecuting                                                            │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Pipeline MVC (IActionFilter)                                         │
+        // │    ➡️ CHAMA       : context.ModelState.Clear()                                          │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Limpar erros de validação do ModelState antes da execução da action.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // context - Contexto da execução do filtro de action.
+        
+        
+        // Param context: Contexto da execução do filtro de action.
         public void OnActionExecuting(ActionExecutingContext context)
         {
             // Limpa todos os erros de validação do ModelState
@@ -72,25 +72,25 @@ namespace FrotiX.Filters
             context.ModelState.Clear();
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: OnActionExecuted                                                             │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Pipeline MVC (IActionFilter)                                         │
-        /// │    ➡️ CHAMA       : (sem chamadas internas)                                             │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Callback pós-action. Mantido para cumprir o contrato do filtro.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    context - Contexto pós-execução da action.
-        /// </para>
-        /// </summary>
-        /// <param name="context">Contexto pós-execução da action.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: OnActionExecuted                                                             │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Pipeline MVC (IActionFilter)                                         │
+        // │    ➡️ CHAMA       : (sem chamadas internas)                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Callback pós-action. Mantido para cumprir o contrato do filtro.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // context - Contexto pós-execução da action.
+        
+        
+        // Param context: Contexto pós-execução da action.
         public void OnActionExecuted(ActionExecutedContext context)
         {
             // Nada a fazer após a execução

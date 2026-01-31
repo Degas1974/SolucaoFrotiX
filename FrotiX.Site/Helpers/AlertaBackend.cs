@@ -27,109 +27,109 @@ using Microsoft.Extensions.Logging;
 
 namespace FrotiX.Helpers
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: AlertaBackend                                                                      │
-    /// │ 📦 TIPO: Estática                                                                             │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// <para>
-    /// 🎯 <b>OBJETIVO:</b><br/>
-    ///    Logar erros inesperados no backend de forma consistente, sem dependência de JSInterop.
-    /// </para>
-    ///
-    /// <para>
-    /// 🔗 <b>RASTREABILIDADE:</b><br/>
-    ///    ⬅️ CHAMADO POR : Services, Filters, Controllers e Helpers internos<br/>
-    ///    ➡️ CHAMA       : ILogger.LogError(), Console.Error, Activity.Current
-    /// </para>
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: AlertaBackend                                                                      │
+    // │ 📦 TIPO: Estática                                                                             │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Logar erros inesperados no backend de forma consistente, sem dependência de JSInterop.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : Services, Filters, Controllers e Helpers internos
+    // ➡️ CHAMA       : ILogger.LogError(), Console.Error, Activity.Current
+    
+    
     public static class AlertaBackend
     {
         private static ILogger? _logger;
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: ConfigureLogger                                                             │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Program.cs / Startup / composição de serviços                        │
-        /// │    ➡️ CHAMA       : (atribuição direta de logger)                                        │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Injetar um ILogger opcional para uso interno do helper.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    logger - Logger a ser utilizado internamente (opcional).
-        /// </para>
-        /// </summary>
-        /// <param name="logger">Logger a ser utilizado internamente (opcional).</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ConfigureLogger                                                             │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Program.cs / Startup / composição de serviços                        │
+        // │    ➡️ CHAMA       : (atribuição direta de logger)                                        │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Injetar um ILogger opcional para uso interno do helper.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // logger - Logger a ser utilizado internamente (opcional).
+        
+        
+        // Param logger: Logger a ser utilizado internamente (opcional).
         public static void ConfigureLogger(ILogger logger) => _logger = logger;
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetCorrelationId                                                            │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : TratamentoErroComLinha*, SendUnexpected                              │
-        /// │    ➡️ CHAMA       : Activity.Current, Guid.NewGuid()                                    │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Gerar um identificador de correlação usando Activity.Current ou GUID.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    string - Identificador de correlação para rastreabilidade.
-        /// </para>
-        /// </summary>
-        /// <returns>Identificador de correlação para rastreabilidade.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetCorrelationId                                                            │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : TratamentoErroComLinha*, SendUnexpected                              │
+        // │    ➡️ CHAMA       : Activity.Current, Guid.NewGuid()                                    │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Gerar um identificador de correlação usando Activity.Current ou GUID.
+        
+        
+        
+        // 📤 RETORNO:
+        // string - Identificador de correlação para rastreabilidade.
+        
+        
+        // Returns: Identificador de correlação para rastreabilidade.
         public static string GetCorrelationId() =>
             Activity.Current?.Id ?? Guid.NewGuid().ToString("N");
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: TratamentoErroComLinha                                                     │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Código de domínio (instance)                                         │
-        /// │    ➡️ CHAMA       : TryExtractFileLine(), GetCorrelationId(), ILogger.LogError()          │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Logar um erro inesperado com contexto da instância, arquivo e linha.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    ctx - Contexto de instância (this) para identificação<br/>
-        ///    ex - Exceção capturada<br/>
-        ///    userMessage - Mensagem amigável opcional<br/>
-        ///    tag - Tag de categorização opcional<br/>
-        ///    severity - Severidade numérica para compatibilidade<br/>
-        ///    member - Nome do membro chamador (CallerMemberName)<br/>
-        ///    file - Caminho do arquivo chamador (CallerFilePath)<br/>
-        ///    line - Linha do arquivo chamador (CallerLineNumber)
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    ValueTask concluída após registrar o log.
-        /// </para>
-        /// </summary>
-        /// <param name="ctx">Contexto de instância (this) para identificação.</param>
-        /// <param name="ex">Exceção capturada.</param>
-        /// <param name="userMessage">Mensagem amigável opcional.</param>
-        /// <param name="tag">Tag de categorização opcional.</param>
-        /// <param name="severity">Severidade numérica para compatibilidade.</param>
-        /// <param name="member">Nome do membro chamador (CallerMemberName).</param>
-        /// <param name="file">Caminho do arquivo chamador (CallerFilePath).</param>
-        /// <param name="line">Linha do arquivo chamador (CallerLineNumber).</param>
-        /// <returns>ValueTask concluída após registrar o log.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: TratamentoErroComLinha                                                     │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Código de domínio (instance)                                         │
+        // │    ➡️ CHAMA       : TryExtractFileLine(), GetCorrelationId(), ILogger.LogError()          │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Logar um erro inesperado com contexto da instância, arquivo e linha.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // ctx - Contexto de instância (this) para identificação
+        // ex - Exceção capturada
+        // userMessage - Mensagem amigável opcional
+        // tag - Tag de categorização opcional
+        // severity - Severidade numérica para compatibilidade
+        // member - Nome do membro chamador (CallerMemberName)
+        // file - Caminho do arquivo chamador (CallerFilePath)
+        // line - Linha do arquivo chamador (CallerLineNumber)
+        
+        
+        
+        // 📤 RETORNO:
+        // ValueTask concluída após registrar o log.
+        
+        
+        // Param ctx: Contexto de instância (this) para identificação.
+        // Param ex: Exceção capturada.
+        // Param userMessage: Mensagem amigável opcional.
+        // Param tag: Tag de categorização opcional.
+        // Param severity: Severidade numérica para compatibilidade.
+        // Param member: Nome do membro chamador (CallerMemberName).
+        // Param file: Caminho do arquivo chamador (CallerFilePath).
+        // Param line: Linha do arquivo chamador (CallerLineNumber).
+        // Returns: ValueTask concluída após registrar o log.
         public static ValueTask TratamentoErroComLinha(
             object? ctx,
             Exception ex,
@@ -182,43 +182,43 @@ namespace FrotiX.Helpers
             }
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: TratamentoErroComLinhaStatic                                                │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Código estático (sem instância)                                      │
-        /// │    ➡️ CHAMA       : TryExtractFileLine(), GetCorrelationId(), ILogger.LogError()          │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Logar um erro inesperado em contexto estático, com arquivo e linha.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    ex - Exceção capturada<br/>
-        ///    userMessage - Mensagem amigável opcional<br/>
-        ///    tag - Tag de categorização opcional<br/>
-        ///    severity - Severidade numérica para compatibilidade<br/>
-        ///    member - Nome do membro chamador (CallerMemberName)<br/>
-        ///    file - Caminho do arquivo chamador (CallerFilePath)<br/>
-        ///    line - Linha do arquivo chamador (CallerLineNumber)
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    ValueTask concluída após registrar o log.
-        /// </para>
-        /// </summary>
-        /// <param name="ex">Exceção capturada.</param>
-        /// <param name="userMessage">Mensagem amigável opcional.</param>
-        /// <param name="tag">Tag de categorização opcional.</param>
-        /// <param name="severity">Severidade numérica para compatibilidade.</param>
-        /// <param name="member">Nome do membro chamador (CallerMemberName).</param>
-        /// <param name="file">Caminho do arquivo chamador (CallerFilePath).</param>
-        /// <param name="line">Linha do arquivo chamador (CallerLineNumber).</param>
-        /// <returns>ValueTask concluída após registrar o log.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: TratamentoErroComLinhaStatic                                                │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Código estático (sem instância)                                      │
+        // │    ➡️ CHAMA       : TryExtractFileLine(), GetCorrelationId(), ILogger.LogError()          │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Logar um erro inesperado em contexto estático, com arquivo e linha.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // ex - Exceção capturada
+        // userMessage - Mensagem amigável opcional
+        // tag - Tag de categorização opcional
+        // severity - Severidade numérica para compatibilidade
+        // member - Nome do membro chamador (CallerMemberName)
+        // file - Caminho do arquivo chamador (CallerFilePath)
+        // line - Linha do arquivo chamador (CallerLineNumber)
+        
+        
+        
+        // 📤 RETORNO:
+        // ValueTask concluída após registrar o log.
+        
+        
+        // Param ex: Exceção capturada.
+        // Param userMessage: Mensagem amigável opcional.
+        // Param tag: Tag de categorização opcional.
+        // Param severity: Severidade numérica para compatibilidade.
+        // Param member: Nome do membro chamador (CallerMemberName).
+        // Param file: Caminho do arquivo chamador (CallerFilePath).
+        // Param line: Linha do arquivo chamador (CallerLineNumber).
+        // Returns: ValueTask concluída após registrar o log.
         public static ValueTask TratamentoErroComLinhaStatic<T>(
             Exception ex,
             string? userMessage = null,
@@ -270,45 +270,45 @@ namespace FrotiX.Helpers
             }
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: SendUnexpected                                                              │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Helpers puros / chamadas utilitárias                                │
-        /// │    ➡️ CHAMA       : TryExtractFileLine(), GetCorrelationId(), ILogger.LogError()          │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Registrar erro inesperado sem contexto de instância/classe.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    source - Identificador de origem do log<br/>
-        ///    userMessage - Mensagem amigável opcional<br/>
-        ///    ex - Exceção capturada<br/>
-        ///    tag - Tag de categorização opcional<br/>
-        ///    severity - Severidade numérica para compatibilidade<br/>
-        ///    member - Nome do membro chamador (CallerMemberName)<br/>
-        ///    file - Caminho do arquivo chamador (CallerFilePath)<br/>
-        ///    line - Linha do arquivo chamador (CallerLineNumber)
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    ValueTask concluída após registrar o log.
-        /// </para>
-        /// </summary>
-        /// <param name="source">Identificador de origem do log.</param>
-        /// <param name="userMessage">Mensagem amigável opcional.</param>
-        /// <param name="ex">Exceção capturada.</param>
-        /// <param name="tag">Tag de categorização opcional.</param>
-        /// <param name="severity">Severidade numérica para compatibilidade.</param>
-        /// <param name="member">Nome do membro chamador (CallerMemberName).</param>
-        /// <param name="file">Caminho do arquivo chamador (CallerFilePath).</param>
-        /// <param name="line">Linha do arquivo chamador (CallerLineNumber).</param>
-        /// <returns>ValueTask concluída após registrar o log.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: SendUnexpected                                                              │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Helpers puros / chamadas utilitárias                                │
+        // │    ➡️ CHAMA       : TryExtractFileLine(), GetCorrelationId(), ILogger.LogError()          │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Registrar erro inesperado sem contexto de instância/classe.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // source - Identificador de origem do log
+        // userMessage - Mensagem amigável opcional
+        // ex - Exceção capturada
+        // tag - Tag de categorização opcional
+        // severity - Severidade numérica para compatibilidade
+        // member - Nome do membro chamador (CallerMemberName)
+        // file - Caminho do arquivo chamador (CallerFilePath)
+        // line - Linha do arquivo chamador (CallerLineNumber)
+        
+        
+        
+        // 📤 RETORNO:
+        // ValueTask concluída após registrar o log.
+        
+        
+        // Param source: Identificador de origem do log.
+        // Param userMessage: Mensagem amigável opcional.
+        // Param ex: Exceção capturada.
+        // Param tag: Tag de categorização opcional.
+        // Param severity: Severidade numérica para compatibilidade.
+        // Param member: Nome do membro chamador (CallerMemberName).
+        // Param file: Caminho do arquivo chamador (CallerFilePath).
+        // Param line: Linha do arquivo chamador (CallerLineNumber).
+        // Returns: ValueTask concluída após registrar o log.
         public static ValueTask SendUnexpected(
             string source,
             string? userMessage,
@@ -359,31 +359,31 @@ namespace FrotiX.Helpers
             }
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: TryExtractFileLine                                                          │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : TratamentoErroComLinha*, SendUnexpected                              │
-        /// │    ➡️ CHAMA       : Exception.StackTrace                                                │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Extrair o arquivo e a linha do topo do stack trace da exceção.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    ex - Exceção capturada.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    (string? file, int? line) com o arquivo e a linha encontrados.
-        /// </para>
-        /// </summary>
-        /// <param name="ex">Exceção capturada.</param>
-        /// <returns>Tupla (arquivo, linha) do stack trace.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: TryExtractFileLine                                                          │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : TratamentoErroComLinha*, SendUnexpected                              │
+        // │    ➡️ CHAMA       : Exception.StackTrace                                                │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Extrair o arquivo e a linha do topo do stack trace da exceção.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // ex - Exceção capturada.
+        
+        
+        
+        // 📤 RETORNO:
+        // (string? file, int? line) com o arquivo e a linha encontrados.
+        
+        
+        // Param ex: Exceção capturada.
+        // Returns: Tupla (arquivo, linha) do stack trace.
         public static (string? file, int? line) TryExtractFileLine(Exception ex)
         {
             try

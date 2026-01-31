@@ -34,19 +34,19 @@ using Microsoft.Extensions.Logging;
 
 namespace FrotiX.Filters;
 
-/// <summary>
-/// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-/// │ ⚡ CLASSE: GlobalExceptionFilter                                                      │
-/// │───────────────────────────────────────────────────────────────────────────────────────│
-/// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-/// │    Filtro global para capturar exceções em Controllers MVC e API.                     │
-/// │    Registra detalhes completos do erro incluindo arquivo, método e linha.             │
-/// │───────────────────────────────────────────────────────────────────────────────────────│
-/// │ 🔗 RASTREABILIDADE:                                                                   │
-/// │    ⬅️ CHAMADO POR : Pipeline ASP.NET (registrado em Program.cs)                       │
-/// │    ➡️ CHAMA       : ILogService.Error(), ILogger.LogError()                           │
-/// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-/// </summary>
+
+// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+// │ ⚡ CLASSE: GlobalExceptionFilter                                                      │
+// │───────────────────────────────────────────────────────────────────────────────────────│
+// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+// │    Filtro global para capturar exceções em Controllers MVC e API.                     │
+// │    Registra detalhes completos do erro incluindo arquivo, método e linha.             │
+// │───────────────────────────────────────────────────────────────────────────────────────│
+// │ 🔗 RASTREABILIDADE:                                                                   │
+// │    ⬅️ CHAMADO POR : Pipeline ASP.NET (registrado em Program.cs)                       │
+// │    ➡️ CHAMA       : ILogService.Error(), ILogger.LogError()                           │
+// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+
 public class GlobalExceptionFilter : IExceptionFilter
 {
     private readonly ILogService _logService;
@@ -63,17 +63,17 @@ public class GlobalExceptionFilter : IExceptionFilter
         _environment = environment;
     }
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ FUNCIONALIDADE: OnException                                                        │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO: Captura exceções de Controllers e registra detalhes no LogService.     │
-    /// │    Para requisições AJAX/API retorna JSON com erro. HTML usa handler padrão.         │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 📥 INPUTS: • context [ExceptionContext]: Contexto da exceção capturada               │
-    /// │ 📤 OUTPUTS: • void - Define context.Result para AJAX ou deixa handler padrão         │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ FUNCIONALIDADE: OnException                                                        │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO: Captura exceções de Controllers e registra detalhes no LogService.     │
+    // │    Para requisições AJAX/API retorna JSON com erro. HTML usa handler padrão.         │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 📥 INPUTS: • context [ExceptionContext]: Contexto da exceção capturada               │
+    // │ 📤 OUTPUTS: • void - Define context.Result para AJAX ou deixa handler padrão         │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     public void OnException(ExceptionContext context)
     {
         var exception = context.Exception;
@@ -125,16 +125,16 @@ public class GlobalExceptionFilter : IExceptionFilter
         // [UI] Para requisições normais, deixa o handler padrão tratar
     }
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ FUNCIONALIDADE: ExtractFileName                                                    │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO: Extrai o nome do arquivo de origem da exceção do StackTrace.           │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 📥 INPUTS: • exception [Exception]: Exceção capturada                                │
-    /// │ 📤 OUTPUTS: • [string]: Nome do arquivo (ex: "Controllers/ViagemController.cs")      │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ FUNCIONALIDADE: ExtractFileName                                                    │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO: Extrai o nome do arquivo de origem da exceção do StackTrace.           │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 📥 INPUTS: • exception [Exception]: Exceção capturada                                │
+    // │ 📤 OUTPUTS: • [string]: Nome do arquivo (ex: "Controllers/ViagemController.cs")      │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     private static string ExtractFileName(Exception exception)
     {
         try
@@ -168,16 +168,16 @@ public class GlobalExceptionFilter : IExceptionFilter
         return "Arquivo não identificado";
     }
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ FUNCIONALIDADE: ExtractLineNumber                                                  │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO: Extrai o número da linha do erro do StackTrace.                        │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 📥 INPUTS: • exception [Exception]: Exceção capturada                                │
-    /// │ 📤 OUTPUTS: • [int?]: Número da linha ou null se não encontrado                      │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ FUNCIONALIDADE: ExtractLineNumber                                                  │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO: Extrai o número da linha do erro do StackTrace.                        │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 📥 INPUTS: • exception [Exception]: Exceção capturada                                │
+    // │ 📤 OUTPUTS: • [int?]: Número da linha ou null se não encontrado                      │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     private static int? ExtractLineNumber(Exception exception)
     {
         try
@@ -197,16 +197,16 @@ public class GlobalExceptionFilter : IExceptionFilter
         return null;
     }
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ FUNCIONALIDADE: IsAjaxRequest                                                      │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO: Verifica se a requisição é AJAX (XMLHttpRequest ou accept JSON).       │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 📥 INPUTS: • request [HttpRequest]: Requisição HTTP                                  │
-    /// │ 📤 OUTPUTS: • [bool]: true se é AJAX                                                 │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ FUNCIONALIDADE: IsAjaxRequest                                                      │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO: Verifica se a requisição é AJAX (XMLHttpRequest ou accept JSON).       │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 📥 INPUTS: • request [HttpRequest]: Requisição HTTP                                  │
+    // │ 📤 OUTPUTS: • [bool]: true se é AJAX                                                 │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     private static bool IsAjaxRequest(HttpRequest request)
     {
         // [LOGICA] Verifica X-Requested-With ou Accept header
@@ -215,19 +215,19 @@ public class GlobalExceptionFilter : IExceptionFilter
     }
 }
 
-/// <summary>
-/// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-/// │ ⚡ CLASSE: AsyncExceptionFilter                                                       │
-/// │───────────────────────────────────────────────────────────────────────────────────────│
-/// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-/// │    Filtro de exceção assíncrono para operações async.                                 │
-/// │    Trata TaskCanceledException e OperationCanceledException como warning.             │
-/// │───────────────────────────────────────────────────────────────────────────────────────│
-/// │ 🔗 RASTREABILIDADE:                                                                   │
-/// │    ⬅️ CHAMADO POR : Pipeline ASP.NET (registrado em Program.cs)                       │
-/// │    ➡️ CHAMA       : ILogService.Warning()                                             │
-/// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-/// </summary>
+
+// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+// │ ⚡ CLASSE: AsyncExceptionFilter                                                       │
+// │───────────────────────────────────────────────────────────────────────────────────────│
+// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+// │    Filtro de exceção assíncrono para operações async.                                 │
+// │    Trata TaskCanceledException e OperationCanceledException como warning.             │
+// │───────────────────────────────────────────────────────────────────────────────────────│
+// │ 🔗 RASTREABILIDADE:                                                                   │
+// │    ⬅️ CHAMADO POR : Pipeline ASP.NET (registrado em Program.cs)                       │
+// │    ➡️ CHAMA       : ILogService.Warning()                                             │
+// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+
 public class AsyncExceptionFilter : IAsyncExceptionFilter
 {
     private readonly ILogService _logService;
@@ -239,17 +239,17 @@ public class AsyncExceptionFilter : IAsyncExceptionFilter
         _logger = logger;
     }
 
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ FUNCIONALIDADE: OnExceptionAsync                                                   │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO: Trata exceções de operações assíncronas. Tasks canceladas são          │
-    /// │    logadas como warning, outras exceções passam para GlobalExceptionFilter.          │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 📥 INPUTS: • context [ExceptionContext]: Contexto da exceção                         │
-    /// │ 📤 OUTPUTS: • [Task]: Task completada                                                │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ FUNCIONALIDADE: OnExceptionAsync                                                   │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO: Trata exceções de operações assíncronas. Tasks canceladas são          │
+    // │    logadas como warning, outras exceções passam para GlobalExceptionFilter.          │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 📥 INPUTS: • context [ExceptionContext]: Contexto da exceção                         │
+    // │ 📤 OUTPUTS: • [Task]: Task completada                                                │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     public Task OnExceptionAsync(ExceptionContext context)
     {
         var exception = context.Exception;

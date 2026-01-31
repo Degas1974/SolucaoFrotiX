@@ -27,62 +27,62 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: ViewFluxoEconomildoDataRepository                                                 │
-    /// │ 📦 HERDA DE: Repository<ViewFluxoEconomildoData>                                             │
-    /// │ 🔌 IMPLEMENTA: IViewFluxoEconomildoDataRepository                                            │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório de leitura da view de fluxo Economildo por data no FrotiX.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ViewFluxoEconomildoDataRepository                                                 │
+    // │ 📦 HERDA DE: Repository                                             │
+    // │ 🔌 IMPLEMENTA: IViewFluxoEconomildoDataRepository                                            │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório de leitura da view de fluxo Economildo por data no FrotiX.
+    
     public class ViewFluxoEconomildoDataRepository : Repository<ViewFluxoEconomildoData>, IViewFluxoEconomildoDataRepository
         {
         private new readonly FrotiXDbContext _db;
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: ViewFluxoEconomildoDataRepository                                             │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : UnitOfWork, DI                                                       │
-        /// │    ➡️ CHAMA       : Repository<ViewFluxoEconomildoData>                                  │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Inicializar o repositório da view de fluxo Economildo por data com o contexto atual.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    db - Contexto de dados do FrotiX
-        /// </para>
-        /// </summary>
-        /// <param name="db">Instância do contexto utilizada pelo repositório.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ViewFluxoEconomildoDataRepository                                             │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UnitOfWork, DI                                                       │
+        // │    ➡️ CHAMA       : Repository                                  │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Inicializar o repositório da view de fluxo Economildo por data com o contexto atual.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // db - Contexto de dados do FrotiX
+        
+        
+        // Param db: Instância do contexto utilizada pelo repositório.
         public ViewFluxoEconomildoDataRepository(FrotiXDbContext db) : base(db)
             {
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetViewFluxoEconomildoDataListForDropDown                                     │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Services, Controllers, UI                                             │
-        /// │    ➡️ CHAMA       : _db.ViewFluxoEconomildoData, OrderBy, Select                          │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Gerar lista de itens para dropdown a partir da view de fluxo Economildo por data.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Itens ordenados por data.
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de itens de seleção da view de fluxo Economildo por data.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetViewFluxoEconomildoDataListForDropDown                                     │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Services, Controllers, UI                                             │
+        // │    ➡️ CHAMA       : _db.ViewFluxoEconomildoData, OrderBy, Select                          │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Gerar lista de itens para dropdown a partir da view de fluxo Economildo por data.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Itens ordenados por data.
+        
+        
+        // Returns: Lista de itens de seleção da view de fluxo Economildo por data.
         public IEnumerable<SelectListItem> GetViewFluxoEconomildoDataListForDropDown()
             {
             return _db.ViewFluxoEconomildoData
@@ -94,25 +94,25 @@ namespace FrotiX.Repository
                 }); ; ;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                       │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Services, Controllers                                                 │
-        /// │    ➡️ CHAMA       : _db.Update, _db.SaveChanges                                           │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Encaminhar atualização de entidade da view quando necessário.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    viewFluxoEconomildoData - Entidade da view a ser atualizada
-        /// </para>
-        /// </summary>
-        /// <param name="viewFluxoEconomildoData">Entidade de fluxo Economildo por data a atualizar.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                       │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Services, Controllers                                                 │
+        // │    ➡️ CHAMA       : _db.Update, _db.SaveChanges                                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Encaminhar atualização de entidade da view quando necessário.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // viewFluxoEconomildoData - Entidade da view a ser atualizada
+        
+        
+        // Param viewFluxoEconomildoData: Entidade de fluxo Economildo por data a atualizar.
         public new void Update(ViewFluxoEconomildoData viewFluxoEconomildoData)
             {
             var objFromDb = _db.ViewFluxoEconomildoData.FirstOrDefault(s => s.ViagemEconomildoId == viewFluxoEconomildoData.ViagemEconomildoId);

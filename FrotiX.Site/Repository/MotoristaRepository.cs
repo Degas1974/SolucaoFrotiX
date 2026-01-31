@@ -27,16 +27,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: MotoristaRepository                                                                │
-    /// │ 📦 HERDA DE: Repository&lt;Motorista&gt;                                                              │
-    /// │ 🔌 IMPLEMENTA: IMotoristaRepository                                                           │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório especializado para gerenciamento de motoristas da frota.
-    /// Fornece acesso a dados e operações específicas para entidade Motorista.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: MotoristaRepository                                                                │
+    // │ 📦 HERDA DE: Repository&lt;Motorista&gt;                                                              │
+    // │ 🔌 IMPLEMENTA: IMotoristaRepository                                                           │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório especializado para gerenciamento de motoristas da frota.
+    // Fornece acesso a dados e operações específicas para entidade Motorista.
+    
     public class MotoristaRepository : Repository<Motorista>, IMotoristaRepository
         {
         private new readonly FrotiXDbContext _db;
@@ -46,26 +46,26 @@ namespace FrotiX.Repository
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetMotoristaListForDropDown                                                 │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers que utilizam dropdowns de motoristas                    │
-        /// │    ➡️ CHAMA       : DbContext.Motorista, Linq OrderBy/Select                            │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retorna lista de motoristas formatada para uso em DropDown/SelectList.
-        ///    Ordenação alfabética por nome para facilitar seleção pelo usuário.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Lista de motoristas com Text=Nome e Value=MotoristaId
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de SelectListItem ordenada por nome do motorista</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetMotoristaListForDropDown                                                 │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers que utilizam dropdowns de motoristas                    │
+        // │    ➡️ CHAMA       : DbContext.Motorista, Linq OrderBy/Select                            │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retorna lista de motoristas formatada para uso em DropDown/SelectList.
+        // Ordenação alfabética por nome para facilitar seleção pelo usuário.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Lista de motoristas com Text=Nome e Value=MotoristaId
+        
+        
+        // Returns: Lista de SelectListItem ordenada por nome do motorista
         public IEnumerable<SelectListItem> GetMotoristaListForDropDown()
             {
             return _db.Motorista
@@ -77,26 +77,26 @@ namespace FrotiX.Repository
                 }); ;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                      │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de Motorista, UnitOfWork                                │
-        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Atualiza dados de um motorista existente no banco de dados.
-        ///    Sobrescreve método herdado para permitir validações específicas.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    motorista - Entidade Motorista com dados atualizados
-        /// </para>
-        /// </summary>
-        /// <param name="motorista">Entidade Motorista com dados a serem persistidos</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de Motorista, UnitOfWork                                │
+        // │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Atualiza dados de um motorista existente no banco de dados.
+        // Sobrescreve método herdado para permitir validações específicas.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // motorista - Entidade Motorista com dados atualizados
+        
+        
+        // Param motorista: Entidade Motorista com dados a serem persistidos
         public new void Update(Motorista motorista)
             {
             var objFromDb = _db.Motorista.FirstOrDefault(s => s.MotoristaId == motorista.MotoristaId);

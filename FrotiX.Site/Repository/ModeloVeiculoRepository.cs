@@ -27,16 +27,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: ModeloVeiculoRepository                                                            │
-    /// │ 📦 HERDA DE: Repository&lt;ModeloVeiculo&gt;                                                          │
-    /// │ 🔌 IMPLEMENTA: IModeloVeiculoRepository                                                       │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório especializado para gerenciamento de modelos de veículos.
-    /// Suporta operações CRUD para entidade ModeloVeiculo com ordenação por descrição.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ModeloVeiculoRepository                                                            │
+    // │ 📦 HERDA DE: Repository&lt;ModeloVeiculo&gt;                                                          │
+    // │ 🔌 IMPLEMENTA: IModeloVeiculoRepository                                                       │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório especializado para gerenciamento de modelos de veículos.
+    // Suporta operações CRUD para entidade ModeloVeiculo com ordenação por descrição.
+    
     public class ModeloVeiculoRepository : Repository<ModeloVeiculo>, IModeloVeiculoRepository
         {
         private new readonly FrotiXDbContext _db;
@@ -46,26 +46,26 @@ namespace FrotiX.Repository
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetModeloVeiculoListForDropDown                                             │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers que utilizam dropdowns de modelos de veículos          │
-        /// │    ➡️ CHAMA       : DbContext.ModeloVeiculo, Linq OrderBy/Select                        │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retorna lista de modelos de veículos formatada para uso em DropDown.
-        ///    Ordenação alfabética por descrição do modelo para facilitar localização.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Lista com Text=DescricaoModelo e Value=ModeloId
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de SelectListItem com modelos ordenados alfabeticamente</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetModeloVeiculoListForDropDown                                             │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers que utilizam dropdowns de modelos de veículos          │
+        // │    ➡️ CHAMA       : DbContext.ModeloVeiculo, Linq OrderBy/Select                        │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retorna lista de modelos de veículos formatada para uso em DropDown.
+        // Ordenação alfabética por descrição do modelo para facilitar localização.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Lista com Text=DescricaoModelo e Value=ModeloId
+        
+        
+        // Returns: Lista de SelectListItem com modelos ordenados alfabeticamente
         public IEnumerable<SelectListItem> GetModeloVeiculoListForDropDown()
             {
             return _db.ModeloVeiculo
@@ -77,26 +77,26 @@ namespace FrotiX.Repository
                 }); ;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                      │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de ModeloVeiculo, UnitOfWork                            │
-        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Atualiza dados de um modelo de veículo existente no banco de dados.
-        ///    Localiza registro por ModeloId antes de persistir alterações.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    modeloVeiculo - Entidade ModeloVeiculo com dados atualizados
-        /// </para>
-        /// </summary>
-        /// <param name="modeloVeiculo">Entidade ModeloVeiculo com dados a serem persistidos</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de ModeloVeiculo, UnitOfWork                            │
+        // │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Atualiza dados de um modelo de veículo existente no banco de dados.
+        // Localiza registro por ModeloId antes de persistir alterações.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // modeloVeiculo - Entidade ModeloVeiculo com dados atualizados
+        
+        
+        // Param modeloVeiculo: Entidade ModeloVeiculo com dados a serem persistidos
         public new void Update(ModeloVeiculo modeloVeiculo)
             {
             var objFromDb = _db.ModeloVeiculo.FirstOrDefault(s => s.ModeloId == modeloVeiculo.ModeloId);

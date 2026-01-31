@@ -19,9 +19,9 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Repository.IRepository
 {
-    /// <summary>
-    /// Interface do repositório de AlertasFrotiX. Estende IRepository&lt;AlertasFrotiX&gt;.
-    /// </summary>
+    
+    // Interface do repositório de AlertasFrotiX. Estende IRepository&lt;AlertasFrotiX&gt;.
+    
     public interface IAlertasFrotiXRepository :IRepository<AlertasFrotiX>
     {
         // Métodos existentes

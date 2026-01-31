@@ -27,16 +27,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: MultaRepository                                                                    │
-    /// │ 📦 HERDA DE: Repository&lt;Multa&gt;                                                                  │
-    /// │ 🔌 IMPLEMENTA: IMultaRepository                                                               │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório especializado para gerenciamento de multas de trânsito.
-    /// Fornece acesso a dados e operações específicas para controle de infrações da frota.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: MultaRepository                                                                    │
+    // │ 📦 HERDA DE: Repository&lt;Multa&gt;                                                                  │
+    // │ 🔌 IMPLEMENTA: IMultaRepository                                                               │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório especializado para gerenciamento de multas de trânsito.
+    // Fornece acesso a dados e operações específicas para controle de infrações da frota.
+    
     public class MultaRepository : Repository<Multa>, IMultaRepository
         {
         private new readonly FrotiXDbContext _db;
@@ -46,26 +46,26 @@ namespace FrotiX.Repository
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetMultaListForDropDown                                                     │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers que utilizam dropdowns de multas                        │
-        /// │    ➡️ CHAMA       : DbContext.Multa, Linq OrderBy/Select                                │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retorna lista de multas formatada para uso em DropDown/SelectList.
-        ///    Ordenação por número da infração para facilitar localização.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Lista com Text=NumInfracao e Value=MultaId
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de SelectListItem ordenada por número da infração</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetMultaListForDropDown                                                     │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers que utilizam dropdowns de multas                        │
+        // │    ➡️ CHAMA       : DbContext.Multa, Linq OrderBy/Select                                │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retorna lista de multas formatada para uso em DropDown/SelectList.
+        // Ordenação por número da infração para facilitar localização.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Lista com Text=NumInfracao e Value=MultaId
+        
+        
+        // Returns: Lista de SelectListItem ordenada por número da infração
         public IEnumerable<SelectListItem> GetMultaListForDropDown()
             {
             return _db.Multa
@@ -77,26 +77,26 @@ namespace FrotiX.Repository
                     });
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                      │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de Multa, UnitOfWork                                    │
-        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Atualiza dados de uma multa existente no banco de dados.
-        ///    Permite alterações em status de pagamento, recursos e demais informações.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    multa - Entidade Multa com dados atualizados
-        /// </para>
-        /// </summary>
-        /// <param name="multa">Entidade Multa com dados a serem persistidos</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de Multa, UnitOfWork                                    │
+        // │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Atualiza dados de uma multa existente no banco de dados.
+        // Permite alterações em status de pagamento, recursos e demais informações.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // multa - Entidade Multa com dados atualizados
+        
+        
+        // Param multa: Entidade Multa com dados a serem persistidos
         public new void Update(Multa multa)
             {
             var objFromDb = _db.Multa.FirstOrDefault(s => s.MultaId == multa.MultaId);

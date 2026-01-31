@@ -29,9 +29,9 @@ namespace FrotiX.Repository
             _db = db;
         }
 
-        /// <summary>
-        /// Obtém todos os alertas de um usuário específico
-        /// </summary>
+        
+        // Obtém todos os alertas de um usuário específico
+        
         public async Task<IEnumerable<AlertasUsuario>> ObterAlertasPorUsuarioAsync(string usuarioId)
         {
             return await _db.Set<AlertasUsuario>()
@@ -41,9 +41,9 @@ namespace FrotiX.Repository
                 .ToListAsync();
         }
 
-        /// <summary>
-        /// Obtém todos os usuários vinculados a um alerta
-        /// </summary>
+        
+        // Obtém todos os usuários vinculados a um alerta
+        
         public async Task<IEnumerable<AlertasUsuario>> ObterUsuariosPorAlertaAsync(Guid alertaId)
         {
             return await _db.Set<AlertasUsuario>()
@@ -52,18 +52,18 @@ namespace FrotiX.Repository
                 .ToListAsync();
         }
 
-        /// <summary>
-        /// Verifica se um usuário já tem um alerta específico vinculado
-        /// </summary>
+        
+        // Verifica se um usuário já tem um alerta específico vinculado
+        
         public async Task<bool> UsuarioTemAlertaAsync(Guid alertaId , string usuarioId)
         {
             return await _db.Set<AlertasUsuario>()
                 .AnyAsync(au => au.AlertasFrotiXId == alertaId && au.UsuarioId == usuarioId);
         }
 
-        /// <summary>
-        /// Remove todos os alertas de um usuário
-        /// </summary>
+        
+        // Remove todos os alertas de um usuário
+        
         public async Task RemoverAlertasDoUsuarioAsync(string usuarioId)
         {
             var alertasUsuario = await _db.Set<AlertasUsuario>()
@@ -76,9 +76,9 @@ namespace FrotiX.Repository
             }
         }
 
-        /// <summary>
-        /// Remove todos os usuários de um alerta
-        /// </summary>
+        
+        // Remove todos os usuários de um alerta
+        
         public async Task RemoverUsuariosDoAlertaAsync(Guid alertaId)
         {
             var alertasUsuario = await _db.Set<AlertasUsuario>()
@@ -91,9 +91,9 @@ namespace FrotiX.Repository
             }
         }
 
-        /// <summary>
-        /// Atualiza a entidade AlertasUsuario
-        /// </summary>
+        
+        // Atualiza a entidade AlertasUsuario
+        
         public new void Update(AlertasUsuario alertaUsuario)
         {
             if (alertaUsuario == null)

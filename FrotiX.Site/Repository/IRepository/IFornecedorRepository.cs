@@ -22,9 +22,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository.IRepository
     {
-    /// <summary>
-    /// Interface do repositório de Fornecedor. Estende IRepository&lt;Fornecedor&gt;.
-    /// </summary>
+    
+    // Interface do repositório de Fornecedor. Estende IRepository&lt;Fornecedor&gt;.
+    
     public interface IFornecedorRepository : IRepository<Fornecedor>
         {
 

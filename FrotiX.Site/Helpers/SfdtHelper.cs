@@ -1,16 +1,16 @@
 ﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: SfdtHelper.cs                                                                           ║
-   ║ 📂 CAMINHO: /Helpers                                                                               ║
+   ║ 🚀 ARQUIVO: SfdtHelper.cs                                                                         ║
+   ║ 📂 CAMINHO: Helpers/                                                                              ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
    ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
-   ║    Helper Syncfusion para conversão de documentos Word (DOCX -> PDF -> PNG). Usa DocIO,             ║
-   ║    DocIORenderer para conversão, PdfViewer para renderização, e SkiaSharp para imagem final.       ║
+   ║    Helper Syncfusion para conversão de documentos Word (DOCX -> PDF -> PNG).                       ║
+   ║    Usa DocIO/DocIORenderer, PdfViewer e SkiaSharp para gerar imagem da 1ª página.                  ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE DE FUNÇÕES (Entradas -> Saídas):                                                         ║
-   ║ 1. [SalvarImagemDeDocx] : Converte DOCX -> PDF -> PNG (1ª página)... (byte[]) -> byte[]            ║
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • SalvarImagemDeDocx(byte[] docxBytes)                                                          ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
    ║ 🔗 DEPENDÊNCIAS: Syncfusion.DocIO, Syncfusion.DocIORenderer, Syncfusion.Pdf, SkiaSharp            ║
-   ║ 📅 ATUALIZAÇÃO: 29/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
+   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
 */
 
@@ -27,8 +27,50 @@ using SkiaSharp;
 
 namespace FrotiX.Helpers
     {
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: SfdtHelper                                                                        │
+    // │ 📦 TIPO: Estática                                                                             │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Converter DOCX em PNG (1ª página) usando pipeline Syncfusion + SkiaSharp.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : Fluxos de geração de imagens/documentos
+    // ➡️ CHAMA       : WordDocument, DocIORenderer, PdfRenderer, SKImage
+    
+    
     public static class SfdtHelper
         {
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: SalvarImagemDeDocx                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Uploads/preview de documentos                                       │
+        // │    ➡️ CHAMA       : DocIORenderer.ConvertToPDF(), PdfRenderer.ExportAsImage()           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Converter um DOCX em PNG (1ª página) e retornar os bytes da imagem.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // docxBytes - Conteúdo do arquivo DOCX.
+        
+        
+        
+        // 📤 RETORNO:
+        // byte[] - Imagem PNG gerada a partir da 1ª página.
+        
+        
+        // Param docxBytes: Conteúdo do arquivo DOCX.
+        // Returns: Imagem PNG gerada a partir da 1ª página.
         public static byte[] SalvarImagemDeDocx(byte[] docxBytes)
             {
             using var docStream = new MemoryStream(docxBytes);
@@ -52,4 +94,3 @@ namespace FrotiX.Helpers
             }
         }
     }
-

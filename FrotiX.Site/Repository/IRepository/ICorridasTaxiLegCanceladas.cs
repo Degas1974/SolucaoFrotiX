@@ -18,9 +18,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository.IRepository
     {
-    /// <summary>
-    /// Interface do repositório de CorridasCanceladasTaxiLeg. Estende IRepository&lt;CorridasCanceladasTaxiLeg&gt;.
-    /// </summary>
+    
+    // Interface do repositório de CorridasCanceladasTaxiLeg. Estende IRepository&lt;CorridasCanceladasTaxiLeg&gt;.
+    
     public interface ICorridasCanceladasTaxiLegRepository : IRepository<CorridasCanceladasTaxiLeg>
         {
 

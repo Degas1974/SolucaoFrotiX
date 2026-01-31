@@ -27,16 +27,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: OperadorContratoRepository                                                         │
-    /// │ 📦 HERDA DE: Repository&lt;OperadorContrato&gt;                                                       │
-    /// │ 🔌 IMPLEMENTA: IOperadorContratoRepository                                                    │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório de relacionamento N:N entre Operador e Contrato.
-    /// Controla quais operadores estão autorizados em quais contratos de abastecimento.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: OperadorContratoRepository                                                         │
+    // │ 📦 HERDA DE: Repository&lt;OperadorContrato&gt;                                                       │
+    // │ 🔌 IMPLEMENTA: IOperadorContratoRepository                                                    │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório de relacionamento N:N entre Operador e Contrato.
+    // Controla quais operadores estão autorizados em quais contratos de abastecimento.
+    
     public class OperadorContratoRepository : Repository<OperadorContrato>, IOperadorContratoRepository
         {
         private new readonly FrotiXDbContext _db;
@@ -46,31 +46,31 @@ namespace FrotiX.Repository
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetOperadorContratoListForDropDown                                          │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de gerenciamento de contratos                          │
-        /// │    ➡️ CHAMA       : DbContext.OperadorContrato, Linq Select                             │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retorna lista de vínculos operador-contrato para uso em DropDown.
-        /// </para>
-        ///
-        /// <para>
-        /// ⚠️ <b>ATENÇÃO:</b><br/>
-        ///    IMPLEMENTAÇÃO INCOMPLETA - Propriedades Text e Value comentadas.
-        ///    Necessita definição de como exibir o vínculo na lista.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Lista de vínculos operador-contrato
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de SelectListItem com vínculos operador-contrato</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetOperadorContratoListForDropDown                                          │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de gerenciamento de contratos                          │
+        // │    ➡️ CHAMA       : DbContext.OperadorContrato, Linq Select                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retorna lista de vínculos operador-contrato para uso em DropDown.
+        
+        
+        
+        // ⚠️ ATENÇÃO:
+        // IMPLEMENTAÇÃO INCOMPLETA - Propriedades Text e Value comentadas.
+        // Necessita definição de como exibir o vínculo na lista.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Lista de vínculos operador-contrato
+        
+        
+        // Returns: Lista de SelectListItem com vínculos operador-contrato
         public IEnumerable<SelectListItem> GetOperadorContratoListForDropDown()
             {
             return _db.OperadorContrato.Select(i => new SelectListItem()
@@ -80,31 +80,31 @@ namespace FrotiX.Repository
                 }); ;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                      │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de OperadorContrato, UnitOfWork                         │
-        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Atualiza vínculo entre operador e contrato usando chave composta.
-        ///    Busca registro existente por OperadorId e ContratoId.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    operadorContrato - Entidade OperadorContrato com dados atualizados
-        /// </para>
-        ///
-        /// <para>
-        /// ⚠️ <b>CHAVE COMPOSTA:</b><br/>
-        ///    Busca utiliza (OperadorId + ContratoId) para identificação única do registro.
-        /// </para>
-        /// </summary>
-        /// <param name="operadorContrato">Entidade OperadorContrato com dados a serem persistidos</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de OperadorContrato, UnitOfWork                         │
+        // │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Atualiza vínculo entre operador e contrato usando chave composta.
+        // Busca registro existente por OperadorId e ContratoId.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // operadorContrato - Entidade OperadorContrato com dados atualizados
+        
+        
+        
+        // ⚠️ CHAVE COMPOSTA:
+        // Busca utiliza (OperadorId + ContratoId) para identificação única do registro.
+        
+        
+        // Param operadorContrato: Entidade OperadorContrato com dados a serem persistidos
         public new void Update(OperadorContrato operadorContrato)
             {
             var objFromDb = _db.OperadorContrato.FirstOrDefault(s => (s.OperadorId == operadorContrato.OperadorId) && (s.ContratoId == operadorContrato.ContratoId));

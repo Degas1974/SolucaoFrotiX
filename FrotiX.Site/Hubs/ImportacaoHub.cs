@@ -15,14 +15,14 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Hubs
 {
-    /// <summary>
-    /// Hub SignalR para envio de progresso em tempo real durante importação de planilhas
-    /// </summary>
+    
+    // Hub SignalR para envio de progresso em tempo real durante importação de planilhas
+    
     public class ImportacaoHub : Hub
     {
-        /// <summary>
-        /// Chamado quando um cliente se conecta ao hub
-        /// </summary>
+        
+        // Chamado quando um cliente se conecta ao hub
+        
         public override async Task OnConnectedAsync()
         {
             try
@@ -36,9 +36,9 @@ namespace FrotiX.Hubs
             }
         }
 
-        /// <summary>
-        /// Chamado quando um cliente se desconecta do hub
-        /// </summary>
+        
+        // Chamado quando um cliente se desconecta do hub
+        
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             try
@@ -52,9 +52,9 @@ namespace FrotiX.Hubs
         }
     }
 
-    /// <summary>
-    /// DTO para envio de progresso ao cliente
-    /// </summary>
+    
+    // DTO para envio de progresso ao cliente
+    
     public class ProgressoImportacao
     {
         public int Porcentagem { get; set; }

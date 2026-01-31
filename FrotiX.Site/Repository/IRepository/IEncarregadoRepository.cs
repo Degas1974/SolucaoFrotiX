@@ -16,9 +16,9 @@ using FrotiX.Models;
 
 namespace FrotiX.Repository.IRepository
 {
-    /// <summary>
-    /// Interface do repositório de Encarregado. Estende IRepository&lt;Encarregado&gt;.
-    /// </summary>
+    
+    // Interface do repositório de Encarregado. Estende IRepository&lt;Encarregado&gt;.
+    
     public interface IEncarregadoRepository : IRepository<Encarregado>
     {
         new void Update(Encarregado encarregado);

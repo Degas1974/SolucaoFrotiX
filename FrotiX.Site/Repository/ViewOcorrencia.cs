@@ -26,62 +26,62 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: ViewOcorrenciaRepository                                                         │
-    /// │ 📦 HERDA DE: Repository<ViewOcorrencia>                                                     │
-    /// │ 🔌 IMPLEMENTA: IViewOcorrenciaRepository                                                    │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório de leitura da view de ocorrências no FrotiX.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ViewOcorrenciaRepository                                                         │
+    // │ 📦 HERDA DE: Repository                                                     │
+    // │ 🔌 IMPLEMENTA: IViewOcorrenciaRepository                                                    │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório de leitura da view de ocorrências no FrotiX.
+    
     public class ViewOcorrenciaRepository : Repository<ViewOcorrencia>, IViewOcorrenciaRepository
         {
         private new readonly FrotiXDbContext _db;
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: ViewOcorrenciaRepository                                                     │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : UnitOfWork, DI                                                       │
-        /// │    ➡️ CHAMA       : Repository<ViewOcorrencia>                                          │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Inicializar o repositório da view de ocorrências com o contexto atual.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    db - Contexto de dados do FrotiX
-        /// </para>
-        /// </summary>
-        /// <param name="db">Instância do contexto utilizada pelo repositório.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ViewOcorrenciaRepository                                                     │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UnitOfWork, DI                                                       │
+        // │    ➡️ CHAMA       : Repository                                          │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Inicializar o repositório da view de ocorrências com o contexto atual.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // db - Contexto de dados do FrotiX
+        
+        
+        // Param db: Instância do contexto utilizada pelo repositório.
         public ViewOcorrenciaRepository(FrotiXDbContext db) : base(db)
             {
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetViewOcorrenciaListForDropDown                                             │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Services, Controllers, UI                                             │
-        /// │    ➡️ CHAMA       : _db.ViewOcorrencia, OrderBy, Select                                  │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Gerar lista de itens para dropdown a partir das ocorrências registradas na view.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Itens ordenados pela data inicial.
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de itens de seleção para ocorrências.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetViewOcorrenciaListForDropDown                                             │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Services, Controllers, UI                                             │
+        // │    ➡️ CHAMA       : _db.ViewOcorrencia, OrderBy, Select                                  │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Gerar lista de itens para dropdown a partir das ocorrências registradas na view.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Itens ordenados pela data inicial.
+        
+        
+        // Returns: Lista de itens de seleção para ocorrências.
         public IEnumerable<SelectListItem> GetViewOcorrenciaListForDropDown()
             {
             return _db.ViewOcorrencia
@@ -93,25 +93,25 @@ namespace FrotiX.Repository
                 }); ; ;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                       │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Services, Controllers                                                 │
-        /// │    ➡️ CHAMA       : _db.Update, _db.SaveChanges                                           │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Encaminhar atualização de entidade da view quando necessário.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    viewOcorrencia - Entidade da view a ser atualizada
-        /// </para>
-        /// </summary>
-        /// <param name="viewOcorrencia">Entidade de ocorrência a atualizar.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                       │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Services, Controllers                                                 │
+        // │    ➡️ CHAMA       : _db.Update, _db.SaveChanges                                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Encaminhar atualização de entidade da view quando necessário.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // viewOcorrencia - Entidade da view a ser atualizada
+        
+        
+        // Param viewOcorrencia: Entidade de ocorrência a atualizar.
         public new void Update(ViewOcorrencia viewOcorrencia)
             {
             var objFromDb = _db.ViewOcorrencia.FirstOrDefault(s => s.ViagemId == viewOcorrencia.ViagemId);

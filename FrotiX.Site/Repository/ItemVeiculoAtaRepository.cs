@@ -27,15 +27,15 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: ItemVeiculoAtaRepository                                                   │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ DESCRIÇÃO:                                                                             │
-    /// │    Repositório para gerenciar itens de veículos em atas de registro de preços.        │
-    /// │    Estende Repository&lt;ItemVeiculoAta&gt; com métodos especializados.               │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ItemVeiculoAtaRepository                                                   │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ DESCRIÇÃO:                                                                             │
+    // │    Repositório para gerenciar itens de veículos em atas de registro de preços.        │
+    // │    Estende Repository&lt;ItemVeiculoAta&gt; com métodos especializados.               │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     public class ItemVeiculoAtaRepository : Repository<ItemVeiculoAta>, IItemVeiculoAtaRepository
     {
         private new readonly FrotiXDbContext _db;
@@ -45,24 +45,24 @@ namespace FrotiX.Repository
             _db = db;
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetItemVeiculoAtaListForDropDown                                          │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO:                                                                          │
-        /// │    Retorna lista de itens de veículo formatada para DropDown.                          │
-        /// │    Ordenada por descrição para facilitar seleção.                                      │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS: Nenhum                                                                      │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS:                                                                            │
-        /// │    • IEnumerable&lt;SelectListItem&gt; - Lista para DropDown                           │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de Ata, formulários de seleção                         │
-        /// │    ➡️ CHAMA       : DbContext.ItemVeiculoAta (LINQ OrderBy, Select)                    │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetItemVeiculoAtaListForDropDown                                          │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO:                                                                          │
+        // │    Retorna lista de itens de veículo formatada para DropDown.                          │
+        // │    Ordenada por descrição para facilitar seleção.                                      │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS: Nenhum                                                                      │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS:                                                                            │
+        // │    • IEnumerable&lt;SelectListItem&gt; - Lista para DropDown                           │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de Ata, formulários de seleção                         │
+        // │    ➡️ CHAMA       : DbContext.ItemVeiculoAta (LINQ OrderBy, Select)                    │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         public IEnumerable<SelectListItem> GetItemVeiculoAtaListForDropDown()
         {
             return _db.ItemVeiculoAta
@@ -74,23 +74,23 @@ namespace FrotiX.Repository
                 });
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                     │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO:                                                                          │
-        /// │    Atualiza um item de veículo ata no banco de dados.                                  │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS:                                                                             │
-        /// │    • itemveiculoata [ItemVeiculoAta] - Item a ser atualizado                           │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS: void                                                                       │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de ItemVeiculoAta, UnitOfWork                          │
-        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                        │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                     │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO:                                                                          │
+        // │    Atualiza um item de veículo ata no banco de dados.                                  │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS:                                                                             │
+        // │    • itemveiculoata [ItemVeiculoAta] - Item a ser atualizado                           │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS: void                                                                       │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de ItemVeiculoAta, UnitOfWork                          │
+        // │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                        │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         public new void Update(ItemVeiculoAta itemveiculoata)
         {
             var objFromDb = _db.ItemVeiculoAta.FirstOrDefault(s => s.ItemVeiculoAtaId == itemveiculoata.ItemVeiculoAtaId);

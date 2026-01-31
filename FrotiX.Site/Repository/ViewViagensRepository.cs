@@ -29,76 +29,76 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FrotiX.Repository
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: ViewViagensRepository                                                              │
-    /// │ 📦 HERDA DE: Repository<ViewViagens>                                                          │
-    /// │ 🔌 IMPLEMENTA: IViewViagensRepository                                                         │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório responsável pela view de viagens.
-    /// Fornece paginação genérica e listagens para UI.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ViewViagensRepository                                                              │
+    // │ 📦 HERDA DE: Repository                                                          │
+    // │ 🔌 IMPLEMENTA: IViewViagensRepository                                                         │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório responsável pela view de viagens.
+    // Fornece paginação genérica e listagens para UI.
+    
     public class ViewViagensRepository : Repository<ViewViagens>, IViewViagensRepository
     {
         private new readonly FrotiXDbContext _db;
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: ViewViagensRepository                                                        │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
-        /// │    ➡️ CHAMA       : base(db)                                                             │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Inicializar o repositório com o contexto do banco de dados.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    db - Contexto do banco de dados da aplicação.
-        /// </para>
-        /// </summary>
-        /// <param name="db">Instância de <see cref="FrotiXDbContext"/>.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ViewViagensRepository                                                        │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
+        // │    ➡️ CHAMA       : base(db)                                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Inicializar o repositório com o contexto do banco de dados.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // db - Contexto do banco de dados da aplicação.
+        
+        
+        // Param db: Instância de <see cref="FrotiXDbContext"/>.
         public ViewViagensRepository(FrotiXDbContext db)
             : base(db)
         {
             _db = db;
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetPaginatedAsync                                                           │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Services, Controllers                                                 │
-        /// │    ➡️ CHAMA       : DbContext.ViewViagens, AsNoTracking, Where, CountAsync, Skip, Take   │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Obter dados paginados da view de viagens com projeção genérica.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    selector - Expressão de seleção/projeção<br/>
-        ///    filter - Filtro aplicado à consulta<br/>
-        ///    page - Página atual (1-based)<br/>
-        ///    pageSize - Quantidade de registros por página
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    Task&lt;(List&lt;T&gt; Items, int TotalCount)&gt; - Itens paginados e total de registros.
-        /// </para>
-        /// </summary>
-        /// <param name="selector">Expressão de projeção.</param>
-        /// <param name="filter">Filtro aplicado à consulta.</param>
-        /// <param name="page">Página atual (1-based).</param>
-        /// <param name="pageSize">Tamanho da página.</param>
-        /// <returns>Itens paginados e total de registros.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetPaginatedAsync                                                           │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Services, Controllers                                                 │
+        // │    ➡️ CHAMA       : DbContext.ViewViagens, AsNoTracking, Where, CountAsync, Skip, Take   │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Obter dados paginados da view de viagens com projeção genérica.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // selector - Expressão de seleção/projeção
+        // filter - Filtro aplicado à consulta
+        // page - Página atual (1-based)
+        // pageSize - Quantidade de registros por página
+        
+        
+        
+        // 📤 RETORNO:
+        // Task&lt;(List&lt;T&gt; Items, int TotalCount)&gt; - Itens paginados e total de registros.
+        
+        
+        // Param selector: Expressão de projeção.
+        // Param filter: Filtro aplicado à consulta.
+        // Param page: Página atual (1-based).
+        // Param pageSize: Tamanho da página.
+        // Returns: Itens paginados e total de registros.
         public async Task<(List<T> Items, int TotalCount)> GetPaginatedAsync<T>(
             Expression<Func<ViewViagens, T>> selector,
             Expression<Func<ViewViagens, bool>> filter,
@@ -122,26 +122,26 @@ namespace FrotiX.Repository
             return (items, totalCount);
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetViewViagensListForDropDown                                                │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
-        /// │    ➡️ CHAMA       : DbContext.ViewViagens, OrderBy, Select                               │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Obter lista da view de viagens para dropdowns.
-        ///    Ordena pela data inicial.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de itens de seleção para viagens.</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetViewViagensListForDropDown                                                │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
+        // │    ➡️ CHAMA       : DbContext.ViewViagens, OrderBy, Select                               │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Obter lista da view de viagens para dropdowns.
+        // Ordena pela data inicial.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
+        
+        
+        // Returns: Lista de itens de seleção para viagens.
         public IEnumerable<SelectListItem> GetViewViagensListForDropDown()
         {
             return _db
@@ -155,26 +155,26 @@ namespace FrotiX.Repository
             ;
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                        │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
-        /// │    ➡️ CHAMA       : DbContext.ViewViagens.FirstOrDefault, _db.Update, _db.SaveChanges     │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Manter compatibilidade com o padrão de repositórios.
-        ///    Views são somente leitura; operação não é recomendada.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    viewViagens - Entidade com dados da view.
-        /// </para>
-        /// </summary>
-        /// <param name="viewViagens">Entidade <see cref="ViewViagens"/>.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                        │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
+        // │    ➡️ CHAMA       : DbContext.ViewViagens.FirstOrDefault, _db.Update, _db.SaveChanges     │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Manter compatibilidade com o padrão de repositórios.
+        // Views são somente leitura; operação não é recomendada.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // viewViagens - Entidade com dados da view.
+        
+        
+        // Param viewViagens: Entidade <see cref="ViewViagens"/>.
         public new void Update(ViewViagens viewViagens)
         {
             var objFromDb = _db.ViewViagens.FirstOrDefault(s => s.ViagemId == viewViagens.ViagemId);

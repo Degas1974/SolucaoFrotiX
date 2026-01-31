@@ -27,16 +27,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: LavadorRepository                                                                  │
-    /// │ 📦 HERDA DE: Repository&lt;Lavador&gt;                                                                │
-    /// │ 🔌 IMPLEMENTA: ILavadorRepository                                                             │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório especializado para gerenciamento de lavadores da frota.
-    /// Fornece acesso a dados e operações específicas para entidade Lavador.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: LavadorRepository                                                                  │
+    // │ 📦 HERDA DE: Repository&lt;Lavador&gt;                                                                │
+    // │ 🔌 IMPLEMENTA: ILavadorRepository                                                             │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório especializado para gerenciamento de lavadores da frota.
+    // Fornece acesso a dados e operações específicas para entidade Lavador.
+    
     public class LavadorRepository : Repository<Lavador>, ILavadorRepository
         {
         private new readonly FrotiXDbContext _db;
@@ -46,26 +46,26 @@ namespace FrotiX.Repository
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetLavadorListForDropDown                                                   │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers que utilizam dropdowns de lavadores                     │
-        /// │    ➡️ CHAMA       : DbContext.Lavador, Linq OrderBy/Select                             │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retorna lista de lavadores formatada para uso em DropDown/SelectList.
-        ///    Ordenação alfabética por nome para facilitar seleção pelo usuário.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Lista de lavadores com Text=Nome e Value=LavadorId
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de SelectListItem ordenada por nome do lavador</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetLavadorListForDropDown                                                   │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers que utilizam dropdowns de lavadores                     │
+        // │    ➡️ CHAMA       : DbContext.Lavador, Linq OrderBy/Select                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retorna lista de lavadores formatada para uso em DropDown/SelectList.
+        // Ordenação alfabética por nome para facilitar seleção pelo usuário.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Lista de lavadores com Text=Nome e Value=LavadorId
+        
+        
+        // Returns: Lista de SelectListItem ordenada por nome do lavador
         public IEnumerable<SelectListItem> GetLavadorListForDropDown()
             {
             return _db.Lavador
@@ -77,26 +77,26 @@ namespace FrotiX.Repository
                 }); ;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                      │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de Lavador, UnitOfWork                                  │
-        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Atualiza dados de um lavador existente no banco de dados.
-        ///    Sobrescreve método herdado para permitir validações específicas.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    lavador - Entidade Lavador com dados atualizados
-        /// </para>
-        /// </summary>
-        /// <param name="lavador">Entidade Lavador com dados a serem persistidos</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de Lavador, UnitOfWork                                  │
+        // │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Atualiza dados de um lavador existente no banco de dados.
+        // Sobrescreve método herdado para permitir validações específicas.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // lavador - Entidade Lavador com dados atualizados
+        
+        
+        // Param lavador: Entidade Lavador com dados a serem persistidos
         public new void Update(Lavador lavador)
             {
             var objFromDb = _db.Lavador.FirstOrDefault(s => s.LavadorId == lavador.LavadorId);

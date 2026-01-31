@@ -22,19 +22,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository.IRepository
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ INTERFACE: IViewLotacaoMotoristaRepository                                        │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-    /// │    Interface do repositório de ViewLotacaoMotorista. Centraliza consultas de lotações  │
-    /// │    de motoristas por setor e período, usando apenas operações genéricas.               │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🔗 RASTREABILIDADE:                                                                   │
-    /// │    ⬅️ CHAMADO POR : Controllers e relatórios de Lotação de Motorista                   │
-    /// │    ➡️ CHAMA       : IRepository<ViewLotacaoMotorista> (métodos base)                  │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ INTERFACE: IViewLotacaoMotoristaRepository                                        │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+    // │    Interface do repositório de ViewLotacaoMotorista. Centraliza consultas de lotações  │
+    // │    de motoristas por setor e período, usando apenas operações genéricas.               │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🔗 RASTREABILIDADE:                                                                   │
+    // │    ⬅️ CHAMADO POR : Controllers e relatórios de Lotação de Motorista                   │
+    // │    ➡️ CHAMA       : IRepository (métodos base)                  │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     public interface IViewLotacaoMotoristaRepository : IRepository<ViewLotacaoMotorista>
     {
         // Sem métodos adicionais: utiliza apenas as operações genéricas do IRepository.

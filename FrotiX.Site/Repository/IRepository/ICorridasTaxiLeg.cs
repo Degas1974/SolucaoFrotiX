@@ -19,9 +19,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository.IRepository
     {
-    /// <summary>
-    /// Interface do repositório de CorridasTaxiLeg. Estende IRepository&lt;CorridasTaxiLeg&gt;.
-    /// </summary>
+    
+    // Interface do repositório de CorridasTaxiLeg. Estende IRepository&lt;CorridasTaxiLeg&gt;.
+    
     public interface ICorridasTaxiLegRepository : IRepository<CorridasTaxiLeg>
         {
         IEnumerable<SelectListItem> GetCorridasTaxiLegListForDropDown();

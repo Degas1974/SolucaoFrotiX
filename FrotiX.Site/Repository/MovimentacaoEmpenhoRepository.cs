@@ -27,16 +27,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: MovimentacaoEmpenhoRepository                                                      │
-    /// │ 📦 HERDA DE: Repository&lt;MovimentacaoEmpenho&gt;                                                    │
-    /// │ 🔌 IMPLEMENTA: IMovimentacaoEmpenhoRepository                                                 │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório especializado para gerenciamento de movimentações de empenho.
-    /// Controla lançamentos contábeis em notas de empenho para compras e serviços da frota.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: MovimentacaoEmpenhoRepository                                                      │
+    // │ 📦 HERDA DE: Repository&lt;MovimentacaoEmpenho&gt;                                                    │
+    // │ 🔌 IMPLEMENTA: IMovimentacaoEmpenhoRepository                                                 │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório especializado para gerenciamento de movimentações de empenho.
+    // Controla lançamentos contábeis em notas de empenho para compras e serviços da frota.
+    
     public class MovimentacaoEmpenhoRepository : Repository<MovimentacaoEmpenho>, IMovimentacaoEmpenhoRepository
         {
         private new readonly FrotiXDbContext _db;
@@ -46,27 +46,27 @@ namespace FrotiX.Repository
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetMovimentacaoEmpenhoListForDropDown                                       │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de gerenciamento financeiro e orçamentário             │
-        /// │    ➡️ CHAMA       : DbContext.MovimentacaoEmpenho, Join com Empenho, Linq              │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retorna lista de movimentações de empenho para uso em DropDown.
-        ///    Utiliza JOIN com tabela Empenho para enriquecimento de dados.
-        ///    Ordenação por data, exibindo data e valor concatenados.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Lista com Text="DataMovimentacao(Valor)" e Value=MovimentacaoId
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de SelectListItem com movimentações de empenho ordenadas por data</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetMovimentacaoEmpenhoListForDropDown                                       │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de gerenciamento financeiro e orçamentário             │
+        // │    ➡️ CHAMA       : DbContext.MovimentacaoEmpenho, Join com Empenho, Linq              │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retorna lista de movimentações de empenho para uso em DropDown.
+        // Utiliza JOIN com tabela Empenho para enriquecimento de dados.
+        // Ordenação por data, exibindo data e valor concatenados.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Lista com Text="DataMovimentacao(Valor)" e Value=MovimentacaoId
+        
+        
+        // Returns: Lista de SelectListItem com movimentações de empenho ordenadas por data
         public IEnumerable<SelectListItem> GetMovimentacaoEmpenhoListForDropDown()
             {
             return _db.MovimentacaoEmpenho
@@ -79,26 +79,26 @@ namespace FrotiX.Repository
                 });
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                      │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de MovimentacaoEmpenho, UnitOfWork                      │
-        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Atualiza dados de uma movimentação de empenho existente.
-        ///    Permite ajustes em lançamentos contábeis após registro inicial.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    movimentacaoempenho - Entidade com dados atualizados da movimentação
-        /// </para>
-        /// </summary>
-        /// <param name="movimentacaoempenho">Entidade MovimentacaoEmpenho com dados a serem persistidos</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de MovimentacaoEmpenho, UnitOfWork                      │
+        // │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Atualiza dados de uma movimentação de empenho existente.
+        // Permite ajustes em lançamentos contábeis após registro inicial.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // movimentacaoempenho - Entidade com dados atualizados da movimentação
+        
+        
+        // Param movimentacaoempenho: Entidade MovimentacaoEmpenho com dados a serem persistidos
         public new void Update(MovimentacaoEmpenho movimentacaoempenho)
             {
             var objFromDb = _db.MovimentacaoEmpenho.FirstOrDefault(s => s.MovimentacaoId == movimentacaoempenho.MovimentacaoId);

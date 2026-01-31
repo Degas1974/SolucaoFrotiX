@@ -24,64 +24,64 @@ using FrotiX.Repository.IRepository;
 
 namespace FrotiX.Repository
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: VeiculoPadraoViagemRepository                                                      │
-    /// │ 📦 HERDA DE: Repository<VeiculoPadraoViagem>                                                  │
-    /// │ 🔌 IMPLEMENTA: IVeiculoPadraoViagemRepository                                                 │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório responsável pelos padrões de viagem por veículo.
-    /// Atualiza métricas de uso e abastecimento registradas em VeiculoPadraoViagem.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: VeiculoPadraoViagemRepository                                                      │
+    // │ 📦 HERDA DE: Repository                                                  │
+    // │ 🔌 IMPLEMENTA: IVeiculoPadraoViagemRepository                                                 │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório responsável pelos padrões de viagem por veículo.
+    // Atualiza métricas de uso e abastecimento registradas em VeiculoPadraoViagem.
+    
     public class VeiculoPadraoViagemRepository : Repository<VeiculoPadraoViagem>, IVeiculoPadraoViagemRepository
     {
         private new readonly FrotiXDbContext _db;
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: VeiculoPadraoViagemRepository                                                │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
-        /// │    ➡️ CHAMA       : base(db)                                                             │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Inicializar o repositório com o contexto do banco de dados.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    db - Contexto do banco de dados da aplicação.
-        /// </para>
-        /// </summary>
-        /// <param name="db">Instância de <see cref="FrotiXDbContext"/>.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: VeiculoPadraoViagemRepository                                                │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
+        // │    ➡️ CHAMA       : base(db)                                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Inicializar o repositório com o contexto do banco de dados.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // db - Contexto do banco de dados da aplicação.
+        
+        
+        // Param db: Instância de <see cref="FrotiXDbContext"/>.
         public VeiculoPadraoViagemRepository(FrotiXDbContext db) : base(db)
         {
             _db = db;
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                        │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Services, Controllers                                                 │
-        /// │    ➡️ CHAMA       : DbContext.VeiculoPadraoViagem.FirstOrDefault, _db.SaveChanges         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Atualizar métricas consolidadas de viagem para um veículo.
-        ///    Define DataAtualizacao com o horário corrente.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    veiculoPadraoViagem - Entidade contendo os dados atualizados.
-        /// </para>
-        /// </summary>
-        /// <param name="veiculoPadraoViagem">Entidade <see cref="VeiculoPadraoViagem"/> com dados atualizados.</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                        │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Services, Controllers                                                 │
+        // │    ➡️ CHAMA       : DbContext.VeiculoPadraoViagem.FirstOrDefault, _db.SaveChanges         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Atualizar métricas consolidadas de viagem para um veículo.
+        // Define DataAtualizacao com o horário corrente.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // veiculoPadraoViagem - Entidade contendo os dados atualizados.
+        
+        
+        // Param veiculoPadraoViagem: Entidade <see cref="VeiculoPadraoViagem"/> com dados atualizados.
         public new void Update(VeiculoPadraoViagem veiculoPadraoViagem)
         {
             var objFromDb = _db.VeiculoPadraoViagem.FirstOrDefault(s => s.VeiculoId == veiculoPadraoViagem.VeiculoId);

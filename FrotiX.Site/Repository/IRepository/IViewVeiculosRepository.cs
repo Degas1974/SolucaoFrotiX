@@ -25,54 +25,54 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository.IRepository
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 INTERFACE: IViewVeiculosRepository                                                │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ DESCRIÇÃO:                                                                             │
-    /// │    Interface do repositório de ViewVeiculos.                                           │
-    /// │    Estende IRepository&lt;ViewVeiculos&gt; com métodos especializados.                 │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 INTERFACE: IViewVeiculosRepository                                                │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ DESCRIÇÃO:                                                                             │
+    // │    Interface do repositório de ViewVeiculos.                                           │
+    // │    Estende IRepository&lt;ViewVeiculos&gt; com métodos especializados.                 │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     public interface IViewVeiculosRepository : IRepository<ViewVeiculos>
     {
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetViewVeiculosListForDropDown                                            │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO:                                                                          │
-        /// │    Retorna lista consolidada de veículos formatada para DropDown.                      │
-        /// │    Inclui dados de contrato, marca, modelo e situação.                                 │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS: Nenhum                                                                      │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS:                                                                            │
-        /// │    • IEnumerable&lt;SelectListItem&gt; - Lista para DropDown de veículos              │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers diversos (seleção de veículos)                         │
-        /// │    ➡️ CHAMA       : Context.ViewVeiculos (SQL View)                                    │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetViewVeiculosListForDropDown                                            │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO:                                                                          │
+        // │    Retorna lista consolidada de veículos formatada para DropDown.                      │
+        // │    Inclui dados de contrato, marca, modelo e situação.                                 │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS: Nenhum                                                                      │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS:                                                                            │
+        // │    • IEnumerable&lt;SelectListItem&gt; - Lista para DropDown de veículos              │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers diversos (seleção de veículos)                         │
+        // │    ➡️ CHAMA       : Context.ViewVeiculos (SQL View)                                    │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         IEnumerable<SelectListItem> GetViewVeiculosListForDropDown();
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                     │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO:                                                                          │
-        /// │    Método de atualização. NÃO APLICÁVEL para views (somente leitura).                 │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS:                                                                             │
-        /// │    • viewVeiculos [ViewVeiculos]                                                       │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS: void                                                                       │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Não aplicável (views são somente leitura)                         │
-        /// │    ➡️ CHAMA       : Nenhum                                                             │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                     │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO:                                                                          │
+        // │    Método de atualização. NÃO APLICÁVEL para views (somente leitura).                 │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS:                                                                             │
+        // │    • viewVeiculos [ViewVeiculos]                                                       │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS: void                                                                       │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Não aplicável (views são somente leitura)                         │
+        // │    ➡️ CHAMA       : Nenhum                                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         void Update(ViewVeiculos viewVeiculos);
     }
 }

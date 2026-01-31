@@ -1,34 +1,30 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ListasCompartilhadas.cs                                                                  ║
-   ║ 📂 CAMINHO: /Helpers                                                                               ║
+   ║ 🚀 ARQUIVO: ListasCompartilhadas.cs                                                               ║
+   ║ 📂 CAMINHO: Helpers/                                                                              ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
    ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
-   ║    Provedores de listas para dropdowns e componentes EJ2 (DropDownList, TreeView). Inclui:         ║
-   ║    ListaFinalidade, ListaNivelCombustivel, ListaVeiculos, ListaMotorista, ListaRequisitante,       ║
-   ║    ListaEvento, ListaSetores (TreeView/Flat), ListaDias, ListaPeriodos, ListaStatus.               ║
-   ║    Comparadores: PtBrComparer (ignora acentos), NaturalStringComparer (ordenação natural).        ║
+   ║    Prover listas para dropdowns e componentes EJ2 (DropDownList, TreeView) e                       ║
+   ║    comparadores de ordenação pt-BR/natural.                                                       ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE DE FUNÇÕES (Entradas -> Saídas):                                                         ║
-   ║ ── Comparadores ──                                                                                  ║
-   ║ 1. [PtBrComparer.Compare]        : pt-BR ignora case/acentos... (x,y) -> int                       ║
-   ║ 2. [NaturalStringComparer.Compare]: Ordenação natural numérica. (x,y) -> int                       ║
-   ║ ── Listas ──                                                                                       ║
-   ║ 3. [ListaFinalidade.FinalidadesList]    : Lista de finalidades viagem... () -> List                ║
-   ║ 4. [ListaNivelCombustivel.NivelCombustivelList]: Níveis do tanque.... () -> List                   ║
-   ║ 5. [ListaVeiculos.VeiculosList]         : Veículos ativos (placa/modelo) () -> IEnumerable         ║
-   ║ 6. [ListaMotorista.MotoristaList]       : Motoristas ativos com foto... () -> IEnumerable          ║
-   ║ 7. [ListaRequisitante.RequisitantesList]: Requisitantes ordenados..... () -> IEnumerable           ║
-   ║ 8. [ListaEvento.EventosList]            : Eventos ativos.............. () -> IEnumerable           ║
-   ║ 9. [ListaSetores.SetoresList]           : Setores hierárquicos TreeView () -> List                 ║
-   ║10. [ListaSetoresEvento.SetoresEventoList]: Setores flat para eventos.. () -> List                  ║
-   ║11. [ListaSetoresFlat.SetoresListFlat]   : Setores indentados dropdown. () -> List                  ║
-   ║12. [ListaDias.DiasList]                 : Dias da semana pt-BR........ () -> List                  ║
-   ║13. [ListaPeriodos.PeriodosList]         : Períodos (D/S/Q/M)........... () -> List                 ║
-   ║14. [ListaRecorrente.RecorrenteList]     : Sim/Não para recorrência.... () -> List                  ║
-   ║15. [ListaStatus.StatusList]             : Status de viagem............ () -> List                  ║
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • PtBrComparer.Compare(string x, string y)                                                     ║
+   ║    • NaturalStringComparer.Compare(string x, string y)                                            ║
+   ║    • ListaFinalidade.FinalidadesList()                                                            ║
+   ║    • ListaNivelCombustivel.NivelCombustivelList()                                                 ║
+   ║    • ListaVeiculos.VeiculosList()                                                                 ║
+   ║    • ListaMotorista.MotoristaList()                                                               ║
+   ║    • ListaRequisitante.RequisitantesList()                                                        ║
+   ║    • ListaEvento.EventosList()                                                                    ║
+   ║    • ListaSetores.SetoresList()                                                                   ║
+   ║    • ListaSetoresEvento.SetoresEventoList()                                                       ║
+   ║    • ListaSetoresFlat.SetoresListFlat()                                                           ║
+   ║    • ListaDias.DiasList()                                                                         ║
+   ║    • ListaPeriodos.PeriodosList()                                                                 ║
+   ║    • ListaRecorrente.RecorrenteList()                                                             ║
+   ║    • ListaStatus.StatusList()                                                                     ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
    ║ 🔗 DEPENDÊNCIAS: IUnitOfWork (Repository Pattern), System.Globalization                            ║
-   ║ 📅 ATUALIZAÇÃO: 29/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
+   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
 */
 
@@ -43,13 +39,54 @@ namespace FrotiX.Helpers
 {
     #region Comparadores
 
-    /// <summary>
-    /// Comparador pt-BR que ignora case e acentos
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: PtBrComparer                                                                      │
+    // │ 📦 TIPO: Interna                                                                             │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Comparar strings em pt-BR ignorando maiúsculas/minúsculas e acentuação.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : Ordenações internas de listas
+    // ➡️ CHAMA       : CompareInfo.Compare()
+    
+    
     internal sealed class PtBrComparer :IComparer<string>
     {
         private static readonly CompareInfo Cmp = new CultureInfo("pt-BR").CompareInfo;
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Compare                                                                  │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : OrderBy/Sort                                                        │
+        // │    ➡️ CHAMA       : CompareInfo.Compare()                                               │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Comparar duas strings usando cultura pt-BR, ignorando case e acentos.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // x - Primeiro texto
+        // y - Segundo texto
+        
+        
+        
+        // 📤 RETORNO:
+        // int - Resultado da comparação (menor, igual ou maior).
+        
+        
+        // Param x: Primeiro texto.
+        // Param y: Segundo texto.
+        // Returns: Resultado da comparação.
         public int Compare(string x , string y)
         {
         return Cmp.Compare(
@@ -60,13 +97,51 @@ namespace FrotiX.Helpers
         }
     }
 
-    /// <summary>
-    /// Comparador para ordenação natural (trata números corretamente)
-    /// Exemplo: "1 Nome" < "2 Nome" < "10 Nome" < "Aaaa" < "Bbbb"
-    /// Números vêm antes de letras
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: NaturalStringComparer                                                             │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Implementar ordenação natural de strings, tratando sequências numéricas corretamente.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : Ordenações de listas no backend
+    // ➡️ CHAMA       : string.Compare(), int.Parse()
+    
+    
     public class NaturalStringComparer : IComparer<string>
     {
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Compare                                                                  │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : OrderBy/Sort                                                        │
+        // │    ➡️ CHAMA       : string.Compare(), int.Parse()                                       │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Comparar duas strings com ordenação natural (números antes de letras).
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // x - Primeiro texto
+        // y - Segundo texto
+        
+        
+        
+        // 📤 RETORNO:
+        // int - Resultado da comparação (menor, igual ou maior).
+        
+        
+        // Param x: Primeiro texto.
+        // Param y: Segundo texto.
+        // Returns: Resultado da comparação.
         public int Compare(string x, string y)
         {
             if (x == null && y == null) return 0;
@@ -129,6 +204,22 @@ namespace FrotiX.Helpers
 
     #region Lista de Finalidades
 
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ListaFinalidade                                                                   │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Disponibilizar lista de finalidades de viagem para dropdowns.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : UI/Views, Controllers e Services
+    // ➡️ CHAMA       : PtBrComparer (ordenação)
+    
+    
     public class ListaFinalidade
     {
         public string Descricao
@@ -142,15 +233,66 @@ namespace FrotiX.Helpers
 
         private readonly IUnitOfWork _unitOfWork;
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaFinalidade (ctor)                                                   │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (sem chamadas internas)                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância sem dependências (lista estática).
+        
+        
         public ListaFinalidade()
         {
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaFinalidade (ctor)                                                   │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (injeção de dependências)                                            │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância com acesso ao UnitOfWork quando necessário.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // unitOfWork - Unidade de trabalho para acesso a repositórios.
+        
+        
+        // Param unitOfWork: Unidade de trabalho para acesso a repositórios.
         public ListaFinalidade(IUnitOfWork unitOfWork)
         {
         _unitOfWork = unitOfWork;
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: FinalidadesList                                                          │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UI/Views, Controllers                                               │
+        // │    ➡️ CHAMA       : PtBrComparer, OrderBy()                                              │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retornar lista de finalidades ordenadas em pt-BR.
+        
+        
+        
+        // 📤 RETORNO:
+        // List&lt;ListaFinalidade&gt; - Lista ordenada de finalidades.
+        
+        
+        // Returns: Lista ordenada de finalidades.
         public List<ListaFinalidade> FinalidadesList()
         {
         try
@@ -197,6 +339,22 @@ namespace FrotiX.Helpers
 
     #region Lista de Nível de Combustível
 
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ListaNivelCombustivel                                                             │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Fornecer lista de níveis de combustível para seleção visual.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : UI/Views e componentes de formulário
+    // ➡️ CHAMA       : (lista estática)
+    
+    
     public class ListaNivelCombustivel
     {
         public string Nivel
@@ -214,15 +372,66 @@ namespace FrotiX.Helpers
 
         private readonly IUnitOfWork _unitOfWork;
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaNivelCombustivel (ctor)                                              │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (sem chamadas internas)                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância sem dependências (lista estática).
+        
+        
         public ListaNivelCombustivel()
         {
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaNivelCombustivel (ctor)                                              │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (injeção de dependências)                                            │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância com acesso ao UnitOfWork quando necessário.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // unitOfWork - Unidade de trabalho para acesso a repositórios.
+        
+        
+        // Param unitOfWork: Unidade de trabalho para acesso a repositórios.
         public ListaNivelCombustivel(IUnitOfWork unitOfWork)
         {
         _unitOfWork = unitOfWork;
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: NivelCombustivelList                                                    │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UI/Views, Controllers                                               │
+        // │    ➡️ CHAMA       : (lista estática)                                                    │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retornar lista fixa de níveis de combustível.
+        
+        
+        
+        // 📤 RETORNO:
+        // List&lt;ListaNivelCombustivel&gt; - Itens com nível, descrição e imagem.
+        
+        
+        // Returns: Lista fixa de níveis de combustível.
         public List<ListaNivelCombustivel> NivelCombustivelList()
         {
         try
@@ -248,6 +457,22 @@ namespace FrotiX.Helpers
 
     #region Lista de Veículos
 
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ListaVeiculos                                                                     │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Fornecer lista de veículos ativos para seleção em dropdowns.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : UI/Views, Controllers e Services
+    // ➡️ CHAMA       : IUnitOfWork.Veiculo.GetAllReduced()
+    
+    
     public class ListaVeiculos
     {
         public string Descricao
@@ -261,15 +486,66 @@ namespace FrotiX.Helpers
 
         private readonly IUnitOfWork _unitOfWork;
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaVeiculos (ctor)                                                     │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (sem chamadas internas)                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância sem dependências.
+        
+        
         public ListaVeiculos()
         {
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaVeiculos (ctor)                                                     │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (injeção de dependências)                                            │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância com UnitOfWork para acesso ao repositório de veículos.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // unitOfWork - Unidade de trabalho para acesso aos dados.
+        
+        
+        // Param unitOfWork: Unidade de trabalho para acesso aos dados.
         public ListaVeiculos(IUnitOfWork unitOfWork)
         {
         _unitOfWork = unitOfWork;
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: VeiculosList                                                            │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UI/Views, Controllers                                               │
+        // │    ➡️ CHAMA       : IUnitOfWork.Veiculo.GetAllReduced(), OrderBy()                      │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retornar veículos ativos ordenados por descrição (placa/modelo).
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;ListaVeiculos&gt; - Veículos ativos.
+        
+        
+        // Returns: Veículos ativos ordenados por descrição.
         public IEnumerable<ListaVeiculos> VeiculosList()
         {
         try
@@ -308,6 +584,22 @@ namespace FrotiX.Helpers
 
     #region Lista de Motoristas
 
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ListaMotorista                                                                    │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Fornecer lista de motoristas ativos com foto em base64.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : UI/Views, Controllers e Services
+    // ➡️ CHAMA       : IUnitOfWork.ViewMotoristas.GetAllReduced()
+    
+    
     public class ListaMotorista
     {
         public Guid MotoristaId
@@ -329,15 +621,66 @@ namespace FrotiX.Helpers
 
         private readonly IUnitOfWork _unitOfWork;
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaMotorista (ctor)                                                   │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (sem chamadas internas)                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância sem dependências.
+        
+        
         public ListaMotorista()
         {
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaMotorista (ctor)                                                   │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (injeção de dependências)                                            │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância com UnitOfWork para acesso à view de motoristas.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // unitOfWork - Unidade de trabalho para acesso aos dados.
+        
+        
+        // Param unitOfWork: Unidade de trabalho para acesso aos dados.
         public ListaMotorista(IUnitOfWork unitOfWork)
         {
         _unitOfWork = unitOfWork;
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: MotoristaList                                                          │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UI/Views, Controllers                                               │
+        // │    ➡️ CHAMA       : IUnitOfWork.ViewMotoristas.GetAllReduced()                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retornar motoristas ativos, com foto em base64 quando disponível.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;ListaMotorista&gt; - Motoristas ativos.
+        
+        
+        // Returns: Motoristas ativos ordenados por nome.
         public IEnumerable<ListaMotorista> MotoristaList()
         {
         try
@@ -369,6 +712,22 @@ namespace FrotiX.Helpers
 
     #region Lista de Requisitantes
 
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ListaRequisitante                                                                 │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Fornecer lista de requisitantes com ordenação natural.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : UI/Views, Controllers e Services
+    // ➡️ CHAMA       : IUnitOfWork.ViewRequisitantes.GetAllReduced(), NaturalStringComparer
+    
+    
     public class ListaRequisitante
     {
         public string Requisitante
@@ -382,15 +741,66 @@ namespace FrotiX.Helpers
 
         private readonly IUnitOfWork _unitOfWork;
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaRequisitante (ctor)                                                 │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (sem chamadas internas)                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância sem dependências.
+        
+        
         public ListaRequisitante()
         {
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaRequisitante (ctor)                                                 │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (injeção de dependências)                                            │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância com UnitOfWork para acesso a requisitantes.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // unitOfWork - Unidade de trabalho para acesso aos dados.
+        
+        
+        // Param unitOfWork: Unidade de trabalho para acesso aos dados.
         public ListaRequisitante(IUnitOfWork unitOfWork)
         {
         _unitOfWork = unitOfWork;
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: RequisitantesList                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UI/Views, Controllers                                               │
+        // │    ➡️ CHAMA       : IUnitOfWork.ViewRequisitantes.GetAllReduced(), NaturalStringComparer │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retornar requisitantes ordenados naturalmente (números antes de letras).
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;ListaRequisitante&gt; - Lista ordenada de requisitantes.
+        
+        
+        // Returns: Lista ordenada de requisitantes.
         public IEnumerable<ListaRequisitante> RequisitantesList()
         {
         try
@@ -427,6 +837,22 @@ namespace FrotiX.Helpers
 
     #region Lista de Eventos
 
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ListaEvento                                                                       │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Fornecer lista de eventos ativos para seleção.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : UI/Views, Controllers e Services
+    // ➡️ CHAMA       : IUnitOfWork.Evento.GetAllReduced()
+    
+    
     public class ListaEvento
     {
         public string Evento
@@ -444,15 +870,66 @@ namespace FrotiX.Helpers
 
         private readonly IUnitOfWork _unitOfWork;
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaEvento (ctor)                                                     │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (sem chamadas internas)                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância sem dependências.
+        
+        
         public ListaEvento()
         {
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaEvento (ctor)                                                     │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (injeção de dependências)                                            │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância com UnitOfWork para acesso a eventos.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // unitOfWork - Unidade de trabalho para acesso aos dados.
+        
+        
+        // Param unitOfWork: Unidade de trabalho para acesso aos dados.
         public ListaEvento(IUnitOfWork unitOfWork)
         {
         _unitOfWork = unitOfWork;
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: EventosList                                                            │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UI/Views, Controllers                                               │
+        // │    ➡️ CHAMA       : IUnitOfWork.Evento.GetAllReduced(), OrderBy()                        │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retornar eventos ativos ordenados por nome.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;ListaEvento&gt; - Eventos ativos.
+        
+        
+        // Returns: Eventos ativos ordenados por nome.
         public IEnumerable<ListaEvento> EventosList()
         {
         try
@@ -480,6 +957,22 @@ namespace FrotiX.Helpers
     #endregion
 
     #region Lista de Setores (TreeView)
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ListaSetores                                                                      │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Fornecer lista hierárquica de setores para TreeView.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : UI/Views e componentes TreeView
+    // ➡️ CHAMA       : IUnitOfWork.ViewSetores.GetAll(), IUnitOfWork.ViewSetores.GetFirstOrDefault()
+    
+    
     public class ListaSetores
     {
         public string SetorSolicitanteId
@@ -513,15 +1006,66 @@ namespace FrotiX.Helpers
 
         private readonly IUnitOfWork _unitOfWork;
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaSetores (ctor)                                                     │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (sem chamadas internas)                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância sem dependências.
+        
+        
         public ListaSetores()
         {
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaSetores (ctor)                                                     │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (injeção de dependências)                                            │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância com UnitOfWork para acesso aos setores.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // unitOfWork - Unidade de trabalho para acesso aos dados.
+        
+        
+        // Param unitOfWork: Unidade de trabalho para acesso aos dados.
         public ListaSetores(IUnitOfWork unitOfWork)
         {
         _unitOfWork = unitOfWork;
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: SetoresList                                                            │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UI/Views, TreeView                                                   │
+        // │    ➡️ CHAMA       : IUnitOfWork.ViewSetores.GetAll(), GetFirstOrDefault()                │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Montar lista hierárquica de setores com indicação de filhos.
+        
+        
+        
+        // 📤 RETORNO:
+        // List&lt;ListaSetores&gt; - Lista hierárquica para TreeView.
+        
+        
+        // Returns: Lista hierárquica para TreeView.
         public List<ListaSetores> SetoresList()
         {
         try
@@ -568,6 +1112,22 @@ namespace FrotiX.Helpers
 
     #region Lista de Setores para Evento (Lista Plana)
 
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ListaSetoresEvento                                                                │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Fornecer lista plana de setores para seleção em eventos.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : UI/Views e formulários de eventos
+    // ➡️ CHAMA       : IUnitOfWork.SetorSolicitante.GetAll()
+    
+    
     public class ListaSetoresEvento
     {
         public string SetorSolicitanteId
@@ -581,15 +1141,66 @@ namespace FrotiX.Helpers
 
         private readonly IUnitOfWork _unitOfWork;
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaSetoresEvento (ctor)                                             │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (sem chamadas internas)                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância sem dependências.
+        
+        
         public ListaSetoresEvento()
         {
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaSetoresEvento (ctor)                                             │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (injeção de dependências)                                            │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância com UnitOfWork para acesso aos setores.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // unitOfWork - Unidade de trabalho para acesso aos dados.
+        
+        
+        // Param unitOfWork: Unidade de trabalho para acesso aos dados.
         public ListaSetoresEvento(IUnitOfWork unitOfWork)
         {
         _unitOfWork = unitOfWork;
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: SetoresEventoList                                                     │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UI/Views, formulários de eventos                                   │
+        // │    ➡️ CHAMA       : IUnitOfWork.SetorSolicitante.GetAll(), OrderBy()                    │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retornar setores em lista plana ordenada por nome.
+        
+        
+        
+        // 📤 RETORNO:
+        // List&lt;ListaSetoresEvento&gt; - Lista ordenada de setores.
+        
+        
+        // Returns: Lista ordenada de setores.
         public List<ListaSetoresEvento> SetoresEventoList()
         {
         try
@@ -627,6 +1238,22 @@ namespace FrotiX.Helpers
 
     #region Lista de Setores Flat (para DropDownList com Indentação)
 
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ListaSetoresFlat                                                                  │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Fornecer lista plana de setores com indentação para dropdowns.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : UI/Views e formulários com DropDownList
+    // ➡️ CHAMA       : IUnitOfWork.ViewSetores.GetAllReduced(), CalcularNivel()
+    
+    
     public class ListaSetoresFlat
     {
         public string SetorSolicitanteId
@@ -644,10 +1271,42 @@ namespace FrotiX.Helpers
 
         private readonly IUnitOfWork _unitOfWork;
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaSetoresFlat (ctor)                                                │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (sem chamadas internas)                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância sem dependências.
+        
+        
         public ListaSetoresFlat()
         {
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaSetoresFlat (ctor)                                                │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (injeção de dependências)                                            │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância com UnitOfWork para acesso aos setores.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // unitOfWork - Unidade de trabalho para acesso aos dados.
+        
+        
+        // Param unitOfWork: Unidade de trabalho para acesso aos dados.
         public ListaSetoresFlat(IUnitOfWork unitOfWork)
         {
         _unitOfWork = unitOfWork;
@@ -670,6 +1329,25 @@ namespace FrotiX.Helpers
             }
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: SetoresListFlat                                                       │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UI/Views, DropDownList                                              │
+        // │    ➡️ CHAMA       : IUnitOfWork.ViewSetores.GetAllReduced(), CalcularNivel()            │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Montar lista plana de setores com indentação hierárquica.
+        
+        
+        
+        // 📤 RETORNO:
+        // List&lt;ListaSetoresFlat&gt; - Lista plana com nível calculado.
+        
+        
+        // Returns: Lista plana com nível calculado.
         public List<ListaSetoresFlat> SetoresListFlat()
         {
         try
@@ -760,6 +1438,22 @@ namespace FrotiX.Helpers
 
     #region Lista de Dias da Semana
 
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ListaDias                                                                        │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Fornecer lista de dias da semana em pt-BR.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : UI/Views e formulários de agenda
+    // ➡️ CHAMA       : (lista estática)
+    
+    
     public class ListaDias
     {
         public string DiaId
@@ -773,15 +1467,66 @@ namespace FrotiX.Helpers
 
         private readonly IUnitOfWork _unitOfWork;
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaDias (ctor)                                                        │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (sem chamadas internas)                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância sem dependências.
+        
+        
         public ListaDias()
         {
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaDias (ctor)                                                        │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (injeção de dependências)                                            │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância com UnitOfWork (quando necessário).
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // unitOfWork - Unidade de trabalho para acesso aos dados.
+        
+        
+        // Param unitOfWork: Unidade de trabalho para acesso aos dados.
         public ListaDias(IUnitOfWork unitOfWork)
         {
         _unitOfWork = unitOfWork;
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: DiasList                                                             │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UI/Views, formulários de agenda                                   │
+        // │    ➡️ CHAMA       : (lista estática)                                                    │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retornar dias da semana em pt-BR.
+        
+        
+        
+        // 📤 RETORNO:
+        // List&lt;ListaDias&gt; - Lista dos dias da semana.
+        
+        
+        // Returns: Lista dos dias da semana.
         public List<ListaDias> DiasList()
         {
         try
@@ -809,6 +1554,22 @@ namespace FrotiX.Helpers
 
     #region Lista de Períodos
 
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ListaPeriodos                                                                    │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Fornecer lista de períodos (D/S/Q/M) para seleção.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : UI/Views e formulários de recorrência
+    // ➡️ CHAMA       : (lista estática)
+    
+    
     public class ListaPeriodos
     {
         public string PeriodoId
@@ -820,10 +1581,42 @@ namespace FrotiX.Helpers
             get; set;
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaPeriodos (ctor)                                                   │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (sem chamadas internas)                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância sem dependências.
+        
+        
         public ListaPeriodos()
         {
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: PeriodosList                                                          │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UI/Views, formulários de recorrência                               │
+        // │    ➡️ CHAMA       : (lista estática)                                                    │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retornar lista de períodos de recorrência.
+        
+        
+        
+        // 📤 RETORNO:
+        // List&lt;ListaPeriodos&gt; - Lista de períodos.
+        
+        
+        // Returns: Lista de períodos.
         public List<ListaPeriodos> PeriodosList()
         {
         try
@@ -848,6 +1641,22 @@ namespace FrotiX.Helpers
 
     #region Lista de Recorrente
 
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ListaRecorrente                                                                  │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Fornecer lista Sim/Não para recorrência.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : UI/Views e formulários de recorrência
+    // ➡️ CHAMA       : (lista estática)
+    
+    
     public class ListaRecorrente
     {
         public string RecorrenteId
@@ -859,10 +1668,42 @@ namespace FrotiX.Helpers
             get; set;
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ListaRecorrente (ctor)                                                 │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : DI / Instanciação manual                                            │
+        // │    ➡️ CHAMA       : (sem chamadas internas)                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Criar instância sem dependências.
+        
+        
         public ListaRecorrente()
         {
         }
 
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: RecorrenteList                                                       │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UI/Views, formulários de recorrência                               │
+        // │    ➡️ CHAMA       : (lista estática)                                                    │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retornar lista de opções de recorrência (Sim/Não).
+        
+        
+        
+        // 📤 RETORNO:
+        // List&lt;ListaRecorrente&gt; - Lista de opções de recorrência.
+        
+        
+        // Returns: Lista de opções de recorrência.
         public List<ListaRecorrente> RecorrenteList()
         {
         try

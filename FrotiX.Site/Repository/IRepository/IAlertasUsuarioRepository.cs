@@ -19,39 +19,39 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Repository.IRepository
 {
-    /// <summary>
-    /// Interface do repositório de AlertasUsuario. Estende IRepository&lt;AlertasUsuario&gt;.
-    /// </summary>
+    
+    // Interface do repositório de AlertasUsuario. Estende IRepository&lt;AlertasUsuario&gt;.
+    
     public interface IAlertasUsuarioRepository :IRepository<AlertasUsuario>
     {
-        /// <summary>
-        /// Obtém todos os alertas de um usuário específico
-        /// </summary>
+        
+        // Obtém todos os alertas de um usuário específico
+        
         Task<IEnumerable<AlertasUsuario>> ObterAlertasPorUsuarioAsync(string usuarioId);
 
-        /// <summary>
-        /// Obtém todos os usuários vinculados a um alerta
-        /// </summary>
+        
+        // Obtém todos os usuários vinculados a um alerta
+        
         Task<IEnumerable<AlertasUsuario>> ObterUsuariosPorAlertaAsync(Guid alertaId);
 
-        /// <summary>
-        /// Verifica se um usuário já tem um alerta específico vinculado
-        /// </summary>
+        
+        // Verifica se um usuário já tem um alerta específico vinculado
+        
         Task<bool> UsuarioTemAlertaAsync(Guid alertaId , string usuarioId);
 
-        /// <summary>
-        /// Remove todos os alertas de um usuário
-        /// </summary>
+        
+        // Remove todos os alertas de um usuário
+        
         Task RemoverAlertasDoUsuarioAsync(string usuarioId);
 
-        /// <summary>
-        /// Remove todos os usuários de um alerta
-        /// </summary>
+        
+        // Remove todos os usuários de um alerta
+        
         Task RemoverUsuariosDoAlertaAsync(Guid alertaId);
 
-        /// <summary>
-        /// Atualiza a entidade AlertasUsuario
-        /// </summary>
+        
+        // Atualiza a entidade AlertasUsuario
+        
         void Update(AlertasUsuario alertaUsuario);
     }
 }

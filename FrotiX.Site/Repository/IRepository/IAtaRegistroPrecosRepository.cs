@@ -18,9 +18,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository.IRepository
     {
-    /// <summary>
-    /// Interface do repositório de AtaRegistroPrecos. Estende IRepository&lt;AtaRegistroPrecos&gt;.
-    /// </summary>
+    
+    // Interface do repositório de AtaRegistroPrecos. Estende IRepository&lt;AtaRegistroPrecos&gt;.
+    
     public interface IAtaRegistroPrecosRepository : IRepository<AtaRegistroPrecos>
         {
 

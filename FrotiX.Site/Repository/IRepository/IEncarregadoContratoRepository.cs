@@ -12,9 +12,9 @@ using FrotiX.Models;
 
 namespace FrotiX.Repository.IRepository
 {
-    /// <summary>
-    /// Interface do repositório de EncarregadoContrato. Estende IRepository&lt;EncarregadoContrato&gt;.
-    /// </summary>
+    
+    // Interface do repositório de EncarregadoContrato. Estende IRepository&lt;EncarregadoContrato&gt;.
+    
     public interface IEncarregadoContratoRepository : IRepository<EncarregadoContrato>
     {
         new void Update(EncarregadoContrato encarregadoContrato);

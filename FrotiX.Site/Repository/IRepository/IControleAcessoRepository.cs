@@ -18,9 +18,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository.IRepository
     {
-    /// <summary>
-    /// Interface do repositório de ControleAcesso. Estende IRepository&lt;ControleAcesso&gt;.
-    /// </summary>
+    
+    // Interface do repositório de ControleAcesso. Estende IRepository&lt;ControleAcesso&gt;.
+    
     public interface IControleAcessoRepository : IRepository<ControleAcesso>
         {
 

@@ -18,9 +18,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository.IRepository
     {
-    /// <summary>
-    /// Interface do repositório de Empenho. Estende IRepository&lt;Empenho&gt;.
-    /// </summary>
+    
+    // Interface do repositório de Empenho. Estende IRepository&lt;Empenho&gt;.
+    
     public interface IEmpenhoRepository : IRepository<Empenho>
         {
 

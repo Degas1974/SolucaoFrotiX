@@ -27,16 +27,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: LotacaoMotoristaRepository                                                         │
-    /// │ 📦 HERDA DE: Repository&lt;LotacaoMotorista&gt;                                                       │
-    /// │ 🔌 IMPLEMENTA: ILotacaoMotoristaRepository                                                    │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório especializado para gerenciamento de lotações de motoristas.
-    /// Controla alocação de motoristas em departamentos/setores da organização.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: LotacaoMotoristaRepository                                                         │
+    // │ 📦 HERDA DE: Repository&lt;LotacaoMotorista&gt;                                                       │
+    // │ 🔌 IMPLEMENTA: ILotacaoMotoristaRepository                                                    │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório especializado para gerenciamento de lotações de motoristas.
+    // Controla alocação de motoristas em departamentos/setores da organização.
+    
     public class LotacaoMotoristaRepository : Repository<LotacaoMotorista>, ILotacaoMotoristaRepository
         {
         private new readonly FrotiXDbContext _db;
@@ -46,26 +46,26 @@ namespace FrotiX.Repository
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetLotacaoMotoristaListForDropDown                                          │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de gerenciamento de lotações                            │
-        /// │    ➡️ CHAMA       : DbContext.LotacaoMotorista, Linq Select                             │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retorna lista de lotações de motoristas para uso em DropDown.
-        ///    Implementação pendente - retorna estrutura sem Text/Value definidos.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Lista de lotações (implementação incompleta)
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de SelectListItem com lotações de motoristas</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetLotacaoMotoristaListForDropDown                                          │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de gerenciamento de lotações                            │
+        // │    ➡️ CHAMA       : DbContext.LotacaoMotorista, Linq Select                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retorna lista de lotações de motoristas para uso em DropDown.
+        // Implementação pendente - retorna estrutura sem Text/Value definidos.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Lista de lotações (implementação incompleta)
+        
+        
+        // Returns: Lista de SelectListItem com lotações de motoristas
         public IEnumerable<SelectListItem> GetLotacaoMotoristaListForDropDown()
             {
             return _db.LotacaoMotorista
@@ -74,26 +74,26 @@ namespace FrotiX.Repository
                     });
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                      │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de LotacaoMotorista, UnitOfWork                         │
-        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Atualiza registro de lotação de motorista (mudança de setor, status, etc).
-        ///    Importante para manter histórico de movimentações de pessoal.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    lotacaoMotorista - Entidade com dados atualizados de lotação
-        /// </para>
-        /// </summary>
-        /// <param name="lotacaoMotorista">Entidade LotacaoMotorista com dados a serem persistidos</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de LotacaoMotorista, UnitOfWork                         │
+        // │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Atualiza registro de lotação de motorista (mudança de setor, status, etc).
+        // Importante para manter histórico de movimentações de pessoal.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // lotacaoMotorista - Entidade com dados atualizados de lotação
+        
+        
+        // Param lotacaoMotorista: Entidade LotacaoMotorista com dados a serem persistidos
         public new void Update(LotacaoMotorista lotacaoMotorista)
             {
             var objFromDb = _db.LotacaoMotorista.FirstOrDefault(lm => lm.LotacaoMotoristaId == lotacaoMotorista.LotacaoMotoristaId);

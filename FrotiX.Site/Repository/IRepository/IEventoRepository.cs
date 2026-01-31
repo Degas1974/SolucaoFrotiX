@@ -30,9 +30,9 @@ namespace FrotiX.Repository.IRepository
 
         void Update(Evento evento);
 
-        /// <summary>
-        /// Lista eventos com paginação e otimização
-        /// </summary>
+        
+        // Lista eventos com paginação e otimização
+        
         Task<(List<EventoListDto> eventos, int totalItems)> GetEventosPaginadoAsync(
             int page ,
             int pageSize ,

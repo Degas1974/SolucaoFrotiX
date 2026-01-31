@@ -1,11 +1,18 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: AlertasHub.cs                                                                          ║
-   ║ 📂 CAMINHO: /Hubs                                                                                  ║
+   ║ 🚀 ARQUIVO: AlertasHub.cs                                                                         ║
+   ║ 📂 CAMINHO: Hubs/                                                                                 ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: SignalR Hub para alertas em tempo real. Gerencia grupos user_{id}.                    ║
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Hub SignalR para alertas em tempo real. Gerencia grupos por usuário (user_{id})                 ║
+   ║    e eventos de conexão/desconexão.                                                               ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: 1.[MarcarComoLido] 2.[OnConnectedAsync] 3.[OnDisconnectedAsync]                         ║
-   ║ 🔗 DEPS: Microsoft.AspNetCore.SignalR | 📅 29/01/2026 | 👤 Copilot | 📝 v2.0                       ║
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • MarcarComoLido(string alertaId, string usuarioId)                                             ║
+   ║    • OnConnectedAsync()                                                                           ║
+   ║    • OnDisconnectedAsync(Exception exception)                                                     ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPENDÊNCIAS: Microsoft.AspNetCore.SignalR                                                     ║
+   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
 */
 
@@ -15,9 +22,46 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Hubs
 {
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: AlertasHub                                                                         │
+    // │ 📦 HERDA DE: Hub                                                                              │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Disponibilizar eventos SignalR para alertas em tempo real por usuário.
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : Clientes SignalR / Pipeline Hub
+    // ➡️ CHAMA       : Clients.User().SendAsync(), Groups.AddToGroupAsync(), Groups.RemoveFromGroupAsync()
+    
+    
     public class AlertasHub :Hub
     {
-        // Método que pode ser chamado do cliente para marcar alerta como lido
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: MarcarComoLido                                                           │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Cliente SignalR                                                     │
+        // │    ➡️ CHAMA       : Clients.User().SendAsync()                                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Notificar o cliente que um alerta foi marcado como lido.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // alertaId - Identificador do alerta
+        // usuarioId - Identificador do usuário alvo
+        
+        
+        // Param alertaId: Identificador do alerta.
+        // Param usuarioId: Identificador do usuário alvo.
         public async Task MarcarComoLido(string alertaId , string usuarioId)
         {
             try
@@ -30,7 +74,25 @@ namespace FrotiX.Hubs
             }
         }
 
-        // Método chamado quando um cliente conecta
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: OnConnectedAsync                                                         │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Pipeline SignalR                                                     │
+        // │    ➡️ CHAMA       : Groups.AddToGroupAsync(), base.OnConnectedAsync()                     │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Registrar conexão do cliente e adicioná-lo ao grupo user_{id} quando identificado.
+        
+        
+        
+        // 📤 RETORNO:
+        // Task - Operação assíncrona de conexão.
+        
+        
+        // Returns: Task de conexão do SignalR.
         public override async Task OnConnectedAsync()
         {
             try
@@ -69,7 +131,31 @@ namespace FrotiX.Hubs
             }
         }
 
-        // Método chamado quando um cliente desconecta
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: OnDisconnectedAsync                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Pipeline SignalR                                                     │
+        // │    ➡️ CHAMA       : Groups.RemoveFromGroupAsync(), base.OnDisconnectedAsync()             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Remover o cliente do grupo user_{id} ao desconectar.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // exception - Exceção gerada durante a desconexão (se houver).
+        
+        
+        
+        // 📤 RETORNO:
+        // Task - Operação assíncrona de desconexão.
+        
+        
+        // Param exception: Exceção gerada durante a desconexão (se houver).
+        // Returns: Task de desconexão do SignalR.
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             try

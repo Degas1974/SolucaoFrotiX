@@ -14,40 +14,40 @@
 */
 namespace FrotiX.Repository.IRepository
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ ⚡ INTERFACE: IUnitOfWork (RepactuacaoVeiculo)                                          │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-    /// │    Parcial do UnitOfWork responsável por expor o repositório de repactuação de         │
-    /// │    veículos, centralizando o acesso às operações desse domínio.                        │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ 🔗 RASTREABILIDADE:                                                                   │
-    /// │    ⬅️ CHAMADO POR : Controllers e Services de RepactuacaoVeiculo                       │
-    /// │    ➡️ CHAMA       : Repositório de RepactuacaoVeiculo                                  │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ ⚡ INTERFACE: IUnitOfWork (RepactuacaoVeiculo)                                          │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+    // │    Parcial do UnitOfWork responsável por expor o repositório de repactuação de         │
+    // │    veículos, centralizando o acesso às operações desse domínio.                        │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ 🔗 RASTREABILIDADE:                                                                   │
+    // │    ⬅️ CHAMADO POR : Controllers e Services de RepactuacaoVeiculo                       │
+    // │    ➡️ CHAMA       : Repositório de RepactuacaoVeiculo                                  │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     public partial interface IUnitOfWork
     {
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: RepactuacaoVeiculo                                                 │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
-        /// │    Fornece acesso ao repositório de repactuação de veículos, utilizado para           │
-        /// │    consultas e atualizações de reajustes contratuais por veículo.                     │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS (Entradas):                                                                 │
-        /// │    • Nenhum parâmetro                                                                 │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS (Saídas):                                                                  │
-        /// │    • [IRepactuacaoVeiculoRepository]: Instância do repositório                         │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : Controllers e Services de RepactuacaoVeiculo                      │
-        /// │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: RepactuacaoVeiculo                                                 │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO DETALHADA:                                                               │
+        // │    Fornece acesso ao repositório de repactuação de veículos, utilizado para           │
+        // │    consultas e atualizações de reajustes contratuais por veículo.                     │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS (Entradas):                                                                 │
+        // │    • Nenhum parâmetro                                                                 │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS (Saídas):                                                                  │
+        // │    • [IRepactuacaoVeiculoRepository]: Instância do repositório                         │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : Controllers e Services de RepactuacaoVeiculo                      │
+        // │    ➡️ CHAMA       : DbContext, LINQ queries                                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         IRepactuacaoVeiculoRepository RepactuacaoVeiculo { get; }
     }
 }

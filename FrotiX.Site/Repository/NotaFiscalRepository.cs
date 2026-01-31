@@ -27,16 +27,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: NotaFiscalRepository                                                               │
-    /// │ 📦 HERDA DE: Repository&lt;NotaFiscal&gt;                                                             │
-    /// │ 🔌 IMPLEMENTA: INotaFiscalRepository                                                          │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório especializado para gerenciamento de notas fiscais.
-    /// Fornece acesso a dados e operações específicas para controle fiscal da frota.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: NotaFiscalRepository                                                               │
+    // │ 📦 HERDA DE: Repository&lt;NotaFiscal&gt;                                                             │
+    // │ 🔌 IMPLEMENTA: INotaFiscalRepository                                                          │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório especializado para gerenciamento de notas fiscais.
+    // Fornece acesso a dados e operações específicas para controle fiscal da frota.
+    
     public class NotaFiscalRepository : Repository<NotaFiscal>, INotaFiscalRepository
         {
         private new readonly FrotiXDbContext _db;
@@ -46,26 +46,26 @@ namespace FrotiX.Repository
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetNotaFiscalListForDropDown                                                │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers que utilizam dropdowns de notas fiscais                 │
-        /// │    ➡️ CHAMA       : DbContext.NotaFiscal, Linq OrderBy/Select                           │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retorna lista de notas fiscais formatada para uso em DropDown/SelectList.
-        ///    Ordenação por número da nota fiscal para facilitar localização.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Lista com Text=NumeroNF e Value=NotaFiscalId
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de SelectListItem ordenada por número da nota fiscal</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetNotaFiscalListForDropDown                                                │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers que utilizam dropdowns de notas fiscais                 │
+        // │    ➡️ CHAMA       : DbContext.NotaFiscal, Linq OrderBy/Select                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retorna lista de notas fiscais formatada para uso em DropDown/SelectList.
+        // Ordenação por número da nota fiscal para facilitar localização.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Lista com Text=NumeroNF e Value=NotaFiscalId
+        
+        
+        // Returns: Lista de SelectListItem ordenada por número da nota fiscal
         public IEnumerable<SelectListItem> GetNotaFiscalListForDropDown()
             {
             return _db.NotaFiscal
@@ -77,26 +77,26 @@ namespace FrotiX.Repository
                 }); ;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                      │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de NotaFiscal, UnitOfWork                               │
-        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Atualiza dados de uma nota fiscal existente no banco de dados.
-        ///    Permite correções em informações fiscais após registro inicial.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    notaFiscal - Entidade NotaFiscal com dados atualizados
-        /// </para>
-        /// </summary>
-        /// <param name="notaFiscal">Entidade NotaFiscal com dados a serem persistidos</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de NotaFiscal, UnitOfWork                               │
+        // │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Atualiza dados de uma nota fiscal existente no banco de dados.
+        // Permite correções em informações fiscais após registro inicial.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // notaFiscal - Entidade NotaFiscal com dados atualizados
+        
+        
+        // Param notaFiscal: Entidade NotaFiscal com dados a serem persistidos
         public new void Update(NotaFiscal notaFiscal)
             {
             var objFromDb = _db.NotaFiscal.FirstOrDefault(s => s.NotaFiscalId == notaFiscal.NotaFiscalId);

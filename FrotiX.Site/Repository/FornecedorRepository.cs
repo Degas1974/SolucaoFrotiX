@@ -27,15 +27,15 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: FornecedorRepository                                                       │
-    /// │───────────────────────────────────────────────────────────────────────────────────────│
-    /// │ DESCRIÇÃO:                                                                             │
-    /// │    Repositório para gerenciar fornecedores do sistema.                                │
-    /// │    Estende Repository&lt;Fornecedor&gt; com métodos especializados.                   │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: FornecedorRepository                                                       │
+    // │───────────────────────────────────────────────────────────────────────────────────────│
+    // │ DESCRIÇÃO:                                                                             │
+    // │    Repositório para gerenciar fornecedores do sistema.                                │
+    // │    Estende Repository&lt;Fornecedor&gt; com métodos especializados.                   │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+    
     public class FornecedorRepository : Repository<Fornecedor>, IFornecedorRepository
     {
         private new readonly FrotiXDbContext _db;
@@ -45,24 +45,24 @@ namespace FrotiX.Repository
             _db = db;
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetFornecedorListForDropDown                                              │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO:                                                                          │
-        /// │    Retorna lista de fornecedores ATIVOS formatada para DropDown.                       │
-        /// │    Filtra apenas fornecedores com Status=true, ordenados por descrição.               │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS: Nenhum                                                                      │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS:                                                                            │
-        /// │    • IEnumerable&lt;SelectListItem&gt; - Lista para DropDown (apenas ativos)           │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de Contrato, formulários de seleção                    │
-        /// │    ➡️ CHAMA       : DbContext.Fornecedor (LINQ Where, OrderBy, Select)                 │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetFornecedorListForDropDown                                              │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO:                                                                          │
+        // │    Retorna lista de fornecedores ATIVOS formatada para DropDown.                       │
+        // │    Filtra apenas fornecedores com Status=true, ordenados por descrição.               │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS: Nenhum                                                                      │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS:                                                                            │
+        // │    • IEnumerable&lt;SelectListItem&gt; - Lista para DropDown (apenas ativos)           │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de Contrato, formulários de seleção                    │
+        // │    ➡️ CHAMA       : DbContext.Fornecedor (LINQ Where, OrderBy, Select)                 │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         public IEnumerable<SelectListItem> GetFornecedorListForDropDown()
         {
             return _db.Fornecedor
@@ -75,23 +75,23 @@ namespace FrotiX.Repository
                 });
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                     │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO:                                                                          │
-        /// │    Atualiza um fornecedor no banco de dados.                                           │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS:                                                                             │
-        /// │    • fornecedor [Fornecedor] - Fornecedor a ser atualizado                             │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS: void                                                                       │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de Fornecedor, UnitOfWork                              │
-        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                        │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                     │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO:                                                                          │
+        // │    Atualiza um fornecedor no banco de dados.                                           │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS:                                                                             │
+        // │    • fornecedor [Fornecedor] - Fornecedor a ser atualizado                             │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS: void                                                                       │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de Fornecedor, UnitOfWork                              │
+        // │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                        │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         public new void Update(Fornecedor fornecedor)
         {
             var objFromDb = _db.Fornecedor.FirstOrDefault(s => s.FornecedorId == fornecedor.FornecedorId);

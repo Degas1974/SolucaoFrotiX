@@ -42,19 +42,19 @@ namespace FrotiX.EndPoints
             _settings = settings;
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: Get (Lista)                                                        │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO: Lista todas as roles do sistema para DataTable.                        │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📤 OUTPUTS: { data, recordsTotal, recordsFiltered }                                  │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🔗 RASTREABILIDADE:                                                                   │
-        /// │    ⬅️ CHAMADO POR : GET /api/roles (Pages/Roles.cshtml)                               │
-        /// │    ➡️ CHAMA       : RoleManager.Roles                                                 │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: Get (Lista)                                                        │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO: Lista todas as roles do sistema para DataTable.                        │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📤 OUTPUTS: { data, recordsTotal, recordsFiltered }                                  │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🔗 RASTREABILIDADE:                                                                   │
+        // │    ⬅️ CHAMADO POR : GET /api/roles (Pages/Roles.cshtml)                               │
+        // │    ➡️ CHAMA       : RoleManager.Roles                                                 │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<IdentityRole>>> Get()
@@ -74,30 +74,30 @@ namespace FrotiX.EndPoints
             }
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: Get (Por ID)                                                       │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO: Busca uma role específica pelo ID.                                     │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS: • id [string]: ID da role (GUID)                                          │
-        /// │ 📤 OUTPUTS: IdentityRole                                                             │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: Get (Por ID)                                                       │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO: Busca uma role específica pelo ID.                                     │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS: • id [string]: ID da role (GUID)                                          │
+        // │ 📤 OUTPUTS: IdentityRole                                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IdentityRole>> Get([FromRoute] string id) => Ok(await _manager.FindByIdAsync(id));
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: Create                                                             │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO: Cria uma nova role no sistema. Gera novo GUID automaticamente.         │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS: • model [IdentityRole]: Dados da nova role                                │
-        /// │ 📤 OUTPUTS: 201 Created com location header ou BadRequest                            │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: Create                                                             │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO: Cria uma nova role no sistema. Gera novo GUID automaticamente.         │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS: • model [IdentityRole]: Dados da nova role                                │
+        // │ 📤 OUTPUTS: 201 Created com location header ou BadRequest                            │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<IActionResult> Create([FromForm] IdentityRole model)
@@ -125,16 +125,16 @@ namespace FrotiX.EndPoints
             }
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: Update                                                             │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO: Atualiza uma role existente.                                           │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS: • model [IdentityRole]: Dados atualizados                                 │
-        /// │ 📤 OUTPUTS: 204 NoContent ou BadRequest                                              │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: Update                                                             │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO: Atualiza uma role existente.                                           │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS: • model [IdentityRole]: Dados atualizados                                 │
+        // │ 📤 OUTPUTS: 204 NoContent ou BadRequest                                              │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Update([FromForm] IdentityRole model)
@@ -158,16 +158,16 @@ namespace FrotiX.EndPoints
             }
         }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ FUNCIONALIDADE: Delete                                                             │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 🎯 DESCRIÇÃO: Remove uma role. Bloqueia exclusão da role padrão do sistema.          │
-        /// │───────────────────────────────────────────────────────────────────────────────────────│
-        /// │ 📥 INPUTS: • model [IdentityRole]: Role a ser removida                               │
-        /// │ 📤 OUTPUTS: 204 NoContent ou BadRequest (se for role padrão)                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: Delete                                                             │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO: Remove uma role. Bloqueia exclusão da role padrão do sistema.          │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS: • model [IdentityRole]: Role a ser removida                               │
+        // │ 📤 OUTPUTS: 204 NoContent ou BadRequest (se for role padrão)                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Delete([FromForm] IdentityRole model)

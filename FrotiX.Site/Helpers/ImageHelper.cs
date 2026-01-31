@@ -1,18 +1,18 @@
 ﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ImageHelper.cs                                                                          ║
-   ║ 📂 CAMINHO: /Helpers                                                                               ║
+   ║ 🚀 ARQUIVO: ImageHelper.cs                                                                         ║
+   ║ 📂 CAMINHO: Helpers/                                                                              ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
    ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
-   ║    Utilitários de manipulação de imagens usando System.Drawing. IsImageValid verifica               ║
-   ║    bytes válidos como imagem. ResizeImage redimensiona JPEG/PNG para dimensões especificadas.      ║
-   ║    NOTA: [SupportedOSPlatform("windows")] - funciona apenas em Windows.                             ║
+   ║    Utilitários de manipulação de imagens usando System.Drawing. Valida imagem e                   ║
+   ║    redimensiona JPEG/PNG para dimensões específicas.                                               ║
+   ║    ⚠️ ATENÇÃO: [SupportedOSPlatform(\"windows\")] - funciona apenas em Windows.                    ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE DE FUNÇÕES (Entradas -> Saídas):                                                         ║
-   ║ 1. [IsImageValid] : Verifica se byte[] é imagem válida....... (byte[]) -> bool                     ║
-   ║ 2. [ResizeImage]  : Redimensiona JPEG/PNG para width/height.. (byte[],w,h) -> byte[] ou null      ║
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • IsImageValid(byte[] imageData)                                                                ║
+   ║    • ResizeImage(byte[] imageData, int width, int height)                                          ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: System.Drawing (Windows-only), System.Drawing.Drawing2D                          ║
-   ║ 📅 ATUALIZAÇÃO: 29/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
+   ║ 🔗 DEPENDÊNCIAS: System.Drawing, System.Drawing.Drawing2D, System.Drawing.Imaging                  ║
+   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
 */
 
@@ -26,11 +26,55 @@ using System.Runtime.Versioning;
 namespace FrotiX.Helpers
     {
     [SupportedOSPlatform("windows")]
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ImageHelper                                                                       │
+    // │ 📦 TIPO: Estática                                                                             │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    
+    // 🎯 OBJETIVO:
+    // Oferecer validação e redimensionamento de imagens no backend (Windows-only).
+    
+    
+    
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : Uploads e fluxos de processamento de imagem
+    // ➡️ CHAMA       : System.Drawing (Image, Bitmap, Graphics)
+    
+    
+    
+    // ⚠️ ATENÇÃO:
+    // Compatível apenas com Windows devido ao uso de System.Drawing.
+    
+    
     public static class ImageHelper
         {
-        /// <summary>
-        /// Verifica se um array de bytes representa uma imagem válida.
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: IsImageValid                                                             │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : ResizeImage()                                                       │
+        // │    ➡️ CHAMA       : Image.FromStream()                                                   │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Verificar se um array de bytes representa uma imagem válida.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // imageData - Bytes da imagem.
+        
+        
+        
+        // 📤 RETORNO:
+        // bool - True se a imagem for válida; caso contrário, false.
+        
+        
+        // Param imageData: Bytes da imagem.
+        // Returns: True se a imagem for válida; caso contrário, false.
         public static bool IsImageValid(byte[] imageData)
             {
             try
@@ -45,9 +89,35 @@ namespace FrotiX.Helpers
                 }
             }
 
-        /// <summary>
-        /// Redimensiona uma imagem JPEG ou PNG em byte[], retornando o byte[] redimensionado ou null.
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ResizeImage                                                             │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Uploads e fluxos de imagens                                         │
+        // │    ➡️ CHAMA       : IsImageValid(), Image.FromStream(), Bitmap.Save()                   │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Redimensionar uma imagem JPEG/PNG e retornar o byte[] resultante.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // imageData - Bytes da imagem original
+        // width - Largura desejada
+        // height - Altura desejada
+        
+        
+        
+        // 📤 RETORNO:
+        // byte[] - Imagem redimensionada em formato JPEG, ou null se inválida.
+        
+        
+        // Param imageData: Bytes da imagem original.
+        // Param width: Largura desejada.
+        // Param height: Altura desejada.
+        // Returns: Imagem redimensionada em formato JPEG, ou null se inválida.
         public static byte[] ResizeImage(byte[] imageData, int width, int height)
             {
             if (imageData == null || imageData.Length == 0 || !IsImageValid(imageData))
@@ -77,4 +147,3 @@ namespace FrotiX.Helpers
             }
         }
     }
-

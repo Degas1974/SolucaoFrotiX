@@ -28,16 +28,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: PatrimonioRepository                                                               │
-    /// │ 📦 HERDA DE: Repository&lt;Patrimonio&gt;                                                             │
-    /// │ 🔌 IMPLEMENTA: IPatrimonioRepository                                                          │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório especializado para gerenciamento de patrimônio.
-    /// Controla ativos permanentes da organização (equipamentos, móveis, bens patrimoniais).
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: PatrimonioRepository                                                               │
+    // │ 📦 HERDA DE: Repository&lt;Patrimonio&gt;                                                             │
+    // │ 🔌 IMPLEMENTA: IPatrimonioRepository                                                          │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório especializado para gerenciamento de patrimônio.
+    // Controla ativos permanentes da organização (equipamentos, móveis, bens patrimoniais).
+    
     public class PatrimonioRepository : Repository<Patrimonio>, IPatrimonioRepository
         {
         private new readonly FrotiXDbContext _db;
@@ -47,27 +47,27 @@ namespace FrotiX.Repository
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetPatrimonioListForDropDown                                                │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de gerenciamento patrimonial                           │
-        /// │    ➡️ CHAMA       : DbContext.Patrimonio, Linq OrderBy/Select                           │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retorna lista de patrimônios para uso em DropDown/SelectList.
-        ///    Exibe NPR (Número de Patrimônio) para identificação.
-        ///    Ordenação por número de série para facilitar localização.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Lista com Text=NPR e Value=PatrimonioId
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de SelectListItem ordenada por número de série do patrimônio</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetPatrimonioListForDropDown                                                │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de gerenciamento patrimonial                           │
+        // │    ➡️ CHAMA       : DbContext.Patrimonio, Linq OrderBy/Select                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retorna lista de patrimônios para uso em DropDown/SelectList.
+        // Exibe NPR (Número de Patrimônio) para identificação.
+        // Ordenação por número de série para facilitar localização.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Lista com Text=NPR e Value=PatrimonioId
+        
+        
+        // Returns: Lista de SelectListItem ordenada por número de série do patrimônio
         public IEnumerable<SelectListItem> GetPatrimonioListForDropDown()
             {
             return _db.Patrimonio
@@ -79,26 +79,26 @@ namespace FrotiX.Repository
                 });
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                      │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de Patrimonio, UnitOfWork                               │
-        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Atualiza dados de um patrimônio existente no banco de dados.
-        ///    Permite alterações em informações cadastrais, localização e status do bem.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    patrimonio - Entidade Patrimonio com dados atualizados
-        /// </para>
-        /// </summary>
-        /// <param name="patrimonio">Entidade Patrimonio com dados a serem persistidos</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de Patrimonio, UnitOfWork                               │
+        // │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Atualiza dados de um patrimônio existente no banco de dados.
+        // Permite alterações em informações cadastrais, localização e status do bem.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // patrimonio - Entidade Patrimonio com dados atualizados
+        
+        
+        // Param patrimonio: Entidade Patrimonio com dados a serem persistidos
         public new void Update(Patrimonio patrimonio)
             {
             var objFromDb = _db.Patrimonio.FirstOrDefault(s => s.PatrimonioId == patrimonio.PatrimonioId);

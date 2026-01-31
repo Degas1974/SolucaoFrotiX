@@ -14,10 +14,10 @@ using System;
 
 namespace FrotiX.Models
 {
-    /// <summary>
-    /// Modelo mapeado da ViewVeiculos
-    /// Tipos verificados campo a campo com o SQL da View
-    /// </summary>
+    
+    // Modelo mapeado da ViewVeiculos
+    // Tipos verificados campo a campo com o SQL da View
+    
     public class ViewVeiculos
     {
         // Veiculo.VeiculoId - UNIQUEIDENTIFIER NOT NULL

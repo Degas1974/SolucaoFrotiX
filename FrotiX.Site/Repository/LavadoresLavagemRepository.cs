@@ -27,16 +27,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: LavadoresLavagemRepository                                                         │
-    /// │ 📦 HERDA DE: Repository&lt;LavadoresLavagem&gt;                                                       │
-    /// │ 🔌 IMPLEMENTA: ILavadoresLavagemRepository                                                    │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório para relacionamento muitos-para-muitos entre Lavadores e Lavagens.
-    /// Registra histórico de participação de lavadores em cada serviço executado.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: LavadoresLavagemRepository                                                         │
+    // │ 📦 HERDA DE: Repository&lt;LavadoresLavagem&gt;                                                       │
+    // │ 🔌 IMPLEMENTA: ILavadoresLavagemRepository                                                    │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório para relacionamento muitos-para-muitos entre Lavadores e Lavagens.
+    // Registra histórico de participação de lavadores em cada serviço executado.
+    
     public class LavadoresLavagemRepository : Repository<LavadoresLavagem>, ILavadoresLavagemRepository
         {
         private new readonly FrotiXDbContext _db;
@@ -46,26 +46,26 @@ namespace FrotiX.Repository
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetLavadoresLavagemListForDropDown                                          │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de gerenciamento de lavagens                            │
-        /// │    ➡️ CHAMA       : DbContext.LavadoresLavagem, Linq OrderBy/Select                     │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retorna lista de associações lavador-lavagem para uso em DropDown.
-        ///    Ordenação por LavagemId, exibindo LavadorId como texto e LavagemId como valor.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Lista ordenada por lavagem com lavadores associados
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de SelectListItem com vínculos lavador-lavagem</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetLavadoresLavagemListForDropDown                                          │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de gerenciamento de lavagens                            │
+        // │    ➡️ CHAMA       : DbContext.LavadoresLavagem, Linq OrderBy/Select                     │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retorna lista de associações lavador-lavagem para uso em DropDown.
+        // Ordenação por LavagemId, exibindo LavadorId como texto e LavagemId como valor.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Lista ordenada por lavagem com lavadores associados
+        
+        
+        // Returns: Lista de SelectListItem com vínculos lavador-lavagem
         public IEnumerable<SelectListItem> GetLavadoresLavagemListForDropDown()
             {
             return _db.LavadoresLavagem
@@ -77,26 +77,26 @@ namespace FrotiX.Repository
                 }); ; ;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                      │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de LavadoresLavagem, UnitOfWork                         │
-        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Atualiza registro de participação de lavador em serviço de lavagem.
-        ///    Localiza registro existente por LavagemId antes de persistir alterações.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    lavadoresLavagem - Entidade com dados atualizados da associação
-        /// </para>
-        /// </summary>
-        /// <param name="lavadoresLavagem">Entidade LavadoresLavagem com dados a serem persistidos</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de LavadoresLavagem, UnitOfWork                         │
+        // │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Atualiza registro de participação de lavador em serviço de lavagem.
+        // Localiza registro existente por LavagemId antes de persistir alterações.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // lavadoresLavagem - Entidade com dados atualizados da associação
+        
+        
+        // Param lavadoresLavagem: Entidade LavadoresLavagem com dados a serem persistidos
         public new void Update(LavadoresLavagem lavadoresLavagem)
             {
             var objFromDb = _db.LavadoresLavagem.FirstOrDefault(s => s.LavagemId == lavadoresLavagem.LavagemId);

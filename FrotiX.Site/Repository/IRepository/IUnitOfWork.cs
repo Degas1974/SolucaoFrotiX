@@ -29,9 +29,9 @@ namespace FrotiX.Repository.IRepository
 {
     public partial interface IUnitOfWork : IDisposable
     {
-        /// <summary>
-        /// Retorna o DbContext para operações avançadas (ChangeTracker, etc.)
-        /// </summary>
+        
+        // Retorna o DbContext para operações avançadas (ChangeTracker, etc.)
+        
         DbContext GetDbContext();
 
         IAbastecimentoRepository Abastecimento

@@ -32,9 +32,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository.IRepository
 {
-    /// <summary>
-    /// Interface do repositório de TipoServico. Estende IRepository&lt;TipoServico&gt;.
-    /// </summary>
+    
+    // Interface do repositório de TipoServico. Estende IRepository&lt;TipoServico&gt;.
+    
     // Interface para TipoServico
     public interface ITipoServicoRepository : IRepository<TipoServico>
     {

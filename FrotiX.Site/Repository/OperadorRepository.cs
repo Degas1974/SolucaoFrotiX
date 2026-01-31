@@ -27,16 +27,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: OperadorRepository                                                                 │
-    /// │ 📦 HERDA DE: Repository&lt;Operador&gt;                                                               │
-    /// │ 🔌 IMPLEMENTA: IOperadorRepository                                                            │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório especializado para gerenciamento de operadores de frota.
-    /// Operadores são auxiliares que acompanham motoristas em viagens e deslocamentos.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: OperadorRepository                                                                 │
+    // │ 📦 HERDA DE: Repository&lt;Operador&gt;                                                               │
+    // │ 🔌 IMPLEMENTA: IOperadorRepository                                                            │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório especializado para gerenciamento de operadores de frota.
+    // Operadores são auxiliares que acompanham motoristas em viagens e deslocamentos.
+    
     public class OperadorRepository : Repository<Operador>, IOperadorRepository
         {
         private new readonly FrotiXDbContext _db;
@@ -46,26 +46,26 @@ namespace FrotiX.Repository
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetOperadorListForDropDown                                                  │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers que utilizam dropdowns de operadores                   │
-        /// │    ➡️ CHAMA       : DbContext.Operador, Linq OrderBy/Select                             │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retorna lista de operadores formatada para uso em DropDown/SelectList.
-        ///    Ordenação alfabética por nome para facilitar localização.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Lista com Text=Nome e Value=OperadorId
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de SelectListItem ordenada alfabeticamente por nome do operador</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetOperadorListForDropDown                                                  │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers que utilizam dropdowns de operadores                   │
+        // │    ➡️ CHAMA       : DbContext.Operador, Linq OrderBy/Select                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retorna lista de operadores formatada para uso em DropDown/SelectList.
+        // Ordenação alfabética por nome para facilitar localização.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Lista com Text=Nome e Value=OperadorId
+        
+        
+        // Returns: Lista de SelectListItem ordenada alfabeticamente por nome do operador
         public IEnumerable<SelectListItem> GetOperadorListForDropDown()
             {
             return _db.Operador
@@ -77,26 +77,26 @@ namespace FrotiX.Repository
                 }); ;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                      │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de Operador, UnitOfWork                                 │
-        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Atualiza dados de um operador existente no banco de dados.
-        ///    Permite alterações em informações cadastrais e vínculos do operador.
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    operador - Entidade Operador com dados atualizados
-        /// </para>
-        /// </summary>
-        /// <param name="operador">Entidade Operador com dados a serem persistidos</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de Operador, UnitOfWork                                 │
+        // │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Atualiza dados de um operador existente no banco de dados.
+        // Permite alterações em informações cadastrais e vínculos do operador.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // operador - Entidade Operador com dados atualizados
+        
+        
+        // Param operador: Entidade Operador com dados a serem persistidos
         public new void Update(Operador operador)
             {
             var objFromDb = _db.Operador.FirstOrDefault(s => s.OperadorId == operador.OperadorId);

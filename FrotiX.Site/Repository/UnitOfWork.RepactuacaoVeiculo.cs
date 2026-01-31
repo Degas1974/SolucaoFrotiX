@@ -18,32 +18,32 @@ using FrotiX.Repository.IRepository;
 
 namespace FrotiX.Repository
 {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: UnitOfWork (parcial)                                                              │
-    /// │ 📦 HERDA DE: IUnitOfWork                                                                     │
-    /// │ 🔌 IMPLEMENTA: Repositórios de repactuação de veículos                                       │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Parte parcial do UnitOfWork dedicada às repactuações de veículos.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: UnitOfWork (parcial)                                                              │
+    // │ 📦 HERDA DE: IUnitOfWork                                                                     │
+    // │ 🔌 IMPLEMENTA: Repositórios de repactuação de veículos                                       │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Parte parcial do UnitOfWork dedicada às repactuações de veículos.
+    
     public partial class UnitOfWork
     {
         private IRepactuacaoVeiculoRepository _repactuacaoVeiculo;
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ PROPRIEDADE: RepactuacaoVeiculo                                                       │
-        /// │ 🔗 RASTREABILIDADE:                                                                      │
-        /// │    ⬅️ CHAMADO POR : Services, Controllers                                                 │
-        /// │    ➡️ CHAMA       : RepactuacaoVeiculoRepository                                           │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Fornecer acesso ao repositório de repactuação de veículos com inicialização lazy.
-        /// </para>
-        /// </summary>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ PROPRIEDADE: RepactuacaoVeiculo                                                       │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Services, Controllers                                                 │
+        // │    ➡️ CHAMA       : RepactuacaoVeiculoRepository                                           │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Fornecer acesso ao repositório de repactuação de veículos com inicialização lazy.
+        
+        
         public IRepactuacaoVeiculoRepository RepactuacaoVeiculo
         {
             get

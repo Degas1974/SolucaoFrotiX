@@ -27,16 +27,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Repository
     {
-    /// <summary>
-    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    /// │ 🎯 CLASSE: MediaCombustivelRepository                                                         │
-    /// │ 📦 HERDA DE: Repository&lt;MediaCombustivel&gt;                                                       │
-    /// │ 🔌 IMPLEMENTA: IMediaCombustivelRepository                                                    │
-    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    ///
-    /// Repositório para gerenciamento de médias históricas de preços de combustível.
-    /// Permite análise de variação de custos por tipo de combustível ao longo do tempo.
-    /// </summary>
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: MediaCombustivelRepository                                                         │
+    // │ 📦 HERDA DE: Repository&lt;MediaCombustivel&gt;                                                       │
+    // │ 🔌 IMPLEMENTA: IMediaCombustivelRepository                                                    │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório para gerenciamento de médias históricas de preços de combustível.
+    // Permite análise de variação de custos por tipo de combustível ao longo do tempo.
+    
     public class MediaCombustivelRepository : Repository<MediaCombustivel>, IMediaCombustivelRepository
         {
         private new readonly FrotiXDbContext _db;
@@ -46,26 +46,26 @@ namespace FrotiX.Repository
             _db = db;
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: GetMediaCombustivelListForDropDown                                          │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de relatórios e análises financeiras                   │
-        /// │    ➡️ CHAMA       : DbContext.MediaCombustivel, Linq OrderBy/Select                     │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Retorna lista de médias de combustível para uso em DropDown.
-        ///    Ordenação por Ano, exibindo ano como texto e CombustivelId como valor.
-        /// </para>
-        ///
-        /// <para>
-        /// 📤 <b>RETORNO:</b><br/>
-        ///    IEnumerable&lt;SelectListItem&gt; - Lista ordenada com Text=Ano e Value=CombustivelId
-        /// </para>
-        /// </summary>
-        /// <returns>Lista de SelectListItem com médias de combustível ordenadas por ano</returns>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetMediaCombustivelListForDropDown                                          │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de relatórios e análises financeiras                   │
+        // │    ➡️ CHAMA       : DbContext.MediaCombustivel, Linq OrderBy/Select                     │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Retorna lista de médias de combustível para uso em DropDown.
+        // Ordenação por Ano, exibindo ano como texto e CombustivelId como valor.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Lista ordenada com Text=Ano e Value=CombustivelId
+        
+        
+        // Returns: Lista de SelectListItem com médias de combustível ordenadas por ano
         public IEnumerable<SelectListItem> GetMediaCombustivelListForDropDown()
             {
             return _db.MediaCombustivel
@@ -77,26 +77,26 @@ namespace FrotiX.Repository
                     });
             }
 
-        /// <summary>
-        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        /// │ ⚡ MÉTODO: Update                                                                      │
-        /// │ 🔗 RASTREABILIDADE:                                                                    │
-        /// │    ⬅️ CHAMADO POR : Controllers de MediaCombustivel, UnitOfWork                         │
-        /// │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
-        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        ///
-        /// <para>
-        /// 🎯 <b>OBJETIVO:</b><br/>
-        ///    Atualiza registro de média de combustível no banco de dados.
-        ///    Utiliza chave composta quádrupla (CombustivelId + NotaFiscalId + Ano + Mes).
-        /// </para>
-        ///
-        /// <para>
-        /// 📥 <b>PARÂMETROS:</b><br/>
-        ///    mediacombustivel - Entidade com chave composta e valores médios atualizados
-        /// </para>
-        /// </summary>
-        /// <param name="mediacombustivel">Entidade MediaCombustivel com dados a serem persistidos</param>
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                      │
+        // │ 🔗 RASTREABILIDADE:                                                                    │
+        // │    ⬅️ CHAMADO POR : Controllers de MediaCombustivel, UnitOfWork                         │
+        // │    ➡️ CHAMA       : DbContext.Update(), DbContext.SaveChanges()                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Atualiza registro de média de combustível no banco de dados.
+        // Utiliza chave composta quádrupla (CombustivelId + NotaFiscalId + Ano + Mes).
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // mediacombustivel - Entidade com chave composta e valores médios atualizados
+        
+        
+        // Param mediacombustivel: Entidade MediaCombustivel com dados a serem persistidos
         public new void Update(MediaCombustivel mediacombustivel)
             {
             var objFromDb = _db.MediaCombustivel.FirstOrDefault(s => (s.CombustivelId == mediacombustivel.CombustivelId) && (s.NotaFiscalId == mediacombustivel.NotaFiscalId) && (s.Ano == mediacombustivel.Ano) && (s.Mes == mediacombustivel.Mes));
