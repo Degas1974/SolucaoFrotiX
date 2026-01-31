@@ -1,13 +1,12 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: RegistroCupomAbastecimento.cs                                                           ║
+   ║ 📌 ARQUIVO: RegistroCupomAbastecimento.cs                                                           ║
    ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Entidade para registro de cupons de abastecimento (comprovantes físicos).             ║
+   ║ 🧭 OBJETIVO: Registrar cupons de abastecimento e seus comprovantes anexados.                       ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENTIDADE: RegistroCupomAbastecimento (RegistroCupomId, DataRegistro, Observacoes, RegistroPDF)   ║
+   ║ 🗂️  CONTÉM: RegistroCupomAbastecimentoViewModel, RegistroCupomAbastecimento                         ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: System.ComponentModel.DataAnnotations                                                      ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: DataAnnotations                                                                     ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
@@ -21,22 +20,39 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
+    // ==================================================================================================
+    // VIEW MODEL
+    // ==================================================================================================
+    // Finalidade: transportar o registro de cupom nas telas de cadastro.
+    // ==================================================================================================
     public class RegistroCupomAbastecimentoViewModel
     {
+        // Identificador do registro.
         public Guid RegistroCupomId { get; set; }
+
+        // Entidade principal do formulário.
         public RegistroCupomAbastecimento? RegistroCupomAbastecimento { get; set; }
     }
 
+    // ==================================================================================================
+    // ENTIDADE
+    // ==================================================================================================
+    // Representa o registro de cupons de abastecimento.
+    // ==================================================================================================
     public class RegistroCupomAbastecimento
     {
+        // Identificador único do registro.
         [Key]
         public Guid RegistroCupomId { get; set; }
 
+        // Data do registro dos cupons.
         [Display(Name = "Data do Registro dos Cupons")]
         public DateTime? DataRegistro { get; set; }
 
+        // Observações do registro.
         public string? Observacoes { get; set; }
 
+        // Caminho/identificador do PDF anexado.
         public string? RegistroPDF { get; set; }
     }
 }

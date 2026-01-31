@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 32.0%
+████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 32.6%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 290 |
-| Percentual | 32.0% |
-| Última Atualização | 31/01/2026 11:38 |
+| Documentados | 295 |
+| Percentual | 32.6% |
+| Última Atualização | 31/01/2026 11:42 |
 
 ---
 
@@ -36,7 +36,7 @@
 | 9 | Infrastructure | 1 | 1 | 100% | ✅ Completo |
 | 10 | Logging | 1 | 1 | 100% | ✅ Completo |
 | 11 | Middlewares | 2 | 2 | 100% | ✅ Completo |
-| 12 | Models | 139 | 89 | 64.0% | 🟡 Em Progresso |
+| 12 | Models | 139 | 94 | 67.6% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
 | 15 | Repository | 209 | 209 | 100% | ✅ Completo |
@@ -180,6 +180,13 @@
    • Patrimonio.cs
    • PlacaBronze.cs
 
+✅ Models/Cadastros - Classes (Lote 115 - novo padrão visual):
+   • Recurso.cs
+   • RegistroCupomAbastecimento.cs
+   • Requisitante.cs
+   • SecaoPatrimonial.cs
+   • SetorPatrimonial.cs
+
 ### 📂 Infrastructure (1/1) ✅
 ```
 ✅ CacheKeys.cs
@@ -196,11 +203,11 @@
 ✅ UiExceptionMiddleware.cs
 ```
 
-### 📂 Models (89/139) 🟡
+### 📂 Models (94/139) 🟡
 ```
 ✅ Estatísticas (13 arquivos - Lotes 51-53)
 ✅ Views (38 arquivos - Lotes 54-61)
-⏳ Cadastros (41 processados)
+⏳ Cadastros (46 processados)
 ⏳ FontAwesome (1 processado)
 ⏳ Planilhas (1 processado)
 ```
@@ -554,10 +561,11 @@
 | 31/01/2026 | 5 | 1 | Lote 112 - Models/Cadastros novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 113 - Models/Cadastros novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 114 - Models/Cadastros novo padrão visual (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 115 - Models/Cadastros novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 63
-**Total de Commits:** 61
-**Total de Arquivos Documentados:** 290
+**Total de Lotes:** 64
+**Total de Commits:** 62
+**Total de Arquivos Documentados:** 295
 
 ---
 
