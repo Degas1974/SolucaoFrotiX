@@ -1,13 +1,12 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: MarcaVeiculo.cs                                                                         ║
+   ║ 📌 ARQUIVO: MarcaVeiculo.cs                                                                         ║
    ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Entidade e ViewModels para cadastro de marcas de veículos (Ford, Fiat, etc.).         ║
+   ║ 🧭 OBJETIVO: Manter o cadastro de marcas de veículos (ex.: Ford, Fiat).                             ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 CLASSES: MarcaVeiculo (MarcaId, DescricaoMarca, Status), MarcaVeiculoViewModel                   ║
+   ║ 🗂️  CONTÉM: MarcaVeiculoViewModel, MarcaVeiculo                                                     ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: System.ComponentModel.DataAnnotations                                                      ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: DataAnnotations                                                                     ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
@@ -18,21 +17,35 @@ using System.Threading.Tasks;
 
 namespace FrotiX.Models
 {
+    // ==================================================================================================
+    // VIEW MODEL
+    // ==================================================================================================
+    // Finalidade: transportar a chave da marca em operações simples de tela.
+    // ==================================================================================================
     public class MarcaVeiculoViewModel
     {
+        // Identificador da marca.
         public Guid MarcaId { get; set; }
     }
 
+    // ==================================================================================================
+    // ENTIDADE
+    // ==================================================================================================
+    // Representa uma marca de veículo.
+    // ==================================================================================================
     public class MarcaVeiculo
     {
+        // Identificador único da marca.
         [Key]
         public Guid MarcaId { get; set; }
 
+        // Descrição/nome da marca.
         [StringLength(50, ErrorMessage = "A descrição não pode exceder 50 caracteres")]
         [Required(ErrorMessage = "(A descrição da marca é obrigatória)")]
         [Display(Name = "Marca do Veículo")]
         public string? DescricaoMarca { get; set; }
 
+        // Flag de status ativo/inativo.
         [Display(Name = "Ativo/Inativo")]
         public bool Status { get; set; }
     }

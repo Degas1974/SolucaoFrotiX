@@ -1,13 +1,12 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ModeloVeiculo.cs                                                                        ║
+   ║ 📌 ARQUIVO: ModeloVeiculo.cs                                                                        ║
    ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Entidade e ViewModels para cadastro de modelos de veículos (Ka, Uno, Onix, etc.).     ║
+   ║ 🧭 OBJETIVO: Manter modelos de veículos e sua relação com marcas.                                   ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 CLASSES: ModeloVeiculo (ModeloId, DescricaoModelo, MarcaId), ModeloVeiculoViewModel (MarcaList)  ║
+   ║ 🗂️  CONTÉM: ModeloVeiculoViewModel, ModeloVeiculo                                                   ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: FrotiX.Validations, SelectListItem                                                         ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core, SelectListItem, Validations                              ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using FrotiX.Validations;
@@ -19,30 +18,47 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models
 {
+    // ==================================================================================================
+    // VIEW MODEL
+    // ==================================================================================================
+    // Finalidade: disponibilizar o modelo e a lista de marcas para seleção em tela.
+    // ==================================================================================================
     public class ModeloVeiculoViewModel
     {
+        // Identificador do modelo.
         public Guid ModeloId
         {
             get; set;
         }
+
+        // Entidade carregada/alterada no formulário.
         public ModeloVeiculo? ModeloVeiculo
         {
             get; set;
         }
+
+        // Lista de marcas para seleção.
         public IEnumerable<SelectListItem>? MarcaList
         {
             get; set;
         }
     }
 
+    // ==================================================================================================
+    // ENTIDADE
+    // ==================================================================================================
+    // Representa um modelo de veículo vinculado a uma marca.
+    // ==================================================================================================
     public class ModeloVeiculo
     {
+        // Identificador único do modelo.
         [Key]
         public Guid ModeloId
         {
             get; set;
         }
 
+        // Descrição do modelo.
         [StringLength(50 , ErrorMessage = "A descrição não pode exceder 50 caracteres")]
         [Required(ErrorMessage = "(A descrição do modelo é obrigatória)")]
         [Display(Name = "Modelo do Veículo")]
@@ -51,12 +67,14 @@ namespace FrotiX.Models
             get; set;
         }
 
+        // Flag de status ativo/inativo.
         [Display(Name = "Ativo/Inativo")]
         public bool Status
         {
             get; set;
         }
 
+        // Marca associada ao modelo.
         [ValidaLista(ErrorMessage = "(A Marca é obrigatória)")]
         [Display(Name = "Marca do Veículo")]
         public Guid MarcaId
@@ -64,6 +82,7 @@ namespace FrotiX.Models
             get; set;
         }
 
+        // Navegação para marca.
         [ForeignKey("MarcaId")]
         public virtual MarcaVeiculo? MarcaVeiculo
         {

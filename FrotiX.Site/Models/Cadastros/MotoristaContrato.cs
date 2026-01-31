@@ -1,13 +1,12 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: MotoristaContrato.cs                                                                    ║
+   ║ 📌 ARQUIVO: MotoristaContrato.cs                                                                    ║
    ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Entidade de relacionamento N:N entre Motorista e Contrato (chave composta).           ║
+   ║ 🧭 OBJETIVO: Mapear vínculo N:N entre Motorista e Contrato via chave composta.                      ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENTIDADE: MotoristaContrato (MotoristaId + ContratoId = PK composta), MotoristaoContratoViewModel║
+   ║ 🗂️  CONTÉM: MotoristaoContratoViewModel, MotoristaContrato                                          ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: FrotiX.Services, FrotiX.Validations                                                        ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core                                                           ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
@@ -22,20 +21,36 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
+    // ==================================================================================================
+    // VIEW MODEL
+    // ==================================================================================================
+    // Finalidade: transportar o vínculo Motorista-Contrato nas telas de edição.
+    // ==================================================================================================
     public class MotoristaoContratoViewModel
     {
+        // Identificador do motorista.
         public Guid MotoristaId { get; set; }
+
+        // Identificador do contrato.
         public Guid ContratoId { get; set; }
+
+        // Entidade do vínculo.
         public MotoristaContrato? MotoristaContrato { get; set; }
     }
 
+    // ==================================================================================================
+    // ENTIDADE
+    // ==================================================================================================
+    // Representa o relacionamento N:N entre Motorista e Contrato.
+    // ⚠️ ATENÇÃO: chave composta (MotoristaId + ContratoId).
+    // ==================================================================================================
     public class MotoristaContrato
     {
-        //2 Foreign Keys as Primary Key
-        //=============================
+        // Chave composta - FK para Motorista.
         [Key, Column(Order = 0)]
         public Guid MotoristaId { get; set; }
 
+        // Chave composta - FK para Contrato.
         [Key, Column(Order = 1)]
         public Guid ContratoId { get; set; }
     }
