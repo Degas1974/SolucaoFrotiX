@@ -1,17 +1,17 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: SkipModelValidationAttribute.cs                                                         ║
-   ║ 📂 CAMINHO: /Filters                                                                                ║
+   ║ 🚀 ARQUIVO: SkipModelValidationAttribute.cs                                                        ║
+   ║ 📂 CAMINHO: Filters/                                                                              ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
    ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
-   ║    Atributo IActionFilter que limpa ModelState durante OnActionExecuting. Usado quando              ║
-   ║    propriedades nullable podem vir null do frontend, mas [ApiController] valida como required.      ║
+   ║    Atributo IActionFilter que limpa o ModelState durante OnActionExecuting. Usado quando           ║
+   ║    propriedades nullable podem vir null do frontend, mas [ApiController] valida como required.     ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE DE FUNÇÕES (Entradas -> Saídas):                                                         ║
-   ║ 1. [OnActionExecuting] : Limpa ModelState.Clear()........... (context) -> void                     ║
-   ║ 2. [OnActionExecuted]  : Callback pós-action (não usado).... (context) -> void                     ║
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • OnActionExecuting(ActionExecutingContext context)                                             ║
+   ║    • OnActionExecuted(ActionExecutedContext context)                                               ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
    ║ 🔗 DEPENDÊNCIAS: Microsoft.AspNetCore.Mvc.Filters                                                  ║
-   ║ 📅 ATUALIZAÇÃO: 29/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
+   ║ 📅 ATUALIZAÇÃO: 30/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                    ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
 */
 
@@ -21,9 +21,22 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace FrotiX.Filters
 {
     /// <summary>
-    /// Atributo para desabilitar a validação automática de ModelState em endpoints específicos.
-    /// Usado quando o modelo tem propriedades nullable que podem vir como null do frontend,
-    /// mas o [ApiController] tenta validar como required.
+    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    /// │ 🎯 CLASSE: SkipModelValidationAttribute                                                        │
+    /// │ 📦 HERDA DE: Attribute                                                                         │
+    /// │ 🔌 IMPLEMENTA: IActionFilter                                                                   │
+    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    ///
+    /// <para>
+    /// 🎯 <b>OBJETIVO:</b><br/>
+    ///    Desabilitar a validação automática de ModelState em endpoints específicos.
+    /// </para>
+    ///
+    /// <para>
+    /// 🔗 <b>RASTREABILIDADE:</b><br/>
+    ///    ⬅️ CHAMADO POR : Pipeline MVC (IActionFilter) / Controllers e Actions com atributo<br/>
+    ///    ➡️ CHAMA       : context.ModelState.Clear()
+    /// </para>
     /// </summary>
     /// <example>
     /// [HttpPost]
@@ -33,6 +46,25 @@ namespace FrotiX.Filters
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
     public class SkipModelValidationAttribute : Attribute, IActionFilter
     {
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: OnActionExecuting                                                            │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Pipeline MVC (IActionFilter)                                         │
+        /// │    ➡️ CHAMA       : context.ModelState.Clear()                                          │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Limpar erros de validação do ModelState antes da execução da action.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    context - Contexto da execução do filtro de action.
+        /// </para>
+        /// </summary>
+        /// <param name="context">Contexto da execução do filtro de action.</param>
         public void OnActionExecuting(ActionExecutingContext context)
         {
             // Limpa todos os erros de validação do ModelState
@@ -40,6 +72,25 @@ namespace FrotiX.Filters
             context.ModelState.Clear();
         }
 
+        /// <summary>
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: OnActionExecuted                                                             │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Pipeline MVC (IActionFilter)                                         │
+        /// │    ➡️ CHAMA       : (sem chamadas internas)                                             │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Callback pós-action. Mantido para cumprir o contrato do filtro.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    context - Contexto pós-execução da action.
+        /// </para>
+        /// </summary>
+        /// <param name="context">Contexto pós-execução da action.</param>
         public void OnActionExecuted(ActionExecutedContext context)
         {
             // Nada a fazer após a execução

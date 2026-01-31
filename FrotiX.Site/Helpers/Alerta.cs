@@ -1,15 +1,29 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║  📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                   ║
- * ║  Arquivo: Helpers/Alerta.cs                                              ║
- * ║  Descrição: Classe estática principal de alertas SweetAlert. Exibe       ║
- * ║             Erro/Sucesso/Info/Warning/Confirmar via TempData. Inclui     ║
- * ║             TratamentoErroComLinha com extração automática de stack      ║
- * ║             trace e integração com ILogService via Service Locator.      ║
- * ║             ORIGEM: SERVER (para diferenciar de CLIENT_JS)               ║
- * ║  Data: 29/01/2026 | LOTE: 22                                             ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: Alerta.cs                                                                             ║
+   ║ 📂 CAMINHO: Helpers/                                                                              ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Classe estática de alertas SweetAlert no servidor (origem SERVER). Exibe                        ║
+   ║    Erro/Sucesso/Info/Warning/Confirmar via TempData e registra erros com linha.                    ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • Erro(string titulo, string texto, string confirmButtonText = "OK")                            ║
+   ║    • Sucesso(string titulo, string texto, string confirmButtonText = "OK")                         ║
+   ║    • Info(string titulo, string texto, string confirmButtonText = "OK")                            ║
+   ║    • Warning(string titulo, string texto, string confirmButtonText = "OK")                         ║
+   ║    • Confirmar(string titulo, string texto, string confirmButtonText = "Sim", string cancelButtonText = "Cancelar") ║
+   ║    • TratamentoErroComLinha(string arquivo, string funcao, Exception error, ILogger logger = null) ║
+   ║    • TratamentoErroComLinha(Exception error, string arquivo, string funcao, ILogger logger = null) ║
+   ║    • GetIconePrioridade(PrioridadeAlerta prioridade)                                               ║
+   ║    • GetCorPrioridade(PrioridadeAlerta prioridade)                                                 ║
+   ║    • GetCorHexPrioridade(PrioridadeAlerta prioridade)                                              ║
+   ║    • GetNomePrioridade(PrioridadeAlerta prioridade)                                                ║
+   ║    • TempDataSet(string key, object value)                                                         ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🔗 DEPENDÊNCIAS: ILogService, ITempDataDictionaryFactory, IHttpContextAccessor, ILoggerFactory      ║
+   ║ 📅 ATUALIZAÇÃO: 30/01/2026 | 👤 AUTOR: Copilot | 📝 VERSÃO: 2.0                                     ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
 
 using FrotiX.Models;
 using Microsoft.AspNetCore.Http;
@@ -24,22 +38,36 @@ using System.Text.Json;
 namespace FrotiX.Helpers
 {
     /// <summary>
-    /// Utilitário de tratamento/log de erros com indicação de arquivo e linha.
-    /// Integrado com sistema de alertas SweetAlert personalizado.
-    /// Usa Service Locator pattern para obter ILogService e gravar erros no banco/arquivo
-    /// de forma unificada (origem: SERVER).
+    /// ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    /// │ 🎯 CLASSE: Alerta                                                                            │
+    /// │ 📦 TIPO: Estática                                                                             │
+    /// ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    ///
+    /// <para>
+    /// 🎯 <b>OBJETIVO:</b><br/>
+    ///    Centralizar alertas SweetAlert no backend e registrar erros com arquivo/linha (SERVER).
+    /// </para>
+    ///
+    /// <para>
+    /// 🔗 <b>RASTREABILIDADE:</b><br/>
+    ///    ⬅️ CHAMADO POR : Controllers, Pages, Services e Helpers internos<br/>
+    ///    ➡️ CHAMA       : ILogService.Error(), ILogger.LogError(), TempData
+    /// </para>
     /// </summary>
     public static class Alerta
     {
         // --- Bridges para DI (preenchidos no Startup/Program) -----------------
+        /// <summary>Acesso ao HttpContext atual via IHttpContextAccessor.</summary>
         public static IHttpContextAccessor HttpCtx
         {
             get; set;
         }
+        /// <summary>Factory para acesso ao TempData de requisições.</summary>
         public static ITempDataDictionaryFactory TempFactory
         {
             get; set;
         }
+        /// <summary>Factory para criação de ILogger em fallback de log.</summary>
         public static ILoggerFactory LoggerFactory
         {
             get; set;
@@ -57,40 +85,142 @@ namespace FrotiX.Helpers
         #region Métodos de Alerta Visual
 
         /// <summary>
-        /// Exibe alerta de erro
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: Erro                                                                       │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Controllers, Pages, Services                                         │
+        /// │    ➡️ CHAMA       : SetAlert()                                                         │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Exibir alerta de erro via SweetAlert no cliente.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    titulo - Título do alerta<br/>
+        ///    texto - Mensagem do alerta<br/>
+        ///    confirmButtonText - Texto do botão de confirmação
+        /// </para>
         /// </summary>
+        /// <param name="titulo">Título do alerta.</param>
+        /// <param name="texto">Mensagem do alerta.</param>
+        /// <param name="confirmButtonText">Texto do botão de confirmação.</param>
         public static void Erro(string titulo , string texto , string confirmButtonText = "OK")
         {
             SetAlert("error" , titulo , texto , confirmButtonText);
         }
 
         /// <summary>
-        /// Exibe alerta de sucesso
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: Sucesso                                                                    │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Controllers, Pages, Services                                         │
+        /// │    ➡️ CHAMA       : SetAlert()                                                         │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Exibir alerta de sucesso via SweetAlert no cliente.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    titulo - Título do alerta<br/>
+        ///    texto - Mensagem do alerta<br/>
+        ///    confirmButtonText - Texto do botão de confirmação
+        /// </para>
         /// </summary>
+        /// <param name="titulo">Título do alerta.</param>
+        /// <param name="texto">Mensagem do alerta.</param>
+        /// <param name="confirmButtonText">Texto do botão de confirmação.</param>
         public static void Sucesso(string titulo , string texto , string confirmButtonText = "OK")
         {
             SetAlert("success" , titulo , texto , confirmButtonText);
         }
 
         /// <summary>
-        /// Exibe alerta de informação
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: Info                                                                       │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Controllers, Pages, Services                                         │
+        /// │    ➡️ CHAMA       : SetAlert()                                                         │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Exibir alerta informativo via SweetAlert no cliente.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    titulo - Título do alerta<br/>
+        ///    texto - Mensagem do alerta<br/>
+        ///    confirmButtonText - Texto do botão de confirmação
+        /// </para>
         /// </summary>
+        /// <param name="titulo">Título do alerta.</param>
+        /// <param name="texto">Mensagem do alerta.</param>
+        /// <param name="confirmButtonText">Texto do botão de confirmação.</param>
         public static void Info(string titulo , string texto , string confirmButtonText = "OK")
         {
             SetAlert("info" , titulo , texto , confirmButtonText);
         }
 
         /// <summary>
-        /// Exibe alerta de aviso
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: Warning                                                                    │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Controllers, Pages, Services                                         │
+        /// │    ➡️ CHAMA       : SetAlert()                                                         │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Exibir alerta de aviso via SweetAlert no cliente.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    titulo - Título do alerta<br/>
+        ///    texto - Mensagem do alerta<br/>
+        ///    confirmButtonText - Texto do botão de confirmação
+        /// </para>
         /// </summary>
+        /// <param name="titulo">Título do alerta.</param>
+        /// <param name="texto">Mensagem do alerta.</param>
+        /// <param name="confirmButtonText">Texto do botão de confirmação.</param>
         public static void Warning(string titulo , string texto , string confirmButtonText = "OK")
         {
             SetAlert("warning" , titulo , texto , confirmButtonText);
         }
 
         /// <summary>
-        /// Exibe alerta de confirmação
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: Confirmar                                                                 │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Controllers, Pages, Services                                         │
+        /// │    ➡️ CHAMA       : SetAlert()                                                         │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Exibir alerta de confirmação via SweetAlert no cliente.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    titulo - Título do alerta<br/>
+        ///    texto - Mensagem do alerta<br/>
+        ///    confirmButtonText - Texto do botão de confirmação<br/>
+        ///    cancelButtonText - Texto do botão de cancelamento
+        /// </para>
         /// </summary>
+        /// <param name="titulo">Título do alerta.</param>
+        /// <param name="texto">Mensagem do alerta.</param>
+        /// <param name="confirmButtonText">Texto do botão de confirmação.</param>
+        /// <param name="cancelButtonText">Texto do botão de cancelamento.</param>
         public static void Confirmar(
             string titulo ,
             string texto ,
@@ -106,11 +236,30 @@ namespace FrotiX.Helpers
         #region Tratamento de Erro com Linha
 
         /// <summary>
-        /// Tratamento de erro com linha - Log unificado (ILogService) + Alerta visual.
-        /// Usa Service Locator para obter ILogService do container DI.
-        /// Se ILogService não estiver disponível (ex: thread background), faz fallback para ILogger/Console.
-        /// ORIGEM: SERVER (para diferenciar de erros CLIENT_JS)
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: TratamentoErroComLinha                                                     │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Controllers, Pages, Services                                         │
+        /// │    ➡️ CHAMA       : TentarObterLinha(), ILogService.Error(), ILogger.LogError(), SetErrorUnexpectedAlert() │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Registrar erro com arquivo/linha e exibir alerta técnico (origem SERVER).
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    arquivo - Caminho ou nome do arquivo de origem<br/>
+        ///    funcao - Nome da função/método de origem<br/>
+        ///    error - Exceção capturada<br/>
+        ///    logger - Logger opcional para fallback
+        /// </para>
         /// </summary>
+        /// <param name="arquivo">Caminho ou nome do arquivo de origem.</param>
+        /// <param name="funcao">Nome da função/método de origem.</param>
+        /// <param name="error">Exceção capturada.</param>
+        /// <param name="logger">Logger opcional para fallback.</param>
         public static void TratamentoErroComLinha(
             string arquivo ,
             string funcao ,
@@ -190,8 +339,30 @@ namespace FrotiX.Helpers
         }
 
         /// <summary>
-        /// Overload legado (Exception primeiro). Redireciona para a ordem nova.
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: TratamentoErroComLinha (overload)                                          │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : Código legado                                                       │
+        /// │    ➡️ CHAMA       : TratamentoErroComLinha(arquivo, funcao, error, logger)              │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Manter compatibilidade com a assinatura antiga (Exception primeiro).
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    error - Exceção capturada<br/>
+        ///    arquivo - Caminho ou nome do arquivo de origem<br/>
+        ///    funcao - Nome da função/método de origem<br/>
+        ///    logger - Logger opcional para fallback
+        /// </para>
         /// </summary>
+        /// <param name="error">Exceção capturada.</param>
+        /// <param name="arquivo">Caminho ou nome do arquivo de origem.</param>
+        /// <param name="funcao">Nome da função/método de origem.</param>
+        /// <param name="logger">Logger opcional para fallback.</param>
         public static void TratamentoErroComLinha(
             Exception error ,
             string arquivo ,
@@ -204,8 +375,30 @@ namespace FrotiX.Helpers
         #region Métodos de Prioridade de Alertas
 
         /// <summary>
-        /// Obtém o ícone FontAwesome Duotone baseado na prioridade do alerta
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: GetIconePrioridade                                                      │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : UI/Views e helpers de alertas                                       │
+        /// │    ➡️ CHAMA       : (switch de PrioridadeAlerta)                                      │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Obter o ícone FontAwesome Duotone baseado na prioridade do alerta.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    prioridade - Prioridade do alerta.
+        /// </para>
+        ///
+        /// <para>
+        /// 📤 <b>RETORNO:</b><br/>
+        ///    string - Classe CSS do ícone FontAwesome.
+        /// </para>
         /// </summary>
+        /// <param name="prioridade">Prioridade do alerta.</param>
+        /// <returns>Classe CSS do ícone FontAwesome.</returns>
         public static string GetIconePrioridade(PrioridadeAlerta prioridade)
         {
             return prioridade switch
@@ -218,8 +411,30 @@ namespace FrotiX.Helpers
         }
 
         /// <summary>
-        /// Obtém a classe CSS de cor baseada na prioridade do alerta
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: GetCorPrioridade                                                         │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : UI/Views e helpers de alertas                                       │
+        /// │    ➡️ CHAMA       : (switch de PrioridadeAlerta)                                      │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Obter a classe CSS de cor baseada na prioridade do alerta.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    prioridade - Prioridade do alerta.
+        /// </para>
+        ///
+        /// <para>
+        /// 📤 <b>RETORNO:</b><br/>
+        ///    string - Classe CSS para cor do alerta.
+        /// </para>
         /// </summary>
+        /// <param name="prioridade">Prioridade do alerta.</param>
+        /// <returns>Classe CSS para cor do alerta.</returns>
         public static string GetCorPrioridade(PrioridadeAlerta prioridade)
         {
             return prioridade switch
@@ -232,8 +447,30 @@ namespace FrotiX.Helpers
         }
 
         /// <summary>
-        /// Obtém a cor hexadecimal baseada na prioridade do alerta
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: GetCorHexPrioridade                                                     │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : UI/Views e helpers de alertas                                       │
+        /// │    ➡️ CHAMA       : (switch de PrioridadeAlerta)                                      │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Obter a cor hexadecimal baseada na prioridade do alerta.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    prioridade - Prioridade do alerta.
+        /// </para>
+        ///
+        /// <para>
+        /// 📤 <b>RETORNO:</b><br/>
+        ///    string - Cor hexadecimal associada à prioridade.
+        /// </para>
         /// </summary>
+        /// <param name="prioridade">Prioridade do alerta.</param>
+        /// <returns>Cor hexadecimal associada à prioridade.</returns>
         public static string GetCorHexPrioridade(PrioridadeAlerta prioridade)
         {
             return prioridade switch
@@ -246,8 +483,30 @@ namespace FrotiX.Helpers
         }
 
         /// <summary>
-        /// Obtém o nome descritivo da prioridade
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: GetNomePrioridade                                                        │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : UI/Views e helpers de alertas                                       │
+        /// │    ➡️ CHAMA       : (switch de PrioridadeAlerta)                                      │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Obter o nome descritivo da prioridade do alerta.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    prioridade - Prioridade do alerta.
+        /// </para>
+        ///
+        /// <para>
+        /// 📤 <b>RETORNO:</b><br/>
+        ///    string - Nome descritivo da prioridade.
+        /// </para>
         /// </summary>
+        /// <param name="prioridade">Prioridade do alerta.</param>
+        /// <returns>Nome descritivo da prioridade.</returns>
         public static string GetNomePrioridade(PrioridadeAlerta prioridade)
         {
             return prioridade switch
@@ -348,8 +607,26 @@ namespace FrotiX.Helpers
         }
 
         /// <summary>
-        /// Grava uma entrada em TempData (se disponível).
+        /// ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        /// │ ⚡ MÉTODO: TempDataSet                                                                │
+        /// │ 🔗 RASTREABILIDADE:                                                                      │
+        /// │    ⬅️ CHAMADO POR : SetAlert(), SetErrorUnexpectedAlert()                               │
+        /// │    ➡️ CHAMA       : TempFactory.GetTempData()                                          │
+        /// ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        ///
+        /// <para>
+        /// 🎯 <b>OBJETIVO:</b><br/>
+        ///    Gravar uma entrada em TempData para exibição de alertas no cliente.
+        /// </para>
+        ///
+        /// <para>
+        /// 📥 <b>PARÂMETROS:</b><br/>
+        ///    key - Chave do TempData<br/>
+        ///    value - Valor a ser armazenado
+        /// </para>
         /// </summary>
+        /// <param name="key">Chave do TempData.</param>
+        /// <param name="value">Valor a ser armazenado.</param>
         public static void TempDataSet(string key , object value)
         {
             try
