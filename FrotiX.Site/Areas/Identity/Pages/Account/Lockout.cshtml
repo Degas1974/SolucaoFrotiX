@@ -1,11 +1,21 @@
-@*
-╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║ 📌 ARQUIVO: Lockout.cshtml                                                                          ║
-║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
-╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-║ 🧭 OBJETIVO: Página de bloqueio de conta e desbloqueio via senha.                                   ║
-╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*@
+@*****************************************************************************************
+ * ⚡ ARQUIVO: Lockout.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de bloqueio de conta que permite desbloqueio via senha.
+ *
+ * 📥 ENTRADAS     : Input.Password (senha para desbloqueio), ViewBag.User, ViewBag.Email.
+ *
+ * 📤 SAÍDAS       : POST para LockoutModel com tentativa de desbloqueio.
+ *
+ * 🔗 CHAMADA POR  : Rota Razor Pages /Account/Lockout.
+ *
+ * 🔄 CHAMA        : LockoutModel.OnPostAsync(), _ValidationScriptsPartial.
+ *
+ * 📦 DEPENDÊNCIAS : Razor Pages, Bootstrap, jQuery, ValidationScriptsPartial.
+ *
+ * 📝 OBSERVAÇÕES  : Campo de senha possui valor hardcoded para demo (Password123!) e
+ *                   deve ser removido em produção.
+ *****************************************************************************************@
 @page
 @model LockoutModel
 @{

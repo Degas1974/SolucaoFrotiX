@@ -1,11 +1,20 @@
-@*
-╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║ 📌 ARQUIVO: Login.cshtml                                                                            ║
-║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
-╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-║ 🧭 OBJETIVO: Página de login do sistema com autenticação via Ponto e senha.                         ║
-╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*@
+@*****************************************************************************************
+ * ⚡ ARQUIVO: Login.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de login do sistema com autenticação via Ponto e senha.
+ *
+ * 📥 ENTRADAS     : Input.Ponto, Input.Password, Input.RememberMe (formulário).
+ *
+ * 📤 SAÍDAS       : POST para LoginModel (autenticação) e renderização de erros.
+ *
+ * 🔗 CHAMADA POR  : Rota Razor Pages /Account/Login.
+ *
+ * 🔄 CHAMA        : LoginModel.OnPostAsync(), _ValidationScriptsPartial.
+ *
+ * 📦 DEPENDÊNCIAS : Razor Pages, Bootstrap, Font Awesome, jQuery.
+ *
+ * 📝 OBSERVAÇÕES  : Possui seção de marketing no header e links sociais do template.
+ *****************************************************************************************@
 @page
 @model LoginModel
 @{
