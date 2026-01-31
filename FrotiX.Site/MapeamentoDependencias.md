@@ -60,7 +60,7 @@
 | VeiculoController | Get | GET /api/Veiculo | Pages/Veiculo/*.cshtml | DataTable init |
 | ViagemController | Get | GET /api/Viagem | Pages/Viagem/*.cshtml | DataTable init |
 
-> ⚠️ **Nota:** Tabela em construção. Processados: 6/375 arquivos documentados.
+> ⚠️ **Nota:** Tabela em construção. Processados: 20/375 arquivos documentados.
 
 ---
 
@@ -80,7 +80,7 @@
 | wwwroot/js/validacao.js | validarFormulario() | Validação | Forms de CRUD |
 | wwwroot/js/usuarios.js | (funções de CRUD) | CRUD Users | Areas/Authorization/Pages/Usuarios.cshtml |
 
-> ⚠️ **Nota:** Tabela em construção. Processados: 6/375 arquivos documentados.
+> ⚠️ **Nota:** Tabela em construção. Processados: 20/375 arquivos documentados.
 
 ---
 
@@ -92,7 +92,14 @@
 | UserManager<IdentityUser> | ConfirmEmailAsync() | ConfirmEmailModel |
 | UserManager<IdentityUser> | ChangeEmailAsync() | ConfirmEmailChangeModel |
 | UserManager<IdentityUser> | SetUserNameAsync() | ConfirmEmailChangeModel |
+| UserManager<IdentityUser> | FindByEmailAsync() | ForgotPasswordModel |
+| UserManager<IdentityUser> | IsEmailConfirmedAsync() | ForgotPasswordModel |
+| UserManager<IdentityUser> | GeneratePasswordResetTokenAsync() | ForgotPasswordModel |
 | SignInManager<IdentityUser> | RefreshSignInAsync() | ConfirmEmailChangeModel |
+| SignInManager<IdentityUser> | SignOutAsync() | ForgotPasswordModel.OnGet, LockoutModel.OnGetAsync |
+| SignInManager<IdentityUser> | PasswordSignInAsync() | LockoutModel, LoginModel, LoginFrotiX |
+| SignInManager<IdentityUser> | GetExternalAuthenticationSchemesAsync() | LoginModel, LoginFrotiX |
+| IEmailSender | SendEmailAsync() | ForgotPasswordModel |
 | IUnitOfWork | GetRepository<T>() | Todos (~80% dos controllers) |
 | IUnitOfWork | SaveChangesAsync() | Todos com operações de escrita |
 | IGlosaService | ObterResumoAsync() | GlosaController |
