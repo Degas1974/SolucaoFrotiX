@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: AbastecimentoController.Import.cs                                                       ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial para importação de planilhas Excel/CSV de abastecimentos QCard.                ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Import(), ProcessExcel(), ProcessCsv(), ResolverPendencias() - progresso via SignalR     ║
-   ║ 🔗 DEPS: NPOI, CsvHelper, SignalR, IAbastecimentoRepository | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0  ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: AbastecimentoController.Import.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Importação de planilhas Excel/CSV de abastecimentos (QCard), com
+ *                   validação, geração de pendências e feedback via SignalR.
+ *
+ * 📥 ENTRADAS     : Arquivos CSV/XLSX, dados de autorização, placa, KM, produto, etc.
+ *
+ * 📤 SAÍDAS       : ResultadoImportacao (linhas importadas, erros e pendências).
+ *
+ * 🔗 CHAMADA POR  : Frontend de importação de abastecimentos.
+ *
+ * 🔄 CHAMA        : NPOI, CsvHelper, ResolverPendencias(), EnviarProgresso().
+ *
+ * 📦 DEPENDÊNCIAS : NPOI, CsvHelper, SignalR, IUnitOfWork, ImportacaoHub.
+ *
+ * 📝 OBSERVAÇÕES  : Faz blindagem de ModelState para navegações e suporta importação dual.
+ **************************************************************************************** */
 
 using FrotiX.Hubs;
 using FrotiX.Models;
@@ -50,12 +58,13 @@ namespace FrotiX.Controllers
      ****************************************************************************************/
     public partial class AbastecimentoController : ControllerBase
     {
-        // DTOs para importação
+        // [DOC] DTO simples para filtros de importação por data
         public class ImportacaoRequest
         {
             public DateTime DataAbastecimento { get; set; }
         }
 
+        // [DOC] Linha de importação com dados brutos, validações e sugestões
         public class LinhaImportacao
         {
             public int NumeroLinhaOriginal { get; set; }
@@ -92,6 +101,7 @@ namespace FrotiX.Controllers
             public double MediaConsumoVeiculo { get; set; }
         }
 
+        // [DOC] Resultado consolidado da importação (resumo + listas)
         public class ResultadoImportacao
         {
             public bool Sucesso { get; set; }
@@ -108,6 +118,7 @@ namespace FrotiX.Controllers
             public int PendenciasGeradas { get; set; }
         }
 
+        // [DOC] Representa erro de importação com dados para correção
         public class ErroImportacao
         {
             public int LinhaOriginal { get; set; }
@@ -139,6 +150,7 @@ namespace FrotiX.Controllers
             public string Produto { get; set; }
         }
 
+        // [DOC] DTO de linhas importadas para retorno ao frontend
         public class LinhaImportadaDTO
         {
             public string Placa { get; set; }
@@ -155,7 +167,7 @@ namespace FrotiX.Controllers
             public string DataHora { get; set; }
         }
 
-        // DTOs para importação dual (CSV + XLSX)
+        // [DOC] DTO de linha CSV (importação dual)
         public class LinhaCsv
         {
             public int Autorizacao { get; set; }
@@ -169,12 +181,14 @@ namespace FrotiX.Controllers
             public int KmAnterior { get; set; }
         }
 
+        // [DOC] DTO de linha XLSX (importação dual)
         public class LinhaXlsx
         {
             public int Autorizacao { get; set; }
             public DateTime DataHora { get; set; }
         }
 
+        // [DOC] Mapeamento de colunas para planilhas CSV/XLSX
         private class MapeamentoColunas
         {
             public int Autorizacao { get; set; } = -1;
@@ -194,6 +208,7 @@ namespace FrotiX.Controllers
             public bool TodosMapeados => Autorizacao >= 0 && Data >= 0 && Placa >= 0 &&
                                          Km >= 0 && Produto >= 0 && Quantidade >= 0 && ValorUnitario >= 0;
 
+            // [DOC] Lista nomes das colunas obrigatórias que não foram mapeadas
             public List<string> ColunasFaltantes()
             {
                 var faltantes = new List<string>();
@@ -209,9 +224,7 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Envia atualização de progresso via SignalR
-        /// </summary>
+        // [DOC] Envia atualização de progresso via SignalR
         private async Task EnviarProgresso(string connectionId, int porcentagem, string etapa, string detalhe,
             int linhaAtual = 0, int totalLinhas = 0,
             int xlsxAtual = 0, int xlsxTotal = 0,
@@ -244,9 +257,7 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Envia resumo da planilha via SignalR (após análise inicial)
-        /// </summary>
+        // [DOC] Envia resumo da planilha via SignalR (após análise inicial)
         private async Task EnviarResumoPlnailha(string connectionId, int totalRegistros, string dataInicial, string dataFinal, 
             int registrosGasolina, int registrosDiesel, int registrosOutros)
         {
@@ -275,6 +286,22 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ MÉTODO: ImportarNovo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Receber arquivo de importação e processar abastecimentos (CSV/XLSX)
+         *                   com validação, progresso via SignalR e geração de pendências.
+         *
+         * 📥 ENTRADAS     : Request.Form.Files (arquivo), connectionId (SignalR)
+         *
+         * 📤 SAÍDAS       : ActionResult com ResultadoImportacao e mensagens de status
+         *
+         * 🔗 CHAMADA POR  : Frontend de importação de abastecimentos
+         *
+         * 🔄 CHAMA        : LerPlanilhaDinamica(), EnviarProgresso(), ResolverPendencias()
+         *
+         * 📦 DEPENDÊNCIAS : IFormFile, SignalR Hub, NPOI/CsvHelper
+         ****************************************************************************************/
         [Route("ImportarNovo")]
         [HttpPost]
         public async Task<ActionResult> ImportarNovo()
@@ -858,9 +885,7 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Determina o tipo principal da pendência baseado nos erros
-        /// </summary>
+        // [DOC] Determina o tipo principal da pendência baseado nos erros
         private string DeterminarTipoPendencia(List<string> erros)
         {
             try
@@ -1273,9 +1298,7 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Lê arquivo CSV e retorna Dictionary com chave = Autorizacao
-        /// </summary>
+        // [DOC] Lê arquivo CSV e retorna Dictionary com chave = Autorizacao
         private async Task<Dictionary<int, LinhaCsv>> LerArquivoCsvAsync(IFormFile file, string connectionId = null)
         {
             try
@@ -1323,9 +1346,7 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Lê arquivo XLSX extraindo apenas Data+Hora e Autorizacao
-        /// </summary>
+        // [DOC] Lê arquivo XLSX extraindo apenas Data+Hora e Autorizacao
         private async Task<Dictionary<int, LinhaXlsx>> LerArquivoXlsxAsync(IFormFile file, string connectionId = null)
         {
             try
@@ -1475,11 +1496,9 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Importação DUAL: recebe CSV + XLSX, faz JOIN em memória por Autorizacao
-        /// NOTA: Este método é acessado via AbastecimentoImportController (sem [ApiController])
-        /// para evitar validação automática antes do processamento dos arquivos.
-        /// </summary>
+        // [DOC] Importação DUAL: recebe CSV + XLSX, faz JOIN em memória por Autorizacao
+        // [DOC] NOTA: Este método é acessado via AbastecimentoImportController (sem [ApiController])
+        // [DOC] para evitar validação automática antes do processamento dos arquivos.
         internal async Task<ActionResult> ImportarDualInternal()
         {
             string connectionId = null;
@@ -2109,9 +2128,7 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Helper para extrair DateTime de uma célula Excel (trata múltiplos formatos)
-        /// </summary>
+        // [DOC] Helper para extrair DateTime de uma célula Excel (múltiplos formatos)
         private DateTime? GetCellDateTimeValue(ICell cell)
         {
             try
@@ -2143,6 +2160,21 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ MÉTODO: ExcluirPorData
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Excluir abastecimentos por data (dia específico).
+         *
+         * 📥 ENTRADAS     : [ImportacaoRequest] request - DataAbastecimento
+         *
+         * 📤 SAÍDAS       : JSON com sucesso/erro e quantidade excluída
+         *
+         * 🔗 CHAMADA POR  : Frontend de importação (rotina de limpeza por data)
+         *
+         * 🔄 CHAMA        : _unitOfWork.Abastecimento.Remove(), _unitOfWork.Save()
+         *
+         * 📦 DEPENDÊNCIAS : IUnitOfWork
+         ****************************************************************************************/
         [Route("ExcluirPorData")]
         [HttpPost]
         public IActionResult ExcluirPorData([FromBody] ImportacaoRequest request)
@@ -2187,6 +2219,21 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ MÉTODO: ExportarPendencias
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Exportar pendências de importação em planilha CSV.
+         *
+         * 📥 ENTRADAS     : Nenhuma
+         *
+         * 📤 SAÍDAS       : FileResult com CSV de pendências
+         *
+         * 🔗 CHAMADA POR  : Frontend de importação (botão exportar pendências)
+         *
+         * 🔄 CHAMA        : _unitOfWork.PendenciaAbastecimento.GetAll()
+         *
+         * 📦 DEPENDÊNCIAS : CsvHelper, IUnitOfWork
+         ****************************************************************************************/
         [Route("ExportarPendencias")]
         [HttpGet]
         public IActionResult ExportarPendencias()

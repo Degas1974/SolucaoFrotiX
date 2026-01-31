@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: AbastecimentoController.Pendencias.cs                                                   ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial para gerenciamento de pendências de importação de abastecimentos.              ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: ListarPendencias(), EditarPendencia(), ResolverPendencia(), ExcluirPendencia()           ║
-   ║ 🔗 DEPS: AbastecimentoPendente Repository, IUnitOfWork | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0       ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: AbastecimentoController.Pendencias.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar pendências de importação de abastecimentos (listar, editar,
+ *                   resolver e excluir pendências).
+ *
+ * 📥 ENTRADAS     : DTOs de pendência, filtros e ações do usuário.
+ *
+ * 📤 SAÍDAS       : JSON com listas de pendências e status das operações.
+ *
+ * 🔗 CHAMADA POR  : Frontend de gestão de pendências de importação.
+ *
+ * 🔄 CHAMA        : Repositórios de pendência, abastecimento, veículo e motorista.
+ *
+ * 📦 DEPENDÊNCIAS : IUnitOfWork, Entity Framework, modelos de pendência.
+ *
+ * 📝 OBSERVAÇÕES  : Oferece sugestões automáticas para correção de KM.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: AbastecimentoImportController.cs                                                        ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Controller dedicado para importação de abastecimentos. Upload Excel/CSV.               ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Upload() - recebe arquivo e chama AbastecimentoController.Import interno                 ║
-   ║ 🔗 DEPS: IHubContext, IUnitOfWork, SignalR | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0                   ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: AbastecimentoImportController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Controller dedicado à importação de abastecimentos, recebendo upload
+ *                   de planilhas e delegando o processamento ao AbastecimentoController.
+ *
+ * 📥 ENTRADAS     : Arquivos Excel/CSV via FormData (multipart/form-data).
+ *
+ * 📤 SAÍDAS       : JSON com resultado da importação e status de processamento.
+ *
+ * 🔗 CHAMADA POR  : Frontend de importação de abastecimentos.
+ *
+ * 🔄 CHAMA        : AbastecimentoController (métodos internos de importação).
+ *
+ * 📦 DEPENDÊNCIAS : IUnitOfWork, IHubContext, SignalR, ILogger, FrotiXDbContext.
+ *
+ * 📝 OBSERVAÇÕES  : Não usa [ApiController] para evitar validação automática de ModelState.
+ **************************************************************************************** */
 
 using FrotiX.Data;
 using FrotiX.Hubs;
@@ -37,10 +45,8 @@ namespace FrotiX.Controllers
      * [DOC] Validação ocorre dentro da lógica de importação, não antes
      * [DOC] Delega processamento para AbastecimentoController via instância interna
      ****************************************************************************************/
-    /// <summary>
-    /// Controller dedicado para importação de abastecimentos.
-    /// NÃO usa [ApiController] para evitar validação automática antes do processamento.
-    /// </summary>
+    // [DOC] Controller dedicado para importação de abastecimentos.
+    // [DOC] NÃO usa [ApiController] para evitar validação automática antes do processamento.
     [Route("api/Abastecimento")]
     public class AbastecimentoImportController : ControllerBase
     {
@@ -64,10 +70,8 @@ namespace FrotiX.Controllers
             _context = context;
         }
 
-        /// <summary>
-        /// Endpoint de importação dual (CSV + XLSX) SEM validação automática.
-        /// Chama o método interno do AbastecimentoController.
-        /// </summary>
+        // [DOC] Endpoint de importação dual (CSV + XLSX) SEM validação automática.
+        // [DOC] Chama o método interno do AbastecimentoController.
         [Route("ImportarDual")]
         [HttpPost]
         public async Task<ActionResult> ImportarDual()

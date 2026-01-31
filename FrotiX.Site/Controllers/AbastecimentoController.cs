@@ -1,13 +1,22 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: AbastecimentoController.cs                                                              ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Controller principal de gestão de abastecimentos. CRUD, Views, Relatórios.             ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Index(), GetAll(), Create(), Edit(), Delete() - partials: DashboardAPI, Import, Pend.    ║
-   ║ 🔗 DEPS: IUnitOfWork, IHubContext, FrotiXDbContext | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0           ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: AbastecimentoController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Controller principal de gestão de abastecimentos, concentrando CRUD,
+ *                   views e operações auxiliares do módulo.
+ *
+ * 📥 ENTRADAS     : Requisições HTTP (GET/POST) para listagem, criação, edição e exclusão.
+ *
+ * 📤 SAÍDAS       : Views Razor e respostas JSON para o frontend.
+ *
+ * 🔗 CHAMADA POR  : UI de cadastros/relatórios e rotas do módulo Abastecimento.
+ *
+ * 🔄 CHAMA        : Partials associados (DashboardAPI, Import, Pendencias) e UnitOfWork.
+ *
+ * 📦 DEPENDÊNCIAS : IUnitOfWork, SignalR, FrotiXDbContext, NPOI, ILogger.
+ *
+ * 📝 OBSERVAÇÕES  : Este controller é parcial e é complementado por arquivos .DashboardAPI,
+ *                   .Import e .Pendencias.
+ **************************************************************************************** */
 
 using FrotiX.Data;
 using FrotiX.Hubs;

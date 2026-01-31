@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: AbastecimentoController.DashboardAPI.cs                                                 ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial com API para Dashboard de Abastecimentos. Usa estatísticas pré-calculadas.     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: DashboardDados(), GetEstatisticasMensais(), GetEstatisticasDiarias(), GetPorVeiculo()    ║
-   ║ 🔗 DEPS: EstatisticaAbastecimentoMensal, FrotiXDbContext | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0     ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: AbastecimentoController.DashboardAPI.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Endpoints de dashboard de abastecimentos com estatísticas e filtros
+ *                   por período, veículo, categoria e combustível.
+ *
+ * 📥 ENTRADAS     : Parâmetros de filtro (ano, mês, datas, placa, categoria, etc.).
+ *
+ * 📤 SAÍDAS       : JSON com dados agregados e séries para gráficos.
+ *
+ * 🔗 CHAMADA POR  : Frontend do dashboard de abastecimentos.
+ *
+ * 🔄 CHAMA        : EstatisticaAbastecimentoMensal/Diaria e consultas do UnitOfWork.
+ *
+ * 📦 DEPENDÊNCIAS : EF Core, DbContext, IUnitOfWork, modelos de estatística.
+ *
+ * 📝 OBSERVAÇÕES  : Implementa fallback quando tabelas estatísticas não possuem dados.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Models.Estatisticas;
@@ -35,19 +43,13 @@ namespace FrotiX.Controllers
      * [DOC] Se nenhum filtro especificado, busca apenas o último mês com dados
      * [DOC] Agrupa dados por mês, dia, veículo, combustível para análises
      ****************************************************************************************/
-    /// <summary>
-    /// Partial class com endpoints da API para o Dashboard de Abastecimentos
-    /// OTIMIZADO: Usa tabelas estatísticas pré-calculadas para melhor performance
-    /// </summary>
     public partial class AbastecimentoController
     {
         #region Dashboard - Dados Gerais (OTIMIZADO)
 
-        /// <summary>
-        /// Retorna todos os dados agregados para o Dashboard de Abastecimentos
-        /// Usa tabelas estatísticas para carregamento rápido
-        /// IMPORTANTE: Se nenhum filtro for especificado, busca apenas o último mês com dados
-        /// </summary>
+        // [DOC] Retorna todos os dados agregados para o Dashboard de Abastecimentos
+        // [DOC] Usa tabelas estatísticas para carregamento rápido
+        // [DOC] IMPORTANTE: Se nenhum filtro for especificado, busca apenas o último mês com dados
         [Route("DashboardDados")]
         [HttpGet]
         public IActionResult DashboardDados(int? ano, int? mes)
@@ -237,10 +239,8 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Retorna dados agregados para o Dashboard filtrados por período personalizado (data início/fim)
-        /// IMPORTANTE: Data início e fim são obrigatórias
-        /// </summary>
+        // [DOC] Retorna dados agregados para o Dashboard filtrados por período personalizado (data início/fim)
+        // [DOC] IMPORTANTE: Data início e fim são obrigatórias
         [Route("DashboardDadosPeriodo")]
         [HttpGet]
         public IActionResult DashboardDadosPeriodo(DateTime? dataInicio, DateTime? dataFim)
@@ -371,10 +371,8 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Fallback para quando não há dados estatísticos pré-calculados
-        /// IMPORTANTE: Se nenhum filtro for especificado, busca apenas o último mês com dados
-        /// </summary>
+        // [DOC] Fallback para quando não há dados estatísticos pré-calculados
+        // [DOC] IMPORTANTE: Se nenhum filtro for especificado, busca apenas o último mês com dados
         private IActionResult DashboardDadosFallback(int? ano, int? mes)
         {
             // FILTRO PADRÃO: Se nenhum filtro foi especificado, buscar último mês com dados
@@ -525,10 +523,8 @@ namespace FrotiX.Controllers
 
         #region Dashboard - Consumo Mensal (OTIMIZADO)
 
-        /// <summary>
-        /// Retorna dados específicos para a aba Consumo Mensal
-        /// Usa tabelas estatísticas para carregamento rápido
-        /// </summary>
+        // [DOC] Retorna dados específicos para a aba Consumo Mensal
+        // [DOC] Usa tabelas estatísticas para carregamento rápido
         [Route("DashboardMensal")]
         [HttpGet]
         public IActionResult DashboardMensal(int ano, int? mes)
@@ -689,9 +685,7 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Fallback para quando não há dados estatísticos
-        /// </summary>
+        // [DOC] Fallback para quando não há dados estatísticos
         private IActionResult DashboardMensalFallback(int ano, int? mes)
         {
             var query = _unitOfWork.ViewAbastecimentos.GetAll()
@@ -808,10 +802,8 @@ namespace FrotiX.Controllers
 
         #region Dashboard - Consumo por Veículo (OTIMIZADO)
 
-        /// <summary>
-        /// Retorna dados específicos para a aba Consumo por Veículo
-        /// Usa tabelas estatísticas para carregamento rápido
-        /// </summary>
+        // [DOC] Retorna dados específicos para a aba Consumo por Veículo
+        // [DOC] Usa tabelas estatísticas para carregamento rápido
         [Route("DashboardVeiculo")]
         [HttpGet]
         public IActionResult DashboardVeiculo(int ano, int? mes, Guid? veiculoId, string? tipoVeiculo)
@@ -1069,9 +1061,7 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Endpoint para dados de veículo filtrados por período personalizado
-        /// </summary>
+        // [DOC] Endpoint para dados de veículo filtrados por período personalizado
         [Route("DashboardDadosVeiculoPeriodo")]
         [HttpGet]
         public IActionResult DashboardDadosVeiculoPeriodo(DateTime? dataInicio, DateTime? dataFim)
@@ -1168,9 +1158,7 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Fallback para quando não há dados estatísticos
-        /// </summary>
+        // [DOC] Fallback para quando não há dados estatísticos
         private IActionResult DashboardVeiculoFallback(int ano, int? mes, Guid? veiculoId, string? tipoVeiculo)
         {
             var query = _unitOfWork.ViewAbastecimentos.GetAll()
@@ -1277,10 +1265,8 @@ namespace FrotiX.Controllers
 
         #region Dashboard - Detalhes dos Abastecimentos
 
-        /// <summary>
-        /// Retorna lista detalhada de abastecimentos para exibir no modal ao clicar em gráficos
-        /// Este endpoint sempre usa a view original (dados detalhados não são pré-calculados)
-        /// </summary>
+        // [DOC] Retorna lista detalhada de abastecimentos para exibir no modal ao clicar em gráficos
+        // [DOC] Este endpoint sempre usa a view original (dados detalhados não são pré-calculados)
         [Route("DashboardDetalhes")]
         [HttpGet]
         public IActionResult DashboardDetalhes(int? ano, int? mes, string? categoria, string? tipoVeiculo, string? placa, int? diaSemana, int? hora)
@@ -1353,10 +1339,8 @@ namespace FrotiX.Controllers
 
         #region Dashboard - Mapas de Calor (OTIMIZADO)
 
-        /// <summary>
-        /// Retorna dados para o Mapa de Calor: Dia da Semana x Hora
-        /// Usa tabela HeatmapAbastecimentoMensal quando disponível
-        /// </summary>
+        // [DOC] Retorna dados para o Mapa de Calor: Dia da Semana x Hora
+        // [DOC] Usa tabela HeatmapAbastecimentoMensal quando disponível
         [Route("DashboardHeatmapHora")]
         [HttpGet]
         public IActionResult DashboardHeatmapHora(int? ano, int? mes)
@@ -1473,9 +1457,7 @@ namespace FrotiX.Controllers
             });
         }
 
-        /// <summary>
-        /// Retorna dados para o Mapa de Calor: Categoria x Mês
-        /// </summary>
+        // [DOC] Retorna dados para o Mapa de Calor: Categoria x Mês
         [Route("DashboardHeatmapCategoria")]
         [HttpGet]
         public IActionResult DashboardHeatmapCategoria(int ano)
@@ -1562,9 +1544,7 @@ namespace FrotiX.Controllers
             });
         }
 
-        /// <summary>
-        /// Retorna dados para o Mapa de Calor: Dia da Semana x Hora de um veículo ou modelo específico
-        /// </summary>
+        // [DOC] Retorna dados para o Mapa de Calor: Dia da Semana x Hora de um veículo ou modelo específico
         [Route("DashboardHeatmapVeiculo")]
         [HttpGet]
         public IActionResult DashboardHeatmapVeiculo(int? ano, string? placa, string? tipoVeiculo)
@@ -1638,11 +1618,9 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Retorna os meses disponíveis para um ano específico
-        /// IMPORTANTE: Retorna apenas meses que têm registros com valor > 0
-        /// Usado para popular dropdown de mês quando o usuário seleciona um ano
-        /// </summary>
+        // [DOC] Retorna os meses disponíveis para um ano específico
+        // [DOC] IMPORTANTE: Retorna apenas meses que têm registros com valor > 0
+        // [DOC] Usado para popular dropdown de mês quando o usuário seleciona um ano
         [Route("DashboardMesesDisponiveis")]
         [HttpGet]
         public IActionResult DashboardMesesDisponiveis(int ano)
@@ -1683,10 +1661,8 @@ namespace FrotiX.Controllers
 
         #region Dashboard - Viagens do Veículo
 
-        /// <summary>
-        /// Retorna as viagens de um veículo específico no período selecionado
-        /// Usado para investigar consumo alto de combustível
-        /// </summary>
+        // [DOC] Retorna as viagens de um veículo específico no período selecionado
+        // [DOC] Usado para investigar consumo alto de combustível
         [Route("DashboardViagensVeiculo")]
         [HttpGet]
         public IActionResult DashboardViagensVeiculo(Guid veiculoId, int ano, int? mes)
@@ -1826,10 +1802,8 @@ namespace FrotiX.Controllers
 
         #region Dashboard - Abastecimentos da Unidade
 
-        /// <summary>
-        /// Retorna os abastecimentos de uma unidade específica no período selecionado
-        /// Usado para investigar consumo por unidade
-        /// </summary>
+        // [DOC] Retorna os abastecimentos de uma unidade específica no período selecionado
+        // [DOC] Usado para investigar consumo por unidade
         [Route("DashboardAbastecimentosUnidade")]
         [HttpGet]
         public IActionResult DashboardAbastecimentosUnidade(string unidade, int ano, int? mes)
@@ -1913,10 +1887,8 @@ namespace FrotiX.Controllers
             }
         }
 
-        /// <summary>
-        /// Retorna os abastecimentos de uma categoria específica no período selecionado
-        /// Usado para investigar consumo por categoria de veículo
-        /// </summary>
+        // [DOC] Retorna os abastecimentos de uma categoria específica no período selecionado
+        // [DOC] Usado para investigar consumo por categoria de veículo
         [Route("DashboardAbastecimentosCategoria")]
         [HttpGet]
         public IActionResult DashboardAbastecimentosCategoria(string categoria, int ano, int? mes)
