@@ -1,11 +1,20 @@
-@*
-╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║ 📌 ARQUIVO: _ViewStart.cshtml                                                                       ║
-║ 📂 CAMINHO: /Areas/Authorization/Pages                                                              ║
-╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-║ 🧭 OBJETIVO: Definir layout padrão das páginas da área Authorization.                               ║
-╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*@
+@*****************************************************************************************
+ * ⚡ ARQUIVO: _ViewStart.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Definir o layout padrão para todas as páginas da área Authorization.
+ *
+ * 📥 ENTRADAS     : Nenhuma (arquivo de configuração Razor).
+ *
+ * 📤 SAÍDAS       : Configuração de layout padrão via propriedade Layout.
+ *
+ * 🔗 CHAMADA POR  : Motor Razor (executado antes de cada view na área).
+ *
+ * 🔄 CHAMA        : ~/Pages/Shared/_Layout.cshtml.
+ *
+ * 📦 DEPENDÊNCIAS : Layout compartilhado da aplicação.
+ *
+ * 📝 OBSERVAÇÕES  : Páginas podem sobrescrever o layout localmente se necessário.
+ *****************************************************************************************@
 @{
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }

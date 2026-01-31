@@ -1,11 +1,22 @@
-﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: ConfirmEmail.cshtml.cs                                                                  ║
-   ║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                           ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: PageModel para confirmação de email após registro.                                     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: ConfirmEmailModel                                                                       ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+﻿/* ****************************************************************************************
+ * ⚡ ARQUIVO: ConfirmEmail.cshtml.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : PageModel para confirmar email após registro, validando token e
+ *                   atualizando o status do usuário no Identity.
+ *
+ * 📥 ENTRADAS     : userId (string), code (string) - parâmetros da query string.
+ *
+ * 📤 SAÍDAS       : StatusMessage e IActionResult (Page/Redirect/NotFound).
+ *
+ * 🔗 CHAMADA POR  : Motor Razor (GET /Account/ConfirmEmail).
+ *
+ * 🔄 CHAMA        : UserManager.FindByIdAsync(), ConfirmEmailAsync(),
+ *                   WebEncoders.Base64UrlDecode().
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Identity, WebUtilities, Razor Pages.
+ *
+ * 📝 OBSERVAÇÕES  : Token é enviado em Base64Url e decodificado antes da validação.
+ **************************************************************************************** */
 
 /****************************************************************************************
  * ⚡ CLASSE: ConfirmEmailModel (PageModel)

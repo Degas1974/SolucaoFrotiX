@@ -1,11 +1,20 @@
-﻿@*
-╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║ 📌 ARQUIVO: ConfirmEmail.cshtml                                                                      ║
-║ 📂 CAMINHO: /Areas/Identity/Pages/Account                                                            ║
-╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-║ 🧭 OBJETIVO: Exibir resultado da confirmação de email do usuário.                                    ║
-╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*@
+﻿@*****************************************************************************************
+ * ⚡ ARQUIVO: ConfirmEmail.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Exibir o resultado da confirmação de email do usuário após registro.
+ *
+ * 📥 ENTRADAS     : Model.StatusMessage (string) definido no code-behind.
+ *
+ * 📤 SAÍDAS       : HTML com título e mensagem de status (sucesso/erro).
+ *
+ * 🔗 CHAMADA POR  : ConfirmEmailModel (GET /Account/ConfirmEmail).
+ *
+ * 🔄 CHAMA        : Partial _StatusMessage para exibir feedback ao usuário.
+ *
+ * 📦 DEPENDÊNCIAS : Razor Pages, partial _StatusMessage.
+ *
+ * 📝 OBSERVAÇÕES  : Mensagens são geradas no backend conforme validação do token.
+ *****************************************************************************************@
 @page
 @model FrotiX.Identity.Pages.Account.ConfirmEmailModel
 @{
