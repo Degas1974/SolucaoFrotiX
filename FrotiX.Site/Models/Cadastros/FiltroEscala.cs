@@ -1,13 +1,15 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: FiltroEscala.cs                                                                         ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
+   ║ 🚀 ARQUIVO: FiltroEscala.cs                                                                       ║
+   ║ 📂 CAMINHO: Models/Cadastros/                                                                     ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: ViewModel para filtros de pesquisa em escalas (por data, tipo, turno, motorista).     ║
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    ViewModel para filtros de pesquisa em escalas (data, tipo, turno, motorista).                  ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 PROPS: DataFiltro, TipoServicoId, Lotacao, VeiculoId, MotoristaId, StatusMotorista, TurnoId     ║
+   ║ 📋 CLASSES DISPONÍVEIS:                                                                           ║
+   ║    • FiltroEscalaViewModel                                                                        ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: System.ComponentModel.DataAnnotations, SelectListItem                                      ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: System.ComponentModel.DataAnnotations, SelectListItem                              ║
+   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: FrotiX Team | 📝 VERSÃO: 2.0                                 ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
@@ -18,6 +20,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace FrotiX.Models
 {
 
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: FiltroEscalaViewModel                                                            │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    //
+    // 🎯 OBJETIVO:
+    // Concentrar filtros e listas de seleção para pesquisa de escalas.
+    //
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : Controllers/Views de escala
+    // ➡️ CHAMA       : SelectListItem
+    //
     public class FiltroEscalaViewModel
     {
         [Display(Name = "Data")]
