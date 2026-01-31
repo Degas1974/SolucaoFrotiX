@@ -1,13 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: RelatoriosController.cs                                                                 ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: PDFs Dashboard Economildo. Heatmaps, gráficos barras/pizza, comparativos MOBs.         ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: ExportarEconomildo(tipo, mob, mes, ano) - Heatmap, UsuariosMes, TopVeiculos, etc.        ║
-   ║ 🔗 DEPS: RelatorioEconomildoPdfService, FrotiXDbContext | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0      ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: RelatoriosController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Exportar PDFs do Dashboard Economildo (heatmaps, gráficos e rankings).
+ *
+ * 📥 ENTRADAS     : Tipo de relatório e filtros (mob, mês, ano).
+ *
+ * 📤 SAÍDAS       : Arquivo PDF gerado com os dados solicitados.
+ *
+ * 🔗 CHAMADA POR  : Dashboard Economildo (exportação de relatórios).
+ *
+ * 🔄 CHAMA        : RelatorioEconomildoPdfService, FrotiXDbContext, IUnitOfWork.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -21,10 +24,17 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FrotiX.Controllers;
 
-/// <summary>
-/// Controller para exportação de PDFs do Dashboard Economildo
-/// Endpoint: /api/Relatorios/ExportarEconomildo?tipo=XXX
-/// </summary>
+/****************************************************************************************
+ * ⚡ CONTROLLER: RelatoriosController
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Expor endpoint de exportação de PDFs do Dashboard Economildo.
+ *
+ * 📥 ENTRADAS     : Tipo de relatório e filtros opcionais.
+ *
+ * 📤 SAÍDAS       : PDF como arquivo para download.
+ *
+ * 🔗 CHAMADA POR  : Dashboard Economildo.
+ ****************************************************************************************/
 [ApiController]
 [Route("api/[controller]")]
 public class RelatoriosController : Controller
@@ -33,6 +43,17 @@ public class RelatoriosController : Controller
     private readonly IUnitOfWork _unitOfWork;
     private readonly RelatorioEconomildoPdfService _pdfService;
 
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: RelatoriosController (Construtor)
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Injetar dependências de contexto e unit of work.
+     *
+     * 📥 ENTRADAS     : context, unitOfWork.
+     *
+     * 📤 SAÍDAS       : Instância configurada do controller.
+     *
+     * 🔗 CHAMADA POR  : ASP.NET Core DI.
+     ****************************************************************************************/
     public RelatoriosController(FrotiXDbContext context, IUnitOfWork unitOfWork)
     {
         _context = context;
@@ -40,6 +61,21 @@ public class RelatoriosController : Controller
         _pdfService = new RelatorioEconomildoPdfService();
     }
 
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: ExportarEconomildo
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Gerar e retornar o PDF do relatório Economildo conforme o tipo.
+     *
+     * 📥 ENTRADAS     : tipo, mob, mes, ano.
+     *
+     * 📤 SAÍDAS       : FileResult (application/pdf) com nome do arquivo.
+     *
+     * 🔗 CHAMADA POR  : GET /api/Relatorios/ExportarEconomildo.
+     *
+     * 🔄 CHAMA        : GerarHeatmapViagens/Passageiros, GerarUsuariosMes/Turno,
+     *                   GerarComparativoMob, GerarUsuariosDiaSemana, GerarDistribuicaoHorario,
+     *                   GerarTopVeiculos.
+     ****************************************************************************************/
     [HttpGet]
     [Route("ExportarEconomildo")]
     public IActionResult ExportarEconomildo(

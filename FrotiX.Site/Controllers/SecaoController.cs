@@ -1,13 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: SecaoController.cs                                                                      ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: API para Seções Patrimoniais (subdivisões de Setores para organização de patrimônio).  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: ListaSecoes(), ListaSecoesCombo(), UpdateStatusSecao() - JOIN SetorPatrimonial           ║
-   ║ 🔗 DEPS: IUnitOfWork (SecaoPatrimonial, SetorPatrimonial) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0    ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: SecaoController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar seções patrimoniais vinculadas a setores.
+ *
+ * 📥 ENTRADAS     : IDs e filtros de seção/setor.
+ *
+ * 📤 SAÍDAS       : JSON com listas e status de operações.
+ *
+ * 🔗 CHAMADA POR  : Telas de cadastro e filtros patrimoniais.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.SecaoPatrimonial, IUnitOfWork.SetorPatrimonial.
+ **************************************************************************************** */
 
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -17,12 +20,32 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: SecaoController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints para listar seções e alternar status.
+     *
+     * 📥 ENTRADAS     : IDs e filtros.
+     *
+     * 📤 SAÍDAS       : JSON com dados e mensagens.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class SecaoController :Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SecaoController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependência do UnitOfWork.
+         *
+         * 📥 ENTRADAS     : unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada do controller.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public SecaoController(IUnitOfWork unitOfWork)
         {
             try
@@ -35,6 +58,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaSecoes
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar seções com nome do setor associado.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com data (lista de seções).
+         *
+         * 🔗 CHAMADA POR  : Grid de seções patrimoniais.
+         ****************************************************************************************/
         [HttpGet]
         [Route("ListaSecoes")]
         public IActionResult ListaSecoes()
@@ -79,6 +113,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaSecoesCombo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar seções ativas por setor selecionado.
+         *
+         * 📥 ENTRADAS     : setorSelecionado (Guid?).
+         *
+         * 📤 SAÍDAS       : JSON com lista de seções (text/value).
+         *
+         * 🔗 CHAMADA POR  : Combos dependentes de setor.
+         ****************************************************************************************/
         [HttpGet]
         [Route("ListaSecoesCombo")]
         public IActionResult ListaSecoesCombo(Guid? setorSelecionado)
@@ -120,6 +165,17 @@ namespace FrotiX.Controllers
                 );
             }
         }
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateStatusSecao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Alternar o status ativo/inativo de uma seção.
+         *
+         * 📥 ENTRADAS     : Id (Guid da seção).
+         *
+         * 📤 SAÍDAS       : JSON com success, message e type.
+         *
+         * 🔗 CHAMADA POR  : Ação de ativar/desativar seção.
+         ****************************************************************************************/
         [Route("UpdateStatusSecao")]
         public JsonResult UpdateStatusSecao(Guid Id)
         {

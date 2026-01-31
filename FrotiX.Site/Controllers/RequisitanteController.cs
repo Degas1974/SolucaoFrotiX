@@ -1,13 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: RequisitanteController.cs                                                               ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Endpoints API REST para gerenciamento de Requisitantes. CRUD básico.                   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Get(), Upsert(), Delete() - pessoas que solicitam recursos/veículos                      ║
-   ║ 🔗 DEPS: IUnitOfWork (Requisitante) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                          ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: RequisitanteController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar requisitantes e seus vínculos com setores solicitantes.
+ *
+ * 📥 ENTRADAS     : IDs, modelos de requisição e DTOs de atualização.
+ *
+ * 📤 SAÍDAS       : JSON com dados e status das operações.
+ *
+ * 🔗 CHAMADA POR  : Telas administrativas e formulários de cadastro.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.Requisitante, IUnitOfWork.SetorSolicitante.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -18,12 +21,33 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: RequisitanteController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints REST para listar, criar, atualizar e remover
+     *                   requisitantes.
+     *
+     * 📥 ENTRADAS     : Modelos e IDs.
+     *
+     * 📤 SAÍDAS       : JSON com dados e mensagens de retorno.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class RequisitanteController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RequisitanteController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependência do UnitOfWork.
+         *
+         * 📥 ENTRADAS     : unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada do controller.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public RequisitanteController(IUnitOfWork unitOfWork)
         {
             try
@@ -40,6 +64,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar requisitantes com setor solicitante associado.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com data (lista de requisitantes).
+         *
+         * 🔗 CHAMADA POR  : Grid de requisitantes.
+         *
+         * 🔄 CHAMA        : Requisitante.GetAll(), SetorSolicitante.GetAll().
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
@@ -73,6 +110,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetAll
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar requisitantes em formato simplificado para consumo geral.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com lista de requisitantes (campos normalizados).
+         *
+         * 🔗 CHAMADA POR  : Combos e grids.
+         ****************************************************************************************/
         [Route("GetAll")]
         [HttpGet]
         public IActionResult GetAll()
@@ -108,6 +156,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetById
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Buscar requisitante por ID.
+         *
+         * 📥 ENTRADAS     : id (string Guid).
+         *
+         * 📤 SAÍDAS       : JSON com success e dados do requisitante.
+         *
+         * 🔗 CHAMADA POR  : Edição/visualização de requisitantes.
+         ****************************************************************************************/
         [Route("GetById")]
         [HttpGet]
         public IActionResult GetById(string id)
@@ -148,6 +207,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Upsert
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Criar ou atualizar um requisitante.
+         *
+         * 📥 ENTRADAS     : model (RequisitanteUpsertModel).
+         *
+         * 📤 SAÍDAS       : JSON com success e message.
+         *
+         * 🔗 CHAMADA POR  : Formulário de cadastro/edição.
+         *
+         * 🔄 CHAMA        : Requisitante.Add()/Update(), UnitOfWork.Save().
+         ****************************************************************************************/
         [Route("Upsert")]
         [HttpPost]
         public IActionResult Upsert([FromBody] RequisitanteUpsertModel model)
@@ -225,6 +297,17 @@ namespace FrotiX.Controllers
         }
 
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetSetores
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar setores solicitantes ativos para seleção.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com lista de setores (id, nome).
+         *
+         * 🔗 CHAMADA POR  : Combos de setor solicitante.
+         ****************************************************************************************/
         [Route("GetSetores")]
         [HttpGet]
         public IActionResult GetSetores()
@@ -250,6 +333,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover requisitante por ID.
+         *
+         * 📥 ENTRADAS     : model (RequisitanteViewModel).
+         *
+         * 📤 SAÍDAS       : JSON com success e message.
+         *
+         * 🔗 CHAMADA POR  : Ação de exclusão no grid.
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(RequisitanteViewModel model)
@@ -287,6 +381,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetSetoresHierarquia
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar a hierarquia de setores solicitantes (árvore).
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com árvore de setores.
+         *
+         * 🔗 CHAMADA POR  : Combos hierárquicos de setor solicitante.
+         ****************************************************************************************/
         [Route("GetSetoresHierarquia")]
         [HttpGet]
         public IActionResult GetSetoresHierarquia()
@@ -313,6 +418,15 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: MontarHierarquiaSetor (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Montar recursivamente a hierarquia de setores solicitantes.
+         *
+         * 📥 ENTRADAS     : setor, todosSetores.
+         *
+         * 📤 SAÍDAS       : Objeto com filhos aninhados.
+         ****************************************************************************************/
         private object MontarHierarquiaSetor(SetorSolicitante setor , List<SetorSolicitante> todosSetores)
         {
             var filhos = todosSetores
@@ -330,6 +444,17 @@ namespace FrotiX.Controllers
             };
         }
 
+        /****************************************************************************************
+         * ⚡ DTO: AtualizarRequisitanteDto
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Transportar dados mínimos para atualização de ramal/setor.
+         *
+         * 📥 ENTRADAS     : RequisitanteId, Ramal, SetorSolicitanteId.
+         *
+         * 📤 SAÍDAS       : Nenhuma (apenas transporte de dados).
+         *
+         * 🔗 CHAMADA POR  : AtualizarRequisitanteRamalSetor.
+         ****************************************************************************************/
         public class AtualizarRequisitanteDto
         {
             public Guid RequisitanteId
@@ -346,6 +471,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AtualizarRequisitanteRamalSetor
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Atualizar ramal e/ou setor solicitante de um requisitante.
+         *
+         * 📥 ENTRADAS     : dto (AtualizarRequisitanteDto).
+         *
+         * 📤 SAÍDAS       : JSON com success e message.
+         *
+         * 🔗 CHAMADA POR  : Ajuste rápido de requisitante.
+         ****************************************************************************************/
         [Route("AtualizarRequisitanteRamalSetor")]
         [HttpPost]
         public IActionResult AtualizarRequisitanteRamalSetor([FromBody] AtualizarRequisitanteDto dto)
@@ -418,6 +554,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateStatusRequisitante
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Alternar status ativo/inativo do requisitante.
+         *
+         * 📥 ENTRADAS     : Id (Guid do requisitante).
+         *
+         * 📤 SAÍDAS       : JSON com success, message e type.
+         *
+         * 🔗 CHAMADA POR  : Ação de ativar/desativar requisitante.
+         ****************************************************************************************/
         [Route("UpdateStatusRequisitante")]
         public JsonResult UpdateStatusRequisitante(Guid Id)
         {
@@ -482,6 +629,17 @@ namespace FrotiX.Controllers
         }
     }
 
+    /****************************************************************************************
+     * ⚡ DTO: RequisitanteUpsertModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar dados para criação/edição de requisitante.
+     *
+     * 📥 ENTRADAS     : RequisitanteId, Ponto, Nome, Ramal, SetorSolicitanteId, Status.
+     *
+     * 📤 SAÍDAS       : Nenhuma (apenas transporte de dados).
+     *
+     * 🔗 CHAMADA POR  : Upsert.
+     ****************************************************************************************/
     public class RequisitanteUpsertModel
     {
         public string RequisitanteId { get; set; }

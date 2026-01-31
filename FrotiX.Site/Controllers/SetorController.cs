@@ -1,13 +1,17 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: SetorController.cs                                                                      ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: API para Setores Patrimoniais. CRUD com detentor de carga patrimonial associado.       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: ListaSetores(), UpdateStatusSetor(), Delete() - valida seções associadas antes excluir   ║
-   ║ 🔗 DEPS: IUnitOfWork (SetorPatrimonial, SecaoPatrimonial) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0    ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: SetorController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar setores patrimoniais e seus vínculos com seções/detentores.
+ *
+ * 📥 ENTRADAS     : IDs e filtros de setor.
+ *
+ * 📤 SAÍDAS       : JSON com listas e status de operações.
+ *
+ * 🔗 CHAMADA POR  : Telas de cadastro e filtros patrimoniais.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.SetorPatrimonial, IUnitOfWork.SecaoPatrimonial,
+ *                   IUnitOfWork.AspNetUsers.
+ **************************************************************************************** */
 
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -17,12 +21,32 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: SetorController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints para listar, atualizar status e remover setores.
+     *
+     * 📥 ENTRADAS     : IDs e filtros.
+     *
+     * 📤 SAÍDAS       : JSON com dados e mensagens.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class SetorController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SetorController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependência do UnitOfWork.
+         *
+         * 📥 ENTRADAS     : unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada do controller.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public SetorController(IUnitOfWork unitOfWork)
         {
             try
@@ -35,6 +59,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaSetores
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar setores com detentor associado.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com data (lista de setores).
+         *
+         * 🔗 CHAMADA POR  : Grid de setores patrimoniais.
+         ****************************************************************************************/
         [HttpGet]
         [Route("ListaSetores")]
         public IActionResult ListaSetores()
@@ -78,6 +113,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateStatusSetor
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Alternar o status ativo/inativo de um setor.
+         *
+         * 📥 ENTRADAS     : Id (Guid do setor).
+         *
+         * 📤 SAÍDAS       : JSON com success, message e type.
+         *
+         * 🔗 CHAMADA POR  : Ação de ativar/desativar setor.
+         ****************************************************************************************/
         [Route("UpdateStatusSetor")]
         public JsonResult UpdateStatusSetor(Guid Id)
         {
@@ -141,6 +187,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover setor quando não houver seções associadas.
+         *
+         * 📥 ENTRADAS     : id (Guid do setor).
+         *
+         * 📤 SAÍDAS       : JSON com success e message.
+         *
+         * 🔗 CHAMADA POR  : Ação de exclusão no grid.
+         *
+         * 🔄 CHAMA        : SetorPatrimonial.GetFirstOrDefault(), SecaoPatrimonial.GetFirstOrDefault(),
+         *                   SetorPatrimonial.Remove(), UnitOfWork.Save().
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete([FromBody] Guid id)
@@ -191,6 +251,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaSetoresCombo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar setores ativos para combos.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON com lista de setores (text/value).
+         *
+         * 🔗 CHAMADA POR  : Combos de setor.
+         ****************************************************************************************/
         [HttpGet]
         [Route("ListaSetoresCombo")]
         public IActionResult ListaSetoresCombo()
