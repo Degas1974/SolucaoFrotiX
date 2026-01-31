@@ -1,13 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: SetorSolicitanteController.GetAll.cs                                                    ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial com listagem/CRUD de setores solicitantes. Estrutura hierárquica pai/filho.    ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetAll(), GetById(), Upsert(), GetSetoresPai() - MontarHierarquia() recursivo            ║
-   ║ 🔗 DEPS: IUnitOfWork (SetorSolicitante) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                      ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: SetorSolicitanteController.GetAll.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Listar setores solicitantes e manter hierarquia pai/filho.
+ *
+ * 📥 ENTRADAS     : Parâmetros de rota e DTOs de upsert.
+ *
+ * 📤 SAÍDAS       : JSON com árvore de setores e dados de edição.
+ *
+ * 🔗 CHAMADA POR  : Telas de setores solicitantes (treeview e formulário).
+ *
+ * 🔄 CHAMA        : IUnitOfWork.SetorSolicitante.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -18,6 +21,15 @@ using System.Linq;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: SetorSolicitanteController.GetAll
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Implementar listagem, consulta e upsert de setores solicitantes.
+     *
+     * 📥 ENTRADAS     : IDs e modelos de upsert.
+     *
+     * 📤 SAÍDAS       : JSON com árvore, detalhes e mensagens.
+     ****************************************************************************************/
     public partial class SetorSolicitanteController : Controller
     {
         /****************************************************************************************
@@ -263,6 +275,17 @@ namespace FrotiX.Controllers
         }
     }
 
+    /****************************************************************************************
+     * ⚡ DTO: SetorSolicitanteUpsertModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar dados para criação/edição de setor solicitante.
+     *
+     * 📥 ENTRADAS     : SetorSolicitanteId, SetorPaiId, Nome, Sigla, Ramal, Status.
+     *
+     * 📤 SAÍDAS       : Nenhuma (apenas transporte de dados).
+     *
+     * 🔗 CHAMADA POR  : Upsert.
+     ****************************************************************************************/
     public class SetorSolicitanteUpsertModel
     {
         public string SetorSolicitanteId { get; set; }

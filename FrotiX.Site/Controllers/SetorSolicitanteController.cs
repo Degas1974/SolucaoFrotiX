@@ -1,13 +1,16 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: SetorSolicitanteController.cs                                                           ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: API para Setores Solicitantes de viagens. Hierarquia: Setor Pai → Setores Filho.       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Delete() - valida setores filhos (SetorPaiId) antes de excluir                           ║
-   ║ 🔗 DEPS: IUnitOfWork (SetorSolicitante) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                      ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: SetorSolicitanteController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar setores solicitantes e validar hierarquia pai/filho.
+ *
+ * 📥 ENTRADAS     : IDs e view models de setor solicitante.
+ *
+ * 📤 SAÍDAS       : JSON com status das operações.
+ *
+ * 🔗 CHAMADA POR  : Telas de cadastro/gestão de setores solicitantes.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.SetorSolicitante.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -16,12 +19,32 @@ using System;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: SetorSolicitanteController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints para manutenção de setores solicitantes.
+     *
+     * 📥 ENTRADAS     : Modelos e IDs de setor solicitante.
+     *
+     * 📤 SAÍDAS       : JSON com mensagens de retorno.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public partial class SetorSolicitanteController :Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SetorSolicitanteController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar dependência do UnitOfWork.
+         *
+         * 📥 ENTRADAS     : unitOfWork.
+         *
+         * 📤 SAÍDAS       : Instância configurada do controller.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public SetorSolicitanteController(IUnitOfWork unitOfWork)
         {
             try
@@ -38,6 +61,20 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remover setor solicitante se não houver setores filhos vinculados.
+         *
+         * 📥 ENTRADAS     : model (SetorSolicitanteViewModel).
+         *
+         * 📤 SAÍDAS       : JSON com success e message.
+         *
+         * 🔗 CHAMADA POR  : Ação de exclusão no grid.
+         *
+         * 🔄 CHAMA        : SetorSolicitante.GetFirstOrDefault(), SetorSolicitante.Remove(),
+         *                   UnitOfWork.Save().
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(SetorSolicitanteViewModel model)

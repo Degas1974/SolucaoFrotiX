@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-█████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░ 49.2%
+█████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░ 49.7%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 445 |
-| Percentual | 49.2% |
-| Última Atualização | 31/01/2026 18:27 |
+| Documentados | 450 |
+| Percentual | 49.7% |
+| Última Atualização | 31/01/2026 18:32 |
 
 ---
 
@@ -26,7 +26,7 @@
 | # | Pasta | Total | Feitos | % | Status |
 |---|-------|-------|--------|---|--------|
 | 1 | Areas | 43 | 43 | 100% | ✅ Completo |
-| 2 | Controllers | 93 | 65 | 69.9% | 🟡 Em Progresso |
+| 2 | Controllers | 93 | 70 | 75.3% | 🟡 Em Progresso |
 | 3 | Data | 5 | 0 | 0% | 🔴 Pendente |
 | 4 | EndPoints | 2 | 2 | 100% | ✅ Completo |
 | 5 | Extensions | 3 | 3 | 100% | ✅ Completo |
@@ -95,7 +95,7 @@
 ✅ Areas/Identity/Pages/_ViewStart.cshtml
 ```
 
-### 📂 Controllers (65/93) 🟡
+### 📂 Controllers (70/93) 🟡
 ```
 ✅ Controllers/AbastecimentoController.cs
 ✅ Controllers/AbastecimentoController.DashboardAPI.cs
@@ -162,6 +162,11 @@
 ✅ Controllers/RequisitanteController.cs
 ✅ Controllers/SecaoController.cs
 ✅ Controllers/SetorController.cs
+✅ Controllers/SetorSolicitanteController.GetAll.cs
+✅ Controllers/SetorSolicitanteController.UpdateStatus.cs
+✅ Controllers/SetorSolicitanteController.cs
+✅ Controllers/TaxiLegController.cs
+✅ Controllers/TestePdfController.cs
 ```
 
 ### 📂 Data (0/5)
@@ -502,6 +507,13 @@
    • RequisitanteController.cs
    • SecaoController.cs
    • SetorController.cs
+
+✅ Controllers - Classes (Lote 153 - revisão cards completos):
+   • SetorSolicitanteController.GetAll.cs
+   • SetorSolicitanteController.UpdateStatus.cs
+   • SetorSolicitanteController.cs
+   • TaxiLegController.cs
+   • TestePdfController.cs
 
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
@@ -966,10 +978,11 @@
 | 31/01/2026 | 5 | 1 | Lote 150 - Controllers revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 151 - Controllers revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 152 - Controllers revisão cards completos (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 153 - Controllers revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 101
-**Total de Commits:** 99
-**Total de Arquivos Documentados:** 445
+**Total de Lotes:** 102
+**Total de Commits:** 100
+**Total de Arquivos Documentados:** 450
 
 ---
 

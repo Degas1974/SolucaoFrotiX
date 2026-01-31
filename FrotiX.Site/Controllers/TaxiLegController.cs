@@ -1,20 +1,17 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: TaxiLegController.cs                                                                    ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: API Controller para importação de corridas TaxiLeg via planilhas Excel.               ║
-   ║    Processa corridas realizadas/canceladas com cálculo de glosa e tempo de espera.                 ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENDPOINTS: [GET] / → Healthcheck | [POST] /Import → Corridas realizadas (.xls/.xlsx)            ║
-   ║    [POST] /ImportCanceladas → Corridas canceladas                                                   ║
-   ║    ROTA BASE: api/TaxiLeg                                                                           ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ ⚙️ CÁLCULOS: Duração=(HoraFinal-HoraInicio) | Espera=(HoraLocal-HoraAceite)                        ║
-   ║    Glosa=true se Espera>15min | ValorGlosa=KmReal*2.44                                             ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: IUnitOfWork, ICorridasTaxiLegRepository, NPOI (Excel), IWebHostEnvironment, ILogger       ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: TaxiLegController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Importar corridas TaxiLeg via planilhas Excel (realizadas e canceladas),
+ *                   com cálculo de glosa e tempo de espera.
+ *
+ * 📥 ENTRADAS     : Arquivos .xls/.xlsx enviados via formulário.
+ *
+ * 📤 SAÍDAS       : JSON com status e resultados do processamento.
+ *
+ * 🔗 CHAMADA POR  : Telas de importação TaxiLeg.
+ *
+ * 🔄 CHAMA        : ICorridasTaxiLegRepository, IUnitOfWork, NPOI, ILogger.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
@@ -34,6 +31,15 @@ using System.Text;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER: TaxiLegController
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor endpoints de importação e validação de corridas TaxiLeg.
+     *
+     * 📥 ENTRADAS     : Uploads de planilhas e requisições de healthcheck.
+     *
+     * 📤 SAÍDAS       : JSON com dados de processamento.
+     ****************************************************************************************/
     [Route("api/[controller]")]
     [ApiController]
     public class TaxiLegController :Controller
@@ -43,6 +49,17 @@ namespace FrotiX.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICorridasTaxiLegRepository _corridasTaxiLegRepository;
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ExtrairHora (Helper)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Extrair horário de uma célula Excel e normalizar para HH:mm.
+         *
+         * 📥 ENTRADAS     : row, cellIndex.
+         *
+         * 📤 SAÍDAS       : String no formato HH:mm ou vazio.
+         *
+         * 🔄 CHAMA        : DateUtil.IsCellDateFormatted, TimeSpan.TryParse, DateTime.TryParse.
+         ****************************************************************************************/
         private string ExtrairHora(IRow row , int cellIndex)
         {
             try
@@ -73,6 +90,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: TaxiLegController (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar logger, hosting, unit of work e repositório TaxiLeg.
+         *
+         * 📥 ENTRADAS     : logger, hostingEnvironment, unitOfWork, corridasTaxiLegRepository.
+         *
+         * 📤 SAÍDAS       : Instância configurada do controller.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         ****************************************************************************************/
         public TaxiLegController(
             ILogger<TaxiLegController> logger ,
             IWebHostEnvironment hostingEnvironment ,
@@ -103,6 +131,17 @@ namespace FrotiX.Controllers
             get; set;
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Index
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Exibir a página inicial de importação TaxiLeg.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : View padrão.
+         *
+         * 🔗 CHAMADA POR  : Navegação do módulo TaxiLeg.
+         ****************************************************************************************/
         public IActionResult Index()
         {
             try
@@ -116,6 +155,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Healthcheck simples do controller.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : JSON booleano de sucesso.
+         *
+         * 🔗 CHAMADA POR  : Verificação de disponibilidade.
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
@@ -133,6 +183,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Import
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Importar corridas realizadas a partir de planilha Excel.
+         *
+         * 📥 ENTRADAS     : Arquivo .xls/.xlsx via Request.Form.Files.
+         *
+         * 📤 SAÍDAS       : JSON com status, mensagens e dados processados.
+         *
+         * 🔗 CHAMADA POR  : Upload de corridas realizadas.
+         *
+         * 🔄 CHAMA        : NPOI, ICorridasTaxiLegRepository, UnitOfWork.Save().
+         ****************************************************************************************/
         [Route("Import")]
         [HttpPost]
         public ActionResult Import()
@@ -384,6 +447,19 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ImportCanceladas
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Importar corridas canceladas a partir de planilha Excel.
+         *
+         * 📥 ENTRADAS     : Arquivo .xls/.xlsx via Request.Form.Files.
+         *
+         * 📤 SAÍDAS       : JSON com status, mensagens e dados processados.
+         *
+         * 🔗 CHAMADA POR  : Upload de corridas canceladas.
+         *
+         * 🔄 CHAMA        : NPOI, ICorridasTaxiLegRepository, UnitOfWork.Save().
+         ****************************************************************************************/
         [Route("ImportCanceladas")]
         [HttpPost]
         public ActionResult ImportCanceladas()

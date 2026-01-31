@@ -1,19 +1,31 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: SetorSolicitanteController.UpdateStatus.cs                                              ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial para toggle de status Ativo/Inativo de setores solicitantes.                   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: UpdateStatus(id) - retorna { success, message, novoStatus: 0/1 }                         ║
-   ║ 🔗 DEPS: IUnitOfWork (SetorSolicitante) | 📅 28/01/2026 | 👤 Copilot | 📝 v2.0                      ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: SetorSolicitanteController.UpdateStatus.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Alternar status ativo/inativo de setores solicitantes.
+ *
+ * 📥 ENTRADAS     : ID do setor solicitante.
+ *
+ * 📤 SAÍDAS       : JSON com success, message e novoStatus.
+ *
+ * 🔗 CHAMADA POR  : TreeView/ação de toggle de setores.
+ *
+ * 🔄 CHAMA        : IUnitOfWork.SetorSolicitante.
+ **************************************************************************************** */
 
 using Microsoft.AspNetCore.Mvc;
 using System;
 
 namespace FrotiX.Controllers
 {
+    /****************************************************************************************
+     * ⚡ CONTROLLER PARTIAL: SetorSolicitanteController.UpdateStatus
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Implementar toggle de status para setores solicitantes.
+     *
+     * 📥 ENTRADAS     : ID (string Guid).
+     *
+     * 📤 SAÍDAS       : JSON com status atualizado.
+     ****************************************************************************************/
     public partial class SetorSolicitanteController : Controller
     {
         /****************************************************************************************
