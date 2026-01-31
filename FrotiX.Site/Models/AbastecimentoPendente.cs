@@ -1,13 +1,20 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: AbastecimentoPendente.cs                                                                ║
-   ║ 📂 CAMINHO: /Models                                                                                 ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Registrar abastecimentos pendentes de importação/validação de planilhas.             ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: AbastecimentoPendente                                                                  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core                                                           ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: AbastecimentoPendente.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Registrar abastecimentos pendentes de importação/validação de planilhas.
+ *
+ * 📥 ENTRADAS     : Dados brutos da planilha, vínculos identificados e sugestões de correção.
+ *
+ * 📤 SAÍDAS       : Entidade persistida para validação e correção posterior.
+ *
+ * 🔗 CHAMADA POR  : Processo de importação de abastecimentos e revisão manual.
+ *
+ * 🔄 CHAMA        : DataAnnotations/EF Core para mapeamento e validação.
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations, EF Core.
+ *
+ * 📝 OBSERVAÇÕES  : Campos nullable para tolerar dados incompletos; Status 0/1/2.
+ **************************************************************************************** */
 
 #nullable enable
 using System;
@@ -17,11 +24,23 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa um abastecimento pendente de correção/validação após importação.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: AbastecimentoPendente
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Armazenar pendências de abastecimento com dados originais e sugestões.
+     *
+     * 📥 ENTRADAS     : Campos da planilha, IDs vinculados e metadados de correção.
+     *
+     * 📤 SAÍDAS       : Registro persistido para triagem, correção e auditoria.
+     *
+     * 🔗 CHAMADA POR  : Importadores de planilha, telas de validação e ajustes.
+     *
+     * 🔄 CHAMA        : Veiculo, Motorista, Combustivel (navegação opcional).
+     *
+     * 📦 DEPENDÊNCIAS : DataAnnotations, ValidateNever.
+     *
+     * 📝 OBSERVAÇÕES  : Possui campos de sugestão de KM e status de resolução.
+     ****************************************************************************************/
     public class AbastecimentoPendente
     {
         // Identificador único do registro.

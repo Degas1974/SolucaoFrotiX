@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-██████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░ 52.5%
+███████████████████████████░░░░░░░░░░░░░░░░░░░░░░░ 53.0%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 475 |
-| Percentual | 52.5% |
-| Última Atualização | 31/01/2026 19:30 |
+| Documentados | 480 |
+| Percentual | 53.0% |
+| Última Atualização | 31/01/2026 20:02 |
 
 ---
 
@@ -27,7 +27,7 @@
 |---|-------|-------|--------|---|--------|
 | 1 | Areas | 43 | 43 | 100% | ✅ Completo |
 | 2 | Controllers | 94 | 94 | 100% | ✅ Completo |
-| 3 | Data | 5 | 1 | 20% | 🟡 Em Progresso |
+| 3 | Data | 5 | 5 | 100% | ✅ Completo |
 | 4 | EndPoints | 2 | 2 | 100% | ✅ Completo |
 | 5 | Extensions | 3 | 3 | 100% | ✅ Completo |
 | 6 | Filters | 4 | 4 | 100% | ✅ Completo |
@@ -36,7 +36,7 @@
 | 9 | Infrastructure | 1 | 1 | 100% | ✅ Completo |
 | 10 | Logging | 1 | 1 | 100% | ✅ Completo |
 | 11 | Middlewares | 2 | 2 | 100% | ✅ Completo |
-| 12 | Models | 139 | 134 | 96.4% | 🟡 Em Progresso |
+| 12 | Models | 139 | 135 | 97.1% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
 | 15 | Repository | 209 | 209 | 100% | ✅ Completo |
@@ -193,9 +193,13 @@
 ✅ Controllers/ViagemLimpezaController.cs
 ```
 
-### 📂 Data (1/5) 🟡
+### 📂 Data (5/5) ✅
 ```
 ✅ Data/ApplicationDbContext.cs
+✅ Data/ControleAcessoDbContext.cs
+✅ Data/FrotiXDbContext.OcorrenciaViagem.cs
+✅ Data/FrotiXDbContext.RepactuacaoVeiculo.cs
+✅ Data/FrotiXDbContext.cs
 ```
 
 ### 📂 EndPoints (2/2) ✅
@@ -574,6 +578,13 @@
    • ViagemLimpezaController.cs
    • ApplicationDbContext.cs
 
+✅ Data + Models - Classes (Lote 159 - revisão cards completos):
+   • ControleAcessoDbContext.cs
+   • FrotiXDbContext.cs
+   • FrotiXDbContext.OcorrenciaViagem.cs
+   • FrotiXDbContext.RepactuacaoVeiculo.cs
+   • AbastecimentoPendente.cs
+
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
    • _ViewImports.cshtml
@@ -639,12 +650,12 @@
 ✅ UiExceptionMiddleware.cs
 ```
 
-### 📂 Models (134/139) 🟡
+### 📂 Models (135/139) 🟡
 ```
 ✅ Estatísticas (13 arquivos - Lotes 51-53)
 ✅ Views (38 arquivos - Lotes 54-61)
 ⏳ Cadastros (55 processados)
-⏳ Raiz (27 processados)
+⏳ Raiz (28 processados)
 ⏳ DTO (4 processados)
 ⏳ FontAwesome (1 processado)
 ⏳ Planilhas (1 processado)
@@ -1043,10 +1054,11 @@
 | 31/01/2026 | 5 | 1 | Lote 156 - Controllers revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 157 - Controllers revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 158 - Controllers + Data revisão cards completos (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 159 - Data + Models revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 107
-**Total de Commits:** 105
-**Total de Arquivos Documentados:** 475
+**Total de Lotes:** 108
+**Total de Commits:** 106
+**Total de Arquivos Documentados:** 480
 
 ---
 

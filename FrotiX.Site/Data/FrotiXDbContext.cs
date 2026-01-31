@@ -1,13 +1,22 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: FrotiXDbContext.cs                                                                      ║
-   ║ 📂 CAMINHO: /Data                                                                                   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: DbContext PRINCIPAL do FrotiX. Todas as entidades de gestão de frota.                  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: Veiculo, Motorista, Viagem, Abastecimento, Contrato, Empenho, NotaFiscal, Multa, etc.    ║
-   ║ 🔗 PARTIAL: .OcorrenciaViagem.cs, .RepactuacaoVeiculo.cs | 📅 29/01/2026 | 👤 Copilot | 📝 v2.0     ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: FrotiXDbContext.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Centralizar o DbContext principal do FrotiX (cadastros, viagens e views).
+ *
+ * 📥 ENTRADAS     : Opções do EF Core (provider/connection string).
+ *
+ * 📤 SAÍDAS       : Contexto configurado com DbSets e mapeamentos.
+ *
+ * 🔗 CHAMADA POR  : Configuração de serviços, repositórios e regras de negócio.
+ *
+ * 🔄 CHAMA        : OnModelCreating para chaves compostas, triggers e configurações especiais.
+ *
+ * 📦 DEPENDÊNCIAS : Microsoft.EntityFrameworkCore, FrotiX.Models.*.
+ *
+ * ⚠️ ATENÇÃO      : Possui múltiplas chaves compostas e tabelas N:N (ver OnModelCreating).
+ *
+ * 📝 OBSERVAÇÕES  : Parciais complementares em .OcorrenciaViagem.cs e .RepactuacaoVeiculo.cs.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Models.Cadastros;
@@ -18,8 +27,38 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FrotiX.Data
 {
+    /****************************************************************************************
+     * ⚡ CLASSE: FrotiXDbContext
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Expor entidades do FrotiX para consultas e persistência no EF Core.
+     *
+     * 📥 ENTRADAS     : DbContextOptions<FrotiXDbContext>.
+     *
+     * 📤 SAÍDAS       : Instância do contexto com DbSets e configurações.
+     *
+     * 🔗 CHAMADA POR  : ASP.NET Core DI e repositórios.
+     *
+     * 🔄 CHAMA        : base(options), Database.SetCommandTimeout, OnModelCreating.
+     *
+     * 📦 DEPENDÊNCIAS : DbContext.
+     ****************************************************************************************/
     public partial class FrotiXDbContext : DbContext
     {
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: FrotiXDbContext (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Configurar o DbContext principal com opções do EF Core.
+         *
+         * 📥 ENTRADAS     : options (DbContextOptions<FrotiXDbContext>).
+         *
+         * 📤 SAÍDAS       : Instância com timeout ajustado.
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI.
+         *
+         * 🔄 CHAMA        : base(options), Database.SetCommandTimeout.
+         *
+         * 📝 OBSERVAÇÕES  : Timeout elevado para operações de carga e relatórios.
+         ****************************************************************************************/
         public FrotiXDbContext(DbContextOptions<FrotiXDbContext> options)
             : base(options)
         {
@@ -39,6 +78,14 @@ namespace FrotiX.Data
         }
 
         public DbSet<AlertasUsuario> AlertasUsuario
+        {
+            get; set;
+        }
+
+        // ============================================================
+        // LOGERRO - SISTEMA DE LOGS
+        // ============================================================
+        public DbSet<LogErro> LogErros
         {
             get; set;
         }
@@ -588,6 +635,21 @@ namespace FrotiX.Data
 
         // Recurso para tabelas com múltiplas chaves primárias
         //====================================================
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnModelCreating
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Configurar triggers, chaves compostas e mapeamentos especiais.
+         *
+         * 📥 ENTRADAS     : modelBuilder.
+         *
+         * 📤 SAÍDAS       : Modelo EF Core configurado.
+         *
+         * 🔗 CHAMADA POR  : EF Core durante a construção do modelo.
+         *
+         * 🔄 CHAMA        : modelBuilder.Entity<...>() com HasTrigger/HasKey/UseSqlOutputClause.
+         *
+         * ⚠️ ATENÇÃO      : Tabelas com trigger exigem UseSqlOutputClause(false).
+         ****************************************************************************************/
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // ================================================================
