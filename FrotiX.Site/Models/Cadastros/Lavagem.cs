@@ -1,13 +1,12 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: Lavagem.cs                                                                              ║
+   ║ 📌 ARQUIVO: Lavagem.cs                                                                              ║
    ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Entidade e ViewModels para registros de lavagens de veículos (data, horário, veículo).║
+   ║ 🧭 OBJETIVO: Registrar lavagens de veículos com horários e vínculos de veículo/motorista.          ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ENTIDADE: Lavagem (LavagemId, Data, HorarioInicio, HorarioFim, VeiculoId) + FK para Veiculo      ║
+   ║ 🗂️  CONTÉM: Lavagem                                                                               ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: FrotiX.Validations, Veiculo                                                                ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core                                                           ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
@@ -21,30 +20,43 @@ using Microsoft.AspNetCore.Http;
 
 namespace FrotiX.Models
 {
+    // ==================================================================================================
+    // ENTIDADE
+    // ==================================================================================================
+    // Representa a lavagem de um veículo em uma data e horários específicos.
+    // ==================================================================================================
     public class Lavagem
     {
+        // Identificador único da lavagem.
         [Key]
         public Guid LavagemId { get; set; }
 
+        // Data da lavagem.
         [DataType(DataType.DateTime)]
         [Display(Name = "Data")]
         public DateTime? Data { get; set; }
 
+        // Horário de início.
         [Display(Name = "Horário Início")]
         public DateTime? HorarioInicio { get; set; }
 
+        // Horário de término.
         [Display(Name = "Horário Fim")]
         public DateTime? HorarioFim { get; set; }
 
+        // Veículo lavado.
         [Display(Name = "Veículo Lavado")]
         public Guid VeiculoId { get; set; }
 
+        // Navegação para veículo.
         [ForeignKey("VeiculoId")]
         public virtual Veiculo? Veiculo { get; set; }
 
+        // Motorista associado à lavagem.
         [Display(Name = "Motorista")]
         public Guid MotoristaId { get; set; }
 
+        // Navegação para motorista.
         [ForeignKey("MotoristaId")]
         public virtual Motorista? Motorista { get; set; }
     }

@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-███████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 29.8%
+███████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 30.4%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 270 |
-| Percentual | 29.8% |
-| Última Atualização | 31/01/2026 09:30 |
+| Documentados | 275 |
+| Percentual | 30.4% |
+| Última Atualização | 31/01/2026 09:34 |
 
 ---
 
@@ -36,7 +36,7 @@
 | 9 | Infrastructure | 1 | 1 | 100% | ✅ Completo |
 | 10 | Logging | 1 | 1 | 100% | ✅ Completo |
 | 11 | Middlewares | 2 | 2 | 100% | ✅ Completo |
-| 12 | Models | 139 | 69 | 49.6% | 🟡 Em Progresso |
+| 12 | Models | 139 | 74 | 53.2% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
 | 15 | Repository | 209 | 209 | 100% | ✅ Completo |
@@ -152,6 +152,13 @@
    • ItensManutencao.cs
    • Lavador.cs
 
+✅ Models/Cadastros - Classes (Lote 111 - novo padrão visual):
+   • LavadorContrato.cs
+   • LavadoresLavagem.cs
+   • Lavagem.cs
+   • LotacaoMotorista.cs
+   • Manutencao.cs
+
 ### 📂 Infrastructure (1/1) ✅
 ```
 ✅ CacheKeys.cs
@@ -168,11 +175,11 @@
 ✅ UiExceptionMiddleware.cs
 ```
 
-### 📂 Models (69/139) 🟡
+### 📂 Models (74/139) 🟡
 ```
 ✅ Estatísticas (13 arquivos - Lotes 51-53)
 ✅ Views (38 arquivos - Lotes 54-61)
-⏳ Cadastros (21 processados)
+⏳ Cadastros (26 processados)
 ⏳ FontAwesome (1 processado)
 ⏳ Planilhas (1 processado)
 ```
@@ -522,10 +529,11 @@
 | 31/01/2026 | 5 | 1 | Lote 108 - Models/Cadastros novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 109 - Models/Cadastros novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 110 - Models/Cadastros novo padrão visual (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 111 - Models/Cadastros novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 59
-**Total de Commits:** 57
-**Total de Arquivos Documentados:** 270
+**Total de Lotes:** 60
+**Total de Commits:** 58
+**Total de Arquivos Documentados:** 275
 
 ---
 
