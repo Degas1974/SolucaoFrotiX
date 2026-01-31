@@ -1,13 +1,15 @@
 ﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: DeleteMovimentacaoWrapper.cs                                                            ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
+   ║ 🚀 ARQUIVO: DeleteMovimentacaoWrapper.cs                                                          ║
+   ║ 📂 CAMINHO: Models/Cadastros/                                                                     ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Wrapper para operações de exclusão de movimentações de Empenho e EmpenhoMulta.        ║
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Wrapper para operações de exclusão de movimentações de Empenho e EmpenhoMulta.                 ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 CLASSES: DeleteMovimentacaoWrapperViewModel (mEmpenho, mEmpenhoMulta)                            ║
+   ║ 📋 CLASSES DISPONÍVEIS:                                                                           ║
+   ║    • DeleteMovimentacaoWrapperViewModel                                                           ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: FrotiX.Validations, MovimentacaoEmpenhoViewModel, MovimentacaoEmpenhoMultaViewModel        ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: MovimentacaoEmpenhoViewModel, MovimentacaoEmpenhoMultaViewModel                    ║
+   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: FrotiX Team | 📝 VERSÃO: 2.0                                 ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
@@ -20,10 +22,21 @@ using FrotiX.Validations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 
-//Classe Wrapper para movimentação de Delete de Empenho e de EmpenhoMulta
+// Wrapper para movimentação de Delete de Empenho e EmpenhoMulta
 
 namespace FrotiX.Models
     {
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: DeleteMovimentacaoWrapperViewModel                                                 │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    //
+    // 🎯 OBJETIVO:
+    // Agrupar movimentações de Empenho e EmpenhoMulta para exclusão.
+    //
+    // 🔗 RASTREABILIDADE:
+    // ⬅️ CHAMADO POR : Controllers/Views de exclusão
+    // ➡️ CHAMA       : MovimentacaoEmpenhoViewModel, MovimentacaoEmpenhoMultaViewModel
+    //
     public class DeleteMovimentacaoWrapperViewModel
         {
         public MovimentacaoEmpenhoViewModel mEmpenho { get; set; }
