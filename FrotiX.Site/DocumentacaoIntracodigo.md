@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-█████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 33.7%
+█████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 34.3%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 305 |
-| Percentual | 33.7% |
-| Última Atualização | 31/01/2026 11:54 |
+| Documentados | 310 |
+| Percentual | 34.3% |
+| Última Atualização | 31/01/2026 12:01 |
 
 ---
 
@@ -36,7 +36,7 @@
 | 9 | Infrastructure | 1 | 1 | 100% | ✅ Completo |
 | 10 | Logging | 1 | 1 | 100% | ✅ Completo |
 | 11 | Middlewares | 2 | 2 | 100% | ✅ Completo |
-| 12 | Models | 139 | 104 | 74.8% | 🟡 Em Progresso |
+| 12 | Models | 139 | 109 | 78.4% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
 | 15 | Repository | 209 | 209 | 100% | ✅ Completo |
@@ -201,6 +201,13 @@
    • ViagensEconomildo.cs
    • AbastecimentoPendente.cs
 
+✅ Models - Classes (Lote 118 - novo padrão visual):
+   • AlertasFrotiX.cs
+   • ContractDropDownItem.cs
+   • DateItem.cs
+   • Encarregado.cs
+   • EncarregadoContrato.cs
+
 ### 📂 Infrastructure (1/1) ✅
 ```
 ✅ CacheKeys.cs
@@ -217,12 +224,12 @@
 ✅ UiExceptionMiddleware.cs
 ```
 
-### 📂 Models (104/139) 🟡
+### 📂 Models (109/139) 🟡
 ```
 ✅ Estatísticas (13 arquivos - Lotes 51-53)
 ✅ Views (38 arquivos - Lotes 54-61)
 ⏳ Cadastros (55 processados)
-⏳ Raiz (1 processado)
+⏳ Raiz (6 processados)
 ⏳ FontAwesome (1 processado)
 ⏳ Planilhas (1 processado)
 ```
@@ -579,10 +586,11 @@
 | 31/01/2026 | 5 | 1 | Lote 115 - Models/Cadastros novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 116 - Models/Cadastros novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 117 - Models/Cadastros + Models novo padrão visual (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 118 - Models novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 66
-**Total de Commits:** 64
-**Total de Arquivos Documentados:** 305
+**Total de Lotes:** 67
+**Total de Commits:** 65
+**Total de Arquivos Documentados:** 310
 
 ---
 

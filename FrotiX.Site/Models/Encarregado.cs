@@ -1,15 +1,12 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: Encarregado.cs                                                                          ║
+   ║ 📌 ARQUIVO: Encarregado.cs                                                                          ║
    ║ 📂 CAMINHO: /Models                                                                                 ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Entidade e ViewModel para gerenciamento de encarregados de contrato, com dados        ║
-   ║    pessoais, vínculo com contrato e funcionalidades de gerenciamento.                               ║
+   ║ 🧭 OBJETIVO: Gerenciar encarregados vinculados a contratos.                                         ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 CLASSES: EncarregadoViewModel, Encarregado                                                       ║
-   ║    PROPS: EncarregadoId, ContratoId, Nome, Email, Telefone, Status                                  ║
+   ║ 🗂️  CONTÉM: EncarregadoViewModel, Encarregado                                                       ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: System.ComponentModel.DataAnnotations, FrotiX.Validations                                  ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core, SelectListItem, Validations, IFormFile                  ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 #nullable enable
@@ -23,42 +20,59 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models
 {
+    // ==================================================================================================
+    // VIEW MODEL
+    // ==================================================================================================
+    // Finalidade: agregar dados do encarregado e lista de contratos na UI.
+    // ==================================================================================================
     public class EncarregadoViewModel
     {
+        // Identificador do encarregado.
         public Guid EncarregadoId
         {
             get; set;
         }
 
+        // Contrato selecionado.
         public Guid ContratoId
         {
             get; set;
         }
 
+        // Entidade principal do formulário.
         public Encarregado? Encarregado
         {
             get; set;
         }
 
+        // Nome do usuário responsável pela última alteração.
         public string? NomeUsuarioAlteracao
         {
             get; set;
         }
 
+        // Lista de contratos para seleção.
         public IEnumerable<SelectListItem>? ContratoList
         {
             get; set;
         }
     }
 
+    // ==================================================================================================
+    // ENTIDADE
+    // ==================================================================================================
+    // Representa um encarregado vinculado a contrato.
+    // ==================================================================================================
     public class Encarregado
     {
+        // Identificador único do encarregado.
         [Key]
         public Guid EncarregadoId
         {
             get; set;
         }
 
+        // Nome do encarregado.
         [StringLength(100 , ErrorMessage = "O Nome não pode exceder 100 caracteres")]
         [Required(ErrorMessage = "(O Nome é obrigatório)")]
         [Display(Name = "Nome do Encarregado")]
@@ -67,6 +81,7 @@ namespace FrotiX.Models
             get; set;
         }
 
+        // Ponto/matrícula.
         [StringLength(20 , ErrorMessage = "O Ponto não pode exceder 20 caracteres")]
         [Required(ErrorMessage = "(O Ponto é obrigatório)")]
         [Display(Name = "Ponto")]
@@ -75,6 +90,7 @@ namespace FrotiX.Models
             get; set;
         }
 
+        // Data de nascimento.
         [DataType(DataType.DateTime)]
         [Required(ErrorMessage = "(A data de nascimento é obrigatória)")]
         [Display(Name = "Data de Nascimento")]
@@ -83,6 +99,7 @@ namespace FrotiX.Models
             get; set;
         }
 
+        // CPF do encarregado.
         [StringLength(20 , ErrorMessage = "O CPF não pode exceder 20 caracteres")]
         [Required(ErrorMessage = "(O CPF é obrigatório)")]
         [Display(Name = "CPF")]
@@ -91,6 +108,7 @@ namespace FrotiX.Models
             get; set;
         }
 
+        // Primeiro celular.
         [StringLength(50 , ErrorMessage = "O celular não pode exceder 50 caracteres")]
         [Required(ErrorMessage = "(O celular é obrigatório)")]
         [Display(Name = "Primeiro Celular")]
@@ -99,6 +117,7 @@ namespace FrotiX.Models
             get; set;
         }
 
+        // Segundo celular (opcional).
         [StringLength(50 , ErrorMessage = "O celular não pode exceder 50 caracteres")]
         [Display(Name = "Segundo Celular")]
         public string? Celular02
@@ -106,6 +125,7 @@ namespace FrotiX.Models
             get; set;
         }
 
+        // Data de ingresso.
         [DataType(DataType.DateTime)]
         [Display(Name = "Data de Ingresso")]
         public DateTime? DataIngresso
@@ -113,27 +133,32 @@ namespace FrotiX.Models
             get; set;
         }
 
+        // Foto armazenada em bytes.
         public byte[]? Foto
         {
             get; set;
         }
 
+        // Status ativo/inativo.
         [Display(Name = "Ativo/Inativo")]
         public bool Status
         {
             get; set;
         }
 
+        // Data da última alteração.
         public DateTime? DataAlteracao
         {
             get; set;
         }
 
+        // Usuário responsável pela alteração.
         public string? UsuarioIdAlteracao
         {
             get; set;
         }
 
+        // Contrato associado.
         [ValidaLista(ErrorMessage = "(O contrato é obrigatório)")]
         [Display(Name = "Contrato")]
         public Guid ContratoId
@@ -141,12 +166,14 @@ namespace FrotiX.Models
             get; set;
         }
 
+        // Navegação para contrato.
         [ForeignKey("ContratoId")]
         public virtual Contrato? Contrato
         {
             get; set;
         }
 
+        // Arquivo de foto enviado na UI (não mapeado).
         [NotMapped]
         public IFormFile? ArquivoFoto
         {

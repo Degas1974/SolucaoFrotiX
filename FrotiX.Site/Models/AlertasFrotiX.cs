@@ -1,15 +1,12 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: AlertasFrotiX.cs                                                                        ║
+   ║ 📌 ARQUIVO: AlertasFrotiX.cs                                                                        ║
    ║ 📂 CAMINHO: /Models                                                                                 ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Entidade para configuração e registro de alertas do sistema. Define tipos, prioridades║
-   ║    e configurações de alertas automáticos (CNH vencida, manutenção, etc).                          ║
+   ║ 🧭 OBJETIVO: Configurar e registrar alertas do sistema (prioridades, recorrência, vínculos).       ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 PROPS: AlertasFrotiXId, Titulo, Descricao, TipoAlerta, Prioridade, DataCriacao, DataDisparo     ║
-   ║    ENUMS: TipoAlerta, PrioridadeAlerta                                                              ║
+   ║ 🗂️  CONTÉM: AlertasFrotiX                                                                           ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: System.ComponentModel.DataAnnotations                                                      ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core                                                           ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
@@ -19,14 +16,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models
 {
+    // ==================================================================================================
+    // ENTIDADE
+    // ==================================================================================================
+    // Representa alertas configurados/gerados pelo sistema.
+    // ==================================================================================================
     public class AlertasFrotiX
     {
+        // Identificador do alerta.
         [Key]
         public Guid AlertasFrotiXId
         {
             get; set;
         }
 
+        // Título do alerta.
         [Required(ErrorMessage = "O título do alerta é obrigatório")]
         [StringLength(200 , ErrorMessage = "O título deve ter no máximo 200 caracteres")]
         public string? Titulo
@@ -34,6 +38,7 @@ namespace FrotiX.Models
             get; set;
         }
 
+        // Descrição detalhada do alerta.
         [Required(ErrorMessage = "A descrição do alerta é obrigatória")]
         [StringLength(1000 , ErrorMessage = "A descrição deve ter no máximo 1000 caracteres")]
         public string? Descricao
@@ -41,37 +46,34 @@ namespace FrotiX.Models
             get; set;
         }
 
+        // Tipo de alerta.
         [Required(ErrorMessage = "O tipo de alerta é obrigatório")]
         public TipoAlerta TipoAlerta
         {
             get; set;
         }
 
+        // Prioridade do alerta.
         [Required(ErrorMessage = "A prioridade é obrigatória")]
         public PrioridadeAlerta Prioridade
         {
             get; set;
         }
 
+        // Data de inserção.
         [Required]
         public DateTime? DataInsercao
         {
             get; set;
         }
 
-        /// <summary>
-        /// Data de exibição do alerta
-        /// Para alertas recorrentes: Data INICIAL da recorrência
-        /// </summary>
+        // Data de exibição do alerta (para recorrentes: início da série).
         public DateTime? DataExibicao
         {
             get; set;
         }
 
-        /// <summary>
-        /// Data de expiração do alerta
-        /// Para alertas recorrentes: Data FINAL da recorrência (término da série)
-        /// </summary>
+        // Data de expiração do alerta (para recorrentes: fim da série).
         public DateTime? DataExpiracao
         {
             get; set;
@@ -83,80 +85,85 @@ namespace FrotiX.Models
             get; set;
         }
 
+        // Usuário que desativou o alerta.
         public string? DesativadoPor
         {
             get; set;
         }
 
+        // Motivo da desativação.
         public string? MotivoDesativacao
         {
             get; set;
         }
 
         // Relacionamentos opcionais
+        // Viagem associada.
         public Guid? ViagemId
         {
             get; set;
         }
 
+        // Navegação para viagem.
         [ForeignKey("ViagemId")]
         public virtual Viagem Viagem
         {
             get; set;
         }
 
+        // Manutenção associada.
         public Guid? ManutencaoId
         {
             get; set;
         }
 
+        // Navegação para manutenção.
         [ForeignKey("ManutencaoId")]
         public virtual Manutencao Manutencao
         {
             get; set;
         }
 
+        // Motorista associado.
         public Guid? MotoristaId
         {
             get; set;
         }
 
+        // Navegação para motorista.
         [ForeignKey("MotoristaId")]
         public virtual Motorista Motorista
         {
             get; set;
         }
 
+        // Veículo associado.
         public Guid? VeiculoId
         {
             get; set;
         }
 
+        // Navegação para veículo.
         [ForeignKey("VeiculoId")]
         public virtual Veiculo Veiculo
         {
             get; set;
         }
 
-        /// <summary>
-        /// Tipo de exibição do alerta
-        /// Valores 1-3: Exibição única
-        /// Valores 4-8: Exibição recorrente
-        /// </summary>
+        // Tipo de exibição do alerta (1-3: única, 4-8: recorrente).
         public TipoExibicaoAlerta TipoExibicao
         {
             get; set;
         }
 
-        /// <summary>
-        /// Horário específico para exibição
-        /// </summary>
+        // Horário específico para exibição.
         public TimeSpan? HorarioExibicao
         {
             get; set;
         }
 
         // Usuário que criou o alerta
+        // Identificador do usuário criador.
         [Required]
         public string? UsuarioCriadorId
         {
@@ -164,15 +171,14 @@ namespace FrotiX.Models
         }
 
         // Status do alerta
+        // Indica se o alerta está ativo.
         public bool Ativo { get; set; } = true;
 
         // =====================================================================
         // CAMPOS DE RECORRÊNCIA - Baseados no design da tabela Viagem
         // =====================================================================
 
-        /// <summary>
-        /// Dias da semana para recorrência Semanal (TipoExibicao=5) e Quinzenal (TipoExibicao=6)
-        /// </summary>
+        // Dias da semana para recorrência semanal/quinzenal.
         public bool Monday { get; set; } = false;
 
         public bool Tuesday { get; set; } = false;
@@ -182,29 +188,19 @@ namespace FrotiX.Models
         public bool Saturday { get; set; } = false;
         public bool Sunday { get; set; } = false;
 
-        /// <summary>
-        /// Dia específico do mês para recorrência Mensal (TipoExibicao=7)
-        /// Valor entre 1 e 31
-        /// </summary>
+        // Dia do mês para recorrência mensal (1-31).
         public int? DiaMesRecorrencia
         {
             get; set;
         }
 
-        /// <summary>
-        /// Lista de datas separadas por vírgula para recorrência Variada (TipoExibicao=8)
-        /// Formato: "2025-01-15,2025-01-20,2025-01-25"
-        /// </summary>
+        // Lista de datas para recorrência variada (ex.: "2025-01-15,2025-01-20").
         public string? DatasSelecionadas
         {
             get; set;
         }
 
-        /// <summary>
-        /// Referência ao alerta original da série recorrente
-        /// O primeiro alerta criado tem RecorrenciaAlertaId = seu próprio AlertasFrotiXId
-        /// Os demais alertas da série apontam para o primeiro
-        /// </summary>
+        // Referência ao alerta original da série recorrente (primeiro alerta da série).
         public Guid? RecorrenciaAlertaId
         {
             get; set;
@@ -244,46 +240,58 @@ namespace FrotiX.Models
         }
     }
 
-    // Tabela de relacionamento N-N entre Alertas e Usuários
+    // ==================================================================================================
+    // RELACIONAMENTO ALERTA-USUÁRIO
+    // ==================================================================================================
+    // Tabela de relacionamento N:N entre alertas e usuários.
+    // ==================================================================================================
     public class AlertasUsuario
     {
+        // Identificador do relacionamento.
         [Key]
         public Guid AlertasUsuarioId
         {
             get; set;
         }
 
+        // Alerta associado.
         [Required]
         public Guid AlertasFrotiXId
         {
             get; set;
         }
 
+        // Navegação para alerta.
         [ForeignKey("AlertasFrotiXId")]
         public virtual AlertasFrotiX AlertasFrotiX
         {
             get; set;
         }
 
+        // Usuário associado.
         [Required]
         public string UsuarioId
         {
             get; set;
         }
 
+        // Navegação para usuário.
         [ForeignKey("UsuarioId")]
         public virtual AspNetUsers Usuario
         {
             get; set;
         }
 
+        // Indica se o alerta foi lido.
         public bool Lido { get; set; } = false;
 
+        // Data da leitura do alerta.
         public DateTime? DataLeitura
         {
             get; set;
         }
 
+        // Indica se foi notificado.
         public bool Notificado { get; set; } = false;
 
         public AlertasUsuario()
@@ -292,16 +300,19 @@ namespace FrotiX.Models
         }
 
         // Controle de exclusão sem leitura
+        // Indica se o alerta foi apagado.
         public bool Apagado
         {
             get; set;
         }
 
+        // Data de exclusão.
         public DateTime? DataApagado
         {
             get; set;
         }
 
+        // Data de notificação enviada.
         public DateTime? DataNotificacao
         {
             get; set;
@@ -342,11 +353,7 @@ namespace FrotiX.Models
         Alta = 3
     }
 
-    /// <summary>
-    /// Tipo de exibição do alerta
-    /// Valores 1-3: Exibição única
-    /// Valores 4-8: Exibição recorrente
-    /// </summary>
+    // Tipo de exibição do alerta (1-3: única, 4-8: recorrente).
     public enum TipoExibicaoAlerta
     {
         [Display(Name = "Ao abrir o sistema")]

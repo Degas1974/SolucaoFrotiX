@@ -1,14 +1,12 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: EncarregadoContrato.cs                                                                  ║
+   ║ 📌 ARQUIVO: EncarregadoContrato.cs                                                                  ║
    ║ 📂 CAMINHO: /Models                                                                                 ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Entidade de relacionamento N:N entre Encarregado e Contrato (chave composta).         ║
+   ║ 🧭 OBJETIVO: Mapear vínculo N:N entre Encarregado e Contrato via chave composta.                    ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 CLASSES: EncarregadoContratoViewModel, EncarregadoContrato                                       ║
-   ║    CHAVE COMPOSTA: EncarregadoId + ContratoId                                                       ║
+   ║ 🗂️  CONTÉM: EncarregadoContratoViewModel, EncarregadoContrato                                       ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: System.ComponentModel.DataAnnotations                                                      ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core                                                           ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 #nullable enable
@@ -18,20 +16,34 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models
 {
+    // ==================================================================================================
+    // VIEW MODEL
+    // ==================================================================================================
+    // Finalidade: transportar vínculo encarregado-contrato nas telas de edição.
+    // ==================================================================================================
     public class EncarregadoContratoViewModel
     {
+        // Identificador do encarregado.
         public Guid EncarregadoId { get; set; }
+        // Identificador do contrato.
         public Guid ContratoId { get; set; }
+        // Entidade do vínculo.
         public EncarregadoContrato? EncarregadoContrato { get; set; }
     }
 
+    // ==================================================================================================
+    // ENTIDADE
+    // ==================================================================================================
+    // Representa o relacionamento N:N entre Encarregado e Contrato.
+    // ⚠️ ATENÇÃO: chave composta (EncarregadoId + ContratoId).
+    // ==================================================================================================
     public class EncarregadoContrato
     {
-        // 2 Foreign Keys as Primary Key (Chave Composta)
-        // ===============================================
+        // Chave composta - FK para Encarregado.
         [Key, Column(Order = 0)]
         public Guid EncarregadoId { get; set; }
 
+        // Chave composta - FK para Contrato.
         [Key, Column(Order = 1)]
         public Guid ContratoId { get; set; }
     }
