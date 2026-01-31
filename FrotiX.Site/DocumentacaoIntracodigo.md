@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-█████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 26.5%
+██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 27.1%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 240 |
-| Percentual | 26.5% |
-| Última Atualização | 30/01/2026 17:25 |
+| Documentados | 245 |
+| Percentual | 27.1% |
+| Última Atualização | 31/01/2026 08:44 |
 
 ---
 
@@ -31,8 +31,8 @@
 | 4 | EndPoints | 2 | 2 | 100% | ✅ Completo |
 | 5 | Extensions | 3 | 3 | 100% | ✅ Completo |
 | 6 | Filters | 4 | 4 | 100% | ✅ Completo |
-| 7 | Helpers | 6 | 2 | 33.3% | 🟡 Em Progresso |
-| 8 | Hubs | 5 | 0 | 0% | 🔴 Pendente |
+| 7 | Helpers | 6 | 6 | 100% | ✅ Completo |
+| 8 | Hubs | 5 | 1 | 20% | 🟡 Em Progresso |
 | 9 | Infrastructure | 1 | 1 | 100% | ✅ Completo |
 | 10 | Logging | 1 | 1 | 100% | ✅ Completo |
 | 11 | Middlewares | 2 | 2 | 100% | ✅ Completo |
@@ -84,14 +84,14 @@
 ✅ SkipModelValidationAttribute.cs
 ```
 
-### 📂 Helpers (2/6) 🟡
+### 📂 Helpers (6/6) ✅
 ```
 ✅ Alerta.cs
 ✅ AlertaBackend.cs
-⏳ ErroHelper.cs
-⏳ ImageHelper.cs
-⏳ ListasCompartilhadas.cs
-⏳ SfdtHelper.cs
+✅ ErroHelper.cs
+✅ ImageHelper.cs
+✅ ListasCompartilhadas.cs
+✅ SfdtHelper.cs
 ```
 
 ✅ Filters + Helpers - Classes (Lote 104 - novo padrão visual):
@@ -101,10 +101,21 @@
    • Alerta.cs
    • AlertaBackend.cs
 
-### 📂 Hubs (0/5)
+### 📂 Hubs (1/5) 🟡
 ```
-(pendente)
+✅ AlertasHub.cs
+⏳ DocGenerationHub.cs
+⏳ EmailBasedUserIdProvider.cs
+⏳ EscalaHub.cs
+⏳ ImportacaoHub.cs
 ```
+
+✅ Helpers + Hubs - Classes (Lote 105 - novo padrão visual):
+   • ErroHelper.cs
+   • ImageHelper.cs
+   • ListasCompartilhadas.cs
+   • SfdtHelper.cs
+   • AlertasHub.cs
 
 ### 📂 Infrastructure (1/1) ✅
 ```
@@ -470,10 +481,11 @@
 | 30/01/2026 | 5 | 1 | Lote 102 - Repository novo padrão visual (5 arquivos) |
 | 30/01/2026 | 2 | 1 | Lote 103 - Repository novo padrão visual (2 arquivos) |
 | 30/01/2026 | 5 | 1 | Lote 104 - Filters + Helpers novo padrão visual (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 105 - Helpers + Hubs novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 53
-**Total de Commits:** 51
-**Total de Arquivos Documentados:** 240
+**Total de Lotes:** 54
+**Total de Commits:** 52
+**Total de Arquivos Documentados:** 245
 
 ---
 
