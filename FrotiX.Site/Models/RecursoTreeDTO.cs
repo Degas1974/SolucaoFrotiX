@@ -1,13 +1,12 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: RecursoTreeDTO.cs                                                                       ║
+   ║ 📌 ARQUIVO: RecursoTreeDTO.cs                                                                       ║
    ║ 📂 CAMINHO: /Models                                                                                 ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: DTO para representação de recursos em TreeView Syncfusion (ejs-treeview).             ║
+   ║ 🧭 OBJETIVO: DTO para representação de recursos em TreeView Syncfusion (ejs-treeview).             ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 PROPS: Id, Text, NomeMenu, Icon (FontAwesome), IconCss, Href, ParentId, HasChild, Expanded      ║
+   ║ 🗂️  CONTÉM: RecursoTreeDTO                                                                          ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: System.Collections.Generic                                                                 ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: System.Collections.Generic                                                         ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
@@ -15,57 +14,56 @@ using System.Collections.Generic;
 
 namespace FrotiX.Models
 {
-    /// <summary>
-    /// DTO para representar um recurso na TreeView Syncfusion.
-    /// Estrutura compatível com o componente ejs-treeview.
-    /// </summary>
+    // ==================================================================================================
+    // DTO
+    // ==================================================================================================
+    // Representa um recurso no TreeView Syncfusion.
+    // ==================================================================================================
     public class RecursoTreeDTO
     {
-        /// <summary>ID único do recurso (string para compatibilidade com TreeView)</summary>
+        // ID único do recurso (string para compatibilidade com TreeView).
         public string? Id { get; set; }
 
-        /// <summary>Texto exibido no menu</summary>
+        // Texto exibido no menu.
         public string? Text { get; set; }
 
-        /// <summary>Identificador único do recurso (para vinculação com ControleAcesso)</summary>
+        // Identificador único do recurso (para vínculo com ControleAcesso).
         public string? NomeMenu { get; set; }
 
-        /// <summary>Classe FontAwesome do ícone (ex: "fa-duotone fa-car")</summary>
+        // Classe FontAwesome do ícone (ex: "fa-duotone fa-car").
         public string? Icon { get; set; }
 
-        /// <summary>CSS do ícone para TreeView Syncfusion</summary>
+        // CSS do ícone para TreeView Syncfusion.
         public string? IconCss { get; set; }
 
-        /// <summary>URL da página (ex: "veiculo_index.html")</summary>
+        // URL da página (ex: "veiculo_index.html").
         public string? Href { get; set; }
 
-        /// <summary>ID do recurso pai (null = raiz)</summary>
+        // ID do recurso pai (null = raiz).
         public string? ParentId { get; set; }
 
-        /// <summary>Indica se tem filhos (usado pelo TreeView)</summary>
+        // Indica se tem filhos (usado pelo TreeView).
         public bool HasChild { get; set; }
 
-        /// <summary>Se o nó está expandido</summary>
+        // Indica se o nó está expandido.
         public bool Expanded { get; set; } = true;
 
-        /// <summary>Ordem de exibição</summary>
+        // Ordem de exibição.
         public double Ordem { get; set; }
 
-        /// <summary>Nível na hierarquia (0=raiz, 1=filho, 2=neto)</summary>
+        // Nível na hierarquia (0=raiz, 1=filho, 2=neto).
         public int Nivel { get; set; }
 
-        /// <summary>Descrição do recurso</summary>
+        // Descrição do recurso.
         public string? Descricao { get; set; }
 
-        /// <summary>Se o recurso está ativo no menu</summary>
+        // Indica se o recurso está ativo no menu.
         public bool Ativo { get; set; } = true;
 
-        /// <summary>Lista de filhos (subitens do menu)</summary>
+        // Lista de filhos (subitens do menu).
         public List<RecursoTreeDTO>? Items { get; set; } = new List<RecursoTreeDTO>();
 
-        /// <summary>
-        /// Converte um Recurso do banco para DTO
-        /// </summary>
+        // Converte um Recurso do banco para DTO.
         public static RecursoTreeDTO FromRecurso(Recurso recurso)
         {
             return new RecursoTreeDTO
@@ -86,9 +84,7 @@ namespace FrotiX.Models
             };
         }
 
-        /// <summary>
-        /// Converte DTO para Recurso do banco
-        /// </summary>
+        // Converte DTO para Recurso do banco.
         public Recurso ToRecurso()
         {
             return new Recurso
