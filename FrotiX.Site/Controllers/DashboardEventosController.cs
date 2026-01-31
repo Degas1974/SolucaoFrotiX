@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: DashboardEventosController.cs                                                           ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Estatísticas e análises de eventos (viagens corporativas). Partial: ExportacaoPDF.     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetEstatisticas(), GetPorStatus(), GetPorSetor(), GetPorRequisitante() - período         ║
-   ║ 🔗 DEPS: FrotiXDbContext, UserManager | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0                        ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: DashboardEventosController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Estatísticas e análises de eventos (viagens corporativas), com filtros
+ *                   por período, status, setor e requisitante.
+ *
+ * 📥 ENTRADAS     : Filtros de data e parâmetros de consulta do dashboard.
+ *
+ * 📤 SAÍDAS       : JSON com estatísticas agregadas e séries para gráficos.
+ *
+ * 🔗 CHAMADA POR  : Frontend do Dashboard de Eventos.
+ *
+ * 🔄 CHAMA        : FrotiXDbContext, UserManager e consultas EF Core.
+ *
+ * 📦 DEPENDÊNCIAS : EF Core, UserManager, FrotiXDbContext.
+ *
+ * 📝 OBSERVAÇÕES  : Possui classe parcial _ExportacaoPDF.cs para geração de relatório PDF.
+ **************************************************************************************** */
 
 using FrotiX.Data;
 using FrotiX.Models;

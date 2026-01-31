@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: DashboardVeiculosController.cs                                                          ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Estatísticas e análises da frota de veículos. Idade média, ativos, locados.            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetEstatisticas(), GetPorTipo(), GetPorStatus(), GetIdadeMedia() - geral da frota        ║
-   ║ 🔗 DEPS: IUnitOfWork, ViewVeiculos | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0                           ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: DashboardVeiculosController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Estatísticas e análises da frota de veículos (idade média, status,
+ *                   tipos e indicadores gerais).
+ *
+ * 📥 ENTRADAS     : Nenhuma (dados gerais sem filtro de data).
+ *
+ * 📤 SAÍDAS       : JSON com estatísticas agregadas de veículos.
+ *
+ * 🔗 CHAMADA POR  : Frontend do Dashboard de Veículos.
+ *
+ * 🔄 CHAMA        : ViewVeiculos e repositórios de veículos via IUnitOfWork.
+ *
+ * 📦 DEPENDÊNCIAS : IUnitOfWork, Repository Pattern.
+ *
+ * 📝 OBSERVAÇÕES  : Métricas incluem veículos ativos, locados e idade média.
+ **************************************************************************************** */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

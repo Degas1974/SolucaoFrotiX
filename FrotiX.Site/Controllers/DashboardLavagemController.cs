@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: DashboardLavagemController.cs                                                           ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Estatísticas e análises de lavagens de veículos. Include com LavadoresLavagem.         ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetEstatisticas(), GetPorLavador(), GetPorVeiculo(), GetPorMotorista() - período         ║
-   ║ 🔗 DEPS: FrotiXDbContext, UserManager, EF Core Include | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0       ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: DashboardLavagemController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Estatísticas e análises de lavagens de veículos, com filtros por
+ *                   lavador, veículo e motorista.
+ *
+ * 📥 ENTRADAS     : Filtros de data e parâmetros de consulta.
+ *
+ * 📤 SAÍDAS       : JSON com estatísticas agregadas de lavagens.
+ *
+ * 🔗 CHAMADA POR  : Frontend do Dashboard de Lavagem.
+ *
+ * 🔄 CHAMA        : FrotiXDbContext, UserManager e Includes EF Core.
+ *
+ * 📦 DEPENDÊNCIAS : EF Core, FrotiXDbContext, UserManager.
+ *
+ * 📝 OBSERVAÇÕES  : Usa Include com LavadoresLavagem para enriquecer dados.
+ **************************************************************************************** */
 
 using FrotiX.Data;
 using FrotiX.Models;

@@ -1,13 +1,21 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: DashboardMotoristasController.cs                                                        ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Estatísticas e análises de desempenho de motoristas. Ranking, KM, viagens.             ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: GetEstatisticas(), GetRankingViagens(), GetRankingKm(), GetMediaHoras() - período        ║
-   ║ 🔗 DEPS: FrotiXDbContext, Motorista, Viagem | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0                  ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: DashboardMotoristasController.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Estatísticas e análises de desempenho de motoristas (ranking, KM,
+ *                   viagens e médias por período).
+ *
+ * 📥 ENTRADAS     : Filtros de data, ano/mês e parâmetros de ranking.
+ *
+ * 📤 SAÍDAS       : JSON com métricas agregadas e rankings.
+ *
+ * 🔗 CHAMADA POR  : Frontend do Dashboard de Motoristas.
+ *
+ * 🔄 CHAMA        : FrotiXDbContext e consultas EF Core (Motorista/Viagem).
+ *
+ * 📦 DEPENDÊNCIAS : EF Core, FrotiXDbContext.
+ *
+ * 📝 OBSERVAÇÕES  : Endpoints focados em performance com agregações por período.
+ **************************************************************************************** */
 
 using FrotiX.Data;
 using Microsoft.AspNetCore.Authorization;

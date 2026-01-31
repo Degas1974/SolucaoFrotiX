@@ -1,13 +1,20 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: DashboardEventosController_ExportacaoPDF.cs                                             ║
-   ║ 📂 CAMINHO: /Controllers                                                                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: Partial para exportação PDF do Dashboard de Eventos. Usa Syncfusion PDF.               ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 ÍNDICE: ExportarPDF() - gera relatório PDF com tabelas, gráficos e estatísticas do período       ║
-   ║ 🔗 DEPS: Syncfusion.Pdf, FrotiXDbContext | 📅 26/01/2026 | 👤 Copilot | 📝 v2.0                     ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: DashboardEventosController_ExportacaoPDF.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Exportar o dashboard de eventos para PDF utilizando Syncfusion.
+ *
+ * 📥 ENTRADAS     : Filtros de data (dataInicio/dataFim) e parâmetros de relatório.
+ *
+ * 📤 SAÍDAS       : Arquivo PDF para download.
+ *
+ * 🔗 CHAMADA POR  : Frontend (botão de exportação PDF).
+ *
+ * 🔄 CHAMA        : Syncfusion.Pdf, criação de páginas e grids.
+ *
+ * 📦 DEPENDÊNCIAS : Syncfusion.Pdf, Syncfusion.Drawing, FrotiXDbContext.
+ *
+ * 📝 OBSERVAÇÕES  : Classe parcial dedicada à exportação PDF do Dashboard de Eventos.
+ **************************************************************************************** */
 
 using FrotiX.Data;
 using FrotiX.Models;
