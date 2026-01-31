@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-██████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 36.5%
+███████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 37.0%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 905 |
-| Documentados | 330 |
-| Percentual | 36.5% |
-| Última Atualização | 31/01/2026 12:21 |
+| Documentados | 335 |
+| Percentual | 37.0% |
+| Última Atualização | 31/01/2026 12:27 |
 
 ---
 
@@ -36,7 +36,7 @@
 | 9 | Infrastructure | 1 | 1 | 100% | ✅ Completo |
 | 10 | Logging | 1 | 1 | 100% | ✅ Completo |
 | 11 | Middlewares | 2 | 2 | 100% | ✅ Completo |
-| 12 | Models | 139 | 129 | 92.8% | 🟡 Em Progresso |
+| 12 | Models | 139 | 134 | 96.4% | 🟡 Em Progresso |
 | 13 | Pages | 340 | 0 | 0% | 🔴 Pendente |
 | 14 | Properties | 1 | 0 | 0% | 🔴 Pendente |
 | 15 | Repository | 209 | 209 | 100% | ✅ Completo |
@@ -236,6 +236,13 @@
    • ViagemEventoDto.cs
    • ViewOcorrenciasAbertasVeiculo.cs
 
+✅ Models + Models/DTO - Classes (Lote 123 - novo padrão visual):
+   • ViewOcorrenciasViagem.cs
+   • EstatisticaVeiculoDto.cs
+   • HigienizacaoDto.cs
+   • LookupsDto.cs
+   • ViagemCalendarDTO.cs
+
 ### 📂 Infrastructure (1/1) ✅
 ```
 ✅ CacheKeys.cs
@@ -252,12 +259,13 @@
 ✅ UiExceptionMiddleware.cs
 ```
 
-### 📂 Models (129/139) 🟡
+### 📂 Models (134/139) 🟡
 ```
 ✅ Estatísticas (13 arquivos - Lotes 51-53)
 ✅ Views (38 arquivos - Lotes 54-61)
 ⏳ Cadastros (55 processados)
-⏳ Raiz (26 processados)
+⏳ Raiz (27 processados)
+⏳ DTO (4 processados)
 ⏳ FontAwesome (1 processado)
 ⏳ Planilhas (1 processado)
 ```
@@ -619,10 +627,11 @@
 | 31/01/2026 | 5 | 1 | Lote 120 - Models novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 121 - Models novo padrão visual (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 122 - Models novo padrão visual (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 123 - Models + Models/DTO novo padrão visual (5 arquivos) |
 
-**Total de Lotes:** 71
-**Total de Commits:** 69
-**Total de Arquivos Documentados:** 330
+**Total de Lotes:** 72
+**Total de Commits:** 70
+**Total de Arquivos Documentados:** 335
 
 ---
 

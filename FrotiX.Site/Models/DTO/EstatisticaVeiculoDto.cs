@@ -1,116 +1,109 @@
 /* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: EstatisticaVeiculoDto.cs                                                                ║
+   ║ 📌 ARQUIVO: EstatisticaVeiculoDto.cs                                                                ║
    ║ 📂 CAMINHO: /Models/DTO                                                                             ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: DTO com estatísticas de viagens por veículo para validação inteligente (IA evolutiva).║
+   ║ 🧭 OBJETIVO: Estatísticas de viagens por veículo para validação inteligente.                       ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 PROPS: VeiculoId, Placa, TotalViagens, KmMedio, KmDesvioPadrao, DuracaoMedia, etc.               ║
+   ║ 🗂️  CONTÉM: EstatisticaVeiculoDto, NivelAnomalia                                                    ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: System                                                                                     ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: System                                                                             ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
 
 namespace FrotiX.Models.DTO
 {
-    /// <summary>
-    /// DTO com estatísticas de viagens de um veículo para validação inteligente
-    /// Usado pela IA evolutiva para calibrar alertas baseados no histórico
-    /// </summary>
+    // ==================================================================================================
+    // DTO
+    // ==================================================================================================
+    // Estatísticas de viagens para validação inteligente e calibração de alertas.
+    // ==================================================================================================
     public class EstatisticaVeiculoDto
     {
-        /// <summary>ID do veículo</summary>
+        // ID do veículo.
         public Guid VeiculoId { get; set; }
 
-        /// <summary>Placa do veículo</summary>
+        // Placa do veículo.
         public string Placa { get; set; }
 
-        /// <summary>Descrição do veículo (marca/modelo)</summary>
+        // Descrição do veículo (marca/modelo).
         public string Descricao { get; set; }
 
-        /// <summary>Total de viagens finalizadas no histórico</summary>
+        // Total de viagens finalizadas.
         public int TotalViagens { get; set; }
 
         // ========== ESTATÍSTICAS DE QUILOMETRAGEM ==========
 
-        /// <summary>Média de km rodados por viagem</summary>
+        // Média de km por viagem.
         public double KmMedio { get; set; }
 
-        /// <summary>Mediana de km rodados por viagem</summary>
+        // Mediana de km por viagem.
         public double KmMediano { get; set; }
 
-        /// <summary>Desvio padrão de km rodados</summary>
+        // Desvio padrão de km.
         public double KmDesvioPadrao { get; set; }
 
-        /// <summary>Menor km registrado em uma viagem</summary>
+        // Menor km registrado.
         public int KmMinimo { get; set; }
 
-        /// <summary>Maior km registrado em uma viagem</summary>
+        // Maior km registrado.
         public int KmMaximo { get; set; }
 
-        /// <summary>Percentil 95 de km (95% das viagens ficam abaixo deste valor)</summary>
+        // Percentil 95 de km.
         public double KmPercentil95 { get; set; }
 
-        /// <summary>Percentil 99 de km (99% das viagens ficam abaixo deste valor)</summary>
+        // Percentil 99 de km.
         public double KmPercentil99 { get; set; }
 
         // ========== ESTATÍSTICAS DE DURAÇÃO ==========
 
-        /// <summary>Duração média das viagens em minutos</summary>
+        // Duração média (minutos).
         public double DuracaoMediaMinutos { get; set; }
 
-        /// <summary>Duração mediana das viagens em minutos</summary>
+        // Duração mediana (minutos).
         public double DuracaoMedianaMinutos { get; set; }
 
-        /// <summary>Desvio padrão da duração em minutos</summary>
+        // Desvio padrão da duração (minutos).
         public double DuracaoDesvioPadraoMinutos { get; set; }
 
-        /// <summary>Menor duração registrada (minutos)</summary>
+        // Menor duração registrada (minutos).
         public int DuracaoMinimaMinutos { get; set; }
 
-        /// <summary>Maior duração registrada (minutos)</summary>
+        // Maior duração registrada (minutos).
         public int DuracaoMaximaMinutos { get; set; }
 
-        /// <summary>Percentil 95 de duração (minutos)</summary>
+        // Percentil 95 de duração (minutos).
         public double DuracaoPercentil95Minutos { get; set; }
 
         // ========== METADADOS ==========
 
-        /// <summary>Data da viagem mais antiga considerada</summary>
+        // Data da viagem mais antiga considerada.
         public DateTime? DataViagemMaisAntiga { get; set; }
 
-        /// <summary>Data da viagem mais recente considerada</summary>
+        // Data da viagem mais recente considerada.
         public DateTime? DataViagemMaisRecente { get; set; }
 
-        /// <summary>Indica se há dados suficientes para análise estatística confiável (>= 10 viagens)</summary>
+        // Indica se há dados suficientes (>= 10 viagens).
         public bool DadosSuficientes => TotalViagens >= 10;
 
-        /// <summary>Indica se há dados mínimos para qualquer análise (>= 3 viagens)</summary>
+        // Indica se há dados mínimos (>= 3 viagens).
         public bool DadosMinimos => TotalViagens >= 3;
 
-        /// <summary>
-        /// Calcula o Z-Score para um valor de km rodado
-        /// Z > 2.5 indica anomalia moderada, Z > 3.5 indica anomalia severa
-        /// </summary>
+        // Calcula Z-Score para km rodado.
         public double CalcularZScoreKm(int kmRodado)
         {
             if (KmDesvioPadrao <= 0 || TotalViagens < 3) return 0;
             return (kmRodado - KmMedio) / KmDesvioPadrao;
         }
 
-        /// <summary>
-        /// Calcula o Z-Score para uma duração em minutos
-        /// </summary>
+        // Calcula Z-Score para duração em minutos.
         public double CalcularZScoreDuracao(int duracaoMinutos)
         {
             if (DuracaoDesvioPadraoMinutos <= 0 || TotalViagens < 3) return 0;
             return (duracaoMinutos - DuracaoMediaMinutos) / DuracaoDesvioPadraoMinutos;
         }
 
-        /// <summary>
-        /// Verifica se um km rodado está dentro do padrão esperado
-        /// </summary>
+        // Classifica km rodado conforme padrão esperado.
         public NivelAnomalia ClassificarKm(int kmRodado)
         {
             if (!DadosMinimos) return NivelAnomalia.SemDados;
@@ -123,9 +116,7 @@ namespace FrotiX.Models.DTO
             return NivelAnomalia.Normal;
         }
 
-        /// <summary>
-        /// Verifica se uma duração está dentro do padrão esperado
-        /// </summary>
+        // Classifica duração conforme padrão esperado.
         public NivelAnomalia ClassificarDuracao(int duracaoMinutos)
         {
             if (!DadosMinimos) return NivelAnomalia.SemDados;
@@ -139,24 +130,22 @@ namespace FrotiX.Models.DTO
         }
     }
 
-    /// <summary>
-    /// Níveis de anomalia para classificação de valores
-    /// </summary>
+    // Níveis de anomalia para classificação de valores.
     public enum NivelAnomalia
     {
-        /// <summary>Não há dados suficientes para análise</summary>
+        // Não há dados suficientes.
         SemDados = 0,
 
-        /// <summary>Valor dentro do padrão esperado</summary>
+        // Valor dentro do padrão esperado.
         Normal = 1,
 
-        /// <summary>Valor ligeiramente acima do esperado (Z-Score 1.5-2.5)</summary>
+        // Valor ligeiramente acima do esperado.
         Leve = 2,
 
-        /// <summary>Valor moderadamente acima do esperado (Z-Score 2.5-3.5) - requer confirmação</summary>
+        // Valor moderadamente acima do esperado.
         Moderada = 3,
 
-        /// <summary>Valor severamente acima do esperado (Z-Score > 3.5) - requer justificativa</summary>
+        // Valor severamente acima do esperado.
         Severa = 4
     }
 }

@@ -1,24 +1,25 @@
 ﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: LookupsDto.cs                                                                           ║
+   ║ 📌 ARQUIVO: LookupsDto.cs                                                                           ║
    ║ 📂 CAMINHO: /Models/DTO                                                                             ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO: DTOs records para lookups de motoristas, veículos e reservas (imutáveis).             ║
+   ║ 🧭 OBJETIVO: Records imutáveis para lookups de motoristas, veículos e reservas.                    ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 RECORDS: MotoristaData, VeiculoData, VeiculoReservaData (sealed records C# 10)                   ║
+   ║ 🗂️  CONTÉM: MotoristaData, VeiculoData, VeiculoReservaData                                          ║
    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPS: System                                                                                     ║
-   ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
+   ║ 🔗 DEPENDÊNCIAS: System                                                                             ║
    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
 
 using System;
 
 namespace FrotiX.Models.DTO // <-- ajuste para o namespace do seu projeto
     {
+    // Dados básicos de motorista.
     public sealed record MotoristaData(Guid MotoristaId, string Nome);
 
+    // Dados básicos de veículo.
     public sealed record VeiculoData(Guid VeiculoId, string Descricao);
 
+    // Dados básicos de veículo reserva.
     public sealed record VeiculoReservaData(Guid VeiculoId, string Descricao);
     }
-
 
