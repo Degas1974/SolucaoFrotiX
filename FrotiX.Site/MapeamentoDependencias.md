@@ -36,6 +36,15 @@
 
 | Controller | Action | Rota HTTP | Arquivo JS Consumidor | Função JS |
 |------------|--------|-----------|----------------------|-----------|
+| RolesEndpoint | GET | GET /api/roles | Areas/Authorization/Pages/Roles.cshtml | DataTable init |
+| RolesEndpoint | POST | POST /api/roles | Areas/Authorization/Pages/Roles.cshtml | onAddRow callback |
+| RolesEndpoint | PUT | PUT /api/roles | Areas/Authorization/Pages/Roles.cshtml | onEditRow callback |
+| RolesEndpoint | DELETE | DELETE /api/roles | Areas/Authorization/Pages/Roles.cshtml | onDeleteRow callback |
+| UsersEndpoint | GET | GET /api/users | Areas/Authorization/Pages/Users.cshtml | DataTable init |
+| UsersEndpoint | POST | POST /api/users | Areas/Authorization/Pages/Users.cshtml | onAddRow callback |
+| UsersEndpoint | PUT | PUT /api/users | Areas/Authorization/Pages/Users.cshtml | onEditRow callback |
+| UsersEndpoint | DELETE | DELETE /api/users | Areas/Authorization/Pages/Users.cshtml | onDeleteRow callback |
+| (usuarios endpoint) | GET | GET /admin/user/... | Areas/Authorization/Pages/Usuarios.cshtml | usuarios.js (externo) |
 | AbastecimentoController | Get | GET /api/Abastecimento | Pages/Abastecimento/*.cshtml | DataTable init |
 | AbastecimentoController | Import | POST /api/Abastecimento/Import | abastecimento-import.js | importarDados() |
 | AbastecimentoController | AtualizaQuilometragem | POST /api/Abastecimento/AtualizaQuilometragem | abastecimento.js | atualizarKm() |
@@ -51,7 +60,7 @@
 | VeiculoController | Get | GET /api/Veiculo | Pages/Veiculo/*.cshtml | DataTable init |
 | ViagemController | Get | GET /api/Viagem | Pages/Viagem/*.cshtml | DataTable init |
 
-> ⚠️ **Nota:** Tabela parcial. Preencher durante documentação intra-código.
+> ⚠️ **Nota:** Tabela em construção. Processados: 6/375 arquivos documentados.
 
 ---
 
@@ -59,6 +68,7 @@
 
 | Arquivo JS | Função Global | Tipo | Invocado Por |
 |------------|--------------|------|--------------|
+| wwwroot/js/alerta.js | alerta.erro() | Modal | Areas/Authorization/Pages/Roles.cshtml, Users.cshtml |
 | wwwroot/js/alerta.js | Alerta.Sucesso() | Modal | Todas as páginas |
 | wwwroot/js/alerta.js | Alerta.Erro() | Modal | Todas as páginas |
 | wwwroot/js/alerta.js | Alerta.Confirmar() | Modal | Todas as páginas |
@@ -66,9 +76,11 @@
 | wwwroot/js/frotix.js | FtxSpin.show() | Loading | Operações longas |
 | wwwroot/js/frotix.js | FtxSpin.hide() | Loading | Após operações |
 | wwwroot/js/datatables-config.js | initDataTable() | Grid | Páginas de listagem |
+| wwwroot/js/datatables-config.js | DataTableEdit() | Grid Editável | Areas/Authorization/Pages/Roles.cshtml, Users.cshtml |
 | wwwroot/js/validacao.js | validarFormulario() | Validação | Forms de CRUD |
+| wwwroot/js/usuarios.js | (funções de CRUD) | CRUD Users | Areas/Authorization/Pages/Usuarios.cshtml |
 
-> ⚠️ **Nota:** Tabela parcial. Preencher durante documentação intra-código.
+> ⚠️ **Nota:** Tabela em construção. Processados: 6/375 arquivos documentados.
 
 ---
 
@@ -76,6 +88,11 @@
 
 | Service | Método | Controllers Consumidores |
 |---------|--------|-------------------------|
+| UserManager<IdentityUser> | FindByIdAsync() | ConfirmEmailModel, ConfirmEmailChangeModel |
+| UserManager<IdentityUser> | ConfirmEmailAsync() | ConfirmEmailModel |
+| UserManager<IdentityUser> | ChangeEmailAsync() | ConfirmEmailChangeModel |
+| UserManager<IdentityUser> | SetUserNameAsync() | ConfirmEmailChangeModel |
+| SignInManager<IdentityUser> | RefreshSignInAsync() | ConfirmEmailChangeModel |
 | IUnitOfWork | GetRepository<T>() | Todos (~80% dos controllers) |
 | IUnitOfWork | SaveChangesAsync() | Todos com operações de escrita |
 | IGlosaService | ObterResumoAsync() | GlosaController |
@@ -86,7 +103,7 @@
 | IHubContext<ImportacaoHub> | SendAsync() | AbastecimentoController, AbastecimentoImportController |
 | IHubContext<AlertasHub> | SendAsync() | AlertasFrotiXController |
 
-> ⚠️ **Nota:** Tabela parcial. Preencher durante documentação intra-código.
+> ⚠️ **Nota:** Tabela em construção. Processados: 10/375 arquivos documentados.
 
 ---
 
