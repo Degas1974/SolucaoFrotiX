@@ -1,17 +1,18 @@
-﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ItensContrato.cs                                                                      ║
-   ║ 📂 CAMINHO: Models/Cadastros/                                                                     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
-   ║    Modelos para itens vinculados a contratos (veículos associados).                               ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 CLASSES DISPONÍVEIS:                                                                           ║
-   ║    • ItensContratoViewModel                                                                       ║
-   ║    • ItensContrato                                                                                ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: FrotiX.Services, FrotiX.Validations, SelectListItem                                ║
-   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: FrotiX Team | 📝 VERSÃO: 2.0                                 ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+﻿/* ****************************************************************************************
+ * ⚡ ARQUIVO: ItensContrato.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Modelar itens vinculados a contratos e ViewModel de apoio.
+ *
+ * 📥 ENTRADAS     : Itens e vínculos com contrato.
+ *
+ * 📤 SAÍDAS       : Entidade auxiliar e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Fluxos de associação de veículos a contratos.
+ *
+ * 🔄 CHAMA        : NotMapped, SelectListItem.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.Services, FrotiX.Validations, Microsoft.AspNetCore.Mvc.Rendering.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -25,17 +26,19 @@ using FrotiX.Validations;
 
 namespace FrotiX.Models
     {
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: ItensContratoViewModel                                                            │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Agrupar item de contrato e lista de contratos para UI.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Controllers/Views de contratos
-    // ➡️ CHAMA       : SelectListItem
-    //
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: ItensContratoViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Agrupar item de contrato e lista de contratos para UI.
+     *
+     * 📥 ENTRADAS     : ItensContrato e lista de contratos.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas de associação.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de contratos.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     ****************************************************************************************/
     public class ItensContratoViewModel
         {
         public Guid ContratoId { get; set; }
@@ -46,20 +49,21 @@ namespace FrotiX.Models
 
     }
 
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: ItensContrato                                                                     │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Representar item de contrato com vínculo de contrato em operações de UI.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Fluxos de associação de veículos a contratos
-    // ➡️ CHAMA       : NotMapped
-    //
-    // ⚠️ ATENÇÃO:
-    // ContratoId é NotMapped (usado apenas em camada de apresentação).
-    //
+    /****************************************************************************************
+     * ⚡ MODEL: ItensContrato
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar item de contrato usado em operações de UI.
+     *
+     * 📥 ENTRADAS     : ContratoId (apenas na camada de apresentação).
+     *
+     * 📤 SAÍDAS       : Estrutura auxiliar para associação de contratos.
+     *
+     * 🔗 CHAMADA POR  : Fluxos de associação de veículos a contratos.
+     *
+     * 🔄 CHAMA        : NotMapped.
+     *
+     * ⚠️ ATENÇÃO      : ContratoId é NotMapped (uso apenas na UI).
+     ****************************************************************************************/
     public class ItensContrato
         {
 
@@ -68,4 +72,3 @@ namespace FrotiX.Models
 
         }
     }
-
