@@ -1,13 +1,20 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: VeiculoAta.cs                                                                           ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Mapear vínculo N:N entre Veículo e Ata de Preços via chave composta.                   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: VeiculoAtaViewModel, VeiculoAta                                                         ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core                                                           ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: VeiculoAta.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Mapear vínculo N:N entre Veículo e Ata de Preços via chave composta.
+ *
+ * 📥 ENTRADAS     : Identificadores de veículo e ata.
+ *
+ * 📤 SAÍDAS       : Entidade de relacionamento e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Fluxos de associação veículo-ata.
+ *
+ * 🔄 CHAMA        : DataAnnotations, Column(Order).
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations.
+ *
+ * ⚠️ ATENÇÃO      : Chave composta (VeiculoId + AtaId).
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -21,11 +28,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: transportar vínculo veículo-ata nas telas de edição.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: VeiculoAtaViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar vínculo veículo-ata nas telas de edição.
+     *
+     * 📥 ENTRADAS     : VeiculoId, AtaId e entidade de vínculo.
+     *
+     * 📤 SAÍDAS       : ViewModel para UI.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de vínculo.
+     ****************************************************************************************/
     public class VeiculoAtaViewModel
     {
         // Identificador do veículo.
@@ -38,12 +51,21 @@ namespace FrotiX.Models
         public VeiculoAta? VeiculoAta { get; set; }
     }
 
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa o relacionamento N:N entre Veículo e Ata de Preços.
-    // ⚠️ ATENÇÃO: chave composta (VeiculoId + AtaId).
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: VeiculoAta
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar o relacionamento N:N entre Veículo e Ata de Preços.
+     *
+     * 📥 ENTRADAS     : VeiculoId e AtaId.
+     *
+     * 📤 SAÍDAS       : Registro de vínculo persistido.
+     *
+     * 🔗 CHAMADA POR  : Fluxos de associação veículo-ata.
+     *
+     * 🔄 CHAMA        : Column(Order).
+     *
+     * ⚠️ ATENÇÃO      : Chave composta (VeiculoId + AtaId).
+     ****************************************************************************************/
     public class VeiculoAta
     {
         // Chave composta - FK para Veículo.

@@ -1,13 +1,20 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: Veiculo.cs                                                                              ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Cadastrar veículos da frota com dados de identificação e vínculos.                    ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: VeiculoViewModel, Veiculo                                                               ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core, SelectListItem, Validations                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: Veiculo.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Cadastrar veículos da frota com dados de identificação e vínculos.
+ *
+ * 📥 ENTRADAS     : Dados cadastrais, marcas, modelos, contratos e atas.
+ *
+ * 📤 SAÍDAS       : Entidade persistida e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Cadastros de frota e processos de viagem/abastecimento.
+ *
+ * 🔄 CHAMA        : DataAnnotations, ValidaLista, ForeignKey, SelectListItem.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.Validations, Microsoft.AspNetCore.Mvc.Rendering.
+ *
+ * ⚠️ ATENÇÃO      : Conversão implícita de PlacaBronzeViewModel não implementada.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -21,11 +28,21 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: agregar veículo e listas de seleção para telas de cadastro/edição.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: VeiculoViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Agregar veículo e listas de seleção para telas de cadastro/edição.
+     *
+     * 📥 ENTRADAS     : Veiculo, filtros e listas auxiliares.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas de frota.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de veículos.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     *
+     * ⚠️ ATENÇÃO      : Conversão implícita lança NotImplementedException.
+     ****************************************************************************************/
     public class VeiculoViewModel
     {
         // Identificador do veículo.
@@ -86,11 +103,19 @@ namespace FrotiX.Models
         }
     }
 
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa um veículo da frota.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: Veiculo
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar um veículo da frota.
+     *
+     * 📥 ENTRADAS     : Identificação, vínculo e dados operacionais.
+     *
+     * 📤 SAÍDAS       : Registro persistido para controle de frota.
+     *
+     * 🔗 CHAMADA POR  : Repositórios e controllers.
+     *
+     * 🔄 CHAMA        : ForeignKey, ValidaLista.
+     ****************************************************************************************/
     public class Veiculo
     {
         // Identificador único do veículo.

@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: Viagem.cs                                                                               ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Modelar viagens, agendamentos, ajustes e dados de finalização.                         ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: AgendamentoViagem, AjusteViagem, FinalizacaoViagem, Viagem, ViewModels                  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core, IFormFile                                                 ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: Viagem.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Modelar viagens, agendamentos, ajustes e dados de finalização.
+ *
+ * 📥 ENTRADAS     : Dados de viagem, ocorrências e arquivos anexos.
+ *
+ * 📤 SAÍDAS       : Entidades/DTOs usados por controllers e serviços de viagens.
+ *
+ * 🔗 CHAMADA POR  : Módulos de viagens, agendamentos e auditoria.
+ *
+ * 🔄 CHAMA        : DataAnnotations, IFormFile, NotMapped.
+ *
+ * 📦 DEPENDÊNCIAS : Microsoft.AspNetCore.Http, System.ComponentModel.DataAnnotations.
+ **************************************************************************************** */
 
 using Microsoft.AspNetCore.Http;
 using System;
@@ -17,11 +22,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // AGENDAMENTO
-    // ==================================================================================================
-    // Representa dados de agendamento e recorrência de viagens.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ DTO: AgendamentoViagem
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar dados de agendamento e recorrência de viagens.
+     *
+     * 📥 ENTRADAS     : Datas, recorrência, origem/destino e vínculos.
+     *
+     * 📤 SAÍDAS       : Payload para criação/edição de agendamentos.
+     *
+     * 🔗 CHAMADA POR  : Fluxos de agendamento.
+     ****************************************************************************************/
     public class AgendamentoViagem
     {
         // Combustível informado ao final da viagem.
@@ -140,11 +151,17 @@ namespace FrotiX.Models
         public bool? Wednesday { get; set; }
     }
 
-    // ==================================================================================================
-    // AJUSTE DE VIAGEM
-    // ==================================================================================================
-    // Dados utilizados para ajuste de viagens após criação.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ DTO: AjusteViagem
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar dados para ajustes pós-criação de viagens.
+     *
+     * 📥 ENTRADAS     : Datas, vínculos e anexos.
+     *
+     * 📤 SAÍDAS       : Payload de ajuste de viagem.
+     *
+     * 🔗 CHAMADA POR  : Fluxos de ajuste de viagem.
+     ****************************************************************************************/
     public class AjusteViagem
     {
         // Arquivo de foto anexado (não mapeado).
@@ -179,11 +196,17 @@ namespace FrotiX.Models
         public Guid ViagemId { get; set; }
     }
 
-    // ==================================================================================================
-    // FINALIZAÇÃO DE VIAGEM
-    // ==================================================================================================
-    // DTO para finalização de viagem (ocorrências via tabela separada).
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ DTO: FinalizacaoViagem
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar dados de finalização de viagem.
+     *
+     * 📥 ENTRADAS     : Combustível, km, ocorrências e anexos.
+     *
+     * 📤 SAÍDAS       : Payload de finalização.
+     *
+     * 🔗 CHAMADA POR  : Fluxos de finalização.
+     ****************************************************************************************/
     public class FinalizacaoViagem
     {
         // Arquivo de foto anexado (não mapeado).
@@ -212,11 +235,15 @@ namespace FrotiX.Models
         public List<OcorrenciaFinalizacaoDTO>? Ocorrencias { get; set; }
     }
 
-    // ==================================================================================================
-    // OCORRÊNCIA DE FINALIZAÇÃO
-    // ==================================================================================================
-    // DTO para cada ocorrência enviada na finalização.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ DTO: OcorrenciaFinalizacaoDTO
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar cada ocorrência enviada na finalização.
+     *
+     * 📥 ENTRADAS     : Resumo, descrição e imagem.
+     *
+     * 📤 SAÍDAS       : Ocorrência individual.
+     ****************************************************************************************/
     public class OcorrenciaFinalizacaoDTO
     {
         // Resumo da ocorrência.
@@ -227,11 +254,15 @@ namespace FrotiX.Models
         public string? ImagemOcorrencia { get; set; }
     }
 
-    // ==================================================================================================
-    // PROCURA DE VIAGEM
-    // ==================================================================================================
-    // ViewModel para filtros de busca de viagens.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: ProcuraViagemViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Fornecer filtros de busca de viagens.
+     *
+     * 📥 ENTRADAS     : Data, hora, ficha e veículo.
+     *
+     * 📤 SAÍDAS       : ViewModel para consultas.
+     ****************************************************************************************/
     public class ProcuraViagemViewModel
     {
         // Data para busca.
@@ -246,11 +277,19 @@ namespace FrotiX.Models
         public Viagem? Viagem { get; set; }
     }
 
-    // ==================================================================================================
-    // VIAGEM
-    // ==================================================================================================
-    // Entidade principal de viagens (ocorrências em tabela separada).
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: Viagem
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar a entidade principal de viagens.
+     *
+     * 📥 ENTRADAS     : Dados operacionais, vínculos e status.
+     *
+     * 📤 SAÍDAS       : Registro persistido de viagem.
+     *
+     * 🔗 CHAMADA POR  : Fluxos de viagens e relatórios.
+     *
+     * 🔄 CHAMA        : IFormFile, NotMapped.
+     ****************************************************************************************/
     public class Viagem
     {
         // Arquivo de foto anexado (não mapeado).
@@ -534,7 +573,17 @@ namespace FrotiX.Models
 
         // ================================================================
 
-        // Atualiza os dados da viagem a partir do agendamento.
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AtualizarDados
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Atualizar os dados da viagem a partir do agendamento.
+         *
+         * 📥 ENTRADAS     : viagem (AgendamentoViagem).
+         *
+         * 📤 SAÍDAS       : Atualização in-place das propriedades da instância.
+         *
+         * 🔗 CHAMADA POR  : Fluxos de criação/edição de viagens.
+         ****************************************************************************************/
         public void AtualizarDados(AgendamentoViagem? viagem)
         {
             if (viagem != null)
@@ -584,17 +633,30 @@ namespace FrotiX.Models
         }
     }
 
+    /****************************************************************************************
+     * ⚡ DTO: ViagemID
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar apenas o identificador de viagem.
+     *
+     * 📥 ENTRADAS     : ViagemId.
+     *
+     * 📤 SAÍDAS       : DTO simples.
+     ****************************************************************************************/
     public class ViagemID
     {
         // Identificador da viagem.
         public Guid ViagemId { get; set; }
     }
 
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: transportar metadados e entidade de viagem para exibição.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: ViagemViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar metadados e entidade de viagem para exibição.
+     *
+     * 📥 ENTRADAS     : Viagem, datas e usuários relacionados.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas/relatórios.
+     ****************************************************************************************/
     public class ViagemViewModel
     {
         // Data de cancelamento.
