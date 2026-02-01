@@ -1,13 +1,19 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: Encarregado.cs                                                                          ║
-   ║ 📂 CAMINHO: /Models                                                                                 ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Gerenciar encarregados vinculados a contratos.                                         ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: EncarregadoViewModel, Encarregado                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core, SelectListItem, Validations, IFormFile                  ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: Encarregado.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar encarregados vinculados a contratos.
+ *
+ * 📥 ENTRADAS     : Dados pessoais, contrato e arquivos de foto.
+ *
+ * 📤 SAÍDAS       : Entidade persistida e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Telas de cadastro e manutenção de encarregados.
+ *
+ * 🔄 CHAMA        : DataAnnotations, ValidaLista, IFormFile.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.Validations, Microsoft.AspNetCore.Mvc.Rendering,
+ *                   Microsoft.AspNetCore.Http.
+ **************************************************************************************** */
 
 #nullable enable
 using FrotiX.Validations;
@@ -20,11 +26,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: agregar dados do encarregado e lista de contratos na UI.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: EncarregadoViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Agregar dados do encarregado e lista de contratos para a UI.
+     *
+     * 📥 ENTRADAS     : Encarregado, ContratoId e listas de seleção.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas de cadastro/edição.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de encarregados.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     ****************************************************************************************/
     public class EncarregadoViewModel
     {
         // Identificador do encarregado.
@@ -58,11 +72,19 @@ namespace FrotiX.Models
         }
     }
 
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa um encarregado vinculado a contrato.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: Encarregado
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar encarregado vinculado a contrato.
+     *
+     * 📥 ENTRADAS     : Dados pessoais, contrato e foto.
+     *
+     * 📤 SAÍDAS       : Registro persistido para gestão de contratos.
+     *
+     * 🔗 CHAMADA POR  : Repositórios e controllers.
+     *
+     * 🔄 CHAMA        : DataAnnotations, ValidaLista, ForeignKey, IFormFile.
+     ****************************************************************************************/
     public class Encarregado
     {
         // Identificador único do encarregado.
