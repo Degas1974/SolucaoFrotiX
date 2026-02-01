@@ -1,9 +1,116 @@
-// ================================
-// Arquivo: error_handler.js
-// Sistema Unificado de Tratamento de Erros
-// Integra com SweetAlertInterop + Alerta.js
-// VERSÃO: Sem handler global de AJAX (tratamento manual)
-// ================================
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: error_handler.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Sistema unificado de tratamento de erros JavaScript com integração
+ *                   Alerta.TratamentoErroComLinha. Captura erros globais, promises não
+ *                   tratadas, enriquece com contexto e registra métricas em localStorage.
+ * 📥 ENTRADAS     : Eventos window.error, unhandledrejection, chamadas ErrorHandler.capturar()
+ * 📤 SAÍDAS       : Logs console, chamadas Alerta.TratamentoErroComLinha, metrics em localStorage
+ * 🔗 CHAMADA POR  : Auto-execução (IIFE), global error handlers, código que chama ErrorHandler.capturar()
+ * 🔄 CHAMA        : Alerta.TratamentoErroComLinha, console.*, localStorage API
+ * 📦 DEPENDÊNCIAS : Alerta.js (window.Alerta), localStorage, navigator.userAgent
+ * 📝 OBSERVAÇÕES  : IIFE auto-executável (initErrorHandler), expõe window.ErrorHandler,
+ *                   tratamento AJAX manual (não global), log limitado a 50 erros
+ *
+ * 📋 ÍNDICE DE FUNÇÕES (11 funções principais + 2 event listeners):
+ *
+ * ┌─ ErrorHandler METHODS (window.ErrorHandler.*) ────────────────────────────┐
+ * │ 1. capturar(origem, error, contexto)                                       │
+ * │    → Handler central que enriquece e envia para Alerta.TratamentoErroComLinha│
+ * │    → Log com console.group, extrai arquivo/função, cria erro enriquecido  │
+ * │    → Parâmetros: origem (string), error (Error|Object), contexto (object) │
+ * │                                                                             │
+ * │ 2. criarErroEnriquecido(error, errorInfo, contexto)                        │
+ * │    → Cria objeto Error enriquecido com contexto, origem, timestamp        │
+ * │    → Preserva stack trace, adiciona detalhes AJAX se aplicável            │
+ * │    → Retorna Error object com propriedades extras                         │
+ * │                                                                             │
+ * │ 3. extrairArquivo(error, contexto)                                         │
+ * │    → Extrai nome do arquivo de origem do erro                             │
+ * │    → Prioridades: contexto.filename → error.fileName → stack regex        │
+ * │    → Fallback: 'agendamento_viagem.js'                                    │
+ * │                                                                             │
+ * │ 4. extrairFuncao(error, origem)                                            │
+ * │    → Extrai nome da função do stack trace                                 │
+ * │    → Regex: /at\s+(\w+)/ na segunda linha do stack                        │
+ * │    → Fallback: origem (string)                                            │
+ * │                                                                             │
+ * │ 5. registrarMetrica(origem, errorInfo)                                     │
+ * │    → Salva erro em localStorage (se DEBUG_MODE ativo)                     │
+ * │    → Mantém apenas últimos 50 erros (FIFO)                                │
+ * │    → Chave localStorage: 'erros_log'                                      │
+ * │                                                                             │
+ * │ 6. setContexto(contexto)                                                   │
+ * │    → Define contexto atual (merge com contextoAtual)                      │
+ * │    → Usado para enriquecer erros subsequentes                             │
+ * │                                                                             │
+ * │ 7. limparContexto()                                                        │
+ * │    → Limpa contextoAtual (reset para {})                                  │
+ * │                                                                             │
+ * │ 8. obterLog()                                                              │
+ * │    → Retorna array de erros do localStorage (parse 'erros_log')           │
+ * │    → Fallback: [] em caso de erro                                         │
+ * │                                                                             │
+ * │ 9. limparLog()                                                             │
+ * │    → Remove 'erros_log' do localStorage                                   │
+ * │    → Log: "✅ Log de erros limpo"                                          │
+ * └─────────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ GLOBAL EVENT LISTENERS ───────────────────────────────────────────────────┐
+ * │ 10. window 'error' listener                                                │
+ * │     → Captura erros JavaScript globais não tratados                       │
+ * │     → Filtra erros de bibliotecas externas (filename check)               │
+ * │     → Chama ErrorHandler.capturar('global', error, contexto)              │
+ * │                                                                             │
+ * │ 11. window 'unhandledrejection' listener                                   │
+ * │     → Captura Promise rejections não tratadas                             │
+ * │     → event.preventDefault() para não logar no console nativo             │
+ * │     → Chama ErrorHandler.capturar('promise', error, contexto)             │
+ * └─────────────────────────────────────────────────────────────────────────────┘
+ *
+ * 🔄 FLUXO DE CAPTURA DE ERRO:
+ * 1. Erro ocorre (global, promise, manual capturar())
+ * 2. ErrorHandler.capturar() é chamado
+ * 3. Enriquece erro com contexto, stack, timestamp, userAgent, URL
+ * 4. Extrai arquivo e função (extrairArquivo, extrairFuncao)
+ * 5. Cria erro enriquecido (criarErroEnriquecido)
+ * 6. Envia para Alerta.TratamentoErroComLinha(arquivo, funcao, erro)
+ * 7. Registra métrica em localStorage (se DEBUG_MODE)
+ *
+ * 📌 ERROR INFO STRUCTURE:
+ * {
+ *   origem: string,           // 'global', 'promise', 'ajax', etc.
+ *   mensagem: string,          // error.message ou fallback
+ *   stack: string,             // stack trace
+ *   timestamp: ISO string,     // new Date().toISOString()
+ *   userAgent: string,         // navigator.userAgent
+ *   url: string,               // window.location.href
+ *   contexto: object,          // contextoAtual + contexto param
+ *   tipoRequisicao?: string,   // 'GET', 'POST', etc. (se AJAX)
+ *   urlRequisicao?: string,    // URL do endpoint (se AJAX)
+ *   statusCode?: number        // HTTP status (se AJAX)
+ * }
+ *
+ * 📌 ENRICHED ERROR PROPERTIES:
+ * - error.contexto (object)
+ * - error.origem (string)
+ * - error.timestamp (ISO string)
+ * - error.detalhes.url (se AJAX)
+ * - error.detalhes.method (se AJAX)
+ * - error.detalhes.status (se AJAX)
+ * - error.detalhes.statusText (se AJAX)
+ * - error.detalhes.responseText (se AJAX)
+ * - error.detalhes.serverMessage (se AJAX)
+ *
+ * 📝 OBSERVAÇÕES ADICIONAIS:
+ * - AJAX error handling é MANUAL (não global), usar criarErroAjax() do alerta.js
+ * - Filtro de bibliotecas externas (filename check em window.error)
+ * - Debug mode: window.DEBUG_MODE habilita localStorage logging
+ * - Limite de 50 erros em localStorage (FIFO queue)
+ * - Exposto globalmente: window.ErrorHandler, window.AgendamentoViagens.errorHandler
+ *
+ * 🛡️ VERSÃO: Sem handler global de AJAX (tratamento manual)
+ **************************************************************************************** */
 
 (function initErrorHandler() 
 {
@@ -86,92 +193,107 @@
         /**
          * Cria objeto de erro enriquecido mantendo todas as propriedades
          */
-        criarErroEnriquecido: function (error, errorInfo, contexto) 
+        criarErroEnriquecido: function (error, errorInfo, contexto)
         {
-            // Base do erro
-            let errorEnriquecido;
+            try {
+                // Base do erro
+                let errorEnriquecido;
 
-            if (error instanceof Error) 
-            {
-                errorEnriquecido = error;
-            }
-            else if (typeof error === 'object' && error !== null) 
-            {
-                errorEnriquecido = new Error(errorInfo.mensagem);
-                // Copiar todas as propriedades do erro original
-                Object.assign(errorEnriquecido, error);
-            }
-            else 
-            {
-                errorEnriquecido = new Error(String(error));
-            }
+                if (error instanceof Error)
+                {
+                    errorEnriquecido = error;
+                }
+                else if (typeof error === 'object' && error !== null)
+                {
+                    errorEnriquecido = new Error(errorInfo.mensagem);
+                    // Copiar todas as propriedades do erro original
+                    Object.assign(errorEnriquecido, error);
+                }
+                else
+                {
+                    errorEnriquecido = new Error(String(error));
+                }
 
-            // Enriquecer com contexto
-            errorEnriquecido.contexto = errorInfo.contexto;
-            errorEnriquecido.origem = errorInfo.origem;
-            errorEnriquecido.timestamp = errorInfo.timestamp;
+                // Enriquecer com contexto
+                errorEnriquecido.contexto = errorInfo.contexto;
+                errorEnriquecido.origem = errorInfo.origem;
+                errorEnriquecido.timestamp = errorInfo.timestamp;
 
-            // Adicionar detalhes específicos de AJAX
-            if (contexto.url) 
-            {
-                errorEnriquecido.detalhes = errorEnriquecido.detalhes || {};
-                errorEnriquecido.detalhes.url = contexto.url;
-                errorEnriquecido.detalhes.method = contexto.method;
-                errorEnriquecido.detalhes.status = contexto.status;
-                errorEnriquecido.detalhes.statusText = contexto.statusText;
-                errorEnriquecido.detalhes.responseText = contexto.responseText;
-                errorEnriquecido.detalhes.serverMessage = contexto.serverMessage;
+                // Adicionar detalhes específicos de AJAX
+                if (contexto.url)
+                {
+                    errorEnriquecido.detalhes = errorEnriquecido.detalhes || {};
+                    errorEnriquecido.detalhes.url = contexto.url;
+                    errorEnriquecido.detalhes.method = contexto.method;
+                    errorEnriquecido.detalhes.status = contexto.status;
+                    errorEnriquecido.detalhes.statusText = contexto.statusText;
+                    errorEnriquecido.detalhes.responseText = contexto.responseText;
+                    errorEnriquecido.detalhes.serverMessage = contexto.serverMessage;
+                }
+
+                // Preservar stack
+                if (!errorEnriquecido.stack && error.stack)
+                {
+                    errorEnriquecido.stack = error.stack;
+                }
+
+                return errorEnriquecido;
+            } catch (erro) {
+                console.error('Erro em criarErroEnriquecido:', erro);
+                return new Error(errorInfo?.mensagem || 'Erro desconhecido');
             }
-
-            // Preservar stack
-            if (!errorEnriquecido.stack && error.stack) 
-            {
-                errorEnriquecido.stack = error.stack;
-            }
-
-            return errorEnriquecido;
         },
 
         /**
          * Extrai arquivo do erro ou contexto
          */
-        extrairArquivo: function (error, contexto) 
+        extrairArquivo: function (error, contexto)
         {
-            // Prioridade 1: Arquivo do contexto
-            if (contexto.filename) return contexto.filename;
+            try {
+                // Prioridade 1: Arquivo do contexto
+                if (contexto.filename) return contexto.filename;
 
-            // Prioridade 2: Arquivo do erro
-            if (error.fileName) return error.fileName;
-            if (error.arquivo) return error.arquivo;
-            if (error.detalhes?.arquivo) return error.detalhes.arquivo;
+                // Prioridade 2: Arquivo do erro
+                if (error.fileName) return error.fileName;
+                if (error.arquivo) return error.arquivo;
+                if (error.detalhes?.arquivo) return error.detalhes.arquivo;
 
-            // Prioridade 3: Extrair do stack
-            if (error.stack) 
-            {
-                const match = error.stack.match(/(?:https?:)?\/\/[^\/]+\/(?:.*\/)?([\w\-_.]+\.(?:js|ts|jsx|tsx))/);
-                if (match) return match[1];
+                // Prioridade 3: Extrair do stack
+                if (error.stack)
+                {
+                    const match = error.stack.match(/(?:https?:)?\/\/[^\/]+\/(?:.*\/)?([\w\-_.]+\.(?:js|ts|jsx|tsx))/);
+                    if (match) return match[1];
+                }
+
+                return 'agendamento_viagem.js';
+            } catch (erro) {
+                console.error('Erro em extrairArquivo:', erro);
+                return 'agendamento_viagem.js';
             }
-
-            return 'agendamento_viagem.js';
         },
 
         /**
          * Extrai função do erro
          */
-        extrairFuncao: function (error, origem) 
+        extrairFuncao: function (error, origem)
         {
-            // Tentar extrair do stack
-            if (error.stack) 
-            {
-                const lines = error.stack.split('\n');
-                if (lines.length > 1) 
+            try {
+                // Tentar extrair do stack
+                if (error.stack)
                 {
-                    const match = lines[1].match(/at\s+(\w+)/);
-                    if (match) return match[1];
+                    const lines = error.stack.split('\n');
+                    if (lines.length > 1)
+                    {
+                        const match = lines[1].match(/at\s+(\w+)/);
+                        if (match) return match[1];
+                    }
                 }
-            }
 
-            return origem;
+                return origem;
+            } catch (erro) {
+                console.error('Erro em extrairFuncao:', erro);
+                return origem;
+            }
         },
 
         /**
@@ -206,17 +328,25 @@
         /**
          * Define contexto atual
          */
-        setContexto: function (contexto) 
+        setContexto: function (contexto)
         {
-            this.contextoAtual = { ...this.contextoAtual, ...contexto };
+            try {
+                this.contextoAtual = { ...this.contextoAtual, ...contexto };
+            } catch (erro) {
+                console.error('Erro em setContexto:', erro);
+            }
         },
 
         /**
          * Limpa contexto
          */
-        limparContexto: function () 
+        limparContexto: function ()
         {
-            this.contextoAtual = {};
+            try {
+                this.contextoAtual = {};
+            } catch (erro) {
+                console.error('Erro em limparContexto:', erro);
+            }
         },
 
         /**

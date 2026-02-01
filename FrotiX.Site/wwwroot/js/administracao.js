@@ -1,6 +1,198 @@
-// ============================================================================
-// administracao.js - Dashboard de Administração FrotiX
-// ============================================================================
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: administracao.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Dashboard de administração com gráficos Chart.js para análise de
+ *                   frota, normalização de viagens, custos, eficiência e heatmaps.
+ *                   Gerencia 10 visualizações distintas com filtros de período.
+ * 📥 ENTRADAS     : Filtros de data (dataInicio, dataFim), eventos DOM (DOMContentLoaded)
+ * 📤 SAÍDAS       : Gráficos Chart.js (pizza, barras, linhas), heatmap tabular, cards
+ * 🔗 CHAMADA POR  : Páginas de administração (dashboard), eventos de filtro
+ * 🔄 CHAMA        : /api/Administracao/* endpoints, Chart.js API, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : Chart.js 4.x, jQuery (fetch nativo), Alerta.js
+ * 📝 OBSERVAÇÕES  : 9 chart instances globais, paleta de 10 cores, Promise.allSettled
+ *                   para carregamento paralelo, fallback para dados vazios
+ *
+ * 📋 ÍNDICE DE FUNÇÕES (35 funções principais):
+ *
+ * ┌─ INICIALIZAÇÃO E FILTROS ──────────────────────────────────────────────────┐
+ * │ 1. DOMContentLoaded event                                                  │
+ * │    → Auto-executa inicializarFiltros() e carregarTodosGraficos()          │
+ * │                                                                             │
+ * │ 2. inicializarFiltros()                                                    │
+ * │    → Define período padrão (últimos 30 dias) nos inputs de data           │
+ * │                                                                             │
+ * │ 3. definirPeriodo(dias)                                                    │
+ * │    → Ajusta filtros de data com período específico e recarrega gráficos   │
+ * │                                                                             │
+ * │ 4. obterParametrosFiltro()                                                 │
+ * │    → Retorna query string com dataInicio e dataFim para AJAX              │
+ * └─────────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ UTILITÁRIOS DE UI ────────────────────────────────────────────────────────┐
+ * │ 5. mostrarSemDados(containerId, mensagem)                                  │
+ * │    → Exibe mensagem "Sem dados" em container de gráfico                   │
+ * │                                                                             │
+ * │ 6. restaurarCanvas(containerId, canvasId)                                  │
+ * │    → Recria elemento <canvas> para re-renderização de gráfico             │
+ * │                                                                             │
+ * │ 7. mostrarLoadingCards()                                                   │
+ * │    → Mostra spinners nos 4 cards de resumo                                │
+ * │                                                                             │
+ * │ 8. pararLoadingCards()                                                     │
+ * │    → Para spinners e define valores padrão "0"                            │
+ * └─────────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ CARREGAMENTO DE DADOS (AJAX) ─────────────────────────────────────────────┐
+ * │ 9. carregarTodosGraficos()                                                 │
+ * │    → Promise.allSettled para carregar 10 gráficos em paralelo             │
+ * │    → GET /api/Administracao/* (vários endpoints)                           │
+ * │                                                                             │
+ * │ 10. carregarResumoGeral()                                                  │
+ * │     → GET /api/Administracao/ObterResumoGeralFrota                         │
+ * │     → Popula cards: veículos ativos, motoristas, viagens, total KM        │
+ * │                                                                             │
+ * │ 11. carregarEstatisticasNormalizacao()                                     │
+ * │     → GET /api/Administracao/ObterEstatisticasNormalizacao                 │
+ * │     → Dados: resumo (pizza) + porTipoNormalizacao (barras)                │
+ * │                                                                             │
+ * │ 12. carregarDistribuicaoTipoUso()                                          │
+ * │     → GET /api/Administracao/ObterDistribuicaoTipoUso                      │
+ * │     → Retorna lista de tipos de uso com quantidades                       │
+ * │                                                                             │
+ * │ 13. carregarHeatmap()                                                      │
+ * │     → GET /api/Administracao/ObterHeatmapViagens                           │
+ * │     → Retorna matriz 7x24 (dias da semana × horas)                        │
+ * │                                                                             │
+ * │ 14. carregarTop10Veiculos()                                                │
+ * │     → GET /api/Administracao/ObterTop10VeiculosPorKm                       │
+ * │     → Retorna top 10 veículos por KM rodados                              │
+ * │                                                                             │
+ * │ 15. carregarTop10Motoristas()                                              │
+ * │     → GET /api/Administracao/ObterTop10MotoristasPorKm                     │
+ * │     → Retorna top 10 motoristas por KM                                    │
+ * │                                                                             │
+ * │ 16. carregarCustoPorFinalidade()                                           │
+ * │     → GET /api/Administracao/ObterCustoPorFinalidade                       │
+ * │     → Retorna custos médio e total por finalidade                         │
+ * │                                                                             │
+ * │ 17. carregarComparativoPropiosTerceirizados()                              │
+ * │     → GET /api/Administracao/ObterComparativoPropiosTerceirizados          │
+ * │     → Retorna dados de veículos próprios vs terceirizados                 │
+ * │                                                                             │
+ * │ 18. carregarEficienciaFrota()                                              │
+ * │     → GET /api/Administracao/ObterEficienciaFrota                          │
+ * │     → Retorna veículos ordenados por custo/KM (menor = mais eficiente)    │
+ * │                                                                             │
+ * │ 19. carregarEvolucaoMensalCustos()                                         │
+ * │     → GET /api/Administracao/ObterEvolucaoMensalCustos                     │
+ * │     → Retorna custos por mês (combustível, motorista, lavador)            │
+ * └─────────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ RENDERIZAÇÃO DE GRÁFICOS (Chart.js) ─────────────────────────────────────┐
+ * │ 20. renderizarPizzaNormalizacao(resumo)                                    │
+ * │     → Chart.js doughnut - Viagens originais vs normalizadas               │
+ * │                                                                             │
+ * │ 21. renderizarBarrasTipoNormalizacao(dados)                                │
+ * │     → Chart.js bar (horizontal) - Quantidade por tipo de normalização     │
+ * │     → Labels quebrados em múltiplas linhas (max 18 chars)                 │
+ * │                                                                             │
+ * │ 22. renderizarTipoUso(dados)                                               │
+ * │     → Chart.js pie - Distribuição por tipo de uso                         │
+ * │                                                                             │
+ * │ 23. renderizarHeatmap(dados)                                               │
+ * │     → Tabela HTML com cores gradientes (não Chart.js)                     │
+ * │     → 7 dias × 24 horas, cores de #e8f5e9 a #2e7d32                       │
+ * │                                                                             │
+ * │ 24. renderizarHeatmapVazio()                                               │
+ * │     → Tabela heatmap com células vazias (#f5f5f5)                         │
+ * │                                                                             │
+ * │ 25. renderizarTop10Veiculos(dados)                                         │
+ * │     → Chart.js bar (horizontal) - Top 10 veículos por KM                  │
+ * │                                                                             │
+ * │ 26. renderizarTop10Motoristas(dados)                                       │
+ * │     → Chart.js bar (horizontal) - Top 10 motoristas por KM                │
+ * │                                                                             │
+ * │ 27. renderizarCustoPorFinalidade(dados)                                    │
+ * │     → Chart.js bar (vertical) - Custo médio por finalidade                │
+ * │                                                                             │
+ * │ 28. renderizarPropriosTerceirizados(dados)                                 │
+ * │     → Chart.js bar (agrupado) - 2 datasets (próprios vs terceirizados)    │
+ * │     → 3 métricas: viagens, KM, custo total                                │
+ * │                                                                             │
+ * │ 29. renderizarEficiencia(dados)                                            │
+ * │     → Chart.js bar (horizontal) - Custo por KM (eficiência)               │
+ * │     → Cores gradientes: verde (top 3), azul (4-7), amarelo (8-10)         │
+ * │                                                                             │
+ * │ 30. renderizarEvolucaoMensal(dados)                                        │
+ * │     → Chart.js line - 3 datasets (combustível, motorista, lavador)        │
+ * │     → Áreas preenchidas (fill: true, tension: 0.3)                        │
+ * └─────────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ FORMATADORES E UTILITÁRIOS ───────────────────────────────────────────────┐
+ * │ 31. formatarTipoNormalizacao(tipo)                                         │
+ * │     → Converte enum para texto legível (underscores → espaços, capitalize)│
+ * │                                                                             │
+ * │ 32. obterCorHeatmap(valor, maxValor)                                       │
+ * │     → Retorna cor CSS baseada em percentual (5 níveis de verde)           │
+ * │                                                                             │
+ * │ 33. formatarNumero(valor)                                                  │
+ * │     → toLocaleString('pt-BR') para números                                │
+ * │                                                                             │
+ * │ 34. formatarMoeda(valor)                                                   │
+ * │     → toLocaleString com currency: 'BRL'                                  │
+ * │                                                                             │
+ * │ 35. formatarKm(valor)                                                      │
+ * │     → Formata com sufixo "km" ou "k km" (> 1000)                          │
+ * │                                                                             │
+ * │ 36. truncarTexto(texto, maxLength)                                         │
+ * │     → Adiciona "..." se exceder maxLength                                 │
+ * └─────────────────────────────────────────────────────────────────────────────┘
+ *
+ * 🔄 AJAX ENDPOINTS CHAMADOS:
+ * - GET /api/Administracao/ObterResumoGeralFrota?dataInicio={}&dataFim={}
+ *   Retorna: { sucesso: bool, dados: { veiculosAtivos, motoristasAtivos, viagensRealizadas, totalKm } }
+ *
+ * - GET /api/Administracao/ObterEstatisticasNormalizacao?dataInicio={}&dataFim={}
+ *   Retorna: { sucesso: bool, dados: { resumo: { viagensOriginais, viagensNormalizadas, percentualNormalizadas },
+ *                                      porTipoNormalizacao: [{ tipo, quantidade }] } }
+ *
+ * - GET /api/Administracao/ObterDistribuicaoTipoUso
+ *   Retorna: { sucesso: bool, dados: [{ tipoUso, quantidade }] }
+ *
+ * - GET /api/Administracao/ObterHeatmapViagens?dataInicio={}&dataFim={}
+ *   Retorna: { sucesso: bool, dados: { matriz: number[][] } } (7x24)
+ *
+ * - GET /api/Administracao/ObterTop10VeiculosPorKm?dataInicio={}&dataFim={}
+ *   Retorna: { sucesso: bool, dados: [{ placa, veiculoDescricao, totalKm, totalViagens }] }
+ *
+ * - GET /api/Administracao/ObterTop10MotoristasPorKm?dataInicio={}&dataFim={}
+ *   Retorna: { sucesso: bool, dados: [{ nome, totalKm, totalViagens }] }
+ *
+ * - GET /api/Administracao/ObterCustoPorFinalidade?dataInicio={}&dataFim={}
+ *   Retorna: { sucesso: bool, dados: [{ finalidade, custoMedio, custoTotal, totalViagens }] }
+ *
+ * - GET /api/Administracao/ObterComparativoPropiosTerceirizados?dataInicio={}&dataFim={}
+ *   Retorna: { sucesso: bool, dados: { proprios: { totalViagens, totalKm, custoTotal },
+ *                                      terceirizados: { totalViagens, totalKm, custoTotal } } }
+ *
+ * - GET /api/Administracao/ObterEficienciaFrota?dataInicio={}&dataFim={}
+ *   Retorna: { sucesso: bool, dados: [{ placa, veiculoDescricao, custoPorKm, totalKm, custoTotal, totalViagens }] }
+ *
+ * - GET /api/Administracao/ObterEvolucaoMensalCustos?dataInicio={}&dataFim={}
+ *   Retorna: { sucesso: bool, dados: [{ mesAno, custoCombustivel, custoMotorista, custoLavador,
+ *                                       custoTotal, totalViagens, totalKm }] }
+ *
+ * 🎨 PALETA DE CORES:
+ * - 10 cores RGBA com opacity 0.8 (azul, verde água, amarelo, vermelho, roxo, laranja, cinza, etc.)
+ * - Bordas com opacity 1.0 (coresBorda)
+ * - Heatmap: gradiente verde (#e8f5e9 → #2e7d32)
+ * - Eficiência: verde (top 3), azul (4-7), amarelo (8-10)
+ *
+ * 📌 VARIÁVEIS GLOBAIS:
+ * - chartNormalizacaoPizza, chartNormalizacaoTipo, chartTipoUso, chartTop10Veiculos,
+ *   chartTop10Motoristas, chartCustoPorFinalidade, chartPropriosTerceirizados,
+ *   chartEficiencia, chartEvolucaoMensal (9 instâncias Chart.js)
+ **************************************************************************************** */
 
 // Variáveis globais para os gráficos
 let chartNormalizacaoPizza = null;
@@ -366,14 +558,20 @@ function renderizarBarrasTipoNormalizacao(dados) {
 }
 
 function formatarTipoNormalizacao(tipo) {
-    if (!tipo) return 'Não especificado';
-    // Substituir underscores por espaços e formatar
-    return tipo
-        .replace(/_/g, ' ')
-        .replace(/([A-Z])/g, ' $1')
-        .trim()
-        .toLowerCase()
-        .replace(/\b\w/g, l => l.toUpperCase());
+    try {
+        if (!tipo) return 'Não especificado';
+        // Substituir underscores por espaços e formatar
+        return tipo
+            .replace(/_/g, ' ')
+            .replace(/([A-Z])/g, ' $1')
+            .trim()
+            .toLowerCase()
+            .replace(/\b\w/g, l => l.toUpperCase());
+    } catch (e) {
+        console.error('Erro formatarTipoNormalizacao:', e);
+        Alerta.TratamentoErroComLinha('administracao.js', 'formatarTipoNormalizacao', e);
+        return 'Não especificado';
+    }
 }
 
 // ============================================================================
@@ -507,13 +705,19 @@ function renderizarHeatmapVazio() {
 }
 
 function obterCorHeatmap(valor, maxValor) {
-    if (valor === 0 || maxValor === 0) return '#f5f5f5';
-    const percentual = valor / maxValor;
-    if (percentual <= 0.2) return '#e8f5e9';
-    if (percentual <= 0.4) return '#c8e6c9';
-    if (percentual <= 0.6) return '#81c784';
-    if (percentual <= 0.8) return '#4caf50';
-    return '#2e7d32';
+    try {
+        if (valor === 0 || maxValor === 0) return '#f5f5f5';
+        const percentual = valor / maxValor;
+        if (percentual <= 0.2) return '#e8f5e9';
+        if (percentual <= 0.4) return '#c8e6c9';
+        if (percentual <= 0.6) return '#81c784';
+        if (percentual <= 0.8) return '#4caf50';
+        return '#2e7d32';
+    } catch (e) {
+        console.error('Erro obterCorHeatmap:', e);
+        Alerta.TratamentoErroComLinha('administracao.js', 'obterCorHeatmap', e);
+        return '#f5f5f5';
+    }
 }
 
 // ============================================================================
