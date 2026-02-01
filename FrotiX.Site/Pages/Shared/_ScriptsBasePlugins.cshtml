@@ -14,9 +14,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" asp-append-version="true"></script>
 
 <!-- 2. SignalR CDN (ANTES do signalr_manager.js!) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.14/signalr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.14/signalr.min.js" crossorigin="anonymous"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr" crossorigin="anonymous"></script>
 
 <!-- Script de inicialização do SignalR com prevenção de dupla inicialização -->
 <script>
@@ -148,13 +148,13 @@
 <!-- ⚠️ ADICIONE O KENDO UI AQUI, ANTES DO VENDORS.BUNDLE.JS -->
 <!-- Kendo UI - CDN Oficial Telerik -->
 @* <link href="https://kendo.cdn.telerik.com/2023.1.117/styles/kendo.default-main.min.css" rel="stylesheet" /> *@
-<script src="https://kendo.cdn.telerik.com/2023.1.117/js/jszip.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2023.1.117/js/jszip.min.js" crossorigin="anonymous"></script>
 <!-- Usar distribuição clássica (non-module) para evitar SyntaxError em browsers -->
-<script src="https://kendo.cdn.telerik.com/2025.2.520/js/kendo.all.min.js"></script>
-<script src="https://kendo.cdn.telerik.com/2025.2.520/js/kendo.aspnetmvc.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2025.2.520/js/kendo.all.min.js" crossorigin="anonymous"></script>
+<script src="https://kendo.cdn.telerik.com/2025.2.520/js/kendo.aspnetmvc.min.js" crossorigin="anonymous"></script>
 
 <!-- PDF.js para o Kendo PDFViewer -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js" crossorigin="anonymous"></script>
 <script>
 	if (window.pdfjsLib) {
 		pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
@@ -165,142 +165,429 @@
 
  <script src="/api/reports/resources/js/telerikReportViewer-18.1.24.514.min.js"></script>
 
-<!-- Syncfusion EJ2 -->
-<script src="https://cdn.syncfusion.com/ej2/31.1.22/dist/ej2.min.js"></script>
-<!-- CLDR e Cultura - SÍNCRONO para evitar erro de percentSign -->
+<!-- Syncfusion EJ2 (usando unpkg como alternativa - CDN oficial com problemas de CORS) -->
+<script src="https://unpkg.com/@@syncfusion/ej2@@32.1.23/dist/ej2.min.js" crossorigin="anonymous"></script>
+<!-- ============================================ -->
+<!-- SYNCFUSION LOCALIZAÇÃO PT-BR COMPLETA      -->
+<!-- CLDR + L10n para versão 32.1.23            -->
+<!-- ============================================ -->
 <script>
 (function() {
-	'use strict';
+    'use strict';
 
-	// Dados CLDR mínimos necessários - carregados SÍNCRONAMENTE
-	var cldrNumberingSystems = {
-		"supplemental": {
-			"numberingSystems": {
-				"latn": { "_digits": "0123456789", "_type": "numeric" }
-			}
-		}
-	};
+    // URLs dos arquivos CLDR necessários (versão 44 - mais recente estável)
+    const CLDR_BASE = 'https://cdn.jsdelivr.net/npm/cldr-data@36.0.1';
+    const cldrUrls = [
+        `${CLDR_BASE}/main/pt/numbers.json`,
+        `${CLDR_BASE}/main/pt/ca-gregorian.json`,
+        `${CLDR_BASE}/main/pt/timeZoneNames.json`,
+        `${CLDR_BASE}/main/pt/currencies.json`,
+        `${CLDR_BASE}/supplemental/numberingSystems.json`,
+        `${CLDR_BASE}/supplemental/currencyData.json`
+    ];
 
-	var cldrNumbers = {
-		"main": {
-			"pt-BR": {
-				"identity": { "language": "pt", "territory": "BR" },
-				"numbers": {
-					"defaultNumberingSystem": "latn",
-					"minimumGroupingDigits": "1",
-					"symbols-numberSystem-latn": {
-						"decimal": ",",
-						"group": ".",
-						"list": ";",
-						"percentSign": "%",
-						"plusSign": "+",
-						"minusSign": "-",
-						"exponential": "E",
-						"superscriptingExponent": "×",
-						"perMille": "‰",
-						"infinity": "∞",
-						"nan": "NaN",
-						"timeSeparator": ":"
-					},
-					"decimalFormats-numberSystem-latn": {
-						"standard": "#,##0.###",
-						"long": { "decimalFormat": { "1000-count-one": "0 mil", "1000-count-other": "0 mil" } },
-						"short": { "decimalFormat": { "1000-count-one": "0 mil", "1000-count-other": "0 mil" } }
-					},
-					"percentFormats-numberSystem-latn": { "standard": "#,##0%" },
-					"currencyFormats-numberSystem-latn": {
-						"standard": "¤ #,##0.00",
-						"accounting": "¤ #,##0.00;(¤ #,##0.00)",
-						"currencySpacing": {
-							"beforeCurrency": { "currencyMatch": "[:^S:]", "surroundingMatch": "[:digit:]", "insertBetween": " " },
-							"afterCurrency": { "currencyMatch": "[:^S:]", "surroundingMatch": "[:digit:]", "insertBetween": " " }
-						}
-					},
-					"scientificFormats-numberSystem-latn": { "standard": "#E0" }
-				}
-			},
-			"pt": {
-				"identity": { "language": "pt" },
-				"numbers": {
-					"defaultNumberingSystem": "latn",
-					"minimumGroupingDigits": "1",
-					"symbols-numberSystem-latn": {
-						"decimal": ",",
-						"group": ".",
-						"list": ";",
-						"percentSign": "%",
-						"plusSign": "+",
-						"minusSign": "-",
-						"exponential": "E",
-						"superscriptingExponent": "×",
-						"perMille": "‰",
-						"infinity": "∞",
-						"nan": "NaN",
-						"timeSeparator": ":"
-					},
-					"decimalFormats-numberSystem-latn": { "standard": "#,##0.###" },
-					"percentFormats-numberSystem-latn": { "standard": "#,##0%" },
-					"currencyFormats-numberSystem-latn": { "standard": "¤ #,##0.00" },
-					"scientificFormats-numberSystem-latn": { "standard": "#E0" }
-				}
-			}
-		}
-	};
+    // Traduções L10n customizadas para pt-BR (Syncfusion 32.x)
+    const ptBRLocale = {
+        'pt': {
+            // Grid
+            'grid': {
+                'EmptyRecord': 'Nenhum registro encontrado',
+                'True': 'Sim',
+                'False': 'Não',
+                'InvalidFilterMessage': 'Dados de filtro inválidos',
+                'GroupDropArea': 'Arraste um cabeçalho de coluna aqui para agrupar',
+                'UnGroup': 'Clique aqui para desagrupar',
+                'GroupDisable': 'Agrupamento desabilitado para esta coluna',
+                'FilterbarTitle': 'Célula de filtro',
+                'EmptyDataSourceError': 'DataSource não pode estar vazio no carregamento inicial',
+                'Add': 'Adicionar',
+                'Edit': 'Editar',
+                'Cancel': 'Cancelar',
+                'Update': 'Atualizar',
+                'Delete': 'Excluir',
+                'Print': 'Imprimir',
+                'Pdfexport': 'Exportar PDF',
+                'Excelexport': 'Exportar Excel',
+                'Wordexport': 'Exportar Word',
+                'Csvexport': 'Exportar CSV',
+                'Search': 'Buscar',
+                'Columnchooser': 'Colunas',
+                'Save': 'Salvar',
+                'Item': 'Item',
+                'Items': 'Itens',
+                'EditOperationAlert': 'Nenhum registro selecionado para edição',
+                'DeleteOperationAlert': 'Nenhum registro selecionado para exclusão',
+                'SaveButton': 'Salvar',
+                'OKButton': 'OK',
+                'CancelButton': 'Cancelar',
+                'EditFormTitle': 'Detalhes de ',
+                'AddFormTitle': 'Adicionar Novo Registro',
+                'BatchSaveConfirm': 'Deseja salvar as alterações?',
+                'BatchSaveLostChanges': 'Alterações não salvas serão perdidas. Deseja continuar?',
+                'ConfirmDelete': 'Tem certeza que deseja excluir o registro?',
+                'CancelEdit': 'Tem certeza que deseja cancelar as alterações?',
+                'ChooseColumns': 'Escolher Colunas',
+                'SearchColumns': 'Buscar Colunas',
+                'Matchs': 'Nenhuma correspondência encontrada',
+                'FilterButton': 'Filtrar',
+                'ClearButton': 'Limpar',
+                'StartsWith': 'Começa com',
+                'EndsWith': 'Termina com',
+                'Contains': 'Contém',
+                'Equal': 'Igual',
+                'NotEqual': 'Diferente',
+                'LessThan': 'Menor que',
+                'LessThanOrEqual': 'Menor ou igual',
+                'GreaterThan': 'Maior que',
+                'GreaterThanOrEqual': 'Maior ou igual',
+                'ChooseDate': 'Escolha uma data',
+                'EnterValue': 'Digite o valor',
+                'Copy': 'Copiar',
+                'Group': 'Agrupar por esta coluna',
+                'Ungroup': 'Desagrupar por esta coluna',
+                'autoFitAll': 'Ajustar todas as colunas',
+                'autoFit': 'Ajustar esta coluna',
+                'Export': 'Exportar',
+                'FirstPage': 'Primeira Página',
+                'LastPage': 'Última Página',
+                'PreviousPage': 'Página Anterior',
+                'NextPage': 'Próxima Página',
+                'SortAscending': 'Ordenar Crescente',
+                'SortDescending': 'Ordenar Decrescente',
+                'EditRecord': 'Editar Registro',
+                'DeleteRecord': 'Excluir Registro',
+                'FilterMenu': 'Filtro',
+                'SelectAll': 'Selecionar Todos',
+                'Blanks': '(Vazios)',
+                'FilterTrue': 'Sim',
+                'FilterFalse': 'Não',
+                'NoResult': 'Nenhum resultado encontrado',
+                'ClearFilter': 'Limpar Filtro',
+                'NumberFilter': 'Filtros Numéricos',
+                'TextFilter': 'Filtros de Texto',
+                'DateFilter': 'Filtros de Data',
+                'DateTimeFilter': 'Filtros de Data/Hora',
+                'MatchCase': 'Diferenciar maiúsculas',
+                'Between': 'Entre',
+                'CustomFilter': 'Filtro Personalizado',
+                'CustomFilterPlaceHolder': 'Digite o valor',
+                'CustomFilterDatePlaceHolder': 'Escolha uma data',
+                'AND': 'E',
+                'OR': 'OU',
+                'ShowRowsWhere': 'Mostrar linhas onde:',
+                'currentPageInfo': '{0} de {1} páginas',
+                'totalItemsInfo': '({0} itens)',
+                'firstPageTooltip': 'Ir para primeira página',
+                'lastPageTooltip': 'Ir para última página',
+                'nextPageTooltip': 'Ir para próxima página',
+                'previousPageTooltip': 'Ir para página anterior',
+                'nextPagerTooltip': 'Ir para próximos itens',
+                'previousPagerTooltip': 'Ir para itens anteriores',
+                'pagerDropDown': 'Itens por página',
+                'pagerAllDropDown': 'Itens',
+                'All': 'Todos'
+            },
+            // Pager
+            'pager': {
+                'currentPageInfo': '{0} de {1} páginas',
+                'totalItemsInfo': '({0} itens)',
+                'firstPageTooltip': 'Ir para primeira página',
+                'lastPageTooltip': 'Ir para última página',
+                'nextPageTooltip': 'Ir para próxima página',
+                'previousPageTooltip': 'Ir para página anterior',
+                'nextPagerTooltip': 'Ir para próximos itens',
+                'previousPagerTooltip': 'Ir para itens anteriores',
+                'pagerDropDown': 'Itens por página',
+                'pagerAllDropDown': 'Itens',
+                'All': 'Todos'
+            },
+            // DatePicker
+            'datepicker': {
+                'placeholder': 'Selecione uma data',
+                'today': 'Hoje'
+            },
+            // DateTimePicker
+            'datetimepicker': {
+                'placeholder': 'Selecione data e hora',
+                'today': 'Hoje'
+            },
+            // TimePicker
+            'timepicker': {
+                'placeholder': 'Selecione o horário'
+            },
+            // Calendar
+            'calendar': {
+                'today': 'Hoje'
+            },
+            // DateRangePicker
+            'daterangepicker': {
+                'placeholder': 'Selecione um período',
+                'startLabel': 'Data Inicial',
+                'endLabel': 'Data Final',
+                'applyText': 'Aplicar',
+                'cancelText': 'Cancelar',
+                'selectedDays': 'Dias Selecionados',
+                'days': 'Dias',
+                'customRange': 'Período Personalizado'
+            },
+            // DropDownList
+            'dropdownlist': {
+                'noRecordsTemplate': 'Nenhum registro encontrado',
+                'actionFailureTemplate': 'Falha na requisição'
+            },
+            // ComboBox
+            'combobox': {
+                'noRecordsTemplate': 'Nenhum registro encontrado',
+                'actionFailureTemplate': 'Falha na requisição'
+            },
+            // AutoComplete
+            'autocomplete': {
+                'noRecordsTemplate': 'Nenhum registro encontrado',
+                'actionFailureTemplate': 'Falha na requisição'
+            },
+            // MultiSelect
+            'multiselect': {
+                'noRecordsTemplate': 'Nenhum registro encontrado',
+                'actionFailureTemplate': 'Falha na requisição',
+                'selectAllText': 'Selecionar Todos',
+                'unSelectAllText': 'Desmarcar Todos',
+                'overflowCountTemplate': '+${count} mais...'
+            },
+            // ListBox
+            'listbox': {
+                'noRecordsTemplate': 'Nenhum registro encontrado'
+            },
+            // Uploader
+            'uploader': {
+                'Browse': 'Procurar',
+                'Clear': 'Limpar',
+                'Upload': 'Enviar',
+                'dropFilesHint': 'Ou solte arquivos aqui',
+                'invalidMinFileSize': 'Arquivo muito pequeno',
+                'invalidMaxFileSize': 'Arquivo muito grande',
+                'invalidFileType': 'Tipo de arquivo não permitido',
+                'uploadFailedMessage': 'Falha no upload',
+                'uploadSuccessMessage': 'Upload concluído',
+                'removedSuccessMessage': 'Arquivo removido',
+                'removedFailedMessage': 'Falha ao remover arquivo',
+                'inProgress': 'Enviando',
+                'readyToUploadMessage': 'Pronto para enviar',
+                'remove': 'Remover',
+                'cancel': 'Cancelar',
+                'delete': 'Excluir'
+            },
+            // NumericTextBox
+            'numerictextbox': {
+                'incrementTitle': 'Incrementar valor',
+                'decrementTitle': 'Decrementar valor'
+            },
+            // Dialog
+            'dialog': {
+                'close': 'Fechar'
+            },
+            // RichTextEditor
+            'richtexteditor': {
+                'alignments': 'Alinhamentos',
+                'justifyLeft': 'Alinhar à Esquerda',
+                'justifyCenter': 'Centralizar',
+                'justifyRight': 'Alinhar à Direita',
+                'justifyFull': 'Justificar',
+                'fontName': 'Fonte',
+                'fontSize': 'Tamanho',
+                'fontColor': 'Cor da Fonte',
+                'backgroundColor': 'Cor de Fundo',
+                'bold': 'Negrito',
+                'italic': 'Itálico',
+                'underline': 'Sublinhado',
+                'strikethrough': 'Tachado',
+                'clearFormat': 'Limpar Formatação',
+                'clearAll': 'Limpar Tudo',
+                'cut': 'Cortar',
+                'copy': 'Copiar',
+                'paste': 'Colar',
+                'unorderedList': 'Lista com Marcadores',
+                'orderedList': 'Lista Numerada',
+                'indent': 'Aumentar Recuo',
+                'outdent': 'Diminuir Recuo',
+                'undo': 'Desfazer',
+                'redo': 'Refazer',
+                'createLink': 'Inserir Link',
+                'image': 'Inserir Imagem',
+                'createTable': 'Criar Tabela',
+                'removeTable': 'Remover Tabela',
+                'sourcecode': 'Código Fonte',
+                'preview': 'Visualizar',
+                'maximize': 'Maximizar',
+                'minimize': 'Minimizar'
+            },
+            // Scheduler
+            'schedule': {
+                'day': 'Dia',
+                'week': 'Semana',
+                'workWeek': 'Semana de Trabalho',
+                'month': 'Mês',
+                'agenda': 'Agenda',
+                'weekAgenda': 'Agenda Semanal',
+                'workWeekAgenda': 'Agenda da Semana de Trabalho',
+                'monthAgenda': 'Agenda Mensal',
+                'today': 'Hoje',
+                'noEvents': 'Sem eventos',
+                'emptyContainer': 'Não há eventos agendados para este dia.',
+                'allDay': 'Dia inteiro',
+                'start': 'Início',
+                'end': 'Fim',
+                'more': 'mais',
+                'close': 'Fechar',
+                'cancel': 'Cancelar',
+                'noTitle': '(Sem título)',
+                'delete': 'Excluir',
+                'deleteEvent': 'Excluir Evento',
+                'deleteMultipleEvent': 'Excluir Múltiplos Eventos',
+                'selectedItems': 'Itens selecionados',
+                'deleteSeries': 'Excluir Série',
+                'edit': 'Editar',
+                'editSeries': 'Editar Série',
+                'editEvent': 'Editar Evento',
+                'createEvent': 'Criar',
+                'subject': 'Assunto',
+                'addTitle': 'Adicionar título',
+                'moreDetails': 'Mais Detalhes',
+                'save': 'Salvar',
+                'editContent': 'Deseja editar apenas este evento ou toda a série?',
+                'deleteRecurrenceContent': 'Deseja excluir apenas este evento ou toda a série?',
+                'deleteContent': 'Tem certeza que deseja excluir este evento?',
+                'deleteMultipleContent': 'Tem certeza que deseja excluir os eventos selecionados?',
+                'newEvent': 'Novo Evento',
+                'title': 'Título',
+                'location': 'Local',
+                'description': 'Descrição',
+                'timezone': 'Fuso Horário',
+                'startTimezone': 'Fuso Horário Inicial',
+                'endTimezone': 'Fuso Horário Final',
+                'repeat': 'Repetir',
+                'saveButton': 'Salvar',
+                'cancelButton': 'Cancelar',
+                'deleteButton': 'Excluir',
+                'recurrence': 'Recorrência',
+                'wrongPattern': 'O padrão de recorrência é inválido.',
+                'seriesChangeAlert': 'As alterações feitas em instâncias específicas desta série serão canceladas e esses eventos corresponderão à série novamente.',
+                'createError': 'A duração do evento deve ser menor que a frequência com que ele ocorre.',
+                'recurrenceDateValidation': 'Alguns meses têm menos dias do que a data selecionada. Para esses meses, a ocorrência cairá no último dia do mês.',
+                'sameDayAlert': 'Duas ocorrências do mesmo evento não podem ocorrer no mesmo dia.',
+                'editRecurrence': 'Editar Recorrência',
+                'repeats': 'Repete',
+                'alert': 'Alerta',
+                'startEndError': 'A data de término selecionada ocorre antes da data de início.',
+                'invalidDateError': 'O valor de data inserido é inválido.',
+                'ok': 'OK',
+                'occurrence': 'Ocorrência',
+                'series': 'Série',
+                'previous': 'Anterior',
+                'next': 'Próximo',
+                'timelineDay': 'Linha do Tempo - Dia',
+                'timelineWeek': 'Linha do Tempo - Semana',
+                'timelineWorkWeek': 'Linha do Tempo - Semana de Trabalho',
+                'timelineMonth': 'Linha do Tempo - Mês'
+            }
+        }
+    };
 
-	var cldrCalendar = {
-		"main": {
-			"pt-BR": {
-				"identity": { "language": "pt", "territory": "BR" },
-				"dates": {
-					"calendars": {
-						"gregorian": {
-							"months": {
-								"format": {
-									"abbreviated": { "1": "jan.", "2": "fev.", "3": "mar.", "4": "abr.", "5": "mai.", "6": "jun.", "7": "jul.", "8": "ago.", "9": "set.", "10": "out.", "11": "nov.", "12": "dez." },
-									"wide": { "1": "janeiro", "2": "fevereiro", "3": "março", "4": "abril", "5": "maio", "6": "junho", "7": "julho", "8": "agosto", "9": "setembro", "10": "outubro", "11": "novembro", "12": "dezembro" }
-								},
-								"stand-alone": {
-									"abbreviated": { "1": "jan.", "2": "fev.", "3": "mar.", "4": "abr.", "5": "mai.", "6": "jun.", "7": "jul.", "8": "ago.", "9": "set.", "10": "out.", "11": "nov.", "12": "dez." },
-									"wide": { "1": "janeiro", "2": "fevereiro", "3": "março", "4": "abril", "5": "maio", "6": "junho", "7": "julho", "8": "agosto", "9": "setembro", "10": "outubro", "11": "novembro", "12": "dezembro" }
-								}
-							},
-							"days": {
-								"format": {
-									"abbreviated": { "sun": "dom.", "mon": "seg.", "tue": "ter.", "wed": "qua.", "thu": "qui.", "fri": "sex.", "sat": "sáb." },
-									"wide": { "sun": "domingo", "mon": "segunda-feira", "tue": "terça-feira", "wed": "quarta-feira", "thu": "quinta-feira", "fri": "sexta-feira", "sat": "sábado" }
-								},
-								"stand-alone": {
-									"abbreviated": { "sun": "dom.", "mon": "seg.", "tue": "ter.", "wed": "qua.", "thu": "qui.", "fri": "sex.", "sat": "sáb." },
-									"wide": { "sun": "domingo", "mon": "segunda-feira", "tue": "terça-feira", "wed": "quarta-feira", "thu": "quinta-feira", "fri": "sexta-feira", "sat": "sábado" }
-								}
-							},
-							"dateFormats": { "full": "EEEE, d 'de' MMMM 'de' y", "long": "d 'de' MMMM 'de' y", "medium": "d 'de' MMM 'de' y", "short": "dd/MM/y" },
-							"timeFormats": { "full": "HH:mm:ss zzzz", "long": "HH:mm:ss z", "medium": "HH:mm:ss", "short": "HH:mm" },
-							"dateTimeFormats": { "full": "{1} {0}", "long": "{1} {0}", "medium": "{1} {0}", "short": "{1} {0}" }
-						}
-					}
-				}
-			}
-		}
-	};
+    // Função para carregar CLDR de forma assíncrona
+    async function loadCldrData() {
+        try {
+            console.log('🌍 Carregando dados CLDR para pt-BR...');
 
-	// Carrega CLDR IMEDIATAMENTE (síncrono)
-	if (typeof ej !== 'undefined' && ej.base && ej.base.loadCldr) {
-		try {
-			ej.base.loadCldr(cldrNumberingSystems, cldrNumbers, cldrCalendar);
-			ej.base.setCulture('pt-BR');
-			window.__cldrLoaded = true;
-			console.log('✅ CLDR pt-BR carregado de forma síncrona');
-		} catch (e) {
-			console.error('Erro ao carregar CLDR:', e);
-			window.__cldrLoaded = false;
-		}
-	}
+            const responses = await Promise.all(
+                cldrUrls.map(url =>
+                    fetch(url)
+                        .then(res => {
+                            if (!res.ok) throw new Error(`Falha ao carregar ${url}`);
+                            return res.json();
+                        })
+                        .catch(err => {
+                            console.warn(`⚠️ Não foi possível carregar: ${url}`, err.message);
+                            return null;
+                        })
+                )
+            );
+
+            // Filtrar respostas válidas
+            const validData = responses.filter(data => data !== null);
+
+            if (validData.length > 0 && typeof ej !== 'undefined' && ej.base && ej.base.loadCldr) {
+                ej.base.loadCldr(...validData);
+                console.log(`✅ CLDR carregado (${validData.length}/${cldrUrls.length} arquivos)`);
+            }
+
+            return true;
+        } catch (error) {
+            console.error('❌ Erro ao carregar CLDR:', error);
+            return false;
+        }
+    }
+
+    // Função para aplicar localizações
+    function applyLocalization() {
+        try {
+            if (typeof ej === 'undefined' || !ej.base) {
+                console.warn('⚠️ Syncfusion não carregado ainda');
+                return false;
+            }
+
+            // Carregar traduções L10n
+            if (ej.base.L10n && ej.base.L10n.load) {
+                ej.base.L10n.load(ptBRLocale);
+                console.log('✅ Traduções L10n pt-BR carregadas');
+            }
+
+            // Definir cultura
+            if (ej.base.setCulture) {
+                ej.base.setCulture('pt');
+                console.log('✅ Cultura definida: pt');
+            }
+
+            // Definir código da moeda
+            if (ej.base.setCurrencyCode) {
+                ej.base.setCurrencyCode('BRL');
+                console.log('✅ Moeda definida: BRL');
+            }
+
+            window.__syncfusionLocaleReady = true;
+            document.dispatchEvent(new CustomEvent('syncfusion-locale-ready'));
+
+            return true;
+        } catch (error) {
+            console.error('❌ Erro ao aplicar localização:', error);
+            return false;
+        }
+    }
+
+    // Inicialização
+    async function init() {
+        try {
+            // Primeiro aplicar traduções L10n (não depende do CLDR)
+            applyLocalization();
+
+            // Depois carregar CLDR em background (para formatação de números/datas)
+            await loadCldrData();
+
+            console.log('🎉 Localização Syncfusion pt-BR configurada com sucesso!');
+            window.__cldrLoaded = true;
+
+        } catch (error) {
+            console.error('❌ Erro na inicialização da localização:', error);
+            window.__cldrLoaded = false;
+        }
+    }
+
+    // Executar inicialização
+    init();
+
 })();
 </script>
 <!-- Registro de licença Syncfusion -->
 <script>
-	ej.base.registerLicense("Ngo9BigBOggjHTQxAR8/V1JFaF5cXGRCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWXZfeHRSRGhcVUVyWkpWYEg=");
+	ej.base.registerLicense("Ngo9BigBOggjHTQxAR8/V1JGaF5cXGpCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdlWX1ecXRVRmRcUkFxWEtWYEs=");
 	// Flag e evento para indicar que licença foi registrada
 	window.syncfusionLicenseReady = true;
 	document.dispatchEvent(new CustomEvent('syncfusion-license-ready'));
@@ -393,19 +680,19 @@
 <!-- GRUPO 5: BIBLIOTECAS DE DADOS E TABELAS -->
 <!-- ============================================ -->
 <!-- Moment.js -->
-<script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/min/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/min/moment.min.js" crossorigin="anonymous"></script>
 
 <!-- DataTables + Plugins -->
-<link rel="stylesheet" href="https://cdn.datatables.net/v/dt/dt-1.13.8/b-2.4.2/r-2.5.0/sl-1.7.0/datatables.min.css">
-<script src="https://cdn.datatables.net/v/dt/dt-1.13.8/b-2.4.2/r-2.5.0/sl-1.7.0/datatables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
-<script src="https://cdn.datatables.net/plug-ins/1.13.8/sorting/datetime-moment.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/v/dt/dt-1.13.8/b-2.4.2/r-2.5.0/sl-1.7.0/datatables.min.css" crossorigin="anonymous">
+<script src="https://cdn.datatables.net/v/dt/dt-1.13.8/b-2.4.2/r-2.5.0/sl-1.7.0/datatables.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.13.8/sorting/datetime-moment.js" crossorigin="anonymous"></script>
 
 <!-- JSZip e PDFMake (para exportação DataTables) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js" crossorigin="anonymous"></script>
 
 <!-- Configurar formatos de data do DataTables -->
 <script>
@@ -417,19 +704,19 @@
 <!-- GRUPO 6: BIBLIOTECAS UI E ALERTAS -->
 <!-- ============================================ -->
 <!-- jQuery UI -->
-<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js"></script>
+<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js" crossorigin="anonymous"></script>
 
 <!-- Toastr -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" crossorigin="anonymous"></script>
 
 <!-- SweetAlert2 (versão fixada) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.min.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.all.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.min.css" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.all.min.js" crossorigin="anonymous"></script>
 
 <!-- Select2 -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" crossorigin="anonymous"></script>
 
 <!-- TinyMCE (com API Key válida) -->
 <script src="https://cdn.tiny.cloud/1/kl9497zd17qjx1o2xzsybc9rf2dikkylq4ou0riihjjo7wbg/tinymce/8/tinymce.min.js"
@@ -538,66 +825,4 @@
 	}
 </script>
 
-<!-- ================================================ -->
-<!-- GRUPO 11: TRADUÇÕES L10N ADICIONAIS SYNCFUSION -->
-<!-- ================================================ -->
-<!-- NOTA: Os dados CLDR principais já foram carregados de forma SÍNCRONA logo após o ej2.min.js -->
-<!-- Este bloco apenas carrega traduções L10n adicionais para componentes específicos -->
-<script>
-(function() {
-    'use strict';
-
-    // Carrega traduções L10n adicionais (CLDR já foi carregado síncronamente)
-    if (typeof ej !== 'undefined' && ej.base && ej.base.L10n) {
-        ej.base.L10n.load({
-            'pt-BR': {
-                timepicker: {
-                    placeholder: 'Selecione o horário'
-                },
-                datepicker: {
-                    placeholder: 'Selecione a data',
-                    today: 'Hoje'
-                },
-                dropdownlist: {
-                    noRecordsTemplate: 'Nenhum registro encontrado',
-                    actionFailureTemplate: 'Falha na requisição'
-                },
-                pdfviewer: {
-                    Open: 'Abrir',
-                    PageNumber: 'Número da página',
-                    PreviousPage: 'Página anterior',
-                    NextPage: 'Próxima página',
-                    GoToPage: 'Ir para página',
-                    Download: 'Baixar',
-                    Print: 'Imprimir',
-                    Bookmarks: 'Marcadores',
-                    PageThumbnails: 'Miniaturas',
-                    TextSearch: 'Buscar texto',
-                    ZoomIn: 'Ampliar',
-                    ZoomOut: 'Reduzir',
-                    FitPage: 'Ajustar à página',
-                    FitWidth: 'Ajustar à largura'
-                },
-                numerictextbox: {
-                    incrementTitle: 'Incrementar valor',
-                    decrementTitle: 'Decrementar valor'
-                },
-                uploader: {
-                    Browse: 'Procurar',
-                    Clear: 'Limpar',
-                    Upload: 'Enviar',
-                    dropFilesHint: 'Ou solte arquivos aqui',
-                    invalidMinFileSize: 'Arquivo muito pequeno',
-                    invalidMaxFileSize: 'Arquivo muito grande',
-                    invalidFileType: 'Tipo de arquivo inválido',
-                    uploadFailedMessage: 'Falha no upload',
-                    uploadSuccessMessage: 'Upload concluído',
-                    removedSuccessMessage: 'Arquivo removido',
-                    removedFailedMessage: 'Falha ao remover arquivo'
-                }
-            }
-        });
-        console.log('✅ Traduções L10n adicionais carregadas');
-    }
-})();
-</script>
+<!-- NOTA: Traduções L10n completas já carregadas no início do arquivo (SYNCFUSION LOCALIZAÇÃO PT-BR COMPLETA) -->

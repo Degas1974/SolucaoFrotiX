@@ -4,6 +4,7 @@ using FrotiX.Cache;
 using FrotiX.Data;
 using FrotiX.Filters;
 using FrotiX.Hubs;
+using FrotiX.Logging;
 using FrotiX.Middlewares;
 using FrotiX.Models;
 using FrotiX.Repository;
@@ -106,7 +107,7 @@ namespace FrotiX
                     options.Level = CompressionLevel.Optimal;
                 });
 
-                // ⭐ CORS - Configuração melhorada para Telerik Reports
+                // ⭐ CORS - Configuração melhorada para Telerik Reports e tratamento de erros
                 services.AddCors(options =>
                 {
                     options.AddPolicy("CorsPolicy",
@@ -114,7 +115,11 @@ namespace FrotiX
                             .AllowAnyOrigin()
                             .AllowAnyMethod()
                             .AllowAnyHeader()
-                            .WithExposedHeaders("Content-Disposition")); // Importante para downloads de PDF
+                            .WithExposedHeaders(
+                                "Content-Disposition",    // Importante para downloads de PDF
+                                "X-Request-Id",           // ID da requisição para rastreamento de erros
+                                "X-Error-Details"         // Detalhes de erro para debug
+                            ));
                 });
 
                 // Configuração do Telerik Reporting
@@ -153,15 +158,37 @@ namespace FrotiX
                 services.AddHostedService<CacheWarmupService>();
 
                 // ========================================================
-                // ⭐ SISTEMA DE LOG DE ERROS - SERVIÇOS
+                // ⭐ SISTEMA DE LOG DE ERROS - SERVIÇOS (v3.0 - Banco de Dados)
                 // ========================================================
+                // NOTA: ILogRepository é registrado APÓS FrotiXDbContext (linha ~250)
+                // para garantir que o DbContext esteja disponível
+
+                // IHttpContextAccessor precisa ser registrado antes do LogService
+                services.AddHttpContextAccessor();
+
+                // LogService - gravação primária no banco + fallback TXT
                 services.AddSingleton<ILogService, LogService>();
-                
+
+                // Configura LoggerProvider customizado para capturar logs do ILogger (Debug Output)
+                services.AddLogging(builder =>
+                {
+                    var serviceProvider = services.BuildServiceProvider();
+                    var logService = serviceProvider.GetRequiredService<ILogService>();
+                    builder.AddFrotiXLogger(logService, Microsoft.Extensions.Logging.LogLevel.Warning);
+                });
+
                 // Filtros de exceção (devem ser Scoped para injeção de dependência)
                 services.AddScoped<GlobalExceptionFilter>();
                 services.AddScoped<AsyncExceptionFilter>();
                 services.AddScoped<PageExceptionFilter>();
                 services.AddScoped<AsyncPageExceptionFilter>();
+
+                // Serviço de exportação de logs (PDF/Excel) - registrado após DbContext
+                // Serviço de alertas de logs em tempo real (SignalR)
+                services.AddHostedService<LogErrosAlertService>();
+
+                // Serviço de limpeza automática de logs antigos (> 90 dias)
+                services.AddHostedService<LogErrosCleanupService>();
                 // ========================================================
 
                 // ⭐ Controllers com Newtonsoft configurado corretamente
@@ -225,6 +252,16 @@ namespace FrotiX
                         .UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
                         .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
                 });
+
+                // ⭐ Repositório de logs - DEVE ser registrado APÓS FrotiXDbContext
+                services.AddScoped<FrotiX.Repository.IRepository.ILogRepository, FrotiX.Repository.LogRepository>();
+
+                // Serviço de exportação de logs (PDF/Excel)
+                services.AddScoped<ILogErrosExportService, LogErrosExportService>();
+
+                // Serviço de análise de erros com Claude AI
+                services.AddHttpClient("ClaudeAI");
+                services.AddScoped<IClaudeAnalysisService, ClaudeAnalysisService>();
 
                 services
                     .AddIdentity<IdentityUser, IdentityRole>(options =>
@@ -316,7 +353,7 @@ namespace FrotiX
 
                 services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
                 services.AddTransient<IMailService, MailService>();
-                services.AddHttpContextAccessor();
+                // AddHttpContextAccessor já registrado anteriormente (seção de logs)
                 services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
                 services.AddScoped<IRazorRenderService, RazorRenderService>();
                 services.AddKendo();

@@ -357,15 +357,21 @@ public partial class LogErrosController
                 .GroupBy(l => l.Url)
                 .OrderByDescending(g => g.Count())
                 .Take(10)
-                .Select((g, idx) => new
+                .Select((g, idx) =>
                 {
-                    posicao = idx + 1,
-                    label = TruncateUrl(g.Key),
-                    subLabel = g.Key,
-                    count = g.Count(),
-                    percentage = total > 0 ? Math.Round((double)g.Count() / total * 100, 1) : 0,
-                    icon = "",
-                    color = ""
+                    var firstLog = g.First();
+                    var formattedLabel = FormatPageLabel(g.Key, firstLog.Arquivo, firstLog.Metodo);
+
+                    return new
+                    {
+                        posicao = idx + 1,
+                        label = formattedLabel,
+                        subLabel = g.Key,
+                        count = g.Count(),
+                        percentage = total > 0 ? Math.Round((double)g.Count() / total * 100, 1) : 0,
+                        icon = "",
+                        color = ""
+                    };
                 })
                 .ToList();
 
@@ -383,6 +389,81 @@ public partial class LogErrosController
         if (string.IsNullOrEmpty(url)) return url;
         var path = url.Split('?')[0];
         return path.Length > 50 ? "..." + path.Substring(path.Length - 47) : path;
+    }
+
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: FormatPageLabel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Formatar label de página para exibição (path a partir de /Pages + método).
+     *
+     * 📥 ENTRADAS     : url (URL completa), arquivo (caminho do arquivo), metodo (nome do método).
+     *
+     * 📤 SAÍDAS       : String formatada (ex: "Viagens/Create.OnPostAsync").
+     ****************************************************************************************/
+    private string FormatPageLabel(string? url, string? arquivo, string? metodo)
+    {
+        string path = "";
+
+        // Tenta extrair path da URL primeiro
+        if (!string.IsNullOrEmpty(url))
+        {
+            try
+            {
+                var uri = new Uri(url, UriKind.RelativeOrAbsolute);
+                if (uri.IsAbsoluteUri)
+                {
+                    path = uri.AbsolutePath;
+                }
+                else
+                {
+                    path = url.Split('?')[0];
+                }
+            }
+            catch
+            {
+                path = url.Split('?')[0];
+            }
+        }
+
+        // Se não conseguiu da URL, tenta do campo Arquivo
+        if (string.IsNullOrEmpty(path) && !string.IsNullOrEmpty(arquivo))
+        {
+            path = arquivo;
+        }
+
+        // Remove prefixos desnecessários
+        if (!string.IsNullOrEmpty(path))
+        {
+            // Remove /Pages/ do início se existir
+            if (path.Contains("/Pages/", StringComparison.OrdinalIgnoreCase))
+            {
+                var idx = path.IndexOf("/Pages/", StringComparison.OrdinalIgnoreCase);
+                path = path.Substring(idx + 7); // 7 = length of "/Pages/"
+            }
+            else if (path.StartsWith("/"))
+            {
+                path = path.Substring(1);
+            }
+
+            // Remove extensões .cshtml
+            path = path.Replace(".cshtml", "");
+        }
+
+        // Adiciona método se disponível
+        if (!string.IsNullOrEmpty(metodo))
+        {
+            // Remove namespace/classe se houver
+            var metodoCurto = metodo;
+            if (metodo.Contains('.'))
+            {
+                var parts = metodo.Split('.');
+                metodoCurto = parts[parts.Length - 1]; // Pega apenas o último segmento
+            }
+
+            path = $"{path}.{metodoCurto}";
+        }
+
+        return string.IsNullOrEmpty(path) ? "(desconhecido)" : path;
     }
 
     // ====== DASHBOARD/TOPERRORS ======
@@ -944,6 +1025,272 @@ public partial class LogErrosController
         {
             _logger.LogError(ex, "Erro ao gerar relatório Excel");
             return BadRequest(new { success = false, error = ex.Message });
+        }
+    }
+
+    // ====== DETALHES DE ERROS POR PÁGINA ======
+    [HttpGet]
+    [Route("Dashboard/PageErrors")]
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: GetPageErrors
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Obter lista de erros de uma página específica para exibição no modal.
+     *
+     * 📥 ENTRADAS     : url (URL da página), dias (período de análise).
+     *
+     * 📤 SAÍDAS       : JSON com lista de erros detalhados.
+     *
+     * 🔗 CHAMADA POR  : Modal de detalhes do Dashboard.
+     ****************************************************************************************/
+    public async Task<IActionResult> GetPageErrors(
+        [FromQuery] string url,
+        [FromQuery] int dias = 7,
+        [FromQuery] int limit = 50)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                return Ok(new { success = false, error = "URL não informada" });
+            }
+
+            var repository = HttpContext.RequestServices.GetService<ILogRepository>();
+            if (repository == null)
+            {
+                return Ok(new { success = false, error = "Repositório não disponível" });
+            }
+
+            var errors = await repository.GetByUrlAsync(url, limit);
+
+            // Filtra por período
+            var startDate = DateTime.Now.AddDays(-dias);
+            errors = errors.Where(e => e.DataHora >= startDate).ToList();
+
+            return Ok(new
+            {
+                success = true,
+                url = url,
+                totalErrors = errors.Count,
+                errors = errors.Select(e => new
+                {
+                    id = e.LogErroId,
+                    dataHora = e.DataHora,
+                    tipo = e.Tipo,
+                    origem = e.Origem,
+                    nivel = e.Nivel,
+                    mensagem = e.Mensagem,
+                    mensagemCurta = TruncateMessage(e.Mensagem, 150),
+                    arquivo = e.Arquivo,
+                    metodo = e.Metodo,
+                    linha = e.Linha,
+                    coluna = e.Coluna,
+                    exceptionType = e.ExceptionType,
+                    exceptionMessage = e.ExceptionMessage,
+                    stackTrace = e.StackTrace,
+                    innerException = e.InnerException,
+                    usuario = e.Usuario,
+                    userAgent = e.UserAgent,
+                    httpMethod = e.HttpMethod,
+                    statusCode = e.StatusCode,
+                    dadosAdicionais = e.DadosAdicionais,
+                    hashErro = e.HashErro,
+                    resolvido = e.Resolvido,
+                    cor = e.Cor,
+                    icone = e.Icone
+                }).ToList()
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao obter erros da página");
+            return Ok(new { success = false, error = ex.Message });
+        }
+    }
+
+    // ====== DETALHES DE UM ERRO ESPECÍFICO ======
+    [HttpGet]
+    [Route("Dashboard/ErrorDetails/{id}")]
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: GetErrorDetails
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Obter detalhes completos de um erro específico.
+     *
+     * 📥 ENTRADAS     : id (ID do erro).
+     *
+     * 📤 SAÍDAS       : JSON com detalhes completos do erro.
+     *
+     * 🔗 CHAMADA POR  : Modal de detalhes do Dashboard.
+     ****************************************************************************************/
+    public async Task<IActionResult> GetErrorDetails(long id)
+    {
+        try
+        {
+            var repository = HttpContext.RequestServices.GetService<ILogRepository>();
+            if (repository == null)
+            {
+                return Ok(new { success = false, error = "Repositório não disponível" });
+            }
+
+            var error = await repository.GetByIdAsync(id);
+            if (error == null)
+            {
+                return Ok(new { success = false, error = "Erro não encontrado" });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                error = new
+                {
+                    id = error.LogErroId,
+                    dataHora = error.DataHora,
+                    tipo = error.Tipo,
+                    origem = error.Origem,
+                    nivel = error.Nivel,
+                    categoria = error.Categoria,
+                    mensagem = error.Mensagem,
+                    arquivo = error.Arquivo,
+                    metodo = error.Metodo,
+                    linha = error.Linha,
+                    coluna = error.Coluna,
+                    exceptionType = error.ExceptionType,
+                    exceptionMessage = error.ExceptionMessage,
+                    stackTrace = error.StackTrace,
+                    innerException = error.InnerException,
+                    url = error.Url,
+                    httpMethod = error.HttpMethod,
+                    statusCode = error.StatusCode,
+                    userAgent = error.UserAgent,
+                    ipAddress = error.IpAddress,
+                    usuario = error.Usuario,
+                    sessionId = error.SessionId,
+                    dadosAdicionais = error.DadosAdicionais,
+                    hashErro = error.HashErro,
+                    resolvido = error.Resolvido,
+                    dataResolucao = error.DataResolucao,
+                    resolvidoPor = error.ResolvidoPor,
+                    observacoes = error.Observacoes,
+                    cor = error.Cor,
+                    icone = error.Icone
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao obter detalhes do erro #{Id}", id);
+            return Ok(new { success = false, error = ex.Message });
+        }
+    }
+
+    // ====== ANÁLISE DE ERRO COM CLAUDE AI ======
+    [HttpPost]
+    [Route("Dashboard/AnalyzeError/{id}")]
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: AnalyzeError
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Enviar erro para análise do Claude AI e retornar sugestões de correção.
+     *
+     * 📥 ENTRADAS     : id (ID do erro).
+     *
+     * 📤 SAÍDAS       : JSON com análise do Claude (diagnóstico, correção, prevenção).
+     *
+     * 🔗 CHAMADA POR  : Botão "Analisar com IA" no modal do Dashboard.
+     ****************************************************************************************/
+    public async Task<IActionResult> AnalyzeError(long id)
+    {
+        try
+        {
+            var repository = HttpContext.RequestServices.GetService<ILogRepository>();
+            var claudeService = HttpContext.RequestServices.GetService<IClaudeAnalysisService>();
+
+            if (repository == null)
+            {
+                return Ok(new { success = false, error = "Repositório não disponível" });
+            }
+
+            if (claudeService == null)
+            {
+                return Ok(new { success = false, error = "Serviço de análise não disponível" });
+            }
+
+            if (!claudeService.IsConfigured)
+            {
+                return Ok(new { success = false, error = "API Key do Claude não configurada. Configure em appsettings.json na seção 'ClaudeAI'." });
+            }
+
+            var error = await repository.GetByIdAsync(id);
+            if (error == null)
+            {
+                return Ok(new { success = false, error = "Erro não encontrado" });
+            }
+
+            _logger.LogInformation("Iniciando análise do erro #{Id} com Claude AI", id);
+
+            var result = await claudeService.AnalyzeErrorAsync(error);
+
+            if (!result.Success)
+            {
+                return Ok(new
+                {
+                    success = false,
+                    error = result.Error
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                analysis = result.Analysis,
+                model = result.Model,
+                tokens = new
+                {
+                    input = result.InputTokens,
+                    output = result.OutputTokens,
+                    total = result.InputTokens + result.OutputTokens
+                },
+                analyzedAt = result.AnalyzedAt
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao analisar erro #{Id} com Claude", id);
+            return Ok(new { success = false, error = ex.Message });
+        }
+    }
+
+    // ====== VERIFICAR STATUS DO SERVIÇO CLAUDE ======
+    [HttpGet]
+    [Route("Dashboard/ClaudeStatus")]
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: GetClaudeStatus
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Verificar se o serviço Claude AI está configurado e disponível.
+     *
+     * 📤 SAÍDAS       : JSON com status do serviço.
+     ****************************************************************************************/
+    public IActionResult GetClaudeStatus()
+    {
+        try
+        {
+            var claudeService = HttpContext.RequestServices.GetService<IClaudeAnalysisService>();
+
+            if (claudeService == null)
+            {
+                return Ok(new { success = true, configured = false, message = "Serviço não registrado" });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                configured = claudeService.IsConfigured,
+                message = claudeService.IsConfigured
+                    ? "Claude AI configurado e pronto para uso"
+                    : "Configure a API Key do Claude em appsettings.json"
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new { success = false, error = ex.Message });
         }
     }
 }

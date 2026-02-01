@@ -15,10 +15,12 @@
 */
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Http;
 
 namespace FrotiX.Middlewares
@@ -47,10 +49,16 @@ namespace FrotiX.Middlewares
         }
 
         
+        /// <summary>
+        /// Status code 499: Client Closed Request (usado pelo nginx quando cliente desconecta)
+        /// </summary>
+        private const int StatusCodeClientClosedRequest = 499;
+
         // ╭───────────────────────────────────────────────────────────────────────────────────────╮
         // │ ⚡ FUNCIONALIDADE: Invoke                                                             │
         // │───────────────────────────────────────────────────────────────────────────────────────│
         // │ 🎯 DESCRIÇÃO: Intercepta exceções e decide formato de resposta (JSON ou HTML).       │
+        // │    - Se é desconexão de cliente: retorna 499 silenciosamente.                        │
         // │    - Se Accept contém application/json OU X-Requested-With é XMLHttpRequest:         │
         // │      Retorna JSON com detalhes do erro.                                              │
         // │    - Caso contrário: Redireciona para /Erro (que lerá TempData["UiError"]).          │
@@ -58,13 +66,32 @@ namespace FrotiX.Middlewares
         // │ 📥 INPUTS: • http [HttpContext]: Contexto da requisição                              │
         // │ 📤 OUTPUTS: • [Task] - JSON response ou redirect                                     │
         // ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        
+
         public async Task Invoke(HttpContext http)
         {
             try
             {
                 // [LOGICA] Executar próximo middleware no pipeline
                 await _next(http);
+            }
+            catch (Exception ex) when (IsClientDisconnectException(ex) || http.RequestAborted.IsCancellationRequested)
+            {
+                // [INFO] Cliente desconectou - isso é normal e esperado
+                // Não tratamos como erro, apenas definimos o status 499 silenciosamente
+                if (!http.Response.HasStarted)
+                {
+                    http.Response.StatusCode = StatusCodeClientClosedRequest;
+                }
+                return;
+            }
+            catch (OperationCanceledException) when (http.RequestAborted.IsCancellationRequested)
+            {
+                // [INFO] Requisição foi cancelada pelo cliente
+                if (!http.Response.HasStarted)
+                {
+                    http.Response.StatusCode = StatusCodeClientClosedRequest;
+                }
+                return;
             }
             catch (Exception ex)
             {
@@ -126,6 +153,68 @@ namespace FrotiX.Middlewares
                     return;
                 }
             }
+        }
+
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ FUNCIONALIDADE: IsClientDisconnectException                                        │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 🎯 DESCRIÇÃO: Verifica se a exceção indica desconexão do cliente.                    │
+        // │───────────────────────────────────────────────────────────────────────────────────────│
+        // │ 📥 INPUTS: • ex [Exception]: Exceção a ser verificada                                │
+        // │ 📤 OUTPUTS: • [bool]: true se é desconexão de cliente                                │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+
+        private static bool IsClientDisconnectException(Exception ex)
+        {
+            var current = ex;
+            while (current != null)
+            {
+                // ConnectionResetException do ASP.NET Core
+                if (current is ConnectionResetException)
+                    return true;
+
+                // ConnectionAbortedException do ASP.NET Core
+                if (current.GetType().Name == "ConnectionAbortedException")
+                    return true;
+
+                // IOException com mensagens específicas de desconexão
+                if (current is IOException ioEx)
+                {
+                    var message = ioEx.Message?.ToLowerInvariant() ?? "";
+                    if (message.Contains("connection reset") ||
+                        message.Contains("broken pipe") ||
+                        message.Contains("an existing connection was forcibly closed") ||
+                        message.Contains("the client has disconnected") ||
+                        message.Contains("connection was aborted"))
+                    {
+                        return true;
+                    }
+                }
+
+                // SocketException com códigos de desconexão
+                if (current is System.Net.Sockets.SocketException socketEx)
+                {
+                    if (socketEx.SocketErrorCode == System.Net.Sockets.SocketError.ConnectionReset ||
+                        socketEx.SocketErrorCode == System.Net.Sockets.SocketError.ConnectionAborted ||
+                        socketEx.SocketErrorCode == System.Net.Sockets.SocketError.Shutdown)
+                    {
+                        return true;
+                    }
+                }
+
+                // Mensagens genéricas de desconexão
+                var msg = current.Message?.ToLowerInvariant() ?? "";
+                if (msg.Contains("the client has disconnected") ||
+                    msg.Contains("connection reset by peer") ||
+                    msg.Contains("an established connection was aborted"))
+                {
+                    return true;
+                }
+
+                current = current.InnerException;
+            }
+
+            return false;
         }
     }
 }

@@ -14,8 +14,11 @@
  **************************************************************************************** */
 
 using FrotiX.Models;
+using FrotiX.Models.Api;
 using FrotiX.Repository.IRepository;
+using FrotiX.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,27 +39,105 @@ namespace FrotiX.Controllers
     public class VeiculoController :Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogService _logService;
+        private readonly ILogger<VeiculoController> _logger;
 
         /****************************************************************************************
          * ⚡ FUNÇÃO: VeiculoController (Construtor)
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Injetar dependência do UnitOfWork.
+         * 🎯 OBJETIVO     : Injetar dependências do UnitOfWork, LogService e Logger.
          *
-         * 📥 ENTRADAS     : unitOfWork.
+         * 📥 ENTRADAS     : unitOfWork, logService, logger.
          *
          * 📤 SAÍDAS       : Instância configurada do controller.
          *
          * 🔗 CHAMADA POR  : ASP.NET Core DI.
          ****************************************************************************************/
-        public VeiculoController(IUnitOfWork unitOfWork)
+        public VeiculoController(IUnitOfWork unitOfWork, ILogService logService, ILogger<VeiculoController> logger)
         {
             try
             {
                 _unitOfWork = unitOfWork;
+                _logService = logService;
+                _logger = logger;
             }
             catch (Exception error)
             {
                 Alerta.TratamentoErroComLinha("VeiculoController.cs" , "VeiculoController" , error);
+            }
+        }
+
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetAll
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar todos os veículos ativos com resposta padronizada.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : ApiResponse com lista de veículos.
+         *
+         * 🔗 CHAMADA POR  : Frontend via AJAX/Fetch.
+         ****************************************************************************************/
+        [HttpGet]
+        [Route("GetAll")]
+        public IActionResult GetAll()
+        {
+            var requestId = Guid.NewGuid().ToString("N")[..8];
+
+            try
+            {
+                _logger.LogInformation("[{RequestId}] Iniciando GetAll de veículos", requestId);
+
+                var veiculos = _unitOfWork.ViewVeiculos.GetAll();
+
+                var result = veiculos
+                    .Where(v => v.VeiculoId != Guid.Empty && v.Status == true)
+                    .Select(v => new
+                    {
+                        v.VeiculoId,
+                        v.Placa,
+                        v.VeiculoCompleto,
+                        v.MarcaModelo,
+                        v.Categoria,
+                        v.Sigla,
+                        v.Status
+                    })
+                    .OrderBy(v => v.Placa)
+                    .ToList();
+
+                _logger.LogInformation("[{RequestId}] Retornando {Count} veículos", requestId, result.Count);
+
+                // Adiciona header de rastreamento
+                Response.Headers["X-Request-Id"] = requestId;
+
+                return Ok(new ApiResponse<object>
+                {
+                    Success = true,
+                    Data = result,
+                    Message = $"{result.Count} veículo(s) encontrado(s)",
+                    RequestId = requestId
+                });
+            }
+            catch (Exception ex)
+            {
+                _logService.Error(
+                    $"[{requestId}] Erro ao carregar veículos: {ex.Message}",
+                    ex,
+                    "VeiculoController.cs",
+                    nameof(GetAll)
+                );
+
+                _logger.LogError(ex, "[{RequestId}] Erro ao carregar veículos", requestId);
+
+                Response.Headers["X-Request-Id"] = requestId;
+
+                return StatusCode(500, ApiResponse<object>.FromException(ex,
+#if DEBUG
+                    includeDetails: true
+#else
+                    includeDetails: false
+#endif
+                ));
             }
         }
 
@@ -72,6 +153,7 @@ namespace FrotiX.Controllers
          * 🔗 CHAMADA POR  : Grid de veículos.
          ****************************************************************************************/
         [HttpGet]
+        [Route("")]
         public IActionResult Get()
         {
             try

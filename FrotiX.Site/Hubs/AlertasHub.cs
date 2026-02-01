@@ -74,6 +74,56 @@ namespace FrotiX.Hubs
             }
         }
 
+        // ╭───────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: EnviarAlertaLogErro                                │
+        // │ 🎯 OBJETIVO: Enviar alerta de log de erro para administradores│
+        // ╰───────────────────────────────────────────────────────────────╯
+        public async Task EnviarAlertaLogErro(object alertaPayload)
+        {
+            try
+            {
+                await Clients.Group("admin_logs").SendAsync("AlertaLogErro", alertaPayload);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro em EnviarAlertaLogErro: {ex.Message}");
+            }
+        }
+
+        // ╭───────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: InscreverAlertasLog                                │
+        // │ 🎯 OBJETIVO: Inscrever usuário para receber alertas de logs   │
+        // ╰───────────────────────────────────────────────────────────────╯
+        public async Task InscreverAlertasLog()
+        {
+            try
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, "admin_logs");
+                Console.WriteLine($"Usuário {Context.UserIdentifier} inscrito em alertas de logs");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro em InscreverAlertasLog: {ex.Message}");
+            }
+        }
+
+        // ╭───────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: DesinscreverAlertasLog                             │
+        // │ 🎯 OBJETIVO: Remover inscrição de alertas de logs             │
+        // ╰───────────────────────────────────────────────────────────────╯
+        public async Task DesinscreverAlertasLog()
+        {
+            try
+            {
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, "admin_logs");
+                Console.WriteLine($"Usuário {Context.UserIdentifier} desinscrito de alertas de logs");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro em DesinscreverAlertasLog: {ex.Message}");
+            }
+        }
+
         
         // ╭───────────────────────────────────────────────────────────────────────────────────────╮
         // │ ⚡ MÉTODO: OnConnectedAsync                                                         │

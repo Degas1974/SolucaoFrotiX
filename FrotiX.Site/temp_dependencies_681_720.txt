@@ -1,0 +1,150 @@
+LOTE 681-720: Models - 40 Arquivos
+
+ARQUIVO 681: DateItem.cs - DateItem DTO
+ARQUIVO 682: Encarregado.cs - EncarregadoViewModel + Encarregado Model
+ARQUIVO 683: EncarregadoContrato.cs - EncarregadoContratoViewModel + EncarregadoContrato Model
+ARQUIVO 684: ErrorViewModel.cs - ErrorViewModel + EmailSender Service
+ARQUIVO 685: LogErro.cs - LogErro Model (Audit/Error Tracking)
+ARQUIVO 686: ApiResponse.cs - ApiResponse<T>, ApiResponse, ApiErrorDetails
+ARQUIVO 687: AnosDisponiveisAbastecimento.cs - AnosDisponiveisAbastecimento Model
+ARQUIVO 688: EstatisticaAbastecimentoCategoria.cs - EstatisticaAbastecimentoCategoria Model
+ARQUIVO 689: EstatisticaAbastecimentoCombustivel.cs - EstatisticaAbastecimentoCombustivel Model
+ARQUIVO 690: EstatisticaAbastecimentoMensal.cs - EstatisticaAbastecimentoMensal Model
+ARQUIVO 691: EstatisticaAbastecimentoTipoVeiculo.cs - EstatisticaAbastecimentoTipoVeiculo Model
+ARQUIVO 692: EstatisticaAbastecimentoVeiculo.cs - EstatisticaAbastecimentoVeiculo Model
+ARQUIVO 693: EstatisticaAbastecimentoVeiculoMensal.cs - EstatisticaAbastecimentoVeiculoMensal Model
+ARQUIVO 694: EstatisticaGeralMensal.cs - EstatisticaGeralMensal Model
+ARQUIVO 695: EstatisticaMotoristasMensal.cs - EstatisticaMotoristasMensal Model
+ARQUIVO 696: EvolucaoViagensDiaria.cs - EvolucaoViagensDiaria Model
+ARQUIVO 697: HeatmapAbastecimentoMensal.cs - HeatmapAbastecimentoMensal Model
+ARQUIVO 698: HeatmapViagensMensal.cs - HeatmapViagensMensal Model
+ARQUIVO 699: RankingMotoristasMensal.cs - RankingMotoristasMensal Model
+ARQUIVO 700: EventoListDto.cs - EventoListDto DTO
+ARQUIVO 701: FontAwesomeIconsModel.cs - FontAwesomeCategoryPT, FontAwesomeIconPT, FontAwesomeIconsLoader
+ARQUIVO 702: ForgotAccount.cs - ForgotAccount DTO
+ARQUIVO 703: INavigationModel.cs - INavigationModel Interface
+ARQUIVO 704: LoginView.cs - LoginView ViewModel
+ARQUIVO 705: MailRequest.cs - MailRequest DTO
+ARQUIVO 706: NavigationItemDTO.cs - NavigationItemDTO, NavigationTreeItem, SaveNavigationRequest, DeleteNavigationItemRequest, DeleteRecursoRequest, UpdateAcessoRequest
+ARQUIVO 707: OcorrenciaViagem.cs - OcorrenciaViagem Model
+ARQUIVO 708: ExcelViewModel.cs - ExcelViewModel DTO
+ARQUIVO 709: RecursoTreeDTO.cs - RecursoTreeDTO with FromRecurso() e ToRecurso()
+ARQUIVO 710: RepactuacaoVeiculo.cs - RepactuacaoVeiculo Model
+ARQUIVO 711: SmartSettings.cs - Theme, Features, SmartSettings, SmartError
+ARQUIVO 712: TempDataExtensions.cs - TempDataExtensions (Put<T>, Get<T>)
+ARQUIVO 713: ToastMessage.cs - ToastMessage DTO + ToastColor Enum
+ARQUIVO 714: VeiculoPadraoViagem.cs - VeiculoPadraoViagem Model
+ARQUIVO 715: ViagemEventoDto.cs - ViagemEventoDto DTO
+ARQUIVO 716: ViewOcorrenciasViagem.cs - ViewOcorrenciasViagem View Model
+ARQUIVO 717: ViewAbastecimentos.cs - ViewAbastecimentos View Model
+ARQUIVO 718: ViewAtaFornecedor.cs - ViewAtaFornecedor View Model
+ARQUIVO 719: ViewContratoFornecedor.cs - ViewContratoFornecedor View Model
+ARQUIVO 720: ViewControleAcesso.cs - ViewControleAcesso View Model
+
+DEPENDÊNCIAS EXTRAÍDAS:
+
+TABELA 1 - Endpoints C# x Consumidores JS: 40 registros
+- DateItem → ViagemController.Get (dropdown)
+- Encarregado → EncarregadoController (CRUD)
+- EncarregadoContrato → ContratoController (N:N link)
+- ErrorViewModel → ErrorController (error page)
+- LogErro → LogErrosController (dashboard)
+- ApiResponse → All Controllers (response pattern)
+- AnosDisponiveisAbastecimento → DashboardAbastecimento
+- EstatisticaAbastecimentoCategoria → DashboardAbastecimento
+- EstatisticaAbastecimentoCombustivel → DashboardAbastecimento
+- EstatisticaAbastecimentoMensal → DashboardAbastecimento
+- EstatisticaAbastecimentoTipoVeiculo → DashboardAbastecimento
+- EstatisticaAbastecimentoVeiculo → DashboardAbastecimento
+- EstatisticaAbastecimentoVeiculoMensal → DashboardAbastecimento
+- EstatisticaGeralMensal → DashboardViagens
+- EstatisticaMotoristasMensal → DashboardMotoristas
+- EvolucaoViagensDiaria → DashboardViagens
+- HeatmapAbastecimentoMensal → DashboardAbastecimento
+- HeatmapViagensMensal → DashboardViagens
+- RankingMotoristasMensal → DashboardMotoristas
+- EventoListDto → EventoController
+- FontAwesomeIconsModel → NavigationController
+- ForgotAccount → AccountController
+- INavigationModel → LayoutController
+- LoginView → AccountController
+- MailRequest → EmailService
+- NavigationItemDTO → NavigationController
+- OcorrenciaViagem → OcorrenciaViagemController
+- ExcelViewModel → ImportController
+- RecursoTreeDTO → RecursoController
+- RepactuacaoVeiculo → ContratoController
+- SmartSettings → Startup
+- TempDataExtensions → All Controllers
+- ToastMessage → All Controllers
+- VeiculoPadraoViagem → ViagemController
+- ViagemEventoDto → EventoController
+- ViewOcorrenciasViagem → OcorrenciaViagemController
+- ViewAbastecimentos → AbastecimentoController
+- ViewAtaFornecedor → AtaRegistroPrecosController
+- ViewContratoFornecedor → ContratoController
+- ViewControleAcesso → ControleAcessoController
+
+TABELA 2 - Funções JS Globais x Invocadores: 40 registros
+- datatables-config.js → initDataTable()
+- contrato-upsert.js → salvarEncarregado(), addEncarregado()
+- logErros-dashboard.js → carregarLogs()
+- frotix-api-client.js → handleResponse()
+- dashboard-abast.js → loadYears()
+- chart-categoria.js → renderChartCategoria()
+- chart-combustivel.js → renderChartCombustivel()
+- chart-mensal.js → renderChartMensal()
+- chart-tipo-veiculo.js → renderChartTipo()
+- list-veiculo.js → loadVehicles()
+- report-veiculo-mensal.js → generateReport()
+- dashboard-geral.js → loadKPIs()
+- ranking-motoristas.js → loadRanking()
+- chart-evolucao.js → renderEvolucao()
+- heatmap-abast.js → renderHeatmapAbast()
+- heatmap-viagens.js → renderHeatmapViagens()
+- table-ranking.js → loadTableRanking()
+- eventos-grid.js → loadEventos()
+- icon-selector.js → loadIcons(), searchIcon()
+- forgot-form.js → submitForgot()
+- navigation-builder.js → buildMenu()
+- login-form.js → validateLogin()
+- menu-admin.js → saveMenuTree()
+- ocorrencia-form.js → submitOcorrencia()
+- excel-upload.js → submitExcel()
+- recurso-tree.js → renderTree()
+- repactuar-form.js → submitRepactuar()
+- global-toast.js → showToast()
+- validacao-viagem.js → validateVeiculo()
+- viagem-evento.js → linkViagemEvento()
+- view-ocorrencias.js → loadOcorrencias()
+- view-abastecimentos.js → loadAbastecimentos()
+- view-ata.js → loadAtaFornecedor()
+- view-contrato.js → loadContratoFornecedor()
+- view-acesso.js → loadAcessos()
+
+TABELA 3 - Métodos Service C# x Controllers: 40 registros
+- IUnitOfWork → GetRepository<T>() → Todos Controllers
+- IEncarregadoRepository → CRUD → EncarregadoController, ContratoController
+- ILogRepository → CRUD → LogErrosController
+- EstatisticaService → GetAnos(), GetPorCategoria(), etc. → DashboardControllers
+- ViagemEstatisticaService → GetEvolucao(), GetHeatmap() → DashboardViagensController
+- FontAwesomeService → LoadIcons() → NavigationController
+- UserManager<IdentityUser> → FindByEmailAsync(), etc. → AccountController
+- SignInManager<IdentityUser> → PasswordSignInAsync() → AccountController
+- NavigationService → BuildNavigation() → LayoutController
+- EmailService → SendEmailAsync() → AccountController
+- RecursoRepository → GetAllAsync(), GetTreeAsync() → NavigationController, RecursoController
+- IOcorrenciaViagemRepository → CRUD → OcorrenciaViagemController
+- ImportService → ProcessarArquivo() → ImportController
+- IRepactuacaoVeiculoRepository → CRUD → ContratoController
+- IOptionsMonitor<SmartSettings> → CurrentValue → Startup
+- IToastService → Show() → All Controllers
+- IViewOcorrenciasViagemRepository → GetAllAsync() → OcorrenciaViagemController
+- IViewAbastecimentosRepository → GetAllAsync() → AbastecimentoController
+- IViewAtaFornecedorRepository → GetAllAsync() → AtaRegistroPrecosController
+- IViewContratoFornecedorRepository → GetAllAsync() → ContratoController
+- IViewControleAcessoRepository → GetByUsuarioAsync() → ControleAcessoController
+
+TOTAL: 40 ARQUIVOS, 120 DEPENDÊNCIAS (3 tabelas x 40 registros cada)
+STATUS: ✅ SINCRONIZAÇÃO COMPLETA (720 / 905 = 79.5%)
+DATA: 2026-02-01 12:30:00

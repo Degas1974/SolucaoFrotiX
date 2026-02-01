@@ -81,6 +81,14 @@
                     "hasChild": false
                 },
                 {
+                    "title": "Itens Pendentes",
+                    "nomeMenu": "Itens Pendentes",
+                    "icon": "fa-duotone fa-person-carry-box",
+                    "href": "viagens_itenspendentes.html",
+                    "roles": [],
+                    "hasChild": false
+                },
+                {
                     "title": "Fluxo de Passageiros",
                     "nomeMenu": "Fluxo de Passageiros",
                     "icon": "fa-duotone fa-users",

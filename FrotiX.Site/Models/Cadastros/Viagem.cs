@@ -508,6 +508,38 @@ namespace FrotiX.Models
         [Display(Name = "Tablet Devolvido")]
         public bool? TabletDevolvido { get; set; }
 
+        // Indica se o documento foi entregue.
+        [Display(Name = "Documento Entregue")]
+        public bool? DocumentoEntregue { get; set; }
+
+        // Indica se o documento foi devolvido.
+        [Display(Name = "Documento Devolvido")]
+        public bool? DocumentoDevolvido { get; set; }
+
+        // Indica se o cartão de abastecimento foi entregue.
+        [Display(Name = "Cartão Abastecimento Entregue")]
+        public bool? CartaoAbastecimentoEntregue { get; set; }
+
+        // Indica se o cartão de abastecimento foi devolvido.
+        [Display(Name = "Cartão Abastecimento Devolvido")]
+        public bool? CartaoAbastecimentoDevolvido { get; set; }
+
+        // Indica se o Arla foi entregue.
+        [Display(Name = "Arla Entregue")]
+        public bool? ArlaEntregue { get; set; }
+
+        // Indica se o Arla foi devolvido.
+        [Display(Name = "Arla Devolvido")]
+        public bool? ArlaDevolvido { get; set; }
+
+        // Indica se o cabo foi entregue.
+        [Display(Name = "Cabo Entregue")]
+        public bool? CaboEntregue { get; set; }
+
+        // Indica se o cabo foi devolvido.
+        [Display(Name = "Cabo Devolvido")]
+        public bool? CaboDevolvido { get; set; }
+
         // ===== VISTORIADORES =====
         // Vistoriador inicial.
         [Display(Name = "Vistoriador Inicial")]

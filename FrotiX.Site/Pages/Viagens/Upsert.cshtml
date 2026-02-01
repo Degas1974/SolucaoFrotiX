@@ -4,6 +4,8 @@
 @using Syncfusion.EJ2;
 @using Syncfusion.Data;
 @using Syncfusion.EJ2.DocumentEditor;
+@using Kendo.Mvc.UI;
+@using Kendo.Mvc.Extensions;
 
 @model FrotiX.Pages.Viagens.UpsertModel
 
@@ -105,6 +107,11 @@ ViewData["valueTemplate"] = @"
             background-color: #e9ecef;
         }
     </style>
+
+    <!-- ======== KENDO UI SCRIPTS - CARREGADOS NO HEAD PARA EVITAR "kendo is not defined" ======== -->
+    <link href="https://kendo.cdn.telerik.com/2022.1.412/styles/kendo.common.min.css" rel="stylesheet" />
+    <link href="https://kendo.cdn.telerik.com/2022.1.412/styles/kendo.default.min.css" rel="stylesheet" />
+    <script src="https://kendo.cdn.telerik.com/2022.1.412/js/kendo.all.min.js"></script>
 }
 
 <script>
@@ -183,14 +190,17 @@ ViewData["valueTemplate"] = @"
     function lstFinalidade_Change() {
         try {
             try {
-                const finalidade = document.getElementById('ddtFinalidade').ej2_instances[0]?.value?.[0];
-                const lstEvento = document.getElementById("ddtEventos")?.ej2_instances?.[0];
+                const finalidadeWidget = $("#ddtFinalidade").data("kendoDropDownList");
+                const finalidade = finalidadeWidget?.dataItem()?.Descricao;
+                const lstEventoWidget = $("#ddtEventos").data("kendoDropDownTree");
                 const btnEvento = document.getElementById("btnEvento");
 
+                // Atualiza o campo hidden
+                $("#hiddenFinalidade").val(finalidadeWidget?.value() || "");
+
                 if (finalidade === 'Evento') {
-                    if (lstEvento) {
-                        lstEvento.enabled = true;
-                        lstEvento.dataBind();
+                    if (lstEventoWidget) {
+                        lstEventoWidget.enable(true);
                     }
                     if (btnEvento) {
                         btnEvento.style.display = "block";
@@ -200,9 +210,8 @@ ViewData["valueTemplate"] = @"
                     }
                     $(".esconde-diveventos").show();
                 } else {
-                    if (lstEvento) {
-                        lstEvento.enabled = false;
-                        lstEvento.dataBind();
+                    if (lstEventoWidget) {
+                        lstEventoWidget.enable(false);
                     }
                     if (btnEvento) btnEvento.style.display = "none";
                     $(".esconde-diveventos").hide();
@@ -747,6 +756,43 @@ ViewData["valueTemplate"] = @"
         font-size: 0.9rem !important;
     }
 
+    /* Correção das bordas dos controles Syncfusion */
+    .e-input-group,
+    .e-input-group.e-control-wrapper,
+    .e-ddl.e-input-group,
+    .e-dropdowntree.e-input-group,
+    .e-ddt.e-input-group {
+        border: 1px solid #ced4da !important;
+        border-radius: 0.25rem !important;
+    }
+
+    /* Força a linha de borda dos controles Syncfusion */
+    .e-float-line::before,
+    .e-float-line::after {
+        background: #ced4da !important;
+        height: 1px !important;
+    }
+
+    .e-input-group .e-float-line,
+    .e-ddl .e-float-line,
+    .e-dropdowntree .e-float-line,
+    .e-ddt .e-float-line {
+        border-bottom: 1px solid #ced4da !important;
+    }
+
+    .e-input-group:focus-within,
+    .e-ddl.e-input-group:focus-within,
+    .e-dropdowntree.e-input-group:focus-within,
+    .e-ddt.e-input-group:focus-within {
+        border-color: #325d88 !important;
+        box-shadow: 0 0 0 0.2rem rgba(50, 93, 136, 0.15) !important;
+    }
+
+    .e-input-group:focus-within .e-float-line::before,
+    .e-input-group:focus-within .e-float-line::after {
+        background: #325d88 !important;
+    }
+
     .ftx-section .form-control:focus {
         border-color: #325d88;
         box-shadow: 0 0 0 0.2rem rgba(50, 93, 136, 0.15);
@@ -986,8 +1032,8 @@ ViewData["valueTemplate"] = @"
     }
     .zoom-btn {
         position: absolute;
-        left: 8px;
-        bottom: 8px;
+        left: -18px;
+        bottom: 18px;
         width: 44px;
         height: 44px;
         border: 3px solid #fff;
@@ -1262,13 +1308,19 @@ ViewData["valueTemplate"] = @"
                                         <div class="col-12 col-md-4">
                                             <label class="ftx-label ftx-required" asp-for="ViagemObj.Viagem.Finalidade">Finalidade</label>
                                             <span class="text-danger font-weight-light" asp-validation-for="ViagemObj.Viagem.Finalidade"></span>
-                                            <ejs-dropdowntree id="ddtFinalidade" placeholder="Escolha a Finalidade..."
-                                                              showCheckBox="false" allowMultiSelection="false"
-                                                              allowFiltering="true" filterType="Contains"
-                                                              ejs-for="@Model.ViagemObj.Viagem.Finalidade" popupHeight="200px"
-                                                              sortOrder="Ascending" showClearButton="true" change="lstFinalidade_Change">
-                                                <e-dropdowntree-fields dataSource="@ViewData["dataFinalidade"]" value="FinalidadeId" text="Descricao"></e-dropdowntree-fields>
-                                            </ejs-dropdowntree>
+                                            @(Html.Kendo().DropDownList()
+                                                .Name("ddtFinalidade")
+                                                .DataTextField("Descricao")
+                                                .DataValueField("FinalidadeId")
+                                                .OptionLabel("Escolha a Finalidade...")
+                                                .Filter("contains")
+                                                .Height(200)
+                                                .HtmlAttributes(new { style = "width: 100%" })
+                                                .BindTo((System.Collections.IEnumerable)ViewData["dataFinalidade"])
+                                                .Value(Model.ViagemObj.Viagem.Finalidade)
+                                                .Events(e => e.Change("lstFinalidade_Change"))
+                                            )
+                                            <input type="hidden" asp-for="ViagemObj.Viagem.Finalidade" id="hiddenFinalidade" />
                                         </div>
                                         <div class="col-12 col-md-4">
                                             <label class="ftx-label ftx-required" asp-for="ViagemObj.Viagem.Origem">Origem</label>
@@ -1419,18 +1471,46 @@ ViewData["valueTemplate"] = @"
                                         <div class="col-6 col-md-3">
                                             <label class="ftx-label ftx-required">Combustível Inicial</label>
                                             <span class="text-danger font-weight-light" asp-validation-for="ViagemObj.Viagem.CombustivelInicial"></span>
-                                            <ejs-dropdowntree id="ddtCombustivelInicial" popupHeight="200px" showClearButton="true"
-                                                              ejs-for="@Model.ViagemObj.Viagem.CombustivelInicial">
-                                                <e-dropdowntree-fields dataSource="@ViewData["dataCombustivel"]" value="Nivel" text="Descricao" imageURL="Imagem"></e-dropdowntree-fields>
-                                            </ejs-dropdowntree>
+                                            @(Html.Kendo().DropDownList()
+                                                .Name("ddtCombustivelInicial")
+                                                .DataTextField("Descricao")
+                                                .DataValueField("Nivel")
+                                                .BindTo((System.Collections.IEnumerable)ViewData["dataCombustivel"])
+                                                .Height(200)
+                                                .HtmlAttributes(new { style = "width: 100%" })
+                                                .Value(Model.ViagemObj.Viagem.CombustivelInicial)
+                                                .Template("<div style='display: flex; align-items: center;'>" +
+                                                          "<img src='#: Imagem #' style='width: 24px; height: 24px; margin-right: 8px;' />" +
+                                                          "<span>#: Descricao #</span>" +
+                                                          "</div>")
+                                                .ValueTemplate("<div style='display: flex; align-items: center;'>" +
+                                                               "<img src='#: Imagem #' style='width: 20px; height: 20px; margin-right: 8px;' />" +
+                                                               "<span>#: Descricao #</span>" +
+                                                               "</div>")
+                                            )
+                                            <input type="hidden" asp-for="ViagemObj.Viagem.CombustivelInicial" id="hiddenCombustivelInicial" />
                                         </div>
                                         <div class="col-6 col-md-3">
                                             <label class="ftx-label">Combustível Final</label>
                                             <span class="text-danger font-weight-light" asp-validation-for="ViagemObj.Viagem.CombustivelFinal"></span>
-                                            <ejs-dropdowntree id="ddtCombustivelFinal" popupHeight="200px" showClearButton="true"
-                                                              ejs-for="@Model.ViagemObj.Viagem.CombustivelFinal">
-                                                <e-dropdowntree-fields dataSource="@ViewData["dataCombustivel"]" value="Nivel" text="Descricao" imageURL="Imagem"></e-dropdowntree-fields>
-                                            </ejs-dropdowntree>
+                                            @(Html.Kendo().DropDownList()
+                                                .Name("ddtCombustivelFinal")
+                                                .DataTextField("Descricao")
+                                                .DataValueField("Nivel")
+                                                .BindTo((System.Collections.IEnumerable)ViewData["dataCombustivel"])
+                                                .Height(200)
+                                                .HtmlAttributes(new { style = "width: 100%" })
+                                                .Value(Model.ViagemObj.Viagem.CombustivelFinal)
+                                                .Template("<div style='display: flex; align-items: center;'>" +
+                                                          "<img src='#: Imagem #' style='width: 24px; height: 24px; margin-right: 8px;' />" +
+                                                          "<span>#: Descricao #</span>" +
+                                                          "</div>")
+                                                .ValueTemplate("<div style='display: flex; align-items: center;'>" +
+                                                               "<img src='#: Imagem #' style='width: 20px; height: 20px; margin-right: 8px;' />" +
+                                                               "<span>#: Descricao #</span>" +
+                                                               "</div>")
+                                            )
+                                            <input type="hidden" asp-for="ViagemObj.Viagem.CombustivelFinal" id="hiddenCombustivelFinal" />
                                         </div>
                                     </div>
                                 </div>
@@ -1454,7 +1534,7 @@ ViewData["valueTemplate"] = @"
                                                        onchange="document.getElementById('hidStatusDocumento').value = this.checked ? 'Entregue' : '';">
                                                 <label class="form-check-label fw-semibold" for="chkStatusDocumento">
                                                     <i class="fa-duotone fa-file-check me-1 text-success"></i>
-                                                    Documento
+                                                    Documento Entregue
                                                 </label>
                                             </div>
                                         </div>
@@ -1468,7 +1548,7 @@ ViewData["valueTemplate"] = @"
                                                        onchange="document.getElementById('hidStatusCartaoAbastecimento').value = this.checked ? 'Entregue' : '';">
                                                 <label class="form-check-label fw-semibold" for="chkStatusCartaoAbastecimento">
                                                     <i class="fa-duotone fa-credit-card me-1 text-success"></i>
-                                                    Cartão Abastecimento
+                                                    Cartão Entregue
                                                 </label>
                                             </div>
                                         </div>
@@ -1585,14 +1665,12 @@ ViewData["valueTemplate"] = @"
                                             <label class="ftx-label ftx-required">Setor Solicitante</label>
                                             <div class="d-flex align-items-center gap-2">
                                                 <div class="flex-grow-1">
-                                                    <ejs-dropdowntree id="ddtSetor" placeholder="Selecione um Setor" enabled="false"
-                                                                      sortOrder="Ascending" showCheckBox="false" allowMultiSelection="false"
-                                                                      allowFiltering="true" filterType="Contains" filterBarPlaceholder="Procurar..."
-                                                                      ejs-for="@Model.ViagemObj.Viagem.SetorSolicitanteId">
-                                                        <e-dropdowntree-fields dataSource="@ViewData["dataSetor"]"
-                                                                               value="SetorSolicitanteId" text="Nome"
-                                                                               parentValue="SetorPaiId" hasChildren="HasChild"></e-dropdowntree-fields>
-                                                    </ejs-dropdowntree>
+                                                    <input id="ddtSetor" style="width: 100%" />
+                                                    <input type="hidden" asp-for="ViagemObj.Viagem.SetorSolicitanteId" id="hiddenSetor" />
+                                                    <script>
+                                                        var setorData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewData["dataSetor"]));
+                                                        var setorValue = "@(Model.ViagemObj.Viagem.SetorSolicitanteId?.ToString() ?? "")";
+                                                    </script>
                                                 </div>
                                                 <a hidden
                                                    class="btn btn-verde btn-sm text-white"
@@ -1649,7 +1727,7 @@ ViewData["valueTemplate"] = @"
                                                        onchange="document.getElementById('hidStatusDocumentoFinal').value = this.checked ? 'Devolvido' : '';">
                                                 <label class="form-check-label fw-semibold" for="chkStatusDocumentoFinal">
                                                     <i class="fa-duotone fa-file-check me-1 text-info"></i>
-                                                    Documento
+                                                    Documento Devolvido
                                                 </label>
                                             </div>
                                         </div>
@@ -1663,7 +1741,7 @@ ViewData["valueTemplate"] = @"
                                                        onchange="document.getElementById('hidStatusCartaoAbastecimentoFinal').value = this.checked ? 'Devolvido' : '';">
                                                 <label class="form-check-label fw-semibold" for="chkStatusCartaoAbastecimentoFinal">
                                                     <i class="fa-duotone fa-credit-card me-1 text-info"></i>
-                                                    Cartão Abastecimento
+                                                    Cartão Devolvido
                                                 </label>
                                             </div>
                                         </div>
@@ -1692,6 +1770,62 @@ ViewData["valueTemplate"] = @"
                                                 <label class="form-check-label fw-semibold" for="chkTabletDevolvido">
                                                     <i class="fa-duotone fa-tablet me-1 text-primary"></i>
                                                     Tablet Devolvido
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <div class="form-check form-switch">
+                                                <input type="hidden" id="hidArlaDevolvido" name="ViagemObj.Viagem.ArlaDevolvido" 
+                                                       value="@(Model.ViagemObj?.Viagem?.ArlaDevolvido == true ? "true" : "false")" />
+                                                <input class="form-check-input" type="checkbox" id="chkArlaDevolvido" 
+                                                       @(Model.ViagemObj?.Viagem?.ArlaDevolvido == true ? "checked" : "")
+                                                       @(viagemFinalizada ? "disabled" : "")
+                                                       onchange="document.getElementById('hidArlaDevolvido').value = this.checked ? 'true' : 'false';">
+                                                <label class="form-check-label fw-semibold" for="chkArlaDevolvido">
+                                                    <i class="fa-duotone fa-tint me-1 text-primary"></i>
+                                                    Arla Devolvido
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <div class="form-check form-switch">
+                                                <input type="hidden" id="hidCaboDevolvido" name="ViagemObj.Viagem.CaboDevolvido" 
+                                                       value="@(Model.ViagemObj?.Viagem?.CaboDevolvido == true ? "true" : "false")" />
+                                                <input class="form-check-input" type="checkbox" id="chkCaboDevolvido" 
+                                                       @(Model.ViagemObj?.Viagem?.CaboDevolvido == true ? "checked" : "")
+                                                       @(viagemFinalizada ? "disabled" : "")
+                                                       onchange="document.getElementById('hidCaboDevolvido').value = this.checked ? 'true' : 'false';">
+                                                <label class="form-check-label fw-semibold" for="chkCaboDevolvido">
+                                                    <i class="fa-duotone fa-charging-station me-1 text-primary"></i>
+                                                    Cabo Devolvido
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <div class="form-check form-switch">
+                                                <input type="hidden" id="hidArlaDevolvido" name="ViagemObj.Viagem.ArlaDevolvido" 
+                                                       value="@(Model.ViagemObj?.Viagem?.ArlaDevolvido == true ? "true" : "false")" />
+                                                <input class="form-check-input" type="checkbox" id="chkArlaDevolvido" 
+                                                       @(Model.ViagemObj?.Viagem?.ArlaDevolvido == true ? "checked" : "")
+                                                       @(viagemFinalizada ? "disabled" : "")
+                                                       onchange="document.getElementById('hidArlaDevolvido').value = this.checked ? 'true' : 'false';">
+                                                <label class="form-check-label fw-semibold" for="chkArlaDevolvido">
+                                                    <i class="fa-duotone fa-tint me-1 text-primary"></i>
+                                                    Arla Devolvido
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <div class="form-check form-switch">
+                                                <input type="hidden" id="hidCaboDevolvido" name="ViagemObj.Viagem.CaboDevolvido" 
+                                                       value="@(Model.ViagemObj?.Viagem?.CaboDevolvido == true ? "true" : "false")" />
+                                                <input class="form-check-input" type="checkbox" id="chkCaboDevolvido" 
+                                                       @(Model.ViagemObj?.Viagem?.CaboDevolvido == true ? "checked" : "")
+                                                       @(viagemFinalizada ? "disabled" : "")
+                                                       onchange="document.getElementById('hidCaboDevolvido').value = this.checked ? 'true' : 'false';">
+                                                <label class="form-check-label fw-semibold" for="chkCaboDevolvido">
+                                                    <i class="fa-duotone fa-charging-station me-1 text-primary"></i>
+                                                    Cabo Devolvido
                                                 </label>
                                             </div>
                                         </div>
@@ -2751,20 +2885,93 @@ ViewData["valueTemplate"] = @"
 		// Passando Parâmetros pro Javascript
 		const ViagemId = "@(Model.ViagemObj.Viagem?.ViagemId.ToString() ?? "")";
 		window.viagemId = ViagemId;
-		
+
 		// Status da viagem para controle de desabilitação
 		window.viagemStatus = "@(Model.ViagemObj?.Viagem?.Status ?? "")";
 		window.viagemFinalizada = @Json.Serialize(Model.ViagemObj?.Viagem?.Status == "Realizada" || Model.ViagemObj?.Viagem?.Status == "Cancelada");
+
+		// Configuração dos eventos change para atualizar campos hidden dos controles Kendo
+		$(document).ready(function() {
+			// Combustível Inicial
+			var combInicialWidget = $("#ddtCombustivelInicial").data("kendoDropDownList");
+			if (combInicialWidget) {
+				combInicialWidget.bind("change", function() {
+					$("#hiddenCombustivelInicial").val(this.value() || "");
+				});
+			}
+
+			// Combustível Final
+			var combFinalWidget = $("#ddtCombustivelFinal").data("kendoDropDownList");
+			if (combFinalWidget) {
+				combFinalWidget.bind("change", function() {
+					$("#hiddenCombustivelFinal").val(this.value() || "");
+				});
+			}
+
+			// Inicializar Kendo DropDownTree para Setor (hierárquico)
+			if (typeof setorData !== 'undefined') {
+				// Construir estrutura hierárquica
+				var hierarchicalData = buildHierarchy(setorData);
+
+				$("#ddtSetor").kendoDropDownTree({
+					placeholder: "Selecione um Setor",
+					dataTextField: "Nome",
+					dataValueField: "SetorSolicitanteId",
+					enabled: false,
+					dataSource: {
+						data: hierarchicalData,
+						schema: {
+							model: {
+								id: "SetorSolicitanteId",
+								hasChildren: "HasChild",
+								children: "items"
+							}
+						}
+					},
+					value: setorValue,
+					change: function(e) {
+						$("#hiddenSetor").val(this.value() || "");
+					}
+				});
+			}
+
+			// Função auxiliar para construir hierarquia
+			function buildHierarchy(flatData) {
+				var roots = [];
+				var lookup = {};
+
+				// Criar lookup por ID
+				flatData.forEach(function(item) {
+					lookup[item.SetorSolicitanteId] = { ...item, items: [] };
+				});
+
+				// Construir árvore
+				flatData.forEach(function(item) {
+					if (item.SetorPaiId && item.SetorPaiId !== "00000000-0000-0000-0000-000000000000") {
+						var parent = lookup[item.SetorPaiId];
+						if (parent) {
+							parent.items.push(lookup[item.SetorSolicitanteId]);
+						} else {
+							roots.push(lookup[item.SetorSolicitanteId]);
+						}
+					} else {
+						roots.push(lookup[item.SetorSolicitanteId]);
+					}
+				});
+
+				return roots;
+			}
+		});
 
 	</script>
 
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
-	<!-- Kendo UI 2022.1.412 - Para Editor de Texto -->
-	<link href="https://kendo.cdn.telerik.com/2022.1.412/styles/kendo.common.min.css" rel="stylesheet" />
-	<link href="https://kendo.cdn.telerik.com/2022.1.412/styles/kendo.default.min.css" rel="stylesheet" />
-	<script src="https://kendo.cdn.telerik.com/2022.1.412/js/kendo.all.min.js"></script>
+	<!-- Kendo UI 2022.1.412 - MOVIDO PARA HeadBlock PARA CARREGAR ANTES DOS CONTROLES -->
+	<!-- <link href="https://kendo.cdn.telerik.com/2022.1.412/styles/kendo.common.min.css" rel="stylesheet" /> -->
+	<!-- <link href="https://kendo.cdn.telerik.com/2022.1.412/styles/kendo.default.min.css" rel="stylesheet" /> -->
+	<!-- <script src="https://kendo.cdn.telerik.com/2022.1.412/js/kendo.all.min.js"></script> -->
 
 	<!-- Kendo Editor Helper - Compatibilidade -->
 	<script src="~/js/viagens/kendo-editor-upsert.js" asp-append-version="true"></script>

@@ -1860,9 +1860,9 @@
 @section ScriptsBlock
 {
     @* ============================================
-       CLDR E CULTURA PT-BR (OBRIGATÓRIO)
+       NOTA: _ScriptsBasePlugins já é carregado no _Layout.cshtml
+       NÃO carregar novamente aqui para evitar conflitos!
        ============================================ *@
-    @await Html.PartialAsync("_ScriptsBasePlugins")
 
     @* ============================================
        DADOS DO SERVIDOR (C# â†' JavaScript)

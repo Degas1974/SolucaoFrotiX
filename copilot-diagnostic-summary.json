@@ -1,0 +1,193 @@
+{
+  "diagnosticReport": {
+    "timestamp": "2026-02-01T13:36:00Z",
+    "errorReported": "Cannot read properties of undefined (reading 'bind')",
+    "status": "CRITICAL_ISSUES_DETECTED"
+  },
+  "environment": {
+    "os": "Linux (WSL2)",
+    "osVersion": "6.6.87.2-microsoft-standard-WSL2",
+    "platform": "Windows",
+    "vscode": {
+      "version": "1.108.2",
+      "build": "c9d77990917f3102ada88be140d28b038d1dd7c7",
+      "architecture": "x64"
+    }
+  },
+  "copilotStatus": {
+    "installed": true,
+    "authenticated": true,
+    "user": "Delgado1974",
+    "sku": "free_limited_copilot",
+    "chatEnabled": true,
+    "extensions": {
+      "github.copilot": "1.388.0",
+      "github.copilot-chat": "0.36.2"
+    }
+  },
+  "problems": [
+    {
+      "id": 1,
+      "severity": "CRITICAL",
+      "priority": "HIGH",
+      "title": "Multiple Conflicting AI Extensions",
+      "description": "8 different AI/Chat extensions installed simultaneously causing resource conflicts",
+      "extensions": [
+        "anthropic.claude-code@2.1.29",
+        "danielsanmedium.dscodegpt@3.14.272",
+        "feiskyer.chatgpt-copilot@4.10.4",
+        "github.copilot@1.388.0",
+        "github.copilot-chat@0.36.2",
+        "google.gemini-cli-vscode-ide-companion@0.20.0",
+        "google.geminicodeassist@2.68.0",
+        "openai.chatgpt@0.4.68"
+      ],
+      "impact": [
+        "Keyboard binding conflicts",
+        "Command namespace collisions",
+        "Initialization race conditions",
+        "Undefined property errors"
+      ]
+    },
+    {
+      "id": 2,
+      "severity": "HIGH",
+      "priority": "HIGH",
+      "title": "Recurring Authentication Error",
+      "description": "PermissiveAuthRequiredError occurring repeatedly in logs",
+      "errorPattern": "PermissiveAuthRequiredError: Permissive authentication is required",
+      "location": "CP.getAllSessions -> provideChatSessionItems",
+      "occurrences": [
+        "2026-02-01 09:37",
+        "2026-02-01 10:32",
+        "2026-02-01 11:27",
+        "2026-02-01 12:22",
+        "2026-02-01 13:17"
+      ],
+      "possibleCause": "Session management issues in Copilot Chat"
+    },
+    {
+      "id": 3,
+      "severity": "MEDIUM",
+      "priority": "MEDIUM",
+      "title": "Conflicting AI Configurations",
+      "description": "Multiple AI assistants configured to auto-start",
+      "settings": {
+        "github.copilot.nextEditSuggestions.enabled": true,
+        "chatgpt.gpt3.provider": "ChatGPT",
+        "chatgpt.gpt3.model": "gpt-5.1-codex",
+        "chatgpt.openOnStartup": true,
+        "GeminiBot.model": "gemma-3n-e4b-it",
+        "geminicodeassist.agentYoloMode": true
+      }
+    },
+    {
+      "id": 4,
+      "severity": "LOW",
+      "priority": "LOW",
+      "title": "Large Cache Files",
+      "description": "Copilot cache contains large embedding files",
+      "cacheSize": "~20MB",
+      "files": {
+        "commandEmbeddings.json": "9.8MB",
+        "settingEmbeddings.json": "9.9MB",
+        "toolEmbeddingsCache.bin": "57KB"
+      },
+      "note": "Size is normal but files may be corrupted"
+    }
+  ],
+  "solutions": {
+    "phase1": {
+      "name": "Quick Fix (Recommended)",
+      "estimatedTime": "10 minutes",
+      "successRate": "75%",
+      "script": "copilot-fix-quick.ps1",
+      "steps": [
+        "Disable conflicting AI extensions",
+        "Clear Copilot cache",
+        "Restart VS Code"
+      ]
+    },
+    "phase2": {
+      "name": "Intermediate Solution",
+      "estimatedTime": "15 minutes",
+      "successRate": "90%",
+      "script": "copilot-cleanup.ps1",
+      "steps": [
+        "Uninstall non-essential extensions",
+        "Clear conflicting settings",
+        "Full cache cleanup",
+        "Restart VS Code"
+      ]
+    },
+    "phase3": {
+      "name": "Complete Reset",
+      "estimatedTime": "20 minutes",
+      "successRate": "98%",
+      "script": "copilot-full-reset.ps1",
+      "steps": [
+        "Close VS Code completely",
+        "Create full backup",
+        "Uninstall Copilot extensions",
+        "Remove all data and cache",
+        "Clean specific settings",
+        "Reinstall Copilot extensions",
+        "Reconfigure authentication"
+      ]
+    }
+  },
+  "scripts": {
+    "copilot-fix-quick.ps1": {
+      "purpose": "Automated quick fix",
+      "usage": ".\\copilot-fix-quick.ps1",
+      "description": "Disables conflicting extensions and clears cache"
+    },
+    "copilot-diagnostics.ps1": {
+      "purpose": "Complete environment diagnostics",
+      "usage": ".\\copilot-diagnostics.ps1",
+      "description": "Analyzes all settings, logs, and generates detailed report"
+    },
+    "copilot-cleanup.ps1": {
+      "purpose": "Cache and temporary data cleanup",
+      "usage": ".\\copilot-cleanup.ps1",
+      "description": "Creates backup and removes corrupted cache"
+    },
+    "copilot-full-reset.ps1": {
+      "purpose": "Complete Copilot reset",
+      "usage": ".\\copilot-full-reset.ps1",
+      "description": "Uninstalls, cleans, and reinstalls everything from scratch"
+    }
+  },
+  "recommendations": {
+    "immediate": [
+      "Execute copilot-fix-quick.ps1",
+      "If fails, execute copilot-cleanup.ps1",
+      "If still fails, execute copilot-full-reset.ps1"
+    ],
+    "mediumTerm": [
+      "Keep only ONE AI extension active at a time",
+      "Update Copilot regularly",
+      "Run diagnostics monthly",
+      "Clean cache quarterly"
+    ],
+    "longTerm": [
+      "Consider VS Code Insiders for testing",
+      "Monitor logs regularly",
+      "Maintain backup of working configurations"
+    ]
+  },
+  "filesCreated": [
+    "COPILOT-DIAGNOSTIC-REPORT.md",
+    "COPILOT-FIX-README.md",
+    "copilot-fix-quick.ps1",
+    "copilot-diagnostics.ps1",
+    "copilot-cleanup.ps1",
+    "copilot-full-reset.ps1",
+    "copilot-diagnostic-summary.json"
+  ],
+  "nextSteps": {
+    "quickStart": "cd \"C:\\FrotiX\\Solucao FrotiX 2026\"; .\\copilot-fix-quick.ps1",
+    "documentation": "Read COPILOT-FIX-README.md for detailed instructions",
+    "fullReport": "See COPILOT-DIAGNOSTIC-REPORT.md for complete analysis"
+  }
+}

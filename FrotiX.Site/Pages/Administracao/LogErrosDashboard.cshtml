@@ -1,0 +1,2476 @@
+@page
+@model FrotiX.Pages.Administracao.LogErrosDashboardModel
+
+@{
+    ViewData["Title"] = "Dashboard de Logs";
+    ViewData["PageName"] = "logerros_dashboard";
+    ViewData["Heading"] = "<i class='fa-duotone fa-chart-mixed'></i> Administração: <span class='fw-300'>Dashboard de Logs</span>";
+    ViewData["Category1"] = "Administração";
+    ViewData["PageIcon"] = "fa-duotone fa-chart-mixed";
+}
+
+@section HeadBlock {
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Marked.js para renderizar Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Highlight.js para syntax highlighting dos blocos de código -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/csharp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/javascript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/json.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/sql.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/xml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/bash.min.js"></script>
+    <!-- Marked-Highlight para integração marked + highlight.js (DEPOIS do hljs) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked-highlight/lib/index.umd.js"></script>
+    <style>
+        /* ====== HEADER AZUL PADRÃO FROTIX ====== */
+        .ftx-card-header {
+            background-color: #3D5771;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ftx-card-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @@keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .ftx-card-header .titulo-paginas {
+            color: #fff !important;
+            font-family: 'Outfit', sans-serif !important;
+            font-weight: 900 !important;
+            font-size: 1.5rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .ftx-card-header .titulo-paginas i.fa-duotone {
+            font-size: 1.75rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        /* ====== CARDS DE ESTATÍSTICAS ====== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #3D5771;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.03) 50%);
+        }
+
+        .stat-card.total { border-left-color: #3D5771; }
+        .stat-card.erros { border-left-color: #dc3545; }
+        .stat-card.warnings { border-left-color: #ffc107; }
+        .stat-card.info { border-left-color: #17a2b8; }
+        .stat-card.js-errors { border-left-color: #6f42c1; }
+        .stat-card.http-errors { border-left-color: #fd7e14; }
+        .stat-card.console { border-left-color: #9333ea; }
+        .stat-card.servidor { border-left-color: #3b82f6; }
+        .stat-card.cliente { border-left-color: #8b5cf6; }
+
+        /* ====== CARDS CLICÁVEIS E SELECIONÁVEIS ====== */
+        .stat-card.filterable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .stat-card.filterable::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            background: #fff;
+            transition: all 0.2s ease;
+            z-index: 2;
+        }
+
+        .stat-card.filterable.selected::before {
+            background: #3D5771;
+            border-color: #3D5771;
+        }
+
+        .stat-card.filterable.selected::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Pro', 'Font Awesome 5 Pro', 'Font Awesome 6 Free', 'FontAwesome';
+            font-weight: 900;
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            width: 16px;
+            height: 16px;
+            color: #fff;
+            font-size: 12px;
+            z-index: 3;
+        }
+
+        .stat-card.filterable.selected {
+            border-left-width: 6px;
+            box-shadow: 0 4px 16px rgba(61, 87, 113, 0.25);
+            background: linear-gradient(to right, rgba(61, 87, 113, 0.05), #fff);
+        }
+
+        .stat-card.erros.selected { box-shadow: 0 4px 16px rgba(220, 53, 69, 0.25); background: linear-gradient(to right, rgba(220, 53, 69, 0.08), #fff); }
+        .stat-card.warnings.selected { box-shadow: 0 4px 16px rgba(255, 193, 7, 0.25); background: linear-gradient(to right, rgba(255, 193, 7, 0.08), #fff); }
+        .stat-card.js-errors.selected { box-shadow: 0 4px 16px rgba(111, 66, 193, 0.25); background: linear-gradient(to right, rgba(111, 66, 193, 0.08), #fff); }
+        .stat-card.http-errors.selected { box-shadow: 0 4px 16px rgba(253, 126, 20, 0.25); background: linear-gradient(to right, rgba(253, 126, 20, 0.08), #fff); }
+        .stat-card.console.selected { box-shadow: 0 4px 16px rgba(147, 51, 234, 0.25); background: linear-gradient(to right, rgba(147, 51, 234, 0.08), #fff); }
+        .stat-card.servidor.selected { box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25); background: linear-gradient(to right, rgba(59, 130, 246, 0.08), #fff); }
+        .stat-card.cliente.selected { box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25); background: linear-gradient(to right, rgba(139, 92, 246, 0.08), #fff); }
+
+        /* Indicador de filtros ativos */
+        .active-filters-bar {
+            background: linear-gradient(135deg, #3D5771, #4a6a8a);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+            color: #fff;
+            font-size: 0.85rem;
+            animation: slideDown 0.3s ease;
+        }
+
+        .active-filters-bar.show {
+            display: flex;
+        }
+
+        @@keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .active-filters-bar .filter-tag {
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .active-filters-bar .filter-tag .remove-filter {
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .active-filters-bar .filter-tag .remove-filter:hover {
+            opacity: 1;
+        }
+
+        .active-filters-bar .clear-all-filters {
+            margin-left: auto;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #fff;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .active-filters-bar .clear-all-filters:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            opacity: 0.15;
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1;
+            color: #2d3748;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .stat-card.erros .stat-value { color: #dc3545; }
+        .stat-card.warnings .stat-value { color: #b8860b; }
+        .stat-card.js-errors .stat-value { color: #6f42c1; }
+        .stat-card.http-errors .stat-value { color: #fd7e14; }
+        .stat-card.console .stat-value { color: #9333ea; }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 0.5rem;
+            font-weight: 600;
+        }
+
+        .stat-trend {
+            font-size: 0.7rem;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stat-trend.up { color: #dc3545; }
+        .stat-trend.down { color: #10b981; }
+        .stat-trend.stable { color: #6b7280; }
+
+        /* ====== CARDS DE GRÁFICOS ====== */
+        .chart-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .chart-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chart-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-title i {
+            color: #3D5771;
+        }
+
+        .chart-body {
+            padding: 1.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* ====== RANKINGS ====== */
+        .ranking-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.2s;
+        }
+
+        .ranking-item:hover {
+            background: #f8fafc;
+            margin: 0 -1rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .ranking-item:last-child {
+            border-bottom: none;
+        }
+
+        .ranking-position {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .ranking-position.top-1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #fff; }
+        .ranking-position.top-2 { background: linear-gradient(135deg, #9ca3af, #6b7280); color: #fff; }
+        .ranking-position.top-3 { background: linear-gradient(135deg, #cd7f32, #a0522d); color: #fff; }
+        .ranking-position.other { background: #f1f5f9; color: #64748b; }
+
+        .ranking-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .ranking-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #2d3748;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ranking-sublabel {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+
+        .ranking-count {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #3D5771;
+            margin-left: 0.5rem;
+        }
+
+        .ranking-bar {
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            margin-top: 0.25rem;
+            overflow: hidden;
+        }
+
+        .ranking-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3D5771, #5a7fa3);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        /* ====== PEAK HOURS ====== */
+        .peak-hours-grid {
+            display: grid;
+            grid-template-columns: repeat(24, 1fr);
+            gap: 2px;
+        }
+
+        .peak-hour {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: 600;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .peak-hour:hover {
+            transform: scale(1.2);
+            z-index: 10;
+        }
+
+        .peak-hour.level-0 { background: #f1f5f9; color: #94a3b8; }
+        .peak-hour.level-1 { background: #dcfce7; color: #166534; }
+        .peak-hour.level-2 { background: #fef3c7; color: #92400e; }
+        .peak-hour.level-3 { background: #fed7aa; color: #9a3412; }
+        .peak-hour.level-4 { background: #fecaca; color: #991b1b; }
+        .peak-hour.level-5 { background: #dc3545; color: #fff; }
+
+        /* ====== ANOMALIAS ====== */
+        .anomaly-card {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .anomaly-card.high {
+            background: linear-gradient(135deg, #fef2f2 0%, #fecdd3 100%);
+            border-color: #f87171;
+        }
+
+        .anomaly-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .anomaly-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #dc3545;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .anomaly-title {
+            font-weight: 700;
+            color: #991b1b;
+        }
+
+        .anomaly-details {
+            font-size: 0.8rem;
+            color: #7f1d1d;
+        }
+
+        /* ====== FILTROS ====== */
+        .filter-bar {
+            background: #fff;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: #3D5771;
+            color: #3D5771;
+        }
+
+        .filter-btn.active {
+            background: #3D5771;
+            border-color: #3D5771;
+            color: #fff;
+        }
+
+        /* ====== RESPONSIVO ====== */
+        @@media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+
+            .peak-hours-grid {
+                grid-template-columns: repeat(12, 1fr);
+            }
+        }
+
+        /* ====== LOADING ====== */
+        .loading-skeleton {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @@keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ====== LINK PARA LOGS ====== */
+        .link-logs {
+            color: #fff;
+            background: rgba(255,255,255,0.15);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .link-logs:hover {
+            background: rgba(255,255,255,0.25);
+            color: #fff;
+        }
+
+        /* ====== RANKING CLICÁVEL ====== */
+        .ranking-item.clickable {
+            cursor: pointer;
+        }
+
+        .ranking-item.clickable:hover {
+            background: #eef6ff;
+        }
+
+        .ranking-item.clickable:hover .ranking-label {
+            color: #3D5771;
+        }
+
+        .ranking-item .view-details-icon {
+            opacity: 0;
+            transition: opacity 0.2s;
+            color: #3D5771;
+            font-size: 0.9rem;
+        }
+
+        .ranking-item.clickable:hover .view-details-icon {
+            opacity: 1;
+        }
+
+        /* ====== MODAL DE DETALHES ====== */
+        .error-details-modal .modal-dialog {
+            max-width: 1000px;
+        }
+
+        .error-details-modal .modal-header {
+            background: linear-gradient(135deg, #3D5771, #4a6a8a);
+            color: #fff;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .error-details-modal .modal-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+        }
+
+        .error-details-modal .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .error-details-modal .close {
+            color: #fff;
+            opacity: 0.8;
+        }
+
+        .error-details-modal .close:hover {
+            opacity: 1;
+        }
+
+        /* Tabs dentro do modal */
+        .error-tabs {
+            border-bottom: 2px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        .error-tabs .nav-link {
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #64748b;
+            padding: 0.75rem 1.25rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .error-tabs .nav-link:hover {
+            color: #3D5771;
+            border-color: transparent;
+        }
+
+        .error-tabs .nav-link.active {
+            color: #3D5771;
+            background: transparent;
+            border-bottom-color: #3D5771;
+        }
+
+        .error-tab-content {
+            padding: 1.5rem;
+        }
+
+        /* Lista de erros no modal */
+        .error-list-item {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .error-list-item:hover {
+            border-color: #3D5771;
+            box-shadow: 0 2px 8px rgba(61, 87, 113, 0.15);
+        }
+
+        .error-list-item.selected {
+            border-color: #3D5771;
+            background: #f0f7ff;
+        }
+
+        .error-list-item .error-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .error-list-item .error-type-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .error-list-item .error-message {
+            flex: 1;
+            font-size: 0.85rem;
+            color: #2d3748;
+            line-height: 1.4;
+        }
+
+        .error-list-item .error-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .error-list-item .error-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* Painel de detalhes do erro selecionado */
+        .error-detail-panel {
+            background: #f8fafc;
+            border-left: 1px solid #e2e8f0;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .error-detail-section {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .error-detail-section:last-child {
+            border-bottom: none;
+        }
+
+        .error-detail-section h6 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .error-detail-section h6 i {
+            color: #3D5771;
+        }
+
+        .error-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+
+        .error-detail-item {
+            font-size: 0.8rem;
+        }
+
+        .error-detail-item label {
+            color: #94a3b8;
+            font-size: 0.7rem;
+            display: block;
+            margin-bottom: 0.1rem;
+        }
+
+        .error-detail-item span {
+            color: #2d3748;
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .error-stack-trace {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.75rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        /* Botão de análise com IA */
+        .btn-analyze-ai {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-analyze-ai:hover {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-analyze-ai:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-analyze-ai i.fa-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @@keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Resultado da análise IA */
+        .ai-analysis-result {
+            background: linear-gradient(135deg, #f0f7ff, #e8f4fc);
+            border: 1px solid #93c5fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .ai-analysis-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #93c5fd;
+        }
+
+        .ai-analysis-header i {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .ai-analysis-header .ai-title {
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .ai-analysis-header .ai-meta {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-left: auto;
+        }
+
+        .ai-analysis-content {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #1e293b;
+        }
+
+        .ai-analysis-content h1,
+        .ai-analysis-content h2,
+        .ai-analysis-content h3 {
+            color: #1e40af;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .ai-analysis-content h1 { font-size: 1.25rem; }
+        .ai-analysis-content h2 { font-size: 1.1rem; }
+        .ai-analysis-content h3 { font-size: 1rem; }
+
+        .ai-analysis-content code {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .ai-analysis-content pre {
+            background: #0d1117 !important;
+            color: #c9d1d9 !important;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 0.75rem 0;
+            border: 1px solid #30363d;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .ai-analysis-content pre code {
+            background: transparent !important;
+            padding: 0 !important;
+            color: inherit !important;
+            font-size: inherit;
+            white-space: pre;
+            word-break: normal;
+            display: block;
+        }
+
+        /* Highlight.js override para garantir visibilidade */
+        .ai-analysis-content pre code.hljs {
+            background: transparent !important;
+            padding: 0 !important;
+        }
+
+        .ai-analysis-content .hljs-keyword { color: #ff7b72; }
+        .ai-analysis-content .hljs-string { color: #a5d6ff; }
+        .ai-analysis-content .hljs-comment { color: #8b949e; font-style: italic; }
+        .ai-analysis-content .hljs-function { color: #d2a8ff; }
+        .ai-analysis-content .hljs-number { color: #79c0ff; }
+        .ai-analysis-content .hljs-class { color: #ffa657; }
+        .ai-analysis-content .hljs-title { color: #d2a8ff; }
+        .ai-analysis-content .hljs-params { color: #c9d1d9; }
+        .ai-analysis-content .hljs-built_in { color: #ffa657; }
+        .ai-analysis-content .hljs-literal { color: #79c0ff; }
+        .ai-analysis-content .hljs-attr { color: #79c0ff; }
+        .ai-analysis-content .hljs-selector-class { color: #7ee787; }
+        .ai-analysis-content .hljs-selector-id { color: #7ee787; }
+        .ai-analysis-content .hljs-variable { color: #ffa657; }
+
+        /* Container para pre com botão de copiar */
+        .ai-analysis-content .code-block-wrapper {
+            position: relative;
+            margin: 0.75rem 0;
+        }
+
+        .ai-analysis-content .code-block-wrapper pre {
+            margin: 0;
+            padding-top: 2.5rem; /* Espaço para o badge de linguagem */
+        }
+
+        .ai-analysis-content .code-copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #8b949e;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 10;
+        }
+
+        .ai-analysis-content .code-copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .ai-analysis-content .code-copy-btn.copied {
+            background: #238636;
+            border-color: #238636;
+            color: #fff;
+        }
+
+        .ai-analysis-content .code-lang-badge {
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #8b949e;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .ai-analysis-content ul, .ai-analysis-content ol {
+            padding-left: 1.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .ai-analysis-content li {
+            margin-bottom: 0.25rem;
+        }
+
+        /* Empty state */
+        .error-empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+
+        .error-empty-state i {
+            font-size: 3rem;
+            opacity: 0.3;
+            margin-bottom: 1rem;
+        }
+
+        /* Tipo badges cores */
+        .badge-error { background: #dc3545; color: #fff; }
+        .badge-error-js { background: #6f42c1; color: #fff; }
+        .badge-http-error { background: #fd7e14; color: #fff; }
+        .badge-warn { background: #ffc107; color: #000; }
+        .badge-info { background: #17a2b8; color: #fff; }
+        .badge-console { background: #9333ea; color: #fff; }
+
+        /* Botão mini de análise IA */
+        .btn-analyze-ai-mini {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+            color: #fff;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-analyze-ai-mini:hover {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+            color: #fff;
+        }
+
+        .btn-analyze-ai-mini:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-analyze-ai-mini.analyzing {
+            pointer-events: none;
+        }
+
+        .btn-analyze-ai-mini.analyzing i {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Ajuste do header do erro para acomodar o botão */
+        .error-list-item .error-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .error-list-item .error-message {
+            flex: 1;
+            font-size: 0.85rem;
+            color: #2d3748;
+            line-height: 1.4;
+        }
+
+        .error-list-item .error-message:hover {
+            color: #3D5771;
+        }
+    </style>
+}
+
+<div class="row">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-container show">
+
+                <!-- HEADER -->
+                <div class="ftx-card-header">
+                    <h2 class="titulo-paginas">
+                        <i class="fa-duotone fa-chart-mixed"></i>
+                        Dashboard de Logs - Métricas e Análises
+                    </h2>
+                    <a href="/Administracao/LogErros" class="link-logs">
+                        <i class="fa-duotone fa-list"></i> Ver Logs Detalhados
+                    </a>
+                </div>
+
+                <div class="panel-content" style="background: #f8fafc; padding: 1.5rem;">
+
+                    <!-- FILTROS DE PERÍODO -->
+                    <div class="filter-bar">
+                        <span class="filter-label"><i class="fa-duotone fa-calendar-range me-1"></i> Período:</span>
+                        <div class="filter-buttons">
+                            <button class="filter-btn @(Model.DiasAnalise == 1 ? "active" : "")" onclick="mudarPeriodo(1)">Hoje</button>
+                            <button class="filter-btn @(Model.DiasAnalise == 7 ? "active" : "")" onclick="mudarPeriodo(7)">7 dias</button>
+                            <button class="filter-btn @(Model.DiasAnalise == 14 ? "active" : "")" onclick="mudarPeriodo(14)">14 dias</button>
+                            <button class="filter-btn @(Model.DiasAnalise == 30 ? "active" : "")" onclick="mudarPeriodo(30)">30 dias</button>
+                        </div>
+                        <button class="btn btn-sm btn-azul ms-auto" onclick="atualizarDashboard()">
+                            <i class="fa-duotone fa-arrows-rotate"></i> Atualizar
+                        </button>
+
+                        <!-- BOTÕES DE EXPORTAÇÃO -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-success dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-duotone fa-file-export me-1"></i> Exportar
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <h6 class="dropdown-header"><i class="fa-duotone fa-file-spreadsheet me-1"></i> Dados Brutos</h6>
+                                <a class="dropdown-item" href="#" onclick="exportarExcel(); return false;">
+                                    <i class="fa-duotone fa-file-excel text-success me-2"></i> Exportar Excel (.xlsx)
+                                </a>
+                                <a class="dropdown-item" href="#" onclick="exportarCSV(); return false;">
+                                    <i class="fa-duotone fa-file-csv text-info me-2"></i> Exportar CSV
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <h6 class="dropdown-header"><i class="fa-duotone fa-file-chart-column me-1"></i> Relatório Executivo</h6>
+                                <a class="dropdown-item" href="#" onclick="exportarRelatorioPDF(); return false;">
+                                    <i class="fa-duotone fa-file-pdf text-danger me-2"></i> Relatório PDF
+                                </a>
+                                <a class="dropdown-item" href="#" onclick="exportarRelatorioExcel(); return false;">
+                                    <i class="fa-duotone fa-file-excel text-success me-2"></i> Relatório Excel
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CARDS DE ESTATÍSTICAS (clicáveis para filtrar) -->
+                    <div class="stats-grid" id="statsGrid">
+                        <div class="stat-card total" data-filter-type="reset" data-filter-label="Total" title="Clique para limpar todos os filtros">
+                            <i class="fa-duotone fa-list-ul stat-icon"></i>
+                            <div class="stat-value" id="statTotal">--</div>
+                            <div class="stat-label">Total de Logs</div>
+                        </div>
+                        <div class="stat-card erros filterable" data-filter-type="tipo" data-filter-value="ERROR" data-filter-label="Erros" title="Clique para filtrar por Erros">
+                            <i class="fa-duotone fa-circle-exclamation stat-icon"></i>
+                            <div class="stat-value" id="statErros">--</div>
+                            <div class="stat-label">Erros</div>
+                            <div class="stat-trend" id="trendErros"></div>
+                        </div>
+                        <div class="stat-card warnings filterable" data-filter-type="tipo" data-filter-value="WARN" data-filter-label="Warnings" title="Clique para filtrar por Warnings">
+                            <i class="fa-duotone fa-triangle-exclamation stat-icon"></i>
+                            <div class="stat-value" id="statWarnings">--</div>
+                            <div class="stat-label">Warnings</div>
+                        </div>
+                        <div class="stat-card js-errors filterable" data-filter-type="tipo" data-filter-value="ERROR-JS" data-filter-label="JS Errors" title="Clique para filtrar por Erros JavaScript">
+                            <i class="fa-duotone fa-js stat-icon"></i>
+                            <div class="stat-value" id="statJsErrors">--</div>
+                            <div class="stat-label">JS Errors</div>
+                        </div>
+                        <div class="stat-card http-errors filterable" data-filter-type="tipo" data-filter-value="HTTP-ERROR" data-filter-label="HTTP Errors" title="Clique para filtrar por Erros HTTP">
+                            <i class="fa-duotone fa-globe stat-icon"></i>
+                            <div class="stat-value" id="statHttpErrors">--</div>
+                            <div class="stat-label">HTTP Errors</div>
+                        </div>
+                        <div class="stat-card console filterable" data-filter-type="tipo" data-filter-value="CONSOLE" data-filter-label="Console" title="Clique para filtrar por Console">
+                            <i class="fa-duotone fa-browser stat-icon"></i>
+                            <div class="stat-value" id="statConsole">--</div>
+                            <div class="stat-label">Console</div>
+                        </div>
+                        <div class="stat-card servidor filterable" data-filter-type="origem" data-filter-value="SERVER" data-filter-label="Servidor" title="Clique para filtrar por Servidor">
+                            <i class="fa-duotone fa-server stat-icon"></i>
+                            <div class="stat-value" id="statServidor">--</div>
+                            <div class="stat-label">Servidor</div>
+                        </div>
+                        <div class="stat-card cliente filterable" data-filter-type="origem" data-filter-value="CLIENT" data-filter-label="Cliente" title="Clique para filtrar por Cliente">
+                            <i class="fa-duotone fa-display stat-icon"></i>
+                            <div class="stat-value" id="statCliente">--</div>
+                            <div class="stat-label">Cliente</div>
+                        </div>
+                    </div>
+
+                    <!-- BARRA DE FILTROS ATIVOS -->
+                    <div class="active-filters-bar" id="activeFiltersBar">
+                        <i class="fa-duotone fa-filter"></i>
+                        <span>Filtros ativos:</span>
+                        <div id="filterTagsContainer"></div>
+                        <button class="clear-all-filters" onclick="limparTodosFiltros()">
+                            <i class="fa-solid fa-xmark me-1"></i> Limpar todos
+                        </button>
+                    </div>
+
+                    <div class="row">
+                        <!-- GRÁFICO TIMELINE -->
+                        <div class="col-lg-8">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <span class="chart-title">
+                                        <i class="fa-duotone fa-chart-line"></i> Erros ao Longo do Tempo
+                                    </span>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="timelineChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- GRÁFICO PIZZA - DISTRIBUIÇÃO -->
+                        <div class="col-lg-4">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <span class="chart-title">
+                                        <i class="fa-duotone fa-chart-pie"></i> Distribuição por Tipo
+                                    </span>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="distributionChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- TOP PÁGINAS -->
+                        <div class="col-lg-6">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <span class="chart-title">
+                                        <i class="fa-duotone fa-ranking-star"></i> Top 10 Páginas com Erros
+                                    </span>
+                                </div>
+                                <div class="chart-body">
+                                    <ul class="ranking-list" id="topPagesRanking">
+                                        <li class="ranking-item">
+                                            <div class="loading-skeleton" style="width: 100%; height: 40px;"></div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TOP ERROS -->
+                        <div class="col-lg-6">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <span class="chart-title">
+                                        <i class="fa-duotone fa-bug"></i> Erros Mais Frequentes
+                                    </span>
+                                </div>
+                                <div class="chart-body">
+                                    <ul class="ranking-list" id="topErrorsRanking">
+                                        <li class="ranking-item">
+                                            <div class="loading-skeleton" style="width: 100%; height: 40px;"></div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- HORÁRIOS DE PICO -->
+                        <div class="col-lg-8">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <span class="chart-title">
+                                        <i class="fa-duotone fa-clock"></i> Mapa de Calor - Erros por Hora
+                                    </span>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="peak-hours-grid" id="peakHoursGrid">
+                                        <!-- Gerado via JS -->
+                                    </div>
+                                    <div class="d-flex justify-content-between mt-2" style="font-size: 0.7rem; color: #94a3b8;">
+                                        <span>00h</span>
+                                        <span>06h</span>
+                                        <span>12h</span>
+                                        <span>18h</span>
+                                        <span>23h</span>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-center gap-3 mt-3" style="font-size: 0.7rem;">
+                                        <span><span class="peak-hour level-0" style="display:inline-block;width:16px;height:16px;"></span> Baixo</span>
+                                        <span><span class="peak-hour level-2" style="display:inline-block;width:16px;height:16px;"></span> Médio</span>
+                                        <span><span class="peak-hour level-4" style="display:inline-block;width:16px;height:16px;"></span> Alto</span>
+                                        <span><span class="peak-hour level-5" style="display:inline-block;width:16px;height:16px;"></span> Crítico</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ANOMALIAS -->
+                        <div class="col-lg-4">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <span class="chart-title">
+                                        <i class="fa-duotone fa-siren-on"></i> Anomalias Detectadas
+                                    </span>
+                                </div>
+                                <div class="chart-body" id="anomaliesContainer">
+                                    <div class="text-center text-muted py-4">
+                                        <i class="fa-duotone fa-spinner fa-spin fa-2x mb-2"></i>
+                                        <p>Analisando...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE DETALHES DE ERROS -->
+<div class="modal fade error-details-modal" id="errorDetailsModal" tabindex="-1" role="dialog" aria-labelledby="errorDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorDetailsModalLabel">
+                    <i class="fa-duotone fa-bug"></i>
+                    <span id="modalPageTitle">Erros da Página</span>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true"><i class="fa-solid fa-xmark"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Tabs -->
+                <ul class="nav nav-tabs error-tabs" id="errorTabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="tab-errors-list" href="javascript:void(0)" onclick="mostrarTab('errors-list-panel', this)" role="tab">
+                            <i class="fa-duotone fa-list me-1"></i> Lista de Erros
+                            <span class="badge badge-secondary ms-1" id="errorCountBadge">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="tab-error-detail" href="javascript:void(0)" onclick="mostrarTab('error-detail-panel', this)" role="tab">
+                            <i class="fa-duotone fa-file-lines me-1"></i> Detalhes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="tab-ai-analysis" href="javascript:void(0)" onclick="mostrarTab('ai-analysis-panel', this)" role="tab">
+                            <i class="fa-duotone fa-robot me-1"></i> Análise IA
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <!-- LISTA DE ERROS -->
+                    <div class="tab-pane fade show active error-tab-content" id="errors-list-panel" role="tabpanel">
+                        <div id="errorsList">
+                            <div class="error-empty-state">
+                                <i class="fa-duotone fa-spinner fa-spin"></i>
+                                <p>Carregando erros...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DETALHES DO ERRO SELECIONADO -->
+                    <div class="tab-pane fade error-tab-content" id="error-detail-panel" role="tabpanel">
+                        <div id="errorDetailContent">
+                            <div class="error-empty-state">
+                                <i class="fa-duotone fa-hand-pointer"></i>
+                                <p>Selecione um erro na lista para ver os detalhes</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ANÁLISE COM IA -->
+                    <div class="tab-pane fade error-tab-content" id="ai-analysis-panel" role="tabpanel">
+                        <div id="aiAnalysisResult">
+                            <div class="error-empty-state">
+                                <i class="fa-duotone fa-robot"></i>
+                                <p>Selecione um erro e clique em "Analisar com IA"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex align-items-center gap-2 w-100">
+                    <span class="text-muted small" id="claudeStatusText">
+                        <i class="fa-duotone fa-circle-check text-success me-1"></i> Claude AI disponível
+                    </span>
+                    <button type="button" class="btn btn-secondary ms-auto" data-dismiss="modal">
+                        <i class="fa-duotone fa-xmark me-1"></i> Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section ScriptsBlock {
+    <script>
+        // ====== VARIÁVEIS GLOBAIS ======
+        var diasAnalise = @Model.DiasAnalise;
+        var timelineChart = null;
+        var distributionChart = null;
+
+        // ====== FILTROS MULTI-SELECT ======
+        var filtrosAtivos = []; // Array de { type: 'tipo'|'origem', value: 'ERROR', label: 'Erros' }
+
+        // ====== INICIALIZAÇÃO ======
+        $(document).ready(function() {
+            carregarDashboard();
+            inicializarFiltrosCards();
+        });
+
+        // ====== INICIALIZAR FILTROS DOS CARDS ======
+        function inicializarFiltrosCards() {
+            // Click nos cards filtráveis
+            $('.stat-card.filterable').on('click', function() {
+                toggleFiltroCard($(this));
+            });
+
+            // Click no card Total para limpar filtros
+            $('.stat-card.total').on('click', function() {
+                limparTodosFiltros();
+            });
+
+            // Adicionar cursor pointer ao card total
+            $('.stat-card.total').css('cursor', 'pointer');
+        }
+
+        function toggleFiltroCard(card) {
+            const filterType = card.data('filter-type');
+            const filterValue = card.data('filter-value');
+            const filterLabel = card.data('filter-label');
+
+            // Verificar se já está selecionado
+            const indexExistente = filtrosAtivos.findIndex(f =>
+                f.type === filterType && f.value === filterValue
+            );
+
+            if (indexExistente > -1) {
+                // Remover filtro
+                filtrosAtivos.splice(indexExistente, 1);
+                card.removeClass('selected');
+            } else {
+                // Adicionar filtro
+                filtrosAtivos.push({ type: filterType, value: filterValue, label: filterLabel });
+                card.addClass('selected');
+            }
+
+            atualizarBarraFiltros();
+            aplicarFiltros();
+        }
+
+        function atualizarBarraFiltros() {
+            const container = $('#filterTagsContainer');
+            const bar = $('#activeFiltersBar');
+
+            if (filtrosAtivos.length === 0) {
+                bar.removeClass('show');
+                return;
+            }
+
+            bar.addClass('show');
+
+            let html = '';
+            filtrosAtivos.forEach((filtro, index) => {
+                html += `
+                    <span class="filter-tag">
+                        ${filtro.label}
+                        <i class="fa-solid fa-times remove-filter" onclick="removerFiltro(${index}); event.stopPropagation();"></i>
+                    </span>
+                `;
+            });
+
+            container.html(html);
+        }
+
+        function removerFiltro(index) {
+            const filtroRemovido = filtrosAtivos[index];
+            filtrosAtivos.splice(index, 1);
+
+            // Desmarcar o card correspondente
+            $(`.stat-card.filterable[data-filter-type="${filtroRemovido.type}"][data-filter-value="${filtroRemovido.value}"]`)
+                .removeClass('selected');
+
+            atualizarBarraFiltros();
+            aplicarFiltros();
+        }
+
+        function limparTodosFiltros() {
+            filtrosAtivos = [];
+            $('.stat-card.filterable').removeClass('selected');
+            atualizarBarraFiltros();
+            aplicarFiltros();
+        }
+
+        function aplicarFiltros() {
+            console.log('[Dashboard] Aplicando filtros:', filtrosAtivos);
+            // Recarregar todos os dados com os filtros aplicados
+            carregarTimeline();
+            carregarDistribuicao();
+            carregarTopPaginas();
+            carregarTopErros();
+            carregarHorariosPico();
+            carregarAnomalias();
+        }
+
+        function construirQueryFiltros() {
+            if (filtrosAtivos.length === 0) {
+                console.log('[Dashboard] Nenhum filtro ativo');
+                return '';
+            }
+
+            let params = [];
+
+            // Agrupar filtros por tipo
+            const tiposFiltro = filtrosAtivos.filter(f => f.type === 'tipo').map(f => f.value);
+            const origensFiltro = filtrosAtivos.filter(f => f.type === 'origem').map(f => f.value);
+
+            if (tiposFiltro.length > 0) {
+                params.push('tipos=' + tiposFiltro.join(','));
+            }
+            if (origensFiltro.length > 0) {
+                params.push('origens=' + origensFiltro.join(','));
+            }
+
+            const queryString = params.length > 0 ? '&' + params.join('&') : '';
+            console.log('[Dashboard] Query de filtros construída:', queryString, '| Tipos:', tiposFiltro, '| Origens:', origensFiltro);
+            return queryString;
+        }
+
+        function mudarPeriodo(dias) {
+            diasAnalise = dias;
+            window.location.href = '/Administracao/LogErrosDashboard?dias=' + dias;
+        }
+
+        function atualizarDashboard() {
+            carregarDashboard();
+        }
+
+        // ====== FUNÇÕES DE EXPORTAÇÃO ======
+        function exportarExcel() {
+            var startDate = new Date();
+            startDate.setDate(startDate.getDate() - diasAnalise);
+            var url = '/api/LogErros/Export/Excel?startDate=' + startDate.toISOString() + '&endDate=' + new Date().toISOString();
+
+            mostrarNotificacao('info', 'Gerando arquivo Excel...');
+            window.location.href = url;
+        }
+
+        function exportarCSV() {
+            var startDate = new Date();
+            startDate.setDate(startDate.getDate() - diasAnalise);
+            var url = '/api/LogErros/Export/CSV?startDate=' + startDate.toISOString() + '&endDate=' + new Date().toISOString();
+
+            mostrarNotificacao('info', 'Gerando arquivo CSV...');
+            window.location.href = url;
+        }
+
+        function exportarRelatorioPDF() {
+            var url = '/api/LogErros/Export/Report/PDF?dias=' + diasAnalise;
+
+            mostrarNotificacao('info', 'Gerando relatório PDF...');
+            window.location.href = url;
+        }
+
+        function exportarRelatorioExcel() {
+            var url = '/api/LogErros/Export/Report/Excel?dias=' + diasAnalise;
+
+            mostrarNotificacao('info', 'Gerando relatório Excel...');
+            window.location.href = url;
+        }
+
+        function mostrarNotificacao(tipo, mensagem) {
+            // Usar toast do sistema se disponível
+            if (typeof toastr !== 'undefined') {
+                toastr[tipo](mensagem);
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: tipo === 'info' ? 'info' : tipo,
+                    title: mensagem,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            } else {
+                console.log('[' + tipo.toUpperCase() + '] ' + mensagem);
+            }
+        }
+
+        async function carregarDashboard() {
+            try {
+                // Carregar todos os dados em paralelo
+                await Promise.all([
+                    carregarStats(),
+                    carregarTimeline(),
+                    carregarDistribuicao(),
+                    carregarTopPaginas(),
+                    carregarTopErros(),
+                    carregarHorariosPico(),
+                    carregarAnomalias()
+                ]);
+            } catch (error) {
+                console.error('[Dashboard] Erro ao carregar:', error);
+            }
+        }
+
+        // ====== ESTATÍSTICAS ======
+        async function carregarStats() {
+            try {
+                const response = await fetch('/api/LogErros/Dashboard/Stats?dias=' + diasAnalise);
+                const data = await response.json();
+
+                if (data.success) {
+                    const stats = data.stats;
+                    $('#statTotal').text(stats.totalLogs || 0);
+                    $('#statErros').text(stats.totalErros || 0);
+                    $('#statWarnings').text(stats.totalWarnings || 0);
+                    $('#statJsErrors').text(stats.totalJsErrors || 0);
+                    $('#statHttpErrors').text(stats.totalHttpErrors || 0);
+                    $('#statConsole').text(stats.totalConsole || 0);
+                    $('#statServidor').text(stats.totalServidor || 0);
+                    $('#statCliente').text(stats.totalCliente || 0);
+
+                    // Trend de erros
+                    if (data.comparison) {
+                        const trend = data.comparison.tendencia;
+                        const variacao = Math.abs(data.comparison.variacaoPercentual || 0).toFixed(0);
+                        let trendHtml = '';
+                        if (trend === 'up') {
+                            trendHtml = '<span class="stat-trend up"><i class="fa-solid fa-arrow-up"></i> +' + variacao + '% vs período anterior</span>';
+                        } else if (trend === 'down') {
+                            trendHtml = '<span class="stat-trend down"><i class="fa-solid fa-arrow-down"></i> -' + variacao + '% vs período anterior</span>';
+                        } else {
+                            trendHtml = '<span class="stat-trend stable"><i class="fa-solid fa-minus"></i> Estável</span>';
+                        }
+                        $('#trendErros').html(trendHtml);
+                    }
+                }
+            } catch (error) {
+                console.error('[Dashboard] Erro ao carregar stats:', error);
+            }
+        }
+
+        // ====== TIMELINE ======
+        async function carregarTimeline() {
+            try {
+                const filtros = construirQueryFiltros();
+                const response = await fetch('/api/LogErros/Dashboard/Timeline?dias=' + diasAnalise + filtros);
+                const data = await response.json();
+
+                if (data.success && data.timeline) {
+                    renderizarTimelineChart(data.timeline);
+                }
+            } catch (error) {
+                console.error('[Dashboard] Erro ao carregar timeline:', error);
+            }
+        }
+
+        function renderizarTimelineChart(timeline) {
+            const ctx = document.getElementById('timelineChart').getContext('2d');
+
+            if (timelineChart) {
+                timelineChart.destroy();
+            }
+
+            const labels = timeline.map(t => t.label);
+            const erros = timeline.map(t => t.erros);
+            const warnings = timeline.map(t => t.warnings);
+            const info = timeline.map(t => t.info);
+
+            timelineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Erros',
+                            data: erros,
+                            borderColor: '#dc3545',
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Warnings',
+                            data: warnings,
+                            borderColor: '#ffc107',
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Info',
+                            data: info,
+                            borderColor: '#17a2b8',
+                            backgroundColor: 'rgba(23, 162, 184, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // ====== DISTRIBUIÇÃO ======
+        async function carregarDistribuicao() {
+            try {
+                const filtros = construirQueryFiltros();
+                const response = await fetch('/api/LogErros/Dashboard/Distribution?dias=' + diasAnalise + filtros);
+                const data = await response.json();
+
+                if (data.success && data.distribution) {
+                    renderizarDistributionChart(data.distribution);
+                }
+            } catch (error) {
+                console.error('[Dashboard] Erro ao carregar distribuição:', error);
+            }
+        }
+
+        function renderizarDistributionChart(distribution) {
+            const ctx = document.getElementById('distributionChart').getContext('2d');
+
+            if (distributionChart) {
+                distributionChart.destroy();
+            }
+
+            const labels = distribution.map(d => d.label);
+            const counts = distribution.map(d => d.count);
+            const colors = distribution.map(d => d.color);
+
+            distributionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: counts,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 10
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ====== TOP PÁGINAS ======
+        async function carregarTopPaginas() {
+            try {
+                const filtros = construirQueryFiltros();
+                const url = '/api/LogErros/Dashboard/TopPages?dias=' + diasAnalise + filtros;
+                console.log('[Dashboard] Carregando Top Páginas com filtros:', filtros, '| URL:', url);
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.success && data.ranking) {
+                    console.log('[Dashboard] Top Páginas carregadas:', data.ranking.length, 'itens');
+                    renderizarRanking('topPagesRanking', data.ranking);
+                }
+            } catch (error) {
+                console.error('[Dashboard] Erro ao carregar top páginas:', error);
+                $('#topPagesRanking').html('<li class="text-muted text-center py-3">Erro ao carregar dados</li>');
+            }
+        }
+
+        // ====== TOP ERROS ======
+        async function carregarTopErros() {
+            try {
+                const filtros = construirQueryFiltros();
+                const url = '/api/LogErros/Dashboard/TopErrors?dias=' + diasAnalise + filtros;
+                console.log('[Dashboard] Carregando Top Erros com filtros:', filtros, '| URL:', url);
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.success && data.ranking) {
+                    console.log('[Dashboard] Top Erros carregados:', data.ranking.length, 'itens');
+                    renderizarRanking('topErrorsRanking', data.ranking);
+                }
+            } catch (error) {
+                console.error('[Dashboard] Erro ao carregar top erros:', error);
+                $('#topErrorsRanking').html('<li class="text-muted text-center py-3">Erro ao carregar dados</li>');
+            }
+        }
+
+        function renderizarRanking(containerId, ranking) {
+            if (!ranking || ranking.length === 0) {
+                $('#' + containerId).html('<li class="text-muted text-center py-3"><i class="fa-duotone fa-inbox me-2"></i>Nenhum dado disponível</li>');
+                return;
+            }
+
+            const maxCount = Math.max(...ranking.map(r => r.count));
+            const isTopPages = containerId === 'topPagesRanking';
+            let html = '';
+
+            ranking.forEach((item, index) => {
+                const positionClass = index === 0 ? 'top-1' : (index === 1 ? 'top-2' : (index === 2 ? 'top-3' : 'other'));
+                const barWidth = (item.count / maxCount * 100).toFixed(0);
+                const clickable = isTopPages ? 'clickable' : '';
+                const dataAttrs = isTopPages ? `data-url="${escapeHtml(item.subLabel || item.label)}" data-label="${escapeHtml(item.label)}"` : '';
+                const onclick = isTopPages ? `onclick="abrirModalErros(this)"` : '';
+
+                html += `
+                    <li class="ranking-item ${clickable}" ${dataAttrs} ${onclick}>
+                        <div class="ranking-position ${positionClass}">${index + 1}</div>
+                        <div class="ranking-content">
+                            <div class="ranking-label" title="${escapeHtml(item.label)}">${escapeHtml(item.label)}</div>
+                            ${item.subLabel ? `<div class="ranking-sublabel">${escapeHtml(item.subLabel)}</div>` : ''}
+                            <div class="ranking-bar">
+                                <div class="ranking-bar-fill" style="width: ${barWidth}%;"></div>
+                            </div>
+                        </div>
+                        <div class="ranking-count">${item.count}</div>
+                        ${isTopPages ? '<i class="fa-duotone fa-arrow-right view-details-icon ms-2"></i>' : ''}
+                    </li>
+                `;
+            });
+
+            $('#' + containerId).html(html);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ====== HORÁRIOS DE PICO ======
+        async function carregarHorariosPico() {
+            try {
+                const filtros = construirQueryFiltros();
+                const response = await fetch('/api/LogErros/Dashboard/PeakHours?dias=' + diasAnalise + filtros);
+                const data = await response.json();
+
+                if (data.success && data.peakHours) {
+                    renderizarPeakHours(data.peakHours);
+                }
+            } catch (error) {
+                console.error('[Dashboard] Erro ao carregar horários de pico:', error);
+            }
+        }
+
+        function renderizarPeakHours(peakHours) {
+            const maxErros = Math.max(...peakHours.map(h => h.totalErros), 1);
+            let html = '';
+
+            for (let h = 0; h < 24; h++) {
+                const hourData = peakHours.find(p => p.hora === h) || { hora: h, totalErros: 0 };
+                const ratio = hourData.totalErros / maxErros;
+                let level = 0;
+                if (ratio > 0.8) level = 5;
+                else if (ratio > 0.6) level = 4;
+                else if (ratio > 0.4) level = 3;
+                else if (ratio > 0.2) level = 2;
+                else if (ratio > 0) level = 1;
+
+                html += `<div class="peak-hour level-${level}" title="${h}h: ${hourData.totalErros} erros">${h}</div>`;
+            }
+
+            $('#peakHoursGrid').html(html);
+        }
+
+        // ====== ANOMALIAS ======
+        async function carregarAnomalias() {
+            try {
+                const filtros = construirQueryFiltros();
+                const response = await fetch('/api/LogErros/Dashboard/Anomalies?dias=' + diasAnalise + filtros);
+                const data = await response.json();
+
+                if (data.success) {
+                    renderizarAnomalias(data.anomalies || []);
+                }
+            } catch (error) {
+                console.error('[Dashboard] Erro ao carregar anomalias:', error);
+                $('#anomaliesContainer').html('<div class="text-danger text-center py-3">Erro ao carregar</div>');
+            }
+        }
+
+        function renderizarAnomalias(anomalies) {
+            if (!anomalies || anomalies.length === 0) {
+                $('#anomaliesContainer').html(`
+                    <div class="text-center py-4" style="color: #10b981;">
+                        <i class="fa-duotone fa-check-circle fa-3x mb-3"></i>
+                        <p class="mb-0 fw-bold">Tudo Normal!</p>
+                        <small class="text-muted">Nenhuma anomalia detectada no período</small>
+                    </div>
+                `);
+                return;
+            }
+
+            let html = '';
+            anomalies.slice(0, 5).forEach(anomaly => {
+                const cardClass = anomaly.severidade === 'high' ? 'high' : '';
+                const dataFormatada = new Date(anomaly.dataHora).toLocaleString('pt-BR');
+
+                html += `
+                    <div class="anomaly-card ${cardClass}">
+                        <div class="anomaly-header">
+                            <div class="anomaly-icon">
+                                <i class="fa-solid fa-exclamation"></i>
+                            </div>
+                            <div>
+                                <div class="anomaly-title">${anomaly.countErros} erros</div>
+                                <div class="anomaly-details">${dataFormatada}</div>
+                            </div>
+                        </div>
+                        <div class="anomaly-details">
+                            ${anomaly.mensagem}
+                        </div>
+                    </div>
+                `;
+            });
+
+            $('#anomaliesContainer').html(html);
+        }
+
+        // ====== MODAL DE ERROS ======
+        var errosCarregados = [];
+        var erroSelecionado = null;
+        var claudeConfigurado = false;
+
+        // Inicialização do modal
+        $(document).ready(function() {
+            verificarStatusClaude();
+        });
+
+        // Função para mostrar tabs manualmente (evita problemas de navegação)
+        function mostrarTab(panelId, tabElement) {
+            // Remove active de todas as tabs
+            $('#errorTabs .nav-link').removeClass('active');
+            // Adiciona active na tab clicada
+            $(tabElement).addClass('active');
+
+            // Esconde todos os painéis
+            $('.tab-content .tab-pane').removeClass('show active');
+            // Mostra o painel correspondente
+            $('#' + panelId).addClass('show active');
+        }
+
+        async function verificarStatusClaude() {
+            try {
+                const response = await fetch('/api/LogErros/Dashboard/ClaudeStatus');
+                const data = await response.json();
+                claudeConfigurado = data.configured;
+
+                if (claudeConfigurado) {
+                    $('#claudeStatusText').html('<i class="fa-duotone fa-circle-check text-success me-1"></i> Claude AI disponível');
+                } else {
+                    $('#claudeStatusText').html('<i class="fa-duotone fa-circle-xmark text-warning me-1"></i> Claude AI não configurado');
+                }
+            } catch (error) {
+                console.error('Erro ao verificar status do Claude:', error);
+                $('#claudeStatusText').html('<i class="fa-duotone fa-circle-xmark text-danger me-1"></i> Erro ao verificar Claude');
+            }
+        }
+
+        function abrirModalErros(element) {
+            const url = $(element).data('url');
+            const label = $(element).data('label');
+
+            $('#modalPageTitle').text('Erros: ' + label);
+            $('#errorDetailsModal').modal('show');
+
+            // Reset
+            errosCarregados = [];
+            erroSelecionado = null;
+            $('#errorsList').html('<div class="error-empty-state"><i class="fa-duotone fa-spinner fa-spin"></i><p>Carregando erros...</p></div>');
+            $('#errorDetailContent').html('<div class="error-empty-state"><i class="fa-duotone fa-hand-pointer"></i><p>Selecione um erro na lista para ver os detalhes</p></div>');
+            $('#aiAnalysisResult').html('<div class="error-empty-state"><i class="fa-duotone fa-robot"></i><p>Selecione um erro e clique em "IA" para analisar</p></div>');
+
+            // Volta para a primeira tab usando nossa função
+            mostrarTab('errors-list-panel', document.getElementById('tab-errors-list'));
+
+            carregarErrosDaPagina(url);
+        }
+
+        async function carregarErrosDaPagina(url) {
+            try {
+                const filtros = construirQueryFiltros();
+                const response = await fetch('/api/LogErros/Dashboard/PageErrors?url=' + encodeURIComponent(url) + '&dias=' + diasAnalise + filtros);
+                const data = await response.json();
+
+                if (data.success && data.errors) {
+                    errosCarregados = data.errors;
+                    renderizarListaErros(data.errors);
+                    $('#errorCountBadge').text(data.totalErrors);
+                } else {
+                    $('#errorsList').html('<div class="error-empty-state"><i class="fa-duotone fa-exclamation-triangle text-warning"></i><p>' + (data.error || 'Erro ao carregar') + '</p></div>');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar erros:', error);
+                $('#errorsList').html('<div class="error-empty-state"><i class="fa-duotone fa-exclamation-triangle text-danger"></i><p>Erro de conexão</p></div>');
+            }
+        }
+
+        function renderizarListaErros(errors) {
+            if (!errors || errors.length === 0) {
+                $('#errorsList').html('<div class="error-empty-state"><i class="fa-duotone fa-check-circle text-success"></i><p>Nenhum erro encontrado no período</p></div>');
+                return;
+            }
+
+            let html = '';
+            errors.forEach((error, index) => {
+                const badgeClass = getBadgeClass(error.tipo);
+                const dataFormatada = new Date(error.dataHora).toLocaleString('pt-BR');
+
+                html += `
+                    <div class="error-list-item" data-index="${index}">
+                        <div class="error-header">
+                            <span class="error-type-badge ${badgeClass}">${escapeHtml(error.tipo)}</span>
+                            <div class="error-message" onclick="selecionarErro(${index})" style="cursor: pointer;">${escapeHtml(error.mensagemCurta || error.mensagem)}</div>
+                            <button class="btn btn-sm btn-analyze-ai-mini" onclick="analisarErroRapido(${index}); event.stopPropagation();" title="Analisar com Claude AI">
+                                <i class="fa-duotone fa-sparkles"></i> IA
+                            </button>
+                        </div>
+                        <div class="error-meta" onclick="selecionarErro(${index})" style="cursor: pointer;">
+                            <span><i class="fa-duotone fa-clock"></i> ${dataFormatada}</span>
+                            ${error.arquivo ? `<span><i class="fa-duotone fa-file-code"></i> ${escapeHtml(truncarTexto(error.arquivo, 30))}</span>` : ''}
+                            ${error.metodo ? `<span><i class="fa-duotone fa-function"></i> ${escapeHtml(error.metodo)}</span>` : ''}
+                            ${error.linha ? `<span><i class="fa-duotone fa-hashtag"></i> Linha ${error.linha}</span>` : ''}
+                            ${error.usuario ? `<span><i class="fa-duotone fa-user"></i> ${escapeHtml(error.usuario)}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            $('#errorsList').html(html);
+        }
+
+        function getBadgeClass(tipo) {
+            if (!tipo) return 'badge-secondary';
+            const t = tipo.toUpperCase();
+            if (t.includes('ERROR-JS')) return 'badge-error-js';
+            if (t.includes('HTTP-ERROR')) return 'badge-http-error';
+            if (t.includes('ERROR')) return 'badge-error';
+            if (t.includes('WARN')) return 'badge-warn';
+            if (t.includes('INFO')) return 'badge-info';
+            if (t.includes('CONSOLE')) return 'badge-console';
+            return 'badge-secondary';
+        }
+
+        function truncarTexto(texto, maxLen) {
+            if (!texto || texto.length <= maxLen) return texto;
+            return '...' + texto.substring(texto.length - maxLen);
+        }
+
+        function selecionarErro(index) {
+            // Marcar como selecionado visualmente
+            $('.error-list-item').removeClass('selected');
+            $(`.error-list-item[data-index="${index}"]`).addClass('selected');
+
+            erroSelecionado = errosCarregados[index];
+
+            renderizarDetalhesErro(erroSelecionado);
+
+            // Limpar análise anterior
+            $('#aiAnalysisResult').html('<div class="error-empty-state"><i class="fa-duotone fa-robot"></i><p>Clique em "IA" no erro para analisar</p></div>');
+
+            // Ir para tab de detalhes usando nossa função
+            mostrarTab('error-detail-panel', document.getElementById('tab-error-detail'));
+        }
+
+        function renderizarDetalhesErro(error) {
+            const dataFormatada = new Date(error.dataHora).toLocaleString('pt-BR');
+
+            let html = `
+                <div class="error-detail-section">
+                    <h6><i class="fa-duotone fa-circle-info"></i> Informações Básicas</h6>
+                    <div class="error-detail-grid">
+                        <div class="error-detail-item">
+                            <label>Tipo</label>
+                            <span class="error-type-badge ${getBadgeClass(error.tipo)}">${escapeHtml(error.tipo)}</span>
+                        </div>
+                        <div class="error-detail-item">
+                            <label>Origem</label>
+                            <span>${escapeHtml(error.origem || 'N/A')}</span>
+                        </div>
+                        <div class="error-detail-item">
+                            <label>Data/Hora</label>
+                            <span>${dataFormatada}</span>
+                        </div>
+                        <div class="error-detail-item">
+                            <label>Nível</label>
+                            <span>${escapeHtml(error.nivel || 'N/A')}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="error-detail-section">
+                    <h6><i class="fa-duotone fa-message-exclamation"></i> Mensagem</h6>
+                    <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1rem; font-size: 0.85rem; color: #dc3545;">
+                        ${escapeHtml(error.mensagem)}
+                    </div>
+                </div>
+
+                <div class="error-detail-section">
+                    <h6><i class="fa-duotone fa-code"></i> Localização</h6>
+                    <div class="error-detail-grid">
+                        <div class="error-detail-item">
+                            <label>Arquivo</label>
+                            <span>${escapeHtml(error.arquivo || 'N/A')}</span>
+                        </div>
+                        <div class="error-detail-item">
+                            <label>Método</label>
+                            <span>${escapeHtml(error.metodo || 'N/A')}</span>
+                        </div>
+                        <div class="error-detail-item">
+                            <label>Linha</label>
+                            <span>${error.linha || 'N/A'}</span>
+                        </div>
+                        <div class="error-detail-item">
+                            <label>Coluna</label>
+                            <span>${error.coluna || 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            if (error.exceptionType || error.exceptionMessage) {
+                html += `
+                    <div class="error-detail-section">
+                        <h6><i class="fa-duotone fa-bug"></i> Exceção</h6>
+                        <div class="error-detail-grid">
+                            <div class="error-detail-item" style="grid-column: span 2;">
+                                <label>Tipo</label>
+                                <span>${escapeHtml(error.exceptionType || 'N/A')}</span>
+                            </div>
+                        </div>
+                        ${error.exceptionMessage ? `<div style="margin-top: 0.5rem; font-size: 0.85rem; color: #dc3545;">${escapeHtml(error.exceptionMessage)}</div>` : ''}
+                    </div>
+                `;
+            }
+
+            if (error.stackTrace) {
+                html += `
+                    <div class="error-detail-section">
+                        <h6><i class="fa-duotone fa-layer-group"></i> Stack Trace</h6>
+                        <div class="error-stack-trace">${escapeHtml(error.stackTrace)}</div>
+                    </div>
+                `;
+            }
+
+            if (error.innerException) {
+                html += `
+                    <div class="error-detail-section">
+                        <h6><i class="fa-duotone fa-circle-nodes"></i> Inner Exception</h6>
+                        <div class="error-stack-trace">${escapeHtml(error.innerException)}</div>
+                    </div>
+                `;
+            }
+
+            html += `
+                <div class="error-detail-section">
+                    <h6><i class="fa-duotone fa-globe"></i> Contexto HTTP</h6>
+                    <div class="error-detail-grid">
+                        <div class="error-detail-item" style="grid-column: span 2;">
+                            <label>URL</label>
+                            <span>${escapeHtml(error.url || 'N/A')}</span>
+                        </div>
+                        <div class="error-detail-item">
+                            <label>Método HTTP</label>
+                            <span>${escapeHtml(error.httpMethod || 'N/A')}</span>
+                        </div>
+                        <div class="error-detail-item">
+                            <label>Status Code</label>
+                            <span>${error.statusCode || 'N/A'}</span>
+                        </div>
+                        <div class="error-detail-item" style="grid-column: span 2;">
+                            <label>User Agent</label>
+                            <span style="font-size: 0.75rem;">${escapeHtml(error.userAgent || 'N/A')}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="error-detail-section">
+                    <h6><i class="fa-duotone fa-user"></i> Usuário</h6>
+                    <div class="error-detail-grid">
+                        <div class="error-detail-item">
+                            <label>Usuário</label>
+                            <span>${escapeHtml(error.usuario || 'Anônimo')}</span>
+                        </div>
+                        <div class="error-detail-item">
+                            <label>Resolvido</label>
+                            <span>${error.resolvido ? '<i class="fa-duotone fa-check-circle text-success"></i> Sim' : '<i class="fa-duotone fa-circle-xmark text-danger"></i> Não'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            if (error.dadosAdicionais) {
+                html += `
+                    <div class="error-detail-section">
+                        <h6><i class="fa-duotone fa-brackets-curly"></i> Dados Adicionais (JSON)</h6>
+                        <div class="error-stack-trace">${formatarJson(error.dadosAdicionais)}</div>
+                    </div>
+                `;
+            }
+
+            // Botão de análise com IA
+            html += `
+                <div class="error-detail-section text-center" style="background: linear-gradient(135deg, #f0f7ff, #e8f4fc); border-radius: 8px; margin-top: 1rem;">
+                    <h6><i class="fa-duotone fa-robot"></i> Análise com Inteligência Artificial</h6>
+                    <p class="text-muted small mb-2">Envie este erro para o Claude AI analisar e receber sugestões de correção</p>
+                    <button class="btn btn-analyze-ai" onclick="analisarComClaude()">
+                        <i class="fa-duotone fa-sparkles"></i>
+                        Analisar com Claude AI
+                    </button>
+                </div>
+            `;
+
+            $('#errorDetailContent').html(html);
+        }
+
+        function formatarJson(jsonStr) {
+            try {
+                const obj = JSON.parse(jsonStr);
+                return escapeHtml(JSON.stringify(obj, null, 2));
+            } catch {
+                return escapeHtml(jsonStr);
+            }
+        }
+
+        // ====== ANÁLISE COM CLAUDE AI ======
+
+        // Função rápida para analisar direto do botão na lista
+        async function analisarErroRapido(index) {
+            // Seleciona o erro
+            erroSelecionado = errosCarregados[index];
+
+            // Marca como selecionado visualmente
+            $('.error-list-item').removeClass('selected');
+            $(`.error-list-item[data-index="${index}"]`).addClass('selected');
+
+            // Encontra o botão clicado
+            const btn = $(`.error-list-item[data-index="${index}"] .btn-analyze-ai-mini`);
+            const originalHtml = btn.html();
+
+            btn.addClass('analyzing');
+            btn.html('<i class="fa-solid fa-spinner"></i>');
+
+            try {
+                const response = await fetch('/api/LogErros/Dashboard/AnalyzeError/' + erroSelecionado.id, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    renderizarAnaliseIA(data);
+                    // Vai para a tab de análise
+                    mostrarTab('ai-analysis-panel', document.getElementById('tab-ai-analysis'));
+                } else {
+                    $('#aiAnalysisResult').html(`
+                        <div class="alert alert-danger">
+                            <i class="fa-duotone fa-exclamation-triangle me-2"></i>
+                            ${escapeHtml(data.error || 'Erro ao analisar')}
+                        </div>
+                    `);
+                    mostrarTab('ai-analysis-panel', document.getElementById('tab-ai-analysis'));
+                }
+            } catch (error) {
+                console.error('Erro ao analisar com Claude:', error);
+                $('#aiAnalysisResult').html(`
+                    <div class="alert alert-danger">
+                        <i class="fa-duotone fa-exclamation-triangle me-2"></i>
+                        Erro de conexão com o serviço de análise
+                    </div>
+                `);
+                mostrarTab('ai-analysis-panel', document.getElementById('tab-ai-analysis'));
+            } finally {
+                btn.removeClass('analyzing');
+                btn.html(originalHtml);
+            }
+        }
+
+        async function analisarComClaude() {
+            if (!erroSelecionado) {
+                mostrarNotificacao('warning', 'Selecione um erro primeiro');
+                return;
+            }
+
+            const btn = $('#btnAnalyzeAI');
+            const originalText = btn.html();
+
+            btn.prop('disabled', true);
+            btn.html('<i class="fa-solid fa-spinner fa-spin"></i> Analisando...');
+
+            try {
+                const response = await fetch('/api/LogErros/Dashboard/AnalyzeError/' + erroSelecionado.id, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    renderizarAnaliseIA(data);
+                    mostrarTab('ai-analysis-panel', document.getElementById('tab-ai-analysis'));
+                } else {
+                    $('#aiAnalysisResult').html(`
+                        <div class="alert alert-danger">
+                            <i class="fa-duotone fa-exclamation-triangle me-2"></i>
+                            ${escapeHtml(data.error || 'Erro ao analisar')}
+                        </div>
+                    `);
+                    mostrarTab('ai-analysis-panel', document.getElementById('tab-ai-analysis'));
+                }
+            } catch (error) {
+                console.error('Erro ao analisar com Claude:', error);
+                $('#aiAnalysisResult').html(`
+                    <div class="alert alert-danger">
+                        <i class="fa-duotone fa-exclamation-triangle me-2"></i>
+                        Erro de conexão com o serviço de análise
+                    </div>
+                `);
+                mostrarTab('ai-analysis-panel', document.getElementById('tab-ai-analysis'));
+            } finally {
+                btn.prop('disabled', false);
+                btn.html(originalText);
+            }
+        }
+
+        // Flag para inicializar marked apenas uma vez
+        let markedInitialized = false;
+
+        function initializeMarked() {
+            if (markedInitialized) return;
+
+            try {
+                if (typeof marked !== 'undefined' && typeof hljs !== 'undefined') {
+                    // Tenta usar marked-highlight se disponível
+                    const highlightExt = typeof markedHighlight !== 'undefined'
+                        ? (markedHighlight.markedHighlight || markedHighlight)
+                        : null;
+
+                    if (highlightExt && typeof highlightExt === 'function') {
+                        // Usa a extensão marked-highlight (API moderna)
+                        marked.use(highlightExt({
+                            langPrefix: 'hljs language-',
+                            highlight: function(code, lang) {
+                                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                                try {
+                                    return hljs.highlight(code, { language: language }).value;
+                                } catch (e) {
+                                    console.warn('Highlight error:', e);
+                                    return code;
+                                }
+                            }
+                        }));
+                        console.log('marked-highlight inicializado com sucesso');
+                    } else {
+                        console.warn('marked-highlight não disponível, usando fallback');
+                    }
+                }
+
+                if (typeof marked !== 'undefined') {
+                    marked.setOptions({
+                        breaks: true,
+                        gfm: true
+                    });
+                }
+
+                markedInitialized = true;
+            } catch (e) {
+                console.error('Erro ao inicializar marked:', e);
+            }
+        }
+
+        function renderizarAnaliseIA(data) {
+            // Inicializa marked se ainda não foi
+            initializeMarked();
+
+            // Parse do markdown com syntax highlighting
+            let analysisHtml = '';
+            try {
+                if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+                    analysisHtml = marked.parse(data.analysis || '');
+                } else if (typeof marked === 'function') {
+                    analysisHtml = marked(data.analysis || '');
+                } else {
+                    // Fallback sem marked
+                    analysisHtml = (data.analysis || '').replace(/\n/g, '<br>');
+                }
+            } catch (e) {
+                console.error('Erro ao processar markdown:', e);
+                analysisHtml = (data.analysis || '').replace(/\n/g, '<br>');
+            }
+
+            const dataFormatada = new Date(data.analyzedAt).toLocaleString('pt-BR');
+
+            const html = `
+                <div class="ai-analysis-result">
+                    <div class="ai-analysis-header">
+                        <i class="fa-duotone fa-sparkles"></i>
+                        <div>
+                            <div class="ai-title">Análise do Claude AI</div>
+                            <div class="ai-meta">Modelo: ${escapeHtml(data.model || 'N/A')} | Tokens: ${data.tokens?.input || 0} → ${data.tokens?.output || 0}</div>
+                        </div>
+                        <div class="ai-meta text-end">
+                            ${dataFormatada}
+                        </div>
+                    </div>
+                    <div class="ai-analysis-content">
+                        ${analysisHtml}
+                    </div>
+                </div>
+            `;
+
+            $('#aiAnalysisResult').html(html);
+
+            // Aplica syntax highlighting e adiciona botões de copiar
+            $('#aiAnalysisResult pre').each(function(i, pre) {
+                const $pre = $(pre);
+                const $code = $pre.find('code');
+
+                // Extrai a linguagem do código
+                let lang = '';
+                if ($code.length) {
+                    const classMatch = $code.attr('class')?.match(/language-(\w+)/);
+                    lang = classMatch ? classMatch[1] : '';
+
+                    // Aplica syntax highlighting
+                    if (typeof hljs !== 'undefined') {
+                        hljs.highlightElement($code[0]);
+                    }
+                }
+
+                // Envolve em wrapper para posicionar botões
+                $pre.wrap('<div class="code-block-wrapper"></div>');
+                const $wrapper = $pre.parent();
+
+                // Adiciona badge de linguagem
+                if (lang) {
+                    $wrapper.prepend(`<span class="code-lang-badge">${lang}</span>`);
+                }
+
+                // Adiciona botão de copiar
+                const copyBtn = $(`<button class="code-copy-btn" title="Copiar código">
+                    <i class="fa-regular fa-copy"></i> Copiar
+                </button>`);
+
+                copyBtn.on('click', function() {
+                    const codeText = $code.length ? $code.text() : $pre.text();
+                    navigator.clipboard.writeText(codeText).then(() => {
+                        const $btn = $(this);
+                        $btn.addClass('copied').html('<i class="fa-regular fa-check"></i> Copiado!');
+                        setTimeout(() => {
+                            $btn.removeClass('copied').html('<i class="fa-regular fa-copy"></i> Copiar');
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Erro ao copiar:', err);
+                        toastr.error('Erro ao copiar código');
+                    });
+                });
+
+                $wrapper.append(copyBtn);
+            });
+        }
+    </script>
+}

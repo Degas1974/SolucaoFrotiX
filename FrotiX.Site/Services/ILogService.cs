@@ -41,6 +41,11 @@ public interface ILogService
     void ErrorJS(string message, string? arquivo = null, string? metodo = null, int? linha = null, int? coluna = null, string? stack = null, string? userAgent = null, string? url = null);
 
     /// <summary>
+    /// Registra log do console do navegador (console.log/warn/error/info)
+    /// </summary>
+    void LogConsole(string tipo, string message, string? arquivo = null, string? metodo = null, int? linha = null, int? coluna = null, string? stack = null, string? userAgent = null, string? url = null);
+
+    /// <summary>
     /// Registra uma mensagem de debug (apenas em modo DEBUG)
     /// </summary>
     void Debug(string message, string? arquivo = null);
@@ -135,6 +140,7 @@ public class LogStats
     public int InfoCount { get; set; }
     public int JSErrorCount { get; set; }
     public int HttpErrorCount { get; set; }
+    public int ConsoleCount { get; set; } // Logs do console do navegador
     public DateTime? FirstLogDate { get; set; }
     public DateTime? LastLogDate { get; set; }
 }

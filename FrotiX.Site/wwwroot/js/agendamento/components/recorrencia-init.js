@@ -194,6 +194,15 @@ window.inicializarDropdownPeriodos = function ()
     {
         console.log("🔧 Inicializando dropdown de períodos...");
 
+        // Verificar se o Syncfusion está carregado
+        if (typeof ej === 'undefined' || !ej.dropdowns || !ej.dropdowns.DropDownList)
+        {
+            console.warn("⚠️ Syncfusion (ej.dropdowns.DropDownList) ainda não carregado. Aguardando...");
+            // Tentar novamente após um delay
+            setTimeout(window.inicializarDropdownPeriodos, 200);
+            return;
+        }
+
         const lstPeriodosElement = document.getElementById("lstPeriodos");
 
         if (!lstPeriodosElement)

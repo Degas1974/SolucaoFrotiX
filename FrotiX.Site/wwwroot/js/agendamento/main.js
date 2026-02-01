@@ -2262,6 +2262,14 @@ document.addEventListener('DOMContentLoaded', function ()
 // ===== INICIALIZAR TEXTBOX SYNCFUSION PARA RAMAL =====
 function inicializarRamalTextBox()
 {
+    // Verificar se o Syncfusion está carregado
+    if (typeof ej === 'undefined' || !ej.inputs || !ej.inputs.TextBox)
+    {
+        console.warn('⚠️ Syncfusion (ej.inputs.TextBox) ainda não carregado. Aguardando...');
+        setTimeout(inicializarRamalTextBox, 200);
+        return;
+    }
+
     const ramalElement = document.getElementById('txtRamalRequisitanteSF');
 
     if (!ramalElement)

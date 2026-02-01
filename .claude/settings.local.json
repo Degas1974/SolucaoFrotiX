@@ -4,7 +4,8 @@
       "Bash(dotnet restore:*)",
       "Bash(dotnet nuget list source:*)",
       "Bash(NUGET_PACKAGES=$HOME/.nuget/packages dotnet build:*)",
-      "Bash(NUGET_PACKAGES=\"$HOME/.nuget/packages\" dotnet build:*)"
+      "Bash(NUGET_PACKAGES=\"$HOME/.nuget/packages\" dotnet build:*)",
+      "Bash(code:*)"
     ]
   }
 }

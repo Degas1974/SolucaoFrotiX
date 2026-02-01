@@ -727,7 +727,12 @@
         </script>
     }
 
+    @* Handler global de erros JavaScript (deve ser carregado primeiro) *@
+    <script src="~/js/global-error-handler.js" asp-append-version="true"></script>
+    @* Cliente API robusto com retry e tratamento de erros *@
+    <script src="~/js/frotix-api-client.js" asp-append-version="true"></script>
     <script src="~/js/frotix-error-logger.js" asp-append-version="true"></script>
+    <script src="~/js/console-interceptor.js" asp-append-version="true"></script>
 
 </body>
 </html>
