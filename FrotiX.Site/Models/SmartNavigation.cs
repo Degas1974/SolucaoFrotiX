@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: SmartNavigation.cs                                                                      ║
-   ║ 📂 CAMINHO: /Models                                                                                 ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Construir navegação dinâmica a partir de JSON (nav.json).                              ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: NavigationBuilder, SmartNavigation, ListItem, Span, ItemType                            ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: System.Text.Json                                                                   ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: SmartNavigation.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Definir modelos e utilitários de navegação baseados em JSON (nav.json).
+ *
+ * 📥 ENTRADAS     : JSON de navegação e configurações de menu.
+ *
+ * 📤 SAÍDAS       : Estruturas de navegação para menus dinâmicos.
+ *
+ * 🔗 CHAMADA POR  : NavigationModel e componentes de menu.
+ *
+ * 🔄 CHAMA        : System.Text.Json.
+ *
+ * 📦 DEPENDÊNCIAS : System.Text.Json.
+ **************************************************************************************** */
 
 using System.Collections.Generic;
 using System.Text.Json;
@@ -20,15 +25,36 @@ using System.Text.Json.Serialization;
 
 namespace FrotiX.Models
     {
-    // ==================================================================================================
-    // BUILDER
-    // ==================================================================================================
-    // Fornece utilitários para construir navegação a partir de JSON.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ BUILDER: NavigationBuilder
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Fornecer utilitários para construir navegação a partir de JSON.
+     *
+     * 📥 ENTRADAS     : JSON de navegação.
+     *
+     * 📤 SAÍDAS       : Instâncias de SmartNavigation.
+     *
+     * 🔗 CHAMADA POR  : NavigationModel.
+     *
+     * 🔄 CHAMA        : JsonSerializer.
+     ****************************************************************************************/
     internal static class NavigationBuilder
         {
         private static JsonSerializerOptions DefaultSettings => SerializerSettings();
 
+        /****************************************************************************************
+         * ⚡ MÉTODO: SerializerSettings
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Configurar opções padrão de serialização JSON.
+         *
+         * 📥 ENTRADAS     : indented (true para JSON formatado).
+         *
+         * 📤 SAÍDAS       : JsonSerializerOptions configurado.
+         *
+         * 🔗 CHAMADA POR  : DefaultSettings.
+         *
+         * 🔄 CHAMA        : JsonStringEnumConverter.
+         ****************************************************************************************/
         private static JsonSerializerOptions SerializerSettings(bool indented = true)
             {
             var options = new JsonSerializerOptions
@@ -43,19 +69,67 @@ namespace FrotiX.Models
             return options;
             }
 
-        // Desserializa o JSON de navegação.
+        /****************************************************************************************
+         * ⚡ MÉTODO: FromJson
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Desserializar o JSON de navegação.
+         *
+         * 📥 ENTRADAS     : json (texto do nav.json).
+         *
+         * 📤 SAÍDAS       : SmartNavigation desserializado.
+         *
+         * 🔗 CHAMADA POR  : NavigationModel.
+         *
+         * 🔄 CHAMA        : JsonSerializer.Deserialize.
+         ****************************************************************************************/
         public static SmartNavigation FromJson(string json) => JsonSerializer.Deserialize<SmartNavigation>(json, DefaultSettings);
         }
 
-    // ==================================================================================================
-    // MODELO DE NAVEGAÇÃO
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: SmartNavigation
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar a navegação principal da aplicação.
+     *
+     * 📥 ENTRADAS     : Lista de itens de menu.
+     *
+     * 📤 SAÍDAS       : Estrutura de navegação pronta para UI.
+     *
+     * 🔗 CHAMADA POR  : NavigationModel, layouts e componentes de menu.
+     *
+     * 🔄 CHAMA        : ListItem.
+     ****************************************************************************************/
     public sealed class SmartNavigation
         {
+        /****************************************************************************************
+         * ⚡ CONSTRUTOR: SmartNavigation
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar navegação vazia.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : Instância com listas padrão.
+         *
+         * 🔗 CHAMADA POR  : Desserialização JSON.
+         *
+         * 🔄 CHAMA        : Não se aplica.
+         ****************************************************************************************/
         public SmartNavigation()
             {
             }
 
+        /****************************************************************************************
+         * ⚡ CONSTRUTOR: SmartNavigation
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar navegação com lista de itens.
+         *
+         * 📥 ENTRADAS     : items.
+         *
+         * 📤 SAÍDAS       : Instância com listas preenchidas.
+         *
+         * 🔗 CHAMADA POR  : NavigationModel.
+         *
+         * 🔄 CHAMA        : List.
+         ****************************************************************************************/
         public SmartNavigation(IEnumerable<ListItem> items)
             {
             Lists = new List<ListItem>(items);
@@ -67,9 +141,19 @@ namespace FrotiX.Models
         public List<ListItem> Lists { get; set; } = new List<ListItem>();
         }
 
-    // ==================================================================================================
-    // ITEM DE MENU
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: ListItem
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar item individual de menu.
+     *
+     * 📥 ENTRADAS     : Propriedades do item (texto, ícone, rota).
+     *
+     * 📤 SAÍDAS       : Item utilizado na renderização de menus.
+     *
+     * 🔗 CHAMADA POR  : SmartNavigation e NavigationModel.
+     *
+     * 🔄 CHAMA        : ItemType, Span.
+     ****************************************************************************************/
     public class ListItem
         {
         // Ícone principal.
@@ -106,9 +190,19 @@ namespace FrotiX.Models
         public string[] Roles { get; set; }
         }
 
-    // ==================================================================================================
-    // SPAN
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: Span
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar informações auxiliares de UI para itens do menu.
+     *
+     * 📥 ENTRADAS     : Position, Class e Text.
+     *
+     * 📤 SAÍDAS       : Metadados para renderização de tags auxiliares.
+     *
+     * 🔗 CHAMADA POR  : ListItem.
+     *
+     * 🔄 CHAMA        : Não se aplica.
+     ****************************************************************************************/
     public sealed class Span
         {
         // Posição do span.
@@ -118,11 +212,35 @@ namespace FrotiX.Models
         // Texto do span.
         public string Text { get; set; }
 
-        // Indica se algum valor foi preenchido.
+        /****************************************************************************************
+         * ⚡ MÉTODO: HasValue
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Indicar se o span possui conteúdo definido.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : true quando Position/Class/Text possuem conteúdo.
+         *
+         * 🔗 CHAMADA POR  : Renderização de UI.
+         *
+         * 🔄 CHAMA        : Não se aplica.
+         ****************************************************************************************/
         public bool HasValue() => (Position?.Length ?? 0) + (Class?.Length ?? 0) + (Text?.Length ?? 0) > 0;
         }
 
-    // Tipos de itens de navegação.
+    /****************************************************************************************
+     * ⚡ ENUM: ItemType
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Tipificar itens de navegação (categoria, pai, filho, etc.).
+     *
+     * 📥 ENTRADAS     : Definidas no JSON de navegação.
+     *
+     * 📤 SAÍDAS       : Enum de tipos de item.
+     *
+     * 🔗 CHAMADA POR  : ListItem.
+     *
+     * 🔄 CHAMA        : Não se aplica.
+     ****************************************************************************************/
     public enum ItemType
         {
         Category = 0,
@@ -132,4 +250,3 @@ namespace FrotiX.Models
         Child
         }
     }
-

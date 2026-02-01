@@ -1,13 +1,19 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: ViewOcorrenciasAbertasVeiculo.cs                                                        ║
-   ║ 📂 CAMINHO: /Models                                                                                 ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Mapear a view SQL de ocorrências abertas por veículo.                                  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: ViewOcorrenciasAbertasVeiculo                                                           ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations | TABLE: ViewOcorrenciasAbertasVeiculo                             ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViewOcorrenciasAbertasVeiculo.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Mapear a view SQL de ocorrências abertas por veículo.
+ *
+ * 📥 ENTRADAS     : Dados retornados pela view ViewOcorrenciasAbertasVeiculo.
+ *
+ * 📤 SAÍDAS       : DTO de leitura para consultas e dashboards.
+ *
+ * 🔗 CHAMADA POR  : Consultas de ocorrências e relatórios.
+ *
+ * 🔄 CHAMA        : DataAnnotations, Table.
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations,
+ *                   System.ComponentModel.DataAnnotations.Schema.
+ **************************************************************************************** */
 
 #nullable enable
 using System;
@@ -16,6 +22,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models
 {
+    /****************************************************************************************
+     * ⚡ MODEL: ViewOcorrenciasAbertasVeiculo
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar a view SQL de ocorrências abertas por veículo.
+     *
+     * 📥 ENTRADAS     : Campos retornados pela view (ocorrências, veículo e motorista).
+     *
+     * 📤 SAÍDAS       : Registro somente leitura para consumo na aplicação.
+     *
+     * 🔗 CHAMADA POR  : Camadas de consulta e exibição.
+     *
+     * 🔄 CHAMA        : Table, Key.
+     ****************************************************************************************/
     [Table("ViewOcorrenciasAbertasVeiculo")]
     public class ViewOcorrenciasAbertasVeiculo
     {

@@ -1,13 +1,18 @@
-﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: NavigationModel.cs                                                                      ║
-   ║ 📂 CAMINHO: /Models                                                                                 ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Construir navegação dinâmica baseada em nav.json e permissões do usuário.             ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: NavigationModel                                                                         ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: IUnitOfWork, IHttpContextAccessor, NavigationBuilder, SmartNavigation             ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+﻿/* ****************************************************************************************
+ * ⚡ ARQUIVO: NavigationModel.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Construir navegação dinâmica baseada em nav.json e permissões do usuário.
+ *
+ * 📥 ENTRADAS     : IUnitOfWork, IHttpContextAccessor e arquivo nav.json.
+ *
+ * 📤 SAÍDAS       : SmartNavigation com itens filtrados por permissões.
+ *
+ * 🔗 CHAMADA POR  : Layouts e componentes de menu.
+ *
+ * 🔄 CHAMA        : NavigationBuilder, SmartNavigation, IUnitOfWork.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.Repository.IRepository, Microsoft.AspNetCore.Http.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -20,11 +25,19 @@ using Microsoft.AspNetCore.Http;
 
 namespace FrotiX.Models
     {
-    // ==================================================================================================
-    // NAVEGAÇÃO
-    // ==================================================================================================
-    // Implementa a construção de menus com base em permissões.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: NavigationModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Montar menus dinâmicos a partir de nav.json e permissões do usuário.
+     *
+     * 📥 ENTRADAS     : UnitOfWork, contexto HTTP e definição de navegação em JSON.
+     *
+     * 📤 SAÍDAS       : Estruturas de menu filtradas por acesso.
+     *
+     * 🔗 CHAMADA POR  : Layouts/Views que renderizam o menu.
+     *
+     * 🔄 CHAMA        : NavigationBuilder, SmartNavigation, IUnitOfWork.
+     ****************************************************************************************/
     public class NavigationModel : INavigationModel
         {
         // Valor padrão de href vazio.
@@ -36,6 +49,19 @@ namespace FrotiX.Models
         private static IUnitOfWork _currentUnitOfWork;
         private static IHttpContextAccessor _httpContextAccessor;
 
+        /****************************************************************************************
+         * ⚡ CONSTRUTOR: NavigationModel
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Injetar serviços necessários para construir a navegação.
+         *
+         * 📥 ENTRADAS     : currentUnitOfWork, httpContextAccessor.
+         *
+         * 📤 SAÍDAS       : Instância pronta para gerar menus.
+         *
+         * 🔗 CHAMADA POR  : DI/Startup.
+         *
+         * 🔄 CHAMA        : Não se aplica.
+         ****************************************************************************************/
         public NavigationModel(
             IUnitOfWork currentUnitOfWork,
             IHttpContextAccessor httpContextAccessor
@@ -50,7 +76,19 @@ namespace FrotiX.Models
         // Navegação inicial (itens essenciais).
         public SmartNavigation Seed => BuildNavigation();
 
-        // Constrói a navegação a partir do arquivo nav.json.
+        /****************************************************************************************
+         * ⚡ MÉTODO: BuildNavigation
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Construir navegação a partir do arquivo nav.json.
+         *
+         * 📥 ENTRADAS     : seedOnly (true para itens essenciais).
+         *
+         * 📤 SAÍDAS       : SmartNavigation com menus filtrados.
+         *
+         * 🔗 CHAMADA POR  : Propriedades Full e Seed.
+         *
+         * 🔄 CHAMA        : NavigationBuilder.FromJson, FillProperties.
+         ****************************************************************************************/
         private static SmartNavigation BuildNavigation(bool seedOnly = true)
             {
             var jsonText = File.ReadAllText("nav.json");
@@ -60,7 +98,19 @@ namespace FrotiX.Models
             return new SmartNavigation(menu);
             }
 
-        // Aplica regras de permissão e preenche propriedades de menu.
+        /****************************************************************************************
+         * ⚡ MÉTODO: FillProperties
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Aplicar permissões e preencher propriedades dos itens de menu.
+         *
+         * 📥 ENTRADAS     : items, seedOnly e parent (opcional).
+         *
+         * 📤 SAÍDAS       : Lista de itens filtrados e enriquecidos.
+         *
+         * 🔗 CHAMADA POR  : BuildNavigation.
+         *
+         * 🔄 CHAMA        : IUnitOfWork.Recurso, IUnitOfWork.ControleAcesso, IsVoid.
+         ****************************************************************************************/
         private static List<ListItem> FillProperties(
             IEnumerable<ListItem> items,
             bool seedOnly,
@@ -153,4 +203,3 @@ namespace FrotiX.Models
             }
         }
     }
-

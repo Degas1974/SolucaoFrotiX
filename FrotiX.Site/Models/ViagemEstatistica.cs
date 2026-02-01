@@ -1,13 +1,19 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: ViagemEstatistica.cs                                                                    ║
-   ║ 📂 CAMINHO: /Models                                                                                 ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Consolidar estatísticas de viagens (custos, totais e médias).                          ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: ViagemEstatistica                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core                                                           ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViagemEstatistica.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Consolidar estatísticas de viagens (custos, totais e médias).
+ *
+ * 📥 ENTRADAS     : Contagens, custos, quilometragem e agregados em JSON.
+ *
+ * 📤 SAÍDAS       : Registro persistido de estatísticas por data de referência.
+ *
+ * 🔗 CHAMADA POR  : Rotinas de geração de estatísticas e dashboards.
+ *
+ * 🔄 CHAMA        : DataAnnotations, EF Core (Table/Column).
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations,
+ *                   System.ComponentModel.DataAnnotations.Schema.
+ **************************************************************************************** */
 
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -15,6 +21,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models
 {
+    /****************************************************************************************
+     * ⚡ MODEL: ViagemEstatistica
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Armazenar métricas consolidadas de viagens.
+     *
+     * 📥 ENTRADAS     : Totais, custos e agregados em JSON.
+     *
+     * 📤 SAÍDAS       : Registro para consultas e relatórios.
+     *
+     * 🔗 CHAMADA POR  : Serviços de estatística e dashboards.
+     *
+     * 🔄 CHAMA        : Table, Column, DataAnnotations.
+     ****************************************************************************************/
     [Table("ViagemEstatistica")]
     public class ViagemEstatistica
     {
