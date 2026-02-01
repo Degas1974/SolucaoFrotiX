@@ -1,6 +1,101 @@
-// signalr_manager.js
-// Gerenciador Global de Conexão SignalR
-// Este arquivo deve ser carregado ANTES de qualquer script que use SignalR
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: signalr_manager.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciador GLOBAL de conexões SignalR para todo o sistema FrotiX.
+ *                   Provê singleton pattern para conexão, auto-reconnect, fallback
+ *                   LongPolling, registro de event handlers e callbacks personalizados.
+ * 📥 ENTRADAS     : Nenhuma (auto-executável), métodos recebem eventName, handlers, etc
+ * 📤 SAÍDAS       : API pública com métodos (getConnection, on, off, invoke, etc)
+ * 🔗 CHAMADA POR  : Qualquer script que precise de SignalR (AlertasHub, notificações)
+ * 🔄 CHAMA        : SignalR Client Library (signalR.HubConnectionBuilder), AppToast
+ * 📦 DEPENDÊNCIAS : @microsoft/signalr (SignalR Client), AppToast (notificações)
+ * 📝 OBSERVAÇÕES  : DEVE ser carregado ANTES de scripts que usam SignalR. Singleton.
+ *                   Fallback automático LongPolling se WebSocket falhar.
+ *
+ * 📋 ÍNDICE DE FUNÇÕES (17 funções):
+ *
+ * ┌─ FUNÇÕES DE CONEXÃO ───────────────────────────────────────────────────────────┐
+ * │ 1.  delay(ms)                                                                   │
+ * │     → Helper async para setTimeout (Promise)                                   │
+ * │                                                                                 │
+ * │ 2.  getTransportName(conn)                                                      │
+ * │     → Detecta transporte usado (WebSockets/LongPolling)                        │
+ * │                                                                                 │
+ * │ 3.  createConnection(useFallback)                                               │
+ * │     → Cria HubConnection com transporte (WebSocket ou LongPolling)             │
+ * │     → Configura withAutomaticReconnect, logging, credentials                   │
+ * │                                                                                 │
+ * │ 4.  setupConnectionHandlers()                                                   │
+ * │     → Configura callbacks: onreconnecting, onreconnected, onclose              │
+ * │     → Notifica UI (AppToast), tenta reconexão automática                       │
+ * │                                                                                 │
+ * │ 5.  getConnection()                                                             │
+ * │     → API principal: retorna conexão ativa ou cria + conecta                   │
+ * │     → Promise única (connectionPromise) para evitar múltiplas conexões         │
+ * │     → Timeout 30s, retry automático com fallback LongPolling                   │
+ * └─────────────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ FUNÇÕES DE EVENT HANDLERS ────────────────────────────────────────────────────┐
+ * │ 6.  on(eventName, handler)                                                      │
+ * │     → Registra event handler SignalR (ex: "NovoAlerta")                        │
+ * │     → Armazena para reregistro após reconexão                                  │
+ * │                                                                                 │
+ * │ 7.  off(eventName, handler)                                                     │
+ * │     → Remove event handler                                                     │
+ * │                                                                                 │
+ * │ 8.  reregisterEventHandlers()                                                   │
+ * │     → Reregistra todos os handlers após reconexão bem-sucedida                 │
+ * │                                                                                 │
+ * │ 9.  invoke(methodName, ...args)                                                 │
+ * │     → Invoca método no servidor via SignalR (RPC)                              │
+ * │     → Retorna Promise com resultado do servidor                                │
+ * └─────────────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ FUNÇÕES DE CALLBACKS ─────────────────────────────────────────────────────────┐
+ * │ 10. registerCallback(callback)                                                  │
+ * │     → Registra callback com métodos onReconnecting, onReconnected, onClose     │
+ * │                                                                                 │
+ * │ 11. unregisterCallback(callback)                                                │
+ * │     → Remove callback registrado                                               │
+ * │                                                                                 │
+ * │ 12. notifyAllCallbacks(callbackName, data)                                      │
+ * │     → Notifica todos os callbacks registrados (ex: onReconnected)              │
+ * └─────────────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ FUNÇÕES UTILITÁRIAS ──────────────────────────────────────────────────────────┐
+ * │ 13. getState()                                                                  │
+ * │     → Retorna estado atual: Connected/Connecting/Reconnecting/Disconnected     │
+ * │                                                                                 │
+ * │ 14. disconnect()                                                                │
+ * │     → Desconecta manualmente e reseta estado                                   │
+ * │                                                                                 │
+ * │ 15. forceReconnect()                                                            │
+ * │     → Força reconexão (útil para testes/debug)                                 │
+ * │                                                                                 │
+ * │ 16. getDebugInfo()                                                              │
+ * │     → Retorna objeto debug: state, connectionId, transport, tentativas, etc    │
+ * └─────────────────────────────────────────────────────────────────────────────────┘
+ *
+ * 🔄 FLUXO DE CONEXÃO:
+ * 1. getConnection() chamado
+ * 2. Delay inicial 1s (evita erro WebSocket)
+ * 3. createConnection() → HubConnectionBuilder
+ * 4. connection.start() com timeout 30s
+ * 5. Se WebSocket falhar → fallback automático LongPolling
+ * 6. Se sucesso → resolve Promise, registra handlers
+ * 7. Se falhar após max tentativas → mostra erro ao usuário
+ *
+ * 🔁 AUTO-RECONNECT:
+ * - withAutomaticReconnect: [0, 2s, 5s, 10s, 30s]
+ * - Máximo 5 tentativas
+ * - Notifica UI via AppToast
+ * - Reregistra event handlers automaticamente
+ *
+ * 📡 TRANSPORTE:
+ * - Preferência: WebSockets
+ * - Fallback automático: LongPolling
+ * - Detecção de erro WebSocket → switch automático
+ **************************************************************************************** */
 
 var SignalRManager = (function ()
 {
@@ -29,12 +124,20 @@ var SignalRManager = (function ()
     /**
      * Função auxiliar de delay
      */
-    function delay(ms) 
+    function delay(ms)
     {
-        return new Promise(function (resolve) 
+        try
         {
-            setTimeout(resolve, ms);
-        });
+            return new Promise(function (resolve)
+            {
+                setTimeout(resolve, ms);
+            });
+        }
+        catch (erro)
+        {
+            console.error('Erro em delay:', erro);
+            return Promise.resolve(); // Resolve imediatamente em caso de erro
+        }
     }
 
     /**

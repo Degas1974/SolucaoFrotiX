@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-████████████████████████████████████████████████░░ 99.5%
+█████████████████████████████████████░░░░░░░░░░░░░ 74.5%
 ```
 
 | Métrica | Valor |
 |---------|-------|
-| Total de Arquivos | 905 |
-| Documentados | 901 |
-| Percentual | 99.5% |
-| Última Atualização | 01/02/2026 11:30 |
+| Total de Arquivos | 967 |
+| Documentados | 720 |
+| Percentual | 74.5% |
+| Última Atualização | 01/02/2026 12:00 |
 
 ---
 
@@ -36,13 +36,14 @@
 | 9 | Infrastructure | 1 | 1 | 100% | ✅ Completo |
 | 10 | Logging | 1 | 1 | 100% | ✅ Completo |
 | 11 | Middlewares | 2 | 2 | 100% | ✅ Completo |
-| 12 | Models | 139 | 135 | 97.1% | 🟡 Em Progresso |
+| 12 | Models | 140 | 135 | 96.4% | 🟡 Em Progresso |
 | 13 | Pages | 342 | 342 | 100% | ✅ Completo |
 | 14 | Properties | 1 | 1 | 100% | ✅ Completo |
-| 15 | Repository | 209 | 209 | 100% | ✅ Completo |
-| 16 | Services | 27 | 27 | 100% | ✅ Completo |
+| 15 | Repository | 211 | 209 | 99.0% | 🟡 Quase Completo |
+| 16 | Services | 48 | 30 | 62.5% | 🟡 Em Progresso |
 | 17 | Settings | 4 | 4 | 100% | ✅ Completo |
 | 18 | Tools | 1 | 1 | 100% | ✅ Completo |
+| 19 | **JavaScript** | **132** | **10** | **7.6%** | 🔴 **Pendente** |
 
 ---
 
@@ -1253,15 +1254,60 @@
 
 ---
 
-## 🎯 ARQUIVOS FALTANTES (4/905)
+## 🎯 ARQUIVOS FALTANTES (247/967)
 
-### 📂 Models (4 arquivos pendentes)
+### 📂 JavaScript - wwwroot/js (122/132 pendentes) 🔴 PRIORIDADE MÁXIMA
 
-Os 4 arquivos faltantes em Models precisam ser identificados e documentados. Possíveis candidatos:
-- Arquivos recém-criados que não foram incluídos nos lotes anteriores
-- Arquivos em subpastas específicas que foram pulados
+#### Distribuição por Diretório:
 
-**Ação necessária:** Fazer uma varredura completa de Models para identificar os 4 arquivos sem documentação.
+| Diretório | Total | Documentados | Pendentes | Prioridade |
+|-----------|-------|--------------|-----------|------------|
+| **Raiz** | 30 | 5 | 25 | 🔴 CRÍTICA |
+| **cadastros/** | 59 | 0 | 59 | 🔴 ALTA |
+| **agendamento/** | 28 | 5 | 23 | 🟡 MÉDIA |
+| **dashboards/** | 6 | 0 | 6 | 🟡 MÉDIA |
+| **alertasfrotix/** | 4 | 0 | 4 | 🟡 MÉDIA |
+| **viagens/** | 3 | 0 | 3 | 🟡 MÉDIA |
+| **outros** | 2 | 0 | 2 | 🟢 BAIXA |
+
+#### Arquivos Críticos na Raiz (Prioridade Imediata):
+
+```javascript
+🔴 PRIORIDADE MÁXIMA (Core do Sistema):
+✅ alerta.js (header de referência externa)
+✅ console-interceptor.js (documentado - Lote 182)
+✅ frotix-api-client.js (documentado - Lote 182)
+✅ global-error-handler.js (documentado - Lote 182)
+✅ frotix-error-logger.js (documentado - Lote 182)
+❌ frotix.js ⭐ ARQUIVO PRINCIPAL - PENDENTE
+❌ sweetalert_interop.js ⭐ CORE - PENDENTE
+❌ syncfusion_tooltips.js ⭐ CORE - PENDENTE
+❌ signalr_manager.js - PENDENTE
+❌ site.js - PENDENTE
+
+🟡 PRIORIDADE ALTA:
+❌ administracao.js
+❌ botao-loading.js
+❌ custom.js
+❌ dt-better-errors.js
+❌ error_handler.js
+❌ ftx-datatable-style.js
+❌ global-toast.js
+❌ pdf-export-profissional.js
+❌ whatsapp.js
+```
+
+### 📂 Models (5/140 pendentes)
+
+- Faltam ~5 arquivos em Models para identificar e documentar
+
+### 📂 Services (18/48 pendentes)
+
+- Services em subpastas (DocGenerator, etc.) precisam de documentação
+
+### 📂 Repository (2/211 pendentes)
+
+- ~2 arquivos faltantes para completar 100%
 
 ---
 

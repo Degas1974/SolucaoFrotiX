@@ -1,30 +1,78 @@
-/*
-    ═══════════════════════════════════════════════════════════════════════════════
-    📄 DOCUMENTAÇÃO COMPLETA DISPONÍVEL
-    ═══════════════════════════════════════════════════════════════════════════════
-    
-    📍 Localização: Documentacao/JavaScript/syncfusion_tooltips.js.md
-    📅 Última Atualização: 08/01/2026
-    📋 Versão: 2.0 (Padrão FrotiX Simplificado)
-    
-    Este arquivo gerencia tooltips globais usando Syncfusion EJ2, substituindo
-    tooltips do Bootstrap e funcionando com elementos dinâmicos. Para entender
-    completamente a funcionalidade, consulte a documentação acima.
-    ═══════════════════════════════════════════════════════════════════════════════
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: syncfusion_tooltips.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciador GLOBAL de tooltips usando Syncfusion EJ2. Substitui
+ *                   tooltips Bootstrap por Syncfusion em todo o sistema, com suporte
+ *                   a elementos dinâmicos e auto-refresh via MutationObserver.
+ * 📥 ENTRADAS     : Elementos HTML com atributo [data-ejtip], eventos hover/mouse
+ * 📤 SAÍDAS       : Tooltips visuais Syncfusion estilo dark (#4a6b8a), sem setas
+ * 🔗 CHAMADA POR  : Auto-execução IIFE no carregamento da página (_Layout.cshtml)
+ * 🔄 CHAMA        : Syncfusion EJ2 Tooltip (ej.popups.Tooltip), MutationObserver API
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 (ej.popups.Tooltip), Bootstrap 5 (para limpeza)
+ * 📝 OBSERVAÇÕES  : Tooltips fecham automaticamente após 2 segundos, suportam HTML
+ *                   (quebras de linha com \n → <br>), sem setas visuais (showTipPointer: false)
+ *
+ * 📋 ÍNDICE DE FUNÇÕES (2 funções principais + 4 callbacks Syncfusion):
+ *
+ * ┌─ FUNÇÕES PRINCIPAIS ───────────────────────────────────────────────────────────┐
+ * │ 1. initializeTooltip()                                                          │
+ * │    → Inicializa tooltip global Syncfusion, remove tooltips Bootstrap           │
+ * │    → Aguarda carregamento do Syncfusion (retry 500ms)                          │
+ * │    → Cria instância global window.ejTooltip                                    │
+ * │    → Adiciona CSS customizado dark (#4a6b8a)                                   │
+ * │                                                                                 │
+ * │ 2. refreshTooltips() (window.refreshTooltips)                                  │
+ * │    → Atualiza tooltips para elementos dinâmicos                                │
+ * │    → Remove atributos Bootstrap de novos elementos                             │
+ * │    → Chama ejTooltip.refresh()                                                 │
+ * └─────────────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ CALLBACKS SYNCFUSION ─────────────────────────────────────────────────────────┐
+ * │ 3. content(args)                                                                │
+ * │    → Retorna texto do tooltip via data-ejtip                                   │
+ * │    → Converte \n para <br> (suporte HTML)                                      │
+ * │                                                                                 │
+ * │ 4. beforeOpen(args)                                                             │
+ * │    → Define conteúdo antes de abrir tooltip                                    │
+ * │    → Converte \n para <br>, fallback "Sem descrição"                           │
+ * │                                                                                 │
+ * │ 5. afterOpen(args)                                                              │
+ * │    → Configura auto-close após 2 segundos                                      │
+ * │    → Armazena timeout ID em data-close-timeout                                 │
+ * │                                                                                 │
+ * │ 6. beforeClose(args)                                                            │
+ * │    → Limpa timeout de auto-close                                               │
+ * └─────────────────────────────────────────────────────────────────────────────────┘
+ *
+ * 🔄 AUTO-EXECUTÁVEL:
+ * - IIFE auto-executa no carregamento
+ * - MutationObserver detecta elementos dinâmicos (DataTables, modals, AJAX)
+ * - DOMContentLoaded + fallback para execução imediata
+ *
+ * 🎨 ESTILO VISUAL:
+ * - Background: #4a6b8a (azul acinzentado escuro)
+ * - Texto: #ffffff (branco)
+ * - Border: #7a8a9a, border-radius: 8px
+ * - Shadow: 0 2px 8px rgba(0,0,0,0.15)
+ * - SEM setas (showTipPointer: false)
+ *
+ * 📌 REFERÊNCIA EXTERNA: Documentacao/JavaScript/syncfusion_tooltips.js.md
+ **************************************************************************************** */
 
 // syncfusion_tooltips.js - Tooltip GLOBAL para todos os elementos com data-ejtip
 (function ()
 {
     function initializeTooltip()
     {
-        // Verifica se o Syncfusion está carregado
-        if (typeof ej === 'undefined' || !ej.popups || !ej.popups.Tooltip)
+        try
         {
-            console.warn('Syncfusion não carregado. Tentando novamente em 500ms...');
-            setTimeout(initializeTooltip, 500);
-            return;
-        }
+            // Verifica se o Syncfusion está carregado
+            if (typeof ej === 'undefined' || !ej.popups || !ej.popups.Tooltip)
+            {
+                console.warn('Syncfusion não carregado. Tentando novamente em 500ms...');
+                setTimeout(initializeTooltip, 500);
+                return;
+            }
 
         // Desabilita tooltips do Bootstrap 5 usando try-catch
         document.querySelectorAll('[data-ejtip]').forEach(function (el)
@@ -117,76 +165,120 @@
             // CRÍTICO: content como função que retorna o texto
             content: function (args)
             {
-                let tooltipText = args.getAttribute('data-ejtip');
-                console.log('Tooltip text:', tooltipText);
-                // Converte \n para <br> para suportar quebras de linha
-                if (tooltipText) {
-                    tooltipText = tooltipText.replace(/\n/g, '<br>');
+                try
+                {
+                    let tooltipText = args.getAttribute('data-ejtip');
+                    console.log('Tooltip text:', tooltipText);
+                    // Converte \n para <br> para suportar quebras de linha
+                    if (tooltipText) {
+                        tooltipText = tooltipText.replace(/\n/g, '<br>');
+                    }
+                    return tooltipText || 'Sem descrição';
                 }
-                return tooltipText || 'Sem descrição';
+                catch (erro)
+                {
+                    console.error('Erro em content callback:', erro);
+                    return 'Erro ao carregar tooltip';
+                }
             },
             beforeOpen: function (args)
             {
-                // Garante que o conteúdo seja definido antes de abrir
-                const target = args.target;
-                let tooltipText = target.getAttribute('data-ejtip');
+                try
+                {
+                    // Garante que o conteúdo seja definido antes de abrir
+                    const target = args.target;
+                    let tooltipText = target.getAttribute('data-ejtip');
 
-                if (tooltipText)
+                    if (tooltipText)
+                    {
+                        // Converte \n para <br> para suportar quebras de linha
+                        tooltipText = tooltipText.replace(/\n/g, '<br>');
+                        this.content = tooltipText;
+                        console.log('Tooltip configurado com:', tooltipText);
+                    } else
+                    {
+                        console.warn('Elemento sem data-ejtip:', target);
+                        this.content = 'Sem descrição';
+                    }
+                }
+                catch (erro)
                 {
-                    // Converte \n para <br> para suportar quebras de linha
-                    tooltipText = tooltipText.replace(/\n/g, '<br>');
-                    this.content = tooltipText;
-                    console.log('Tooltip configurado com:', tooltipText);
-                } else
-                {
-                    console.warn('Elemento sem data-ejtip:', target);
-                    this.content = 'Sem descrição';
+                    console.error('Erro em beforeOpen callback:', erro);
+                    this.content = 'Erro ao carregar tooltip';
                 }
             },
             afterOpen: function (args)
             {
-                // Força o fechamento após 2 segundos
-                const tooltipElement = args.element;
-                const closeTimeout = setTimeout(() =>
+                try
                 {
-                    this.close();
-                }, 2000);
+                    // Força o fechamento após 2 segundos
+                    const tooltipElement = args.element;
+                    const closeTimeout = setTimeout(() =>
+                    {
+                        this.close();
+                    }, 2000);
 
-                tooltipElement.setAttribute('data-close-timeout', closeTimeout);
+                    tooltipElement.setAttribute('data-close-timeout', closeTimeout);
+                }
+                catch (erro)
+                {
+                    console.error('Erro em afterOpen callback:', erro);
+                }
             },
             beforeClose: function (args)
             {
-                const closeTimeout = args.element.getAttribute('data-close-timeout');
-                if (closeTimeout)
+                try
                 {
-                    clearTimeout(parseInt(closeTimeout));
-                    args.element.removeAttribute('data-close-timeout');
+                    const closeTimeout = args.element.getAttribute('data-close-timeout');
+                    if (closeTimeout)
+                    {
+                        clearTimeout(parseInt(closeTimeout));
+                        args.element.removeAttribute('data-close-timeout');
+                    }
+                }
+                catch (erro)
+                {
+                    console.error('Erro em beforeClose callback:', erro);
                 }
             }
         });
 
-        window.ejTooltip.appendTo('body');
-        console.log('✓ Tooltip GLOBAL Syncfusion inicializado (sem setas)');
+            window.ejTooltip.appendTo('body');
+            console.log('✓ Tooltip GLOBAL Syncfusion inicializado (sem setas)');
+        }
+        catch (erro)
+        {
+            console.error('Erro em initializeTooltip:', erro);
+            Alerta.TratamentoErroComLinha('syncfusion_tooltips.js', 'initializeTooltip', erro);
+        }
     }
 
     // Refresher para elementos dinâmicos
     window.refreshTooltips = function ()
     {
-        document.querySelectorAll('[data-ejtip]').forEach(function (el)
+        try
         {
-            el.removeAttribute('data-bs-toggle');
-            el.removeAttribute('data-bs-original-title');
-            el.removeAttribute('title');
-        });
+            document.querySelectorAll('[data-ejtip]').forEach(function (el)
+            {
+                el.removeAttribute('data-bs-toggle');
+                el.removeAttribute('data-bs-original-title');
+                el.removeAttribute('title');
+            });
 
-        if (window.ejTooltip)
+            if (window.ejTooltip)
+            {
+                window.ejTooltip.refresh();
+                console.log('✓ Tooltips atualizados');
+            } else
+            {
+                console.warn('⚠ ejTooltip não está inicializado. Inicializando...');
+                initializeTooltip();
+            }
+        }
+        catch (erro)
         {
-            window.ejTooltip.refresh();
-            console.log('✓ Tooltips atualizados');
-        } else
-        {
-            console.warn('⚠ ejTooltip não está inicializado. Inicializando...');
-            initializeTooltip();
+            console.error('Erro em refreshTooltips:', erro);
+            Alerta.TratamentoErroComLinha('syncfusion_tooltips.js', 'refreshTooltips', erro);
         }
     };
 

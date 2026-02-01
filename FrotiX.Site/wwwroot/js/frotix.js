@@ -1,6 +1,59 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: frotix.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Biblioteca CORE do FrotiX com utilitários globais, sistemas de UI
+ *                   (spinner, ripple, loading), formatadores, validações e helpers.
+ *
+ * 📥 ENTRADAS     : Eventos DOM (click, submit, keypress, paste, blur), elementos HTML.
+ *
+ * 📤 SAÍDAS       : Efeitos visuais (spinner, ripple, loading), validações automáticas,
+ *                   strings formatadas, objetos ComboBox.
+ *
+ * 🔗 CHAMADA POR  : Todas as páginas do sistema via _Layout.cshtml (carregamento global).
+ *
+ * 🔄 CHAMA        : Moment.js (formatação de datas), jQuery (animações), Syncfusion/Kendo
+ *                   (tooltips e comboboxes), sessionStorage (persistência de estado).
+ *
+ * 📦 DEPENDÊNCIAS : jQuery, Moment.js, Syncfusion EJ2, Kendo UI, FontAwesome Duotone.
+ *
+ * 📝 OBSERVAÇÕES  : Este é o arquivo PRINCIPAL de utilitários JavaScript do FrotiX.
+ *                   NUNCA remova ou altere sem teste completo em todo o sistema.
+ *                   Documentação externa completa em: Documentacao/JavaScript/frotix.js.md
+ * --------------------------------------------------------------------------------------
+ * 📋 ÍNDICE DE FUNÇÕES (28 funções principais):
+ * --------------------------------------------------------------------------------------
+ * 1.  [trimTransparentPNG]          : Corta bordas PNG transparentes.... (img, w, h) -> Canvas
+ * 2.  [FtxSpin.show]                : Exibe spinner fullscreen FrotiX... (msg) -> void
+ * 3.  [FtxSpin.hide]                : Oculta spinner........................ () -> void
+ * 4.  [FtxSpin.setMsg]              : Atualiza mensagem do spinner........ (msg) -> void
+ * 5.  [lockButton]                  : Trava botão submit c/ spinner....... (btn) -> bool
+ * 6.  [formatarDataBR]              : Formata data para DD/MM/YYYY........ (raw) -> string
+ * 7.  [formatarHora]                : Formata hora para HH:mm.............. (raw) -> string
+ * 8.  [tiraAcento]                  : Sanitiza string p/ nome arquivo..... (txt) -> string
+ * 9.  [createRipple]                : Cria efeito ripple no clique........ (evt, el) -> void
+ * 10. [addRippleToElement]          : Adiciona ripple manualmente......... (el, variant) -> void
+ * 11. [removeRippleFromElement]     : Remove ripple de elemento........... (el) -> void
+ * 12. [FtxLoading.apply]            : Aplica estado loading em botão...... (el) -> bool
+ * 13. [FtxLoading.reset]            : Remove estado loading................ (el) -> void
+ * 14. [FtxLoading.resetAll]         : Remove todos os loadings............. () -> void
+ * 15. [getRequisitanteCombo]        : Retorna ComboBox Requisitante....... () -> kendo.ComboBox
+ * 16. [getRequisitanteEventoCombo]  : Retorna ComboBox Requisitante Evento () -> kendo.ComboBox
+ * 17. [aplicarValidacaoAntiEspacos] : Bloqueia espaços iniciais em inputs. () -> void
+ * --------------------------------------------------------------------------------------
+ * 🔄 SISTEMAS AUTOMÁTICOS (IIFE - auto-execução):
+ * --------------------------------------------------------------------------------------
+ * • FtxSpin System          : Spinner global com persistência via sessionStorage
+ * • Global Busy Submit      : Auto-lock em botões de submit com validação HTML5/jQuery
+ * • Syncfusion Tooltips     : Tooltips globais via [data-ejtip]
+ * • Ripple System           : Efeito ripple automático em todos os botões
+ * • FtxLoading System       : Loading automático em elementos [data-ftx-loading]
+ * • Nav Menu Enhancement    : Melhoria UX no menu lateral (click no texto abre submenu)
+ * • Validação Anti-Espaços  : Bloqueia espaços iniciais em inputs (keypress + trim)
+ * **************************************************************************************** */
+
 /*
     ═══════════════════════════════════════════════════════════════════════════════
-    📄 DOCUMENTAÇÃO COMPLETA DISPONÍVEL
+    📄 DOCUMENTAÇÃO EXTERNA COMPLETA DISPONÍVEL
     ═══════════════════════════════════════════════════════════════════════════════
 
     📍 Localização: Documentacao/JavaScript/frotix.js.md
