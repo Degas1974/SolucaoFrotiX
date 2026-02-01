@@ -1,5 +1,221 @@
-// alertas_upsert.js - Cadastro e Edição de Alertas FrotiX
-// Versão com suporte completo a recorrência (TipoExibicao 1-8)
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: alertas_upsert.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário de cadastro e edição de Alertas FrotiX com suporte completo
+ *                   a recorrência (TipoExibicao 1-8), validação, dropdowns customizados
+ *                   (motorista com foto, agendamento com cards), e integração com API.
+ * 📥 ENTRADAS     : Clicks em tipo-alerta-cards, mudanças em dropdowns Syncfusion,
+ *                   submit do #formAlerta, dados de edição (backend)
+ * 📤 SAÍDAS       : POST /api/AlertasFrotiX/Salvar, validações UI, toasts, SweetAlert,
+ *                   redirect para /AlertasFrotiX após sucesso
+ * 🔗 CHAMADA POR  : AlertasFrotiX/Upsert.cshtml, DOMContentLoaded auto-init
+ * 🔄 CHAMA        : $.ajax, Swal.fire, AppToast.show, Alerta.Confirmar,
+ *                   coletarDadosRecorrenciaAlerta (alertas_recorrencia.js),
+ *                   initCalendarioAlerta, TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery, Syncfusion EJ2 (DropDownList, TextBox, DatePicker, etc.),
+ *                   SweetAlert2, AppToast, Alerta.js, alertas_recorrencia.js (para tipo 8)
+ * 📝 OBSERVAÇÕES  : TipoAlerta 1-6 (Agendamento, Manutenção, Motorista, Veículo, Anúncio,
+ *                   Diversos). TipoExibicao 1-8 (não recorrente 1-3, recorrente 4-8).
+ *                   Todas as funções têm try-catch completo. Previne submit duplo com
+ *                   flag window.salvandoAlerta.
+ *
+ * 📋 ÍNDICE DE FUNÇÕES (18 funções + 3 DOMContentLoaded handlers):
+ *
+ * ┌─ INICIALIZAÇÃO ──────────────────────────────────────────────────────────┐
+ * │ 1. DOMContentLoaded (main)                                              │
+ * │    → Chama: inicializarControles, configurarEventHandlers,             │
+ * │      aplicarSelecaoInicial, configurarValidacao, configurarAvisoUsuarios│
+ * │    → Console.log de inicialização                                       │
+ * │                                                                          │
+ * │ 2. inicializarControles()                                               │
+ * │    → Código comentado: configuração de Syncfusion Tooltip (desativado) │
+ * │    → Placeholder para futuras inicializações                            │
+ * │                                                                          │
+ * │ 3. aplicarSelecaoInicial()                                              │
+ * │    → Lê #TipoAlerta.val(), aplica .selected no card correspondente     │
+ * │    → Chama configurarCamposRelacionados(tipoAtual)                     │
+ * │    → Lê TipoExibicao dropdown, chama configurarCamposExibicao          │
+ * │    → Usado em modo de edição para restaurar estado visual              │
+ * └──────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ EVENT HANDLERS ─────────────────────────────────────────────────────────┐
+ * │ 4. configurarEventHandlers()                                            │
+ * │    → .tipo-alerta-card click: remove .selected de todos, adiciona ao   │
+ * │      clicado, atualiza #TipoAlerta hidden, chama configurarCamposRelacionados│
+ * │    → #TipoExibicao dropdown.change: chama configurarCamposExibicao     │
+ * │    → #formAlerta submit: preventDefault, validação, desabilita botão,  │
+ * │      chama salvarAlerta                                                 │
+ * │    → Usa .off().on() para evitar múltiplos handlers                    │
+ * └──────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ CONFIGURAÇÃO DE CAMPOS DINÂMICOS ───────────────────────────────────────┐
+ * │ 5. configurarCamposRelacionados(tipo)                                   │
+ * │    → Esconde todos: divViagem, divManutencao, divMotorista, divVeiculo │
+ * │    → Limpa valores de todos os dropdowns de vínculo                    │
+ * │    → Switch case TipoAlerta (1-6):                                      │
+ * │      • 1 (Agendamento): mostra divViagem                               │
+ * │      • 2 (Manutenção): mostra divManutencao                            │
+ * │      • 3 (Motorista): mostra divMotorista                              │
+ * │      • 4 (Veículo): mostra divVeiculo                                  │
+ * │      • 5/6 (Anúncio/Diversos): sem vínculos específicos                │
+ * │                                                                          │
+ * │ 6. configurarCamposExibicao(tipoExibicao)                               │
+ * │    → Esconde TODOS os campos primeiro (divDataExibicao, divHorario,    │
+ * │      divDataExpiracao, divDias, divDiaMes, calendarContainer)          │
+ * │    → Ajusta labels (lblDataExibicao, lblHorarioExibicao) conforme tipo│
+ * │    → Switch case TipoExibicao (1-8):                                    │
+ * │      • 1: mostra apenas divDataExpiracao                               │
+ * │      • 2: mostra divHorario + divDataExpiracao                         │
+ * │      • 3: mostra divDataExibicao + divHorario + divDataExpiracao       │
+ * │      • 4: Data Inicial, Horário, Data Final (label="Data Inicial")    │
+ * │      • 5/6 (Semanal/Quinzenal): + divDiasAlerta                        │
+ * │      • 7 (Mensal): + divDiaMesAlerta                                   │
+ * │      • 8 (Dias Variados): Horário + Data Final + Calendar, init se needed│
+ * │    → Console.log de configuração                                        │
+ * └──────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ VALIDAÇÃO ───────────────────────────────────────────────────────────────┐
+ * │ 7. configurarValidacao()                                                │
+ * │    → Adiciona blur handlers customizados aos inputs Syncfusion         │
+ * │    → #Titulo.blur → validarCampo('Titulo', 'Título é obrigatório')    │
+ * │    → #Descricao.blur → validarCampo('Descricao', 'Descrição é obrigatória')│
+ * │                                                                          │
+ * │ 8. validarCampo(campoId, mensagemErro)                                  │
+ * │    → Obtém campo via ej2_instances[0].value                            │
+ * │    → Se vazio: mostra mensagem em [data-valmsg-for], retorna false    │
+ * │    → Se válido: esconde mensagem, retorna true                         │
+ * │                                                                          │
+ * │ 9. validarFormulario()                                                  │
+ * │    → Valida título e descrição (obrigatórios)                          │
+ * │    → Valida TipoAlerta != 0                                            │
+ * │    → Usuários: OPCIONAL (vazio = todos os usuários)                    │
+ * │    → Valida campos de exibição por TipoExibicao (switch case):        │
+ * │      • Tipo 2: requer HorarioExibicao                                  │
+ * │      • Tipo 3: requer DataExibicao                                     │
+ * │      • Tipo 4-7: requer DataExibicao (inicial) + DataExpiracao (final)│
+ * │      • Tipo 5/6: + lstDiasAlerta (array não vazio)                    │
+ * │      • Tipo 7: + lstDiasMesAlerta (int)                                │
+ * │      • Tipo 8: + datasAlertaSelecionadas.length > 0                   │
+ * │    → AppToast.show para cada erro, retorna boolean                     │
+ * └──────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ COLETA DE DADOS E SALVAMENTO ──────────────────────────────────────────┐
+ * │ 10. obterDadosFormulario()                                              │
+ * │     → Monta objeto base: { AlertasFrotiXId, Titulo, Descricao,        │
+ * │       TipoAlerta, Prioridade, TipoExibicao, UsuariosIds }              │
+ * │     → CAMPOS OPCIONAIS DE VÍNCULOS (baseados em TipoAlerta):          │
+ * │       • Tipo 1: ViagemId (limpa não-GUID)                              │
+ * │       • Tipo 2: ManutencaoId                                           │
+ * │       • Tipo 3: MotoristaId                                            │
+ * │       • Tipo 4: VeiculoId                                              │
+ * │     → CAMPOS DE EXIBIÇÃO E RECORRÊNCIA (baseados em TipoExibicao):    │
+ * │       • Tipo 3-7: DataExibicao                                         │
+ * │       • Tipo 2-8: HorarioExibicao                                      │
+ * │       • Todos: DataExpiracao (opcional)                                │
+ * │       • Tipo 5/6: DiasSemana (array)                                   │
+ * │       • Tipo 7: DiaMesRecorrencia (int)                                │
+ * │       • Tipo 8: DatasSelecionadas (string "YYYY-MM-DD,...")           │
+ * │     → Retorna objeto completo ou null em erro                          │
+ * │                                                                          │
+ * │ 11. salvarAlerta()                                                      │
+ * │     → Previne submit duplo: window.salvandoAlerta flag                │
+ * │     → obterDadosFormulario()                                           │
+ * │     → Swal.fire loading modal                                          │
+ * │     → POST /api/AlertasFrotiX/Salvar (JSON)                            │
+ * │     → Sucesso: AppToast.show, redirect /AlertasFrotiX após 1.5s       │
+ * │     → Erro: Swal.fire erro, re-habilita botão submit                  │
+ * │     → Mensagens específicas: 404, 500, responseJSON.message            │
+ * └──────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ AVISO DE USUÁRIOS ──────────────────────────────────────────────────────┐
+ * │ 12. configurarAvisoUsuarios()                                           │
+ * │     → Obtém dropdown #UsuariosIds (multiselect)                        │
+ * │     → Cria div #avisoTodosUsuarios (background azul claro, info)      │
+ * │     → multiselect.change: se vazio → slideDown aviso, senão → slideUp │
+ * │     → Verifica estado inicial: mostra aviso se sem seleção            │
+ * │     → Mensagem: "Nenhum usuário selecionado. O alerta será exibido    │
+ * │       para todos os usuários."                                         │
+ * └──────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ DROPDOWNS CUSTOMIZADOS ─────────────────────────────────────────────────┐
+ * │ 13. configurarDropdownMotoristaComFoto()                                │
+ * │     → Dropdown #MotoristaId com templates customizados                │
+ * │     → itemTemplate: card com <img> + nome (foto em Group.Name)        │
+ * │     → valueTemplate: linha compacta com foto mini + nome              │
+ * │     → onerror: fallback /images/placeholder-user.png                   │
+ * │     → dataBind() força re-render                                        │
+ * │     → DOMContentLoaded: setTimeout 300ms para init                     │
+ * │                                                                          │
+ * │ 14. configurarDropdownAgendamentoRico()                                 │
+ * │     → Dropdown #ViagemId com cards ricos                               │
+ * │     → itemTemplate: card com header (data+hora+finalidade), body       │
+ * │       (origem→destino, requisitante), badges, ícones Font Awesome     │
+ * │     → valueTemplate: linha simples data + origem → destino             │
+ * │     → filtering: busca em DataInicial, Origem, Destino, Requisitante, │
+ * │       Finalidade (multi-field search)                                  │
+ * │     → DOMContentLoaded: setTimeout 300ms                               │
+ * │                                                                          │
+ * │ 15. configurarDropdownManutencaoRico()                                  │
+ * │     → Dropdown #ManutencaoId com cards de OS                           │
+ * │     → itemTemplate: card com NumOS, 4 datas (Solicitação,             │
+ * │       Disponibilização, Entrega, Devolução), Veículo, Reserva         │
+ * │     → valueTemplate: "OS {NumOS} — {Veículo}"                          │
+ * │     → Usa helpers linhaData (com legenda) e linha (sem legenda)       │
+ * │     → filtering: busca em NumOS, Veiculo, CarroReserva                │
+ * │     → DOMContentLoaded: setTimeout 300ms                               │
+ * └──────────────────────────────────────────────────────────────────────────┘
+ *
+ * 📌 TIPOS DE ALERTA (TipoAlerta):
+ * 1 = Agendamento (vincula ViagemId)
+ * 2 = Manutenção (vincula ManutencaoId)
+ * 3 = Motorista (vincula MotoristaId)
+ * 4 = Veículo (vincula VeiculoId)
+ * 5 = Anúncio (sem vínculos)
+ * 6 = Diversos (sem vínculos)
+ *
+ * 📌 TIPOS DE EXIBIÇÃO (TipoExibicao):
+ * 1 = Ao abrir o sistema (não recorrente)
+ * 2 = Em Horário Específico (não recorrente)
+ * 3 = Em Data/Hora Específica (não recorrente)
+ * 4 = Recorrente - Diário (seg-sex automático)
+ * 5 = Recorrente - Semanal (requer dias da semana)
+ * 6 = Recorrente - Quinzenal (requer dias da semana)
+ * 7 = Recorrente - Mensal (requer dia do mês 1-31)
+ * 8 = Recorrente - Dias Variados (requer calendário multi-select)
+ *
+ * 🔄 FLUXO DE CRIAÇÃO DE ALERTA:
+ * 1. Usuário seleciona tipo de alerta (click em card)
+ * 2. configurarCamposRelacionados: mostra campos de vínculo apropriados
+ * 3. Usuário seleciona TipoExibicao
+ * 4. configurarCamposExibicao: mostra campos de recorrência apropriados
+ * 5. Usuário preenche formulário
+ * 6. Submit → validarFormulario
+ * 7. obterDadosFormulario: monta objeto JSON
+ * 8. salvarAlerta: POST /api, loading modal, redirect
+ *
+ * 🔄 FLUXO DE EDIÇÃO:
+ * 1. Backend preenche #TipoAlerta hidden, TipoExibicao dropdown, campos
+ * 2. DOMContentLoaded → aplicarSelecaoInicial
+ * 3. configurarCamposRelacionados + configurarCamposExibicao restauram UI
+ * 4. Usuário edita, submit segue fluxo normal
+ *
+ * 📝 OBSERVAÇÕES ADICIONAIS:
+ * - Previne submit duplo com flag global window.salvandoAlerta
+ * - Usuários opcional: se vazio, alerta para todos (aviso visual azul)
+ * - Dropdowns customizados: 300ms delay na init para Syncfusion carregar
+ * - Foto de motorista: hack usando Group.Name para armazenar URL
+ * - Agendamento cards: busca em 5 campos diferentes (multi-field filtering)
+ * - Manutenção cards: 4 datas com legendas legíveis (Solicitação, etc.)
+ * - Validação: mostra AppToast amarelo para cada erro
+ * - Redirect após salvar: setTimeout 1500ms para usuário ver toast
+ * - Labels dinâmicos: "Data de Exibição" vira "Data Inicial" em recorrentes
+ * - Todas as funções têm try-catch com TratamentoErroComLinha
+ * - 3 DOMContentLoaded handlers separados: main, motorista, agendamento, manutenção
+ * - console.log abundante para debug (inicialização, eventos, configurações)
+ *
+ * 🔌 VERSÃO: 2.0 (Recorrência Completa)
+ * 📌 ÚLTIMA ATUALIZAÇÃO: 01/02/2026
+ **************************************************************************************** */
 
 $(document).ready(function () 
 {

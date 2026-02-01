@@ -1,6 +1,190 @@
-// alertas_navbar.js - Sistema de Alertas no Navbar (Global) - VERSÃO CORRIGIDA
-// Este arquivo deve ser incluído no layout principal (_Layout.cshtml)
-// REQUER: signalr_manager.js carregado ANTES deste arquivo
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: alertas_navbar.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Sistema global de alertas no navbar com atualizações em tempo real
+ *                   via SignalR. Gerencia dropdown de alertas, badge de notificações,
+ *                   marcação de lidos e notificações de navegador.
+ * 📥 ENTRADAS     : Eventos SignalR (NovoAlerta, AtualizarBadgeAlertas), clicks em UI,
+ *                   responses de GET /api/AlertasFrotiX/GetAlertasAtivos
+ * 📤 SAÍDAS       : Renderização de dropdown, atualização de badges, POST marcação lidos,
+ *                   notificações toast/navegador, console.logs
+ * 🔗 CHAMADA POR  : _Layout.cshtml (global), DOMContentLoaded auto-init
+ * 🔄 CHAMA        : SignalRManager.getConnection, $.ajax, AppToast.show, Notification API,
+ *                   TratamentoErroComLinha, Alerta.Confirmar
+ * 📦 DEPENDÊNCIAS : signalr_manager.js (REQUIRED antes deste), jQuery, SignalR Client,
+ *                   AppToast (opcional), Alerta.js (opcional), Bootstrap dropdown markup
+ * 📝 OBSERVAÇÕES  : Requer signalr_manager.js carregado ANTES. Auto-injeta estilos CSS.
+ *                   Badge ID: badgeAlertasSino. Dropdown ID: dropdownAlertas. Todas as
+ *                   funções já possuem try-catch completo com TratamentoErroComLinha.
+ *
+ * 📋 ÍNDICE DE FUNÇÕES (23 funções + 1 IIFE + 1 DOMContentLoaded):
+ *
+ * ┌─ INICIALIZAÇÃO ─────────────────────────────────────────────────────────┐
+ * │ 1. DOMContentLoaded handler                                             │
+ * │    → Auto-init: chama inicializarAlertasNavbar e inicializarSignalRNavbar│
+ * │    → try-catch global na inicialização                                  │
+ * │                                                                          │
+ * │ 2. inicializarAlertasNavbar()                                           │
+ * │    → Carrega alertas não lidos via AJAX                                │
+ * │    → Configura event listeners (sino, dropdown, document click)        │
+ * │    → Previne fechamento ao clicar dentro do dropdown                   │
+ * │                                                                          │
+ * │ 3. inicializarSignalRNavbar()                                           │
+ * │    → Verifica se SignalRManager está disponível (fatal se não)        │
+ * │    → Obtém conexão via SignalRManager.getConnection()                  │
+ * │    → Chama configurarEventHandlersSignalR                              │
+ * │    → Registra callbacks de reconexão (onReconnected, onReconnecting, onClose)│
+ * │    → Retry automático após 5s se falhar                                │
+ * │                                                                          │
+ * │ 4. configurarEventHandlersSignalR()                                     │
+ * │    → SignalR.on("NovoAlerta") - adiciona ao array, atualiza badge, toast│
+ * │    → SignalR.on("AtualizarBadgeAlertas") - atualiza contador de badge │
+ * │    → Chama mostrarNotificacaoNavegador para notificações nativas      │
+ * └──────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ GERENCIAMENTO DE DROPDOWN ──────────────────────────────────────────────┐
+ * │ 5. toggleDropdownAlertas()                                              │
+ * │    → Alterna exibição do dropdown (visible → close, hidden → open)    │
+ * │                                                                          │
+ * │ 6. abrirDropdownAlertas()                                               │
+ * │    → Fecha outros dropdowns, fadeIn(200)                               │
+ * │    → Recarrega alertas via carregarAlertasNaoLidos                     │
+ * │                                                                          │
+ * │ 7. fecharDropdownAlertas()                                              │
+ * │    → fadeOut(200) do dropdown                                          │
+ * │                                                                          │
+ * │ 8. renderizarDropdownAlertas()                                          │
+ * │    → CORREÇÃO: Cria container #listaAlertasNavbar se não existir      │
+ * │    → Renderiza lista de alertas com cards HTML (título, mensagem, etc)│
+ * │    → Se vazio: mostra mensagem "Nenhum alerta não lido"               │
+ * │    → Usa truncarTexto, obterClasseSeveridade, formatarDataHora        │
+ * │    → Botão "Marcar como lido" por alerta                              │
+ * └──────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ CARREGAMENTO E MARCAÇÃO DE ALERTAS ─────────────────────────────────────┐
+ * │ 9. carregarAlertasNaoLidos()                                            │
+ * │    → GET /api/AlertasFrotiX/GetAlertasAtivos                           │
+ * │    → Atualiza array alertasNaoLidos global                             │
+ * │    → Chama atualizarBadgeNavbar e renderizarDropdownAlertas           │
+ * │                                                                          │
+ * │ 10. marcarComoLidoNavbar(alertaId)                                      │
+ * │     → POST /api/AlertasFrotiX/MarcarComoLido { alertaId }             │
+ * │     → Remove visualmente com fadeOut(300)                              │
+ * │     → Atualiza array alertasNaoLidos (filter)                          │
+ * │     → Atualiza badge, re-renderiza se vazio                            │
+ * │     → Toast de sucesso/erro                                            │
+ * │                                                                          │
+ * │ 11. marcarTodosComoLidosNavbar()                                        │
+ * │     → Confirma ação com Alerta.Confirmar (se disponível)              │
+ * │     → Chama executarMarcarTodosComoLidos se confirmado                │
+ * │     → Fallback sem confirmação se Alerta.Confirmar não existe         │
+ * │                                                                          │
+ * │ 12. executarMarcarTodosComoLidos()                                      │
+ * │     → POST /api/AlertasFrotiX/MarcarTodosComoLidos                     │
+ * │     → Limpa array alertasNaoLidos = []                                 │
+ * │     → atualizarBadgeNavbar(0), renderiza vazio                         │
+ * │     → Toast de sucesso                                                 │
+ * └──────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ BADGE E NOTIFICAÇÕES ───────────────────────────────────────────────────┐
+ * │ 13. atualizarBadgeNavbar(total)                                         │
+ * │     → Atualiza elemento #badgeAlertasSino (CORRIGIDO do anterior)     │
+ * │     → Se total > 0: display=block, textContent=total                   │
+ * │     → Se total = 0: display=none                                       │
+ * │     → Aviso console.warn se badge não encontrado                       │
+ * │                                                                          │
+ * │ 14. mostrarNotificacaoNavegador(alerta)                                 │
+ * │     → Verifica suporte: if (!("Notification" in window)) return        │
+ * │     → Se permission="granted": cria notificação                        │
+ * │     → Se permission="denied": não faz nada                             │
+ * │     → Caso contrário: requestPermission, cria se granted               │
+ * │                                                                          │
+ * │ 15. criarNotificacao(alerta)                                            │
+ * │     → new Notification(alerta.titulo, { body, icon, badge })           │
+ * │     → onclick: foca window, abre dropdown, fecha notificação           │
+ * │     → Ícone: /img/logo-small.png                                       │
+ * └──────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ FUNÇÕES AUXILIARES ─────────────────────────────────────────────────────┐
+ * │ 16. obterClasseSeveridade(severidade)                                   │
+ * │     → Mapeia severidade → classe Bootstrap                             │
+ * │     → { Critico: 'danger', Alto: 'warning', Medio: 'info', Baixo: 'secondary' }│
+ * │     → Default: 'info'                                                   │
+ * │                                                                          │
+ * │ 17. formatarDataHora(dataStr)                                           │
+ * │     → Calcula diff (agora - data)                                      │
+ * │     → < 1 min: "Agora"                                                 │
+ * │     → < 60 min: "X min atrás"                                          │
+ * │     → < 24h: "X h atrás"                                               │
+ * │     → < 7 dias: "X dia(s) atrás"                                       │
+ * │     → >= 7 dias: toLocaleDateString('pt-BR')                           │
+ * │                                                                          │
+ * │ 18. truncarTexto(texto, maxLength)                                      │
+ * │     → Se texto.length <= maxLength: retorna texto                      │
+ * │     → Caso contrário: texto.substring(0, maxLength) + '...'            │
+ * └──────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ INJEÇÃO DE ESTILOS CSS ─────────────────────────────────────────────────┐
+ * │ 19. IIFE auto-executável (lines ~740-811)                               │
+ * │     → Injeta <style id="estiloAlertasNavbar"> no <head>                │
+ * │     → Define estilos para #dropdownAlertas, #listaAlertasNavbar, etc. │
+ * │     → Verifica se já existe para evitar duplicação                     │
+ * │     → Estilos: dropdown box-shadow, hover effects, badge absoluto     │
+ * └──────────────────────────────────────────────────────────────────────────┘
+ *
+ * 🔄 FLUXO DE INICIALIZAÇÃO:
+ * 1. DOMContentLoaded dispara
+ * 2. inicializarAlertasNavbar: carrega alertas iniciais, configura UI listeners
+ * 3. inicializarSignalRNavbar: obtém conexão SignalR, registra event handlers
+ * 4. configurarEventHandlersSignalR: escuta "NovoAlerta", "AtualizarBadgeAlertas"
+ * 5. IIFE injeta CSS automaticamente
+ * 6. Sistema fica aguardando eventos SignalR e interações do usuário
+ *
+ * 🔄 FLUXO DE NOVO ALERTA (SignalR):
+ * 1. SignalR.on("NovoAlerta") dispara
+ * 2. alertasNaoLidos.unshift(alerta)
+ * 3. atualizarBadgeNavbar(length)
+ * 4. Se dropdown visível: renderizarDropdownAlertas
+ * 5. AppToast.show (se disponível)
+ * 6. mostrarNotificacaoNavegador (se permitido)
+ *
+ * 🔄 FLUXO DE MARCAR COMO LIDO:
+ * 1. Usuário clica "Marcar como lido" no alerta
+ * 2. marcarComoLidoNavbar(alertaId) → POST /api
+ * 3. Sucesso: fadeOut visual, filter array, atualizar badge
+ * 4. Se array vazio: renderiza mensagem "Nenhum alerta"
+ * 5. Toast de feedback
+ *
+ * 📌 VARIÁVEIS GLOBAIS:
+ * - connectionAlertasNavbar: Conexão SignalR do navbar
+ * - alertasNaoLidos: Array de alertas não lidos (sincronizado com API)
+ *
+ * 📌 ELEMENTOS DOM REQUERIDOS:
+ * - #btnNotificacoes ou #iconeSino: Botão/ícone do sino (click handler)
+ * - #dropdownAlertas: Container do dropdown (criado/verificado em runtime)
+ * - #listaAlertasNavbar: Container da lista (criado dinamicamente se não existir)
+ * - #badgeAlertasSino: Badge de contador (atualizado em tempo real)
+ * - #btnMarcarTodosLidosNavbar: Botão marcar todos (criado dinamicamente)
+ *
+ * 📌 API ENDPOINTS:
+ * - GET /api/AlertasFrotiX/GetAlertasAtivos → { sucesso, dados: [ alerta[] ] }
+ * - POST /api/AlertasFrotiX/MarcarComoLido { alertaId } → { sucesso, message }
+ * - POST /api/AlertasFrotiX/MarcarTodosComoLidos → { sucesso, message }
+ *
+ * 📝 OBSERVAÇÕES ADICIONAIS:
+ * - CORREÇÃO IMPORTANTE: linha 588 usa #badgeAlertasSino (não #badgeAlertasNavbar)
+ * - CORREÇÃO IMPORTANTE: renderizarDropdownAlertas cria estrutura HTML se não existir
+ * - SignalR callbacks de reconexão: recarrega alertas automaticamente
+ * - Retry de conexão SignalR: setTimeout 5s se falhar
+ * - Todas as funções têm try-catch com TratamentoErroComLinha
+ * - Injeção de CSS: evita duplicação com verificação $('#estiloAlertasNavbar').length
+ * - Browser notifications: usa Notification API nativa (request permission se needed)
+ * - Dropdown fecha ao clicar fora (document click handler)
+ * - Dropdown NÃO fecha ao clicar dentro (e.stopPropagation)
+ *
+ * 🔌 VERSÃO: 2.0 (CORRIGIDA)
+ * 📌 ÚLTIMA ATUALIZAÇÃO: 01/02/2026
+ **************************************************************************************** */
 
 var connectionAlertasNavbar;
 var alertasNaoLidos = [];
