@@ -586,6 +586,140 @@
 
 ---
 
+## 📋 ADIÇÕES LOTE 481-580 (Controllers + Data + Models - 100 arquivos)
+
+### Controllers - Empenho até LogErros (Posições 481-496)
+
+| # | Arquivo | Controller | Principais Dependências | Endpoints |
+|---|---------|-----------|------------------------|-----------|
+| 481 | EmpenhoController.cs | EmpenhoController | IUnitOfWork (Empenho, MovimentacaoEmpenho, NotaFiscal, ViewEmpenhos) | GET /api/empenho, POST /api/empenho |
+| 482 | EncarregadoController.cs | EncarregadoController | IUnitOfWork (Encarregado, EncarregadoContrato, Contrato, Fornecedor, AspNetUsers) | GET /api/encarregado, POST /api/encarregado |
+| 483 | EscalaController.cs | EscalaController (Partial) | IUnitOfWork, ILogger, IHubContext<EscalaHub>, SignalR, FrotiX.Helpers | GET /escala/index, POST /escala/create |
+| 484 | EscalaController_Api.cs | EscalaController_Api | IUnitOfWork, IHubContext<EscalaHub>, async/await | GET /api/escala/dados, POST /api/escala/salvar |
+| 485 | FornecedorController.cs | FornecedorController | IUnitOfWork (Fornecedor, Contrato) | GET /api/fornecedor, POST /api/fornecedor |
+| 486 | GlosaController.cs | GlosaController | IGlosaService, Syncfusion DataOperations, ClosedXML | GET /glosa/resumo, POST /glosa/exportar-excel |
+| 487 | GridAtaController.cs | GridAtaController | IUnitOfWork (Ata, ItemVeiculoAta), Syncfusion | GET /api/gridata, POST /api/gridata |
+| 488 | GridContratoController.cs | GridContratoController | IUnitOfWork (Contrato, ItemVeiculoContrato), Syncfusion | GET /api/gridcontrato, POST /api/gridcontrato |
+| 489 | HomeController.cs | HomeController | OrdersDetails (classe demo) | GET /, GET /api/home/datasource |
+| 490 | ItensContratoController.cs | ItensContratoController | IUnitOfWork (ItensContrato, Contrato) | GET /api/itenscontrato, POST /api/itenscontrato |
+
+### Controllers - LavadorController até LoginController (Posições 491-494)
+
+| # | Arquivo | Controller | Principais Dependências | Endpoints |
+|---|---------|-----------|------------------------|-----------|
+| 491 | LavadorController.cs | LavadorController | IUnitOfWork (Lavador, LavadorContrato, Fornecedor) | GET /api/lavador, POST /api/lavador |
+| 492 | LogErrosController.cs | LogErrosController | IUnitOfWork (LogErro), IMemoryCache, IWebHostEnvironment | GET /api/logerros, POST /api/logerros/dashboard |
+| 493 | LogErrosController.Dashboard.cs | LogErrosController (Partial) | IUnitOfWork (LogErro), IMemoryCache | GET /logerros/dashboard |
+| 494 | LoginController.cs | LoginController | IUnitOfWork (AspNetUsers), ClaimsPrincipal | GET /api/login/userdata |
+
+### Controllers - ManutencaoController até OcorrenciaViagemController (Posições 495-520)
+
+| # | Arquivo | Controller | Principais Dependências | Endpoints |
+|---|---------|-----------|------------------------|-----------|
+| 495 | ManutencaoController.cs | ManutencaoController | IUnitOfWork (Manutencao, ItensManutencao), IMemoryCache, IWebHostEnvironment | GET /api/manutencao, POST /api/manutencao/upload |
+| 496 | MarcaVeiculoController.cs | MarcaVeiculoController | IUnitOfWork (MarcaVeiculo, ModeloVeiculo) | GET /api/marca, POST /api/marca |
+| 497 | ModeloVeiculoController.cs | ModeloVeiculoController | IUnitOfWork (ModeloVeiculo, MarcaVeiculo) | GET /api/modelo, DELETE /api/modelo/{id} |
+| 498 | MotoristaController.cs | MotoristaController | IUnitOfWork (Motorista, MotoristaContrato, Contrato, Fornecedor, ViewMotoristasViagem) | GET /api/motorista, POST /api/motorista/upload-cnh |
+| 499 | MultaController.cs | MultaController | IUnitOfWork (Multa, EmpenhoMulta, OrgaoAutuante, Veiculo), Services | GET /api/multa, POST /api/multa |
+| 500 | MultaPdfViewerController.cs | MultaPdfViewerController | Syncfusion.EJ2.PdfViewer, IMemoryCache, IWebHostEnvironment | GET /pdf/multa/{id} |
+| 501 | MultaUploadController.cs | MultaUploadController | File System, IWebHostEnvironment, IFormFile | POST /upload/multa |
+| 502 | NavigationController.cs | NavigationController | IUnitOfWork (Recurso), IMemoryCache, IWebHostEnvironment, nav.json | GET /api/navigation/menu |
+| 503 | NormalizeController.cs | NormalizeController | TextNormalization Services | POST /api/normalize/text |
+| 504 | NotaFiscalController.cs | NotaFiscalController | IUnitOfWork (NotaFiscal, Empenho, Contrato) | GET /api/notafiscal, POST /api/notafiscal |
+| 505 | NotaFiscalController.Partial.cs | NotaFiscalController (Partial) | IUnitOfWork | (Métodos auxiliares) |
+| 506 | OcorrenciaController.cs | OcorrenciaController | IUnitOfWork (Ocorrencia) | GET /api/ocorrencia, POST /api/ocorrencia |
+| 507 | OcorrenciaViagemController.cs | OcorrenciaViagemController | IUnitOfWork (OcorrenciaViagem, Viagem), ViewOcorrenciasViagem | GET /api/ocorrenciaviagem, POST /api/ocorrenciaviagem |
+| 508 | OcorrenciaViagemController.Debug.cs | OcorrenciaViagemController (Debug) | IUnitOfWork | (Debug methods) |
+| 509 | OcorrenciaViagemController.Gestao.cs | OcorrenciaViagemController (Gestão) | IUnitOfWork (OcorrenciaViagem) | (Gestão operations) |
+| 510 | OcorrenciaViagemController.Listar.cs | OcorrenciaViagemController (Listar) | IUnitOfWork (OcorrenciaViagem, ViewOcorrenciasViagem) | GET /api/ocorrenciaviagem/listar |
+| 511 | OcorrenciaViagemController.Upsert.cs | OcorrenciaViagemController (Upsert) | IUnitOfWork, TextNormalizationHelper, FrotiX.Helpers | POST /api/ocorrenciaviagem/upsert |
+| 512 | OperadorController.cs | OperadorController | IUnitOfWork (Operador, OperadorContrato, Contrato, Fornecedor, AspNetUsers) | GET /api/operador, POST /api/operador |
+| 513 | PatrimonioController.cs | PatrimonioController | IUnitOfWork (Patrimonio, MovimentacaoPatrimonio, SetorPatrimonial, SecaoPatrimonial), IMemoryCache | GET /api/patrimonio, POST /api/patrimonio/movimentar |
+| 514 | PdfViewerCNHController.cs | PdfViewerCNHController | Syncfusion.EJ2.PdfViewer, IUnitOfWork (Motorista), IMemoryCache | GET /pdfviewer/cnh/{id} |
+| 515 | PdfViewerController.cs | PdfViewerController | Syncfusion.EJ2.PdfViewer, IWebHostEnvironment | GET /pdfviewer/{filename} |
+| 516 | PlacaBronzeController.cs | PlacaBronzeController | IUnitOfWork (PlacaBronze, Veiculo) | GET /api/placabronze, DELETE /api/placabronze/{id} |
+| 517 | RecursoController.cs | RecursoController | IUnitOfWork (Recurso, ControleAcesso) | GET /api/recurso, POST /api/recurso |
+| 518 | RelatorioSetorSolicitanteController.cs | RelatorioSetorSolicitanteController | Stimulsoft.Report.Mvc, IUnitOfWork | GET /relatorio/setorsolicitante |
+| 519 | RelatoriosController.cs | RelatoriosController | FrotiXDbContext, RelatorioEconomildoPdfService, IUnitOfWork | POST /relatorio/economildo |
+| 520 | ReportsController.cs | ReportsController | (Listagem de relatórios disponíveis) | GET /reports |
+
+### Controllers - RequisitanteController até ViagemController Partials (Posições 521-545)
+
+| # | Arquivo | Controller | Principais Dependências | Endpoints |
+|---|---------|-----------|------------------------|-----------|
+| 521 | RequisitanteController.cs | RequisitanteController | IUnitOfWork (Requisitante) | GET /api/requisitante |
+| 522 | SecaoController.cs | SecaoController | IUnitOfWork (SecaoPatrimonial, SetorPatrimonial) | GET /api/secao |
+| 523 | SetorController.cs | SetorController | IUnitOfWork (SetorPatrimonial, SecaoPatrimonial) | GET /api/setor |
+| 524 | SetorSolicitanteController.cs | SetorSolicitanteController (Base) | IUnitOfWork (SetorSolicitante) | (Classe parcial base) |
+| 525 | SetorSolicitanteController.GetAll.cs | SetorSolicitanteController (GetAll) | IUnitOfWork (SetorSolicitante) | GET /api/setorsolicitante |
+| 526 | SetorSolicitanteController.UpdateStatus.cs | SetorSolicitanteController (UpdateStatus) | IUnitOfWork (SetorSolicitante) | POST /api/setorsolicitante/updatestatus |
+| 527 | TaxiLegController.cs | TaxiLegController | IUnitOfWork (CorridasTaxiLeg, CorridasTaxiLegCanceladas), NPOI, IWebHostEnvironment | GET /api/taxileg, POST /api/taxileg/export |
+| 528 | TestePdfController.cs | TestePdfController | (Teste/Debug) | (Testing endpoints) |
+| 529 | UnidadeController.cs | UnidadeController | IUnitOfWork (Unidade, Veiculo, LotacaoMotorista, Motorista), INotyfService | GET /api/unidade, POST /api/unidade |
+| 530 | UploadCNHController.cs | UploadCNHController | IUnitOfWork (Motorista), IWebHostEnvironment, IFormFile | POST /upload/cnh |
+| 531 | UploadCRLVController.cs | UploadCRLVController | IUnitOfWork (Veiculo), IWebHostEnvironment, IFormFile | POST /upload/crlv |
+| 532 | UsuarioController.cs | UsuarioController (Base) | UserManager<IdentityUser>, IUnitOfWork (AspNetUsers) | (Classe parcial base) |
+| 533 | UsuarioController.Usuarios.cs | UsuarioController (Usuarios) | UserManager<IdentityUser>, IUnitOfWork (AspNetUsers) | GET /api/usuario, POST /api/usuario/update |
+| 534 | VeiculoController.cs | VeiculoController | IUnitOfWork (Veiculo, MarcaVeiculo, ModeloVeiculo, ViewVeiculos) | GET /api/veiculo, POST /api/veiculo |
+| 535 | VeiculosUnidadeController.cs | VeiculosUnidadeController | IUnitOfWork (Veiculo, Unidade, ViewVeiculos) | GET /api/veiculosunidade |
+| 536 | ViagemController.cs | ViagemController (Base) | FrotiXDbContext, IUnitOfWork, IViagemRepository, ViagemEstatisticaService, IMemoryCache | (Classe parcial base) |
+| 537 | ViagemController.AtualizarDados.cs | ViagemController (AtualizarDados) | IUnitOfWork (Viagem) | POST /api/viagem/atualizardados |
+| 538 | ViagemController.AtualizarDadosViagem.cs | ViagemController (AtualizarDadosViagem) | IUnitOfWork (Viagem) | POST /api/viagem/atualizardadosviagem |
+| 539 | ViagemController.CalculoCustoBatch.cs | ViagemController (CalculoCustoBatch) | IUnitOfWork, LINQ batch operations | POST /api/viagem/calculocusto |
+| 540 | ViagemController.CustosViagem.cs | ViagemController (CustosViagem) | IUnitOfWork (ViewCustosViagem, Viagem) | GET /api/viagem/custos |
+| 541 | ViagemController.DashboardEconomildo.cs | ViagemController (Dashboard) | IUnitOfWork, ViagemEstatisticaService, FrotiXDbContext | GET /api/viagem/dashboard |
+| 542 | ViagemController.DesassociarEvento.cs | ViagemController (DesassociarEvento) | IUnitOfWork (Viagem, ViagemEvento) | POST /api/viagem/desassociarevent |
+| 543 | ViagemController.HeatmapEconomildo.cs | ViagemController (Heatmap) | IUnitOfWork, FrotiXDbContext, LINQ grouping | GET /api/viagem/heatmap |
+| 544 | ViagemController.HeatmapEconomildoPassageiros.cs | ViagemController (HeatmapPass) | IUnitOfWork, FrotiXDbContext | GET /api/viagem/heatmap/passageiros |
+| 545 | ViagemController.ListaEventos.cs | ViagemController (ListaEventos) | IUnitOfWork (Viagem, ViewEventos) | GET /api/viagem/eventos |
+
+### Controllers Finais + Data Context (Posições 546-550)
+
+| # | Arquivo | Tipo | Principais Dependências | Status |
+|---|---------|------|------------------------|--------|
+| 546 | ViagemController.MetodosEstatisticas.cs | ViagemController (Estatísticas) | IUnitOfWork, ViagemEstatisticaService, LINQ | GET /api/viagem/estatisticas |
+| 547 | ViagemEventoController.cs | ViagemEventoController (Base) | IUnitOfWork (ViagemEvento, Viagem), IWebHostEnvironment | POST /api/viagemevent |
+| 548 | ViagemEventoController.UpdateStatus.cs | ViagemEventoController (UpdateStatus) | IUnitOfWork (ViagemEvento) | POST /api/viagemevent/updatestatus |
+| 549 | ViagemLimpezaController.cs | ViagemLimpezaController | IViagemRepository (correção batch Origem/Destino) | POST /api/viagemlimpeza |
+| 550 | ApplicationDbContext.cs | Data Context (Identity) | IdentityDbContext, ASP.NET Core Identity | DbContext Identity |
+
+### Data + Models Context (Posições 551-580)
+
+| # | Arquivo | Tipo | Conteúdo | Status |
+|---|---------|------|----------|--------|
+| 551 | ControleAcessoDbContext.cs | Data Context | DbContext para controle de acesso/permissões | ✅ |
+| 552 | FrotiXDbContext.cs | Data Context | DbContext principal (60+ DbSets, chaves compostas, timeout 9000ms) | ✅ |
+| 553 | FrotiXDbContext.OcorrenciaViagem.cs | Data Context (Partial) | Configurações EF Core para OcorrenciaViagem | ✅ |
+| 554 | FrotiXDbContext.RepactuacaoVeiculo.cs | Data Context (Partial) | Configurações EF Core para RepactuacaoVeiculo | ✅ |
+| 555 | AbastecimentoPendente.cs | Model (DTO) | DTO para abastecimentos pendentes de processamento | ✅ |
+| 556 | AlertasFrotiX.cs | Model | Modelo de alertas do sistema FrotiX | ✅ |
+| 557 | Abastecimento.cs | Model (Cadastro) | Abastecimento de veículo (litros, combustível, valor) | ✅ |
+| 558 | Agenda.cs | Model (Cadastro) | Agenda/agendamentos de viagens | ✅ |
+| 559 | AspNetUsers.cs | Model | Usuários do sistema (Identity) | ✅ |
+| 560 | AtaRegistroPrecos.cs | Model (Cadastro) | Atas de registro de preços | ✅ |
+| 561 | CoberturaFolga.cs | Model (Cadastro) | Cobertura de motorista durante folgas | ✅ |
+| 562 | Combustivel.cs | Model (Cadastro) | Tipos de combustível (gasolina, diesel, etanol) | ✅ |
+| 563 | Contrato.cs | Model (Cadastro) | Contratos com fornecedores e empreiteiros | ✅ |
+| 564 | ControleAcesso.cs | Model (Cadastro) | Controle de acesso/permissões de usuários | ✅ |
+| 565 | CorridasTaxiLeg.cs | Model (Cadastro) | Corridas de TaxiLeg (caronas compartilhadas) | ✅ |
+| 566 | CorridasTaxiLegCanceladas.cs | Model (Cadastro) | Corridas TaxiLeg canceladas | ✅ |
+| 567 | DeleteMovimentacaoWrapper.cs | Model (DTO) | DTO wrapper para deletar movimentações | ✅ |
+| 568 | Empenho.cs | Model (Cadastro) | Empenhos orçamentários vinculados a contratos | ✅ |
+| 569 | EmpenhoMulta.cs | Model (Cadastro) | Vínculos entre Empenho e Multa | ✅ |
+| 570 | EscalaDiaria.cs | Model (Cadastro) | Escalas diárias de motorista (plantões) | ✅ |
+| 571 | Escalas.cs | Model (Cadastro) | Base para escalas | ✅ |
+| 572 | Evento.cs | Model (Cadastro) | Eventos de viagem (parada, entrega, etc) | ✅ |
+| 573 | FiltroEscala.cs | Model (Cadastro) | Filtros para busca avançada de escalas | ✅ |
+| 574 | Fornecedor.cs | Model (Cadastro) | Fornecedores/empresas contratadas | ✅ |
+| 575 | ItensContrato.cs | Model (Cadastro) | Itens de um contrato | ✅ |
+| 576 | ItensManutencao.cs | Model (Cadastro) | Itens de manutenção de veículo | ✅ |
+| 577 | Lavador.cs | Model (Cadastro) | Lavadores de veículos | ✅ |
+| 578 | LavadorContrato.cs | Model (Cadastro) | Vínculos entre Lavador e Contrato | ✅ |
+| 579 | LavadoresLavagem.cs | Model (Cadastro) | Vínculos entre Lavador e Lavagem | ✅ |
+| 580 | Lavagem.cs | Model (Cadastro) | Registros de lavagem de veículo | ✅ |
+
+---
+
 ## 📝 Log de Atualizações
 
 | Data | Alteração | Autor |
