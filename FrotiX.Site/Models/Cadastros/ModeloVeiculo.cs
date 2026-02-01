@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: ModeloVeiculo.cs                                                                        ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Manter modelos de veículos e sua relação com marcas.                                   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: ModeloVeiculoViewModel, ModeloVeiculo                                                   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core, SelectListItem, Validations                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ModeloVeiculo.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Manter modelos de veículos e sua relação com marcas.
+ *
+ * 📥 ENTRADAS     : Descrição do modelo, status e marca associada.
+ *
+ * 📤 SAÍDAS       : Entidade persistida e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Cadastros de veículos e filtros de modelo.
+ *
+ * 🔄 CHAMA        : ValidaLista, ForeignKey, SelectListItem.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.Validations, Microsoft.AspNetCore.Mvc.Rendering.
+ **************************************************************************************** */
 
 using FrotiX.Validations;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,11 +23,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: disponibilizar o modelo e a lista de marcas para seleção em tela.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: ModeloVeiculoViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Disponibilizar modelo e lista de marcas para seleção em tela.
+     *
+     * 📥 ENTRADAS     : ModeloVeiculo e lista de marcas.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas de cadastro/edição.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de modelos.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     ****************************************************************************************/
     public class ModeloVeiculoViewModel
     {
         // Identificador do modelo.
@@ -44,11 +57,19 @@ namespace FrotiX.Models
         }
     }
 
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa um modelo de veículo vinculado a uma marca.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: ModeloVeiculo
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar um modelo de veículo vinculado a uma marca.
+     *
+     * 📥 ENTRADAS     : Descrição, status e marca vinculada.
+     *
+     * 📤 SAÍDAS       : Registro persistido de modelo.
+     *
+     * 🔗 CHAMADA POR  : Repositórios e controllers.
+     *
+     * 🔄 CHAMA        : ForeignKey, ValidaLista.
+     ****************************************************************************************/
     public class ModeloVeiculo
     {
         // Identificador único do modelo.

@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: Manutencao.cs                                                                           ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Registrar manutenções de veículos, datas-chave, status e veículo reserva.             ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: Manutencao, ManutencaoViewModel                                                         ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core                                                           ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: Manutencao.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Registrar manutenções de veículos com datas, status e veículo reserva.
+ *
+ * 📥 ENTRADAS     : Datas-chave da manutenção, status e vínculos com veículos.
+ *
+ * 📤 SAÍDAS       : Entidade persistida e ViewModel para formulários.
+ *
+ * 🔗 CHAMADA POR  : Módulos de manutenção e relatórios.
+ *
+ * 🔄 CHAMA        : DataAnnotations, ForeignKey.
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations, Microsoft.EntityFrameworkCore.
+ **************************************************************************************** */
 
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -15,11 +20,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa um registro de manutenção de veículo, com datas, status e vínculos.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: Manutencao
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar registro de manutenção de veículo com datas e status.
+     *
+     * 📥 ENTRADAS     : Datas, status, OS e vínculos.
+     *
+     * 📤 SAÍDAS       : Registro persistido para controle de manutenção.
+     *
+     * 🔗 CHAMADA POR  : Fluxos de manutenção.
+     *
+     * 🔄 CHAMA        : ForeignKey.
+     ****************************************************************************************/
     public class Manutencao
     {
         // Data de alteração do registro.
@@ -132,11 +145,17 @@ namespace FrotiX.Models
         public Guid? VeiculoReservaId { get; set; }
     }
 
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: transportar manutenção e chave em contextos de formulário.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: ManutencaoViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar manutenção e chave em contextos de formulário.
+     *
+     * 📥 ENTRADAS     : Manutencao e ManutencaoId.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas/rotas.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de manutenção.
+     ****************************************************************************************/
     public class ManutencaoViewModel
     {
         // Registro de manutenção carregado/alterado.

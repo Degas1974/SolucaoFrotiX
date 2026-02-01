@@ -17,7 +17,7 @@
 | Total de Arquivos | 905 |
 | Documentados | 480 |
 | Percentual | 53.0% |
-| Última Atualização | 31/01/2026 21:57 |
+| Última Atualização | 31/01/2026 22:00 |
 
 ---
 
@@ -620,6 +620,13 @@
    • LavadoresLavagem.cs
    • Lavagem.cs
 
+✅ Models - Classes (Lote 165 - revisão cards completos):
+   • LotacaoMotorista.cs
+   • Manutencao.cs
+   • MarcaVeiculo.cs
+   • ModeloVeiculo.cs
+   • Motorista.cs
+
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
    • _ViewImports.cshtml
@@ -1095,9 +1102,10 @@
 | 31/01/2026 | 5 | 1 | Lote 162 - Models revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 163 - Models revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 164 - Models revisão cards completos (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 165 - Models revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 113
-**Total de Commits:** 111
+**Total de Lotes:** 114
+**Total de Commits:** 112
 **Total de Arquivos Documentados:** 480
 
 ---

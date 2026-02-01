@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: Motorista.cs                                                                            ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Cadastro de motoristas com dados pessoais, CNH, contrato e vínculo de unidade.        ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: MotoristaViewModel, Motorista                                                           ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core, SelectListItem, IFormFile                                ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: Motorista.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Cadastro de motoristas com dados pessoais, CNH, contrato e unidade.
+ *
+ * 📥 ENTRADAS     : Dados pessoais, documentos, vínculos e arquivos de foto.
+ *
+ * 📤 SAÍDAS       : Entidade persistida e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Cadastros de motoristas e gestão de viagens.
+ *
+ * 🔄 CHAMA        : DataAnnotations, ForeignKey, IFormFile.
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations, Microsoft.AspNetCore.Http.
+ **************************************************************************************** */
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,11 +23,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: agregar dados do motorista e listas de seleção usadas na UI.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: MotoristaViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Agregar dados do motorista e listas de seleção usadas na UI.
+     *
+     * 📥 ENTRADAS     : Motorista, contrato, unidade e listas auxiliares.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas de cadastro/edição.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de motoristas.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     ****************************************************************************************/
     public class MotoristaViewModel
     {
         // Identificador do motorista.
@@ -68,11 +81,19 @@ namespace FrotiX.Models
         }
     }
 
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa o motorista com dados pessoais, documentos e vínculos.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: Motorista
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar motorista com dados pessoais, documentos e vínculos.
+     *
+     * 📥 ENTRADAS     : Nome, CNH, contatos, contrato e unidade.
+     *
+     * 📤 SAÍDAS       : Registro persistido para operações do FrotiX.
+     *
+     * 🔗 CHAMADA POR  : Repositórios e controllers.
+     *
+     * 🔄 CHAMA        : DataAnnotations, ForeignKey, NotMapped.
+     ****************************************************************************************/
     public class Motorista
     {
         // Identificador único do motorista.
