@@ -1,23 +1,38 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: EstatisticaVeiculoDto.cs                                                                ║
-   ║ 📂 CAMINHO: /Models/DTO                                                                             ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Estatísticas de viagens por veículo para validação inteligente.                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: EstatisticaVeiculoDto, NivelAnomalia                                                    ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: System                                                                             ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: EstatisticaVeiculoDto.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Consolidar estatísticas de viagens por veículo para validação inteligente.
+ *
+ * 📥 ENTRADAS     : Métricas de km, duração e datas de viagens.
+ *
+ * 📤 SAÍDAS       : Estatísticas consolidadas e classificações de anomalia.
+ *
+ * 🔗 CHAMADA POR  : Serviços de validação e regras de negócio de viagens.
+ *
+ * 🔄 CHAMA        : Math.Abs.
+ *
+ * 📦 DEPENDÊNCIAS : System.
+ **************************************************************************************** */
 
 using System;
 
 namespace FrotiX.Models.DTO
 {
-    // ==================================================================================================
-    // DTO
-    // ==================================================================================================
-    // Estatísticas de viagens para validação inteligente e calibração de alertas.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ DTO: EstatisticaVeiculoDto
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Armazenar estatísticas de viagens e suportar classificação de anomalias.
+     *
+     * 📥 ENTRADAS     : Quilometragem, duração, datas e total de viagens.
+     *
+     * 📤 SAÍDAS       : Indicadores e classificações para validações.
+     *
+     * 🔗 CHAMADA POR  : Camadas de negócio de viagens e auditoria.
+     *
+     * 🔄 CHAMA        : Math.Abs, CalcularZScoreKm, CalcularZScoreDuracao.
+     *
+     * 📦 DEPENDÊNCIAS : System.
+     ****************************************************************************************/
     public class EstatisticaVeiculoDto
     {
         // ID do veículo.
@@ -89,21 +104,57 @@ namespace FrotiX.Models.DTO
         // Indica se há dados mínimos (>= 3 viagens).
         public bool DadosMinimos => TotalViagens >= 3;
 
-        // Calcula Z-Score para km rodado.
+        /****************************************************************************************
+         * ⚡ MÉTODO: CalcularZScoreKm
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcular o Z-Score da quilometragem rodada.
+         *
+         * 📥 ENTRADAS     : kmRodado.
+         *
+         * 📤 SAÍDAS       : Z-Score (double); 0 quando dados insuficientes.
+         *
+         * 🔗 CHAMADA POR  : ClassificarKm.
+         *
+         * 🔄 CHAMA        : Não se aplica.
+         ****************************************************************************************/
         public double CalcularZScoreKm(int kmRodado)
         {
             if (KmDesvioPadrao <= 0 || TotalViagens < 3) return 0;
             return (kmRodado - KmMedio) / KmDesvioPadrao;
         }
 
-        // Calcula Z-Score para duração em minutos.
+        /****************************************************************************************
+         * ⚡ MÉTODO: CalcularZScoreDuracao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcular o Z-Score da duração em minutos.
+         *
+         * 📥 ENTRADAS     : duracaoMinutos.
+         *
+         * 📤 SAÍDAS       : Z-Score (double); 0 quando dados insuficientes.
+         *
+         * 🔗 CHAMADA POR  : ClassificarDuracao.
+         *
+         * 🔄 CHAMA        : Não se aplica.
+         ****************************************************************************************/
         public double CalcularZScoreDuracao(int duracaoMinutos)
         {
             if (DuracaoDesvioPadraoMinutos <= 0 || TotalViagens < 3) return 0;
             return (duracaoMinutos - DuracaoMediaMinutos) / DuracaoDesvioPadraoMinutos;
         }
 
-        // Classifica km rodado conforme padrão esperado.
+        /****************************************************************************************
+         * ⚡ MÉTODO: ClassificarKm
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Classificar quilometragem conforme padrões de anomalia.
+         *
+         * 📥 ENTRADAS     : kmRodado.
+         *
+         * 📤 SAÍDAS       : Nível de anomalia calculado.
+         *
+         * 🔗 CHAMADA POR  : Regras de validação de viagens.
+         *
+         * 🔄 CHAMA        : CalcularZScoreKm, Math.Abs.
+         ****************************************************************************************/
         public NivelAnomalia ClassificarKm(int kmRodado)
         {
             if (!DadosMinimos) return NivelAnomalia.SemDados;
@@ -116,7 +167,19 @@ namespace FrotiX.Models.DTO
             return NivelAnomalia.Normal;
         }
 
-        // Classifica duração conforme padrão esperado.
+        /****************************************************************************************
+         * ⚡ MÉTODO: ClassificarDuracao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Classificar duração conforme padrões de anomalia.
+         *
+         * 📥 ENTRADAS     : duracaoMinutos.
+         *
+         * 📤 SAÍDAS       : Nível de anomalia calculado.
+         *
+         * 🔗 CHAMADA POR  : Regras de validação de viagens.
+         *
+         * 🔄 CHAMA        : CalcularZScoreDuracao, Math.Abs.
+         ****************************************************************************************/
         public NivelAnomalia ClassificarDuracao(int duracaoMinutos)
         {
             if (!DadosMinimos) return NivelAnomalia.SemDados;
@@ -130,7 +193,19 @@ namespace FrotiX.Models.DTO
         }
     }
 
-    // Níveis de anomalia para classificação de valores.
+    /****************************************************************************************
+     * ⚡ ENUM: NivelAnomalia
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar níveis de anomalia para quilometragem e duração.
+     *
+     * 📥 ENTRADAS     : Valores calculados nos classificadores.
+     *
+     * 📤 SAÍDAS       : Enum com níveis de severidade.
+     *
+     * 🔗 CHAMADA POR  : EstatisticaVeiculoDto.
+     *
+     * 🔄 CHAMA        : Não se aplica.
+     ****************************************************************************************/
     public enum NivelAnomalia
     {
         // Não há dados suficientes.

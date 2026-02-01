@@ -17,7 +17,7 @@
 | Total de Arquivos | 905 |
 | Documentados | 480 |
 | Percentual | 53.0% |
-| Última Atualização | 01/02/2026 01:25 |
+| Última Atualização | 01/02/2026 01:30 |
 
 ---
 
@@ -662,6 +662,13 @@
    • Viagem.cs
    • ViagensEconomildo.cs
 
+✅ Models + Models/DTO - Classes (Lote 171 - revisão cards completos):
+   • ContractDropDownItem.cs
+   • EstatisticaVeiculoDto.cs
+   • HigienizacaoDto.cs
+   • LookupsDto.cs
+   • ViagemCalendarDTO.cs
+
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
    • _ViewImports.cshtml
@@ -1143,9 +1150,10 @@
 | 01/02/2026 | 5 | 1 | Lote 168 - Models revisão cards completos (5 arquivos) |
 | 01/02/2026 | 5 | 1 | Lote 169 - Models revisão cards completos (5 arquivos) |
 | 01/02/2026 | 5 | 1 | Lote 170 - Models revisão cards completos (5 arquivos) |
+| 01/02/2026 | 5 | 1 | Lote 171 - Models + Models/DTO revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 119
-**Total de Commits:** 117
+**Total de Lotes:** 120
+**Total de Commits:** 118
 **Total de Arquivos Documentados:** 480
 
 ---

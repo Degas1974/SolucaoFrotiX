@@ -1,20 +1,37 @@
-﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: HigienizacaoDto.cs                                                                      ║
-   ║ 📂 CAMINHO: /Models/DTO                                                                             ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: DTOs para higienização de dados (correção de origens/destinos).                        ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: HigienizacaoDto, CorrecaoOrigemDto, CorrecaoDestinoDto                                  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: System.Collections.Generic                                                         ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+﻿/* ****************************************************************************************
+ * ⚡ ARQUIVO: HigienizacaoDto.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Padronizar DTOs de higienização de dados (origens e destinos).
+ *
+ * 📥 ENTRADAS     : Listas de valores existentes e novos valores corrigidos.
+ *
+ * 📤 SAÍDAS       : Payloads para correção e saneamento de dados de viagem.
+ *
+ * 🔗 CHAMADA POR  : Rotinas administrativas de higienização e ajustes.
+ *
+ * 🔄 CHAMA        : Não se aplica.
+ *
+ * 📦 DEPENDÊNCIAS : System.Collections.Generic.
+ **************************************************************************************** */
 
 using System.Collections.Generic;
 
 
 namespace FrotiX.Models.DTO
     {
-    // DTO para higienização geral.
+    /****************************************************************************************
+     * ⚡ DTO: HigienizacaoDto
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Consolidar informações de higienização (tipo e novos valores).
+     *
+     * 📥 ENTRADAS     : Tipo, lista de valores antigos e novo valor aplicado.
+     *
+     * 📤 SAÍDAS       : Dados para execução de correções em lote.
+     *
+     * 🔗 CHAMADA POR  : Serviços administrativos de higienização.
+     *
+     * 🔄 CHAMA        : Não se aplica.
+     ****************************************************************************************/
     public class HigienizacaoDto
         {
         // Tipo de correção (origem/destino).
@@ -25,7 +42,19 @@ namespace FrotiX.Models.DTO
         public string NovosValores { get; set; }
         }
 
-    // DTO para correção de origem.
+    /****************************************************************************************
+     * ⚡ DTO: CorrecaoOrigemDto
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Definir correção para origens de viagem.
+     *
+     * 📥 ENTRADAS     : Lista de origens atuais e nova origem.
+     *
+     * 📤 SAÍDAS       : Payload para atualização de origens.
+     *
+     * 🔗 CHAMADA POR  : Serviços de higienização de origens.
+     *
+     * 🔄 CHAMA        : Não se aplica.
+     ****************************************************************************************/
     public class CorrecaoOrigemDto
         {
         // Lista de origens atuais.
@@ -34,7 +63,19 @@ namespace FrotiX.Models.DTO
         public string NovaOrigem { get; set; }
         }
 
-    // DTO para correção de destino.
+    /****************************************************************************************
+     * ⚡ DTO: CorrecaoDestinoDto
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Definir correção para destinos de viagem.
+     *
+     * 📥 ENTRADAS     : Lista de destinos atuais e novo destino.
+     *
+     * 📤 SAÍDAS       : Payload para atualização de destinos.
+     *
+     * 🔗 CHAMADA POR  : Serviços de higienização de destinos.
+     *
+     * 🔄 CHAMA        : Não se aplica.
+     ****************************************************************************************/
     public class CorrecaoDestinoDto
         {
         // Lista de destinos atuais.
@@ -44,4 +85,3 @@ namespace FrotiX.Models.DTO
         }
 
     }
-
