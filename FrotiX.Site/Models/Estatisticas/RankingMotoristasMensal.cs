@@ -1,14 +1,19 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-    ║ 🚀 ARQUIVO: RankingMotoristasMensal.cs                                                              ║
-    ║ 📂 CAMINHO: /Models/Estatisticas                                                                    ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 🎯 OBJETIVO: Modelo para ranking mensal de motoristas (viagens, km, horas, multas).                ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 📋 ENTIDADE: RankingMotoristasMensal (TipoRanking, Posicao, MotoristaId, ValorPrincipal, etc.)     ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 🔗 DEPS: System.ComponentModel.DataAnnotations                                                      ║
-    ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: RankingMotoristasMensal.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Consolidar ranking mensal de motoristas.
+ *
+ * 📥 ENTRADAS     : Tipo de ranking, posição e métricas.
+ *
+ * 📤 SAÍDAS       : Registro para rankings e dashboards.
+ *
+ * 🔗 CHAMADA POR  : Relatórios de desempenho.
+ *
+ * 🔄 CHAMA        : DataAnnotations, EF Core (Table).
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations,
+ *                   System.ComponentModel.DataAnnotations.Schema.
+ **************************************************************************************** */
 
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -16,42 +21,69 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models.Estatisticas
 {
+    /****************************************************************************************
+     * ⚡ MODEL: RankingMotoristasMensal
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar ranking mensal de motoristas.
+     *
+     * 📥 ENTRADAS     : Tipo de ranking, posição e valores agregados.
+     *
+     * 📤 SAÍDAS       : Entidade consultável para análises.
+     *
+     * 🔗 CHAMADA POR  : Serviços de estatísticas.
+     *
+     * 🔄 CHAMA        : Key, StringLength, ForeignKey.
+     ****************************************************************************************/
     [Table("RankingMotoristasMensal")]
     public class RankingMotoristasMensal
     {
+        // Identificador do registro.
         [Key]
         public Guid Id { get; set; }
 
+        // Ano de referência.
         public int Ano { get; set; }
 
+        // Mês de referência.
         public int Mes { get; set; }
 
+        // Tipo de ranking (VIAGENS, KM, HORAS, ABASTECIMENTOS, MULTAS, PERFORMANCE).
         [StringLength(50)]
-        public string TipoRanking { get; set; } // 'VIAGENS', 'KM', 'HORAS', 'ABASTECIMENTOS', 'MULTAS', 'PERFORMANCE'
+        public string TipoRanking { get; set; }
 
+        // Posição no ranking.
         public int Posicao { get; set; }
 
+        // Identificador do motorista.
         public Guid MotoristaId { get; set; }
 
+        // Nome do motorista.
         [StringLength(200)]
         public string NomeMotorista { get; set; }
 
+        // Tipo do motorista (Efetivo/Ferista/Cobertura).
         [StringLength(50)]
-        public string TipoMotorista { get; set; } // Efetivo/Ferista/Cobertura
+        public string TipoMotorista { get; set; }
 
         // Valores conforme o tipo de ranking
-        public decimal ValorPrincipal { get; set; } // Viagens/KM/Horas/etc
+        // Valor principal (viagens/km/horas/etc).
+        public decimal ValorPrincipal { get; set; }
 
-        public decimal ValorSecundario { get; set; } // KM (para performance), Valor (para multas)
+        // Valor secundário (KM para performance, valor para multas).
+        public decimal ValorSecundario { get; set; }
 
-        public decimal ValorTerciario { get; set; } // Horas (para performance)
+        // Valor terciário (horas para performance).
+        public decimal ValorTerciario { get; set; }
 
-        public int ValorQuaternario { get; set; } // Multas (para performance)
+        // Valor quaternário (multas para performance).
+        public int ValorQuaternario { get; set; }
 
         // Controle
+        // Data da última atualização do agregado.
         public DateTime DataAtualizacao { get; set; }
 
         // Navegação
+        // Motorista associado.
         [ForeignKey("MotoristaId")]
         public virtual FrotiX.Models.Motorista Motorista { get; set; }
     }

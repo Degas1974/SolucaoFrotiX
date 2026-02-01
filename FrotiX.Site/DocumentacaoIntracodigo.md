@@ -17,7 +17,7 @@
 | Total de Arquivos | 905 |
 | Documentados | 480 |
 | Percentual | 53.0% |
-| Última Atualização | 01/02/2026 01:59 |
+| Última Atualização | 01/02/2026 02:03 |
 
 ---
 
@@ -697,6 +697,13 @@
    • EstatisticaGeralMensal.cs
    • EstatisticaMotoristasMensal.cs
 
+✅ Models/Estatisticas + Models - Classes (Lote 176 - revisão cards completos):
+   • EvolucaoViagensDiaria.cs
+   • HeatmapAbastecimentoMensal.cs
+   • HeatmapViagensMensal.cs
+   • RankingMotoristasMensal.cs
+   • EventoListDto.cs
+
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
    • _ViewImports.cshtml
@@ -1183,9 +1190,10 @@
 | 01/02/2026 | 5 | 1 | Lote 173 - Models revisão cards completos (5 arquivos) |
 | 01/02/2026 | 5 | 1 | Lote 174 - Models/Api + Models/Estatisticas revisão cards completos (5 arquivos) |
 | 01/02/2026 | 5 | 1 | Lote 175 - Models/Estatisticas revisão cards completos (5 arquivos) |
+| 01/02/2026 | 5 | 1 | Lote 176 - Models/Estatisticas + Models revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 124
-**Total de Commits:** 122
+**Total de Lotes:** 125
+**Total de Commits:** 123
 **Total de Arquivos Documentados:** 480
 
 ---
