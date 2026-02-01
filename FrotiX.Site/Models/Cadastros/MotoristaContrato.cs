@@ -1,13 +1,20 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: MotoristaContrato.cs                                                                    ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Mapear vínculo N:N entre Motorista e Contrato via chave composta.                      ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: MotoristaoContratoViewModel, MotoristaContrato                                          ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core                                                           ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: MotoristaContrato.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Mapear vínculo N:N entre Motorista e Contrato.
+ *
+ * 📥 ENTRADAS     : Identificadores de motorista e contrato.
+ *
+ * 📤 SAÍDAS       : Entidade de relacionamento e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Fluxos de associação motorista-contrato.
+ *
+ * 🔄 CHAMA        : DataAnnotations, Column(Order).
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations, Microsoft.EntityFrameworkCore.
+ *
+ * ⚠️ ATENÇÃO      : Chave composta (MotoristaId + ContratoId).
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -21,11 +28,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: transportar o vínculo Motorista-Contrato nas telas de edição.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: MotoristaoContratoViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar o vínculo Motorista-Contrato nas telas de edição.
+     *
+     * 📥 ENTRADAS     : MotoristaId, ContratoId e entidade de vínculo.
+     *
+     * 📤 SAÍDAS       : ViewModel para UI.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de vínculo.
+     ****************************************************************************************/
     public class MotoristaoContratoViewModel
     {
         // Identificador do motorista.
@@ -38,12 +51,21 @@ namespace FrotiX.Models
         public MotoristaContrato? MotoristaContrato { get; set; }
     }
 
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa o relacionamento N:N entre Motorista e Contrato.
-    // ⚠️ ATENÇÃO: chave composta (MotoristaId + ContratoId).
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: MotoristaContrato
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar o relacionamento N:N entre Motorista e Contrato.
+     *
+     * 📥 ENTRADAS     : MotoristaId e ContratoId.
+     *
+     * 📤 SAÍDAS       : Registro de vínculo persistido.
+     *
+     * 🔗 CHAMADA POR  : Fluxos de associação motorista-contrato.
+     *
+     * 🔄 CHAMA        : Column(Order).
+     *
+     * ⚠️ ATENÇÃO      : Chave composta (MotoristaId + ContratoId).
+     ****************************************************************************************/
     public class MotoristaContrato
     {
         // Chave composta - FK para Motorista.

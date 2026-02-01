@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: MovimentacaoEmpenhoMulta.cs                                                             ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Registrar movimentações de empenhos vinculadas a multas de trânsito.                  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: MovimentacaoEmpenhoMultaViewModel, MovimentacaoEmpenhoMulta                              ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core, SelectListItem, Validations                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: MovimentacaoEmpenhoMulta.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Registrar movimentações de empenhos vinculadas a multas de trânsito.
+ *
+ * 📥 ENTRADAS     : Dados financeiros, multa e empenho relacionado.
+ *
+ * 📤 SAÍDAS       : Entidade persistida e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Módulos de multas e financeiro.
+ *
+ * 🔄 CHAMA        : DataAnnotations, ForeignKey, SelectListItem.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.Validations, Microsoft.AspNetCore.Mvc.Rendering.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -20,11 +25,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: transportar movimentação e lista de empenhos de multa para seleção.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: MovimentacaoEmpenhoMultaViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar movimentação e lista de empenhos de multa para seleção.
+     *
+     * 📥 ENTRADAS     : MovimentacaoEmpenhoMulta e EmpenhoMultaList.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas financeiras de multas.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de multas.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     ****************************************************************************************/
     public class MovimentacaoEmpenhoMultaViewModel
     {
         // Identificador da movimentação.
@@ -37,11 +50,19 @@ namespace FrotiX.Models
         public IEnumerable<SelectListItem>? EmpenhoMultaList { get; set; }
     }
 
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa uma movimentação financeira ligada a multa de trânsito.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: MovimentacaoEmpenhoMulta
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar movimentação financeira ligada a multa de trânsito.
+     *
+     * 📥 ENTRADAS     : Descrição, tipo, valor e vínculos.
+     *
+     * 📤 SAÍDAS       : Registro persistido da movimentação.
+     *
+     * 🔗 CHAMADA POR  : Fluxos financeiros de multas.
+     *
+     * 🔄 CHAMA        : ForeignKey.
+     ****************************************************************************************/
     public class MovimentacaoEmpenhoMulta
     {
         // Identificador único da movimentação.

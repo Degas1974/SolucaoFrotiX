@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: MovimentacaoPatrimonio.cs                                                               ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Registrar movimentações patrimoniais entre setores/seções e o patrimônio associado.   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: MovimentacaoPatrimonioViewModel, MovimentacaoPatrimonio                                 ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core                                                           ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: MovimentacaoPatrimonio.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Registrar movimentações patrimoniais entre setores/seções.
+ *
+ * 📥 ENTRADAS     : Dados de movimentação, patrimônio e setores de origem/destino.
+ *
+ * 📤 SAÍDAS       : Entidade persistida e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Gestão patrimonial e relatórios.
+ *
+ * 🔄 CHAMA        : DataAnnotations.
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -22,11 +27,17 @@ using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: consolidar dados da movimentação e metadados de exibição.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: MovimentacaoPatrimonioViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Consolidar dados da movimentação e metadados de exibição.
+     *
+     * 📥 ENTRADAS     : MovimentacaoPatrimonio e identificadores auxiliares.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas de patrimônio.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views patrimoniais.
+     ****************************************************************************************/
     public class MovimentacaoPatrimonioViewModel
     {
         // Entidade principal do formulário.
@@ -55,11 +66,17 @@ namespace FrotiX.Models
         public string? SecaoDestinoNome { get; set; }
     }
 
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa a movimentação de um patrimônio entre setores/seções.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: MovimentacaoPatrimonio
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar a movimentação de um patrimônio entre setores/seções.
+     *
+     * 📥 ENTRADAS     : Data, responsável e vínculos de setor/seção.
+     *
+     * 📤 SAÍDAS       : Registro persistido da movimentação.
+     *
+     * 🔗 CHAMADA POR  : Gestão patrimonial.
+     ****************************************************************************************/
     public class MovimentacaoPatrimonio
     {
         // Identificador único da movimentação.

@@ -17,7 +17,7 @@
 | Total de Arquivos | 905 |
 | Documentados | 480 |
 | Percentual | 53.0% |
-| Última Atualização | 31/01/2026 22:00 |
+| Última Atualização | 31/01/2026 22:04 |
 
 ---
 
@@ -627,6 +627,13 @@
    • ModeloVeiculo.cs
    • Motorista.cs
 
+✅ Models - Classes (Lote 166 - revisão cards completos):
+   • MotoristaContrato.cs
+   • MovimentacaoEmpenho.cs
+   • MovimentacaoEmpenhoMulta.cs
+   • MovimentacaoPatrimonio.cs
+   • Multa.cs
+
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
    • _ViewImports.cshtml
@@ -1103,9 +1110,10 @@
 | 31/01/2026 | 5 | 1 | Lote 163 - Models revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 164 - Models revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 165 - Models revisão cards completos (5 arquivos) |
+| 31/01/2026 | 5 | 1 | Lote 166 - Models revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 114
-**Total de Commits:** 112
+**Total de Lotes:** 115
+**Total de Commits:** 113
 **Total de Arquivos Documentados:** 480
 
 ---

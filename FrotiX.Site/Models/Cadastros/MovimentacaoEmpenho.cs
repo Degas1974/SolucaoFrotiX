@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: MovimentacaoEmpenho.cs                                                                  ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Registrar movimentações de empenho (tipo, valor e data) vinculadas ao empenho.        ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: MovimentacaoEmpenhoViewModel, MovimentacaoEmpenho                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core, SelectListItem, Validations                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: MovimentacaoEmpenho.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Registrar movimentações de empenho (tipo, valor e data).
+ *
+ * 📥 ENTRADAS     : Dados financeiros e vínculo com empenho.
+ *
+ * 📤 SAÍDAS       : Entidade persistida e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Módulos financeiros e relatórios.
+ *
+ * 🔄 CHAMA        : DataAnnotations, ForeignKey, SelectListItem.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.Validations, Microsoft.AspNetCore.Mvc.Rendering.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -20,11 +25,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: transportar a movimentação e a lista de empenhos para seleção.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: MovimentacaoEmpenhoViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar a movimentação e a lista de empenhos para seleção.
+     *
+     * 📥 ENTRADAS     : MovimentacaoEmpenho e EmpenhoList.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas de movimentação.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views financeiras.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     ****************************************************************************************/
     public class MovimentacaoEmpenhoViewModel
     {
         // Identificador da movimentação.
@@ -37,11 +50,19 @@ namespace FrotiX.Models
         public IEnumerable<SelectListItem>? EmpenhoList { get; set; }
     }
 
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa uma movimentação financeira associada a um empenho.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: MovimentacaoEmpenho
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar movimentação financeira associada a um empenho.
+     *
+     * 📥 ENTRADAS     : Descrição, tipo, valor e data.
+     *
+     * 📤 SAÍDAS       : Registro persistido da movimentação.
+     *
+     * 🔗 CHAMADA POR  : Fluxos financeiros.
+     *
+     * 🔄 CHAMA        : ForeignKey.
+     ****************************************************************************************/
     public class MovimentacaoEmpenho
     {
         // Identificador único da movimentação.
