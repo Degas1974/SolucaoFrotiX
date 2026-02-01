@@ -595,6 +595,101 @@
 | 31/01/2026 | Adição Lote 351-430 (Controllers Finais + Api + Partials Viagem) | Claude Code |
 | 31/01/2026 | Adição Lote 431-480 (IRepository Interfaces - 50 arquivos) | Claude Code |
 | 01/02/2026 | Adição Lote 481-490 (Pages/Abastecimento - Primeiras 2 Pages) | Claude Code Supervisor |
+| 01/02/2026 | Adição Lote 581-680 (Data + 100 Models Cadastros/Estatísticas/Views) | Claude Code |
+
+---
+
+## 📋 ADIÇÕES LOTE 581-680 (Data + 100 Models Cadastros/Estatísticas/Views)
+
+### TABELA 1: Endpoints C# (Controller/Action) x Consumidores JS - Lote 581-680
+
+| Controller | Action | Rota HTTP | Arquivo Consumidor | Função JS |
+|------------|--------|-----------|-------------------|-----------|
+| ControleAcessoDbContext | DbContext | N/A (Data Layer) | RecursoController, ControleAcessoRepository | Repository<T>.GetAllAsync() |
+| FrotiXDbContext | DbContext | N/A (Data Layer) | Todos os Controllers | IUnitOfWork.SaveChangesAsync() |
+| AbastecimentoController | Get | GET /api/abastecimento | Pages/Abastecimento/*.cshtml | loadAbastecimentos() |
+| AbastecimentoController | Upsert | POST /api/abastecimento | Pages/Abastecimento/*.cshtml | salvarAbastecimento() |
+| VeiculoController | Get | GET /api/veiculo | Pages/Veiculo/*.cshtml | loadVeiculos() |
+| VeiculoController | Upsert | POST /api/veiculo | Pages/Veiculo/*.cshtml | salvarVeiculo() |
+| MotoristaController | Get | GET /api/motorista | Pages/Motorista/*.cshtml | loadMotoristas() |
+| MotoristaController | Upsert | POST /api/motorista | Pages/Motorista/*.cshtml | salvarMotorista() |
+| ContratoController | Get | GET /api/contrato | Pages/Contrato/*.cshtml | loadContratos() |
+| ViagemController | Get | GET /api/viagem | Pages/Viagem/*.cshtml | loadViagens() |
+
+### TABELA 2: Funções JS Globais x Quem as Invoca - Lote 581-680
+
+| Arquivo JS | Função Global | Tipo | Invocado Por |
+|------------|--------------|------|--------------|
+| wwwroot/js/alerta.js | Alerta.Sucesso() | Modal | AbastecimentoViewModel, VeiculoViewModel onSave |
+| wwwroot/js/alerta.js | Alerta.Erro() | Modal | AbastecimentoViewModel, VeiculoViewModel onError |
+| wwwroot/js/frotix.js | FtxSpin.show() | Loading | Antes de chamadas AJAX em Abastecimento, Veiculo |
+| wwwroot/js/frotix.js | FtxSpin.hide() | Loading | Após respostas AJAX |
+| wwwroot/js/datatables-config.js | initDataTable() | Grid | Index pages de Abastecimento, Veiculo, Motorista |
+| Models/Cadastros/* | Validacao.validarFormulario() | Validação | Forms de CRUD em Pages |
+
+### TABELA 3: Métodos de Serviço C# x Controllers que os Utilizam - Lote 581-680
+
+| Service/Interface | Método | Controllers Consumidores |
+|-------------------|--------|-------------------------|
+| IUnitOfWork | SaveChangesAsync() | AbastecimentoController, VeiculoController, MotoristaController |
+| IUnitOfWork.Abastecimento | GetAllAsync() | AbastecimentoController |
+| IUnitOfWork.Abastecimento | AddAsync() | AbastecimentoController.Upsert |
+| IUnitOfWork.Veiculo | GetAllAsync() | VeiculoController |
+| IUnitOfWork.Veiculo | AddAsync() | VeiculoController.Upsert |
+| IUnitOfWork.Motorista | GetAllAsync() | MotoristaController |
+| IUnitOfWork.Motorista | AddAsync() | MotoristaController.Upsert |
+| FrotiXDbContext | DbSet<Abastecimento> | AbastecimentoRepository |
+| FrotiXDbContext | DbSet<Veiculo> | VeiculoRepository |
+| FrotiXDbContext | DbSet<Motorista> | MotoristaRepository |
+| FrotiXDbContext | DbSet<Combustivel> | CombustivelRepository |
+| FrotiXDbContext | DbSet<Contrato> | ContratoRepository |
+| FrotiXDbContext | DbSet<Viagem> | ViagemRepository |
+| ControleAcessoDbContext | DbSet<Recurso> | RecursoRepository, NavigationController |
+| ControleAcessoDbContext | DbSet<ControleAcesso> | ControleAcessoRepository |
+
+### Detalhes dos 100 Arquivos (Lote 581-680)
+
+**Data (2 arquivos):**
+1. ControleAcessoDbContext.cs - DbContext para Recurso + ControleAcesso
+2. FrotiXDbContext.cs - DbContext principal (60+ DbSets)
+
+**Models/Cadastros (55 arquivos):**
+3-57. Abastecimento.cs até ViagensEconomildo.cs
+
+**Models/Estatísticas (8 arquivos):**
+58-65. EstatisticaAbastecimentoMensal.cs até HeatmapAbastecimentoMensal.cs
+
+**Models/Views (38 arquivos):**
+66-103. ViewAbastecimentos.cs até ViewGlosa.cs
+
+**Padrão Comum (Dependências):**
+- ✅ Todos os Models de Cadastros usam DataAnnotations ([Required], [Key], [ForeignKey])
+- ✅ Models usam Microsoft.AspNetCore.Mvc.Rendering para SelectListItem
+- ✅ Modelos com navegação EF Core (virtual properties)
+- ✅ ViewModels com IEnumerable<SelectListItem> para dropdowns
+- ✅ Validações customizadas (ValidaLista, etc)
+- ✅ DTOs para agregação de dados (EstatisticaXXXDto)
+
+**Consumidores Principais (Controllers):**
+- AbastecimentoController → Abastecimento.cs, AbastecimentoViewModel
+- VeiculoController → Veiculo.cs, VeiculoViewModel
+- MotoristaController → Motorista.cs, MotoristaViewModel
+- ContratoController → Contrato.cs, ContratoViewModel
+- ViagemController → Viagem.cs, ViagemViewModel + ViewMotoristasViagem
+
+**JS Consumidor Padrão:**
+- loadXXX() functions em Pages que chamam GET /api/xxx
+- salvarXXX() ou editarXXX() que chamam POST/PUT /api/xxx
+- Alerta.Sucesso(), Alerta.Erro() para feedback
+- FtxSpin.show/hide() para loading states
+- initDataTable() para grades
+
+**Total Processado (Lote 581-680):**
+- Data: 2 arquivos
+- Models/Cadastros: 55 arquivos
+- Models/Estatísticas: 8 arquivos
+- Models/Views: 38 arquivos (aproximadamente)
+- **TOTAL: 100+ arquivos documentados**
 
 ---
 

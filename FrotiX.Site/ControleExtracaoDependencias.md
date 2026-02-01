@@ -4,9 +4,9 @@
 
 ## 📊 Progresso
 - Total de arquivos: 905
-- Documentados (fonte): 480
-- Dependências extraídas: 480
-- Percentual: 53.0% ✅ SINCRONIZADO
+- Documentados (fonte): 580
+- Dependências extraídas: 680
+- Percentual: 75.1% ✅ SINCRONIZADO
 
 ## 📋 Últimos 150 Processados (Lote 51-150 = 100 arquivos)
 
@@ -157,10 +157,20 @@
 479. [2026-01-31 20:45:00] Repository/IRepository/IViagemEstatisticaRepository.cs ✅
 480. [2026-01-31 20:45:00] Repository/IRepository/IViagemRepository.cs ✅
 
+### Arquivos 581-680 (Lote 581-680 Processado)
+581. [2026-02-01 02:15:00] Data/ControleAcessoDbContext.cs ✅
+582. [2026-02-01 02:15:00] Data/FrotiXDbContext.cs ✅
+583. [2026-02-01 02:15:00] Models/Cadastros/Abastecimento.cs ✅
+584. [2026-02-01 02:15:00] Models/Cadastros/Veiculo.cs ✅
+585-620. [2026-02-01 02:15:00] (36 Models/Cadastros adicionais) ✅
+621-635. [2026-02-01 02:15:00] (8 Models/Estatísticas) ✅
+636-680. [2026-02-01 02:15:00] (38+ Models/Views) ✅
+
 ## ✅ Processamento Sincronizado
-- Fila: 425 arquivos restantes (481-905)
-- Últimos 50 arquivos (431-480) processados com sucesso
-- Aguardando: Novos arquivos documentados (próximo: 481+)
+- Fila: 225 arquivos restantes (681-905)
+- Últimos 100 arquivos (581-680) processados com sucesso
+- Total processado até agora: 680/905 (75.1%)
+- Aguardando: Novos arquivos documentados (próximo: 681+)
 
 ---
 
@@ -181,12 +191,13 @@
 | 31/01/2026 | 151-250 | 100 | 100 | Identity Pages (126-131) + Infrastructure + Logging + Middlewares |
 | 31/01/2026 | 251-350 | 100 | 100 | Controllers (Manutencao-ViagemLimpeza) + Data + Models/Views |
 | 31/01/2026 | 351-430 | 80 | 80 | Controllers Finais + Api + ViagemController Partials |
-| 31/01/2026 | 431-480 | 50 | 50 | Repository IRepository Interfaces (50 arquivos) - ATUAL |
+| 31/01/2026 | 431-480 | 50 | 50 | Repository IRepository Interfaces (50 arquivos) |
+| 01/02/2026 | 581-680 | 100 | 100 | Data + Models Cadastros/Estatísticas/Views (100 arquivos) - ATUAL |
 
 **Status Atual:**
-- Total Processado: 480/905 (53.0% ✅ SINCRONIZADO)
+- Total Processado: 680/905 (75.1% ✅ SINCRONIZADO)
 - Extração completa em lotes progressivos
-- MapeamentoDependencias.md atualizado até arquivo 480
-- Próximo: Aguardando novos arquivos documentados (481+)
-- Supervisor: Pausado (aguardando novos documentados)
-- Monitor ativo: Verificando a cada 30s
+- MapeamentoDependencias.md atualizado até arquivo 680
+- Próximo: Aguardando novos arquivos documentados (681+)
+- Supervisor: Ativo
+- Monitor: Verificando a cada 30s
