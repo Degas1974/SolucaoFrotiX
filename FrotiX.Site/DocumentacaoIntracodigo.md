@@ -17,7 +17,7 @@
 | Total de Arquivos | 905 |
 | Documentados | 480 |
 | Percentual | 53.0% |
-| Última Atualização | 01/02/2026 00:46 |
+| Última Atualização | 01/02/2026 00:58 |
 
 ---
 
@@ -648,6 +648,13 @@
    • RegistroCupomAbastecimento.cs
    • Requisitante.cs
 
+✅ Models - Classes (Lote 169 - revisão cards completos):
+   • SecaoPatrimonial.cs
+   • SetorPatrimonial.cs
+   • SetorSolicitante.cs
+   • TipoMulta.cs
+   • Unidade.cs
+
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
    • _ViewImports.cshtml
@@ -1127,9 +1134,10 @@
 | 31/01/2026 | 5 | 1 | Lote 166 - Models revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 167 - Models revisão cards completos (5 arquivos) |
 | 01/02/2026 | 5 | 1 | Lote 168 - Models revisão cards completos (5 arquivos) |
+| 01/02/2026 | 5 | 1 | Lote 169 - Models revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 117
-**Total de Commits:** 115
+**Total de Lotes:** 118
+**Total de Commits:** 116
 **Total de Arquivos Documentados:** 480
 
 ---
