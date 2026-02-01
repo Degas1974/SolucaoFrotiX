@@ -1,13 +1,19 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: ViewOcorrenciasViagem.cs                                                                ║
-   ║ 📂 CAMINHO: /Models                                                                                 ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Mapear a view SQL de ocorrências de viagens (status, origem/destino).                 ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: ViewOcorrenciasViagem                                                                   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations | TABLE: ViewOcorrenciasViagem                                     ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViewOcorrenciasViagem.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Mapear a view SQL de ocorrências de viagens.
+ *
+ * 📥 ENTRADAS     : Campos retornados pela view ViewOcorrenciasViagem.
+ *
+ * 📤 SAÍDAS       : DTO de leitura para consultas e relatórios.
+ *
+ * 🔗 CHAMADA POR  : Consultas de ocorrências e dashboards.
+ *
+ * 🔄 CHAMA        : DataAnnotations, Table.
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations,
+ *                   System.ComponentModel.DataAnnotations.Schema.
+ **************************************************************************************** */
 
 #nullable enable
 using System;
@@ -16,6 +22,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models
 {
+    /****************************************************************************************
+     * ⚡ MODEL: ViewOcorrenciasViagem
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar a view SQL de ocorrências de viagem.
+     *
+     * 📥 ENTRADAS     : Ocorrência, viagem, veículo e motorista.
+     *
+     * 📤 SAÍDAS       : Registro somente leitura.
+     *
+     * 🔗 CHAMADA POR  : Camadas de consulta e exibição.
+     *
+     * 🔄 CHAMA        : Table, Key.
+     ****************************************************************************************/
     [Table("ViewOcorrenciasViagem")]
     public class ViewOcorrenciasViagem
     {

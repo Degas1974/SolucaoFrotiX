@@ -1,14 +1,18 @@
-﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-    ║ 🚀 ARQUIVO: ViewContratoFornecedor.cs                                                              ║
-    ║ 📂 CAMINHO: /Models/Views                                                                           ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 🎯 OBJETIVO: View SQL de contratos com dados de fornecedor (descrição, tipo).                      ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 📋 PROPS: ContratoId, Descricao, TipoContrato                                                       ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 🔗 DEPS: FrotiX.Services, FrotiX.Validations                                                        ║
-    ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+﻿/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViewContratoFornecedor.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Mapear view SQL de contratos com dados de fornecedor.
+ *
+ * 📥 ENTRADAS     : ContratoId, descrição e tipo de contrato.
+ *
+ * 📤 SAÍDAS       : DTO de leitura para relatórios e seleção.
+ *
+ * 🔗 CHAMADA POR  : Listagens de contratos e fornecedores.
+ *
+ * 🔄 CHAMA        : Não se aplica.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.Services, FrotiX.Validations.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -23,16 +27,31 @@ using Microsoft.AspNetCore.Http;
 
 namespace FrotiX.Models
     {
+    /****************************************************************************************
+     * ⚡ MODEL: ViewContratoFornecedor
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar view SQL de contratos com fornecedor.
+     *
+     * 📥 ENTRADAS     : Identificador, descrição e tipo.
+     *
+     * 📤 SAÍDAS       : Registro somente leitura.
+     *
+     * 🔗 CHAMADA POR  : Consultas e relatórios.
+     *
+     * 🔄 CHAMA        : Não se aplica.
+     ****************************************************************************************/
     public class ViewContratoFornecedor
         {
 
+        // Identificador do contrato.
         public Guid ContratoId { get; set; }
 
+        // Descrição do contrato.
         public string? Descricao { get; set; }
 
+        // Tipo de contrato.
         public string? TipoContrato { get; set; }
 
         }
     }
-
 
