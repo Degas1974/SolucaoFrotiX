@@ -1,12 +1,12 @@
 # Controle de Extração de Dependências
 
-**Última Atualização:** 2026-01-31 17:15:00
+**Última Atualização:** 2026-01-31 20:45:00
 
 ## 📊 Progresso
 - Total de arquivos: 905
-- Documentados (fonte): 380
-- Dependências extraídas: 150
-- Percentual: 39.5%
+- Documentados (fonte): 480
+- Dependências extraídas: 480
+- Percentual: 53.0% ✅ ATUALIZADO
 
 ## 📋 Últimos 150 Processados (Lote 51-150 = 100 arquivos)
 
@@ -62,18 +62,104 @@
 49. [2026-01-31 17:00:00] Filters/GlobalExceptionFilter.cs ✅
 50. [2026-01-31 17:00:00] Filters/PageExceptionFilter.cs ✅
 
-### Arquivos 51-150 (Lote 51-150 Processado)
-51. [2026-01-31 17:15:00] Controllers/LoginController.cs ✅
-52. [2026-01-31 17:15:00] Controllers/MarcaVeiculoController.cs ✅
-53. [2026-01-31 17:15:00] Controllers/ModeloVeiculoController.cs ✅
-54. [2026-01-31 17:15:00] Controllers/ManutencaoController.cs ✅
-55. [2026-01-31 17:15:00] Controllers/MotoristaController.cs ✅
-56. [2026-01-31 17:15:00] Controllers/MultaController.cs ✅
-57. [2026-01-31 17:15:00] Controllers/NavigationController.cs ✅
-58-150. [2026-01-31 17:15:00] (93 Controllers adicionais processados em lote) ✅
+### Arquivos 351-430 (Lote 351-430 Processado)
+351. [2026-01-31 18:30:00] Controllers/OcorrenciaViagemController.Listar.cs ✅
+352. [2026-01-31 18:30:00] Controllers/OcorrenciaViagemController.Upsert.cs ✅
+353. [2026-01-31 18:30:00] Controllers/OperadorController.cs ✅
+354. [2026-01-31 18:30:00] Controllers/PatrimonioController.cs ✅
+355. [2026-01-31 18:30:00] Controllers/PdfViewerCNHController.cs ✅
+356. [2026-01-31 18:30:00] Controllers/PdfViewerController.cs ✅
+357. [2026-01-31 18:30:00] Controllers/PlacaBronzeController.cs ✅
+358. [2026-01-31 18:30:00] Controllers/RecursoController.cs ✅
+359. [2026-01-31 18:30:00] Controllers/RequisitanteController.cs ✅
+360. [2026-01-31 18:30:00] Controllers/SecaoController.cs ✅
+361. [2026-01-31 18:30:00] Controllers/SetorController.cs ✅
+362. [2026-01-31 18:30:00] Controllers/SetorSolicitanteController.cs ✅
+363. [2026-01-31 18:30:00] Controllers/SetorSolicitanteController.GetAll.cs ✅
+364. [2026-01-31 18:30:00] Controllers/SetorSolicitanteController.UpdateStatus.cs ✅
+365. [2026-01-31 18:30:00] Controllers/TaxiLegController.cs ✅
+366. [2026-01-31 18:30:00] Controllers/UnidadeController.cs ✅
+367. [2026-01-31 18:30:00] Controllers/UploadCNHController.cs ✅
+368. [2026-01-31 18:30:00] Controllers/UploadCRLVController.cs ✅
+369. [2026-01-31 18:30:00] Controllers/UsuarioController.cs ✅
+370. [2026-01-31 18:30:00] Controllers/UsuarioController.Usuarios.cs ✅
+371. [2026-01-31 18:30:00] Controllers/VeiculoController.cs ✅
+372. [2026-01-31 18:30:00] Controllers/VeiculosUnidadeController.cs ✅
+373. [2026-01-31 18:30:00] Controllers/ViagemController.cs ✅
+374. [2026-01-31 18:30:00] Controllers/ViagemController.AtualizarDados.cs ✅
+375. [2026-01-31 18:30:00] Controllers/ViagemController.AtualizarDadosViagem.cs ✅
+376. [2026-01-31 18:30:00] Controllers/ViagemController.CalculoCustoBatch.cs ✅
+377. [2026-01-31 18:30:00] Controllers/ViagemController.CustosViagem.cs ✅
+378. [2026-01-31 18:30:00] Controllers/ViagemController.DashboardEconomildo.cs ✅
+379. [2026-01-31 18:30:00] Controllers/ViagemController.DesassociarEvento.cs ✅
+380. [2026-01-31 18:30:00] Controllers/ViagemController.HeatmapEconomildo.cs ✅
+381. [2026-01-31 18:30:00] Controllers/ViagemController.HeatmapEconomildoPassageiros.cs ✅
+382. [2026-01-31 18:30:00] Controllers/ViagemController.ListaEventos.cs ✅
+383. [2026-01-31 18:30:00] Controllers/ViagemController.MetodosEstatisticas.cs ✅
+384. [2026-01-31 18:30:00] Controllers/ViagemEventoController.cs ✅
+385. [2026-01-31 18:30:00] Controllers/ViagemEventoController.UpdateStatus.cs ✅
+386. [2026-01-31 18:30:00] Controllers/ViagemLimpezaController.cs ✅
+387. [2026-01-31 18:30:00] Controllers/RelatoriosController.cs ✅
+388. [2026-01-31 18:30:00] Controllers/RelatorioSetorSolicitanteController.cs ✅
+389. [2026-01-31 18:30:00] Controllers/ReportsController.cs ✅
+390. [2026-01-31 18:30:00] Controllers/TestePdfController.cs ✅
+391-430. [2026-01-31 18:30:00] (40 arquivos adicionais: Services, Pages, Settings, Tools, API) ✅
 
-## ⏸️ Aguardando Documentação
-- Fila vazia (aguardando novos arquivos documentados)
+### Arquivos 431-480 (Lote 431-480 Processado - ATUAL)
+431. [2026-01-31 20:45:00] Repository/IRepository/IEscalasRepository.cs ✅
+432. [2026-01-31 20:45:00] Repository/IRepository/IEventoRepository.cs ✅
+433. [2026-01-31 20:45:00] Repository/IRepository/IFornecedorRepository.cs ✅
+434. [2026-01-31 20:45:00] Repository/IRepository/IItemVeiculoAtaRepository.cs ✅
+435. [2026-01-31 20:45:00] Repository/IRepository/IItemVeiculoContratoRepository.cs ✅
+436. [2026-01-31 20:45:00] Repository/IRepository/IItensManutencaoRepository.cs ✅
+437. [2026-01-31 20:45:00] Repository/IRepository/ILavadorContratoRepository.cs ✅
+438. [2026-01-31 20:45:00] Repository/IRepository/ILavadorRepository.cs ✅
+439. [2026-01-31 20:45:00] Repository/IRepository/ILavadoresLavagemRepository.cs ✅
+440. [2026-01-31 20:45:00] Repository/IRepository/ILavagemRepository.cs ✅
+441. [2026-01-31 20:45:00] Repository/IRepository/ILotacaoMotoristaRepository.cs ✅
+442. [2026-01-31 20:45:00] Repository/IRepository/IManutencaoRepository.cs ✅
+443. [2026-01-31 20:45:00] Repository/IRepository/IMarcaVeiculoRepository.cs ✅
+444. [2026-01-31 20:45:00] Repository/IRepository/IMediaCombustivelRepository.cs ✅
+445. [2026-01-31 20:45:00] Repository/IRepository/IModeloVeiculoRepository.cs ✅
+446. [2026-01-31 20:45:00] Repository/IRepository/IMotoristaContratoRepository.cs ✅
+447. [2026-01-31 20:45:00] Repository/IRepository/IMotoristaRepository.cs ✅
+448. [2026-01-31 20:45:00] Repository/IRepository/IMovimentacaoEmpenhoMultaRepository.cs ✅
+449. [2026-01-31 20:45:00] Repository/IRepository/IMovimentacaoEmpenhoRepository.cs ✅
+450. [2026-01-31 20:45:00] Repository/IRepository/IMovimentacaoPatrimonioRepository.cs ✅
+451. [2026-01-31 20:45:00] Repository/IRepository/IMultaRepository.cs ✅
+452. [2026-01-31 20:45:00] Repository/IRepository/INotaFiscalRepository.cs ✅
+453. [2026-01-31 20:45:00] Repository/IRepository/IOcorrenciaViagemRepository.cs ✅
+454. [2026-01-31 20:45:00] Repository/IRepository/IOperadorContratoRepository.cs ✅
+455. [2026-01-31 20:45:00] Repository/IRepository/IOperadorRepository.cs ✅
+456. [2026-01-31 20:45:00] Repository/IRepository/IOrgaoAutuanteRepository.cs ✅
+457. [2026-01-31 20:45:00] Repository/IRepository/IPatrimonioRepository.cs ✅
+458. [2026-01-31 20:45:00] Repository/IRepository/IPlacaBronzeRepository.cs ✅
+459. [2026-01-31 20:45:00] Repository/IRepository/IRecursoRepository.cs ✅
+460. [2026-01-31 20:45:00] Repository/IRepository/IRegistroCupomAbastecimentoRepository.cs ✅
+461. [2026-01-31 20:45:00] Repository/IRepository/IRepactuacaoAtaRepository.cs ✅
+462. [2026-01-31 20:45:00] Repository/IRepository/IRepactuacaoContratoRepository.cs ✅
+463. [2026-01-31 20:45:00] Repository/IRepository/IRepactuacaoServicosRepository.cs ✅
+464. [2026-01-31 20:45:00] Repository/IRepository/IRepactuacaoTerceirizacaoRepository.cs ✅
+465. [2026-01-31 20:45:00] Repository/IRepository/IRepactuacaoVeiculoRepository.cs ✅
+466. [2026-01-31 20:45:00] Repository/IRepository/IRepository.cs ✅
+467. [2026-01-31 20:45:00] Repository/IRepository/IRequisitanteRepository.cs ✅
+468. [2026-01-31 20:45:00] Repository/IRepository/ISecaoPatrimonialRepository.cs ✅
+469. [2026-01-31 20:45:00] Repository/IRepository/ISetorPatrimonialRepository.cs ✅
+470. [2026-01-31 20:45:00] Repository/IRepository/ISetorSolicitanteRepository.cs ✅
+471. [2026-01-31 20:45:00] Repository/IRepository/ITipoMultaRepository.cs ✅
+472. [2026-01-31 20:45:00] Repository/IRepository/IUnidadeRepository.cs ✅
+473. [2026-01-31 20:45:00] Repository/IRepository/IUnitOfWork.OcorrenciaViagem.cs ✅
+474. [2026-01-31 20:45:00] Repository/IRepository/IUnitOfWork.RepactuacaoVeiculo.cs ✅
+475. [2026-01-31 20:45:00] Repository/IRepository/IVeiculoAtaRepository.cs ✅
+476. [2026-01-31 20:45:00] Repository/IRepository/IVeiculoContratoRepository.cs ✅
+477. [2026-01-31 20:45:00] Repository/IRepository/IVeiculoPadraoViagemRepository.cs ✅
+478. [2026-01-31 20:45:00] Repository/IRepository/IVeiculoRepository.cs ✅
+479. [2026-01-31 20:45:00] Repository/IRepository/IViagemEstatisticaRepository.cs ✅
+480. [2026-01-31 20:45:00] Repository/IRepository/IViagemRepository.cs ✅
+
+## ✅ Processamento em Progresso
+- Fila: 425 arquivos restantes (481-905)
+- Últimos 50 arquivos (431-480) processados com sucesso
 
 ---
 
@@ -93,7 +179,11 @@
 | 31/01/2026 | 51-150 | 100 | 100 | Controllers + Models - Primeira grande leva |
 | 31/01/2026 | 151-250 | 100 | 100 | Identity Pages (126-131) + Infrastructure + Logging + Middlewares |
 | 31/01/2026 | 251-350 | 100 | 100 | Controllers (Manutencao-ViagemLimpeza) + Data + Models/Views |
+| 31/01/2026 | 351-430 | 80 | 80 | Controllers Finais + Api + ViagemController Partials |
+| 31/01/2026 | 431-480 | 50 | 50 | Repository IRepository Interfaces (50 arquivos) - ATUAL |
 
-**Próximos Lotes:**
-- Lote 351-415: Services + Pages + Helpers + Repository finais
-- Lote 416+: Complementares conforme documentacao
+**Status Atual:**
+- Total Processado: 480/905 (53.0% ✅)
+- Extração completa em 6 lotes (progressivo)
+- MapeamentoDependencias.md atualizado com Lote 431-480
+- Próximo: Processar lotes 481-530 (Services + Pages + Settings + Tools)

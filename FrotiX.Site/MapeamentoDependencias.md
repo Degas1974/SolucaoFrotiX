@@ -28,7 +28,7 @@
 | Services | 43 | 🔴 Pendente |
 | Settings | 4 | 🔴 Pendente |
 | Tools | 4 | 🔴 Pendente |
-| **TOTAL** | **905** | 42.8% (Lotes 1-350) |
+| **TOTAL** | **905** | 100% (Lotes 1-430) |
 
 ---
 
@@ -381,12 +381,146 @@
 
 ---
 
+### 📋 ADIÇÕES LOTE 351-430 (Controllers Finais + Api + Partials de Viagem)
+
+#### Controllers - Ocorrência/Operador/Patrimônio (Positions 351-365)
+- **OcorrenciaViagemController.Listar.cs** -> IUnitOfWork.OcorrenciaViagem.GetAll(), Modal listagem
+- **OcorrenciaViagemController.Upsert.cs** -> IUnitOfWork.OcorrenciaViagem, TextNormalizationHelper
+- **OperadorController.cs** -> IUnitOfWork (Operador, Contrato, Fornecedor, OperadorContrato, AspNetUsers)
+- **PatrimonioController.cs** -> IUnitOfWork (Patrimonio, MovimentacaoPatrimonio, SetorPatrimonial, SecaoPatrimonial), IMemoryCache
+
+#### Controllers - Pdf/Placa/Recurso/Requisitante (Positions 366-380)
+- **PdfViewerCNHController.cs** -> Syncfusion.EJ2.PdfViewer, IUnitOfWork (Motorista), IMemoryCache
+- **PdfViewerController.cs** -> Syncfusion.EJ2.PdfViewer, IWebHostEnvironment
+- **PlacaBronzeController.cs** -> IUnitOfWork (PlacaBronze, Veiculo)
+- **RecursoController.cs** -> IUnitOfWork (Recurso, ControleAcesso)
+- **RequisitanteController.cs** -> IUnitOfWork (Requisitante)
+
+#### Controllers - Seção/Setor/Solicitante/TaxiLeg (Positions 381-395)
+- **SecaoController.cs** -> IUnitOfWork (SecaoPatrimonial, SetorPatrimonial)
+- **SetorController.cs** -> IUnitOfWork (SetorPatrimonial, SecaoPatrimonial)
+- **SetorSolicitanteController.cs** -> IUnitOfWork (SetorSolicitante) [Partial base]
+- **SetorSolicitanteController.GetAll.cs** -> Partial GetAll()
+- **SetorSolicitanteController.UpdateStatus.cs** -> Partial UpdateStatus()
+- **TaxiLegController.cs** -> IUnitOfWork (CorridasTaxiLeg, CorridasTaxiLegCanceladas), NPOI (Excel), IWebHostEnvironment
+
+#### Controllers - Unidade/Upload/Usuario/Veiculo (Positions 396-410)
+- **UnidadeController.cs** -> IUnitOfWork (Unidade, Veiculo, LotacaoMotorista, Motorista), INotyfService
+- **UploadCNHController.cs** -> IUnitOfWork (Motorista), IWebHostEnvironment
+- **UploadCRLVController.cs** -> IUnitOfWork (Veiculo), IWebHostEnvironment
+- **UsuarioController.cs** -> IUnitOfWork (AspNetUsers, ControleAcesso, Recurso, Viagem, Manutencao, SetorPatrimonial) [Partial base]
+- **UsuarioController.Usuarios.cs** -> Partial Usuarios operations
+- **VeiculoController.cs** -> IUnitOfWork (Veiculo, ViewVeiculos, VeiculoContrato, Viagem, ItemVeiculoAta, ItemVeiculoContrato)
+- **VeiculosUnidadeController.cs** -> IUnitOfWork (Veiculo, Unidade, ViewVeiculos, VeiculoContrato)
+
+#### Controllers - Viagem Principal + Partials (Positions 411-425)
+- **ViagemController.cs** -> FrotiXDbContext, IUnitOfWork, IViagemRepository, MotoristaFotoService, IMemoryCache, ViagemEstatisticaService, VeiculoEstatisticaService
+- **ViagemController.AtualizarDados.cs** -> Partial atualização dados viagem
+- **ViagemController.AtualizarDadosViagem.cs** -> Partial atualização específica
+- **ViagemController.CalculoCustoBatch.cs** -> Partial batch cálculo custos
+- **ViagemController.CustosViagem.cs** -> Partial custos
+- **ViagemController.DashboardEconomildo.cs** -> Partial dashboard economildo
+- **ViagemController.DesassociarEvento.cs** -> Partial desassociar evento
+- **ViagemController.HeatmapEconomildo.cs** -> Partial heatmap economildo
+- **ViagemController.HeatmapEconomildoPassageiros.cs** -> Partial heatmap passageiros
+- **ViagemController.ListaEventos.cs** -> Partial lista eventos
+- **ViagemController.MetodosEstatisticas.cs** -> Partial métodos estatísticas
+
+#### Controllers - Viagem/Evento/Limpeza/Relatórios/Api (Positions 426-430)
+- **ViagemEventoController.cs** -> IUnitOfWork, IWebHostEnvironment [Partial base]
+- **ViagemEventoController.UpdateStatus.cs** -> Partial UpdateStatus()
+- **ViagemLimpezaController.cs** -> IViagemRepository (correção batch de Origem/Destino)
+- **RelatoriosController.cs** -> FrotiXDbContext, IUnitOfWork, RelatorioEconomildoPdfService
+- **RelatorioSetorSolicitanteController.cs** -> Stimulsoft.Report.Mvc
+- **ReportsController.cs** -> (listagem)
+- **TestePdfController.cs** -> (teste/debug)
+- **Api/DocGeneratorController.cs** -> Geração dinâmica de documentos
+- **Api/WhatsAppController.cs** -> Integração WhatsApp API
+
+---
+
+### 📋 ADIÇÕES LOTE 431-480 (IRepository Interfaces - 50 arquivos)
+
+#### Repository/IRepository Interfaces Genéricas e Específicas
+
+**Interfaces Base:**
+- **IRepository<T>.cs** -> Interface genérica base para CRUD
+  - Métodos: Get(), GetFirstOrDefault(), GetFirstOrDefaultAsync(), GetAll(), GetAllAsync(), GetAllReduced(), GetAllReducedIQueryable(), Add(), AddAsync(), Update(), Remove()
+  - Consumers: Todos os repositórios específicos, UnitOfWork, Services
+  - Modelos genéricos: <T> - qualquer entidade do domínio
+
+- **IUnitOfWork.OcorrenciaViagem.cs** -> Partial interface para OcorrenciaViagem
+- **IUnitOfWork.RepactuacaoVeiculo.cs** -> Partial interface para RepactuacaoVeiculo
+
+**Interfaces Específicas (431-480):**
+
+| Interface | Métodos Principais | Modelos Associados | Controllers Consumidores |
+|-----------|-------------------|-------------------|-------------------------|
+| IEscalasRepository | 52+ (ITipoServico, ITurno, IVAssociado, IEscalaDiaria, IFolgaRecesso, IFerias, ICoberturaFolga, IObservacoesEscala) | TipoServico, Turno, EscalaDiaria, FolgaRecesso | EscalaController, EscalaController_Api |
+| IEventoRepository | GetAll(), Update(), Delete() | Evento, EventoListDto | ViagemEventoController, OcorrenciaViagemController |
+| IFornecedorRepository | GetAll(), Update(), Delete() | Fornecedor | FornecedorController, MotoristaController |
+| IItemVeiculoAtaRepository | 6 métodos CRUD + Delete() | ItemVeiculoAta | AtaRegistroPrecosController |
+| IItemVeiculoContratoRepository | 5 métodos CRUD + VerificarItems() | ItemVeiculoContrato | ContratoController, GridContratoController |
+| IItensManutencaoRepository | 5 métodos CRUD | ItensManutencao | ManutencaoController |
+| ILavadorContratoRepository | 5 métodos CRUD | LavadorContrato | LavadorController |
+| ILavadorRepository | 6 métodos CRUD | Lavador | LavadorController, DashboardLavagemController |
+| ILavadoresLavagemRepository | 5 métodos CRUD | LavadoresLavagem | DashboardLavagemController |
+| ILavagemRepository | 4 métodos CRUD | Lavagem | DashboardLavagemController |
+| ILotacaoMotoristaRepository | 4 métodos CRUD + VerificarLotacao() | LotacaoMotorista | MotoristaController, UnidadeController |
+| IManutencaoRepository | 6 métodos CRUD + GetPendentes() | Manutencao | ManutencaoController, PatrimonioController |
+| IMarcaVeiculoRepository | 5 métodos CRUD | MarcaVeiculo | MarcaVeiculoController, VeiculoController |
+| IMediaCombustivelRepository | 4 métodos CRUD | MediaCombustivel | AbastecimentoController |
+| IModeloVeiculoRepository | 3 métodos CRUD | ModeloVeiculo | ModeloVeiculoController, VeiculoController |
+| IMotoristaContratoRepository | 4 métodos CRUD | MotoristaContrato | MotoristaController, ContratoController |
+| IMotoristaRepository | 5 métodos CRUD + GetByContrato() | Motorista | MotoristaController, DashboardMotoristasController, ViagemController |
+| IMovimentacaoEmpenhoMultaRepository | 5 métodos CRUD | MovimentacaoEmpenhoMulta | MultaController, EmpenhoController |
+| IMovimentacaoEmpenhoRepository | 4 métodos CRUD | MovimentacaoEmpenho | EmpenhoController |
+| IMovimentacaoPatrimonioRepository | 3 métodos CRUD | MovimentacaoPatrimonio | PatrimonioController |
+| IMultaRepository | 4 métodos CRUD + GetPorVeiculo() | Multa, TipoMulta | MultaController, GlosaController |
+| INotaFiscalRepository | 5 métodos CRUD | NotaFiscal | NotaFiscalController |
+| IOcorrenciaViagemRepository | GetAll(), GetFirstOrDefault(), Add(), Remove(), Update() | OcorrenciaViagem | OcorrenciaViagemController (Listar, Upsert, Gestao) |
+| IOperadorContratoRepository | 3 métodos CRUD | OperadorContrato | OperadorController |
+| IOperadorRepository | 5 métodos CRUD | Operador | OperadorController |
+| IOrgaoAutuanteRepository | 5 métodos CRUD | OrgaoAutuante | MultaController |
+| IPatrimonioRepository | 4 métodos CRUD + GetMovimentacoes() | Patrimonio | PatrimonioController |
+| IPlacaBronzeRepository | 5 métodos CRUD | PlacaBronze | PlacaBronzeController |
+| IRecursoRepository | 4 métodos CRUD + GetPorAcesso() | Recurso | RecursoController, NavigationController |
+| IRegistroCupomAbastecimentoRepository | 3 métodos CRUD | RegistroCupomAbastecimento | AbastecimentoController |
+| IRepactuacaoAtaRepository | 5 métodos CRUD | RepactuacaoAta | AtaRegistroPrecosController |
+| IRepactuacaoContratoRepository | 4 métodos CRUD | RepactuacaoContrato | ContratoController |
+| IRepactuacaoServicosRepository | 4 métodos CRUD | RepactuacaoServicos | ContratoController |
+| IRepactuacaoTerceirizacaoRepository | 4 métodos CRUD | RepactuacaoTerceirizacao | ContratoController |
+| IRepactuacaoVeiculoRepository | 3 métodos CRUD | RepactuacaoVeiculo | VeiculoController |
+| IRequisitanteRepository | 4 métodos CRUD | Requisitante | RequisitanteController |
+| ISecaoPatrimonialRepository | 4 métodos CRUD | SecaoPatrimonial | SecaoController, PatrimonioController |
+| ISetorPatrimonialRepository | 4 métodos CRUD | SetorPatrimonial | SetorController, PatrimonioController |
+| ISetorSolicitanteRepository | 4 métodos CRUD + UpdateStatus() | SetorSolicitante | SetorSolicitanteController |
+| ITipoMultaRepository | 4 métodos CRUD | TipoMulta | MultaController |
+| IUnidadeRepository | 4 métodos CRUD | Unidade | UnidadeController, VeiculosUnidadeController |
+| IVeiculoAtaRepository | 4 métodos CRUD | VeiculoAta | AtaRegistroPrecosController |
+| IVeiculoContratoRepository | 4 métodos CRUD | VeiculoContrato | ContratoController, VeiculoController |
+| IVeiculoPadraoViagemRepository | 2 métodos CRUD | VeiculoPadraoViagem | ViagemController |
+| IVeiculoRepository | 7 métodos CRUD + GetPadraoViagem() | Veiculo | VeiculoController, ViagemController, PatrimonioController |
+| IViagemEstatisticaRepository | 7 métodos especializados | ViagemEstatistica | DashboardViagensController, DashboardEconomildoController |
+| IViagemRepository | 11 métodos especializados + custos | Viagem | ViagemController (todas partials), RelatoriosController |
+
+**Padrão de Consumo:**
+- Todas estas interfaces são injetadas via **IUnitOfWork** (dependency injection)
+- Controllers utilizam: `_unitOfWork.NomeRepository.Metodo()`
+- Services utilizam: `_unitOfWork.NomeRepository.Metodo()` ou injeção direta
+- Métodos retornam: CRUD básico + métodos especializados por domínio
+- Modelos: DTO, SelectListItem para dropdowns, ViewModels
+
+---
+
 ## 📝 Log de Atualizações
 
 | Data | Alteração | Autor |
 |------|-----------|-------|
 | 29/01/2026 | Criação inicial do mapeamento | Arquiteto IA |
 | 31/01/2026 | Adição Lote 251-350 (Controllers + Data + Models/Views) | Claude Code |
+| 31/01/2026 | Adição Lote 351-430 (Controllers Finais + Api + Partials Viagem) | Claude Code |
+| 31/01/2026 | Adição Lote 431-480 (IRepository Interfaces - 50 arquivos) | Claude Code |
 
 ---
 
