@@ -17,7 +17,7 @@
 | Total de Arquivos | 905 |
 | Documentados | 480 |
 | Percentual | 53.0% |
-| Última Atualização | 31/01/2026 22:13 |
+| Última Atualização | 01/02/2026 00:46 |
 
 ---
 
@@ -641,6 +641,13 @@
    • OperadorContrato.cs
    • OrgaoAutuante.cs
 
+✅ Models - Classes (Lote 168 - revisão cards completos):
+   • Patrimonio.cs
+   • PlacaBronze.cs
+   • Recurso.cs
+   • RegistroCupomAbastecimento.cs
+   • Requisitante.cs
+
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
    • _ViewImports.cshtml
@@ -1119,9 +1126,10 @@
 | 31/01/2026 | 5 | 1 | Lote 165 - Models revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 166 - Models revisão cards completos (5 arquivos) |
 | 31/01/2026 | 5 | 1 | Lote 167 - Models revisão cards completos (5 arquivos) |
+| 01/02/2026 | 5 | 1 | Lote 168 - Models revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 116
-**Total de Commits:** 114
+**Total de Lotes:** 117
+**Total de Commits:** 115
 **Total de Arquivos Documentados:** 480
 
 ---

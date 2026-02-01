@@ -22,13 +22,13 @@
 | Logging | 1 | ✅ Completo |
 | Middlewares | 2 | ✅ Completo |
 | Models | 139 | 🟠 75% (Lotes 51-150, 251-350 processados) |
-| Pages | 340 | 🔴 Pendente |
+| Pages | 340 | 🟡 Em Progresso (Lote 481-485) |
 | Properties | 1 | 🔴 Pendente |
 | Repository | 209 | ✅ Completo |
 | Services | 43 | 🔴 Pendente |
 | Settings | 4 | 🔴 Pendente |
 | Tools | 4 | 🔴 Pendente |
-| **TOTAL** | **905** | 100% (Lotes 1-430) |
+| **TOTAL** | **905** | 100% (Lotes 1-480, iniciando 481-485) |
 
 ---
 
@@ -513,6 +513,51 @@
 
 ---
 
+## 📋 ADIÇÕES LOTE 481-485 (Pages/Abastecimento - Primeiras Pages)
+
+### Pages/Abastecimento/Index.cshtml
+**Tipo:** Razor Page (CSHTML)
+**Model:** FrotiX.Models.Abastecimento
+**Documentação:** Documentacao/Pages/Abastecimento - Index.md
+
+**TABELA 1 - Endpoints C# Consumidos:**
+| Controller | Action | Rota HTTP | Método JS | Status |
+|------------|--------|-----------|-----------|--------|
+| AbastecimentoController | Get | GET /api/abastecimento | ListaTodosAbastecimentos() | ✅ Iniciado |
+| AbastecimentoController | AtualizaQuilometragem | POST /api/Abastecimento/AtualizaQuilometragem | btnEditaKm.onclick | ✅ Modal |
+
+**TABELA 2 - Funções JavaScript Definidas:**
+| Função JS | Localização | Propósito | Dependências |
+|-----------|-------------|----------|--------------|
+| DefineEscolhaVeiculo() | Inline | Handler combobox lstVeiculos.change | ListaTodosAbastecimentos(), Alerta.TratamentoErroComLinha |
+| DefineEscolhaUnidade() | Inline | Handler combobox lstUnidade.change | ListaTodosAbastecimentos(), Alerta.TratamentoErroComLinha |
+| DefineEscolhaMotorista() | Inline | Handler combobox lstMotorista.change | ListaTodosAbastecimentos(), Alerta.TratamentoErroComLinha |
+| DefineEscolhaCombustivel() | Inline | Handler combobox lstCombustivel.change | ListaTodosAbastecimentos(), Alerta.TratamentoErroComLinha |
+| DefineEscolhaData() | Inline | Handler input txtData.change | Alerta.TratamentoErroComLinha |
+| ListaTodosAbastecimentos() | Inline | Inicializa DataTable com dados de /api/abastecimento | jQuery.DataTable, $.fn.DataTable.moment, Ajax GET |
+
+**TABELA 3 - Services C# Injetados:**
+| Service/Interface | Método | Uso | Escopo |
+|-------------------|--------|-----|--------|
+| IUnitOfWork | ListasCompartilhadas | Inicializa listas Veiculos, Combustivel, Unidade, Motorista | @functions OnGet() |
+| ListaVeiculos (Helper) | VeiculosList() | Popula ViewData["lstVeiculos"] | @functions OnGet() |
+| ListaCombustivel (Helper) | CombustivelList() | Popula ViewData["lstCombustivel"] | @functions OnGet() |
+| ListaUnidade (Helper) | UnidadeList() | Popula ViewData["lstUnidade"] | @functions OnGet() |
+| ListaMotorista (Helper) | MotoristaList() | Popula ViewData["lstMotorista"] | @functions OnGet() |
+
+**Componentes Syncfusion/Kendo Utilizados:**
+- ejs-combobox (5x): lstVeiculos, lstCombustivel, lstUnidade, lstMotorista, (possível 5º)
+- DataTable (jQuery): tblAbastecimentos com 14 colunas
+
+**Alertas Utilizados:**
+- Alerta.TratamentoErroComLinha("Index.cshtml", "[função]", error) - 5 ocorrências
+
+**Status de Documentação:**
+- ✅ Este arquivo está completamente documentado em: `Documentacao/Pages/Abastecimento - Index.md`
+- Data: 08/01/2026
+
+---
+
 ## 📝 Log de Atualizações
 
 | Data | Alteração | Autor |
@@ -521,6 +566,7 @@
 | 31/01/2026 | Adição Lote 251-350 (Controllers + Data + Models/Views) | Claude Code |
 | 31/01/2026 | Adição Lote 351-430 (Controllers Finais + Api + Partials Viagem) | Claude Code |
 | 31/01/2026 | Adição Lote 431-480 (IRepository Interfaces - 50 arquivos) | Claude Code |
+| 01/02/2026 | Adição Lote 481-485 (Pages/Abastecimento - Primeiras Pages) | Claude Code Supervisor |
 
 ---
 

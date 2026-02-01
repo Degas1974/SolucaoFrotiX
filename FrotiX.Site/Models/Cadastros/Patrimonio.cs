@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: Patrimonio.cs                                                                           ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Gerenciar bens patrimoniais com identificação, localização e status.                  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: PatrimonioViewModel, Patrimonio                                                         ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core, SelectListItem, Validations                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: Patrimonio.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar bens patrimoniais com identificação, localização e status.
+ *
+ * 📥 ENTRADAS     : Dados do bem, localização e vínculos com setor/seção.
+ *
+ * 📤 SAÍDAS       : Entidade persistida e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Gestão patrimonial e inventário.
+ *
+ * 🔄 CHAMA        : DataAnnotations, ForeignKey, SelectListItem.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.Validations, Microsoft.AspNetCore.Mvc.Rendering.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -21,12 +26,20 @@ using FrotiX.Validations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
-{ //Essa PatrimonioViewModel não faz sentido, ele só salva o objeto patrimonio dela, mais nada
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: transportar patrimônio e listas de seleção para a UI.
-    // ==================================================================================================
+{
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: PatrimonioViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar patrimônio e listas de seleção para a UI.
+     *
+     * 📥 ENTRADAS     : Patrimonio e listas de marca/setor/seção.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas patrimoniais.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de patrimônio.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     ****************************************************************************************/
     public class PatrimonioViewModel
     {
         // Identificador do patrimônio.
@@ -42,11 +55,19 @@ namespace FrotiX.Models
         public IEnumerable<SelectListItem>? SecaoList { get; set; } = new List<SelectListItem>();
     }
 
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa um bem patrimonial do órgão.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: Patrimonio
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar um bem patrimonial do órgão.
+     *
+     * 📥 ENTRADAS     : Identificação, localização e status de conferência.
+     *
+     * 📤 SAÍDAS       : Registro persistido de patrimônio.
+     *
+     * 🔗 CHAMADA POR  : Gestão patrimonial, inventário e conferência.
+     *
+     * 🔄 CHAMA        : ForeignKey.
+     ****************************************************************************************/
     public class Patrimonio
     {
         // Identificador único do patrimônio.

@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: Requisitante.cs                                                                         ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Cadastrar requisitantes de viagens (pessoas autorizadas a solicitar).                 ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: RequisitanteViewModel, Requisitante                                                     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core, SelectListItem, Validations                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: Requisitante.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Cadastrar requisitantes de viagens (pessoas autorizadas a solicitar).
+ *
+ * 📥 ENTRADAS     : Dados pessoais, contato e setor solicitante.
+ *
+ * 📤 SAÍDAS       : Entidade persistida e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Cadastros de viagens e módulos de requisição.
+ *
+ * 🔄 CHAMA        : DataAnnotations, ValidaZero, ForeignKey, SelectListItem.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.Validations, Microsoft.AspNetCore.Mvc.Rendering.
+ **************************************************************************************** */
 
 using FrotiX.Validations;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,11 +23,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: transportar requisitante e lista de setores solicitantes.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: RequisitanteViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar requisitante e lista de setores solicitantes.
+     *
+     * 📥 ENTRADAS     : Requisitante e SetorSolicitanteList.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas de cadastro/edição.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de requisitantes.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     ****************************************************************************************/
     public class RequisitanteViewModel
     {
         // Identificador do requisitante.
@@ -44,11 +57,19 @@ namespace FrotiX.Models
         }
     }
 
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa um requisitante de viagens.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: Requisitante
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar um requisitante de viagens.
+     *
+     * 📥 ENTRADAS     : Nome, ponto, ramal e setor solicitante.
+     *
+     * 📤 SAÍDAS       : Registro persistido para solicitações de viagem.
+     *
+     * 🔗 CHAMADA POR  : Repositórios e controllers de viagens.
+     *
+     * 🔄 CHAMA        : ValidaZero, ForeignKey.
+     ****************************************************************************************/
     public class Requisitante
     {
         // Identificador único do requisitante.

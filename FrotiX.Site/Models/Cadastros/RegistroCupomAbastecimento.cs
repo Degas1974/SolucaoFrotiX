@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: RegistroCupomAbastecimento.cs                                                           ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Registrar cupons de abastecimento e seus comprovantes anexados.                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: RegistroCupomAbastecimentoViewModel, RegistroCupomAbastecimento                         ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations                                                                     ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: RegistroCupomAbastecimento.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Registrar cupons de abastecimento e seus comprovantes anexados.
+ *
+ * 📥 ENTRADAS     : Datas, observações e arquivo do comprovante.
+ *
+ * 📤 SAÍDAS       : Entidade persistida e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Rotinas de abastecimento e auditoria.
+ *
+ * 🔄 CHAMA        : DataAnnotations.
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -20,11 +25,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: transportar o registro de cupom nas telas de cadastro.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: RegistroCupomAbastecimentoViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar o registro de cupom nas telas de cadastro.
+     *
+     * 📥 ENTRADAS     : RegistroCupomAbastecimento.
+     *
+     * 📤 SAÍDAS       : ViewModel para UI.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de abastecimento.
+     ****************************************************************************************/
     public class RegistroCupomAbastecimentoViewModel
     {
         // Identificador do registro.
@@ -34,11 +45,17 @@ namespace FrotiX.Models
         public RegistroCupomAbastecimento? RegistroCupomAbastecimento { get; set; }
     }
 
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa o registro de cupons de abastecimento.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: RegistroCupomAbastecimento
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar o registro de cupons de abastecimento.
+     *
+     * 📥 ENTRADAS     : Data de registro, observações e PDF.
+     *
+     * 📤 SAÍDAS       : Registro persistido para controle.
+     *
+     * 🔗 CHAMADA POR  : Processos de abastecimento.
+     ****************************************************************************************/
     public class RegistroCupomAbastecimento
     {
         // Identificador único do registro.
