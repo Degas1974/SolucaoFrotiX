@@ -289,11 +289,15 @@
 
     // [DADOS] Limpar cache periodicamente (evita vazamento de memória)
     setInterval(function () {
-        const now = Date.now();
-        for (const [key, time] of logCache.entries()) {
-            if (now - time > CACHE_DURATION * 10) {
-                logCache.delete(key);
+        try {
+            const now = Date.now();
+            for (const [key, time] of logCache.entries()) {
+                if (now - time > CACHE_DURATION * 10) {
+                    logCache.delete(key);
+                }
             }
+        } catch (error) {
+            originalConsole.error('[FrotiX] Erro ao limpar cache de logs:', error);
         }
     }, 30000); // A cada 30 segundos
 

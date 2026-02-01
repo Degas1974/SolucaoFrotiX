@@ -48,48 +48,68 @@ var FrotiXApi = (function () {
      * Gera ID unico para requisicao
      */
     function generateRequestId() {
-        return Math.random().toString(36).substring(2, 10);
+        try {
+            return Math.random().toString(36).substring(2, 10);
+        } catch (erro) {
+            console.error('Erro em generateRequestId:', erro);
+            return 'error-' + Date.now();
+        }
     }
 
     /**
      * Sleep/delay async
      */
     function sleep(ms) {
-        return new Promise(function (resolve) {
-            setTimeout(resolve, ms);
-        });
+        try {
+            return new Promise(function (resolve) {
+                setTimeout(resolve, ms);
+            });
+        } catch (erro) {
+            console.error('Erro em sleep:', erro);
+            return Promise.resolve();
+        }
     }
 
     /**
      * Constroi URL com query params
      */
     function buildUrl(endpoint, params) {
-        var url = config.baseUrl + endpoint;
-        if (params && Object.keys(params).length > 0) {
-            var queryString = Object.keys(params)
-                .filter(function (key) {
-                    return params[key] !== null && params[key] !== undefined;
-                })
-                .map(function (key) {
-                    return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
-                })
-                .join('&');
-            if (queryString) {
-                url += (url.indexOf('?') >= 0 ? '&' : '?') + queryString;
+        try {
+            var url = config.baseUrl + endpoint;
+            if (params && Object.keys(params).length > 0) {
+                var queryString = Object.keys(params)
+                    .filter(function (key) {
+                        return params[key] !== null && params[key] !== undefined;
+                    })
+                    .map(function (key) {
+                        return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
+                    })
+                    .join('&');
+                if (queryString) {
+                    url += (url.indexOf('?') >= 0 ? '&' : '?') + queryString;
+                }
             }
+            return url;
+        } catch (erro) {
+            console.error('Erro em buildUrl:', erro);
+            return config.baseUrl + endpoint;
         }
-        return url;
     }
 
     /**
      * Verifica se deve tentar novamente
      */
     function shouldRetry(error) {
-        // Retry para erros de rede ou servidor sobrecarregado
-        if (error instanceof TypeError) return true;
-        if (error.name === 'AbortError') return true;
-        if (error instanceof ApiError && [0, 502, 503, 504].indexOf(error.statusCode) >= 0) return true;
-        return false;
+        try {
+            // Retry para erros de rede ou servidor sobrecarregado
+            if (error instanceof TypeError) return true;
+            if (error.name === 'AbortError') return true;
+            if (error instanceof ApiError && [0, 502, 503, 504].indexOf(error.statusCode) >= 0) return true;
+            return false;
+        } catch (erro) {
+            console.error('Erro em shouldRetry:', erro);
+            return false;
+        }
     }
 
     /**
@@ -130,50 +150,55 @@ var FrotiXApi = (function () {
      * Trata diferentes tipos de erro
      */
     function handleError(error, method, endpoint, requestId) {
-        // Erro ja tratado
-        if (error instanceof ApiError) {
-            return error;
-        }
+        try {
+            // Erro ja tratado
+            if (error instanceof ApiError) {
+                return error;
+            }
 
-        // Timeout/Abort
-        if (error.name === 'AbortError') {
-            return new ApiError(
-                'Requisicao cancelada: tempo limite excedido',
-                408,
-                requestId
-            );
-        }
+            // Timeout/Abort
+            if (error.name === 'AbortError') {
+                return new ApiError(
+                    'Requisicao cancelada: tempo limite excedido',
+                    408,
+                    requestId
+                );
+            }
 
-        // Erro de rede (CORS, DNS, conexao)
-        if (error instanceof TypeError && error.message && error.message.indexOf('fetch') >= 0) {
-            return new ApiError(
-                'Erro de conexao: verifique sua internet ou tente novamente',
-                0,
-                requestId,
-                { originalError: error.message }
-            );
-        }
+            // Erro de rede (CORS, DNS, conexao)
+            if (error instanceof TypeError && error.message && error.message.indexOf('fetch') >= 0) {
+                return new ApiError(
+                    'Erro de conexao: verifique sua internet ou tente novamente',
+                    0,
+                    requestId,
+                    { originalError: error.message }
+                );
+            }
 
-        // "Script error" - erro cross-origin sem detalhes
-        if (error.message === 'Script error.' || error.message === 'Script error') {
+            // "Script error" - erro cross-origin sem detalhes
+            if (error.message === 'Script error.' || error.message === 'Script error') {
+                return new ApiError(
+                    'Erro ao processar requisicao. Se persistir, contate o suporte.',
+                    500,
+                    requestId,
+                    {
+                        type: 'CrossOriginError',
+                        hint: 'Erro de origem cruzada - detalhes nao disponiveis por seguranca'
+                    }
+                );
+            }
+
+            // Erro generico
             return new ApiError(
-                'Erro ao processar requisicao. Se persistir, contate o suporte.',
+                error.message || 'Erro desconhecido',
                 500,
                 requestId,
-                {
-                    type: 'CrossOriginError',
-                    hint: 'Erro de origem cruzada - detalhes nao disponiveis por seguranca'
-                }
+                { originalError: error.toString ? error.toString() : String(error) }
             );
+        } catch (erro) {
+            console.error('Erro em handleError:', erro);
+            return new ApiError('Erro critico ao processar erro', 500, requestId);
         }
-
-        // Erro generico
-        return new ApiError(
-            error.message || 'Erro desconhecido',
-            500,
-            requestId,
-            { originalError: error.toString ? error.toString() : String(error) }
-        );
     }
 
     /**
@@ -297,28 +322,48 @@ var FrotiXApi = (function () {
      * Faz requisicao GET para a API
      */
     function get(endpoint, params) {
-        return request('GET', endpoint, params || {});
+        try {
+            return request('GET', endpoint, params || {});
+        } catch (erro) {
+            console.error('Erro em get:', erro);
+            return Promise.reject(new ApiError('Erro ao iniciar requisicao GET', 0, generateRequestId()));
+        }
     }
 
     /**
      * Faz requisicao POST para a API
      */
     function post(endpoint, data) {
-        return request('POST', endpoint, data || {});
+        try {
+            return request('POST', endpoint, data || {});
+        } catch (erro) {
+            console.error('Erro em post:', erro);
+            return Promise.reject(new ApiError('Erro ao iniciar requisicao POST', 0, generateRequestId()));
+        }
     }
 
     /**
      * Faz requisicao PUT para a API
      */
     function put(endpoint, data) {
-        return request('PUT', endpoint, data || {});
+        try {
+            return request('PUT', endpoint, data || {});
+        } catch (erro) {
+            console.error('Erro em put:', erro);
+            return Promise.reject(new ApiError('Erro ao iniciar requisicao PUT', 0, generateRequestId()));
+        }
     }
 
     /**
      * Faz requisicao DELETE para a API
      */
     function del(endpoint, params) {
-        return request('DELETE', endpoint, params || {});
+        try {
+            return request('DELETE', endpoint, params || {});
+        } catch (erro) {
+            console.error('Erro em del:', erro);
+            return Promise.reject(new ApiError('Erro ao iniciar requisicao DELETE', 0, generateRequestId()));
+        }
     }
 
     // API publica
