@@ -17,7 +17,7 @@
 | Total de Arquivos | 905 |
 | Documentados | 480 |
 | Percentual | 53.0% |
-| Última Atualização | 01/02/2026 01:55 |
+| Última Atualização | 01/02/2026 01:59 |
 
 ---
 
@@ -690,6 +690,13 @@
    • EstatisticaAbastecimentoCombustivel.cs
    • EstatisticaAbastecimentoMensal.cs
 
+✅ Models/Estatisticas - Classes (Lote 175 - revisão cards completos):
+   • EstatisticaAbastecimentoTipoVeiculo.cs
+   • EstatisticaAbastecimentoVeiculo.cs
+   • EstatisticaAbastecimentoVeiculoMensal.cs
+   • EstatisticaGeralMensal.cs
+   • EstatisticaMotoristasMensal.cs
+
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
    • _ViewImports.cshtml
@@ -1175,9 +1182,10 @@
 | 01/02/2026 | 5 | 1 | Lote 172 - Models revisão cards completos (5 arquivos) |
 | 01/02/2026 | 5 | 1 | Lote 173 - Models revisão cards completos (5 arquivos) |
 | 01/02/2026 | 5 | 1 | Lote 174 - Models/Api + Models/Estatisticas revisão cards completos (5 arquivos) |
+| 01/02/2026 | 5 | 1 | Lote 175 - Models/Estatisticas revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 123
-**Total de Commits:** 121
+**Total de Lotes:** 124
+**Total de Commits:** 122
 **Total de Arquivos Documentados:** 480
 
 ---
