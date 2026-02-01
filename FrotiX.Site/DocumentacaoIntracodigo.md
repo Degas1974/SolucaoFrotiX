@@ -17,7 +17,7 @@
 | Total de Arquivos | 905 |
 | Documentados | 480 |
 | Percentual | 53.0% |
-| Última Atualização | 01/02/2026 01:50 |
+| Última Atualização | 01/02/2026 01:55 |
 
 ---
 
@@ -683,6 +683,13 @@
    • ErrorViewModel.cs
    • LogErro.cs
 
+✅ Models/Api + Models/Estatisticas - Classes (Lote 174 - revisão cards completos):
+   • ApiResponse.cs
+   • AnosDisponiveisAbastecimento.cs
+   • EstatisticaAbastecimentoCategoria.cs
+   • EstatisticaAbastecimentoCombustivel.cs
+   • EstatisticaAbastecimentoMensal.cs
+
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
    • _ViewImports.cshtml
@@ -1167,9 +1174,10 @@
 | 01/02/2026 | 5 | 1 | Lote 171 - Models + Models/DTO revisão cards completos (5 arquivos) |
 | 01/02/2026 | 5 | 1 | Lote 172 - Models revisão cards completos (5 arquivos) |
 | 01/02/2026 | 5 | 1 | Lote 173 - Models revisão cards completos (5 arquivos) |
+| 01/02/2026 | 5 | 1 | Lote 174 - Models/Api + Models/Estatisticas revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 122
-**Total de Commits:** 120
+**Total de Lotes:** 123
+**Total de Commits:** 121
 **Total de Arquivos Documentados:** 480
 
 ---
