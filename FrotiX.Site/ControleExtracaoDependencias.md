@@ -1,12 +1,12 @@
 # Controle de Extração de Dependências
 
-**Última Atualização:** 2026-01-31 20:45:00
+**Última Atualização:** 2026-02-01 01:46:00
 
 ## 📊 Progresso
 - Total de arquivos: 905
 - Documentados (fonte): 480
-- Dependências extraídas: 482
-- Percentual: 53.2% ✅ ATUALIZADO
+- Dependências extraídas: 480
+- Percentual: 53.0% ✅ SINCRONIZADO
 
 ## 📋 Últimos 150 Processados (Lote 51-150 = 100 arquivos)
 
@@ -157,14 +157,10 @@
 479. [2026-01-31 20:45:00] Repository/IRepository/IViagemEstatisticaRepository.cs ✅
 480. [2026-01-31 20:45:00] Repository/IRepository/IViagemRepository.cs ✅
 
-### Arquivos 481-490 (Lote 481-490 Processado - ATUAL)
-481. [2026-02-01 00:15:30] Pages/Abastecimento/Index.cshtml ✅
-482. [2026-02-01 00:22:15] Pages/Abastecimento/Importacao.cshtml ✅
-
-## ✅ Processamento em Progresso
-- Fila: 423 arquivos restantes (483-905)
+## ✅ Processamento Sincronizado
+- Fila: 425 arquivos restantes (481-905)
 - Últimos 50 arquivos (431-480) processados com sucesso
-- Processando: Pages (Abastecimento - arquivos 483-490 em fila)
+- Aguardando: Novos arquivos documentados (próximo: 481+)
 
 ---
 
@@ -188,9 +184,9 @@
 | 31/01/2026 | 431-480 | 50 | 50 | Repository IRepository Interfaces (50 arquivos) - ATUAL |
 
 **Status Atual:**
-- Total Processado: 482/905 (53.2% ✅)
+- Total Processado: 480/905 (53.0% ✅ SINCRONIZADO)
 - Extração completa em lotes progressivos
-- MapeamentoDependencias.md atualizado com Lote 481-490 (2 arquivos)
-- Próximo: Processar arquivos 483-530 (Pages/Abastecimento completo + outras pages)
-- Supervisor ativo: Monitorando continuamente
-- Ritmo: ~1-2 arquivos por iteração
+- MapeamentoDependencias.md atualizado até arquivo 480
+- Próximo: Aguardando novos arquivos documentados (481+)
+- Supervisor: Pausado (aguardando novos documentados)
+- Monitor ativo: Verificando a cada 30s
