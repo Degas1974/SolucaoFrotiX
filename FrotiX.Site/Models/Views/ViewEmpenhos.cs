@@ -1,14 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-    ║ 🚀 ARQUIVO: ViewEmpenhos.cs                                                                        ║
-    ║ 📂 CAMINHO: /Models/Views                                                                           ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 🎯 OBJETIVO: View SQL de empenhos de contratos (saldos, vigência, dados financeiros).             ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 📋 PROPS: EmpenhoId, NotaEmpenho, DataEmissao, AnoVigencia, SaldoInicial/Final                     ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 🔗 DEPS: FrotiX.Validations                                                                         ║
-    ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViewEmpenhos.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Mapear view SQL de empenhos de contratos.
+ *
+ * 📥 ENTRADAS     : Identificadores, saldos, vigência e dados financeiros.
+ *
+ * 📤 SAÍDAS       : DTO de leitura para relatórios.
+ *
+ * 🔗 CHAMADA POR  : Relatórios de contratos e empenhos.
+ *
+ * 🔄 CHAMA        : Não se aplica.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.Validations.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -21,34 +25,59 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
+    /****************************************************************************************
+     * ⚡ MODEL: ViewEmpenhos
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar view SQL de empenhos de contratos.
+     *
+     * 📥 ENTRADAS     : Saldos e dados de vigência.
+     *
+     * 📤 SAÍDAS       : Registro somente leitura.
+     *
+     * 🔗 CHAMADA POR  : Consultas e relatórios financeiros.
+     *
+     * 🔄 CHAMA        : Key.
+     ****************************************************************************************/
     public class ViewEmpenhos
     {
+        // Identificador do empenho.
         [Key]
         public Guid EmpenhoId { get; set; }
 
+        // Nota de empenho.
         public string? NotaEmpenho { get; set; }
 
+        // Data de emissão.
         public DateTime? DataEmissao { get; set; }
 
+        // Ano de vigência.
         public int? AnoVigencia { get; set; }
 
+        // Início da vigência.
         public DateTime? VigenciaInicial { get; set; }
 
+        // Fim da vigência.
         public DateTime? VigenciaFinal { get; set; }
 
+        // Saldo inicial.
         public double? SaldoInicial { get; set; }
 
+        // Saldo final.
         public double? SaldoFinal { get; set; }
 
+        // Saldo de movimentação.
         public double? SaldoMovimentacao { get; set; }
 
+        // Saldo de notas.
         public double? SaldoNotas { get; set; }
 
+        // Total de movimentações.
         public int? Movimentacoes { get; set; }
 
-        // View SQL usa ISNULL para garantir GUID vazio em vez de NULL
+        // Identificador do contrato (ISNULL na view).
         public Guid ContratoId { get; set; }
 
+        // Identificador da ata.
         public Guid AtaId { get; set; }
     }
 }

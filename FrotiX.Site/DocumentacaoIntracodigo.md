@@ -17,7 +17,7 @@
 | Total de Arquivos | 905 |
 | Documentados | 480 |
 | Percentual | 53.0% |
-| Última Atualização | 01/02/2026 02:19 |
+| Última Atualização | 01/02/2026 02:26 |
 
 ---
 
@@ -732,6 +732,13 @@
    • ViewContratoFornecedor.cs
    • ViewControleAcesso.cs
 
+✅ Models/Views - Classes (Lote 181 - revisão cards completos):
+   • ViewCustosViagem.cs
+   • ViewEmpenhoMulta.cs
+   • ViewEmpenhos.cs
+   • ViewEscalasCompletas.cs
+   • ViewEventos.cs
+
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
    • _ViewImports.cshtml
@@ -1223,9 +1230,10 @@
 | 01/02/2026 | 5 | 1 | Lote 178 - Models + Models/Planilhas revisão cards completos (5 arquivos) |
 | 01/02/2026 | 5 | 1 | Lote 179 - Models revisão cards completos (5 arquivos) |
 | 01/02/2026 | 5 | 1 | Lote 180 - Models + Models/Views revisão cards completos (5 arquivos) |
+| 01/02/2026 | 5 | 1 | Lote 181 - Models/Views revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 129
-**Total de Commits:** 127
+**Total de Lotes:** 130
+**Total de Commits:** 128
 **Total de Arquivos Documentados:** 480
 
 ---
