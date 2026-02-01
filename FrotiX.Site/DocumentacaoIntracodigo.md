@@ -17,7 +17,7 @@
 | Total de Arquivos | 905 |
 | Documentados | 480 |
 | Percentual | 53.0% |
-| Última Atualização | 01/02/2026 02:11 |
+| Última Atualização | 01/02/2026 02:14 |
 
 ---
 
@@ -718,6 +718,13 @@
    • RecursoTreeDTO.cs
    • RepactuacaoVeiculo.cs
 
+✅ Models - Classes (Lote 179 - revisão cards completos):
+   • SmartSettings.cs
+   • TempDataExtensions.cs
+   • ToastMessage.cs
+   • VeiculoPadraoViagem.cs
+   • ViagemEventoDto.cs
+
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
    • _ViewImports.cshtml
@@ -1207,9 +1214,10 @@
 | 01/02/2026 | 5 | 1 | Lote 176 - Models/Estatisticas + Models revisão cards completos (5 arquivos) |
 | 01/02/2026 | 5 | 1 | Lote 177 - Models/FontAwesome + Models revisão cards completos (5 arquivos) |
 | 01/02/2026 | 5 | 1 | Lote 178 - Models + Models/Planilhas revisão cards completos (5 arquivos) |
+| 01/02/2026 | 5 | 1 | Lote 179 - Models revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 127
-**Total de Commits:** 125
+**Total de Lotes:** 128
+**Total de Commits:** 126
 **Total de Arquivos Documentados:** 480
 
 ---
