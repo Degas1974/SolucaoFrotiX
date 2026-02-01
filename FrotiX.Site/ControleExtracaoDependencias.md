@@ -5,8 +5,8 @@
 ## 📊 Progresso
 - Total de arquivos: 905
 - Documentados (fonte): 480
-- Dependências extraídas: 481
-- Percentual: 53.1% ✅ ATUALIZADO
+- Dependências extraídas: 482
+- Percentual: 53.2% ✅ ATUALIZADO
 
 ## 📋 Últimos 150 Processados (Lote 51-150 = 100 arquivos)
 
@@ -159,11 +159,12 @@
 
 ### Arquivos 481-490 (Lote 481-490 Processado - ATUAL)
 481. [2026-02-01 00:15:30] Pages/Abastecimento/Index.cshtml ✅
+482. [2026-02-01 00:22:15] Pages/Abastecimento/Importacao.cshtml ✅
 
 ## ✅ Processamento em Progresso
-- Fila: 424 arquivos restantes (482-905)
+- Fila: 423 arquivos restantes (483-905)
 - Últimos 50 arquivos (431-480) processados com sucesso
-- Processando: Pages (Abastecimento e outras pastas)
+- Processando: Pages (Abastecimento - arquivos 483-490 em fila)
 
 ---
 
@@ -187,8 +188,9 @@
 | 31/01/2026 | 431-480 | 50 | 50 | Repository IRepository Interfaces (50 arquivos) - ATUAL |
 
 **Status Atual:**
-- Total Processado: 481/905 (53.1% ✅)
+- Total Processado: 482/905 (53.2% ✅)
 - Extração completa em lotes progressivos
-- MapeamentoDependencias.md atualizado com Lote 481-485
-- Próximo: Processar arquivos 482-530 (Pages/Abastecimento + Services + Settings + Tools)
+- MapeamentoDependencias.md atualizado com Lote 481-490 (2 arquivos)
+- Próximo: Processar arquivos 483-530 (Pages/Abastecimento completo + outras pages)
 - Supervisor ativo: Monitorando continuamente
+- Ritmo: ~1-2 arquivos por iteração

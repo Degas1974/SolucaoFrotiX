@@ -513,9 +513,9 @@
 
 ---
 
-## 📋 ADIÇÕES LOTE 481-485 (Pages/Abastecimento - Primeiras Pages)
+## 📋 ADIÇÕES LOTE 481-490 (Pages/Abastecimento - Primeiras Pages)
 
-### Pages/Abastecimento/Index.cshtml
+### Pages/Abastecimento/Index.cshtml (481)
 **Tipo:** Razor Page (CSHTML)
 **Model:** FrotiX.Models.Abastecimento
 **Documentação:** Documentacao/Pages/Abastecimento - Index.md
@@ -556,6 +556,34 @@
 - ✅ Este arquivo está completamente documentado em: `Documentacao/Pages/Abastecimento - Index.md`
 - Data: 08/01/2026
 
+### Pages/Abastecimento/Importacao.cshtml (482)
+**Tipo:** Razor Page (CSHTML)
+**Model:** FrotiX.Pages.Abastecimentos.ImportarModel
+**Documentação:** Em progresso
+
+**TABELA 1 - Endpoints C# Consumidos:**
+| Controller | Action | Rota HTTP | Método JS | Status |
+|------------|--------|-----------|-----------|--------|
+| AbastecimentoImportController | Import | POST /api/Abastecimento/Import | submitImportacao() | ✅ Upload XLSX/CSV |
+| AbastecimentoImportController | ValidarArquivos | POST /api/ValidarArquivos | validarArquivos() | ✅ Validação |
+
+**TABELA 2 - Funções JavaScript Definidas:**
+| Função JS | Localização | Propósito | Dependências |
+|-----------|-------------|----------|--------------|
+| setupDropZones() | Inline | Configura drag-drop para XLSX e CSV | dropZoneXlsx, dropZoneCsv, FtxSpin |
+| submitImportacao() | Inline | Submete arquivo via FormData | fetch, Alerta.TratamentoErroComLinha, FtxSpin |
+| validarArquivos() | Inline | Valida estrutura de arquivo | fetch, Alerta.TratamentoErroComLinha |
+
+**TABELA 3 - Services C# Injetados:**
+| Service/Interface | Método | Uso | Escopo |
+|-------------------|--------|-----|--------|
+| IAbastecimentoImportService | ProcessarImportacao() | Processa planilha + gera relatório | AbastecimentoImportController |
+
+**Componentes Utilizados:**
+- Drop zones: 2x (XLSX + CSV)
+- Alertas de resultado: SweetAlert
+- Barra de progresso: CSS customizada FrotiX
+
 ---
 
 ## 📝 Log de Atualizações
@@ -566,7 +594,7 @@
 | 31/01/2026 | Adição Lote 251-350 (Controllers + Data + Models/Views) | Claude Code |
 | 31/01/2026 | Adição Lote 351-430 (Controllers Finais + Api + Partials Viagem) | Claude Code |
 | 31/01/2026 | Adição Lote 431-480 (IRepository Interfaces - 50 arquivos) | Claude Code |
-| 01/02/2026 | Adição Lote 481-485 (Pages/Abastecimento - Primeiras Pages) | Claude Code Supervisor |
+| 01/02/2026 | Adição Lote 481-490 (Pages/Abastecimento - Primeiras 2 Pages) | Claude Code Supervisor |
 
 ---
 
