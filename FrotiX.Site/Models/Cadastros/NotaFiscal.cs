@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: NotaFiscal.cs                                                                           ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Registrar notas fiscais vinculadas a contratos, empenhos e veículos.                  ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: NotaFiscalViewModel, NotaFiscal                                                         ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core, SelectListItem, Validations                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: NotaFiscal.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Registrar notas fiscais vinculadas a contratos, empenhos e veículos.
+ *
+ * 📥 ENTRADAS     : Dados da nota, vínculos e referências de período.
+ *
+ * 📤 SAÍDAS       : Entidade persistida e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Módulos financeiros e relatórios.
+ *
+ * 🔄 CHAMA        : DataAnnotations, ValidaZero, ForeignKey, SelectListItem.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.Validations, Microsoft.AspNetCore.Mvc.Rendering.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -20,11 +25,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: transportar a nota fiscal e listas de seleção (empenho/contrato/ata).
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: NotaFiscalViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar a nota fiscal e listas de seleção (empenho/contrato/ata).
+     *
+     * 📥 ENTRADAS     : NotaFiscal e listas auxiliares.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas financeiras.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de notas fiscais.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     ****************************************************************************************/
     public class NotaFiscalViewModel
     {
         // Identificador da nota fiscal.
@@ -46,11 +59,21 @@ namespace FrotiX.Models
         public IEnumerable<SelectListItem>? AtaList { get; set; }
     }
 
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa uma nota fiscal associada a contratos/empenhos.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: NotaFiscal
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar uma nota fiscal associada a contratos/empenhos.
+     *
+     * 📥 ENTRADAS     : Número, datas, valores e vínculos.
+     *
+     * 📤 SAÍDAS       : Registro persistido para controle financeiro.
+     *
+     * 🔗 CHAMADA POR  : Repositórios e controllers.
+     *
+     * 🔄 CHAMA        : ForeignKey, ValidaZero, NotMapped.
+     *
+     * ⚠️ ATENÇÃO      : Há campos NotMapped para cálculo/exibição de custos.
+     ****************************************************************************************/
     public class NotaFiscal
     {
         // Identificador único da nota fiscal.

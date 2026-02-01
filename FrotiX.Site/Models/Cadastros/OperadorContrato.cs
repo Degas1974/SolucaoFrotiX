@@ -1,13 +1,20 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: OperadorContrato.cs                                                                     ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Mapear vínculo N:N entre Operador e Contrato via chave composta.                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: OperadorContratoViewModel, OperadorContrato                                             ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core                                                           ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: OperadorContrato.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Mapear vínculo N:N entre Operador e Contrato.
+ *
+ * 📥 ENTRADAS     : Identificadores de operador e contrato.
+ *
+ * 📤 SAÍDAS       : Entidade de relacionamento e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Fluxos de associação operador-contrato.
+ *
+ * 🔄 CHAMA        : DataAnnotations, Column(Order).
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations, Microsoft.EntityFrameworkCore.
+ *
+ * ⚠️ ATENÇÃO      : Chave composta (OperadorId + ContratoId).
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -21,11 +28,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: transportar vínculo Operador-Contrato nas telas de edição.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: OperadorContratoViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Transportar vínculo Operador-Contrato nas telas de edição.
+     *
+     * 📥 ENTRADAS     : OperadorId, ContratoId e entidade de vínculo.
+     *
+     * 📤 SAÍDAS       : ViewModel para UI.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de vínculo.
+     ****************************************************************************************/
     public class OperadorContratoViewModel
     {
         // Identificador do operador.
@@ -38,12 +51,21 @@ namespace FrotiX.Models
         public OperadorContrato? OperadorContrato { get; set; }
     }
 
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa o relacionamento N:N entre Operador e Contrato.
-    // ⚠️ ATENÇÃO: chave composta (OperadorId + ContratoId).
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: OperadorContrato
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar o relacionamento N:N entre Operador e Contrato.
+     *
+     * 📥 ENTRADAS     : OperadorId e ContratoId.
+     *
+     * 📤 SAÍDAS       : Registro de vínculo persistido.
+     *
+     * 🔗 CHAMADA POR  : Fluxos de associação operador-contrato.
+     *
+     * 🔄 CHAMA        : Column(Order).
+     *
+     * ⚠️ ATENÇÃO      : Chave composta (OperadorId + ContratoId).
+     ****************************************************************************************/
     public class OperadorContrato
     {
         // Chave composta - FK para Operador.

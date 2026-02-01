@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: ObservacoesEscala.cs                                                                    ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Gerenciar observações de escala com período de exibição e prioridade.                 ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: ObservacoesEscalaViewModel                                                              ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, SelectListItem                                                    ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ObservacoesEscala.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar observações de escala com período de exibição e prioridade.
+ *
+ * 📥 ENTRADAS     : Datas de exibição, prioridade e descrição.
+ *
+ * 📤 SAÍDAS       : ViewModel para telas de observações.
+ *
+ * 🔗 CHAMADA POR  : Controllers/Views de escala.
+ *
+ * 🔄 CHAMA        : DataAnnotations e SelectListItem.
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations, Microsoft.AspNetCore.Mvc.Rendering.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -19,11 +24,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace FrotiX.Models
 {
 
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: registrar observações e controlar período/prioridade de exibição.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: ObservacoesEscalaViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Registrar observações e controlar período/prioridade de exibição.
+     *
+     * 📥 ENTRADAS     : DataEscala, descrição, prioridade e datas de exibição.
+     *
+     * 📤 SAÍDAS       : ViewModel para gestão de observações.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de escala.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     ****************************************************************************************/
     public class ObservacoesEscalaViewModel
     {
         // Identificador da observação.
@@ -65,7 +78,19 @@ namespace FrotiX.Models
         // Lista para prioridade
         public IEnumerable<SelectListItem>? PrioridadeList { get; set; }
 
-        // Define valores padrão para datas e prioridade.
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ObservacoesEscalaViewModel (Construtor)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Definir valores padrão para datas e prioridade.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : Datas preenchidas e prioridade "Normal".
+         *
+         * 🔗 CHAMADA POR  : Instanciação/DI.
+         *
+         * 🔄 CHAMA        : DateTime.Today.
+         ****************************************************************************************/
         public ObservacoesEscalaViewModel()
         {
             DataEscala = DateTime.Today;

@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: Operador.cs                                                                             ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Cadastro de operadores de frota com dados pessoais e vínculo de contrato.             ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: OperadorViewModel, Operador                                                             ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core, SelectListItem, Validations, IFormFile                  ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: Operador.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Cadastro de operadores de frota com dados pessoais e vínculo de contrato.
+ *
+ * 📥 ENTRADAS     : Dados pessoais, contrato e arquivo de foto.
+ *
+ * 📤 SAÍDAS       : Entidade persistida e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Cadastros de operadores e gestão de contratos.
+ *
+ * 🔄 CHAMA        : DataAnnotations, ValidaLista, ForeignKey, IFormFile.
+ *
+ * 📦 DEPENDÊNCIAS : FrotiX.Validations, Microsoft.AspNetCore.Http.
+ **************************************************************************************** */
 
 using FrotiX.Validations;
 using Microsoft.AspNetCore.Http;
@@ -19,11 +24,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: agregar dados do operador e lista de contratos na UI.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: OperadorViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Agregar dados do operador e lista de contratos na UI.
+     *
+     * 📥 ENTRADAS     : Operador, ContratoId e lista de contratos.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas de cadastro/edição.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de operadores.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     ****************************************************************************************/
     public class OperadorViewModel
     {
         // Identificador do operador.
@@ -57,11 +70,19 @@ namespace FrotiX.Models
         }
     }
 
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa um operador de frota.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: Operador
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar um operador de frota.
+     *
+     * 📥 ENTRADAS     : Dados pessoais, contrato e foto.
+     *
+     * 📤 SAÍDAS       : Registro persistido para controle de operadores.
+     *
+     * 🔗 CHAMADA POR  : Repositórios e controllers.
+     *
+     * 🔄 CHAMA        : DataAnnotations, ValidaLista, ForeignKey, NotMapped.
+     ****************************************************************************************/
     public class Operador
     {
         // Identificador único do operador.
