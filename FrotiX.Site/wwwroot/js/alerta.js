@@ -1,24 +1,163 @@
-/*
-    ═══════════════════════════════════════════════════════════════════════════════
-    📄 DOCUMENTAÇÃO COMPLETA DISPONÍVEL
-    ═══════════════════════════════════════════════════════════════════════════════
-    
-    📍 Localização: Documentacao/JavaScript/alerta.js.md
-    📅 Última Atualização: 08/01/2026
-    📋 Versão: 2.0 (Padrão FrotiX Simplificado)
-    
-    Este arquivo fornece uma interface simplificada para exibir alertas, confirmações
-    e tratamento de erros em todo o sistema FrotiX. Para entender completamente a
-    funcionalidade, consulte a documentação acima.
-    ═══════════════════════════════════════════════════════════════════════════════
-*/
-
-// ================================
-// Arquivo: alerta.js
-// Wrapper utilitário para SweetAlertInterop
-// VERSÃO CORRIGIDA - NOVA ESTRUTURA DE ERRO
-// Integrado com ErrorHandler Unificado
-// ================================
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: alerta.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Wrapper CORE para SweetAlertInterop + sistema unificado de tratamento
+ *                   de erros JavaScript. Provê API simplificada para alertas, confirmações
+ *                   e logging de erros com envio automático ao servidor.
+ * 📥 ENTRADAS     : Chamadas de funções (Alerta.Erro, .Sucesso, .TratamentoErroComLinha, etc)
+ * 📤 SAÍDAS       : SweetAlert modals, console logs, POST /api/LogErros/LogJavaScript
+ * 🔗 CHAMADA POR  : TODO O SISTEMA FrotiX (referenciado em TODOS os arquivos JavaScript)
+ * 🔄 CHAMA        : SweetAlertInterop.*, ErrorHandler.*, fetch /api/LogErros/LogJavaScript
+ * 📦 DEPENDÊNCIAS : SweetAlertInterop (sweetalert_interop.js), ErrorHandler (error_handler.js)
+ * 📝 OBSERVAÇÕES  : DEVE ser carregado APÓS SweetAlertInterop. Integração automática
+ *                   com ErrorHandler via polling (max 50 tentativas x 100ms = 5s).
+ *
+ * 📋 ÍNDICE DE FUNÇÕES (20 funções principais + helpers):
+ *
+ * ┌─ FEEDBACKS BÁSICOS (window.Alerta.*) ─────────────────────────────────────────┐
+ * │ 1.  Alerta.Erro(titulo, texto, confirm)                                        │
+ * │     → SweetAlertInterop.ShowError() - Modal de erro vermelho                  │
+ * │                                                                                 │
+ * │ 2.  Alerta.Sucesso(titulo, texto, confirm)                                     │
+ * │     → SweetAlertInterop.ShowSuccess() - Modal de sucesso verde                │
+ * │                                                                                 │
+ * │ 3.  Alerta.Info(titulo, texto, confirm)                                        │
+ * │     → SweetAlertInterop.ShowInfo() - Modal informativo azul                   │
+ * │                                                                                 │
+ * │ 4.  Alerta.Warning(titulo, texto, confirm)                                     │
+ * │     → SweetAlertInterop.ShowWarning() - Modal de aviso amarelo                │
+ * │                                                                                 │
+ * │ 5.  Alerta.Alerta(titulo, texto, confirm)                                      │
+ * │     → Alias para Alerta.Warning (compatibilidade)                             │
+ * │                                                                                 │
+ * │ 6.  Alerta.Confirmar(titulo, texto, confirm, cancel)                           │
+ * │     → SweetAlertInterop.ShowConfirm() - Modal confirmação 2 botões            │
+ * │     → Retorna Promise<boolean> (true = confirmou, false = cancelou)           │
+ * │                                                                                 │
+ * │ 7.  Alerta.Confirmar3(titulo, texto, buttonTodos, buttonAtual, buttonCancel)   │
+ * │     → SweetAlertInterop.ShowConfirm3() - Modal confirmação 3 botões           │
+ * │     → Retorna Promise<"todos"|"atual"|false>                                  │
+ * │                                                                                 │
+ * │ 8.  Alerta.ValidacaoIAConfirmar(titulo, mensagem, confirm, cancel)             │
+ * │     → SweetAlertInterop.ShowValidacaoIAConfirmar() - Modal IA c/ badge        │
+ * │     → Para análises estatísticas (Z-Score, histórico). Fallback: Confirmar()  │
+ * └─────────────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ TRATAMENTO DE ERROS (window.Alerta.TratamentoErroComLinha) ──────────────────┐
+ * │ 9.  TratamentoErroComLinha(classeOuArquivo, metodo, erro)                      │
+ * │     → Handler PRINCIPAL de erros do sistema                                   │
+ * │     → Extrai mensagem via extrairMensagem()                                   │
+ * │     → Prepara objeto erro (string → Error, object → enriquecido)              │
+ * │     → Envia para SweetAlertInterop.ShowErrorUnexpected()                      │
+ * │     → Envia log para servidor via _enviarLogParaServidor()                    │
+ * │                                                                                 │
+ * │ 10. extrairMensagem(erro) [helper interno]                                     │
+ * │     → Extrai mensagem de erro de múltiplas fontes                             │
+ * │     → Prioridades: erro/message/mensagem/msg → toString() → JSON.stringify()  │
+ * │     → Fallback: "Erro sem mensagem específica"                                │
+ * │                                                                                 │
+ * │ 11. _enviarLogParaServidor(arquivo, metodo, erroObj)                           │
+ * │     → POST /api/LogErros/LogJavaScript (silencioso, background)               │
+ * │     → Payload: mensagem, arquivo, metodo, linha, coluna, stack, userAgent, url│
+ * │     → Não bloqueia execução, nunca lança exceção                              │
+ * └─────────────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ HELPER AJAX (window.criarErroAjax) ──────────────────────────────────────────┐
+ * │ 12. criarErroAjax(jqXHR, textStatus, errorThrown, ajaxSettings)                │
+ * │     → Converte erro jQuery AJAX para objeto compatível com TratamentoErro     │
+ * │     → Extrai: status, statusText, responseText, url, method, headers          │
+ * │     → Tenta parsear JSON response para mensagem do servidor                   │
+ * │     → Mensagens amigáveis por HTTP code (400, 401, 404, 500, etc.)            │
+ * │     → Retorna objeto enriquecido com .message, .erro, .stack, .tipoErro       │
+ * └─────────────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ INTEGRAÇÃO ERRORHANDLER (auto-execução polling) ─────────────────────────────┐
+ * │ 13. integrarErrorHandler() [IIFE]                                              │
+ * │     → Aguarda ErrorHandler estar disponível (polling 100ms, max 5s)           │
+ * │     → Chama tentarIntegrar() recursivamente até sucesso                       │
+ * │                                                                                 │
+ * │ 14. tentarIntegrar() [helper interno]                                          │
+ * │     → Verifica typeof ErrorHandler !== 'undefined'                            │
+ * │     → Se disponível: cria funções adicionais e expõe no Alerta.*              │
+ * │     → Se não: retry setTimeout(100ms) até maxTentativas (50)                  │
+ * │                                                                                 │
+ * │ 15. Alerta.TratamentoErroComLinhaEnriquecido(arquivo, funcao, erro, contexto)  │
+ * │     → Criada pela integração                                                  │
+ * │     → Adiciona contextoManual ao erro antes de chamar TratamentoErroComLinha  │
+ * │                                                                                 │
+ * │ 16. Alerta.setContextoGlobal(contexto)                                         │
+ * │     → Criada pela integração                                                  │
+ * │     → Chama ErrorHandler.setContexto(contexto)                                │
+ * │                                                                                 │
+ * │ 17. Alerta.limparContextoGlobal()                                              │
+ * │     → Criada pela integração                                                  │
+ * │     → Chama ErrorHandler.limparContexto()                                     │
+ * │                                                                                 │
+ * │ 18. Alerta.obterLogErros()                                                     │
+ * │     → Criada pela integração                                                  │
+ * │     → Chama ErrorHandler.obterLog(), retorna array de erros                   │
+ * │                                                                                 │
+ * │ 19. Alerta.limparLogErros()                                                    │
+ * │     → Criada pela integração                                                  │
+ * │     → Chama ErrorHandler.limparLog()                                          │
+ * │                                                                                 │
+ * │ 20. Alerta.criarErroAjax(...)                                                  │
+ * │     → Criada pela integração (alias para window.criarErroAjax)                │
+ * └─────────────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ UTILITÁRIOS ──────────────────────────────────────────────────────────────────┐
+ * │ 21. callIf(fn, ...args)                                                        │
+ * │     → Helper seguro para chamar funções (try-catch interno)                   │
+ * │     → Retorna resultado da função ou undefined em caso de erro                │
+ * └─────────────────────────────────────────────────────────────────────────────────┘
+ *
+ * 🔄 FLUXO DE TRATAMENTO DE ERRO:
+ * 1. Código chama Alerta.TratamentoErroComLinha(arquivo, metodo, erro)
+ * 2. Logs extensivos no console (debug)
+ * 3. Detecta tipo do erro (string, Error, object, primitivo)
+ * 4. Extrai mensagem via extrairMensagem() (múltiplas fontes)
+ * 5. Prepara erroObj com message, erro, stack, name, propriedades extras
+ * 6. Envia log para servidor via _enviarLogParaServidor() (POST background)
+ * 7. Exibe modal SweetAlertInterop.ShowErrorUnexpected(arquivo, metodo, erroObj)
+ *
+ * 🌐 ENDPOINT AJAX:
+ * - POST /api/LogErros/LogJavaScript
+ *   Body: { mensagem, arquivo, metodo, linha, coluna, stack, userAgent, url, timestamp }
+ *   Origem: CLIENT_JS
+ *   Silencioso: não bloqueia nem exibe erro se falhar
+ *
+ * 📦 OBJETO ERRO ENRIQUECIDO (criarErroAjax):
+ * {
+ *   message: string,           // Mensagem principal
+ *   erro: string,              // Mensagem alternativa
+ *   status: number,            // HTTP status code
+ *   statusText: string,        // HTTP status text
+ *   responseText: string,      // Corpo da resposta
+ *   url: string,               // URL do endpoint
+ *   method: string,            // GET/POST/PUT/DELETE
+ *   textStatus: string,        // jQuery status
+ *   readyState: number,        // XMLHttpRequest state
+ *   tipoErro: 'AJAX',         // Identificador
+ *   headers: string,           // Response headers
+ *   serverMessage: string,     // Mensagem do servidor (se JSON)
+ *   responseJson: object,      // Response parseado (se JSON)
+ *   mensagemAmigavel: string,  // Mensagem user-friendly por código HTTP
+ *   stack: string              // Stack trace sintético
+ * }
+ *
+ * 📝 OBSERVAÇÕES ADICIONAIS:
+ * - Logging EXTENSIVO no console (para debug)
+ * - Compatibilidade: window.TratamentoErroComLinha = window.Alerta.TratamentoErroComLinha
+ * - Fallbacks: se SweetAlertInterop não disponível, log no console
+ * - Integração automática com ErrorHandler (polling assíncrono)
+ * - Suporte a contexto adicional via TratamentoErroComLinhaEnriquecido
+ * - Mensagens amigáveis por HTTP code (0, 400, 401, 403, 404, 408, 500, 502, 503, 504)
+ * - Extração inteligente de mensagens do servidor (JSON ou HTML)
+ *
+ * 📌 VERSÃO: 2.0 (Padrão FrotiX Simplificado)
+ * 📌 ÚLTIMA ATUALIZAÇÃO: 08/01/2026
+ * 📌 DOCUMENTAÇÃO EXTERNA: Documentacao/JavaScript/alerta.js.md
+ **************************************************************************************** */
 
 (function initAlerta()
 {
@@ -472,109 +611,139 @@ window.criarErroAjax = function (jqXHR, textStatus, errorThrown, ajaxSettings = 
  * Integração com ErrorHandler Unificado
  * Aguarda ErrorHandler estar disponível e cria funções de conveniência
  */
-(function integrarErrorHandler() 
+(function integrarErrorHandler()
 {
-    let tentativas = 0;
-    const maxTentativas = 50; // 5 segundos (50 x 100ms)
+    try {
+        let tentativas = 0;
+        const maxTentativas = 50; // 5 segundos (50 x 100ms)
 
-    function tentarIntegrar() 
-    {
-        tentativas++;
-
-        if (typeof ErrorHandler !== 'undefined') 
+        function tentarIntegrar()
         {
-            console.log('✅ [Alerta] Integrado com ErrorHandler');
+            try {
+                tentativas++;
 
-            // Expor criarErroAjax também no namespace Alerta
-            window.Alerta.criarErroAjax = window.criarErroAjax;
-
-            // Criar função de conveniência para contexto adicional
-            window.Alerta.TratamentoErroComLinhaEnriquecido = function (arquivo, funcao, erro, contextoAdicional = {}) 
-            {
-                // Se vier com contexto adicional, enriquecer o erro
-                if (contextoAdicional && Object.keys(contextoAdicional).length > 0) 
+                if (typeof ErrorHandler !== 'undefined')
                 {
-                    // Se erro for objeto, adicionar contexto
-                    if (typeof erro === 'object' && erro !== null) 
+                    console.log('✅ [Alerta] Integrado com ErrorHandler');
+
+                    // Expor criarErroAjax também no namespace Alerta
+                    window.Alerta.criarErroAjax = window.criarErroAjax;
+
+                    // Criar função de conveniência para contexto adicional
+                    window.Alerta.TratamentoErroComLinhaEnriquecido = function (arquivo, funcao, erro, contextoAdicional = {})
                     {
-                        erro.contextoManual = contextoAdicional;
-                    }
-                    else 
+                        try {
+                            // Se vier com contexto adicional, enriquecer o erro
+                            if (contextoAdicional && Object.keys(contextoAdicional).length > 0)
+                            {
+                                // Se erro for objeto, adicionar contexto
+                                if (typeof erro === 'object' && erro !== null)
+                                {
+                                    erro.contextoManual = contextoAdicional;
+                                }
+                                else
+                                {
+                                    // Se for string ou primitivo, criar objeto
+                                    const mensagem = String(erro);
+                                    erro = {
+                                        message: mensagem,
+                                        erro: mensagem,
+                                        contextoManual: contextoAdicional,
+                                        stack: new Error(mensagem).stack
+                                    };
+                                }
+                            }
+
+                            // Chamar o tratamento original
+                            return window.Alerta.TratamentoErroComLinha(arquivo, funcao, erro);
+                        } catch (erro) {
+                            console.error('Erro em TratamentoErroComLinhaEnriquecido:', erro);
+                            return Promise.resolve();
+                        }
+                    };
+
+                    // Expor função para definir contexto global
+                    window.Alerta.setContextoGlobal = function (contexto)
                     {
-                        // Se for string ou primitivo, criar objeto
-                        const mensagem = String(erro);
-                        erro = {
-                            message: mensagem,
-                            erro: mensagem,
-                            contextoManual: contextoAdicional,
-                            stack: new Error(mensagem).stack
-                        };
-                    }
+                        try {
+                            if (ErrorHandler && ErrorHandler.setContexto)
+                            {
+                                ErrorHandler.setContexto(contexto);
+                            }
+                        } catch (erro) {
+                            console.error('Erro em setContextoGlobal:', erro);
+                        }
+                    };
+
+                    // Expor função para limpar contexto global
+                    window.Alerta.limparContextoGlobal = function ()
+                    {
+                        try {
+                            if (ErrorHandler && ErrorHandler.limparContexto)
+                            {
+                                ErrorHandler.limparContexto();
+                            }
+                        } catch (erro) {
+                            console.error('Erro em limparContextoGlobal:', erro);
+                        }
+                    };
+
+                    // Expor função para obter log de erros
+                    window.Alerta.obterLogErros = function ()
+                    {
+                        try {
+                            if (ErrorHandler && ErrorHandler.obterLog)
+                            {
+                                return ErrorHandler.obterLog();
+                            }
+                            return [];
+                        } catch (erro) {
+                            console.error('Erro em obterLogErros:', erro);
+                            return [];
+                        }
+                    };
+
+                    // Expor função para limpar log de erros
+                    window.Alerta.limparLogErros = function ()
+                    {
+                        try {
+                            if (ErrorHandler && ErrorHandler.limparLog)
+                            {
+                                ErrorHandler.limparLog();
+                            }
+                        } catch (erro) {
+                            console.error('Erro em limparLogErros:', erro);
+                        }
+                    };
+
+                    console.log('📋 [Alerta] Funções adicionais disponíveis:');
+                    console.log('  - Alerta.criarErroAjax(jqXHR, textStatus, errorThrown, ajaxSettings)');
+                    console.log('  - Alerta.TratamentoErroComLinhaEnriquecido(arquivo, funcao, erro, contexto)');
+                    console.log('  - Alerta.setContextoGlobal(contexto)');
+                    console.log('  - Alerta.limparContextoGlobal()');
+                    console.log('  - Alerta.obterLogErros()');
+                    console.log('  - Alerta.limparLogErros()');
                 }
-
-                // Chamar o tratamento original
-                return window.Alerta.TratamentoErroComLinha(arquivo, funcao, erro);
-            };
-
-            // Expor função para definir contexto global
-            window.Alerta.setContextoGlobal = function (contexto) 
-            {
-                if (ErrorHandler && ErrorHandler.setContexto) 
+                else if (tentativas < maxTentativas)
                 {
-                    ErrorHandler.setContexto(contexto);
+                    // Tentar novamente em 100ms
+                    setTimeout(tentarIntegrar, 100);
                 }
-            };
-
-            // Expor função para limpar contexto global
-            window.Alerta.limparContextoGlobal = function () 
-            {
-                if (ErrorHandler && ErrorHandler.limparContexto) 
+                else
                 {
-                    ErrorHandler.limparContexto();
+                    console.warn('⚠️ [Alerta] ErrorHandler não foi carregado após 5 segundos');
+                    console.warn('   Certifique-se de que error_handler.js está sendo carregado');
                 }
-            };
-
-            // Expor função para obter log de erros
-            window.Alerta.obterLogErros = function () 
-            {
-                if (ErrorHandler && ErrorHandler.obterLog) 
-                {
-                    return ErrorHandler.obterLog();
-                }
-                return [];
-            };
-
-            // Expor função para limpar log de erros
-            window.Alerta.limparLogErros = function () 
-            {
-                if (ErrorHandler && ErrorHandler.limparLog) 
-                {
-                    ErrorHandler.limparLog();
-                }
-            };
-
-            console.log('📋 [Alerta] Funções adicionais disponíveis:');
-            console.log('  - Alerta.criarErroAjax(jqXHR, textStatus, errorThrown, ajaxSettings)');
-            console.log('  - Alerta.TratamentoErroComLinhaEnriquecido(arquivo, funcao, erro, contexto)');
-            console.log('  - Alerta.setContextoGlobal(contexto)');
-            console.log('  - Alerta.limparContextoGlobal()');
-            console.log('  - Alerta.obterLogErros()');
-            console.log('  - Alerta.limparLogErros()');
+            } catch (erro) {
+                console.error('Erro em tentarIntegrar:', erro);
+            }
         }
-        else if (tentativas < maxTentativas) 
-        {
-            // Tentar novamente em 100ms
-            setTimeout(tentarIntegrar, 100);
-        }
-        else 
-        {
-            console.warn('⚠️ [Alerta] ErrorHandler não foi carregado após 5 segundos');
-            console.warn('   Certifique-se de que error_handler.js está sendo carregado');
-        }
+
+        // Iniciar tentativas de integração
+        tentarIntegrar();
+    } catch (erro) {
+        console.error('Erro em integrarErrorHandler:', erro);
     }
-
-    // Iniciar tentativas de integração
-    tentarIntegrar();
 })();
 
 // ============================================================================
