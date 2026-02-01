@@ -17,7 +17,7 @@
 | Total de Arquivos | 905 |
 | Documentados | 480 |
 | Percentual | 53.0% |
-| Última Atualização | 01/02/2026 02:06 |
+| Última Atualização | 01/02/2026 02:11 |
 
 ---
 
@@ -711,6 +711,13 @@
    • LoginView.cs
    • MailRequest.cs
 
+✅ Models + Models/Planilhas - Classes (Lote 178 - revisão cards completos):
+   • NavigationItemDTO.cs
+   • OcorrenciaViagem.cs
+   • ExcelViewModel.cs
+   • RecursoTreeDTO.cs
+   • RepactuacaoVeiculo.cs
+
 ✅ Areas/Authorization + Areas/Identity - Pages (Lote 125 - novo padrão visual):
    • Usuarios.cshtml.cs
    • _ViewImports.cshtml
@@ -1199,9 +1206,10 @@
 | 01/02/2026 | 5 | 1 | Lote 175 - Models/Estatisticas revisão cards completos (5 arquivos) |
 | 01/02/2026 | 5 | 1 | Lote 176 - Models/Estatisticas + Models revisão cards completos (5 arquivos) |
 | 01/02/2026 | 5 | 1 | Lote 177 - Models/FontAwesome + Models revisão cards completos (5 arquivos) |
+| 01/02/2026 | 5 | 1 | Lote 178 - Models + Models/Planilhas revisão cards completos (5 arquivos) |
 
-**Total de Lotes:** 126
-**Total de Commits:** 124
+**Total de Lotes:** 127
+**Total de Commits:** 125
 **Total de Arquivos Documentados:** 480
 
 ---

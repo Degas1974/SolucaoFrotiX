@@ -1,13 +1,19 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: OcorrenciaViagem.cs                                                                     ║
-   ║ 📂 CAMINHO: /Models                                                                                 ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Registrar ocorrências durante viagens (acidentes, problemas, etc.).                   ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: OcorrenciaViagem                                                                        ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core                                                           ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: OcorrenciaViagem.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Registrar ocorrências durante viagens (acidentes, problemas, etc.).
+ *
+ * 📥 ENTRADAS     : Identificadores, descrição, status e evidências.
+ *
+ * 📤 SAÍDAS       : Registro persistido para acompanhamento.
+ *
+ * 🔗 CHAMADA POR  : Fluxos de viagem e manutenção.
+ *
+ * 🔄 CHAMA        : DataAnnotations, EF Core (Table).
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations,
+ *                   System.ComponentModel.DataAnnotations.Schema.
+ **************************************************************************************** */
 
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -15,6 +21,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FrotiX.Models
 {
+    /****************************************************************************************
+     * ⚡ MODEL: OcorrenciaViagem
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar ocorrência associada a uma viagem.
+     *
+     * 📥 ENTRADAS     : Viagem, veículo, motorista e detalhes da ocorrência.
+     *
+     * 📤 SAÍDAS       : Entidade persistida para controle de ocorrências.
+     *
+     * 🔗 CHAMADA POR  : Repositórios e controllers.
+     *
+     * 🔄 CHAMA        : Key, Required, StringLength.
+     ****************************************************************************************/
     [Table("OcorrenciaViagem")]
     public class OcorrenciaViagem
     {

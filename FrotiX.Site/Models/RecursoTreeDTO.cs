@@ -1,24 +1,37 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: RecursoTreeDTO.cs                                                                       ║
-   ║ 📂 CAMINHO: /Models                                                                                 ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: DTO para representação de recursos em TreeView Syncfusion (ejs-treeview).             ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: RecursoTreeDTO                                                                          ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: System.Collections.Generic                                                         ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: RecursoTreeDTO.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Representar recursos em TreeView Syncfusion (ejs-treeview).
+ *
+ * 📥 ENTRADAS     : Dados de recurso e hierarquia.
+ *
+ * 📤 SAÍDAS       : DTO para montagem de árvore de navegação.
+ *
+ * 🔗 CHAMADA POR  : Telas de administração de menu.
+ *
+ * 🔄 CHAMA        : System.Collections.Generic.
+ *
+ * 📦 DEPENDÊNCIAS : System.Collections.Generic.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // DTO
-    // ==================================================================================================
-    // Representa um recurso no TreeView Syncfusion.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ DTO: RecursoTreeDTO
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar recurso no TreeView Syncfusion.
+     *
+     * 📥 ENTRADAS     : Identificadores, texto, URL e hierarquia.
+     *
+     * 📤 SAÍDAS       : Estrutura pronta para árvore de navegação.
+     *
+     * 🔗 CHAMADA POR  : APIs e telas de administração.
+     *
+     * 🔄 CHAMA        : Recurso.
+     ****************************************************************************************/
     public class RecursoTreeDTO
     {
         // ID único do recurso (string para compatibilidade com TreeView).
@@ -63,7 +76,19 @@ namespace FrotiX.Models
         // Lista de filhos (subitens do menu).
         public List<RecursoTreeDTO>? Items { get; set; } = new List<RecursoTreeDTO>();
 
-        // Converte um Recurso do banco para DTO.
+        /****************************************************************************************
+         * ⚡ MÉTODO: FromRecurso
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Converter entidade Recurso em DTO.
+         *
+         * 📥 ENTRADAS     : recurso.
+         *
+         * 📤 SAÍDAS       : RecursoTreeDTO.
+         *
+         * 🔗 CHAMADA POR  : Serviços de administração.
+         *
+         * 🔄 CHAMA        : Guid.ToString.
+         ****************************************************************************************/
         public static RecursoTreeDTO FromRecurso(Recurso recurso)
         {
             return new RecursoTreeDTO
@@ -84,7 +109,19 @@ namespace FrotiX.Models
             };
         }
 
-        // Converte DTO para Recurso do banco.
+        /****************************************************************************************
+         * ⚡ MÉTODO: ToRecurso
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Converter DTO em entidade Recurso.
+         *
+         * 📥 ENTRADAS     : Nenhuma (dados do DTO).
+         *
+         * 📤 SAÍDAS       : Recurso.
+         *
+         * 🔗 CHAMADA POR  : Serviços de persistência.
+         *
+         * 🔄 CHAMA        : Guid.TryParse, Guid.NewGuid.
+         ****************************************************************************************/
         public Recurso ToRecurso()
         {
             return new Recurso
