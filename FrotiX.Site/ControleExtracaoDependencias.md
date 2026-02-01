@@ -1,12 +1,12 @@
 # Controle de Extração de Dependências
 
-**Última Atualização:** 2026-02-01 01:46:00
+**Última Atualização:** 2026-02-01 02:30:00
 
 ## 📊 Progresso
 - Total de arquivos: 905
 - Documentados (fonte): 580
-- Dependências extraídas: 680
-- Percentual: 75.1% ✅ SINCRONIZADO
+- Dependências extraídas: 580
+- Percentual: 64.0% ✅ SINCRONIZADO COM MAPEAMENTO
 
 ## 📋 Últimos 150 Processados (Lote 51-150 = 100 arquivos)
 
@@ -192,11 +192,13 @@
 | 31/01/2026 | 251-350 | 100 | 100 | Controllers (Manutencao-ViagemLimpeza) + Data + Models/Views |
 | 31/01/2026 | 351-430 | 80 | 80 | Controllers Finais + Api + ViagemController Partials |
 | 31/01/2026 | 431-480 | 50 | 50 | Repository IRepository Interfaces (50 arquivos) |
-| 01/02/2026 | 581-680 | 100 | 100 | Data + Models Cadastros/Estatísticas/Views (100 arquivos) - ATUAL |
+| 01/02/2026 | 481-580 | 100 | 100 | Controllers (Empenho-Lavagem) + Data Contexts (100 arquivos) - ATUAL |
+| 01/02/2026 | 581-680 | 100 | 100 | Data + Models Cadastros/Estatísticas/Views (100 arquivos) |
 
 **Status Atual:**
-- Total Processado: 680/905 (75.1% ✅ SINCRONIZADO)
-- Extração completa em lotes progressivos
+- Total Processado: 580/905 (64.0% ✅ SINCRONIZADO)
+- Lote 481-580 finalizado com sucesso
+- Extração completa em lotes progressivos (100 arquivos por lote)
 - MapeamentoDependencias.md atualizado até arquivo 680
 - Próximo: Aguardando novos arquivos documentados (681+)
 - Supervisor: Ativo
