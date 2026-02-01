@@ -1,16 +1,20 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 🚀 ARQUIVO: ItensManutencao.cs                                                                    ║
-   ║ 📂 CAMINHO: Models/Cadastros/                                                                     ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
-   ║    Entidade para itens de manutenção de veículos (peças e serviços).                              ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 📋 CLASSES DISPONÍVEIS:                                                                           ║
-   ║    • ItensManutencao                                                                              ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: FrotiX.Services, FrotiX.Validations, SelectListItem                                ║
-   ║ 📅 ATUALIZAÇÃO: 31/01/2026 | 👤 AUTOR: FrotiX Team | 📝 VERSÃO: 2.0                                 ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ItensManutencao.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Representar itens de manutenção de veículos (peças e serviços).
+ *
+ * 📥 ENTRADAS     : Dados do item, vínculo com manutenção, motorista e viagem.
+ *
+ * 📤 SAÍDAS       : Entidade persistida para controle de manutenção.
+ *
+ * 🔗 CHAMADA POR  : Fluxos de manutenção e relatórios técnicos.
+ *
+ * 🔄 CHAMA        : ForeignKey, NotMapped.
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations, Microsoft.EntityFrameworkCore.
+ *
+ * ⚠️ ATENÇÃO      : NumOS e DataOS são NotMapped (uso apenas em UI).
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -24,20 +28,21 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
-    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
-    // │ 🎯 CLASSE: ItensManutencao                                                                   │
-    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-    //
-    // 🎯 OBJETIVO:
-    // Registrar itens vinculados a manutenção, motorista e viagem.
-    //
-    // 🔗 RASTREABILIDADE:
-    // ⬅️ CHAMADO POR : Fluxos de manutenção
-    // ➡️ CHAMA       : ForeignKey, NotMapped
-    //
-    // ⚠️ ATENÇÃO:
-    // Campos NumOS e DataOS são NotMapped (uso em UI).
-    //
+    /****************************************************************************************
+     * ⚡ MODEL: ItensManutencao
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Registrar itens vinculados à manutenção, motorista e viagem.
+     *
+     * 📥 ENTRADAS     : Tipo, resumo, descrição e status do item.
+     *
+     * 📤 SAÍDAS       : Registro persistido para auditoria e acompanhamento.
+     *
+     * 🔗 CHAMADA POR  : Fluxos de manutenção.
+     *
+     * 🔄 CHAMA        : ForeignKey, NotMapped.
+     *
+     * ⚠️ ATENÇÃO      : NumOS e DataOS são NotMapped (uso na UI).
+     ****************************************************************************************/
     public class ItensManutencao
     {
         [Key]

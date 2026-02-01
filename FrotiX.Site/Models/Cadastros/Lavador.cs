@@ -1,13 +1,18 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-   ║ 📌 ARQUIVO: Lavador.cs                                                                              ║
-   ║ 📂 CAMINHO: /Models/Cadastros                                                                       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🧭 OBJETIVO: Definir entidade e view model para cadastro de lavadores e seleção de contrato.       ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🗂️  CONTÉM: LavadorViewModel, Lavador                                                               ║
-   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-   ║ 🔗 DEPENDÊNCIAS: DataAnnotations, EF Core, SelectListItem, Validations                              ║
-   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: Lavador.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Definir entidade e ViewModel para cadastro de lavadores.
+ *
+ * 📥 ENTRADAS     : Dados pessoais, contrato e arquivo de foto.
+ *
+ * 📤 SAÍDAS       : Entidade persistida e ViewModel para UI.
+ *
+ * 🔗 CHAMADA POR  : Cadastros de lavadores e gestão de contratos.
+ *
+ * 🔄 CHAMA        : DataAnnotations, ValidaLista, ForeignKey, IFormFile.
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations, Microsoft.AspNetCore.Http.
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -22,14 +27,19 @@ using Microsoft.AspNetCore.Http;
 
 namespace FrotiX.Models
 {
-    // ==================================================================================================
-    // VIEW MODEL
-    // ==================================================================================================
-    // Finalidade: reunir dados do lavador e lista de contratos para telas de cadastro/edição.
-    // Observações:
-    // - ContratoList é preenchida na camada de apresentação para seleção em combo.
-    // - Lavador concentra os dados persistidos no banco.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ VIEWMODEL: LavadorViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Reunir dados do lavador e lista de contratos para UI.
+     *
+     * 📥 ENTRADAS     : Lavador, ContratoId e lista de contratos.
+     *
+     * 📤 SAÍDAS       : ViewModel para telas de cadastro/edição.
+     *
+     * 🔗 CHAMADA POR  : Controllers/Views de lavadores.
+     *
+     * 🔄 CHAMA        : SelectListItem.
+     ****************************************************************************************/
     public class LavadorViewModel
     {
         // Identificador do lavador exibido/alterado na tela.
@@ -48,11 +58,19 @@ namespace FrotiX.Models
         public IEnumerable<SelectListItem> ContratoList { get; set; }
     }
 
-    // ==================================================================================================
-    // ENTIDADE
-    // ==================================================================================================
-    // Representa um lavador (funcionário) vinculado a contrato.
-    // ==================================================================================================
+    /****************************************************************************************
+     * ⚡ MODEL: Lavador
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar lavador vinculado a contrato.
+     *
+     * 📥 ENTRADAS     : Dados pessoais, contato, contrato e foto.
+     *
+     * 📤 SAÍDAS       : Registro persistido para gestão de lavadores.
+     *
+     * 🔗 CHAMADA POR  : Repositórios e controllers.
+     *
+     * 🔄 CHAMA        : DataAnnotations, ValidaLista, ForeignKey, NotMapped.
+     ****************************************************************************************/
     public class Lavador
     {
         // Identificador único do lavador.
