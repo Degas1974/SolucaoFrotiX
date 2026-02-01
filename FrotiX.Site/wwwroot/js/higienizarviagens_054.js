@@ -1,60 +1,190 @@
-/*
-    ═══════════════════════════════════════════════════════════════════════════════
-    📄 DOCUMENTAÇÃO COMPLETA DISPONÍVEL
-    ═══════════════════════════════════════════════════════════════════════════════
-    
-    📍 Localização: Documentacao/JavaScript/higienizarviagens_054.js.md
-    📅 Última Atualização: 08/01/2026
-    📋 Versão: 2.0 (Padrão FrotiX Simplificado)
-    
-    Este arquivo gerencia a funcionalidade de higienização/unificação de origens
-    e destinos de viagens. Para entender completamente a funcionalidade,
-    consulte a documentação acima.
-    ═══════════════════════════════════════════════════════════════════════════════
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: higienizarviagens_054.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerencia funcionalidade de higienização/unificação de origens e
+ *                   destinos de viagens. Permite mover itens entre listas, normalizar
+ *                   textos, e enviar unificações para API via POST.
+ * 📥 ENTRADAS     : Listas Syncfusion EJ2 ListBox com origens/destinos duplicados,
+ *                   valores de inputs txtNovaOrigem/txtNovoDestino
+ * 📤 SAÍDAS       : POST /api/viagem/unificar, SweetAlert modals, atualização de listas
+ * 🔗 CHAMADA POR  : Páginas de administração de viagens (higienização)
+ * 🔄 CHAMA        : Swal.fire, fetch API, Syncfusion ListBox API, console.*, loading overlay
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 ListBox, SweetAlert2, loadingOverlayHigienizar element
+ * 📝 OBSERVAÇÕES  : Normalização NFD, dedupe de listas, double-click para mover itens,
+ *                   animação CSS entering/highlighted, contadores badge em tempo real
+ *
+ * 📋 ÍNDICE DE FUNÇÕES (14 funções + 1 event listener):
+ *
+ * ┌─ FUNÇÕES DE LOADING ───────────────────────────────────────────────────┐
+ * │ 1. mostrarLoading(texto)                                                │
+ * │    → Exibe overlay de loading e desabilita todos os botões da tela     │
+ * │    → Atualiza texto do loading se fornecido                            │
+ * │    → Adiciona classe .btn-disabled-loading aos botões                  │
+ * │                                                                         │
+ * │ 2. esconderLoading()                                                   │
+ * │    → Esconde overlay de loading e reabilita todos os botões           │
+ * │    → Remove classe .btn-disabled-loading dos botões                   │
+ * │                                                                         │
+ * │ 3. showLoading()                                                       │
+ * │    → Alias para mostrarLoading() (compatibilidade)                    │
+ * │                                                                         │
+ * │ 4. hideLoading()                                                       │
+ * │    → Alias para esconderLoading() (compatibilidade)                   │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ FUNÇÕES DE NORMALIZAÇÃO E MANIPULAÇÃO DE LISTAS ──────────────────────┐
+ * │ 5. normalizarTexto(texto)                                              │
+ * │    → Normaliza texto para comparação (NFD, remove acentos, lowercase) │
+ * │    → Remove espaços múltiplos, trim, converte / para /                │
+ * │    → Retorna string normalizada                                       │
+ * │                                                                         │
+ * │ 6. moverSelecionados(origemId, destinoId)                             │
+ * │    → Move itens selecionados de uma ListBox para outra                │
+ * │    → Usa normalizarTexto para comparação case-insensitive             │
+ * │    → Adiciona animação entering/highlighted (1s)                      │
+ * │    → Atualiza contadores de ambas as listas                           │
+ * │                                                                         │
+ * │ 7. atualizarListbox(id, itens)                                        │
+ * │    → Atualiza dataSource de uma ListBox Syncfusion                    │
+ * │    → Chama dataBind() para refresh                                    │
+ * │                                                                         │
+ * │ 8. atualizarContador(listBoxId)                                       │
+ * │    → Atualiza badge de contagem de itens de uma ListBox              │
+ * │    → Mapeamento: listOrigens → badgeOrigens, etc.                    │
+ * │    → Suporta badge normal e badge com .badge-num                     │
+ * │                                                                         │
+ * │ 9. obterTextosDaLista(listId)                                         │
+ * │    → Extrai array de strings (texto) de uma ListBox                  │
+ * │    → Suporta formato string[] e objeto[] com .text                   │
+ * │    → Filtra vazios e aplica trim                                     │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ FUNÇÕES DE GRAVAÇÃO E API ─────────────────────────────────────────────┐
+ * │ 10. gravarUnificacaoViagens()                                          │
+ * │     → Função legada de unificação conjunta origem+destino             │
+ * │     → Valida txtUnificar + pelo menos uma seleção                     │
+ * │     → POST /api/viagem/unificar com reload após sucesso              │
+ * │                                                                         │
+ * │ 11. gravarOrigem()                                                     │
+ * │     → Grava unificação apenas de origens                              │
+ * │     → Valida txtNovaOrigem + listOrigensSelecionadas não vazia       │
+ * │     → Chama enviarRequisicaoUnificacao com destinosSelecionados=[]   │
+ * │                                                                         │
+ * │ 12. gravarDestino()                                                    │
+ * │     → Grava unificação apenas de destinos                             │
+ * │     → Valida txtNovoDestino + listDestinosSelecionados não vazia     │
+ * │     → Chama enviarRequisicaoUnificacao com origensSelecionadas=[]    │
+ * │                                                                         │
+ * │ 13. enviarRequisicaoUnificacao(dados)                                 │
+ * │     → Envia POST /api/viagem/unificar com loading overlay            │
+ * │     → Formato JSON: { novoValor, origensSelecionadas, destinosSelecionados } │
+ * │     → Exibe SweetAlert sucesso/erro, reload após sucesso             │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ EVENT LISTENERS ───────────────────────────────────────────────────────┐
+ * │ 14. DOMContentLoaded handler                                           │
+ * │     → Configura double-click em 4 ListBoxes para mover itens          │
+ * │     → Pares: listOrigens ↔ listOrigensSelecionadas                   │
+ * │     │        listDestinos ↔ listDestinosSelecionados                 │
+ * │     → Adiciona listeners em btnGravarOrigem e btnGravarDestino       │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ * 🔄 FLUXO DE UNIFICAÇÃO:
+ * 1. Usuário move itens entre listas (double-click ou arrastar)
+ * 2. Preenche novo valor (txtNovaOrigem ou txtNovoDestino)
+ * 3. Clica em btnGravarOrigem ou btnGravarDestino
+ * 4. Validação de campos (novo valor não vazio + pelo menos 1 item selecionado)
+ * 5. enviarRequisicaoUnificacao mostra loading e faz POST /api/viagem/unificar
+ * 6. API processa unificação no banco de dados
+ * 7. SweetAlert de sucesso → location.reload() para atualizar listas
+ *
+ * 📌 FORMATO JSON API:
+ * POST /api/viagem/unificar
+ * {
+ *   "novoValor": "São Paulo - SP",
+ *   "origensSelecionadas": ["sao paulo", "SP", "São Paulo"],
+ *   "destinosSelecionados": []
+ * }
+ *
+ * 📝 OBSERVAÇÕES ADICIONAIS:
+ * - normalizarTexto usa NFD (Canonical Decomposition) para remover acentos
+ * - moverSelecionados suporta tanto string[] quanto objeto[] com .text
+ * - Animação CSS: .entering + .highlighted (1000ms)
+ * - Loading overlay desabilita TODOS os botões da página (não apenas os de ação)
+ * - Badge mapping hardcoded para 4 ListBoxes específicas
+ *
+ * 🔌 VERSÃO: 2.0 (Padrão FrotiX Simplificado)
+ * 📌 ÚLTIMA ATUALIZAÇÃO: 01/02/2026
+ **************************************************************************************** */
 
 // ===== FUNÇÕES DE LOADING - PADRÃO FROTIX =====
 function mostrarLoading(texto) {
-    const overlay = document.getElementById('loadingOverlayHigienizar');
-    if (overlay) {
-        if (texto) {
-            const loadingText = overlay.querySelector('.ftx-loading-text');
-            if (loadingText) loadingText.textContent = texto;
+    try {
+        const overlay = document.getElementById('loadingOverlayHigienizar');
+        if (overlay) {
+            if (texto) {
+                const loadingText = overlay.querySelector('.ftx-loading-text');
+                if (loadingText) loadingText.textContent = texto;
+            }
+            overlay.style.display = 'flex';
         }
-        overlay.style.display = 'flex';
+        // Desabilita todos os botões da tela
+        document.querySelectorAll('button, input[type="button"], input[type="submit"]').forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('btn-disabled-loading');
+        });
+    } catch (erro) {
+        console.error('[FrotiX] Erro em mostrarLoading:', erro);
     }
-    // Desabilita todos os botões da tela
-    document.querySelectorAll('button, input[type="button"], input[type="submit"]').forEach(btn => {
-        btn.disabled = true;
-        btn.classList.add('btn-disabled-loading');
-    });
 }
 
 function esconderLoading() {
-    const overlay = document.getElementById('loadingOverlayHigienizar');
-    if (overlay) {
-        overlay.style.display = 'none';
+    try {
+        const overlay = document.getElementById('loadingOverlayHigienizar');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+        // Reabilita todos os botões
+        document.querySelectorAll('button, input[type="button"], input[type="submit"]').forEach(btn => {
+            btn.disabled = false;
+            btn.classList.remove('btn-disabled-loading');
+        });
+    } catch (erro) {
+        console.error('[FrotiX] Erro em esconderLoading:', erro);
     }
-    // Reabilita todos os botões
-    document.querySelectorAll('button, input[type="button"], input[type="submit"]').forEach(btn => {
-        btn.disabled = false;
-        btn.classList.remove('btn-disabled-loading');
-    });
 }
 
 // Alias para compatibilidade com código existente
-function showLoading() { mostrarLoading(); }
-function hideLoading() { esconderLoading(); }
+function showLoading() {
+    try {
+        mostrarLoading();
+    } catch (erro) {
+        console.error('[FrotiX] Erro em showLoading:', erro);
+    }
+}
+
+function hideLoading() {
+    try {
+        esconderLoading();
+    } catch (erro) {
+        console.error('[FrotiX] Erro em hideLoading:', erro);
+    }
+}
 
 function normalizarTexto(texto)
 {
-    return texto
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/\s+/g, ' ')
-        .replace(/\//g, '/')
-        .trim()
-        .toLowerCase();
+    try {
+        return texto
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/\s+/g, ' ')
+            .replace(/\//g, '/')
+            .trim()
+            .toLowerCase();
+    } catch (erro) {
+        console.error('[FrotiX] Erro em normalizarTexto:', erro);
+        return String(texto || '').toLowerCase();
+    }
 }
 
 function moverSelecionados(origemId, destinoId)
