@@ -720,6 +720,54 @@
 
 ---
 
+## 📋 ADIÇÕES LOTE 681-720 (Models Finais - 40 arquivos)
+
+### TABELA 1: Endpoints C# (Controller/Action) x Consumidores JS - Lote 681-720
+
+**Padrão: Models (Data Transfer Objects e Entidades)** - Não há endpoints diretos neste lote, pois contém apenas modelos de dados.
+
+| Model | Namespace | Consumido Por | Tipo | Status |
+|-------|-----------|---------------|------|--------|
+| DateItem | FrotiX.Models | Interfaces de filtro | DTO (simples) | ✅ Sem dependências |
+| Encarregado | FrotiX.Models | EncarregadoController, Repositórios | Entity + ViewModel | ✅ Valida(FrotiX.Validations), IFormFile |
+| EncarregadoContrato | FrotiX.Models | Repository, EncarregadoController | Entity (N:N) | ✅ Chave composta |
+| ErrorViewModel | FrotiX.Models | Error pages | ViewModel | ✅ IEmailSender (stub) |
+| LogErro | FrotiX.Models | LogErrosController, LogService, IRepository | Entity (Auditoria) | ✅ DataAnnotations, Table attributes |
+| ApiResponse<T> | FrotiX.Models.Api | Controllers API | Padrão genérico | ✅ Guid, Exception.Message |
+| ApiResponse | FrotiX.Models.Api | Controllers API | Padrão não-tipado | ✅ Herda de ApiResponse<object> |
+| ApiErrorDetails | FrotiX.Models.Api | ApiResponse.FromException | Detalhes técnicos | ✅ DateTime |
+| AnosDisponiveisAbastecimento | FrotiX.Models.Estatisticas | Dashboards, Filtros | Statistics Entity | ✅ DatabaseGenerated.None |
+| EstatisticaAbastecimentoCategoria | FrotiX.Models.Estatisticas | Relatórios, Dashboards | Statistics Entity | ✅ Grouping analytics |
+| EstatisticaAbastecimentoCombustivel | FrotiX.Models.Estatisticas | Relatórios, Dashboards | Statistics Entity | ✅ Agregação por combustível |
+| EstatisticaAbastecimentoMensal | FrotiX.Models.Estatisticas | Dashboards | Statistics Entity | ✅ Agregação mensal |
+| EstatisticaAbastecimentoTipoVeiculo | FrotiX.Models.Estatisticas | Relatórios | Statistics Entity | ✅ Agregação por tipo |
+
+### TABELA 2: Funções JS Globais x Quem as Invoca - Lote 681-720
+
+**Padrão: Modelos de Dados** - Modelos não contêm funções JavaScript diretas. Consumo é via:
+- Controllers API que retornam JSON serializado destes modelos
+- DataTables em Pages que exibem dados de Estatísticas
+- FormModels em Razor Pages que populam dropdowns/seletores
+
+| Modelo | Propriedades | Serialização JSON | Consumo em Pages |
+|--------|-------------|-------------------|------------------|
+| ApiResponse<T> | { success, data, message, requestId, errorDetails } | JSON padrão | Tratamento de respostas fetch |
+| AnosDisponiveisAbastecimento | { ano, totalAbastecimentos, dataAtualizacao } | JSON array | Filtros de período |
+| EstatisticaAbastecimento* | { ano, mes, total*, valor*, litros*, ... } | JSON array | DataTables, gráficos Syncfusion |
+
+### TABELA 3: Métodos de Serviço C# x Controllers que os Utilizam - Lote 681-720
+
+| Service/Interface | Método | Modelos Utilizados | Consumidores |
+|-------------------|--------|-------------------|--------------|
+| IRepository<LogErro> | GetAllAsync(), AddAsync() | LogErro | LogErrosController |
+| IRepository<Estatistica*> | GetAllAsync() | Todas as Estatísticas | DashboardController, RelatoriosController |
+| FrotiXDbContext | DbSet<LogErro> | LogErro | Persistence, querying |
+| FrotiXDbContext | DbSet<Estatistica*> | Statistics Models | Persistence, aggregations |
+| DataAnnotations | [Table()], [Key], [StringLength()] | Todos os Models | EF Core Mapping |
+| Microsoft.AspNetCore.Identity.UI.Services | IEmailSender | ErrorViewModel | Identity framework stub |
+
+---
+
 ## 📝 Log de Atualizações
 
 | Data | Alteração | Autor |
@@ -730,6 +778,7 @@
 | 31/01/2026 | Adição Lote 431-480 (IRepository Interfaces - 50 arquivos) | Claude Code |
 | 01/02/2026 | Adição Lote 481-490 (Pages/Abastecimento - Primeiras 2 Pages) | Claude Code Supervisor |
 | 01/02/2026 | Adição Lote 581-680 (Data + 100 Models Cadastros/Estatísticas/Views) | Claude Code |
+| 01/02/2026 | Adição Lote 681-720 (40 Models Finais - Sincronização Completa 720/967) | Claude Code |
 
 ---
 
