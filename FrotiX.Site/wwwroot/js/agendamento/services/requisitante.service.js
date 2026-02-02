@@ -1,28 +1,495 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║                                                                          ║
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║                                                                          ║
- * ║  Este arquivo está completamente documentado em:                         ║
- * ║  📄 Documentacao/JavaScript/requisitante.service.md                      ║
- * ║                                                                          ║
- * ║  A documentação inclui:                                                   ║
- * ║  • Visão geral da funcionalidade                                        ║
- * ║  • Explicação detalhada de cada método                                   ║
- * ║  • Interconexões com outros arquivos                                     ║
- * ║  • Exemplos de uso                                                       ║
- * ║  • Troubleshooting completo                                              ║
- * ║  • Correção crítica do fechamento automático do accordion                ║
- * ║                                                                          ║
- * ║  Última atualização: 12/01/2026                                          ║
- * ║  Versão: 1.1                                                             ║
- * ║                                                                          ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
-
-// ====================================================================
-// REQUISITANTE SERVICE - Serviço para gerenciamento de requisitantes
-// ====================================================================
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: requisitante.service.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Service completo para gerenciamento de Requisitantes (solicitantes
+ *                   de viagens) do sistema FrotiX. Combina SERVICE LAYER (RequisitanteService
+ *                   class com 2 métodos CRUD: adicionar POST, listar GET) e UI LAYER
+ *                   completa (Bootstrap Modal para cadastro, validações de campos, Syncfusion
+ *                   DropDownTree para setores). Total de 17 funções: 2 service methods +
+ *                   15 UI functions (modal open/close, form validation, field sanitization,
+ *                   AJAX save). IIFE wrapper com "use strict". Debug logging extensivo.
+ * 📥 ENTRADAS     : adicionar(dados: {Nome, Ponto, Ramal, Email, SetorSolicitanteId}),
+ *                   listar() sem params, UI functions variadas (elementos DOM, eventos)
+ * 📤 SAÍDAS       : adicionar retorna {success, message, requisitanteId}, listar retorna
+ *                   Promise<{success, data: Array<{RequisitanteId, Requisitante}>}>, UI
+ *                   functions manipulam DOM (show/hide modal, populate dropdowns, validate
+ *                   fields, update Kendo ComboBox lstRequisitante)
+ * 🔗 CHAMADA POR  : Event handlers (onSelectRequisitante em event-handlers.js), exibe-viagem.js
+ *                   (ExibeViagem, preencherCamposParaEdicao), Bootstrap modal triggers
+ *                   (data-bs-toggle="modal" em botão Novo Requisitante), controls-init.js
+ *                   (inicializarEventHandlersControles), modal close events
+ * 🔄 CHAMA        : ApiClient.post('/api/Viagem/AdicionarRequisitante'), $.ajax GET
+ *                   (/Viagens/Upsert?handler=AJAXPreencheListaRequisitantes), $.ajax POST
+ *                   (salvarNovoRequisitante), criarErroAjax, Alerta.TratamentoErroComLinha,
+ *                   Alerta.Alerta, Alerta.Warning, Alerta.Erro, AppToast.show, toastr,
+ *                   bootstrap.Modal (show/hide/getInstance), Syncfusion DropDownTree
+ *                   (new ej.dropdowns.DropDownTree, destroy, dataBind, value setter),
+ *                   Kendo ComboBox (getRequisitanteCombo, setDataSource, value), DOM
+ *                   methods (getElementById, querySelector, addEventListener, classList,
+ *                   cloneNode, replaceChild), Array methods (map, push, sort, some, slice),
+ *                   String methods (trim, toLowerCase, replace, substring, split, join),
+ *                   JSON.stringify, parseInt, setTimeout, console logging
+ * 📦 DEPENDÊNCIAS : ApiClient (window.ApiClient), jQuery ($.ajax), criarErroAjax
+ *                   (ajax-helper.js), Alerta (frotix-core.js), AppToast/toastr (toast
+ *                   notifications), Bootstrap 5 Modal (bootstrap.Modal, data-bs-toggle,
+ *                   shown.bs.modal event), Syncfusion EJ2 DropDownTree (ej.dropdowns.
+ *                   DropDownTree, ej2_instances), Kendo UI ComboBox (lstRequisitante,
+ *                   getRequisitanteCombo function), DOM elements (#txtPonto, #txtNome,
+ *                   #txtRamal, #txtEmail, #ddtSetorNovoRequisitante, #hiddenSetorId,
+ *                   #lstSetorRequisitanteAgendamento, #lstSetorRequisitanteEvento,
+ *                   #txtRamalRequisitanteSF, #modalNovoRequisitante, #modalViagens,
+ *                   #btnInserirRequisitante, #lstRequisitante), window.SETORES_DATA
+ *                   (global array), Razor Pages endpoints (/Viagens/Upsert handler,
+ *                   /api/Viagem/AdicionarRequisitante)
+ * 📝 OBSERVAÇÕES  : Exporta window.RequisitanteService (singleton instance), window.
+ *                   inicializarSistemaRequisitante, window.resetarSistemaRequisitante,
+ *                   window.configurarBotaoNovoRequisitante, window.abrirFormularioCadastro
+ *                   Requisitante, window.fecharFormularioCadastroRequisitante, window.
+ *                   limparCamposCadastroRequisitante, window.salvarNovoRequisitante, window.
+ *                   capturarDadosSetores, window.inicializarDropDownTreeModal (9 exports).
+ *                   IIFE wrapper ((function(){ "use strict"; ... })()) com isolation. Debug
+ *                   tracking: window.requisitanteServiceLoadCount incrementado em cada load.
+ *                   Proteção contra dupla inicialização: window.requisitanteServiceInicializado
+ *                   flag. Bootstrap Modal stacking: z-index 1060 para modal filho, 1059 para
+ *                   backdrop. Syncfusion DropDownTree recriado em shown.bs.modal event (fix
+ *                   popup rendering issue). Campo Ponto auto-prefixo "p_" (blur validation).
+ *                   Campo Email auto-sufixo "@camara.leg.br" (blur validation). Campo Nome
+ *                   auto Camel Case com conectores (de, da, do, das, dos, e) lowercase.
+ *                   Campo Ramal: apenas números, 8 dígitos, começa com 1-9. Validação flag
+ *                   estaValidando previne cliques durante validação (bloqueio seletivo).
+ *                   Kendo ComboBox lstRequisitante atualizado após save (add + sort alfabético).
+ *                   Auto-inicialização: DOMContentLoaded listener para inicializarDropDownTree
+ *                   Modal. Pattern comum: clone button + replaceChild para remover listeners
+ *                   antigos. Try-catch completo com TratamentoErroComLinha em todas as functions.
+ *                   Console logging extremamente detalhado (🔄🆕✅❌⚠️📦🔍 emojis). Usa
+ *                   ApiClient em adicionar, $.ajax direto em listar e salvarNovoRequisitante
+ *                   (inconsistência de pattern). DropDownTree.value espera array ([value])
+ *                   para seleção. Modal Bootstrap usa static backdrop + keyboard:false para
+ *                   evitar fechamento acidental. Sanitização de nome: Unicode letters/numbers
+ *                   only, max 80 chars. Ramal max 8 dígitos, Ponto max 50 chars (com "p_").
+ *
+ * 📋 ÍNDICE DE FUNÇÕES (17 funções: 2 service + 15 UI, 9 exports window.*):
+ *
+ * ┌─ CLASS RequisitanteService (SERVICE LAYER) ────────────────────────┐
+ * │ constructor()                                                       │
+ * │ → Inicializa this.api = window.ApiClient                           │
+ * │ → Singleton instance: window.RequisitanteService                   │
+ * └─────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ async adicionar(dados: Object) ───────────────────────────────────┐
+ * │ → Adiciona novo requisitante via API POST                          │
+ * │ → param dados: {Nome, Ponto, Ramal, Email, SetorSolicitanteId}    │
+ * │ → returns Promise<{success, message, requisitanteId}> ou           │
+ * │           {success: false, message/error}                          │
+ * │ → Fluxo:                                                            │
+ * │   1. try-catch wrapper                                              │
+ * │   2. await this.api.post('/api/Viagem/AdicionarRequisitante',dados)│
+ * │   3. if response.success: return {success: true, message,           │
+ * │      requisitanteId: response.requisitanteid}                       │
+ * │   4. else: return {success: false, message || "Erro ao adicionar"}  │
+ * │   5. catch: Alerta.TratamentoErroComLinha + return {success: false, │
+ * │      error: error.message}                                          │
+ * │ → Não lança exceção, sempre retorna objeto com success flag        │
+ * │ → Usado internamente ou externamente para add requisitante         │
+ * └─────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ async listar() ────────────────────────────────────────────────────┐
+ * │ → Lista todos os requisitantes do sistema                          │
+ * │ → returns Promise<{success: true, data: Array<{RequisitanteId,     │
+ * │           Requisitante}>}> ou reject(erro)                          │
+ * │ → Fluxo:                                                            │
+ * │   1. try-catch wrapper                                              │
+ * │   2. return new Promise((resolve, reject) => {...})                 │
+ * │   3. $.ajax GET /Viagens/Upsert?handler=AJAXPreencheListaRequisitantes│
+ * │   4. success callback:                                              │
+ * │      a. const requisitantes = res.data.map(item => ({               │
+ * │           RequisitanteId: item.requisitanteId, Requisitante:        │
+ * │           item.requisitante }))                                     │
+ * │      b. resolve({success: true, data: requisitantes})               │
+ * │   5. error callback:                                                │
+ * │      a. const erro = criarErroAjax(jqXHR, textStatus, errorThrown,  │
+ * │           this)                                                     │
+ * │      b. Alerta.TratamentoErroComLinha("requisitante.service.js",    │
+ * │           "listar", erro)                                           │
+ * │      c. reject(erro)                                                │
+ * │   6. catch outer: TratamentoErroComLinha + return {success: false,  │
+ * │      error, data: []}                                               │
+ * │ → Mapeia camelCase backend para PascalCase Syncfusion              │
+ * │ → Pattern Promise wrapper around jQuery.ajax                       │
+ * └─────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ UI LAYER (15 functions dentro de IIFE) ───────────────────────────┐
+ * │                                                                     │
+ * │ 1. capturarDadosSetores()                                           │
+ * │    → Captura dados de setores de outros dropdowns já carregados    │
+ * │    → Tenta lstSetorRequisitanteAgendamento.ej2_instances[0].fields.│
+ * │      dataSource primeiro                                            │
+ * │    → Fallback: lstSetorRequisitanteEvento                           │
+ * │    → Popula window.SETORES_DATA (global array)                     │
+ * │    → returns boolean (true se capturado, false se falhou)          │
+ * │    → Console.log quantidade de itens capturados                     │
+ * │                                                                     │
+ * │ 2. inicializarSistemaRequisitante()                                 │
+ * │    → Inicializa sistema de requisitante ao abrir modal             │
+ * │    → Proteção: verifica window.requisitanteServiceInicializado flag │
+ * │    → Marca flag como true imediatamente (previne race conditions)  │
+ * │    → Chama configurarBotoesCadastroRequisitante()                   │
+ * │    → Comentário: accordion code DESABILITADO, agora usa Bootstrap   │
+ * │      Modal                                                          │
+ * │    → Incrementa inicializacaoCount (debug)                          │
+ * │    → Export: window.inicializarSistemaRequisitante                  │
+ * │                                                                     │
+ * │ 3. configurarBotaoNovoRequisitante()                                │
+ * │    → Configura botão "Novo Requisitante" (toggle accordion - DEPRECATED)│
+ * │    → Comentário: agora usa data-bs-toggle="modal" em HTML          │
+ * │    → Clone button + replaceChild para remover listeners antigos    │
+ * │    → Click listener com estaValidando e isProcessing flags         │
+ * │    → Toggle sectionCadastroRequisitante display (none/block)        │
+ * │    → Chama abrirFormularioCadastroRequisitante ou fechar           │
+ * │    → Export: window.configurarBotaoNovoRequisitante                │
+ * │                                                                     │
+ * │ 4. abrirFormularioCadastroRequisitante()                            │
+ * │    → Abre Bootstrap Modal #modalNovoRequisitante                    │
+ * │    → Fluxo:                                                         │
+ * │      1. limparCamposCadastroRequisitante()                          │
+ * │      2. bootstrap.Modal.getInstance ou new bootstrap.Modal({        │
+ * │         backdrop: 'static', keyboard: false })                      │
+ * │      3. modalInstance.show()                                        │
+ * │      4. setTimeout 150ms: ajusta z-index modal (1060) e backdrop    │
+ * │         (1059) para stacking correto                                │
+ * │      5. shown.bs.modal event listener:                              │
+ * │         a. setTimeout 100ms                                         │
+ * │         b. capturarDadosSetores() se window.SETORES_DATA vazio      │
+ * │         c. Destroy old ddtSetorNovoRequisitante.ej2_instances[0]    │
+ * │         d. new ej.dropdowns.DropDownTree com 8 event handlers       │
+ * │            (open ajusta z-index 1060, select stopPropagation,       │
+ * │             blur, close, created, dataBound)                        │
+ * │         e. dropdown.appendTo(ddtSetor)                              │
+ * │         f. removeEventListener após executar (once: true)           │
+ * │    → Try-catch com TratamentoErroComLinha                           │
+ * │    → Export: window.abrirFormularioCadastroRequisitante            │
+ * │                                                                     │
+ * │ 5. fecharFormularioCadastroRequisitante()                           │
+ * │    → Fecha Bootstrap Modal via bootstrap.Modal.getInstance().hide() │
+ * │    → Reset isProcessing flag                                        │
+ * │    → Try-catch com TratamentoErroComLinha                           │
+ * │    → Export: window.fecharFormularioCadastroRequisitante           │
+ * │                                                                     │
+ * │ 6. limparCamposCadastroRequisitante()                               │
+ * │    → Limpa campos #txtPonto, #txtNome, #txtRamal, #txtEmail        │
+ * │    → Limpa #ddtSetorNovoRequisitante.ej2_instances[0].value = null  │
+ * │    → dataBind() para refresh                                        │
+ * │    → Console logging detalhado (stack trace, dataSource length)     │
+ * │    → Try-catch (sem throw, apenas console.error)                    │
+ * │    → Export: window.limparCamposCadastroRequisitante               │
+ * │                                                                     │
+ * │ 7. configurarValidacaoPonto()                                       │
+ * │    → Configura validação de campo #txtPonto                         │
+ * │    → Clone + replaceChild para limpar listeners                     │
+ * │    → blur event:                                                    │
+ * │      a. trim valor                                                  │
+ * │      b. if length > 50: Alerta.Warning + substring(0, 50)          │
+ * │      c. if começa com "P_": converte para "p_" (lowercase)          │
+ * │      d. if não começa com "p_": adiciona "p_" no início             │
+ * │      e. verificar length > 50 novamente após adicionar "p_"         │
+ * │      f. atualizar campo.value                                       │
+ * │    → Try-catch com TratamentoErroComLinha                           │
+ * │    → Console.log "✅ Validação de Ponto configurada"                │
+ * │                                                                     │
+ * │ 8. toCamelCase(str)                                                 │
+ * │    → Converte string para Camel Case com conectores lowercase      │
+ * │    → param str: string para converter                               │
+ * │    → returns string em Camel Case                                   │
+ * │    → Conectores: ['de', 'da', 'do', 'das', 'dos', 'e']             │
+ * │    → Fluxo:                                                         │
+ * │      1. toLowerCase()                                               │
+ * │      2. split(' ')                                                  │
+ * │      3. filter(palavra => palavra.length > 0)                       │
+ * │      4. map((palavra, index) => {                                   │
+ * │           if (index === 0 || !conectores.includes(palavra))         │
+ * │             return palavra.charAt(0).toUpperCase() + palavra.slice(1)│
+ * │           return palavra })                                         │
+ * │      5. join(' ')                                                   │
+ * │    → Exemplo: "MARIA DA SILVA" → "Maria da Silva"                  │
+ * │                                                                     │
+ * │ 9. sanitizeNomeCompleto(valor)                                      │
+ * │    → Remove caracteres inválidos e limita a 80 caracteres          │
+ * │    → param valor: string para sanitizar                             │
+ * │    → returns string sanitizada                                      │
+ * │    → Regex: /[^\p{L}\p{N} ]+/gu (remove tudo exceto Unicode letters,│
+ * │      numbers, espaços)                                              │
+ * │    → substring(0, 80) se exceder                                    │
+ * │    → Usado em validação de Nome (input e blur events)              │
+ * │                                                                     │
+ * │ 10. configurarValidacoesRequisitante()                              │
+ * │     → Configura validações de Ramal, Email, Nome                    │
+ * │     → RAMAL:                                                        │
+ * │       - input event: replace(/\D/g, ''), substring(0, 8)            │
+ * │       - blur event: regex /^[1-9]\d{7}$/ (8 dígitos, começa 1-9)   │
+ * │       - is-invalid class se não passar                              │
+ * │     → EMAIL:                                                        │
+ * │       - blur event: remove @camara.leg.br, remove @, remove chars   │
+ * │         inválidos, adiciona @camara.leg.br obrigatório              │
+ * │       - regex /^[a-z0-9._-]+@camara\.leg\.br$/ final                │
+ * │       - input event: toLowerCase, limita 1 @                        │
+ * │     → NOME:                                                         │
+ * │       - input event: sanitizeNomeCompleto                           │
+ * │       - blur event: sanitize + toCamelCase, valida não vazio        │
+ * │     → Clone + replaceChild para todos os campos                     │
+ * │     → Try-catch com TratamentoErroComLinha em cada listener         │
+ * │                                                                     │
+ * │ 11. configurarBotoesCadastroRequisitante()                          │
+ * │     → Configura botões do formulário                                │
+ * │     → Chama: configurarValidacaoPonto()                             │
+ * │     → Chama: configurarValidacoesRequisitante()                     │
+ * │     → Configura #btnInserirRequisitante click: salvarNovoRequisitante│
+ * │     → Clone + replaceChild, preventDefault, stopPropagation,        │
+ * │       stopImmediatePropagation, capture phase (true)                │
+ * │     → Comentário: btnFecharAccordionRequisitante DESABILITADO (usa  │
+ * │       data-bs-dismiss="modal" em HTML)                              │
+ * │                                                                     │
+ * │ 12. salvarNovoRequisitante()                                        │
+ * │     → Salva novo requisitante via AJAX POST                         │
+ * │     → Fluxo:                                                        │
+ * │       1. Obter campos: txtPonto, txtNome, txtRamal, txtEmail,       │
+ * │          hiddenSetorId (TreeView hidden field)                      │
+ * │       2. Validações com estaValidando = true:                       │
+ * │          a. Ponto obrigatório                                       │
+ * │          b. Nome obrigatório                                        │
+ * │          c. Ramal obrigatório                                       │
+ * │          d. Setor obrigatório (hiddenSetorId.value)                 │
+ * │          e. Se falha: setTimeout 2000ms reset flag, Alerta.Alerta,  │
+ * │             focus, return                                           │
+ * │       3. Montar objRequisitante: {Nome, Ponto, Ramal: parseInt,     │
+ * │          Email, SetorSolicitanteId: toString}                       │
+ * │       4. $.ajax POST /api/Viagem/AdicionarRequisitante              │
+ * │       5. success callback:                                          │
+ * │          a. if data.success: AppToast.show ou toastr.success        │
+ * │          b. Atualizar Kendo ComboBox lstRequisitante:               │
+ * │             - getRequisitanteCombo()                                │
+ * │             - novoItem = {RequisitanteId, Requisitante: "nome - ponto"}│
+ * │             - dataSource = comboRequisitante.dataSource.data()      │
+ * │             - push(novoItem) se não existe                          │
+ * │             - sort alfabético (localeCompare pt-BR)                 │
+ * │             - setDataSource(dataSource)                             │
+ * │             - value(requisitanteId)                                 │
+ * │          c. Atualizar #txtRamalRequisitanteSF.value                 │
+ * │          d. Atualizar #lstSetorRequisitanteAgendamento.ej2_instances│
+ * │             [0].value = [setorValue] (array), dataBind()            │
+ * │          e. bootstrap.Modal.getInstance().hide()                    │
+ * │          f. limparCamposCadastroRequisitante()                      │
+ * │          else: AppToast/toastr/Alerta.Erro com mensagem             │
+ * │       6. error callback: Alerta.Erro, TratamentoErroComLinha        │
+ * │       7. catch outer: estaValidando = false, TratamentoErroComLinha │
+ * │     → Try-catch completo com logging detalhado                      │
+ * │     → Export: window.salvarNovoRequisitante                         │
+ * │                                                                     │
+ * │ 13. resetarSistemaRequisitante()                                    │
+ * │     → Reseta sistema ao fechar modal                                │
+ * │     → window.requisitanteServiceInicializado = false                │
+ * │     → fecharFormularioCadastroRequisitante()                        │
+ * │     → limparCamposCadastroRequisitante()                            │
+ * │     → Disconnect window.__accordionObserver se existir              │
+ * │     → Export: window.resetarSistemaRequisitante                     │
+ * │                                                                     │
+ * │ 14. inicializarDropDownTreeModal()                                  │
+ * │     → Inicializa DropDownTree quando modal é exibido               │
+ * │     → Listener shown.bs.modal em #modalNovoRequisitante            │
+ * │     → Fluxo:                                                        │
+ * │       1. getElementById("ddtSetorNovoRequisitante")                 │
+ * │       2. if !window.SETORES_DATA: capturarDadosSetores()            │
+ * │       3. if ainda vazio: setTimeout 500ms retry captura             │
+ * │       4. criarDropDownTree(ddtSetor)                                │
+ * │     → Auto-inicialização: DOMContentLoaded ou immediate se ready    │
+ * │     → Export: window.inicializarDropDownTreeModal                   │
+ * │                                                                     │
+ * │ 15. criarDropDownTree(elemento)                                     │
+ * │     → Cria DropDownTree no elemento fornecido                       │
+ * │     → param elemento: DOM element para appendTo                     │
+ * │     → Fluxo:                                                        │
+ * │       1. if ej2_instances[0] exists: destroy()                      │
+ * │       2. new ej.dropdowns.DropDownTree({                            │
+ * │          fields: {dataSource: SETORES_DATA, value: 'SetorSolicitanteId',│
+ * │            text: 'Nome', parentValue: 'SetorPaiId', hasChildren:    │
+ * │            'HasChild'},                                             │
+ * │          allowFiltering: true, placeholder, sortOrder: 'Ascending', │
+ * │          showCheckBox: false, filterType: 'Contains', popupHeight:  │
+ * │          '200px', popupWidth: '100%', width: '100%',                │
+ * │          created, dataBound callbacks })                            │
+ * │       3. dropdown.appendTo(elemento)                                │
+ * │     → Try-catch com TratamentoErroComLinha                          │
+ * │     → Console.log quantidade de itens carregados                    │
+ * └─────────────────────────────────────────────────────────────────────┘
+ *
+ * 🔄 FLUXO TÍPICO DE ADICIONAR REQUISITANTE:
+ * 1. Usuário clica em botão "Novo Requisitante" (data-bs-toggle="modal"
+ *    target="#modalNovoRequisitante")
+ * 2. Bootstrap Modal abre #modalNovoRequisitante
+ * 3. shown.bs.modal event dispara: DropDownTree é recriado (fix rendering)
+ * 4. capturarDadosSetores() popula window.SETORES_DATA de outros dropdowns
+ * 5. new ej.dropdowns.DropDownTree criado com SETORES_DATA, z-index 1060
+ * 6. Usuário preenche: Ponto (auto "p_" prefix), Nome (auto Camel Case),
+ *    Ramal (8 dígitos), Email (auto @camara.leg.br), Setor (TreeView)
+ * 7. Usuário clica "Salvar" (#btnInserirRequisitante)
+ * 8. salvarNovoRequisitante() executa:
+ *    a. Validações com estaValidando flag (Alerta.Alerta se falha)
+ *    b. $.ajax POST /api/Viagem/AdicionarRequisitante
+ *    c. Success: atualiza Kendo ComboBox lstRequisitante (add + sort)
+ *    d. Atualiza campos Ramal e Setor do formulário principal
+ *    e. Fecha modal via bootstrap.Modal.getInstance().hide()
+ *    f. limparCamposCadastroRequisitante()
+ * 9. Novo requisitante aparece selecionado em lstRequisitante (Kendo)
+ * 10. onSelectRequisitante handler dispara (event-handlers.js) para
+ *     fazer 2 AJAX calls paralelos (buscar ramal e setor)
+ *
+ * 🔄 FLUXO DE VALIDAÇÃO DE CAMPOS:
+ * - PONTO (blur): adiciona "p_" se não tem, converte "P_" → "p_", trunca 50 chars
+ * - NOME (input): sanitizeNomeCompleto (Unicode letters/numbers/spaces, 80 chars)
+ * - NOME (blur): toCamelCase (primeira palavra + não-conectores uppercase first letter)
+ * - RAMAL (input): remove não-dígitos, limita 8 chars
+ * - RAMAL (blur): regex /^[1-9]\d{7}$/, adiciona is-invalid se falha
+ * - EMAIL (input): toLowerCase, remove chars inválidos, limita 1 @
+ * - EMAIL (blur): remove @camara.leg.br existente, remove @, sanitiza, adiciona
+ *   @camara.leg.br obrigatório, regex /^[a-z0-9._-]+@camara\.leg\.br$/
+ * - SETOR: hiddenSetorId preenchido por TreeView, validado em salvar
+ *
+ * 🔄 FLUXO DE STACKING DE MODAIS (Bootstrap):
+ * 1. Modal pai: #modalViagens (z-index padrão 1055, backdrop 1050)
+ * 2. Modal filho: #modalNovoRequisitante
+ * 3. abrirFormularioCadastroRequisitante():
+ *    a. bootstrap.Modal({backdrop: 'static', keyboard: false})
+ *    b. modalInstance.show()
+ *    c. setTimeout 150ms:
+ *       - modalElement.style.zIndex = '1060'
+ *       - ultimo backdrop.style.zIndex = '1059'
+ * 4. DropDownTree popup: open event ajusta args.popup.element.style.zIndex = '1060'
+ * 5. Modal filho fecha: backdrop removido automaticamente, modal pai permanece aberto
+ *
+ * 📌 ESTRUTURA DE DADOS (adicionar):
+ * Request:
+ * {
+ *   "Nome": "Maria da Silva",
+ *   "Ponto": "p_12345",
+ *   "Ramal": 12345678,
+ *   "Email": "maria.silva@camara.leg.br",
+ *   "SetorSolicitanteId": "42"
+ * }
+ *
+ * Response:
+ * {
+ *   "success": true,
+ *   "message": "Requisitante adicionado com sucesso",
+ *   "requisitanteid": 123
+ * }
+ *
+ * 📌 ESTRUTURA DE DADOS (listar):
+ * Backend response:
+ * {
+ *   "data": [
+ *     { "requisitanteId": 1, "requisitante": "João Silva - p_11111" },
+ *     { "requisitanteId": 2, "requisitante": "Maria Santos - p_22222" }
+ *   ]
+ * }
+ *
+ * Após map (PascalCase):
+ * [
+ *   { "RequisitanteId": 1, "Requisitante": "João Silva - p_11111" },
+ *   { "RequisitanteId": 2, "Requisitante": "Maria Santos - p_22222" }
+ * ]
+ *
+ * 📌 DOM ELEMENTS DEPENDENCY (18 elements):
+ * - #txtPonto: input text para Ponto do requisitante
+ * - #txtNome: input text para Nome do requisitante
+ * - #txtRamal: input text para Ramal (8 dígitos)
+ * - #txtEmail: input text para Email (@camara.leg.br)
+ * - #ddtSetorNovoRequisitante: Syncfusion DropDownTree para setor (modal)
+ * - #hiddenSetorId: input hidden preenchido por TreeView com setor selecionado
+ * - #lstSetorRequisitanteAgendamento: Syncfusion DropDownTree (form principal)
+ * - #lstSetorRequisitanteEvento: Syncfusion DropDownTree (fallback para captura)
+ * - #txtRamalRequisitanteSF: input text Ramal no form principal (atualizado após save)
+ * - #modalNovoRequisitante: Bootstrap Modal para cadastro de requisitante
+ * - #modalViagens: Bootstrap Modal pai (viagens)
+ * - #btnInserirRequisitante: button Salvar no modal de requisitante
+ * - #lstRequisitante: Kendo ComboBox para seleção de requisitante (form principal)
+ * - #sectionCadastroRequisitante: section do formulário (usado em accordion DEPRECATED)
+ * - #btnRequisitante: button "Novo Requisitante" (usado em accordion DEPRECATED)
+ * - .modal-backdrop: Bootstrap backdrops (z-index ajustado)
+ * - .swal2-container: SweetAlert container (permitido durante estaValidando)
+ * - #accordionRequisitante: accordion container (DEPRECATED, agora usa modal)
+ *
+ * 📌 GLOBAL VARIABLES:
+ * - window.RequisitanteService: singleton instance da classe
+ * - window.SETORES_DATA: array de setores capturado de outros dropdowns
+ * - window.requisitanteServiceInicializado: flag de inicialização (boolean)
+ * - window.requisitanteServiceLoadCount: contador de cargas do script (debug)
+ * - window.__accordionObserver: MutationObserver (DEPRECATED, accordion removido)
+ * - window.globalClickListener: global click listener (DEPRECATED)
+ * - estaValidando: flag interna para bloqueio durante validação (boolean)
+ * - isProcessing: flag interna para evitar duplo clique (boolean)
+ * - inicializacaoCount: contador interno de inicializações (debug)
+ *
+ * 📌 EXPORTS (9 window.* functions):
+ * 1. window.RequisitanteService (singleton instance)
+ * 2. window.inicializarSistemaRequisitante
+ * 3. window.resetarSistemaRequisitante
+ * 4. window.configurarBotaoNovoRequisitante
+ * 5. window.abrirFormularioCadastroRequisitante
+ * 6. window.fecharFormularioCadastroRequisitante
+ * 7. window.limparCamposCadastroRequisitante
+ * 8. window.salvarNovoRequisitante
+ * 9. window.capturarDadosSetores
+ * 10. window.inicializarDropDownTreeModal
+ *
+ * 📌 TRATAMENTO DE ERROS:
+ * - Todos os 17 métodos/funções têm try-catch
+ * - TratamentoErroComLinha em todos os catch blocks
+ * - criarErroAjax em $.ajax error callbacks
+ * - Alerta.Alerta/Warning/Erro para feedback ao usuário
+ * - AppToast.show ou toastr.success/error para notificações
+ * - Console logging extensivo com emojis (🔄🆕✅❌⚠️📦🔍)
+ * - estaValidando flag com setTimeout 2000ms reset em caso de validação falha
+ * - Silent return em algumas funções se elementos não existem
+ *
+ * 📝 OBSERVAÇÕES ADICIONAIS:
+ * - IIFE wrapper: (function(){ "use strict"; ... })() para isolation
+ * - Debug tracking: window.requisitanteServiceLoadCount incrementado, timestamp logged
+ * - Pattern inconsistency: ApiClient em adicionar, $.ajax em listar e salvar
+ * - Clone + replaceChild pattern usado em todos os event listeners para remover
+ *   listeners antigos (evita múltiplos binds)
+ * - Capture phase (true) em alguns addEventListener para prioridade
+ * - preventDefault, stopPropagation, stopImmediatePropagation em botões críticos
+ * - Bootstrap Modal static backdrop + keyboard:false para evitar fechamento acidental
+ * - z-index stacking: modal 1060, backdrop 1059, popup DropDownTree 1060
+ * - Syncfusion DropDownTree recriado em shown.bs.modal (fix popup rendering issue
+ *   quando control criado com display:none)
+ * - DropDownTree.value espera array ([value]) para seleção, não string
+ * - Kendo ComboBox usa setDataSource + value() methods (diferentes de Syncfusion)
+ * - getRequisitanteCombo() function externa (não definida neste arquivo)
+ * - Ramal parseInt sem radix (assume base 10)
+ * - SetorSolicitanteId toString() para garantir string
+ * - Sort alfabético com localeCompare('pt-BR') para ordem correta
+ * - Regex Unicode: \p{L}\p{N} para suportar acentos em nomes
+ * - Auto-inicialização DOMContentLoaded para inicializarDropDownTreeModal
+ * - Comentários sobre código DESABILITADO (accordion antigo, botão fechar)
+ * - Accordion code comentado (lines 212-268) para referência histórica
+ * - MutationObserver desconectado em reset (window.__accordionObserver)
+ * - Campo Email: domínio @camara.leg.br hardcoded e obrigatório
+ * - Campo Ponto: prefixo "p_" hardcoded e obrigatório
+ * - Campo Nome: conectores ['de', 'da', 'do', 'das', 'dos', 'e'] lowercase
+ * - Validação de Ramal: começa com 1-9 (não aceita 0 como primeiro dígito)
+ * - Console.log stack trace em limparCamposCadastroRequisitante (debug)
+ * - Toast notifications: prefere AppToast.show, fallback toastr, fallback Alerta
+ * - Alerta.Alerta usado para validações simples (não bloqueia workflow)
+ * - Alerta.Warning usado para avisos não-críticos (truncamento)
+ * - Alerta.Erro usado para erros AJAX críticos
+ * - jQuery.ajax usado em vez de fetch (legacy pattern)
+ * - contentType: "application/json; charset=utf-8" explícito em POST
+ * - dataType: "json" para auto-parse response
+ * - data: JSON.stringify para body serialization
+ *
+ * 🔌 VERSÃO: 1.2
+ * 📌 ÚLTIMA ATUALIZAÇÃO: 01/02/2026
+ **************************************************************************************** */
 
 /* eslint-disable no-undef */
 (function ()
