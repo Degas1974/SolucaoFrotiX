@@ -313,13 +313,27 @@ const CORES_FROTIX = {
 // FUNÇÃO DE FORMATAÇÃO DE NÚMEROS
 // ========================================
 
-/**
- * Formata número com separador de milhar (ponto) e decimais (vírgula)
- * @param {number} valor - Valor a ser formatado
- * @param {number} casasDecimais - Número de casas decimais (padrão: 0)
- * @returns {string} Número formatado
- * Exemplo: formatarNumero(1234567.89, 2) => "1.234.567,89"
- */
+/****************************************************************************************
+ * ⚡ FUNÇÃO: formatarNumero
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formata números com separador de milhar (ponto) e decimais (vírgula)
+ *                   seguindo o padrão brasileiro pt-BR.
+ *
+ * 📥 ENTRADAS     : valor [number] - Número a ser formatado (pode ser null/undefined)
+ *                   casasDecimais [number] - Quantidade de casas decimais (padrão: 0)
+ *
+ * 📤 SAÍDAS       : [string] Número formatado (ex: "1.234.567,89") ou "0" se inválido
+ *
+ * 🔗 CHAMADA POR  : Todas as funções de renderização de gráficos (axisLabelRender,
+ *                   tooltipRender), carregarEstatisticasGerais, renderizarTabelaTop10,
+ *                   atualizarVariacao, ~40 pontos no código
+ *
+ * 🔄 CHAMA        : Number.toFixed(), String.replace(), String.split()
+ *
+ * 📝 OBSERVAÇÕES  : • Valores null/undefined/NaN retornam "0"
+ *                   • Usa regex /\B(?=(\d{3})+(?!\d))/g para separador de milhar
+ *                   • Vírgula como separador decimal (padrão BR)
+ ****************************************************************************************/
 function formatarNumero(valor, casasDecimais = 0)
 {
     try
@@ -354,13 +368,27 @@ function formatarNumero(valor, casasDecimais = 0)
     }
 }
 
-/**
- * Formata valor monetário com regra especial:
- * - Valores < 100: exibe com 2 casas decimais (ex: R$ 99,50)
- * - Valores >= 100: exibe sem casas decimais (ex: R$ 1.234)
- * @param {number} valor - Valor monetário a ser formatado
- * @returns {string} Valor formatado
- */
+/****************************************************************************************
+ * ⚡ FUNÇÃO: formatarValorMonetario
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formata valores monetários com regra especial de casas decimais:
+ *                   • Valores < R$ 100,00 → 2 casas decimais (ex: R$ 99,50)
+ *                   • Valores >= R$ 100,00 → sem casas decimais (ex: R$ 1.234)
+ *
+ * 📥 ENTRADAS     : valor [number] - Valor monetário a ser formatado
+ *
+ * 📤 SAÍDAS       : [string] Valor formatado sem prefixo R$ (ex: "1.234" ou "99,50")
+ *
+ * 🔗 CHAMADA POR  : carregarEstatisticasGerais (cards de custo), renderizarTabelaTop10,
+ *                   abrirModalDetalhesViagem, todas as funções de tooltip de gráficos
+ *                   de custo
+ *
+ * 🔄 CHAMA        : formatarNumero(valor, casasDecimais)
+ *
+ * 📝 OBSERVAÇÕES  : • Retorna "0" se valor inválido (null/undefined/NaN)
+ *                   • Regra especial implementada para melhorar UX (detalhes em valores
+ *                     pequenos, limpeza visual em valores grandes)
+ ****************************************************************************************/
 function formatarValorMonetario(valor)
 {
     try
@@ -408,6 +436,24 @@ let modalAjustaViagemDashboard = null;
 // LOADING INICIAL DA PÁGINA
 // ========================================
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: mostrarLoadingInicial
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Exibe overlay de loading fullscreen com logo FrotiX pulsante durante
+ *                   carregamento inicial do dashboard.
+ *
+ * 📥 ENTRADAS     : Nenhuma
+ *
+ * 📤 SAÍDAS       : Elemento #loadingInicialDashboard visível (display: flex)
+ *
+ * 🔗 CHAMADA POR  : inicializarDashboard() [linha ~129]
+ *
+ * 🔄 CHAMA        : document.getElementById(), element.style.display = 'flex'
+ *
+ * 📝 OBSERVAÇÕES  : • Overlay fullscreen com backdrop semi-transparente
+ *                   • Logo FrotiX animado (pulse) + barra de progresso
+ *                   • Z-index alto para sobrepor todo o conteúdo
+ ****************************************************************************************/
 function mostrarLoadingInicial()
 {
     try
@@ -423,6 +469,24 @@ function mostrarLoadingInicial()
     }
 }
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: esconderLoadingInicial
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Esconde overlay de loading inicial com fade out suave (300ms) após
+ *                   dashboard totalmente carregado.
+ *
+ * 📥 ENTRADAS     : Nenhuma
+ *
+ * 📤 SAÍDAS       : Elemento #loadingInicialDashboard oculto (opacity 0 → display none)
+ *
+ * 🔗 CHAMADA POR  : inicializarDashboard() [linha ~150], carregarDadosDashboard() [em caso de erro]
+ *
+ * 🔄 CHAMA        : document.getElementById(), element.style.opacity = '0',
+ *                   setTimeout(), element.style.display = 'none'
+ *
+ * 📝 OBSERVAÇÕES  : • Fade out de 300ms para transição suave
+ *                   • Primeiro reduz opacity, depois remove do layout (display none)
+ ****************************************************************************************/
 function esconderLoadingInicial()
 {
     try
@@ -445,6 +509,28 @@ function esconderLoadingInicial()
 // INICIALIZAÇÃO
 // ========================================
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: inicializarDashboard
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Entry point do dashboard. Inicializa período padrão (últimos 30 dias),
+ *                   prepara campos de data HTML5, configura modal de ajuste e carrega
+ *                   todos os dados do dashboard via Promise.allSettled.
+ *
+ * 📥 ENTRADAS     : Nenhuma (chamada pelo DOMContentLoaded)
+ *
+ * 📤 SAÍDAS       : Dashboard totalmente carregado com 16 endpoints, gráficos renderizados,
+ *                   toast de sucesso "Dashboard carregado com sucesso!"
+ *
+ * 🔗 CHAMADA POR  : $(document).ready() [linha ~3650]
+ *
+ * 🔄 CHAMA        : mostrarLoadingInicial(), inicializarCamposData(),
+ *                   inicializarModalAjuste(), carregarDadosDashboard(),
+ *                   esconderLoadingInicial(), AppToast.show()
+ *
+ * 📝 OBSERVAÇÕES  : • Função async para suportar await carregarDadosDashboard()
+ *                   • Período padrão: hoje 23:59:59 até hoje-30 dias 00:00:00
+ *                   • Try-catch global trata falhas e esconde loading mesmo com erro
+ ****************************************************************************************/
 async function inicializarDashboard()
 {
     try
@@ -482,6 +568,26 @@ async function inicializarDashboard()
 // CAMPOS DE DATA HTML5
 // ========================================
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: inicializarCamposData
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Preenche inputs HTML5 type="date" com valores do periodoAtual e
+ *                   adiciona event listeners para sincronizar mudanças com o objeto
+ *                   periodoAtual global.
+ *
+ * 📥 ENTRADAS     : Nenhuma (usa variável global periodoAtual)
+ *
+ * 📤 SAÍDAS       : Inputs #dataInicio e #dataFim preenchidos com formato YYYY-MM-DD,
+ *                   event listeners registrados
+ *
+ * 🔗 CHAMADA POR  : inicializarDashboard() [linha ~134]
+ *
+ * 🔄 CHAMA        : formatarDataParaInput(data), addEventListener('change')
+ *
+ * 📝 OBSERVAÇÕES  : • Formato YYYY-MM-DD obrigatório para input[type=date]
+ *                   • Atualiza periodoAtual.dataInicio com hora 00:00:00
+ *                   • Atualiza periodoAtual.dataFim com hora 23:59:59
+ ****************************************************************************************/
 function inicializarCamposData()
 {
     try
@@ -524,6 +630,26 @@ function inicializarCamposData()
     }
 }
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: formatarDataParaInput
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Converte objeto Date JavaScript para string no formato YYYY-MM-DD
+ *                   compatível com input HTML5 type="date".
+ *
+ * 📥 ENTRADAS     : data [Date] - Objeto Date JavaScript
+ *
+ * 📤 SAÍDAS       : [string] Data formatada no formato "YYYY-MM-DD" (ex: "2026-02-02")
+ *                   ou string vazia se erro
+ *
+ * 🔗 CHAMADA POR  : inicializarCamposData(), aplicarFiltroPeriodo()
+ *
+ * 🔄 CHAMA        : Date.getFullYear(), Date.getMonth(), Date.getDate(),
+ *                   String.padStart()
+ *
+ * 📝 OBSERVAÇÕES  : • Mês JavaScript é 0-indexed, precisa adicionar +1
+ *                   • PadStart garante 2 dígitos (01, 02... 12)
+ *                   • Retorna string vazia se data inválida (try-catch)
+ ****************************************************************************************/
 function formatarDataParaInput(data)
 {
     try
@@ -542,6 +668,43 @@ function formatarDataParaInput(data)
 // CARREGAR DADOS
 // ========================================
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: carregarDadosDashboard
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Carrega TODOS os dados do dashboard em paralelo usando Promise.allSettled
+ *                   (16 endpoints simultâneos). Não bloqueia se um endpoint falhar.
+ *                   Registra tempo total de carregamento e logs de falhas.
+ *
+ * 📥 ENTRADAS     : Nenhuma (usa variável global periodoAtual para parâmetros de data)
+ *
+ * 📤 SAÍDAS       : Dashboard completo renderizado com 16 seções:
+ *                   • Cards estatísticos (21 cards)
+ *                   • 15 gráficos Syncfusion
+ *                   • Tabela TOP 10 viagens mais caras
+ *                   • Heatmap 7x24 (dia × hora)
+ *                   Console log: "✅ Dashboard carregado em X.XXs"
+ *
+ * 🔗 CHAMADA POR  : inicializarDashboard(), aplicarFiltroPeriodo(), atualizarDashboard(),
+ *                   filtrarPorAnoMes(), limparFiltroAnoMes(), limparFiltroPeriodo(),
+ *                   gravarViagemDashboard() [após atualização de viagem]
+ *
+ * 🔄 CHAMA        : Promise.allSettled com 16 funções:
+ *                   carregarEstatisticasGerais(), carregarViagensPorDia(),
+ *                   carregarViagensPorStatus(), carregarViagensPorMotorista(),
+ *                   carregarViagensPorVeiculo(), carregarCustosPorDia(),
+ *                   carregarCustosPorTipo(), carregarViagensPorFinalidade(),
+ *                   carregarViagensPorRequisitante(), carregarViagensPorSetor(),
+ *                   carregarCustosPorMotorista(), carregarCustosPorVeiculo(),
+ *                   carregarTop10ViagensMaisCaras(), carregarHeatmapViagens(),
+ *                   carregarTop10VeiculosKm(), carregarCustoMedioPorFinalidade()
+ *                   + mostrarLoadingGeral(), esconderLoadingGeral(), performance.now()
+ *
+ * 📝 OBSERVAÇÕES  : • Função async retorna Promise<void>
+ *                   • Promise.allSettled garante que falha em 1 endpoint não trava os outros
+ *                   • REMOVIDO: carregarKmPorVeiculo() (usava ViagemEstatistica com dados errados)
+ *                   • Logs de falhas: console.error com nome do endpoint que falhou
+ *                   • Performance: ~70% mais rápido que requests sequenciais
+ ****************************************************************************************/
 async function carregarDadosDashboard()
 {
     try
@@ -605,6 +768,34 @@ async function carregarDadosDashboard()
 // ESTATÍSTICAS GERAIS
 // ========================================
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: carregarEstatisticasGerais
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Carrega e atualiza os 21 cards de estatísticas principais do dashboard:
+ *                   • 9 cards principais (custo total/médio, viagens, km total/médio, status)
+ *                   • 5 cards de custo por tipo (combustível, veículo, motorista, operador, lavador)
+ *                   • 9 badges de variação percentual vs período anterior (verde/vermelho)
+ *
+ * 📥 ENTRADAS     : Nenhuma (usa periodoAtual.dataInicio e periodoAtual.dataFim)
+ *
+ * 📤 SAÍDAS       : Cards HTML atualizados via jQuery:
+ *                   #statTotalViagens, #statViagensFinalizadas, #statCustoTotal,
+ *                   #statCustoMedio, #statKmTotal, #statKmMedio, #statViagensEmAndamento,
+ *                   #statViagensAgendadas, #statViagensCanceladas, #statCustoCombustivel,
+ *                   #statCustoVeiculo, #statCustoMotorista, #statCustoOperador,
+ *                   #statCustoLavador + 14 badges de variação (#variacao*)
+ *
+ * 🔗 CHAMADA POR  : carregarDadosDashboard() [linha ~197]
+ *
+ * 🔄 CHAMA        : fetch('/api/DashboardViagens/ObterEstatisticasGerais?...'),
+ *                   formatarNumero(), formatarValorMonetario(), atualizarVariacao(),
+ *                   jQuery $() para atualizar DOM
+ *
+ * 📝 OBSERVAÇÕES  : • Endpoint retorna {success, data: {...}, periodoAnterior: {...}}
+ *                   • Se periodoAnterior não existe, badges mostram "-" (neutro)
+ *                   • Usa formatarValorMonetario (regra <100: 2 casas, >=100: 0 casas)
+ *                   • KM sempre com 0 casas decimais exceto km médio (2 casas)
+ ****************************************************************************************/
 async function carregarEstatisticasGerais()
 {
     try
@@ -681,6 +872,26 @@ async function carregarEstatisticasGerais()
 // VIAGENS POR DIA
 // ========================================
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: carregarViagensPorDia
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Busca dados de viagens agrupadas por dia da semana (Dom-Sáb) e
+ *                   renderiza gráfico de colunas Syncfusion (Column Chart).
+ *
+ * 📥 ENTRADAS     : Nenhuma (usa periodoAtual para parâmetros de API)
+ *
+ * 📤 SAÍDAS       : Gráfico de colunas renderizado em #chartViagensPorDia com 7 barras
+ *                   (uma por dia da semana), altura 350px, cor azul padrão FrotiX
+ *
+ * 🔗 CHAMADA POR  : carregarDadosDashboard() [linha ~197]
+ *
+ * 🔄 CHAMA        : fetch('/api/DashboardViagens/ObterViagensPorDia?...'),
+ *                   renderizarGraficoViagensPorDia(dados)
+ *
+ * 📝 OBSERVAÇÕES  : • Endpoint retorna array: [{diaSemana: "Segunda", total: 45}, ...]
+ *                   • Try-catch com Alerta.TratamentoErroComLinha
+ *                   • Se success=false ou data vazio, gráfico não é renderizado (fail silently)
+ ****************************************************************************************/
 async function carregarViagensPorDia()
 {
     try
@@ -703,6 +914,29 @@ async function carregarViagensPorDia()
     }
 }
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: renderizarGraficoViagensPorDia
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Renderiza gráfico de colunas Syncfusion EJ2 com dados de viagens
+ *                   por dia da semana (7 colunas: Dom-Sáb).
+ *
+ * 📥 ENTRADAS     : dados [Array<{diaSemana: string, total: number}>] - Array com 7 itens
+ *
+ * 📤 SAÍDAS       : Gráfico Column Chart Syncfusion renderizado em #chartViagensPorDia
+ *                   com tooltip, labels formatados pt-BR, canto arredondado (10px)
+ *
+ * 🔗 CHAMADA POR  : carregarViagensPorDia() [linha ~373]
+ *
+ * 🔄 CHAMA        : new ej.charts.Chart({...}), chart.appendTo('#chartViagensPorDia'),
+ *                   formatarNumero() [callbacks axisLabelRender e tooltipRender]
+ *
+ * 📝 OBSERVAÇÕES  : • Tipo: Column Chart com cornerRadius topLeft/topRight 10px
+ *                   • Cor: CORES_FROTIX.azul (#0D47A1)
+ *                   • Altura: 350px
+ *                   • Eixo X: Category (dias da semana)
+ *                   • Eixo Y: Valores numéricos com separador de milhar
+ *                   • Legenda: desabilitada (visible: false)
+ ****************************************************************************************/
 function renderizarGraficoViagensPorDia(dados)
 {
     try
@@ -766,6 +1000,25 @@ function renderizarGraficoViagensPorDia(dados)
 // VIAGENS POR STATUS
 // ========================================
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: carregarViagensPorStatus
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Busca dados de viagens agrupadas por status (Finalizadas, Em Andamento,
+ *                   Agendadas, Canceladas) e renderiza gráfico de rosca (Donut Chart).
+ *
+ * 📥 ENTRADAS     : Nenhuma (usa periodoAtual para parâmetros de API)
+ *
+ * 📤 SAÍDAS       : Gráfico de rosca renderizado em #chartViagensPorStatus com 4 fatias,
+ *                   altura 350px, legenda na parte inferior
+ *
+ * 🔗 CHAMADA POR  : carregarDadosDashboard() [linha ~197]
+ *
+ * 🔄 CHAMA        : fetch('/api/DashboardViagens/ObterViagensPorStatus?...'),
+ *                   renderizarGraficoViagensPorStatus(dados)
+ *
+ * 📝 OBSERVAÇÕES  : • Endpoint retorna array: [{status: "Finalizadas", total: 120}, ...]
+ *                   • Se success=false ou data vazio, gráfico não renderizado
+ ****************************************************************************************/
 async function carregarViagensPorStatus()
 {
     try
@@ -788,6 +1041,29 @@ async function carregarViagensPorStatus()
     }
 }
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: renderizarGraficoViagensPorStatus
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Renderiza gráfico de rosca (Donut) Syncfusion EJ2 com dados de viagens
+ *                   por status (Finalizadas, Em Andamento, Agendadas, Canceladas).
+ *
+ * 📥 ENTRADAS     : dados [Array<{status: string, total: number}>] - Array com 4 status
+ *
+ * 📤 SAÍDAS       : Gráfico AccumulationChart (Donut) renderizado em #chartViagensPorStatus
+ *                   com labels externos, legenda inferior, innerRadius 40%, altura 350px
+ *
+ * 🔗 CHAMADA POR  : carregarViagensPorStatus() [linha ~415]
+ *
+ * 🔄 CHAMA        : chartViagensPorStatus.destroy() [se existir instância anterior],
+ *                   new ej.charts.AccumulationChart({...}),
+ *                   chart.appendTo('#chartViagensPorStatus'), formatarNumero() [tooltipRender]
+ *
+ * 📝 OBSERVAÇÕES  : • Tipo: AccumulationChart (Donut - innerRadius 40%)
+ *                   • DataLabel: Outside position com enableSmartLabels
+ *                   • Variável global: chartViagensPorStatus armazena instância p/ destroy posterior
+ *                   • Legenda: position 'Bottom'
+ *                   • Tooltip formatado com separador de milhar pt-BR
+ ****************************************************************************************/
 function renderizarGraficoViagensPorStatus(dados)
 {
     try
@@ -1831,6 +2107,27 @@ function renderizarTabelaTop10(dados)
 
 /**
  * Abre o modal com detalhes da viagem
+ * 
+ * 🎯 OBJETIVO     : Exibe modal Bootstrap com detalhamento completo de uma viagem do TOP 10
+ *                   incluindo breakdown de custos, botão de edição e alerta de KM zero.
+ * 
+ * 📥 ENTRADAS     : index [number] - Índice da viagem no array dadosTop10Viagens (0-9)
+ * 
+ * 📤 SAÍDAS       : Modal #modalDetalhesViagem aberto com:
+ *                   • Dados da viagem (nº ficha, status, datas, motorista, veículo, km, duração)
+ *                   • Breakdown de custos (5 tipos + total)
+ *                   • Alerta amarelo se kmRodado = 0 (com botão ajustar)
+ *                   • Botão "Editar Viagem" vinculado a /Viagens/Upsert/{viagemId}
+ * 
+ * 🔗 CHAMADA POR  : onclick nas linhas <tr> da tabela TOP 10 [renderizarTabelaTop10, linha ~1025]
+ * 
+ * 🔄 CHAMA        : jQuery $('#modal*'), formatarNumero(), formatarDuracao(),
+ *                   formatarValorMonetario(), new bootstrap.Modal()
+ * 
+ * 📝 OBSERVAÇÕES  : • Armazena viagemAtualId global para uso no botão editar
+ *                   • Mostra/esconde #alertaKmZero conforme kmRodado
+ *                   • Status renderizado como badge Bootstrap (bg-success/warning/danger)
+ * 
  * @param {number} index - Índice da viagem no array dadosTop10Viagens
  */
 function abrirModalDetalhesViagem(index)
@@ -1897,6 +2194,24 @@ function abrirModalDetalhesViagem(index)
 
 /**
  * Formata minutos em horas e minutos (ex: 125 => "2h 05min")
+ * 
+ * 🎯 OBJETIVO     : Converte duração em minutos para formato legível "Xh YYmin".
+ * 
+ * 📥 ENTRADAS     : minutos [number] - Total de minutos (ex: 125, 45, 120)
+ * 
+ * 📤 SAÍDAS       : [string] Duração formatada:
+ *                   • "2h 05min" (125 min)
+ *                   • "45min" (45 min, sem horas)
+ *                   • "2h" (120 min, sem minutos resto)
+ *                   • "-" (se minutos <= 0 ou inválido)
+ * 
+ * 🔗 CHAMADA POR  : abrirModalDetalhesViagem() [linha ~1050]
+ * 
+ * 🔄 CHAMA        : Math.floor(), String.padStart()
+ * 
+ * 📝 OBSERVAÇÕES  : • Minutos resto sempre com 2 dígitos (padStart)
+ *                   • Try-catch retorna "-" em caso de erro
+ * 
  * @param {number} minutos - Total de minutos
  * @returns {string} Duração formatada
  */
@@ -2236,6 +2551,30 @@ function renderizarCustoMedioPorFinalidade(dados)
 // FILTROS
 // ========================================
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: aplicarFiltroPeriodo
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Aplica filtro de período rápido (7/15/30/60/90/180/365 dias) a partir
+ *                   de hoje, atualiza inputs HTML5 de data e recarrega dashboard completo.
+ *
+ * 📥 ENTRADAS     : dias [number] - Número de dias retroativos a partir de hoje
+ *                   (ex: 30 = últimos 30 dias)
+ *
+ * 📤 SAÍDAS       : periodoAtual atualizado, inputs #dataInicio e #dataFim preenchidos,
+ *                   dashboard recarregado com 16 endpoints
+ *
+ * 🔗 CHAMADA POR  : Event listeners dos botões .btn-period [data-dias] (7/15/30/60/90/180/365)
+ *                   [linha ~3653]
+ *
+ * 🔄 CHAMA        : new Date(), periodoAtual.dataFim.setDate(),
+ *                   document.getElementById(), formatarDataParaInput(),
+ *                   carregarDadosDashboard()
+ *
+ * 📝 OBSERVAÇÕES  : • dataFim: hoje 23:59:59
+ *                   • dataInicio: hoje - N dias, 00:00:00
+ *                   • Atualiza inputs HTML5 para visualização do usuário
+ *                   • Try-catch global com Alerta.TratamentoErroComLinha
+ ****************************************************************************************/
 function aplicarFiltroPeriodo(dias)
 {
     try
@@ -2321,6 +2660,26 @@ function atualizarDashboard()
 // LOADING
 // ========================================
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: mostrarLoadingGeral
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Exibe loading overlay reutilizável (#loadingInicialDashboard) com
+ *                   mensagem personalizável durante operações AJAX.
+ *
+ * 📥 ENTRADAS     : mensagem [string] - Texto personalizado para .ftx-loading-text
+ *                   (opcional, default mantém mensagem anterior)
+ *
+ * 📤 SAÍDAS       : Overlay de loading visível com mensagem atualizada
+ *
+ * 🔗 CHAMADA POR  : carregarDadosDashboard() [linha ~195], gravarViagemDashboard()
+ *
+ * 🔄 CHAMA        : document.getElementById(), querySelector('.ftx-loading-text'),
+ *                   element.textContent, classList.remove('d-none'), element.style
+ *
+ * 📝 OBSERVAÇÕES  : • Reutiliza mesmo elemento do loading inicial
+ *                   • Remove classe d-none + força display flex + opacity 1
+ *                   • Console.error se elemento não existir
+ ****************************************************************************************/
 function mostrarLoadingGeral(mensagem)
 {
     try
@@ -2349,6 +2708,26 @@ function mostrarLoadingGeral(mensagem)
     }
 }
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: esconderLoadingGeral
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Esconde loading overlay com delay e fade out suave (500ms + 300ms),
+ *                   restaura mensagem padrão para próximo uso.
+ *
+ * 📥 ENTRADAS     : Nenhuma
+ *
+ * 📤 SAÍDAS       : Overlay oculto (opacity 0 → d-none + display none após 800ms total)
+ *
+ * 🔗 CHAMADA POR  : carregarDadosDashboard() [linha ~227]
+ *
+ * 🔄 CHAMA        : setTimeout() [2x aninhados], document.getElementById(),
+ *                   querySelector('.ftx-loading-text'), element.style, classList.add()
+ *
+ * 📝 OBSERVAÇÕES  : • Delay 500ms antes de iniciar fade out
+ *                   • Fade out 300ms (transição opacity)
+ *                   • Restaura texto padrão: "Carregando Dashboard de Viagens"
+ *                   • Total: 800ms até ocultação completa
+ ****************************************************************************************/
 function esconderLoadingGeral()
 {
     try
@@ -2383,6 +2762,35 @@ function esconderLoadingGeral()
 // CÁLCULO DE VARIAÇÕES
 // ========================================
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: atualizarVariacao
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Calcula variação percentual entre valor atual e anterior, atualiza
+ *                   badge HTML com texto formatado e aplica classe CSS (verde/vermelho/neutro)
+ *                   conforme resultado.
+ *
+ * 📥 ENTRADAS     : elementoId [string] - ID do elemento HTML badge (ex: "variacaoCusto")
+ *                   valorAtual [number] - Valor do período atual
+ *                   valorAnterior [number] - Valor do período anterior para comparação
+ *
+ * 📤 SAÍDAS       : Badge HTML atualizado:
+ *                   • Texto: "+15.50% vs período anterior" (se crescimento)
+ *                   • Texto: "-8.30% vs período anterior" (se queda)
+ *                   • Texto: "-" (se valorAnterior = 0 ou null)
+ *                   • Classe: .variacao-positiva (verde) | .variacao-negativa (vermelho) |
+ *                             .variacao-neutra (cinza)
+ *
+ * 🔗 CHAMADA POR  : carregarEstatisticasGerais() [14 vezes - uma para cada badge de variação]
+ *
+ * 🔄 CHAMA        : jQuery $('#elementoId'), .text(), .removeClass(), .addClass(),
+ *                   Number.toFixed(2)
+ *
+ * 📝 OBSERVAÇÕES  : • Fórmula: ((atual - anterior) / anterior) * 100
+ *                   • Variação > 0: verde (positiva)
+ *                   • Variação < 0: vermelho (negativa)
+ *                   • Variação = 0: cinza (neutra)
+ *                   • Se valorAnterior = 0, exibe "-" (neutro)
+ ****************************************************************************************/
 function atualizarVariacao(elementoId, valorAtual, valorAnterior)
 {
     try
@@ -2423,17 +2831,40 @@ function atualizarVariacao(elementoId, valorAtual, valorAnterior)
 // EXPORTAÇÃO PARA PDF
 // ========================================
 
-// ========================================
-// EXPORTAÇÃO PARA PDF
-// ========================================
-
 /**
  * Exporta o Dashboard para PDF e exibe em Modal com PDFViewer
  */
-/**
- * Exporta o dashboard para PDF capturando gráficos E cards visuais
- * Envia via POST para /Viagens/ExportarParaPDF
- */
+/****************************************************************************************
+ * ⚡ FUNÇÃO: exportarParaPDF
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Captura TODOS os gráficos Syncfusion + 9 cards visuais como imagens PNG,
+ *                   envia via POST para /Viagens/ExportarParaPDF, recebe PDF gerado
+ *                   com QuestPDF e exibe em modal com PDFViewer Syncfusion.
+ *
+ * 📥 ENTRADAS     : Nenhuma (usa periodoAtual global para datas)
+ *
+ * 📤 SAÍDAS       : • Modal #modalPDFViewer aberto com PDF renderizado
+ *                   • pdfAtualBlob global preenchido (para download posterior)
+ *                   • Console logs detalhados de progresso e tamanhos
+ *                   • Toast Verde: "PDF gerado com sucesso!" ou Vermelho em erro
+ *
+ * 🔗 CHAMADA POR  : Botão #btnExportarPDF [evento click, linha ~3659]
+ *
+ * 🔄 CHAMA        : capturarGraficos() → 6 gráficos SVG → PNG,
+ *                   capturarCards() → 9 cards PNG (html2canvas),
+ *                   fetch('/Viagens/ExportarParaPDF', {POST, JSON}),
+ *                   response.blob(), FileReader.readAsDataURL(),
+ *                   new bootstrap.Modal(), carregarPDFNoViewer(),
+ *                   AppToast.show(), Alerta.TratamentoErroComLinha
+ *
+ * 📝 OBSERVAÇÕES  : • Payload pode chegar a 20-30MB (6 gráficos PNG + 9 cards PNG)
+ *                   • Verifica tamanho antes de enviar (limite ASP.NET: 30MB)
+ *                   • SVG → PNG obrigatório (Syncfusion.Pdf backend só aceita PNG/JPG)
+ *                   • Console logs extensivos para diagnóstico
+ *                   • Captura: status, motoristas, veículos, finalidades, requisitantes, setores
+ *                   • Cards: 3x3 grid (custo total/viagens/médio, km, status)
+ *                   • Função async com try-catch robusto
+ ****************************************************************************************/
 async function exportarParaPDF()
 {
     try
@@ -2649,6 +3080,41 @@ function baixarPDF()
 /**
  * Captura todos os gráficos como Base64
  */
+/****************************************************************************************
+ * ⚡ FUNÇÃO: capturarGraficos
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Captura 6 gráficos Syncfusion como Base64 SVG, depois converte cada
+ *                   um para PNG (backend Syncfusion.Pdf exige PNG). Retorna dicionário
+ *                   com chaves: status, motoristas, veiculos, finalidades, requisitantes,
+ *                   setores.
+ *
+ * 📥 ENTRADAS     : Nenhuma (acessa instâncias globais chartViagensPorStatus e elementos DOM)
+ *
+ * 📤 SAÍDAS       : [Promise<Object>] Dicionário:
+ *                   {
+ *                     status: "data:image/png;base64,...",
+ *                     motoristas: "data:image/png;base64,...",
+ *                     veiculos: "data:image/png;base64,...",
+ *                     finalidades: "data:image/png;base64,...",
+ *                     requisitantes: "data:image/png;base64,...",
+ *                     setores: "data:image/png;base64,..."
+ *                   }
+ *                   Strings vazias "" se captura falhar
+ *
+ * 🔗 CHAMADA POR  : exportarParaPDF() [linha ~2548]
+ *
+ * 🔄 CHAMA        : exportarGraficoSyncfusion(chart, nome) → SVG Base64 (6x),
+ *                   converterSvgParaPng(svgBase64) → PNG Base64 (6x),
+ *                   document.querySelector('#chart*'),
+ *                   element.ej2_instances[0]
+ *
+ * 📝 OBSERVAÇÕES  : • Console logs detalhados para CADA gráfico
+ *                   • Trata falhas individuais (gráfico = "" se erro)
+ *                   • chartViagensPorStatus: variável global
+ *                   • Outros gráficos: via DOM querySelector + ej2_instances[0]
+ *                   • Conversão SVG→PNG obrigatória (Syncfusion.Pdf não suporta SVG)
+ *                   • Async com await para conversões síncronas
+ ****************************************************************************************/
 async function capturarGraficos()
 {
     try
@@ -2794,6 +3260,33 @@ async function capturarGraficos()
 /**
  * Converte SVG Base64 para PNG Base64 usando Blob e URL.createObjectURL
  * Método mais robusto que funciona com SVGs complexos do Syncfusion
+ * 
+ * 🎯 OBJETIVO     : Converte gráficos SVG do Syncfusion para PNG de alta qualidade usando
+ *                   canvas HTML5. Método robusto que suporta SVGs complexos com gradientes,
+ *                   animações e filtros.
+ * 
+ * 📥 ENTRADAS     : svgBase64 [string] - String Base64 do SVG COM prefixo
+ *                   "data:image/svg+xml;base64," (formato data URI completo)
+ * 
+ * 📤 SAÍDAS       : [Promise<string>] PNG Base64 com prefixo "data:image/png;base64,..."
+ *                   Qualidade 95%, fundo branco, dimensões preservadas do SVG original
+ * 
+ * 🔗 CHAMADA POR  : capturarGraficos() [loop de conversão, linha ~2666]
+ * 
+ * 🔄 CHAMA        : atob() [decodifica Base64],
+ *                   new Blob(), URL.createObjectURL(),
+ *                   new Image(), img.onload, canvas.getContext('2d'),
+ *                   ctx.fillRect(), ctx.drawImage(), canvas.toDataURL('image/png', 0.95),
+ *                   URL.revokeObjectURL()
+ * 
+ * 📝 OBSERVAÇÕES  : • Cria Blob do SVG para URL object (mais robusto que data URI direto)
+ *                   • Fundo branco (#FFFFFF) para evitar transparência no PDF
+ *                   • Qualidade 95% (0.95) para balanço tamanho/qualidade
+ *                   • Fallback de dimensões: 800x600 se img.width/height inválidos
+ *                   • CORS: crossOrigin = 'anonymous' para evitar taint
+ *                   • Logs de tamanho antes/depois: "XKB (SVG) → YKB (PNG)"
+ *                   • Promise.reject em caso de erro (try-catch no caller)
+ * 
  * @param {string} svgBase64 - String Base64 do SVG (com data:image/svg+xml;base64, prefixo)
  * @returns {Promise<string>} PNG Base64 (com data:image/png;base64, prefixo)
  */
@@ -2889,9 +3382,39 @@ async function converterSvgParaPng(svgBase64)
 
 /**
  * Exporta gráfico Syncfusion com DEBUG COMPLETO
+ * 
+ * 🎯 OBJETIVO     : Exporta gráfico Syncfusion (Chart ou AccumulationChart) como Base64.
+ *                   Tenta CANVAS primeiro (mais rápido), depois SVG (se canvas não existir).
+ *                   Logs extensivos para diagnóstico.
+ * 
+ * 📥 ENTRADAS     : chart [Object] - Instância do gráfico Syncfusion (ej.charts.Chart ou
+ *                                        ej.charts.AccumulationChart)
+ *                   nome [string] - Nome do gráfico para logs (ex: "status", "motoristas")
+ * 
+ * 📤 SAÍDAS       : [Promise<string|null>] Base64 do gráfico:
+ *                   • "data:image/png;base64,..." se canvas encontrado
+ *                   • "data:image/svg+xml;base64,..." se SVG encontrado
+ *                   • null se nenhum formato encontrado (erro)
+ * 
+ * 🔗 CHAMADA POR  : capturarGraficos() [6 vezes, linha ~2628-2663]
+ * 
+ * 🔄 CHAMA        : chart.element.querySelector('canvas'),
+ *                   canvas.toDataURL('image/png'),
+ *                   chart.element.querySelector('svg'),
+ *                   new XMLSerializer().serializeToString(svg),
+ *                   btoa(unescape(encodeURIComponent()))
+ * 
+ * 📝 OBSERVAÇÕES  : • Syncfusion pode usar CANVAS ou SVG dependendo do tipo de gráfico
+ *                   • Canvas: padrão para Chart (Column, Bar, Line, Area)
+ *                   • SVG: padrão para AccumulationChart (Pie, Donut)
+ *                   • Logs console para CADA tentativa de captura
+ *                   • Retorna null (não throw) para permitir outros gráficos continuarem
+ *                   • Verifica: chart, chart.element, canvas, svg em sequência
+ *                   • Logs de tamanho em KB para monitorar payload
+ * 
  * @param {Object} chart - Instância do gráfico Syncfusion
  * @param {string} nome - Nome do gráfico (para debug)
- * @returns {Promise<string>} Base64 do gráfico
+ * @returns {Promise<string|null>} Base64 do gráfico
  */
 function exportarGraficoSyncfusion(chart, nome)
 {
@@ -3013,6 +3536,26 @@ function limparPDFViewer()
 // MODAL DE AJUSTE DE VIAGEM (Dashboard)
 // ========================================
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: inicializarModalAjuste
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Inicializa instância Bootstrap 5 do modal #modalAjustaViagemDashboard
+ *                   e registra event listener do botão "Ajustar Viagem".
+ *
+ * 📥 ENTRADAS     : Nenhuma
+ *
+ * 📤 SAÍDAS       : Instância modalAjustaViagemDashboard criada (variável global),
+ *                   event listener registrado em #btnAjustarViagemDashboard
+ *
+ * 🔗 CHAMADA POR  : inicializarDashboard() [linha ~136]
+ *
+ * 🔄 CHAMA        : document.getElementById(), new bootstrap.Modal(),
+ *                   addEventListener('click', gravarViagemDashboard)
+ *
+ * 📝 OBSERVAÇÕES  : • Modal config: keyboard true, backdrop 'static' (não fecha ao clicar fora)
+ *                   • Chamado apenas 1x na inicialização do dashboard
+ *                   • Try-catch global com Alerta.TratamentoErroComLinha
+ ****************************************************************************************/
 function inicializarModalAjuste()
 {
     try

@@ -1,40 +1,261 @@
 /* ****************************************************************************************
- * ⚡ ARQUIVO: agendamento_viagem.js (6600 lines - MEGA MODULE)
- * ================================================================================================
- * 
- * 📋 OBJETIVO:
- *    Sistema completo de agendamento de viagens com controle de fluxo: solicitação → aprovação
- *    → execução → finalização. Gerencia CRUD agendamentos, integração com FullCalendar,
- *    múltiplos modals (solicitação, aprovação, cancelamento, alteração), validações de
- *    disponibilidade (veículo/motorista), cálculos de combustível, envio WhatsApp notificações,
- *    sincronização Viagens, sistema permissões (solicitante/aprovador/executor), histórico
- *    completo, relatórios Excel/PDF, anexos, ocorrências, recorrência agendamentos.
- * 
- * 🔢 PARÂMETROS ENTRADA: agendamentoId (GUID), permissões usuário, filtros calendário
- * 📤 SAÍDAS: POST /api/Agendamento/* (30+ endpoints), modals, FullCalendar events, toasts
- * 
- * 🔗 DEPENDÊNCIAS: jQuery, Syncfusion EJ2 (DropDownList/DatePicker/Grid/Scheduler), FullCalendar,
- *    Bootstrap 5, SweetAlert2, AppToast, Alerta.js, FrotiXWhatsApp, moment.js
- * 
- * 📑 CATEGORIAS PRINCIPAIS (300+ funções organizadas em 25+ seções):
- *    • Inicialização FullCalendar + carregamento eventos (20 funções)
- *    • Modals (solicitação/aprovação/cancelamento/edição/detalhes) - 50 funções
- *    • Validações disponibilidade veículo/motorista - 25 funções
- *    • Fluxo aprovação (solicitar/aprovar/rejeitar/cancelar) - 30 funções
- *    • Cálculos combustível, distância, custos - 20 funções
- *    • Integração WhatsApp notificações - 15 funções
- *    • Sincronização Viagens (criar viagem de agendamento) - 20 funções
- *    • Recorrência (agendamentos repetidos diário/semanal/mensal) - 25 funções
- *    • Histórico alterações timeline - 15 funções
- *    • Exportação Excel/PDF, impressão - 12 funções
- *    • Anexos (upload/preview/remoção) - 20 funções
- *    • Sistema permissões (validação roles) - 10 funções
- *    • Helpers formatação/conversão - 40+ funções
- * 
- * ⚠️ ARQUIVO CRÍTICO: 6600 linhas, núcleo módulo Agendamentos. Alterações requerem testes
- *    extensivos em todos os fluxos (solicitar/aprovar/executar/cancelar/editar/recorrência).
- * 
- * **************************************************************************************** */
+ * ⚡ ARQUIVO: agendamento_viagem.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Sistema completo de gerenciamento de agendamentos e viagens da frota.
+ *                   Permite criar, editar, visualizar, cancelar e excluir agendamentos
+ *                   únicos e recorrentes (diário, semanal, quinzenal, mensal, variado).
+ *                   Integra calendário FullCalendar com formulários dinâmicos, validações
+ *                   robustas, controle de estados (Agendada/Aberta/Realizada/Cancelada),
+ *                   sistema de eventos, cálculos automáticos de quilometragem e duração.
+ *
+ * 📥 ENTRADAS     :
+ *    • Formulário de agendamento: motorista, veículo, datas, horários, origem, destino
+ *    • Configurações de recorrência: período, dias da semana, data final, dias variados
+ *    • Dados de viagem: quilometragem (atual/inicial/final), combustível, ficha vistoria
+ *    • Informações de requisitante: nome, ramal, setor, email
+ *    • Vinculação com eventos: eventoId, dados do evento institucional
+ *    • Parâmetros de edição: viagemId, recorrenciaViagemId, flags de edição em massa
+ *
+ * 📤 SAÍDAS       :
+ *    • Agendamentos criados/atualizados no banco via API REST
+ *    • Calendário FullCalendar atualizado dinamicamente com eventos coloridos
+ *    • Toasts de feedback: sucesso (verde) / erro (vermelho) / alerta (amarelo)
+ *    • Modais de confirmação com SweetAlert2 (Alerta.Confirmar)
+ *    • Relatórios de viagem para impressão (btnImprime)
+ *    • Logs de erro detalhados (Alerta.TratamentoErroComLinha)
+ *
+ * 🔗 CHAMADA POR  :
+ *    • Página Viagens/Upsert.cshtml (carregamento inicial do calendário)
+ *    • Clique em data/hora vazia do calendário (criar novo agendamento)
+ *    • Clique em evento existente no calendário (editar/visualizar)
+ *    • Botões de ação do modal: btnConfirma, btnApaga, btnCancela, btnViagem
+ *    • Botão de registro de viagem (transforma agendamento em viagem realizada)
+ *
+ * 🔄 CHAMA        :
+ *    • API REST:
+ *      - POST /api/Agenda/Agendamento - Criar/atualizar agendamentos e viagens
+ *      - GET  /api/Agenda/Eventos - Buscar eventos do calendário (filtro data)
+ *      - GET  /api/Viagem/PegarStatusViagem - Verificar se viagem está aberta
+ *      - GET  /api/Agenda/ObterAgendamentoEdicaoInicial - Buscar agendamento inicial recorrente
+ *      - GET  /api/Agenda/ObterAgendamentoExclusao - Buscar todos agendamentos recorrentes
+ *      - GET  /api/Eventos/Listar - Listar eventos disponíveis para vinculação
+ *      - GET  /Viagens/Upsert?handler=VerificaFicha - Validar nº ficha vistoria
+ *      - GET  /Viagens/Upsert?handler=FichaExistente - Verificar duplicidade de ficha
+ *
+ *    • Sistema de Alertas (alerta.js):
+ *      - Alerta.Erro(titulo, mensagem) - Alertas de erro
+ *      - Alerta.Warning(titulo, mensagem) - Alertas de aviso
+ *      - Alerta.Confirmar(titulo, msg, btnSim, btnNao) - Confirmações
+ *      - Alerta.TratamentoErroComLinha(arquivo, funcao, erro) - Log de erros
+ *
+ *    • Sistema de Toasts (frotix.js):
+ *      - AppToast.show("Verde", mensagem, duracao) - Toast de sucesso
+ *      - AppToast.show("Vermelho", mensagem, duracao) - Toast de erro
+ *
+ *    • Sistema de Loading (frotix.js):
+ *      - FtxSpin.show(mensagem) - Exibir spinner de carregamento
+ *      - FtxSpin.hide() - Ocultar spinner
+ *
+ * 📦 DEPENDÊNCIAS :
+ *    • jQuery 3.x - Manipulação DOM, AJAX, event handlers
+ *    • Syncfusion EJ2 - Suite completa de componentes:
+ *      - DropDownList/ComboBox - Seletores de motorista, veículo, finalidade
+ *      - DatePicker - Seleção de datas inicial/final/recorrência
+ *      - MultiSelect - Seleção múltipla de dias da semana
+ *      - RichTextEditor - Editor de descrição com formatação HTML
+ *      - Calendar - Calendário de seleção múltipla de datas variadas
+ *      - Tooltip - Dicas contextuais (data-ejtip)
+ *    • FullCalendar 5.x - Calendário principal de visualização de eventos
+ *    • Moment.js - Manipulação e formatação de datas/horas
+ *    • Bootstrap 5 - Framework CSS, modais, grid system
+ *    • SweetAlert2 (via Alerta.js) - Alertas e confirmações estilizadas
+ *    • alerta.js - Wrapper FrotiX para SweetAlert2
+ *    • frotix.js - Utilitários globais (FtxSpin, AppToast)
+ *
+ * 📝 OBSERVAÇÕES  :
+ *    • Arquivo extenso: 6599 linhas com lógica complexa de agendamentos
+ *    • Try-catch obrigatório em TODAS funções (padrão FrotiX)
+ *    • Sistema de recorrência suporta 5 tipos:
+ *      D = Diário (seg-sex), S = Semanal, Q = Quinzenal, M = Mensal, V = Variado
+ *    • Estados da viagem: Agendada (azul), Aberta (amarelo), Realizada (verde),
+ *      Cancelada (vermelho), com controles de UI específicos para cada estado
+ *    • Validações robustas:
+ *      - Campos obrigatórios conforme tipo (agendamento vs viagem)
+ *      - Data final não pode ser 5+ dias após inicial (confirma usuário)
+ *      - Km final > Km inicial (diferença > 100km confirma usuário)
+ *      - Km inicial > Km atual (diferença > 100km confirma usuário)
+ *      - Ficha vistoria: alerta se difere ±100 da última inserida
+ *      - Ficha vistoria: alerta se já existe no sistema
+ *    • Cálculos automáticos:
+ *      - Quilometragem percorrida = Km Final - Km Inicial
+ *      - Duração = Data/Hora Final - Data/Hora Inicial (em horas)
+ *    • Arredondamento automático de horários para intervalos de 10 minutos
+ *    • Sistema de eventos permite vincular viagens a eventos institucionais
+ *    • Accordion de requisitante: criação de requisitante on-the-fly
+ *    • Modal reutilizável: serve para criar/editar/visualizar/registrar viagem
+ *    • Anti-double-submit: flag isSubmitting previne múltiplos envios
+ *    • Integração com sistema de usuários: exibe quem criou/agendou/finalizou
+ *    • Suporte a imagens coladas no editor de descrição (Ctrl+V)
+ *    • Loading inteligente: oculta spinners do FullCalendar, usa FtxSpin
+ *    • Limpeza automática de tooltips ao fechar modal (previne bugs visuais)
+ *    • Suporte a transformação: agendamento → viagem realizada
+ *    • Edição de recorrentes: opção de editar "todos" ou "apenas atual"
+ *    • Exclusão de recorrentes: opção de excluir "todos", "atual" ou "próximos"
+ *
+ * 📋 ÍNDICE DE FUNÇÕES (78 funções principais):
+ * --------------------------------------------------------------------------------------
+ *
+ * 🔧 UTILITÁRIOS GERAIS (13 funções):
+ *   • getSyncfusionInstance(id)                 - Obtém instância EJ2 de elemento
+ *   • arredondarHora(hora, intervalo)           - Arredonda hora p/ próximo intervalo
+ *   • rebuildLstPeriodos()                      - Reconstrói dropdown de períodos
+ *   • toDateOnlyString(d)                       - Converte data → "YYYY-MM-DD"
+ *   • getSfValue0(inst)                         - Obtém primeiro valor de componente SF
+ *   • parseIntSafe(v)                           - Converte string → int (null se inválido)
+ *   • toLocalDateOnly(date)                     - Remove hora de data (00:00:00)
+ *   • toLocalDateTimeString(date, timeStr)      - Combina data + hora → ISO string
+ *   • fmtDateLocal(d)                           - Formata data local YYYY-MM-DD
+ *   • makeLocalDateTime(yyyyMMdd, hhmm)         - Cria datetime ISO de strings
+ *   • formatDate(dateObj)                       - Formata data → DD/MM/YYYY
+ *   • parseDate(d)                              - Parse inteligente multi-formato
+ *   • delay(ms)                                 - Promise delay (setTimeout wrapper)
+ *
+ * 🧹 LIMPEZA E TOOLTIPS (1 função):
+ *   • limpaTooltipsGlobais(timeout)             - Remove todos tooltips da página
+ *
+ * 📅 CALENDÁRIO (3 funções):
+ *   • InitializeCalendar(URL)                   - Inicializa FullCalendar completo
+ *   • calendarEvents(fetchInfo, success, fail)  - Carrega eventos via API
+ *   • onDateChange(args)                        - Handler mudança de data (calendar)
+ *
+ * 🆕 CRIAÇÃO DE AGENDAMENTOS (6 funções):
+ *   • criarAgendamentoNovo()                    - Cria objeto novo agendamento do form
+ *   • criarAgendamentoUnico()                   - Cria agendamento único (não recorrente)
+ *   • criarAgendamento(viagemId, recorrId, dt)  - Cria agendamento genérico
+ *   • criarAgendamentoEdicao(agendamento)       - Cria objeto para edição
+ *   • criarAgendamentoViagem(agendamento)       - Transforma agendamento → viagem
+ *   • enviarNovoAgendamento(agend, isLast)      - Envia novo agendamento via API
+ *
+ * ✏️ EDIÇÃO DE AGENDAMENTOS (5 funções):
+ *   • editarAgendamento(viagemId)               - Edita agendamento único
+ *   • editarAgendamentoRecorrente(...)          - Edita agendamentos recorrentes
+ *   • enviarAgendamentoComOpcao(...)            - Envia edição com opções (todos/atual)
+ *   • aplicarAtualizacao(objViagem)             - Aplica atualização via POST API
+ *   • recuperarViagemEdicao(viagemId)           - Recupera dados p/ edição
+ *
+ * 📡 ENVIO E PERSISTÊNCIA (1 função):
+ *   • enviarAgendamento(agendamento)            - Envia agendamento via AJAX POST
+ *
+ * 🔁 RECORRÊNCIA (13 funções):
+ *   • handleRecurrence(periodo, datas)          - Gerencia criação de recorrência
+ *   • ajustarDataInicialRecorrente(tipo)        - Ajusta data inicial p/ recorrência
+ *   • gerarRecorrenciaVariada(datas)            - Gera recorrência dias variados
+ *   • gerarRecorrenciaMensal(...)               - Gera recorrência mensal
+ *   • gerarRecorrenciaDiaria(...)               - Gera recorrência diária (seg-sex)
+ *   • gerarRecorrenciaPorPeriodo(...)           - Gera recorrência semanal/quinzenal
+ *   • obterAgendamentosRecorrenteInicial(id)    - Obtém agendamento inicial da série
+ *   • obterAgendamentosRecorrentes(recorrId)    - Obtém todos agendamentos da série
+ *   • getDatasIniciais(viagemId, recorrId)      - Obtém datas de agendamentos recorrentes
+ *   • obterEDefinirDatasCalendario(...)         - Define datas no calendário seleção
+ *   • atualizarListBoxHTMLComDatas(datas)       - Atualiza listbox HTML com datas
+ *   • atualizarCalendarioExistente(datas)       - Atualiza calendário com datas existentes
+ *   • limparCamposRecorrencia()                 - Limpa campos de recorrência
+ *
+ * 🗑️ EXCLUSÃO E CANCELAMENTO (2 funções):
+ *   • excluirAgendamento(viagemId)              - Exclui agendamento (c/ opções)
+ *   • cancelarAgendamento(viagemId, desc, toast)- Cancela agendamento
+ *
+ * ✅ VALIDAÇÃO (6 funções):
+ *   • ValidaCampos(viagemId)                    - Valida todos campos obrigatórios
+ *   • validarDatas()                            - Valida diferença datas inicial/final
+ *   • validarDatasInicialFinal(ini, fim)        - Valida datas (5+ dias alerta)
+ *   • validarKmInicialFinal()                   - Valida Km inicial < Km final
+ *   • validarKmAtualFinal()                     - Valida Km atual < Km inicial
+ *   • (focusout txtNoFichaVistoria)             - Valida ficha vistoria (2 AJAX)
+ *
+ * 🧮 CÁLCULOS (2 funções):
+ *   • calcularDistanciaViagem()                 - Calcula Km percorrido
+ *   • calcularDuracaoViagem()                   - Calcula duração em horas
+ *
+ * 🖥️ INTERFACE - EXIBIÇÃO (15 funções):
+ *   • ExibeViagem(viagem, data, hora)           - Exibe modal agendamento/viagem
+ *   • inicializarCamposModal()                  - Inicializa campos do modal
+ *   • inicializarComponentesEJ2()               - Inicializa componentes Syncfusion
+ *   • preencherCamposBasicos(viagem)            - Preenche campos básicos
+ *   • preencherDataInicial(dataClicada)         - Preenche data inicial
+ *   • preencherHoraInicial(horaClicada)         - Preenche hora inicial
+ *   • arredondarHoraProximos10Minutos(moment)   - Arredonda para 10min
+ *   • exibirCamposViagem(viagem)                - Exibe campos específicos viagem
+ *   • exibirLabelsUsuarios(viagem)              - Exibe labels usuários (criado/etc)
+ *   • exibirLabelUsuario(...)                   - Exibe label individual usuário
+ *   • limparLabelsUsuarios()                    - Limpa labels de usuários
+ *   • desabilitarTodosControles()               - Desabilita todos controles form
+ *   • limparCamposModalViagens()                - Limpa todos campos do modal
+ *   • hideAccordionRequisitante()               - Esconde accordion requisitante
+ *   • configurarModoNovoAgendamento(data, hora) - Configura UI novo agendamento
+ *
+ * 🎭 INTERFACE - ESTADOS DA VIAGEM (6 funções):
+ *   • determinarEstadoViagem(viagem)            - Determina estado atual
+ *   • configurarViagemFinalizada(viagem, est)   - UI viagem finalizada (só leitura)
+ *   • configurarAgendamentoAtivo(viagem)        - UI agendamento ativo (editável)
+ *   • configurarAgendamentoCancelado(viagem)    - UI agendamento cancelado
+ *   • configurarViagemAberta(viagem)            - UI viagem aberta (em andamento)
+ *   • configurarRecorrencia(viagem)             - Configura UI recorrência
+ *
+ * 📋 INTERFACE - RECORRÊNCIA UI (3 funções):
+ *   • configurarRecorrenciaSemanal(viagem)      - UI recorrência semanal
+ *   • configurarRecorrenciaMensal(viagem)       - UI recorrência mensal
+ *   • configurarRecorrenciaVariada(viagem)      - UI recorrência variada
+ *
+ * 🎉 SISTEMA DE EVENTOS (8 funções):
+ *   • inicializarSistemaEventoCompleto()        - Inicializa sistema eventos completo
+ *   • controlarCardEvento(finalidade)           - Controla visibilidade card evento
+ *   • habilitarLstEventos(habilitar)            - Habilita/desabilita lista eventos
+ *   • abrirAccordionEvento()                    - Abre accordion criação evento
+ *   • fecharAccordionEvento()                   - Fecha accordion evento
+ *   • limparCamposEventoFormulario()            - Limpa campos formulário evento
+ *   • salvarNovoEvento()                        - Salva novo evento via AJAX
+ *   • atualizarListaEventosESelecionar(id)      - Atualiza lista e seleciona evento
+ *
+ * 📊 LISTAS E DADOS (2 funções):
+ *   • PreencheListaEventos()                    - Preenche dropdown eventos
+ *   • PreencheListaSetores()                    - Preenche dropdown setores
+ *
+ * 🔄 HANDLERS SYNCFUSION (2 funções):
+ *   • onCreate()                                - Handler onCreate Syncfusion
+ *   • toolbarClick(e)                           - Handler clique toolbar
+ *
+ * ⚠️ TRATAMENTO DE ERROS (2 funções):
+ *   • handleAgendamentoError(error)             - Trata erro agendamento
+ *   • exibirErroAgendamento()                   - Exibe mensagem erro
+ *   • exibirMensagemSucesso()                   - Exibe mensagem sucesso
+ *
+ * 🔀 VARIÁVEIS GLOBAIS (12 variáveis):
+ *   • modalLock                                 - Lock modal (previne duplicação)
+ *   • CarregandoViagemBloqueada                 - Flag bloqueio carregamento
+ *   • viagemId, viagemId_AJAX                   - IDs viagem atual
+ *   • recorrenciaViagemId, recorrenciaViagemId_AJAX - IDs recorrência
+ *   • dataInicial_List, dataInicial, horaInicial - Dados temporários data/hora
+ *   • agendamentosRecorrentes                   - Array agendamentos recorrentes
+ *   • editarTodosRecorrentes                    - Flag edição em massa
+ *   • transformandoEmViagem                     - Flag transformação agend→viagem
+ *   • datasSelecionadas                         - Array datas selecionadas (variado)
+ *   • isSubmitting                              - Flag anti-double-submit
+ *
+ * 📌 EVENT LISTENERS (6 listeners principais):
+ *   • $(document).on('shown.bs.modal')          - Inicializa tooltips em modais
+ *   • $("#btnConfirma").on("click")             - Confirma criação/edição/viagem
+ *   • $("#txtNoFichaVistoria").focusout()       - Valida ficha vistoria
+ *   • rteDescricao.addEventListener("paste")    - Permite colar imagens
+ *   • document.addEventListener("DOMContentLoaded") - Init calendário datas variadas
+ *   • $(document).ready()                       - Inicializa dropdowns recorrência
+ *
+ * --------------------------------------------------------------------------------------
+ * 📅 ÚLTIMA ATUALIZAÇÃO: 02/02/2026
+ * 👨‍💻 DOCUMENTADO POR: Claude Sonnet 4.5 (Agente FrotiX)
+ * 🔖 VERSÃO: 2.0 - Documentação completa padrão FrotiX
+ * ⚠️ CRÍTICO: 6599 linhas - Núcleo do módulo Agendamentos. Testar extensivamente!
+ * ****************************************************************************************/
 
 // ====================================================================
 // CORREÇÕES APLICADAS:
