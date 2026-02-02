@@ -1,5 +1,40 @@
 // ====================================================================
-// MODAL DE AGENDAMENTO DE VIAGENS - VERSÃO REFATORADA
+// ARQUIVO: modal_agenda.js
+// MÓDULO: Cadastros > Agendamento de Viagens
+// DESCRIÇÃO: Modal interativo para criação, edição e gerenciamento de
+//            agendamentos de viagens. Integra FullCalendar, Syncfusion
+//            components e validações de dados em tempo real.
+//
+// RESPONSABILIDADES:
+//   - Inicialização e configuração de componentes Syncfusion
+//   - Gerenciamento do calendário FullCalendar
+//   - Validação de campos e dados do agendamento
+//   - Criação, edição, exclusão e cancelamento de agendamentos
+//   - Suporte a agendamentos recorrentes
+//   - Cálculo automático de durações e distâncias
+//   - Manipulação de UI/UX do modal
+//
+// DEPENDÊNCIAS:
+//   - jQuery
+//   - FullCalendar v6
+//   - Syncfusion (DropDownList, MultiSelect, DatePicker, Calendar)
+//   - Moment.js
+//   - alerta.js (sistema de alertas SweetAlert)
+//   - frotix.js (utilitários globais)
+//   - API REST (/api/Agenda/*)
+//
+// DATA DE CRIAÇÃO: [Data Original]
+// ÚLTIMA MODIFICAÇÃO: 02/02/2026
+// VERSÃO: 2.0
+// AUTOR: FrotiX Development Team
+//
+// CHANGELOG:
+//   v2.0 - 02/02/2026: Documentação padronizada FrotiX
+//   v1.0 - Data Original: Versão inicial - refatoração do modal
+//
+// NOTA: Todas as funções possuem try-catch implícito através dos handlers
+//       de evento jQuery. Erros críticos devem ser tratados com
+//       Alerta.TratamentoErroComLinha().
 // ====================================================================
 
 // Variáveis Globais

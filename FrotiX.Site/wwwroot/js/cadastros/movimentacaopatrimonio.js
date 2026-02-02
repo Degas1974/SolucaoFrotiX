@@ -1,3 +1,109 @@
+/**
+ * 📦 MÓDULO: Movimentação de Patrimônio
+ *
+ * 📝 Descrição:
+ *    Gerencia a movimentação de bens patrimoniais entre setores e seções.
+ *    Permite criar, atualizar e excluir registros de movimentação, com controle
+ *    de origem, destino, data e responsável.
+ *
+ * 🎯 Funcionalidades Principais:
+ *    • 📋 Listagem com DataTable e filtros avançados
+ *    • ➕ Criar nova movimentação (UPSERT)
+ *    • ✏️  Editar movimentação existente
+ *    • 🗑️  Excluir movimentação com confirmação
+ *    • 🔍 Filtros por: data, setor/seção (origem/destino), responsável
+ *    • 📦 Carregamento de dados via combos EJ2 (Syncfusion)
+ *    • ⚡ Loading overlay durante operações assíncronas
+ *
+ * 🗂️  Estrutura de Dados:
+ *    - MovimentacaoPatrimonioId (UUID)
+ *    - PatrimonioId (UUID)
+ *    - DataMovimentacao (DateTime)
+ *    - SetorOrigemId / SecaoOrigemId (UUID)
+ *    - SetorDestinoId / SecaoDestinoId (UUID)
+ *    - ResponsavelMovimentacao (string)
+ *    - StatusPatrimonio (bool: Ativo/Baixado)
+ *
+ * 🌐 Endpoints da API:
+ *    • GET  /api/Patrimonio/MovimentacaoPatrimonioGrid       (lista com filtros)
+ *    • GET  /api/Patrimonio/GetMovimentacao                  (obter um registro)
+ *    • POST /api/Patrimonio/CreateMovimentacao               (criar)
+ *    • POST /api/Patrimonio/UpdateMovimentacao               (editar)
+ *    • POST /api/Patrimonio/DeleteMovimentacaoPatrimonio     (deletar)
+ *    • GET  /api/Patrimonio/ListaPatrimonios                 (combo patrimônios)
+ *    • GET  /api/Setor/ListaSetores                          (combo setores)
+ *    • GET  /api/Secao/ListaSecoes                           (combo seções por setor)
+ *    • GET  /api/Patrimonio/GetSetoresSecoesHierarquicos     (árvore setor/seção)
+ *    • GET  /api/Patrimonio/GetResponsaveisMovimentacoes     (combo responsáveis)
+ *    • GET  /api/Patrimonio/GetSingle                        (obter patrimônio por ID)
+ *
+ * 🎨 Componentes UI Esperados:
+ *    • #tblMovimentacaoPatrimonio      (DataTable index)
+ *    • #cmbPatrimonio                  (ComboBox EJ2)
+ *    • #cmbSetorDestino                (ComboBox EJ2)
+ *    • #cmbSecoesDestino               (ComboBox EJ2)
+ *    • #dataMov                        (DatePicker EJ2)
+ *    • #StatusCheckbox                 (Checkbox EJ2)
+ *    • #formsMovimentacaoPatrimonio    (form principal)
+ *    • #btnSalvar                      (botão submit)
+ *    • #loadingOverlayMovPatrimonio    (loading overlay)
+ *    • #ddtSetorSecaoOrigem            (DropDownTree EJ2)
+ *    • #ddtSetorSecaoDestino           (DropDownTree EJ2)
+ *    • #cmbResponsavel                 (ComboBox EJ2)
+ *    • #drpDataMovimentacao            (DateRangePicker EJ2)
+ *    • #btnFiltrarMovimentacoes        (botão filtro)
+ *
+ * ⚙️  Dependências:
+ *    • jQuery ($.ajax, $(document).ready, etc)
+ *    • Syncfusion EJ2 (ComboBox, DatePicker, Checkbox, DropDownTree, DateRangePicker)
+ *    • DataTables (jquery.dataTables)
+ *    • alerta.js (Alerta.*, AppToast, FtxSpin)
+ *    • CSS: data-ejtip para tooltips
+ *
+ * 🔄 Fluxo Principal (INDEX):
+ *    1. document.ready → carregarFiltrosMovimentacoes() + loadList()
+ *    2. loadList() → inicializa DataTable com GET /MovimentacaoPatrimonioGrid
+ *    3. Click botão delete → confirmar → POST /DeleteMovimentacaoPatrimonio
+ *    4. Reload automático da tabela
+ *
+ * 🔄 Fluxo Principal (UPSERT):
+ *    1. document.ready → inicializarFormularioUpsert() + configurarHandlersFormulario()
+ *    2. Se edição: carregarDadosMovimentacao(id)
+ *    3. Click salvar → salvarMovimentacao()
+ *    4. Validação de campos obrigatórios
+ *    5. POST /CreateMovimentacao ou /UpdateMovimentacao
+ *    6. Redirecionamento para index
+ *
+ * 🔐 Tratamento de Erros:
+ *    • Try-catch em TODAS as funções (obrigatório FrotiX)
+ *    • Alerta.TratamentoErroComLinha() para logs estruturados
+ *    • AppToast.show() para mensagens ao usuário
+ *    • Desabilita botão durante operações
+ *
+ * 📊 Validações do Formulário:
+ *    • Patrimônio obrigatório (não pode estar vazio)
+ *    • Data obrigatória
+ *    • Setor/Seção origem obrigatórios
+ *    • Setor/Seção destino obrigatórios
+ *    • Seção destino ≠ seção origem
+ *
+ * 💾 Persistência:
+ *    • Dados salvos via API POST
+ *    • Resposta sucesso → redirect para /MovimentacaoPatrimonio/Index
+ *    • Resposta erro → AppToast mensagem + re-enable botão
+ *
+ * 📝 Histórico de Alterações:
+ *    • Versão Refatorada com Ajax
+ *    • Integração EJ2 Syncfusion
+ *    • Filtros avançados com DropDownTree
+ *    • Loading overlay visual
+ *    • Validações robustas
+ *
+ * 📌 Autor: FrotiX Development Team
+ * 📅 Última Atualização: Fevereiro 2026
+ * ⚡ Status: Ativo
+ */
+
 /* movimentacaopatrimonio.js - Versão Refatorada com Ajax */
 var dataTable;
 
