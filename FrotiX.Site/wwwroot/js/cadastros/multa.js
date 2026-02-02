@@ -1,3 +1,135 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: multa.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciamento completo do cadastro e edição de multas. Manipula uploads
+ *                   de PDFs (Autuação, Penalidade, Comprovante, EDoc, Documentos), integração
+ *                   com viewer de PDF, validações de campos obrigatórios, busca de viagens
+ *                   associadas, e gerenciamento de contratos de veículos e motoristas.
+ * 📥 ENTRADAS     : Dados de formulário HTML (campos de texto, listas Syncfusion, inputs),
+ *                   eventos de upload de arquivos, eventos de mudança em dropdowns,
+ *                   cliques em botões, dados de AJAX (viagens, fichas, empenhos)
+ * 📤 SAÍDAS       : PDFs carregados no viewer, campos preenchidos com dados de API,
+ *                   valores monetários formatados (BRL), validações executadas, modais
+ *                   abertas/fechadas, toasts de sucesso/erro exibidos
+ * 🔗 CHAMADA POR  : Pages/Multa/UpsertAutuacao.cshtml, Pages/Multa/UpsertPenalidade.cshtml
+ * 🔄 CHAMA        : $.ajax (jQuery), Syncfusion ej.inputs.Uploader, Syncfusion DropdownList,
+ *                   SweetAlert (swal), AppToast.show, Alerta.TratamentoErroComLinha,
+ *                   FtxSpin (implícito em validações), moment.js (formatos de data)
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, Syncfusion EJ2 (Uploader, DropdownList, RichTextEditor),
+ *                   Bootstrap 5.3 (Modal), SweetAlert 2.x, Alerta.js, Font Awesome 6.x
+ *                   (fa-duotone), FullCalendar (contexto de viagens), Kendo UI (implícito)
+ * 📝 OBSERVAÇÕES  : Todas as funções têm try-catch com Alerta.TratamentoErroComLinha.
+ *                   Utiliza validações de dados obrigatórios antes de submit. Remove acentos
+ *                   de nomes de PDF (tiraAcento). Carrega primeiro PDF disponível em modo
+ *                   edição (carregarPrimeiroPDF com prioridade: Penalidade→Autuação→Comprovante
+ *                   →EDoc→Outros). Gerencia duas variáveis globais de controle: EscolhendoVeiculo
+ *                   e EscolhendoMotorista para evitar loops de validação. Integração com
+ *                   API /api/Multa/* para buscas de viagem, validações, saldo de empenho.
+ *
+ * 📋 ÍNDICE DE FUNÇÕES (28 funções principais):
+ *
+ * ┌─ FUNÇÕES UTILITÁRIAS (3 funções) ───────────────────────────────────────────────────┐
+ * │ 1. tiraAcento(frase) → string (remove acentos, substitui espaços por underscore)    │
+ * │ 2. getMainViewer() → object|null (obtém instância do PDF viewer)                   │
+ * │ 3. loadPdfInViewer(fileName) → void (carrega PDF no viewer principal)              │
+ * │                                                                                      │
+ * ├─ CALLBACKS DE UPLOAD (5 funções) ──────────────────────────────────────────────────┐
+ * │ 4. onSuccessAutuacao(e) → void (callback upload PDF Autuação)                      │
+ * │ 5. onSuccessPenalidade(e) → void (callback upload PDF Penalidade)                  │
+ * │ 6. onSuccessComprovante(e) → void (callback upload PDF Comprovante)                │
+ * │ 7. onSuccessEDoc(e) → void (callback upload PDF EDoc)                              │
+ * │ 8. onSuccessDocumentos(e) → void (callback upload Outros Documentos)               │
+ * │                                                                                      │
+ * ├─ INICIALIZAÇÃO (3 funções) ────────────────────────────────────────────────────────┐
+ * │ 9. configurarControlesSyncfusion() → void (cria Uploaders Syncfusion para 5 PDFs)  │
+ * │ 10. verificarModoEdicao() → void (detecta modo edição vs criação)                   │
+ * │ 11. carregarPrimeiroPDF() → void (prioridade: Penalidade→Autuação→...)              │
+ * │ 12. inicializarValoresMonetarios() → void (formata valores como "0,00")             │
+ * │ 13. inicializarNovoRegistro() → void (limpa listas em modo criação)                │
+ * │                                                                                      │
+ * ├─ VALIDAÇÕES & FORMATAÇÃO (2 funções) ────────────────────────────────────────────┐
+ * │ 14. stopEnterSubmitting(e) → boolean (previne submit com Enter, exceto em div)      │
+ * │ 15. moeda(a, e, r, t) → boolean (formata entrada monetária em tempo real)           │
+ * │                                                                                      │
+ * ├─ EVENT HANDLERS DROPDOWNS (8 funções) ──────────────────────────────────────────────┐
+ * │ 16. lstOrgaoChange() → void (ao mudar órgão, limpa empenhos e carrega novos)        │
+ * │ 17. lstEmpenhosChange() → void (ao mudar empenho, busca saldo)                      │
+ * │ 18. lstVeiculo_Select() → void (marca flag EscolhendoVeiculo=true)                  │
+ * │ 19. lstVeiculo_Change() → void (ao mudar veículo, carrega contrato/ata)             │
+ * │ 20. lstContratoVeiculo_Change() → void (valida se veículo pertence ao contrato)     │
+ * │ 21. lstAtaVeiculo_Change() → void (valida se veículo pertence à ata)                │
+ * │ 22. lstMotorista_Select() → void (marca flag EscolhendoMotorista=true)              │
+ * │ 23. lstMotorista_Change() → void (ao mudar motorista, carrega contrato)             │
+ * │ 24. lstContratoMotorista_Change() → void (valida se motorista pertence ao contrato) │
+ * │                                                                                      │
+ * ├─ HANDLERS BOTÕES & EVENTOS (9 funções) ───────────────────────────────────────────┐
+ * │ 25. #btnSubmit.click (event) → void (validações completas antes de submit)          │
+ * │ 26. .btnViagem.click (event) → void (procura viagem associada à multa)              │
+ * │ 27. .btnFicha.click (event) → void (procura ficha de vistoria)                      │
+ * │ 28. #txtNumInfracao.focusout (event) → void (valida duplicação de número)           │
+ * │ 29. .btnComprovante.click (event) → void (abre modal de comprovante)                │
+ * │ 30. .btnNotificacao.click (event) → void (abre modal de autuação)                   │
+ * │ 31. #btnFecharModalComprovante.click → void (fecha modal comprovante)               │
+ * │ 32. #btnFecharModalFichaVistoria.click → void (fecha modal ficha)                   │
+ * │ 33. toolbarClick(e) → void (configura XSRF-TOKEN no RTE upload)                     │
+ * │                                                                                      │
+ * ├─ CONFIGURAÇÕES ────────────────────────────────────────────────────────────────────┐
+ * │ 34. document.ready → void (inicializa tudo ao carregar página)                      │
+ * │ 35. #modalFicha.on("show.bs.modal") → void (carrega imagem de ficha)                │
+ * │ 36. #modalComprovante.on("show.bs.modal") → void (carrega PDF comprovante)          │
+ * │ 37. ej.base.L10n.load (pt-BR) → void (localização RichTextEditor)                   │
+ * │                                                                                      │
+ * ├─ VARIÁVEIS GLOBAIS (5 variáveis) ──────────────────────────────────────────────────┐
+ * │ - ViagemId: string (ID da viagem encontrada na busca)                               │
+ * │ - ComprovantePDF: string (caminho do PDF de comprovante)                            │
+ * │ - ComprovantePDF2: string (segundo PDF de comprovante, se houver)                   │
+ * │ - EscolhendoVeiculo: boolean (flag para evitar loop de validação em veículo)        │
+ * │ - EscolhendoMotorista: boolean (flag para evitar loop de validação em motorista)    │
+ * │                                                                                      │
+ * └─────────────────────────────────────────────────────────────────────────────────────┘
+ *
+ * ⚠️ FLUXO DE EXECUÇÃO CRÍTICO:
+ *
+ *   1. $(document).ready() dispara:
+ *      - configurarControlesSyncfusion() cria os 5 Uploaders
+ *      - verificarModoEdicao() detecta modo
+ *
+ *   2. Se EDIÇÃO (MultaId presente):
+ *      - lstInfracao recebe TipoMultaId
+ *      - carregarPrimeiroPDF() carrega PDF (prioridade)
+ *      - inicializarValoresMonetarios() formata valores
+ *      - lstEmpenhosChange() é chamada manualmente
+ *
+ *   3. Se CRIAÇÃO:
+ *      - inicializarNovoRegistro() limpa listas
+ *      - inicializarValoresMonetarios() formata com "0,00"
+ *
+ *   4. Submit (#btnSubmit):
+ *      - Valida 12 campos obrigatórios
+ *      - Se OK, clica #btnEscondido (submete form real)
+ *      - Se erro, exibe SweetAlert
+ *
+ * 📌 ENDPOINTS API UTILIZADOS:
+ *
+ *   GET  /api/Upload/save                    → Upload arquivo
+ *   GET  /api/Upload/remove                  → Remove arquivo
+ *   GET  /api/Multa/PegaInstrumentoVeiculo   → Instrumento (contrato/ata) do veículo
+ *   GET  /api/Multa/ValidaContratoVeiculo    → Valida veículo-contrato
+ *   GET  /api/Multa/ValidaAtaVeiculo         → Valida veículo-ata
+ *   GET  /api/Multa/PegaContratoMotorista    → Contrato do motorista
+ *   GET  /api/Multa/ValidaContratoMotorista  → Valida motorista-contrato
+ *   POST /api/Multa/ProcuraViagem            → Busca viagem por veículo/data/hora
+ *   POST /api/Multa/ProcuraFicha             → Busca ficha de vistoria
+ *   GET  /Multa/UpsertPenalidade?handler=AJAXPreencheListaEmpenhos → Empenhos do órgão
+ *   GET  /Multa/UpsertAutuacao?handler=PegaSaldoEmpenho → Saldo do empenho
+ *   GET  /api/Multa/MultaExistente           → Verifica duplicação de número
+ *   GET  /api/Viagem/PegaFichaModal          → Imagem da ficha
+ *
+ * ✅ DATA DE DOCUMENTAÇÃO: 02/02/2026
+ * ✅ VERSÃO PADRÃO: FrotiX 2026 v1.0
+ *
+ **************************************************************************************** */
+
 // Função para remover acentos
 function tiraAcento(frase)
 {

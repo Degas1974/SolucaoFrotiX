@@ -1,8 +1,123 @@
-/**
- * upsert_autuacao.js - REFATORADO COMPLETO
- * Gerenciamento de autuações e multas
- * Sistema FrotiX - Versão com Alerta.*
- * VERSÃO 100% COMPLETA - CORRIGIDO
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: upsert_autuacao.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciamento completo do formulário de cadastro/edição de autuações
+ *                   e multas, incluindo upload de PDFs, validações, integração com
+ *                   contratos/atas, empenhos, veículos, motoristas e fichas de vistoria
+ *
+ * 📥 ENTRADAS     :
+ *   • Campos do formulário (data/hora infração, localização, valores, etc)
+ *   • Seleções de dropdowns (órgão, empenho, veículo, motorista, contratos/atas)
+ *   • Upload de arquivo PDF da autuação
+ *   • Eventos de usuário (clicks, changes, focusout, etc)
+ *
+ * 📤 SAÍDAS       :
+ *   • Validações em tempo real (alertas, toasts)
+ *   • Carregamento dinâmico de dropdowns (empenhos filtrados por órgão)
+ *   • Exibição de PDF da autuação no viewer Syncfusion
+ *   • Modal com imagem da ficha de vistoria
+ *   • Formatação automática de valores monetários
+ *   • Vinculação automática de veículo/motorista com contrato/ata
+ *
+ * 🔗 CHAMADA POR  :
+ *   • UpsertAutuacao.cshtml (Razor Page de autuação)
+ *   • Eventos DOM (document.ready, clicks em botões, changes em dropdowns)
+ *
+ * 🔄 CHAMA        :
+ *   • /api/Multa/MultaExistente (verifica duplicidade por número infração)
+ *   • /api/Multa/PegaInstrumentoVeiculo (busca contrato/ata do veículo)
+ *   • /api/Multa/ValidaContratoVeiculo (valida relação veículo-contrato)
+ *   • /api/Multa/ValidaAtaVeiculo (valida relação veículo-ata)
+ *   • /api/Multa/PegaContratoMotorista (busca contrato do motorista)
+ *   • /api/Multa/ValidaContratoMotorista (valida relação motorista-contrato)
+ *   • /api/Multa/ProcuraViagem (busca viagem por data/hora/veículo)
+ *   • /api/Multa/ProcuraFicha (busca viagem por número ficha vistoria)
+ *   • /api/Multa/PegaImagemFichaVistoria (retorna imagem base64 da ficha)
+ *   • /api/MultaPdfViewer (serviço para PDFViewer Syncfusion)
+ *   • /Multa/UpsertAutuacao?handler=AJAXPreencheListaEmpenhos (lista empenhos)
+ *   • /Multa/UpsertAutuacao?handler=PegaSaldoEmpenho (saldo de empenho)
+ *   • /api/Viagem/PegaFichaModal (HTML da ficha modal - legado)
+ *   • Alerta.* (sistema de alertas SweetAlert)
+ *   • AppToast.show() (notificações toast)
+ *   • FtxSpin.show() (indicador de loading - se usado)
+ *
+ * 📦 DEPENDÊNCIAS :
+ *   • jQuery 3.x
+ *   • Syncfusion EJ2 (PDFViewer, Uploader, DropDownList, ComboBox, DatePicker, TimePicker)
+ *   • Bootstrap 5 (Modal)
+ *   • jsPDF (conversão imagem → PDF)
+ *   • alerta.js (Alerta.TratamentoErroComLinha, Alerta.Warning, Alerta.Erro)
+ *   • AppToast (sistema de notificações toast - opcional)
+ *   • CLDR data (necessário para componentes Syncfusion)
+ *
+ * 📝 OBSERVAÇÕES  :
+ *   • Arquivo 100% refatorado com try-catch em todas funções
+ *   • Upload de PDF validado (apenas .pdf permitido) com salvamento automático
+ *   • Sistema de validação de datas (infração <= notificação <= limite)
+ *   • Máscaras de moeda brasileira com formatação dinâmica
+ *   • Integração com sistema de contratos e atas (veículos e motoristas)
+ *   • Validação de duplicidade de multas por número de infração
+ *   • Busca inteligente de viagem por data/hora/veículo ou número ficha
+ *   • Modal com imagem da ficha de vistoria + botão para baixar como PDF
+ *   • Aguarda carregamento do CLDR antes de inicializar componentes Syncfusion
+ *   • Sistema de flags (EscolhendoVeiculo/Motorista) para evitar validações duplas
+ *   • Upload com CSRF token para segurança
+ *   • RichTextEditor com upload de imagens protegido por XSRF-TOKEN
+ *
+ * 📋 ÍNDICE DE FUNÇÕES:
+ * ────────────────────────────────────────────────────────────────────────────────────
+ * UTILITÁRIOS E CONTROLE
+ *   • stopEnterSubmitting(e)                    : Previne submit ao pressionar Enter
+ *
+ * PDF VIEWER
+ *   • getViewer()                               : Obtém instância do PDFViewer
+ *   • loadPdfInViewer(fileName)                 : Carrega PDF no viewer Syncfusion
+ *   • waitForCldr()                             : Aguarda carregamento do CLDR
+ *
+ * CALLBACKS DO UPLOADER
+ *   • onAutuacaoUploadSelected(args)            : Valida arquivo .pdf antes do upload
+ *   • onAutuacaoUploadSuccess(args)             : Processa sucesso do upload
+ *   • onAutuacaoUploadFailure(args)             : Trata falha no upload
+ *
+ * FORMATAÇÃO DE VALORES
+ *   • moeda(input, sep, dec, event)             : Formata campo como moeda (legado)
+ *   • aplicarMascaraMoeda()                     : Aplica máscara R$ em campos .moeda-brasileira
+ *   • formatarMoeda(valor)                      : Formata número para moeda pt-BR
+ *
+ * RICH TEXT EDITOR
+ *   • toolbarClick(e)                           : Anexa CSRF ao upload de imagens RTE
+ *
+ * VALIDAÇÕES
+ *   • txtNumeroInfracao.focusout                : Verifica se multa já existe
+ *
+ * VEÍCULO E CONTRATOS/ATAS
+ *   • lstVeiculo_Select()                       : Ativa flag ao selecionar veículo
+ *   • lstVeiculo_Change()                       : Busca e define contrato/ata do veículo
+ *   • lstContratoVeiculo_Change()               : Valida se veículo pertence ao contrato
+ *   • lstAtaVeiculo_Change()                    : Valida se veículo pertence à ata
+ *
+ * MOTORISTA E CONTRATOS
+ *   • lstMotorista_Select()                     : Ativa flag ao selecionar motorista
+ *   • lstMotorista_Change()                     : Busca e define contrato do motorista
+ *   • lstContratoMotorista_Change()             : Valida se motorista pertence ao contrato
+ *
+ * ÓRGÃOS E EMPENHOS
+ *   • lstOrgaoChange()                          : Carrega empenhos do órgão selecionado
+ *   • lstEmpenhosChange()                       : Exibe saldo do empenho selecionado
+ *
+ * BUSCA DE VIAGEM E FICHA
+ *   • btnViagem.click                           : Busca viagem por data/hora/veículo
+ *   • btnFicha.click                            : Busca ficha e exibe modal com imagem
+ *   • btnBaixarPDF.click                        : Converte imagem da ficha em PDF
+ *   • modalFicha.show.bs.modal                  : Carrega HTML da ficha (legado)
+ *
+ * VALIDAÇÕES ADICIONAIS
+ *   • vincularEventosValidacao()                : Vincula Title Case e validação de datas
+ *   • validarOrdemDatas(campoId)                : Valida ordem cronológica de datas
+ *
+ * INICIALIZAÇÃO
+ *   • $(document).ready()                       : Inicializa componentes e eventos
+ * ────────────────────────────────────────────────────────────────────────────────────
  */
 
 // ====================================================================

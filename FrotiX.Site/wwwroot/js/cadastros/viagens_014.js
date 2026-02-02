@@ -1,28 +1,83 @@
-/* ****************************************************************************************
- * ⚡ ARQUIVO: viagens_014.js (910 lines)
- * ================================================================================================
- * 
- * 📋 OBJETIVO:
- *    Página de listagem de viagens com foco em cancelamento e gestão de status. Grid
- *    Syncfusion interativa com ações: cancelar viagem (com motivo), editar, visualizar,
- *    excluir, reativar. Modal cancelamento solicita motivo (textarea obrigatório). Filtros
- *    avançados por status (ativa/cancelada/finalizada), data, veículo, motorista. Exportação
- *    Excel, badges status coloridos (ativa=verde, cancelada=vermelho, finalizada=azul).
- * 
- * 🔢 PARÂMETROS ENTRADA: filtros grid (status/dataInicio/dataFim/veiculoId/motoristaId)
- * 📤 SAÍDAS: GET /api/Viagens/Listar, POST /api/Viagens/Cancelar, DELETE /api/Viagens/Excluir
- * 
- * 🔗 DEPENDÊNCIAS: jQuery, Syncfusion EJ2 Grid, Bootstrap 5, SweetAlert (v1 legacy),
- *    AppToast, Alerta.js
- * 
- * 📑 FUNÇÕES PRINCIPAIS (35+ funções):
- *    • ListaTodasViagens() → Carrega grid com dados viagens (todas os status)
- *    • cancelarViagem(viagemId) → SweetAlert modal motivo → POST /api/Viagens/Cancelar
- *    • reativarViagem(viagemId) → SweetAlert confirmação → POST /api/Viagens/Reativar
- *    • aplicarFiltros() → Recarrega grid com filtros aplicados
- *    • limparFiltros() → Reset todos os filtros → recarrega grid
- * 
- * **************************************************************************************** */
+/* ******************************************************************************
+ * ARQUIVO: viagens_014.js
+ * ==============================================================================
+ *
+ * OBJETIVO:
+ *    Gerenciar listagem de viagens com foco em cancelamento, finalização e
+ *    gestão de status. Implementa grid DataTable interativa com operações:
+ *    cancelar viagem, finalizar viagem (com dados de combustível, km, hora),
+ *    editar, visualizar. Validações de data (máx 5 dias), quilometragem
+ *    (máx 100km diferença). Filtros avançados por status (Aberta/Realizada/
+ *    Cancelada), data, veículo, motorista, evento. Exportação para Excel/PDF.
+ *    Modal de finalização com campos para dados finais (km, combustível, hora,
+ *    data), status de documentos (entrega), ocorrências (texto + imagem).
+ *
+ * PARÂMETROS ENTRADA:
+ *    - Filtros grid: status/dataInicio/dataFim/veiculoId/motoristaId/eventoId
+ *    - Modal Finalização: ViagemId, DataFinal, HoraFim, KmFinal, CombustivelFinal
+ *
+ * SAÍDAS (API):
+ *    - GET /api/viagem (listagem com filtros)
+ *    - POST /api/Viagem/Cancelar (cancelar viagem)
+ *    - POST /api/Viagem/FinalizaViagem (finalizar com dados)
+ *    - GET /api/Viagem/updateStatusViagem (atualizar status)
+ *
+ * DEPENDÊNCIAS:
+ *    - jQuery (core AJAX + DOM manipulation)
+ *    - DataTables (grid principal com export Excel/PDF)
+ *    - Bootstrap 5 (modais, layouts)
+ *    - SweetAlert (v1 legacy - confirmações, alertas)
+ *    - Alerta.js (sistema customizado de erros)
+ *    - Syncfusion EJ2 (dropdowns: lstVeiculos, lstMotorista, lstEventos,
+ *                       lstStatus, ddtCombustivelInicial, ddtCombustivelFinal)
+ *    - Syncfusion RichText (rteOcorrencias, rteDescricao)
+ *
+ * FUNÇÕES PRINCIPAIS:
+ *    - ListaTodasViagens()           : Carrega/recarrega grid DataTable
+ *    - cancelarViagem(id)            : Modal SweetAlert → POST cancelamento
+ *    - validarDatasSimples()         : Validação data (máx 5 dias diferença)
+ *    - validarKmSimples()            : Validação km (máx 100km diferença)
+ *    - parseDate(d)                  : Parse data DD/MM/YYYY ou YYYY-MM-DD
+ *    - Modal shown.bs.modal          : Preenche campos ao abrir finalização
+ *    - Modal hide.bs.modal           : Limpa campos ao fechar finalização
+ *    - #btnFinalizarViagem.click     : Validação + POST finalização
+ *    - Validadores focusout          : Data/Hora/Km (inline validation)
+ *
+ * FLUXO PRINCIPAL:
+ *    1. document.ready → ListaTodasViagens() (carrega grid)
+ *    2. Usuário clica ação (Finalizar/Cancelar/Editar/Ficha/Print)
+ *    3. Se Finalizar → Modal shown → preenche dados iniciais
+ *    4. Usuário digita dados finais + validação em tempo real
+ *    5. Click btnFinalizarViagem → validação completa → POST
+ *    6. Sucesso → reload grid + toast + fechar modal
+ *
+ * ESTRUTURA GRID DATATABLE (22 colunas):
+ *    0: noFichaVistoria    1: dataInicial      2: horaInicio
+ *    3: nomeRequisitante   4: nomeSetor        5: nomeMotorista
+ *    6: descricaoVeiculo   7: status           8: acoes (botões)
+ *    9: rowNumber          10: kmInicial       11: combustivelInicial
+ *    12-21: dados finais + ocorrências (ocultos até finalizar)
+ *
+ * ESTADOS VIAGEM:
+ *    - "Aberta"     : Viagem iniciada, pode finalizar/cancelar
+ *    - "Realizada"  : Viagem finalizada, desabilita ações
+ *    - "Cancelada"  : Viagem cancelada, desabilita ações
+ *
+ * VALIDAÇÕES:
+ *    • Data final >= data inicial
+ *    • Data final <= data inicial + 5 dias (confirma se > 5)
+ *    • Hora final >= hora inicial (se mesma data)
+ *    • Km final >= km inicial
+ *    • Km final <= km inicial + 100 (confirma se > 100)
+ *    • Combustível final: obrigatório (droplist)
+ *    • Se ocorrência (texto/imagem) → resumo obrigatório
+ *    • Documentos/CartãoAbastecimento: checkboxes (entregue/ausente)
+ *
+ * DATA: 02/02/2026
+ * VERSION: 1.0
+ * AUTOR: FrotiX Development Team
+ * ******************************************************************************
+ */
 
 $(document).ready(function () {
     try {

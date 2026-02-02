@@ -1,3 +1,123 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: patrimonio.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar todas as funcionalidades do módulo de Patrimônio,
+ *                   incluindo listagem, cadastro, edição, exclusão, movimentações
+ *                   e controle de marca/modelo/setor/seção. Implementa controle
+ *                   completo do ciclo de vida dos patrimônios da organização.
+ *
+ * 📥 ENTRADAS     : - Página: /Patrimonio/Index (listagem com filtros)
+ *                   - Página: /Patrimonio/Upsert (cadastro/edição)
+ *                   - Página: /Patrimonio/VisualizarMovimentacoes (histórico)
+ *                   - APIs: /api/Patrimonio/* (CRUD completo)
+ *                   - Campos formulário: NPR, Marca, Modelo, Descrição, Setor,
+ *                     Seção, Situação, Status, Upload de Imagem
+ *                   - Filtros: Marca/Modelo (DropDownTree), Setor/Seção (DropDownTree),
+ *                     Situação (ComboBox)
+ *
+ * 📤 SAÍDAS       : - DataTables: listagem patrimônios e movimentações
+ *                   - Alertas: confirmações, erros e sucesso (Alerta.* e AppToast.*)
+ *                   - Modais: cadastro rápido de marca/modelo
+ *                   - Redirecionamentos: após salvar/excluir
+ *                   - Loading overlay: feedback visual durante operações
+ *
+ * 🔗 CHAMADA POR  : - Views Razor: Index.cshtml, Upsert.cshtml, VisualizarMovimentacoes.cshtml
+ *                   - PatrimonioController.cs (server-side)
+ *                   - Eventos DOM: click, submit, change de formulários
+ *                   - Bootstrap 5: eventos de modais (show.bs.modal, hidden.bs.modal)
+ *
+ * 🔄 CHAMA        : - /api/Patrimonio/ListaMarcasModelos (GET - árvore marca/modelo)
+ *                   - /api/Patrimonio/ListaSetoresSecoes (GET - árvore setor/seção)
+ *                   - /api/Patrimonio/ListaSituacoes (GET - combo situações)
+ *                   - /api/Patrimonio/ (GET - grid patrimônios com filtros)
+ *                   - /api/Patrimonio/Delete (POST - excluir patrimônio)
+ *                   - /api/Patrimonio/ListaMarcas (GET - combo marcas)
+ *                   - /api/Patrimonio/ListaModelos (GET - combo modelos por marca)
+ *                   - /api/Patrimonio/ListaSetores (GET - combo setores)
+ *                   - /api/Patrimonio/ListaSecoes (GET - combo seções por setor)
+ *                   - /api/Patrimonio/MovimentacaoPatrimonioGrid (GET - histórico)
+ *                   - /api/Patrimonio/DeleteMovimentacaoPatrimonio (POST - excluir movimentação)
+ *                   - Alerta.TratamentoErroComLinha() (tratamento erros)
+ *                   - Alerta.Confirmar() (confirmação SweetAlert)
+ *                   - Alerta.Erro() (mensagem erro SweetAlert)
+ *                   - AppToast.show() (notificações toast)
+ *
+ * 📦 DEPENDÊNCIAS : - jQuery 3.x (ajax, eventos, DOM)
+ *                   - DataTables 1.10.25+ (grids responsivos)
+ *                   - Syncfusion EJ2 (ComboBox, DropDownTree, Uploader)
+ *                   - Bootstrap 5 (modais, layout)
+ *                   - SweetAlert2 (via Alerta.*)
+ *                   - alerta.js (sistema FrotiX de alertas)
+ *                   - frotix.js (funções globais como FtxSpin)
+ *
+ * 📝 OBSERVAÇÕES  : - Arquivo segue padrão FrotiX com try-catch obrigatório
+ *                   - Implementa roteamento por pathname (index/upsert/visualizar)
+ *                   - Usa instâncias Syncfusion (ej2_instances[0])
+ *                   - Controle de GUID vazios (00000000-0000-0000-0000-000000000000)
+ *                   - Validação de arquivos: apenas jpg, jpeg, png
+ *                   - Loading overlay padrão FrotiX na página Index
+ *                   - Compatibilidade jQuery legacy + Bootstrap 5
+ *                   - Modais estáticos (backdrop: 'static')
+ *                   - Situações com cores padronizadas (verde, laranja, vinho, preto, cinza)
+ *                   - DataTables com ordenação DESC por data (movimentações)
+ *                   - Limita nome marca/modelo a 30 caracteres
+ *                   - Previne submissão com Enter (stopEnterSubmitting)
+ *
+ * 📋 ÍNDICE DE FUNÇÕES:
+ * --------------------------------------------------------------------------------------
+ *
+ * 🔷 SEÇÃO 1: INICIALIZAÇÃO GLOBAL E MODAIS
+ *    1.1  $(document).ready (global)              → Inicializa modais, handlers e limpeza
+ *    1.2  initModaisBootstrap5()                  → Instancia modais Bootstrap 5
+ *    1.3  setupModalEventListeners()              → Event listeners de limpeza ao fechar
+ *    1.4  setupModalCloseHandlers()               → Handlers jQuery legacy (compatibilidade)
+ *    1.5  closeModal(modalId)                     → Fechar modal (Bootstrap 5 + fallback)
+ *    1.6  setupAddModeloButton()                  → Configura botões adicionar marca/modelo
+ *    1.7  cleanupEmptyGuids()                     → Limpa GUIDs vazios ao carregar
+ *
+ * 🔷 SEÇÃO 2: FUNÇÕES UTILITÁRIAS GLOBAIS
+ *    2.1  stopEnterSubmitting(e)                  → Previne submit com Enter
+ *    2.2  getComboboxInstance(elementId)          → Retorna instância Syncfusion ComboBox
+ *
+ * 🔷 SEÇÃO 3: PÁGINA INDEX - LISTAGEM DE PATRIMÔNIOS
+ *    3.1  mostrarLoading()                        → Exibe overlay de loading
+ *    3.2  esconderLoading()                       → Oculta overlay de loading
+ *    3.3  $(document).ready (index)               → Inicializa grid e handlers
+ *    3.4  carregarFiltros()                       → Carrega dados dos filtros (marca/setor/situação)
+ *    3.5  aplicarFiltros()                        → Aplica filtros e recarrega DataTable
+ *    3.6  loadGrid()                              → Inicializa DataTable de patrimônios
+ *    3.7  setupDeleteHandlers()                   → Configura botões de excluir patrimônio
+ *
+ * 🔷 SEÇÃO 4: PÁGINA UPSERT - CADASTRO/EDIÇÃO
+ *    4.1  $(document).ready (upsert)              → Inicializa componentes do formulário
+ *    4.2  initSituacao()                          → Inicializa ComboBox de situação
+ *    4.3  initMarcaModelo()                       → Inicializa ComboBoxes marca/modelo
+ *    4.4  onMarcaChange(args)                     → Event handler mudança de marca
+ *    4.5  loadListaMarcas()                       → Carrega lista de marcas via API
+ *    4.6  loadListaModelos(marca, modeloAtual)    → Carrega modelos da marca via API
+ *    4.7  initSetorSecao()                        → Inicializa ComboBoxes setor/seção
+ *    4.8  onSetorChange(args)                     → Event handler mudança de setor
+ *    4.9  loadListaSetores(callback)              → Carrega lista de setores via API
+ *    4.10 loadListaSecoes(setorId, secaoAtual)    → Carrega seções do setor via API
+ *    4.11 setupModalHandlers()                    → Configura eventos dos modais
+ *    4.12 setupValidation()                       → Configura validação do formulário
+ *    4.13 window.salvarNovaMarca()                → Salva nova marca (modal)
+ *    4.14 window.salvarNovoModelo()               → Salva novo modelo (modal)
+ *    4.15 window.onFileSelect(args)               → Handler seleção de arquivos (upload)
+ *    4.16 window.onFileRemove(args)               → Handler remoção de arquivo
+ *    4.17 readURL(file)                           → Preview de imagem selecionada
+ *    4.18 validateFiles(args)                     → Valida tipo e duplicação de arquivos
+ *
+ * 🔷 SEÇÃO 5: PÁGINA VISUALIZAR MOVIMENTAÇÕES
+ *    5.1  $(document).ready (movimentações)       → Inicializa grid de movimentações
+ *    5.2  loadGridMovimentacoes(patrimonioId)     → Carrega DataTable de movimentações
+ *    5.3  setupDeleteMovimentacaoHandlers()       → Configura botões de excluir movimentação
+ *
+ * 🔷 SEÇÃO 6: COMPATIBILIDADE E FUNÇÕES GLOBAIS
+ *    6.1  window.onMarcaChange                    → Exporta para compatibilidade global
+ *
+ * **************************************************************************************/
+
 // ============================================
 // ARQUIVO: patrimonio.js
 // Controle de Patrimônio - JavaScript

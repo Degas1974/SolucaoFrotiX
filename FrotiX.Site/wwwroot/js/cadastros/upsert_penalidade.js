@@ -1,8 +1,38 @@
-/**
- * upsert_penalidade.js - DEFINITIVAMENTE CORRETO
- * Gerenciamento de penalidades e multas
- * Sistema FrotiX - Versão FINAL CORRIGIDA
- */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: upsert_penalidade.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciamento completo de penalidades e multas, incluindo upload de
+ *                   documentos PDF (autuação, penalidade, e-doc, comprovante), carregamento
+ *                   em viewers, validação de seleções e integração com dados de veículos,
+ *                   motoristas, órgãos e empenhos.
+ *
+ * 📥 ENTRADAS     : Seleção de veículo, motorista, contrato, ata, órgão, empenho, valores
+ *                   de multa, upload de arquivos PDF, seleção de viagem e ficha de vistoria.
+ *
+ * 📤 SAÍDAS       : Atualização de DOM (campos de formulário, viewers PDF), chamadas AJAX
+ *                   para validação e busca de dados, exibição de mensagens (AppToast),
+ *                   abertura de modals (Bootstrap 5).
+ *
+ * 🔗 CHAMADA POR  : Eventos onclick de botões, change de dropdowns Syncfusion, eventos
+ *                   de upload de arquivos, document.ready (DOMContentLoaded).
+ *
+ * 🔄 CHAMA        : APIs: /api/Multa/CheckFileExists, /Multa/UpsertPenalidade?handler=*,
+ *                   /api/Multa/PegaInstrumentoVeiculo, /api/Multa/ValidaContratoVeiculo,
+ *                   /api/Multa/ValidaAtaVeiculo, /api/Multa/PegaContratoMotorista,
+ *                   /api/Multa/ValidaContratoMotorista, /api/Viagem/PegaViagemModal,
+ *                   /api/Viagem/VerificaFichaExiste, /api/Viagem/ObterFichaVistoria.
+ *
+ * 📦 DEPENDÊNCIAS : jQuery, Syncfusion EJ2 (Dropdowns, File Uploader, PDF Viewer),
+ *                   Bootstrap 5, alerta.js (Alerta.TratamentoErroComLinha, AppToast),
+ *                   frotix.js (FtxSpin).
+ *
+ * 📝 OBSERVAÇÕES  :
+ *                   - Todas as funções possuem try-catch com tratamento centralizado.
+ *                   - PDFs são carregados apenas após verificação de existência via API.
+ *                   - Validações de relacionamento (veículo-contrato, motorista-contrato).
+ *                   - Máscara de moeda brasileira aplicada em inputs de valores.
+ *                   - Modals Bootstrap 5 para visualizar viagens e fichas de vistoria.
+ **************************************************************************************** */
 
 // ====================================================================
 // VARIÁVEIS GLOBAIS

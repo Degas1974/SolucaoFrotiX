@@ -1,28 +1,57 @@
-/* ****************************************************************************************
- * ⚡ ARQUIVO: viagens_001.js (1152 lines)
- * ================================================================================================
- * 
- * 📋 OBJETIVO:
- *    Página de listagem e gestão de viagens com Syncfusion Grid interativo. Exibe todas as
- *    viagens cadastradas em grid paginada com filtros, ordenação, busca. Ações inline: editar,
- *    visualizar detalhes, excluir, finalizar viagem, ajustar KM. Modals: finalização viagem
- *    (ocorrências, combustível final, KM final), ajuste KM (quando km_rodado = 0). Integração
- *    OcorrenciaViagem module. Exportação Excel, impressão, filtros avançados.
- * 
- * 🔢 PARÂMETROS ENTRADA: filtros grid (dataInicio/dataFim/veiculoId/motoristaId/status)
- * 📤 SAÍDAS: GET /api/Viagens/Listar, POST /api/Viagens/Finalizar, DELETE /api/Viagens/Excluir
- * 
- * 🔗 DEPENDÊNCIAS: jQuery, Syncfusion EJ2 Grid, Bootstrap 5, SweetAlert2, AppToast,
- *    Alerta.js, OcorrenciaViagem module (ocorrencia-viagem.js)
- * 
- * 📑 FUNÇÕES PRINCIPAIS (50+ funções):
- *    • ListaTodasViagens() → Carrega grid Syncfusion com dados viagens
- *    • modalFinalizaViagem(viagemId) → Abre modal finalização
- *    • salvarFinalizacaoViagem() → POST com ocorrências + KM final
- *    • modalAjusteKM(viagemId) → Corrige KM quando km_rodado = 0
- *    • excluirViagem(viagemId) → SweetAlert confirmação → DELETE
- * 
- * **************************************************************************************** */
+/**
+ * ARQUIVO: viagens_001.js
+ *
+ * OBJETIVO:
+ * Gerenciar listagem e operações de viagens (finalizar, cancelar, visualizar detalhes).
+ * Integra DataTables para exibição de dados com paginação, ordenação e filtros.
+ * Fornece modal para finalização de viagem com captura de KM final, combustível final,
+ * ocorrências e validação de datas/KM.
+ *
+ * FLUXO PRINCIPAL:
+ * 1. ListaTodasViagens() → Carrega grid DataTables com GET /api/viagem
+ * 2. Filtros: veiculoId, motoristaId, statusId, dataViagem, eventoId
+ * 3. Ações inline: Editar, Finalizar viagem, Cancelar, Ficha vistoria, Imprimir
+ * 4. Modal Finaliza Viagem: Valida datas/KM e POST para /api/Viagem/FinalizaViagem
+ * 5. Cancelamento: Confirmação SweetAlert e DELETE via /api/Viagem/Cancelar
+ *
+ * DEPENDÊNCIAS:
+ * - jQuery (requisições AJAX)
+ * - DataTables (grid com paginação)
+ * - Bootstrap 5 (modais)
+ * - SweetAlert2 (confirmações)
+ * - Alerta.js (tratamento de erros)
+ * - Syncfusion EJ2 (dropdowns combustível, RTEs)
+ *
+ * FUNÇÕES PRINCIPAIS:
+ * - ListaTodasViagens(): Inicializa e carrega DataTable
+ * - validarDatasSimples(): Valida intervalo de datas (máx 5 dias)
+ * - validarKmSimples(): Valida diferença de KM (máx 100 km)
+ * - parseDate(d): Converte formato DD/MM/YYYY ou YYYY-MM-DD
+ *
+ * EVENTOS:
+ * - click .btn-modal-finaliza: Abre modal finalização
+ * - click .btn-modal-ficha: Abre modal ficha vistoria
+ * - click .btn-modal-print: Abre modal impressão
+ * - click .btn-cancelar: Confirmação e cancelamento de viagem
+ * - shown.bs.modal #modalFinalizaViagem: Popula campos com dados da viagem
+ * - hide.bs.modal #modalFinalizaViagem: Limpa formulário
+ * - focusout #txtDataFinal: Valida data final >= data inicial
+ * - focusout #txtHoraFinal: Valida hora final >= hora inicial (mesmo dia)
+ * - focusout #txtKmFinal: Valida KM final >= KM inicial
+ * - click #btnFinalizarViagem: Submete finalização com validações
+ *
+ * APIs CONSUMIDAS:
+ * - GET /api/viagem: Carrega lista de viagens (filtros: veiculoId, motoristaId, statusId, dataviagem, eventoId)
+ * - POST /api/Viagem/FinalizaViagem: Finaliza viagem (body: ViagemId, DataFinal, HoraFim, KmFinal, CombustivelFinal, etc)
+ * - POST /api/Viagem/Cancelar: Cancela viagem (body: ViagemId)
+ *
+ * OBSERVAÇÕES:
+ * - Usa try-catch em TODAS as funções
+ * - Alertas via Alerta.* (SweetAlert), NUNCA alert()
+ * - Validações: Datas devem estar em ordem, KM deve aumentar, combustível obrigatório
+ * - Modal preserva dados de viagem já finalizada como readonly
+ * - Suporta imagem de ocorrência (upload/preview)
+ */
 
 $(document).ready(function () {
     try

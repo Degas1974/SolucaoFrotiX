@@ -1,3 +1,129 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: itenscontrato.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar a vinculação de itens (veículos, encarregados, operadores,
+ *                   motoristas e lavadores) a contratos de locação/terceirização e a
+ *                   atas de registro de preços, controlando status e exibindo resumos
+ *                   financeiros e operacionais.
+ *
+ * 📥 ENTRADAS     : - Parâmetros URL: contratoId, ataId (seleção automática)
+ *                   - Interações do usuário: seleção de contratos/atas, filtros,
+ *                     inclusão/remoção de itens, alternância de status
+ *                   - Dados da API: listas de contratos/atas, detalhes, itens disponíveis
+ *
+ * 📤 SAÍDAS       : - Exibição de resumos de contratos/atas (fornecedor, objeto, vigência)
+ *                   - DataTables com itens vinculados (veículos, colaboradores)
+ *                   - Contadores de status (ativos/inativos)
+ *                   - Totalizadores financeiros (custo mensal, quantidade contratada)
+ *                   - Toasts de sucesso/erro, modais de confirmação
+ *
+ * 🔗 CHAMADA POR  : - Páginas HTML: ItensContrato/Index.cshtml
+ *                   - Event handlers: $(document).ready(), change(), click() events
+ *                   - Callbacks AJAX: success/error handlers
+ *
+ * 🔄 CHAMA        : - APIs REST:
+ *                     • /api/ItensContrato/* (ListaContratos, GetContratoDetalhes,
+ *                       GetVeiculosContrato, IncluirVeiculoContrato, etc.)
+ *                     • /api/Veiculo/updateStatusVeiculo
+ *                     • /api/Encarregado/UpdateStatusEncarregado
+ *                     • /api/Operador/UpdateStatusOperador
+ *                     • /api/Motorista/UpdateStatusMotorista
+ *                     • /api/Lavador/UpdateStatusLavador
+ *                   - Componentes globais:
+ *                     • AppToast.show() - notificações
+ *                     • Alerta.Confirmar() - confirmações
+ *                     • Alerta.TratamentoErroComLinha() - tratamento de erros
+ *                   - jQuery/DataTables: inicialização e manipulação de tabelas
+ *
+ * 📦 DEPENDÊNCIAS : - jQuery 3.x
+ *                   - DataTables 1.13.x (com i18n pt-BR)
+ *                   - Bootstrap 5.x (modais)
+ *                   - Font Awesome (ícones fa-duotone)
+ *                   - alerta.js (sistema de alertas FrotiX)
+ *                   - frotix.js (AppToast)
+ *
+ * 📝 OBSERVAÇÕES  : - Suporta três tipos de contrato: Locação, Terceirização e Serviço
+ *                   - Contratos de Locação: gerenciam apenas veículos
+ *                   - Contratos de Terceirização: gerenciam encarregados, operadores,
+ *                     motoristas e lavadores (conforme configuração)
+ *                   - Contratos de Serviço: não possuem itens vinculáveis
+ *                   - Atas: gerenciam apenas veículos (sem custo mensal individual)
+ *                   - Todas as funções possuem try-catch com tratamento via Alerta.*
+ *                   - Loading overlay exibido durante carregamento de DataTables
+ *                   - Shimmer effect para transições entre contratos/atas
+ *                   - Atualização dinâmica de status sem reload da página
+ *                   - Filtros por item (apenas para veículos em contratos de locação)
+ *                   - Contadores de status atualizados em tempo real
+ *
+ * 📋 ÍNDICE DE FUNÇÕES:
+ * --------------------------------------------------------------------------------------
+ * [INICIALIZAÇÃO]
+ *   - $(document).ready()              : Configuração inicial e event handlers
+ *   - atualizarBadgeStatus()           : Atualiza visual de badges de status
+ *
+ * [NAVEGAÇÃO E CONTROLE]
+ *   - switchTipo()                     : Alterna entre modos Contrato/Ata
+ *   - ocultarTudo()                    : Limpa interface e reseta tabelas
+ *   - mostrarShimmer()                 : Exibe efeito shimmer de carregamento
+ *   - ocultarShimmer()                 : Oculta shimmer
+ *   - mostrarLoading()                 : Exibe overlay de loading
+ *   - esconderLoading()                : Oculta overlay de loading
+ *
+ * [CARREGAMENTO DE LISTAS]
+ *   - loadContratos()                  : Carrega droplist de contratos (com seleção opcional)
+ *   - loadAtas()                       : Carrega droplist de atas (com seleção opcional)
+ *
+ * [DETALHES - CONTRATOS]
+ *   - loadContratoDetalhes()           : Busca e exibe detalhes do contrato
+ *   - exibirResumoContrato()           : Renderiza resumo do contrato (header)
+ *   - configurarAbas()                 : Configura abas conforme tipo de contrato
+ *   - loadItensContrato()              : Carrega itens (descrição veículos) do contrato
+ *
+ * [DETALHES - ATAS]
+ *   - loadAtaDetalhes()                : Busca e exibe detalhes da ata
+ *   - exibirResumoAta()                : Renderiza resumo da ata (header)
+ *   - configurarAbasAta()              : Configura aba de veículos para ata
+ *
+ * [DATATABLES - VEÍCULOS]
+ *   - loadTblVeiculos()                : Inicializa DataTable de veículos (contratos)
+ *   - loadTblVeiculosAta()             : Inicializa DataTable de veículos (atas)
+ *   - carregarFiltroItens()            : Popula dropdown de filtro por item
+ *   - filtrarPorItem()                 : Aplica filtro por item na tabela
+ *   - limparFiltroItem()               : Remove filtro por item
+ *   - atualizarContadoresStatus()      : Recalcula contadores de veículos ativos/inativos
+ *
+ * [DATATABLES - COLABORADORES]
+ *   - loadTblEncarregados()            : Inicializa DataTable de encarregados
+ *   - loadTblOperadores()              : Inicializa DataTable de operadores
+ *   - loadTblMotoristas()              : Inicializa DataTable de motoristas
+ *   - loadTblLavadores()               : Inicializa DataTable de lavadores
+ *
+ * [MODAIS - INCLUSÃO]
+ *   - abrirModalVeiculo()              : Abre modal para incluir veículo
+ *   - abrirModalEncarregado()          : Abre modal para incluir encarregado
+ *   - abrirModalOperador()             : Abre modal para incluir operador
+ *   - abrirModalMotorista()            : Abre modal para incluir motorista
+ *   - abrirModalLavador()              : Abre modal para incluir lavador
+ *
+ * [SALVAR - INCLUSÃO]
+ *   - salvarVeiculo()                  : Vincula veículo ao contrato/ata
+ *   - salvarEncarregado()              : Vincula encarregado ao contrato
+ *   - salvarOperador()                 : Vincula operador ao contrato
+ *   - salvarMotorista()                : Vincula motorista ao contrato
+ *   - salvarLavador()                  : Vincula lavador ao contrato
+ *
+ * [REMOVER - DESVINCULAÇÃO]
+ *   - removerVeiculo()                 : Remove veículo do contrato
+ *   - removerVeiculoAta()              : Remove veículo da ata
+ *   - desvincularEncarregado()         : Desvincula encarregado do contrato
+ *   - desvincularOperador()            : Desvincula operador do contrato
+ *   - desvincularMotorista()           : Desvincula motorista do contrato
+ *   - desvincularLavador()             : Desvincula lavador do contrato
+ *
+ * [UTILITÁRIOS]
+ *   - formatarMoeda()                  : Formata valores numéricos para R$ 0.000,00
+ * ****************************************************************************************/
+
 // ============================================================
 // ITENS CONTRATO - JavaScript
 // FrotiX - Sistema de Gestão de Frotas

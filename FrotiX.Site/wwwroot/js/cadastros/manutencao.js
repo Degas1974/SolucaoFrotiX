@@ -1,3 +1,118 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: manutencao.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar toda a interface de Ordem de Serviço (OS) de Manutenção
+ *                   de veículos, controlando ocorrências, pendências, itens de
+ *                   manutenção, veículos reserva, upload de fotos e estados da OS
+ *                   (Aberta, Fechada, Cancelada).
+ *
+ * 📥 ENTRADAS     : - Dados de veículos (lstVeiculo)
+ *                   - Dados de motoristas (lstMotorista)
+ *                   - Dados de ocorrências de vistoria
+ *                   - Dados de pendências de manutenção
+ *                   - Uploads de imagens (fotos de ocorrências)
+ *                   - Formulários de OS (datas, status, resumos)
+ *                   - Informações de veículo reserva
+ *
+ * 📤 SAÍDAS       : - Interface completa de gestão de OS
+ *                   - DataTables com ocorrências, pendências e itens selecionados
+ *                   - Controles de estado (habilitado/desabilitado por status OS)
+ *                   - Registro/atualização de OS no backend via AJAX
+ *                   - Modais de fotos e inserção de itens
+ *                   - Alertas de validação e confirmação
+ *
+ * 🔗 CHAMADA POR  : - /Manutencao/Upsert (página Razor)
+ *                   - /Manutencao/ListaManutencao (navegação)
+ *                   - Eventos de usuário (cliques, mudanças, submits)
+ *
+ * 🔄 CHAMA        : - /api/Manutencao/RecuperaUsuario (GET)
+ *                   - /api/manutencao/ItensOS (GET)
+ *                   - /api/manutencao/OcorrenciasVeiculosManutencao (GET)
+ *                   - /api/manutencao/OcorrenciasVeiculosPendencias (GET)
+ *                   - /Uploads/UploadPDF?handler=SaveIMGManutencao (POST)
+ *                   - /Manutencao/Upsert (POST - submissão de formulário)
+ *                   - Alerta.* (alerta.js - SweetAlert2)
+ *                   - AppToast.show() (toasts)
+ *                   - FtxSpin.show/hide() (spinners)
+ *                   - FTXTooltip.setAutoClose() (tooltips)
+ *
+ * 📦 DEPENDÊNCIAS : - jQuery 3.x
+ *                   - DataTables.js (tabelas de dados)
+ *                   - Bootstrap 5 (modais, UI)
+ *                   - Syncfusion EJ2 (RichTextEditor, DropDownList, Tooltip)
+ *                   - Kendo UI Upload
+ *                   - Moment.js (manipulação de datas)
+ *                   - alerta.js (sistema de alertas FrotiX)
+ *                   - frotix.js (FtxSpin, AppToast)
+ *
+ * 📝 OBSERVAÇÕES  : - Arquivo complexo com 4433 linhas
+ *                   - Gerencia 3 DataTables principais: Ocorrências, Pendências, Itens
+ *                   - Modo de visualização especial para OS Fechada/Cancelada
+ *                   - Proteção de Data de Solicitação contra bug de +1 dia (UTC)
+ *                   - Upload de fotos com token antiforgery
+ *                   - Validações cruzadas de datas (Solicitação, Disponibilidade,
+ *                     Entrega, Devolução, Reserva)
+ *                   - Controle de debounce em remoção de itens
+ *                   - Tooltips Syncfusion com auto-close em 1500ms
+ *                   - Status de OS bloqueado na edição (só pode ser alterado via
+ *                     botão "Baixar OS" na ListaManutencao)
+ *
+ * 📋 ÍNDICE DE FUNÇÕES:
+ * --------------------------------------------------------------------------------------
+ * 1. hojeLocalYYYYMMDD()                  - Retorna data atual em formato YYYY-MM-DD
+ * 2. normalizaInputDate($input)           - Normaliza input date sem pular dia
+ * 3. toYMD(value)                         - Converte DD/MM/YYYY para YYYY-MM-DD
+ * 4. diffDaysYMD(a, b)                    - Calcula diferença em dias entre datas
+ * 5. protectSolicDate()                   - Protege Data Solicitação contra bug +1
+ * 6. removeHTML(str)                      - Remove tags HTML de string
+ * 7. escAttr(s)                           - Escapa atributos HTML
+ * 8. SelecionaLinha(...)                  - Move ocorrência para tabela de itens
+ * 9. SelecionaLinhaPendencia(...)         - Move pendência para tabela de itens
+ * 10. onCreate()                          - Callback de criação do RichTextEditor
+ * 11. fecharModaisAbertos()               - Fecha modais Bootstrap abertos
+ * 12. fnExibeReserva()                    - Exibe/oculta seção de veículo reserva
+ * 13. PreenchePagina()                    - Inicializa DataTables e carrega dados
+ * 14. InsereRegistro()                    - Valida e salva/atualiza OS no backend
+ * 15. forceCloseModal()                   - Força fechamento de modal específico
+ * 16. RemoveItem(itemId, buttonElement)   - Remove item e devolve à origem
+ * 17. processarRemocaoItem(data, $tr)     - Processa lógica de remoção de item
+ *
+ * 📋 CLASSES:
+ * --------------------------------------------------------------------------------------
+ * - Ocorrencia                            - Classe auxiliar para manipulação de dados
+ *                                           de ocorrências e pendências
+ *
+ * 📋 VARIÁVEIS GLOBAIS:
+ * --------------------------------------------------------------------------------------
+ * - ManutencaoId                          - ID da OS atual (GUID)
+ * - dataTableOcorrencias                  - Instância DataTable de ocorrências
+ * - dataTablePendencias                   - Instância DataTable de pendências
+ * - dataTableItens                        - Instância DataTable de itens selecionados
+ * - defaultRTE                            - Instância do RichTextEditor
+ * - ImagemSelecionada                     - Nome do arquivo de imagem uploadado
+ * - linhaSelecionadaFoto                  - Índice da linha com foto selecionada
+ * - modoVisualizacaoFoto                  - Flag para modo somente visualização
+ * - removeItemDebounce                    - Flag de debounce para remoção
+ *
+ * 📋 EVENTOS PRINCIPAIS:
+ * --------------------------------------------------------------------------------------
+ * - DOMContentLoaded                      - Inicialização de popovers, tooltips,
+ *                                           usuários, status, proteção de data
+ * - txtFileItem.change                    - Upload de foto via fetch
+ * - btnAdicionaItem.click                 - Abre modal de inserção de item manual
+ * - btnInsereItem.click                   - Adiciona item manual à tabela
+ * - btnEdita.click                        - Salva OS (modo edição)
+ * - btnAdiciona.click                     - Cria OS (modo inclusão)
+ * - modalManutencao.shown/hidden          - Gerencia estado do modal de item
+ * - lstVeiculo.change                     - Carrega dados ao selecionar veículo
+ * - lstReserva.change                     - Exibe/oculta campos de reserva
+ * - js-selecionar-item.click              - Seleciona ocorrência/pendência
+ * - js-devolver-item.click                - Devolve item à origem
+ * - js-remover-item.click                 - Remove item manual
+ * - js-ver-foto.click                     - Abre modal de visualização de foto
+ *
+ * ****************************************************************************************/
+
 var ManutencaoId = "";
 var dataTableOcorrencias;
 var dataTablePendencias;
