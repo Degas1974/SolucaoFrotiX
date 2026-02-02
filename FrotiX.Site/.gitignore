@@ -361,3 +361,20 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsdnul
+
+# ===================================================
+# FrotiX - Proteção de Segredos e Dados Sensíveis
+# ===================================================
+
+# Arquivos de configuração com segredos (NÃO commitar)
+appsettings.Development.json
+appsettings.*.json
+!appsettings.json
+
+# Arquivos de ambiente e segredos
+.env
+.env.*
+*.env
+
+# User Secrets (já protegido pelo sistema, mas explicitamente ignorado)
+secrets.json
