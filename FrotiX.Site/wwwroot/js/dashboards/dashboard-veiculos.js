@@ -185,114 +185,334 @@ $(document).ready(function () {
 // ==============================================
 // NAVEGAÇÃO DE ABAS
 // ==============================================
+
+/****************************************************************************************
+ * 🔧 FUNÇÃO: initTabs
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Inicializa sistema de navegação entre as 3 abas do dashboard de veículos
+ *    (Visão Geral, Uso dos Veículos, Custos) com lazy loading inteligente.
+ * 
+ * 📥 ENTRADAS:
+ *    - Nenhuma (usa seletores DOM para elementos .dash-tab-veic)
+ * 
+ * 📤 SAÍDAS:
+ *    • Event listeners jQuery nos botões de aba
+ *    • Troca de classes .active em tabs e conteúdos
+ *    • Trigger de funções de carregamento (inicializarFiltrosUso, carregarDadosCustos)
+ * 
+ * 🔗 CHAMADA POR:
+ *    • $(document).ready() → Inicialização única ao carregar página
+ * 
+ * 🔄 CHAMA:
+ *    - inicializarFiltrosUso() → Primeira vez que abre aba "Uso"
+ *    - carregarDadosCustos() → Primeira vez que abre aba "Custos"
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - Lazy loading: dados só são carregados na primeira abertura da aba
+ *    - Flags de controle: filtrosUsoInicializados, dadosCustos (null check)
+ *    - Visão Geral carrega automaticamente no ready (não precisa lazy)
+ * 
+ ****************************************************************************************/
 function initTabs() {
-    $('.dash-tab-veic').on('click', function () {
-        const tabId = $(this).data('tab');
+    try {
+        $('.dash-tab-veic').on('click', function () {
+            const tabId = $(this).data('tab');
 
-        // Atualiza classes das abas
-        $('.dash-tab-veic').removeClass('active');
-        $(this).addClass('active');
+            // Atualiza classes das abas
+            $('.dash-tab-veic').removeClass('active');
+            $(this).addClass('active');
 
-        // Mostra conteúdo correto
-        $('.dash-content-veic').removeClass('active');
-        $(`#tab-${tabId}`).addClass('active');
+            // Mostra conteúdo correto
+            $('.dash-content-veic').removeClass('active');
+            $(`#tab-${tabId}`).addClass('active');
 
-        // Carrega dados se necessário
-        if (tabId === 'uso-veiculos' && !filtrosUsoInicializados) {
-            inicializarFiltrosUso();
-        } else if (tabId === 'custos' && !dadosCustos) {
-            carregarDadosCustos();
-        }
-    });
+            // Carrega dados se necessário
+            if (tabId === 'uso-veiculos' && !filtrosUsoInicializados) {
+                inicializarFiltrosUso();
+            } else if (tabId === 'custos' && !dadosCustos) {
+                carregarDadosCustos();
+            }
+        });
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'initTabs', error);
+    }
 }
 
 // ==============================================
 // LOADING OVERLAY
 // ==============================================
+
+/****************************************************************************************
+ * 🔧 FUNÇÃO: mostrarLoading
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Exibe overlay de loading fullscreen com mensagem personalizável durante
+ *    operações assíncronas (fetch API, Ajax).
+ * 
+ * 📥 ENTRADAS:
+ *    • mensagem {String} [opcional='Carregando...'] - Texto exibido no loading
+ * 
+ * 📤 SAÍDAS:
+ *    • Atualiza textContent de #loadingOverlayVeic .ftx-loading-text
+ *    • FadeIn 200ms do overlay #loadingOverlayVeic
+ * 
+ * 🔗 CHAMADA POR:
+ *    • carregarDadosGerais(), inicializarFiltrosUso(), carregarDadosUso(), carregarDadosCustos()
+ * 
+ * 🔄 CHAMA:
+ *    - jQuery.fadeIn() (animação)
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - Overlay possui z-index 9999 (sobre todo conteúdo)
+ *    - Animação rápida (200ms) para UX responsivo
+ * 
+ ****************************************************************************************/
 function mostrarLoading(mensagem = 'Carregando...') {
-    $('#loadingOverlayVeic .ftx-loading-text').text(mensagem);
-    $('#loadingOverlayVeic').fadeIn(200);
+    try {
+        $('#loadingOverlayVeic .ftx-loading-text').text(mensagem);
+        $('#loadingOverlayVeic').fadeIn(200);
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'mostrarLoading', error);
+    }
 }
 
+/****************************************************************************************
+ * 🔧 FUNÇÃO: esconderLoading
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Oculta overlay de loading com animação fade out após conclusão de
+ *    operações assíncronas.
+ * 
+ * 📥 ENTRADAS:
+ *    - Nenhuma
+ * 
+ * 📤 SAÍDAS:
+ *    • FadeOut 300ms do overlay #loadingOverlayVeic
+ * 
+ * 🔗 CHAMADA POR:
+ *    • carregarDadosGerais() (success/error), inicializarFiltrosUso(), carregarDadosUso(),
+ *      carregarDadosCustos() (todos callbacks Ajax)
+ * 
+ * 🔄 CHAMA:
+ *    - jQuery.fadeOut() (animação)
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - Animação fade out (300ms) ligeiramente mais longa que fade in para UX suave
+ *    - Sempre chamada após mostrarLoading(), mesmo em caso de erro
+ * 
+ ****************************************************************************************/
 function esconderLoading() {
-    $('#loadingOverlayVeic').fadeOut(300);
+    try {
+        $('#loadingOverlayVeic').fadeOut(300);
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'esconderLoading', error);
+    }
 }
 
 // ==============================================
 // ABA 1: VISÃO GERAL
 // ==============================================
+
+/****************************************************************************************
+ * 🔧 FUNÇÃO: carregarDadosGerais
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Carrega dados da Visão Geral da Frota via API e renderiza 9 cards, 5 gráficos
+ *    e 4 tabelas (categoria, combustível, unidade, top KM).
+ * 
+ * 📥 ENTRADAS:
+ *    - Nenhuma (busca todos os dados sem filtros)
+ * 
+ * 📤 SAÍDAS:
+ *    • dadosGerais {Object} - Cache global dos dados retornados
+ *    • Renderiza em tela:
+ *      - 9 cards: total/ativos/inativos/reserva/efetivos/próprios/locados/idade/valor
+ *      - 5 gráficos Syncfusion: categoria, status, origem, modelos, ano fabricação
+ *      - 4 tabelas: categoria, combustível, unidade, top KM
+ * 
+ * 🔗 CHAMADA POR:
+ *    • $(document).ready() → Carregamento automático na inicialização
+ * 
+ * 🔄 CHAMA:
+ *    - mostrarLoading() / esconderLoading()
+ *    - atualizarCardsGerais(data.totais)
+ *    - renderizarGraficosGerais(data)
+ *    - renderizarTabelasGerais(data)
+ *    - mostrarErro() (em caso de falha)
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - API: GET /api/DashboardVeiculos/DashboardDados
+ *    - Sempre executada no pageload (não tem lazy loading como outras abas)
+ *    - Error handler robusto com mensagem amigável ao usuário
+ * 
+ ****************************************************************************************/
 function carregarDadosGerais() {
-    mostrarLoading('Carregando dados da frota...');
+    try {
+        mostrarLoading('Carregando dados da frota...');
 
-    $.ajax({
-        url: '/api/DashboardVeiculos/DashboardDados',
-        method: 'GET',
-        success: function (data) {
-            dadosGerais = data;
-            atualizarCardsGerais(data.totais);
-            renderizarGraficosGerais(data);
-            renderizarTabelasGerais(data);
-            esconderLoading();
-        },
-        error: function (xhr, status, error) {
-            console.error('Erro ao carregar dados gerais:', error);
-            esconderLoading();
-            mostrarErro('Erro ao carregar dados da frota');
-        }
-    });
+        $.ajax({
+            url: '/api/DashboardVeiculos/DashboardDados',
+            method: 'GET',
+            success: function (data) {
+                dadosGerais = data;
+                atualizarCardsGerais(data.totais);
+                renderizarGraficosGerais(data);
+                renderizarTabelasGerais(data);
+                esconderLoading();
+            },
+            error: function (xhr, status, error) {
+                console.error('Erro ao carregar dados gerais:', error);
+                esconderLoading();
+                mostrarErro('Erro ao carregar dados da frota');
+            }
+        });
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'carregarDadosGerais', error);
+        esconderLoading();
+    }
 }
 
+/****************************************************************************************
+ * 🔧 FUNÇÃO: atualizarCardsGerais
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Atualiza os 9 cards estatísticos da Visão Geral com totais da frota (ativo/inativo/
+ *    reserva/efetivo/próprio/locado/idade média/valor mensal).
+ * 
+ * 📥 ENTRADAS:
+ *    • totais {Object} - Objeto com propriedades:
+ *      - totalVeiculos {Number}    → Total de veículos cadastrados
+ *      - veiculosAtivos {Number}   → Veículos em operação
+ *      - veiculosInativos {Number} → Veículos fora de operação
+ *      - veiculosReserva {Number}  → Veículos em reserva técnica
+ *      - veiculosEfetivos {Number} → Veículos do quadro efetivo
+ *      - veiculosProprios {Number} → Veículos próprios da frota
+ *      - veiculosLocados {Number}  → Veículos locados de terceiros
+ *      - idadeMedia {Number}       → Idade média em anos (com decimais)
+ *      - valorMensalTotal {Number} → Valor total mensal (R$)
+ * 
+ * 📤 SAÍDAS:
+ *    • Atualiza textContent de 9 elementos #totalVeiculos, #veiculosAtivos, etc.
+ *    • Formata valores numéricos com separador de milhares (pt-BR)
+ *    • Formata idade com 1 casa decimal + " anos"
+ *    • Formata valor mensal com formatarMoeda() (R$ 1.234,56)
+ * 
+ * 🔗 CHAMADA POR:
+ *    • carregarDadosGerais() → Após fetch /api/DashboardVeiculos/DashboardDados
+ * 
+ * 🔄 CHAMA:
+ *    - formatarMoeda(valor) → Formatação monetária pt-BR
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - toLocaleString('pt-BR') para separador de milhares
+ *    - idadeMedia.toFixed(1) para 1 casa decimal (ex: 5,8 anos)
+ *    - Cards usam classes .card-stat-value do FrotiX.css
+ * 
+ ****************************************************************************************/
 function atualizarCardsGerais(totais) {
-    $('#totalVeiculos').text(totais.totalVeiculos.toLocaleString('pt-BR'));
-    $('#veiculosAtivos').text(totais.veiculosAtivos.toLocaleString('pt-BR'));
-    $('#veiculosInativos').text(totais.veiculosInativos.toLocaleString('pt-BR'));
-    $('#veiculosReserva').text(totais.veiculosReserva.toLocaleString('pt-BR'));
-    $('#veiculosEfetivos').text(totais.veiculosEfetivos.toLocaleString('pt-BR'));
-    $('#veiculosProprios').text(totais.veiculosProprios.toLocaleString('pt-BR'));
-    $('#veiculosLocados').text(totais.veiculosLocados.toLocaleString('pt-BR'));
-    $('#idadeMedia').text(totais.idadeMedia.toFixed(1) + ' anos');
-    $('#valorMensalTotal').text(formatarMoeda(totais.valorMensalTotal));
+    try {
+        $('#totalVeiculos').text(totais.totalVeiculos.toLocaleString('pt-BR'));
+        $('#veiculosAtivos').text(totais.veiculosAtivos.toLocaleString('pt-BR'));
+        $('#veiculosInativos').text(totais.veiculosInativos.toLocaleString('pt-BR'));
+        $('#veiculosReserva').text(totais.veiculosReserva.toLocaleString('pt-BR'));
+        $('#veiculosEfetivos').text(totais.veiculosEfetivos.toLocaleString('pt-BR'));
+        $('#veiculosProprios').text(totais.veiculosProprios.toLocaleString('pt-BR'));
+        $('#veiculosLocados').text(totais.veiculosLocados.toLocaleString('pt-BR'));
+        $('#idadeMedia').text(totais.idadeMedia.toFixed(1) + ' anos');
+        $('#valorMensalTotal').text(formatarMoeda(totais.valorMensalTotal));
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'atualizarCardsGerais', error);
+    }
 }
 
+/****************************************************************************************
+ * 🔧 FUNÇÃO: renderizarGraficosGerais
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Renderiza os 5 gráficos Syncfusion da Visão Geral (categoria, status, origem,
+ *    modelos, ano fabricação) com dados da API.
+ * 
+ * 📥 ENTRADAS:
+ *    • data {Object} - Objeto com 5 arrays:
+ *      - porCategoria {Array}     → [{categoria, quantidade}] - Passeio/Carga/PM/etc
+ *      - porStatus {Array}        → [{status, quantidade}] - Ativo/Inativo
+ *      - porOrigem {Array}        → [{origem, quantidade}] - Próprio/Locado/Terceiro
+ *      - porModelo {Array}        → [{modelo, quantidade}] - Modelos de veículos
+ *      - porAnoFabricacao {Array} → [{ano, quantidade}] - Anos de fabricação
+ * 
+ * 📤 SAÍDAS:
+ *    • 5 gráficos Syncfusion renderizados:
+ *      1. chartCategoria (Donut): distribuição por categoria
+ *      2. chartStatus (Donut): ativo vs inativo (verde/cinza)
+ *      3. chartOrigem (Donut): próprio/locado/terceiro (3 cores)
+ *      4. chartModelos (Bar horizontal): top modelos
+ *      5. chartAnoFabricacao (Column): distribuição temporal
+ * 
+ * 🔗 CHAMADA POR:
+ *    • carregarDadosGerais() → Após fetch API
+ * 
+ * 🔄 CHAMA:
+ *    - renderizarChartPie() (3x: categoria, status, origem)
+ *    - renderizarChartBarH() (1x: modelos)
+ *    - renderizarChartColumn() (1x: ano fabricação)
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - Trunca nome de modelo para 25 chars (... ao final)
+ *    - Paletas customizadas: status (#10b981/#64748b), origem (#5f8575/#f59e0b/#06b6d4)
+ *    - Validação data.length > 0 antes de renderizar
+ *    - Converte ano para string no gráfico (eixo X categórico)
+ * 
+ ****************************************************************************************/
 function renderizarGraficosGerais(data) {
-    // Gráfico de Categoria (Donut)
-    if (data.porCategoria && data.porCategoria.length > 0) {
-        renderizarChartPie('chartCategoria', data.porCategoria.map(c => ({
-            x: c.categoria,
-            y: c.quantidade
-        })));
-    }
+    try {
+        // Gráfico de Categoria (Donut)
+        if (data.porCategoria && data.porCategoria.length > 0) {
+            renderizarChartPie('chartCategoria', data.porCategoria.map(c => ({
+                x: c.categoria,
+                y: c.quantidade
+            })));
+        }
 
-    // Gráfico de Status (Donut)
-    if (data.porStatus && data.porStatus.length > 0) {
-        renderizarChartPie('chartStatus', data.porStatus.map(s => ({
-            x: s.status,
-            y: s.quantidade
-        })), ['#10b981', '#64748b']);
-    }
+        // Gráfico de Status (Donut)
+        if (data.porStatus && data.porStatus.length > 0) {
+            renderizarChartPie('chartStatus', data.porStatus.map(s => ({
+                x: s.status,
+                y: s.quantidade
+            })), ['#10b981', '#64748b']);
+        }
 
-    // Gráfico de Origem (Donut)
-    if (data.porOrigem && data.porOrigem.length > 0) {
-        renderizarChartPie('chartOrigem', data.porOrigem.map(o => ({
-            x: o.origem,
-            y: o.quantidade
-        })), ['#5f8575', '#f59e0b', '#06b6d4']);
-    }
+        // Gráfico de Origem (Donut)
+        if (data.porOrigem && data.porOrigem.length > 0) {
+            renderizarChartPie('chartOrigem', data.porOrigem.map(o => ({
+                x: o.origem,
+                y: o.quantidade
+            })), ['#5f8575', '#f59e0b', '#06b6d4']);
+        }
 
-    // Gráfico de Modelos (Barras Horizontais)
-    if (data.porModelo && data.porModelo.length > 0) {
-        renderizarChartBarH('chartModelos', data.porModelo.map(m => ({
-            x: m.modelo.length > 25 ? m.modelo.substring(0, 22) + '...' : m.modelo,
-            y: m.quantidade
-        })));
-    }
+        // Gráfico de Modelos (Barras Horizontais)
+        if (data.porModelo && data.porModelo.length > 0) {
+            renderizarChartBarH('chartModelos', data.porModelo.map(m => ({
+                x: m.modelo.length > 25 ? m.modelo.substring(0, 22) + '...' : m.modelo,
+                y: m.quantidade
+            })));
+        }
 
-    // Gráfico de Ano de Fabricação (Colunas)
-    if (data.porAnoFabricacao && data.porAnoFabricacao.length > 0) {
-        renderizarChartColumn('chartAnoFabricacao', data.porAnoFabricacao.map(a => ({
-            x: a.ano.toString(),
-            y: a.quantidade
-        })));
+        // Gráfico de Ano de Fabricação (Colunas)
+        if (data.porAnoFabricacao && data.porAnoFabricacao.length > 0) {
+            renderizarChartColumn('chartAnoFabricacao', data.porAnoFabricacao.map(a => ({
+                x: a.ano.toString(),
+                y: a.quantidade
+            })));
+        }
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'renderizarGraficosGerais', error);
     }
 }
 
@@ -1117,15 +1337,51 @@ function preencherSelectAnos(seletor, anos, anoSelecionado) {
     }
 }
 
+/****************************************************************************************
+ * 🔧 FUNÇÃO: mostrarErro
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Exibe mensagem de erro ao usuário com SweetAlert2 (prioritário) ou AppToast
+ *    (fallback), eliminando uso de alert() nativo.
+ * 
+ * 📥 ENTRADAS:
+ *    • mensagem {String} - Texto da mensagem de erro a ser exibida
+ * 
+ * 📤 SAÍDAS:
+ *    - Swal.fire() modal (se SweetAlert2 disponível)
+ *    - AppToast.show() toast (se AppToast disponível)
+ *    - console.error() (se ambos indisponíveis)
+ * 
+ * 🔗 CHAMADA POR:
+ *    • carregarDadosGerais(), carregarDadosUso(), carregarDadosCustos()
+ *    • Todos os handlers de erro Ajax
+ * 
+ * 🔄 CHAMA:
+ *    - Swal.fire() (SweetAlert2)
+ *    - AppToast.show() (global-toast.js)
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - NUNCA usa alert() nativo (violação padrão FrotiX)
+ *    - Cor do botão: CORES_VEIC.primary (#5f8575)
+ *    - Fallback hierárquico: Swal → AppToast → console.error
+ * 
+ ****************************************************************************************/
 function mostrarErro(mensagem) {
-    if (typeof Swal !== 'undefined') {
-        Swal.fire({
-            icon: 'error',
-            title: 'Erro',
-            text: mensagem,
-            confirmButtonColor: CORES_VEIC.primary
-        });
-    } else {
-        alert(mensagem);
+    try {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: mensagem,
+                confirmButtonColor: CORES_VEIC.primary
+            });
+        } else if (typeof AppToast !== 'undefined') {
+            AppToast.show('error', mensagem);
+        } else {
+            console.error('[dashboard-veiculos.js] Erro crítico (SweetAlert e AppToast indisponíveis):', mensagem);
+        }
+    } catch (error) {
+        console.error('[dashboard-veiculos.js] Erro ao exibir mensagem de erro:', error);
     }
 }
