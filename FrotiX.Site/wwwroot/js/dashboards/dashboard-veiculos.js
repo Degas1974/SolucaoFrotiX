@@ -1350,30 +1350,96 @@ function renderizarChartColumnGrouped(containerId, series1, series2, nome1, nome
 // FUNÇÕES AUXILIARES
 // ==============================================
 
+/****************************************************************************************
+ * 🔧 FUNÇÃO: formatarMoeda
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Formata valores numéricos para moeda brasileira (R$ 1.234,56) usando
+ *    Intl.NumberFormat padrão pt-BR.
+ * 
+ * 📥 ENTRADAS:
+ *    • valor {Number|null|undefined} - Valor numérico a ser formatado
+ * 
+ * 📤 SAÍDAS:
+ *    • {String} "R$ 1.234,56" (2 casas decimais) ou "R$ 0,00" se valor nulo
+ * 
+ * 🔗 CHAMADA POR:
+ *    • atualizarCardsGerais(), atualizarCardsUso(), atualizarCardsCustos(),
+ *      renderizarTabelasUso(), renderizarTabelasCustos()
+ * 
+ * 🔄 CHAMA:
+ *    - Number.toLocaleString() (ECMAScript Intl API)
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - Fallback seguro: null/undefined retorna "R$ 0,00"
+ *    - Sempre usa 2 casas decimais (minimumFractionDigits: 2)
+ *    - Padrão BRL (currency: 'BRL')
+ * 
+ ****************************************************************************************/
 function formatarMoeda(valor) {
-    if (valor === null || valor === undefined) return 'R$ 0,00';
-    return valor.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-        minimumFractionDigits: 2
-    });
+    try {
+        if (valor === null || valor === undefined) return 'R$ 0,00';
+        return valor.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+            minimumFractionDigits: 2
+        });
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'formatarMoeda', error);
+        return 'R$ 0,00';
+    }
 }
 
+/****************************************************************************************
+ * 🔧 FUNÇÃO: preencherSelectAnos
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Popula dropdown <select> com lista de anos disponíveis, incluindo opção
+ *    "Todos os Anos" e pré-seleção opcional.
+ * 
+ * 📥 ENTRADAS:
+ *    • seletor {String}       - Seletor jQuery do <select> (ex: '#filtroAnoUso')
+ *    • anos {Array<Number>}   - Array de anos [2025, 2024, 2023...]
+ *    • anoSelecionado {Number} - Ano a pré-selecionar (opcional)
+ * 
+ * 📤 SAÍDAS:
+ *    • Atualiza innerHTML do <select> com <option> elements
+ *    • Primeira option: "<Todos os Anos>" (value="")
+ *    • Options subsequentes: anos da lista ou ano atual se vazio
+ * 
+ * 🔗 CHAMADA POR:
+ *    • inicializarFiltrosUso(), carregarDadosUso(), carregarDadosCustos()
+ * 
+ * 🔄 CHAMA:
+ *    - jQuery.empty(), jQuery.append()
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - Sempre inclui opção "Todos" primeiro
+ *    - Fallback: se anos vazio, adiciona apenas ano atual
+ *    - Atributo selected adicionado se ano === anoSelecionado
+ * 
+ ****************************************************************************************/
 function preencherSelectAnos(seletor, anos, anoSelecionado) {
-    const $select = $(seletor);
-    $select.empty();
+    try {
+        const $select = $(seletor);
+        $select.empty();
 
-    // Adiciona opção "Todos os Anos" primeiro
-    $select.append('<option value="">&lt;Todos os Anos&gt;</option>');
+        // Adiciona opção "Todos os Anos" primeiro
+        $select.append('<option value="">&lt;Todos os Anos&gt;</option>');
 
-    if (anos && anos.length > 0) {
-        anos.forEach(ano => {
-            const selected = ano === anoSelecionado ? 'selected' : '';
-            $select.append(`<option value="${ano}" ${selected}>${ano}</option>`);
-        });
-    } else {
-        const anoAtual = new Date().getFullYear();
-        $select.append(`<option value="${anoAtual}" selected>${anoAtual}</option>`);
+        if (anos && anos.length > 0) {
+            anos.forEach(ano => {
+                const selected = ano === anoSelecionado ? 'selected' : '';
+                $select.append(`<option value="${ano}" ${selected}>${ano}</option>`);
+            });
+        } else {
+            const anoAtual = new Date().getFullYear();
+            $select.append(`<option value="${anoAtual}" selected>${anoAtual}</option>`);
+        }
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'preencherSelectAnos', error);
     }
 }
 
