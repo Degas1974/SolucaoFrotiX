@@ -1,22 +1,162 @@
-﻿/*
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: main.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Entry point e orquestrador da aplicação de agendamento. IIFE principal
+ *                   (2388 linhas) que inicializa Syncfusion L10n PT-BR, configura event
+ *                   handlers Bootstrap Modal (shown.bs.modal/hidden.bs.modal), binds
+ *                   button clicks (btnConfirma, btnSalvarRecorrencia, btnFechar, etc.),
+ *                   inicializa Kendo Editor helpers, RichTextEditor Syncfusion, tooltips,
+ *                   StateManager, RecorrenciaLogic, Calendar config. Coordena todos os
+ *                   módulos do agendamento: modal-viagem-novo.js, recorrencia*.js,
+ *                   relatorio.js, evento.js, exibe-viagem.js, calendario.js. Último
+ *                   script carregado (após dependências). Documentação externa completa
+ *                   em 📄 Documentacao/Pages/Agenda - Index.md.
+ * 📥 ENTRADAS     : DOM events (DOMContentLoaded, click, shown.bs.modal, hidden.bs.modal,
+ *                   change em dropdowns Syncfusion), user interactions (button clicks,
+ *                   modal open/close), Syncfusion component events (RTE.change, Calendar.change,
+ *                   DropDownList.change), Kendo Editor API (KendoEditorHelper adapter)
+ * 📤 SAÍDAS       : Void (side effects: app initialized, event listeners bound, global
+ *                   variables set, modules configured), console.log debug (emoji prefixes
+ *                   🚀⚙️✅❌), global window.* functions (corrigirBordaInferior, etc.)
+ * 🔗 CHAMADA POR  : Page load (script tag em Agenda/Index.cshtml ou Viagens/Upsert.cshtml),
+ *                   DOMContentLoaded event, user interactions (buttons, modals)
+ * 🔄 CHAMA        : Todos os módulos agendamento: modal-viagem-novo (aoAbrirModalViagem,
+ *                   aoFecharModalViagem, carregarRelatorioNoModal), recorrencia-logic
+ *                   (inicializarLogicaRecorrencia), recorrencia-init (inicializarControlesRecorrencia,
+ *                   inicializarDropdownPeriodos), recorrencia (window.handleRecurrence),
+ *                   evento (ExibirOcultarDivEvento), StateManager (inicializar, get/set),
+ *                   CalendarioConfig (configurar PT-BR), KendoEditorHelper (v4 adapter),
+ *                   Alerta (TratamentoErroComLinha), configurarLocalizacaoSyncfusion,
+ *                   initializeModalTooltips, jQuery ($, .on, .off, .modal), Syncfusion
+ *                   (RTE, DateTimePicker, DropDownList, Calendar), Bootstrap Modal API
+ * 📦 DEPENDÊNCIAS : jQuery (DOM manipulation, events, AJAX), Bootstrap 5 Modal (shown/hidden
+ *                   events, .modal('show'/'hide')), Syncfusion EJ2 (RTE, DropDownList,
+ *                   DateTimePicker, Calendar, L10n), Kendo UI (Editor, ComboBox via
+ *                   KendoEditorHelper), StateManager (agendamento state), Alerta (error
+ *                   handling), módulos agendamento (modal-viagem-novo, recorrencia*,
+ *                   relatorio, evento, exibe-viagem, calendario), DOM elements (buttons,
+ *                   modals, form inputs), external docs (Documentacao/Pages/Agenda - Index.md)
+ * 📝 OBSERVAÇÕES  : IIFE pattern (Immediately Invoked Function Expression) com 'use strict'.
+ *                   Arquivo mais longo do módulo (2388 linhas). Documentação externa
+ *                   completa em 📄 Documentacao/Pages/Agenda - Index.md (última atualização:
+ *                   08/01/2026) com fluxos detalhados, funções principais, handlers de
+ *                   eventos, sistema recorrência, interconexões. Header inline documenta
+ *                   apenas high-level overview. DEVE SER CARREGADO POR ÚLTIMO após todos
+ *                   os módulos dependentes (ordem crítica). 3 global variables legadas:
+ *                   window.defaultRTE (RichTextEditor instance), window.modalDebounceTimer
+ *                   (debounce para modal open), window.modalIsOpening (flag prevent double-open).
+ *                   Try-catch completo em event handlers com Alerta.TratamentoErroComLinha.
+ *                   Console.log extensivo com emoji prefixes: 🚀 (init), ⚙️ (config), ✅
+ *                   (success), ❌ (error). Event delegation: $(document).on para elementos
+ *                   dinâmicos. DOMContentLoaded: main initialization entry point. Módulos
+ *                   principais coordenados: modal management (criar/editar/cancelar viagens),
+ *                   recorrência (cálculo datas + UI logic), relatórios (Telerik viewer),
+ *                   eventos (DropDownList adicionar), calendário (Syncfusion Calendar
+ *                   PT-BR), exibição (card viagem details). Button handlers: btnConfirma
+ *                   (salvar/atualizar viagem), btnSalvarRecorrencia (enviar recorrência),
+ *                   btnFechar/btnCancelarModal (close modal), btnVisualizarRelatorio
+ *                   (Telerik ReportViewer). Modal events: shown.bs.modal (aoAbrirModalViagem
+ *                   + tooltips), hidden.bs.modal (aoFecharModalViagem + cleanup). Inicialização
+ *                   sequence: configurarLocalizacao → inicializarTooltips → configurarBotaoConfirmar
+ *                   → configurarModalViagens → inicializarCalendario → inicializarRTE
+ *                   → inicializarStateManager → console.log "Sistema pronto". Kendo/Syncfusion
+ *                   integration: KendoEditorHelper v4 adapter (ej2_instances compatibility
+ *                   layer para código Kendo-expecting). Syncfusion L10n PT-BR: calendário
+ *                   (Hoje), datepicker (Selecione uma data), RTE (140+ strings traduzidas).
+ *
+ * 📚 DOCUMENTAÇÃO EXTERNA:
  * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║                                                                          ║
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║                                                                          ║
- * ║  Este arquivo está completamente documentado em:                         ║
  * ║  📄 Documentacao/Pages/Agenda - Index.md                                 ║
- * ║                                                                          ║
- * ║  A documentação inclui:                                                   ║
- * ║  • Explicação detalhada de todas as funções principais                   ║
- * ║  • Fluxo completo de inicialização                                      ║
- * ║  • Handlers de eventos e validações                                      ║
- * ║  • Sistema de recorrência explicado                                     ║
- * ║  • Interconexões com outros módulos                                      ║
- * ║                                                                          ║
  * ║  Última atualização: 08/01/2026                                          ║
  * ║                                                                          ║
+ * ║  Contém:                                                                 ║
+ * ║  • Explicação detalhada de todas as funções principais                   ║
+ * ║  • Fluxo completo de inicialização (sequence diagram)                    ║
+ * ║  • Handlers de eventos e validações                                      ║
+ * ║  • Sistema de recorrência explicado (5 tipos: D/S/Q/M/V)                 ║
+ * ║  • Interconexões com outros módulos (architecture diagram)               ║
+ * ║  • Troubleshooting comum (ordem scripts, Syncfusion load, etc.)          ║
  * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+ *
+ * 📋 MÓDULOS COORDENADOS (12 arquivos):
+ * 1. modal-viagem-novo.js: Modal Bootstrap management (criar/editar/cancelar viagens)
+ * 2. recorrencia-logic.js: UI logic recorrência (show/hide campos, Calendar multiselect, badge)
+ * 3. recorrencia.js: GerenciadorRecorrencia (cálculo datas, POST batch)
+ * 4. recorrencia-init.js: Init controls recorrência (populate dataSource, create lstPeriodos)
+ * 5. relatorio.js: Telerik ReportViewer (Agendamento.trdp, FichaVistoria.trdp)
+ * 6. reportviewer-close-guard.js: Proteção modal close durante render (patch callbacks)
+ * 7. evento.js: Modal eventos (adicionar novo evento, DropDownList atualizar)
+ * 8. evento.service.js: EventoService (POST/GET eventos, atualizarListaDropdown)
+ * 9. exibe-viagem.js: Card exibição viagem (detalhes, botões editar/cancelar/relatório)
+ * 10. calendario.js: Syncfusion Calendar agenda (drag/drop, click handlers)
+ * 11. sweetalert_interop.patch.js: Patch SweetAlert warning fallback
+ * 12. main.js (este arquivo): Entry point orquestrador
+ *
+ * 🔄 FLUXO INICIALIZAÇÃO (HIGH-LEVEL):
+ * 1. Page load → script tags executam em ordem (dependencies first, main.js last)
+ * 2. DOMContentLoaded event trigger
+ * 3. main.js IIFE executa: console.log "Inicializando Sistema de Agendamento"
+ * 4. configurarLocalizacao() → Syncfusion L10n PT-BR (calendário, datepicker, RTE)
+ * 5. inicializarTooltips() → Bootstrap tooltips em modals
+ * 6. configurarBotaoConfirmar() → bind btnConfirma click (salvar viagem)
+ * 7. configurarBotaoSalvarRecorrencia() → bind btnSalvarRecorrencia (enviar recorrência)
+ * 8. configurarBotoesFechaModal() → bind btnFechar + btnCancelarModal
+ * 9. configurarModalViagens() → shown.bs.modal (aoAbrirModalViagem) + hidden.bs.modal (aoFecharModalViagem)
+ * 10. inicializarCalendario() → CalendarioConfig.configurar PT-BR
+ * 11. inicializarRTE() → RichTextEditor Syncfusion (toolbar, L10n)
+ * 12. inicializarStateManager() → StateManager.inicializar (viagemId, ehEdicao, etc.)
+ * 13. inicializarKendoEditorHelper() → KendoEditorHelper v4 adapter
+ * 14. inicializarRecorrenciaLogic() → RecorrenciaLogic.inicializarLogicaRecorrencia (setTimeout 1000ms)
+ * 15. inicializarDropdownPeriodos() → recorrencia-init (criar lstPeriodos DropDownList)
+ * 16. console.log "Sistema de Agendamento Pronto" + ✅
+ * 17. App aguarda user interactions (click buttons, open modals, etc.)
+ *
+ * 📌 EVENT HANDLERS PRINCIPAIS (7+ bindings):
+ * - btnConfirma.click → validar form → criarAgendamentoNovo → enviarAgendamento → modal.hide
+ * - btnSalvarRecorrencia.click → ajustarDataInicialRecorrente → handleRecurrence → modal.hide
+ * - btnFechar.click → modal.hide (cleanup via hidden.bs.modal)
+ * - modalViagens.shown.bs.modal → aoAbrirModalViagem (configurar title, carregar dados se ehEdicao)
+ * - modalViagens.hidden.bs.modal → aoFecharModalViagem (limparCamposModalViagens, StateManager reset)
+ * - lstRecorrente.change → aoMudarRecorrente (show/hide divPeriodo)
+ * - lstPeriodos.change → aoMudarPeriodo (show campos específicos: lstDias/lstDiasMes/calDatasSelecionadas)
+ *
+ * 📌 GLOBAL VARIABLES LEGADAS (3):
+ * - window.defaultRTE: RichTextEditor Syncfusion instance (usado em modal-viagem-novo)
+ * - window.modalDebounceTimer: setTimeout ID para debounce modal open (prevent double-open)
+ * - window.modalIsOpening: Boolean flag (true durante modal open animation)
+ *
+ * 📌 ORDEM DE CARREGAMENTO (crítico):
+ * 1. jQuery (CDN ou local)
+ * 2. Bootstrap 5 (CSS + JS)
+ * 3. Syncfusion EJ2 (ej.base, ej.calendars, ej.dropdowns, ej.richtexteditor, ej.inputs)
+ * 4. Kendo UI (kendo.all.min.js para Editor/ComboBox)
+ * 5. Alerta.js (error handling global)
+ * 6. StateManager.js (app state management)
+ * 7. Módulos agendamento (modal-viagem-novo, recorrencia*, relatorio, evento, exibe-viagem, calendario)
+ * 8. main.js (ÚLTIMO - orquestrador)
+ * → Se ordem incorreta: funções undefined, components não renderizam, app quebra
+ *
+ * 📝 OBSERVAÇÕES ADICIONAIS:
+ * - IIFE: evita poluir scope global (apenas funções específicas exportadas via window.*)
+ * - 'use strict': modo estrito JavaScript (previne erros comuns)
+ * - Console.log: extensivo debug com emoji prefixes (facilita troubleshooting)
+ * - Try-catch: em todos os event handlers e funções principais (app não quebra por erros isolados)
+ * - Event delegation: $(document).on usado para elementos dinâmicos (modals, buttons adicionados após load)
+ * - Debounce: modalDebounceTimer previne double-open ao clicar rapidamente
+ * - Tooltips: inicializados após modal shown (Bootstrap requirement)
+ * - L10n: Syncfusion localização PT-BR carregada no início (calendário, datepicker, RTE)
+ * - StateManager: centraliza state do agendamento (viagemId, ehEdicao, ehRecorrente, modoCancelamento)
+ * - KendoEditorHelper: adapter v4 para compatibilidade código Kendo-expecting com Syncfusion RTE
+ * - RTE: configurado com 140+ strings traduzidas (bold, italic, link, table, etc.)
+ * - Calendário: firstDayOfWeek=0 (domingo), PT-BR month/day names via manual translation
+ * - Recorrência: init delay 1000ms para garantir que Syncfusion components renderizaram
+ * - Cleanup: hidden.bs.modal limpa campos, reseta StateManager, destroi ReportViewer instances
+ * - External docs: 📄 Agenda - Index.md contém diagramas, fluxos completos, troubleshooting
+ *
+ * 🔌 VERSÃO: 5.0 (refatorado após Lote 193, adiciona comprehensive header)
+ * 📌 ÚLTIMA ATUALIZAÇÃO: 02/02/2026
+ * 📄 DOCUMENTAÇÃO EXTERNA: Documentacao/Pages/Agenda - Index.md (08/01/2026)
+ **************************************************************************************** */
 
 // ====================================================================
 // MAIN.JS - Entry Point da Aplicação de Agendamento
