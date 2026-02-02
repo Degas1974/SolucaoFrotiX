@@ -1,22 +1,112 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║                                                                          ║
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║                                                                          ║
- * ║  Este arquivo está completamente documentado em:                         ║
- * ║  📄 Documentacao/JavaScript/exibe-viagem.md                               ║
- * ║                                                                          ║
- * ║  A documentação inclui:                                                   ║
- * ║  • Visão geral da funcionalidade                                        ║
- * ║  • Explicação detalhada de cada função                                   ║
- * ║  • Interconexões com outros arquivos                                     ║
- * ║  • Fluxos de dados                                                       ║
- * ║  • Troubleshooting                                                       ║
- * ║                                                                          ║
- * ║  Última atualização: 12/01/2026                                          ║
- * ║                                                                          ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: exibe-viagem.js (4764 linhas, 39 funções)
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Controlador principal do modal de viagens. Exibe formulário para
+ *                   criar novo agendamento OU editar viagem existente. Gerencia
+ *                   preenchimento de todos os campos (data, hora, motorista, veículo,
+ *                   requisitante, origem, destino, recorrência, etc.), configuração
+ *                   de recorrência (diária/semanal/quinzenal/mensal/dias variados),
+ *                   validação de campos, exibição condicional de seções (finalização,
+ *                   recorrência, evento), configuração de botões por status (Aberta/
+ *                   Fechada/Cancelada), e restauração de dados de recorrência.
+ * 📥 ENTRADAS     : objViagem (Object com dados completos da viagem OU string vazia para
+ *                   novo), dataClicada (Date opcional para novo agendamento), horaClicada
+ *                   (string "HH:mm" opcional), viagemId/recorrenciaId para buscar dados
+ * 📤 SAÍDAS       : Modal #modalViagens aberto/configurado, campos preenchidos (100+
+ *                   campos diferentes), seções exibidas/ocultas, título do modal definido,
+ *                   botões configurados por status, flags globais definidas
+ *                   (window.CarregandoAgendamento, window.BUSCAR_PRIMEIRO_AGENDAMENTO)
+ * 🔗 CHAMADA POR  : calendario.js (click evento/select data), botões UI (Novo Agendamento),
+ *                   event handlers, páginas de agendamento
+ * 🔄 CHAMA        : $.ajax (GET RecuperaViagem, ObterAgendamentoEdicao, GetDatasViagem,
+ *                   etc.), Syncfusion components (ej2_instances, dataBind), jQuery
+ *                   (val, focus, show, hide), moment.js (format, toDate), FullCalendar
+ *                   (refetchEvents), Alerta.TratamentoErroComLinha, window.criarErroAjax,
+ *                   validação, inicialização de componentes
+ * 📦 DEPENDÊNCIAS : jQuery, Syncfusion EJ2 (DatePicker, TimePicker, DropDownList,
+ *                   MultiSelect, Calendar, ListBox, RichTextEditor), moment.js,
+ *                   FullCalendar, Bootstrap (Modal), Alerta.js, window.calendar
+ * 📝 OBSERVAÇÕES  : Arquivo gigante (4764 linhas) com 39 funções. Função principal:
+ *                   window.ExibeViagem (entry point). Recorrência complexa com 5 tipos
+ *                   (Diária D, Semanal S, Quinzenal Q, Mensal M, Dias Variados V).
+ *                   BUSCAR_PRIMEIRO_AGENDAMENTO desabilitado (delays 30s). Duplicação
+ *                   de funções em linhas 3719-4728 (window.garantirVisibilidadeRecorrencia,
+ *                   habilitarBuscaPrimeiro, etc. aparecem 2x). Múltiplas seções condicionais
+ *                   (viagem nova vs existente, aberta vs fechada, recorrente vs única).
+ *
+ * 📋 SUMÁRIO DE FUNÇÕES (39 funções agrupadas por categoria):
+ *
+ * ┌─ ENTRY POINT ────────────────────────────────────────────────────────────┐
+ * │ window.ExibeViagem(objViagem, dataClicada, horaClicada) - Principal      │
+ * │ aguardarFuncaoDisponivel(nomeFuncao, timeout) - Helper polling           │
+ * └───────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ EXIBIÇÃO (nova vs existente) ───────────────────────────────────────────┐
+ * │ exibirNovaViagem(dataClicada, horaClicada) - Limpa + preenche novo       │
+ * │ exibirViagemExistente(objViagem) - Preenche 100+ campos                  │
+ * │ mostrarCamposViagem(objViagem) - Exibe/oculta por status                 │
+ * └───────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ RECORRÊNCIA - CONFIGURAÇÃO (5 tipos: D/S/Q/M/V) ───────────────────────┐
+ * │ configurarCamposRecorrencia(objViagem) - Router por tipo                 │
+ * │ configurarRecorrenciaDiaria(objViagem) - Tipo D (data final)             │
+ * │ configurarRecorrenciaSemanal(objViagem) - Tipo S/Q (dias + data final)   │
+ * │ configurarRecorrenciaMensal(objViagem) - Tipo M (dia mês + data final)   │
+ * │ configurarRecorrencia(objViagem) - Visibilidade seção                    │
+ * └───────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ RECORRÊNCIA - EXIBIÇÃO ─────────────────────────────────────────────────┐
+ * │ mostrarCamposRecorrenciaDiaria(objViagem) - Mostra campos diária         │
+ * │ mostrarCamposRecorrenciaSemanal(objViagem) - Mostra campos semanal       │
+ * │ mostrarCamposRecorrenciaMensal(objViagem) - Mostra campos mensal         │
+ * │ window.garantirVisibilidadeRecorrencia(objViagem) - Força visibilidade   │
+ * └───────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ RECORRÊNCIA - RESTAURAÇÃO ──────────────────────────────────────────────┐
+ * │ restaurarDadosRecorrencia(objViagem) - Router restauração                │
+ * │ restaurarRecorrenciaDiaria(objViagem) - Restaura data final              │
+ * │ restaurarRecorrenciaSemanal(objViagem) - Restaura dias + data final      │
+ * │ restaurarRecorrenciaMensal(objViagem) - Restaura dia mês + data final    │
+ * └───────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ DIAS VARIADOS (calendário multi-select) ────────────────────────────────┐
+ * │ limparListboxDatasVariadas() - Limpa selectedDates listbox               │
+ * │ limparListboxDatasVariadasCompleto() - Limpa listbox + calendário        │
+ * │ window.limparListboxDatasVariadas - Alias exportado                      │
+ * └───────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ UI CONFIGURATION ───────────────────────────────────────────────────────┐
+ * │ configurarBotoesPorStatus(objViagem) - Botões por status                 │
+ * │ definirTituloModal(objViagem) - Título modal                             │
+ * │ configurarRodapeLabelsNovo() - Labels rodapé novo                        │
+ * │ inicializarLstRecorrente() - Dropdown recorrência                        │
+ * │ window.ModalConfig - Config object                                       │
+ * │ window.setModalTitle(tipo, tituloCustomizado) - Set título               │
+ * └───────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ BUSCAR PRIMEIRO AGENDAMENTO (desabilitado) ─────────────────────────────┐
+ * │ window.BUSCAR_PRIMEIRO_AGENDAMENTO = false - Flag global                 │
+ * │ window.habilitarBuscaPrimeiro() - Habilita flag                          │
+ * │ window.desabilitarBuscaPrimeiro() - Desabilita flag                      │
+ * │ window.statusBuscaPrimeiro() - Status atual                              │
+ * └───────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ TESTING/DEBUG ──────────────────────────────────────────────────────────┐
+ * │ window.testarAPIObterAgendamento(viagemId) - Testa API                   │
+ * │ window.debugDelay() - Debug delays                                       │
+ * │ window.desabilitarTodosDelays() - Desabilita delays                      │
+ * └───────────────────────────────────────────────────────────────────────────┘
+ *
+ * 📌 TIPOS DE RECORRÊNCIA: "D" (Diária), "S" (Semanal), "Q" (Quinzenal),
+ *    "M" (Mensal), "V" (Dias Variados)
+ * 📌 STATUS VIAGEM: Aberta (editar), Fechada (visualizar), Cancelada (visualizar)
+ * 📌 CAMPOS: 100+ campos diferentes (datas, km, combustível, pessoas, locais, etc.)
+ * 📌 DUPLICAÇÕES: Functions duplicadas em lines 3719-4728
+ * 📌 BUSCAR_PRIMEIRO desabilitado por delays de 30 segundos
+ *
+ * 🔌 VERSÃO: 1.0
+ * 📌 ÚLTIMA ATUALIZAÇÃO: 01/02/2026
+ **************************************************************************************** */
 
 /**
  * Exibe viagem no modal (criar ou editar)

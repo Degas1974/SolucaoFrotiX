@@ -1,6 +1,273 @@
-﻿// ====================================================================
-// EVENT HANDLERS - Handlers de eventos dos componentes do formulário
-// ====================================================================
+﻿/* ****************************************************************************************
+ * ⚡ ARQUIVO: event-handlers.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Event handlers para componentes do formulário de agendamento de
+ *                   viagens. Gerencia eventos de seleção/mudança de requisitante (com
+ *                   preenchimento automático de ramal/setor via AJAX), motorista (com
+ *                   templates de foto), veículo (busca km atual), finalidade (exibe/oculta
+ *                   card de evento), eventos (preenche data início/fim/participantes),
+ *                   e datas selecionadas (calendário multi-select). Armazena valores
+ *                   originais em window.requisitanteOriginal para restauração.
+ * 📥 ENTRADAS     : args objects (Syncfusion/Kendo event args com itemData, value, model),
+ *                   IDs de elementos DOM (#lstRequisitante, #lstMotorista, #lstVeiculo,
+ *                   etc.), referências globais (window.requisitanteOriginal)
+ * 📤 SAÍDAS       : Campos preenchidos automaticamente (ramal, setor, km atual, dados
+ *                   evento), templates aplicados (motorista com foto), divs exibidas/
+ *                   ocultas (#sectionEvento, #divDadosEventoSelecionado), listbox
+ *                   atualizada (selectedDates), console.log (produção!), valores retornados
+ *                   (motorista ID), Alerta.Erro em caso de falha AJAX
+ * 🔗 CHAMADA POR  : controls-init.js (atribuição de eventos), event listeners Syncfusion/
+ *                   Kendo, inicializarEventoSelect (DOMContentLoaded)
+ * 🔄 CHAMA        : $.ajax (GET requests para PegaRamal, PegaSetor, PegaKmAtualVeiculo,
+ *                   ObterPorId), document.getElementById, Syncfusion ej2_instances,
+ *                   Kendo $(el).data("kendoComboBox"), ej.base.getComponent,
+ *                   Alerta.TratamentoErroComLinha, Alerta.Erro, window.criarErroAjax,
+ *                   window.bootstrap.Modal, console.log/warn/error
+ * 📦 DEPENDÊNCIAS : jQuery ($.ajax), Syncfusion EJ2 (ej2_instances, ej.base.getComponent,
+ *                   DatePicker, ComboBox, NumericTextBox, DropDownTree), Kendo UI
+ *                   (kendoComboBox), Bootstrap 5 (Modal), Alerta.js, window.criarErroAjax,
+ *                   imagens (/images/barbudo.jpg)
+ * 📝 OBSERVAÇÕES  : Exporta 11 funções window.* + 1 variável global (requisitanteOriginal).
+ *                   Todas têm try-catch completo. console.log em produção (80+ logs).
+ *                   Typo "padrío" (line 473). AJAX responses: res.data || res (flexible).
+ *                   onSelectRequisitante faz 2 AJAX paralelos (ramal + setor).
+ *                   RequisitanteEventoValueChange duplica lógica de setor (deveria usar
+ *                   onSelectRequisitanteEvento). exibirDadosEvento faz AJAX adicional
+ *                   para buscar dados completos. inicializarEventoSelect não exportada
+ *                   (setup interno).
+ *
+ * 📋 ÍNDICE DE FUNÇÕES (14 funções: 11 window.*, 3 internas):
+ *
+ * ┌─ VARIÁVEL GLOBAL ─────────────────────────────────────────────────────┐
+ * │ 1. window.requisitanteOriginal = { id, ramal, setorId }               │
+ * │    → Armazena valores originais para restauração                      │
+ * │    → Populado por onSelectRequisitante                                │
+ * └───────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ REQUISITANTE (auto-fill ramal + setor) ─────────────────────────────┐
+ * │ 2. window.onSelectRequisitante(args)                                  │
+ * │    → Evento SELECT de lstRequisitante (quando seleciona da lista)    │
+ * │    → Valida args.itemData.RequisitanteId                              │
+ * │    → Armazena window.requisitanteOriginal.id                          │
+ * │    → AJAX 1: GET /Viagens/Upsert?handler=PegaRamal                    │
+ * │      success: preenche txtRamalRequisitanteSF (Syncfusion TextBox)   │
+ * │               armazena window.requisitanteOriginal.ramal              │
+ * │      fallback: preenche ramalElement.value (HTML input)               │
+ * │      error: limpa campo + Alerta.Erro                                 │
+ * │    → AJAX 2: GET /Viagens/Upsert?handler=PegaSetor (paralelo)        │
+ * │      success: preenche lstSetorRequisitanteAgendamento (DropDownTree)│
+ * │               armazena window.requisitanteOriginal.setorId            │
+ * │      error: limpa campo + Alerta.Erro                                 │
+ * │    → try-catch: console.error + Alerta.Erro                           │
+ * │                                                                        │
+ * │ 3. window.onSelectRequisitanteEvento(args)                            │
+ * │    → Evento SELECT de lstRequisitanteEvento                           │
+ * │    → Valida args.itemData.RequisitanteId                              │
+ * │    → AJAX: GET /Viagens/Upsert?handler=PegaSetor                      │
+ * │      success: preenche lstSetorRequisitanteEvento (DropDownTree)     │
+ * │      error: limpa campo + Alerta.Erro                                 │
+ * │    → try-catch: console.error + Alerta.Erro                           │
+ * │                                                                        │
+ * │ 4. window.RequisitanteValueChange()                                   │
+ * │    → Evento CHANGE de lstRequisitante (Kendo ComboBox)               │
+ * │    → LEGACY: mantido para compatibilidade                             │
+ * │    → Agora auto-fill é feito por onSelectRequisitante (SELECT event) │
+ * │    → Apenas valida comboBox.value() !== null/''                       │
+ * │    → console.log "RequisitanteValueChange chamado"                    │
+ * │    → try-catch: Alerta.TratamentoErroComLinha                         │
+ * └───────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ FINALIDADE (show/hide evento card) ─────────────────────────────────┐
+ * │ 5. window.lstFinalidade_Change(args)                                  │
+ * │    → Evento CHANGE de lstFinalidade                                   │
+ * │    → Se finalidade.toLowerCase().includes("evento"):                  │
+ * │      • sectionEvento.style.display = "block"                          │
+ * │    → Senão:                                                            │
+ * │      • sectionEvento.style.display = "none"                           │
+ * │      • Fecha modalEvento (Bootstrap Modal)                            │
+ * │      • Limpa lstEventos.value = null + dataBind()                     │
+ * │    → try-catch: Alerta.TratamentoErroComLinha                         │
+ * └───────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ MOTORISTA (template com fotos) ─────────────────────────────────────┐
+ * │ 6. window.MotoristaValueChange()                                      │
+ * │    → Evento CHANGE de lstMotorista                                    │
+ * │    → Retorna String(ddTreeObj.value) (motorista ID)                   │
+ * │    → console.log "Objeto Motorista"                                   │
+ * │    → Se value===null || enabled===false: retorna undefined            │
+ * │    → try-catch: Alerta.TratamentoErroComLinha                         │
+ * │                                                                        │
+ * │ 7. window.onLstMotoristaCreated()                                     │
+ * │    → Evento CREATED de lstMotorista                                   │
+ * │    → Define itemTemplate: div.d-flex com img (40x40px) + span        │
+ * │      • Img: data.FotoBase64 (se startsWith 'data:image')             │
+ * │             senão '/images/barbudo.jpg'                               │
+ * │      • onerror: this.src='/images/barbudo.jpg'                        │
+ * │      • Text: data.Nome                                                │
+ * │    → Define valueTemplate: div.d-flex com img (30x30px) + span       │
+ * │      • Idêntico a itemTemplate mas tamanho diferente                  │
+ * │    → console.log "Templates de motorista configurados"                │
+ * │    → try-catch: console.error + Alerta.TratamentoErroComLinha (se existir)│
+ * └───────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ VEÍCULO (auto-fill km atual) ───────────────────────────────────────┐
+ * │ 8. window.VeiculoValueChange()                                        │
+ * │    → Evento CHANGE de lstVeiculo                                      │
+ * │    → console.log "Objeto Veículo"                                     │
+ * │    → Se value===null || enabled===false: retorna undefined            │
+ * │    → AJAX: GET /Viagens/Upsert?handler=PegaKmAtualVeiculo             │
+ * │      data: { id: veiculoid }                                          │
+ * │      success: preenche txtKmAtual.value = res.data (km atual)         │
+ * │      error: criarErroAjax + Alerta.TratamentoErroComLinha             │
+ * │    → try-catch: Alerta.TratamentoErroComLinha                         │
+ * └───────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ REQUISITANTE EVENTO (auto-fill setor) ──────────────────────────────┐
+ * │ 9. window.RequisitanteEventoValueChange()                             │
+ * │    → Evento CHANGE de lstRequisitanteEvento                           │
+ * │    → Typo "padrío" (deveria ser "padrão") no comentário              │
+ * │    → Se value===null || value==='': retorna                           │
+ * │    → AJAX: GET /Viagens/Upsert?handler=PegaSetor                      │
+ * │      success: preenche ddtSetorEvento.value = [res.data]              │
+ * │      error: criarErroAjax + Alerta.TratamentoErroComLinha             │
+ * │    → NOTA: duplica lógica de onSelectRequisitanteEvento               │
+ * │    → try-catch: Alerta.TratamentoErroComLinha                         │
+ * └───────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ CALENDÁRIO (multi-select dates) ────────────────────────────────────┐
+ * │ 10. window.onDateChange(args)                                         │
+ * │     → Evento de calendário multi-select                               │
+ * │     → Obtém selectedDates = args.model.values                         │
+ * │     → Limpa listbox: listbox.innerHTML = ''                           │
+ * │     → Para cada date: cria <li> com toLocaleDateString()              │
+ * │     → Appends <li> ao listbox #selectedDates                          │
+ * │     → try-catch: Alerta.TratamentoErroComLinha                        │
+ * └───────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ EVENTO (auto-fill data início/fim/participantes) ───────────────────┐
+ * │ 11. inicializarEventoSelect() (interna, não exportada)               │
+ * │     → Obtém lstEventos (ComboBox Syncfusion)                          │
+ * │     → Define select event: exibirDadosEvento(args.itemData)           │
+ * │     → Define clearing event: ocultarDadosEvento()                     │
+ * │     → console.log "Handler de seleção de evento inicializado"         │
+ * │     → try-catch: console.error                                        │
+ * │                                                                        │
+ * │ 12. exibirDadosEvento(eventoData) (exportada window.*)                │
+ * │     → Mostra divDadosEventoSelecionado (display='flex')               │
+ * │     → Extrai eventoId = eventoData.EventoId || eventoId               │
+ * │     → AJAX: GET /api/ViagemEvento/ObterPorId?id={eventoId}            │
+ * │       success: se response.success && response.data:                  │
+ * │                  preencherCamposEvento(response.data)                 │
+ * │                senão: preencherCamposEvento(eventoData)               │
+ * │       error: console.error + preencherCamposEvento(eventoData)        │
+ * │     → Se !eventoId: preencherCamposEvento(eventoData) direto          │
+ * │     → try-catch: console.error                                        │
+ * │                                                                        │
+ * │ 13. preencherCamposEvento(dados) (interna, não exportada)             │
+ * │     → Extrai dataInicial = dados.DataInicial || dataInicial || ...    │
+ * │       Preenche txtDataInicioEvento (DatePicker): value = new Date()   │
+ * │     → Extrai dataFinal = dados.DataFinal || dataFinal || ...          │
+ * │       Preenche txtDataFimEvento (DatePicker): value = new Date()      │
+ * │     → Extrai qtdParticipantes = dados.QtdParticipantes || ...         │
+ * │       Preenche txtQtdParticipantesEvento (NumericTextBox): value      │
+ * │     → console.log para cada campo preenchido ou warning se ausente    │
+ * │     → try-catch: console.error                                        │
+ * │                                                                        │
+ * │ 14. ocultarDadosEvento() (exportada window.*)                         │
+ * │     → Esconde divDadosEventoSelecionado (display='none')              │
+ * │     → Limpa txtDataInicioEvento: value = null                         │
+ * │     → Limpa txtDataFimEvento: value = null                            │
+ * │     → Limpa txtQtdParticipantesEvento: value = null                   │
+ * │     → console.log "Dados do evento limpos"                            │
+ * │     → try-catch: console.error                                        │
+ * └───────────────────────────────────────────────────────────────────────┘
+ *
+ * 🔄 FLUXO DE PREENCHIMENTO AUTOMÁTICO REQUISITANTE:
+ * 1. Usuário seleciona requisitante no dropdown (lstRequisitante)
+ * 2. Syncfusion dispara evento SELECT → onSelectRequisitante(args)
+ * 3. Extrai RequisitanteId de args.itemData
+ * 4. Armazena window.requisitanteOriginal.id
+ * 5. AJAX paralelo 1: GET PegaRamal
+ *    a. success: preenche txtRamalRequisitanteSF (Syncfusion) ou fallback HTML
+ *    b. armazena window.requisitanteOriginal.ramal
+ *    c. error: limpa campo + Alerta.Erro
+ * 6. AJAX paralelo 2: GET PegaSetor
+ *    a. success: preenche lstSetorRequisitanteAgendamento (DropDownTree)
+ *    b. armazena window.requisitanteOriginal.setorId
+ *    c. error: limpa campo + Alerta.Erro
+ * 7. Usuário vê ramal e setor preenchidos automaticamente
+ *
+ * 🔄 FLUXO DE EVENTO SELECIONADO:
+ * 1. Usuário seleciona evento no dropdown (lstEventos)
+ * 2. inicializarEventoSelect configurou select event
+ * 3. select dispara → exibirDadosEvento(args.itemData)
+ * 4. Mostra divDadosEventoSelecionado
+ * 5. Extrai eventoId
+ * 6. Se eventoId:
+ *    a. AJAX GET /api/ViagemEvento/ObterPorId
+ *    b. success: preencherCamposEvento(response.data)
+ *    c. error: preencherCamposEvento(eventoData) fallback
+ * 7. preencherCamposEvento:
+ *    a. txtDataInicioEvento = dataInicial
+ *    b. txtDataFimEvento = dataFinal
+ *    c. txtQtdParticipantesEvento = qtdParticipantes
+ * 8. Usuário vê campos preenchidos
+ * 9. Se clicar X (clearing): ocultarDadosEvento() → esconde div + limpa campos
+ *
+ * 🔄 FLUXO DE MUDANÇA DE FINALIDADE:
+ * 1. Usuário seleciona Finalidade (lstFinalidade)
+ * 2. lstFinalidade_Change(args) dispara
+ * 3. Se finalidade.includes("evento"):
+ *    a. sectionEvento.display = "block" (mostra card)
+ * 4. Senão:
+ *    a. sectionEvento.display = "none" (esconde card)
+ *    b. Fecha modalEvento (Bootstrap Modal)
+ *    c. Limpa lstEventos
+ *
+ * 📌 DIFERENÇAS ENTRE EVENTOS SELECT vs CHANGE:
+ * - SELECT: dispara ao selecionar item da lista dropdown (não dispara ao digitar)
+ * - CHANGE: dispara ao mudar valor (inclusive digitação, clear, programático)
+ * - onSelectRequisitante usa SELECT (melhor para auto-fill, evita disparar em digitação)
+ * - RequisitanteValueChange usa CHANGE (legacy, mantido para compatibilidade)
+ *
+ * 📌 ESTRUTURA DE AJAX RESPONSES:
+ * - Flexible: res.data || res (suporta {data: valor} ou valor direto)
+ * - PegaRamal: retorna número (ramal)
+ * - PegaSetor: retorna ID (setorId)
+ * - PegaKmAtualVeiculo: retorna número (km)
+ * - ObterPorId: retorna {success, data: {DataInicial, DataFinal, QtdParticipantes, ...}}
+ *
+ * 📌 COMPONENTS UI ENVOLVIDOS:
+ * - Kendo: lstRequisitante (ComboBox) - usa $(el).data("kendoComboBox")
+ * - Syncfusion: lstFinalidade, lstMotorista, lstVeiculo, lstRequisitanteEvento,
+ *               lstEventos, lstSetorRequisitanteAgendamento, lstSetorRequisitanteEvento,
+ *               txtRamalRequisitanteSF, txtDataInicioEvento, txtDataFimEvento,
+ *               txtQtdParticipantesEvento, ddtSetorEvento
+ * - Bootstrap: modalEvento (Modal)
+ * - HTML native: txtKmAtual, selectedDates (listbox)
+ *
+ * 📌 TEMPLATES MOTORISTA:
+ * - itemTemplate: dropdown items (40x40px foto circular + nome)
+ * - valueTemplate: selected value (30x30px foto circular + nome)
+ * - Foto: data.FotoBase64 (base64 data URI) ou /images/barbudo.jpg
+ * - onerror: duplo fallback para /images/barbudo.jpg
+ *
+ * 📝 OBSERVAÇÕES ADICIONAIS:
+ * - console.log em produção (80+ logs): console.log, console.warn, console.error
+ * - Typo "padrío" (line 473) deveria ser "padrão"
+ * - RequisitanteEventoValueChange duplica lógica de onSelectRequisitanteEvento
+ * - AJAX paralelo em onSelectRequisitante (ramal + setor simultaneamente)
+ * - exibirDadosEvento faz AJAX adicional para dados completos (ObterPorId)
+ * - preencherCamposEvento flexível com aliases (DataInicial || dataInicial || ...)
+ * - inicializarEventoSelect não exportada (setup interno, deve ser chamada em init)
+ * - window.requisitanteOriginal usado para restaurar valores (possível undo)
+ * - ej.base.getComponent usado para obter componentes Syncfusion (alternativa a ej2_instances)
+ * - Evento clearing (lstEventos) chama ocultarDadosEvento quando clica X
+ * - Código emoji: 🎯 🔧 ✅ ❌ ⚠️ 📦 🏢 📋 🔍 📝 🙈 📞 🆔
+ *
+ * 🔌 VERSÃO: 1.0
+ * 📌 ÚLTIMA ATUALIZAÇÃO: 01/02/2026
+ **************************************************************************************** */
 
 // ===================================================================
 // VARIÁVEL GLOBAL: Armazena dados originais do requisitante
