@@ -1,3 +1,115 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ocorrencia-viagem-popup.js
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Modal de alerta automático exibido ao selecionar veículo em formulários de viagem.
+ *    Verifica via API se existe alguma ocorrência aberta (Acidente/Defeito/Multa) vinculada
+ *    ao veículo. Se sim: exibe modal informativo com botão "Ver Ocorrências Abertas" (link
+ *    para página de ocorrências filtrada) e botão "Prosseguir". Previne uso inadvertido de
+ *    veículo com problemas ativos. Pattern Revealing Module (IIFE).
+ * 
+ * 🔢 PARÂMETROS DE ENTRADA:
+ *    - verificar(veiculoId, veiculoDescricao, callback)
+ *       • veiculoId: GUID do veículo selecionado
+ *       • veiculoDescricao: texto ex "ABC-1234 - Ford Fiesta 2020"
+ *       • callback: função a executar após fechar modal (ex: continuar preenchimento form)
+ * 
+ * 📤 SAÍDAS PRODUZIDAS:
+ *    - Modal Bootstrap 5: título "⚠️ Ocorrências Abertas", badge contador vermelho (ex: 3)
+ *    - Corpo: mensagem "Este veículo possui X ocorrência(s) aberta(s)"
+ *    - Botões: "Ver Ocorrências Abertas" (redirect) + "Prosseguir Mesmo Assim" (dismiss)
+ *    - Callback executado ao fechar modal (permite ou cancela ação)
+ * 
+ * 🔗 DEPENDÊNCIAS:
+ *    • BIBLIOTECAS: jQuery 3.x, Bootstrap 5.x (Modal API)
+ *    • ARQUIVOS FROTIX: FrotiX.css (badges, modal custom)
+ *    • API: /api/OcorrenciaViagem/ContarAbertasPorVeiculo?veiculoId={guid} (GET) → { success, count }
+ * 
+ * ================================================================================================
+ * 📑 ÍNDICE DE FUNÇÕES (3 funções públicas + 2 privadas)
+ * ================================================================================================
+ * 
+ * ┌─────────────────────────────────────────────────────────────────────────────────────────┐
+ * │ 🔧 PÚBLICAS (exports)                                                                    │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • verificar(veiculoId, veiculoDescricao, callback) → Entry point, faz GET e decide modal│
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🔒 PRIVADAS                                                                              │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • mostrarPopup(veiculoId, veiculoDescricao, count, callback) → Gera HTML modal + show   │
+ * │ • construirHtmlModal(veiculoDescricao, count, callback) → Template HTML modal Bootstrap │
+ * └─────────────────────────────────────────────────────────────────────────────────────────┘
+ * 
+ * ================================================================================================
+ * 🔄 FLUXOS TÍPICOS
+ * ================================================================================================
+ * 
+ * 💡 FLUXO 1: Veículo com ocorrências abertas
+ *    Select veículo ABC-1234 → evento change → chamar OcorrenciaViagemPopup.verificar(veiculoId, descricao, callback)
+ *      → GET /api/OcorrenciaViagem/ContarAbertasPorVeiculo?veiculoId={guid}
+ *      → Response: { success: true, count: 3 }
+ *      → mostrarPopup(veiculoId, descricao, 3, callback)
+ *         → construirHtmlModal() → template com badge "3", mensagem, botões
+ *         → Inject HTML em body
+ *         → Bootstrap Modal show
+ *      → User escolhe:
+ *         • Click "Ver Ocorrências Abertas" → redirect /OcorrenciaViagem?veiculoId={guid}
+ *         • Click "Prosseguir Mesmo Assim" → fecha modal → executa callback() → continua form
+ * 
+ * 💡 FLUXO 2: Veículo sem ocorrências (normal)
+ *    Select veículo DEF-5678 → OcorrenciaViagemPopup.verificar(veiculoId, descricao, callback)
+ *      → GET /api/OcorrenciaViagem/ContarAbertasPorVeiculo?veiculoId={guid}
+ *      → Response: { success: true, count: 0 }
+ *      → NÃO exibe modal (skip)
+ *      → Executa callback() imediatamente → continua form normalmente
+ * 
+ * 💡 FLUXO 3: VeiculoId inválido (00000000-0000...) ou null
+ *    Select dropdown placeholder → OcorrenciaViagemPopup.verificar(null, null, callback)
+ *      → Validação: if (!veiculoId || veiculoId === '00000000-0000-0000-0000-000000000000')
+ *      → Executa callback() imediatamente SEM fazer API call
+ *      → Não exibe modal
+ * 
+ * ================================================================================================
+ * 🔍 OBSERVAÇÕES TÉCNICAS
+ * ================================================================================================
+ * 
+ * 🎨 MODAL VISUAL:
+ *    - Header: badge-danger com contador vermelho (ex: "3"), ícone ⚠️, título "Ocorrências Abertas"
+ *    - Body: mensagem "Este veículo possui X ocorrência(s) aberta(s). Deseja visualizá-las antes de prosseguir?"
+ *    - Footer 2 botões:
+ *       • Btn primário (azul): "Ver Ocorrências Abertas" → href="/OcorrenciaViagem?veiculoId={guid}"
+ *       • Btn secondary (cinza): "Prosseguir Mesmo Assim" → data-bs-dismiss="modal"
+ * 
+ * 🔒 SEGURANÇA:
+ *    - Valida veiculoId não nulo e diferente de GUID vazio (00000000-0000-0000-0000-000000000000)
+ *    - Backend API valida permissões (usuário só vê ocorrências do próprio setor)
+ *    - Não exibe detalhes das ocorrências no popup (apenas contador)
+ * 
+ * ⚡ CALLBACK PATTERN:
+ *    - Função callback opcional (3º parâmetro)
+ *    - Chamada quando:
+ *       • Modal NÃO precisa ser exibido (count = 0 ou veiculoId inválido)
+ *       • User clica "Prosseguir Mesmo Assim" (evento modal hidden.bs.modal)
+ *    - Permite retomar fluxo normal do formulário pai
+ * 
+ * 🗑️ AUTO-DESTROY MODAL:
+ *    - Modal removido do DOM após hidden.bs.modal (limpa memória)
+ *    - $('#modalOcorrenciasAbertas').remove() no evento hidden
+ * 
+ * 🎯 CASOS DE USO:
+ *    - Formulário Agendamento Viagem (selecionar veículo)
+ *    - Formulário Inserir Viagem (selecionar veículo)
+ *    - Formulário Manutenção (selecionar veículo para manutenção preventiva)
+ *    - Qualquer tela onde seleção de veículo deve alertar sobre problemas ativos
+ * 
+ * 📦 PATTERN REVEALING MODULE:
+ *    - IIFE: var OcorrenciaViagemPopup = (function () { ... return { verificar }; })();
+ *    - Export público: verificar
+ *    - Funções privadas: mostrarPopup, construirHtmlModal (não acessíveis fora do módulo)
+ * 
+ * **************************************************************************************** */
+
 // =====================================================
 // OCORRENCIA-VIAGEM-POPUP.JS
 // Popup de ocorrências abertas ao selecionar veículo

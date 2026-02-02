@@ -1,3 +1,133 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: kendo-editor-upsert.js
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Camada de compatibilidade para substituição de Syncfusion RichTextEditor por Kendo UI
+ *    Editor na página de Viagens (Upsert). Expõe API idêntica ao Syncfusion para que código
+ *    legado continue funcionando sem refatoração massiva. Funções globais wrapper:
+ *    salvarConteudoEditor(), obterConteudoEditor(), limparEditor(), setarConteudoEditor().
+ *    Toolbar customizada: Bold, Italic, Underline, Font/FontSize, Link, Image, ViewHtml.
+ * 
+ * 🔢 PARÂMETROS DE ENTRADA:
+ *    - Elemento HTML: <textarea id="rte"></textarea> (substituído por Kendo Editor)
+ *    - Chamadas de funções: salvarConteudoEditor(), setarConteudoEditor(html)
+ * 
+ * 📤 SAÍDAS PRODUZIDAS:
+ *    - Instância Kendo Editor: _kendoEditorUpsert (global), rico em recursos WYSIWYG
+ *    - Método getValue(): retorna HTML limpo
+ *    - Método setValue(html): define conteúdo programaticamente
+ *    - Validação: alerta se editor não inicializado ao tentar salvar/obter conteúdo
+ * 
+ * 🔗 DEPENDÊNCIAS:
+ *    • BIBLIOTECAS: Kendo UI Editor (kendo.all.min.js), jQuery 3.x
+ *    • ARQUIVOS FROTIX: alerta.js (TratamentoErroComLinha), FrotiX.css
+ *    • HTML REQUIRED: <textarea id="rte"></textarea> na página Viagens/Upsert
+ * 
+ * ================================================================================================
+ * 📑 ÍNDICE DE FUNÇÕES (5 funções globais + 1 helper)
+ * ================================================================================================
+ * 
+ * ┌─────────────────────────────────────────────────────────────────────────────────────────┐
+ * │ 🛠️ FUNÇÕES GLOBAIS (compatibilidade Syncfusion → Kendo)                                  │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • initKendoEditorUpsert()                  → Inicializa Kendo Editor em #rte            │
+ * │ • salvarConteudoEditor()                   → Retorna HTML do editor (alias getValue)    │
+ * │ • obterConteudoEditor()                    → Retorna HTML do editor (alias getValue)    │
+ * │ • limparEditor()                           → setValue("") → limpa conteúdo              │
+ * │ • setarConteudoEditor(html)                → setValue(html) → define conteúdo           │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🔧 HELPERS                                                                               │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • validarEditorInicializado()              → Verifica se _kendoEditorUpsert !== null    │
+ * └─────────────────────────────────────────────────────────────────────────────────────────┘
+ * 
+ * ================================================================================================
+ * 🔄 FLUXOS TÍPICOS
+ * ================================================================================================
+ * 
+ * 💡 FLUXO 1: Inicialização do editor (DOMContentLoaded)
+ *    Página Viagens/Upsert.cshtml → <script> $(document).ready() → initKendoEditorUpsert()
+ *      → Verifica elemento textarea #rte existe
+ *      → Cria Kendo Editor com toolbar customizada:
+ *         [bold, italic, underline, strikethrough, justifyLeft/Center/Right/Full,
+ *          insertUnorderedList, insertOrderedList, indent, outdent, createLink,
+ *          unlink, insertImage, insertFile, subscript, superscript, tableWizard,
+ *          createTable, addRowAbove, addRowBelow, addColumnLeft, addColumnRight,
+ *          deleteRow, deleteColumn, viewHtml, formatting, fontName, fontSize,
+ *          foreColor, backColor, cleanFormatting, print, pdf]
+ *      → Define propriedades: height=450px, messages pt-BR (opcional)
+ *      → Armazena instância em _kendoEditorUpsert (global)
+ *      → Flag _kendoEditorUpsertInitialized = true
+ * 
+ * 💡 FLUXO 2: Salvar viagem (submit form)
+ *    Botão "Salvar Viagem" → validarFormulario() → salvarConteudoEditor()
+ *      → Valida _kendoEditorUpsert !== null
+ *      → Chama _kendoEditorUpsert.value() → retorna HTML (ex: "<p><strong>Texto</strong></p>")
+ *      → Atribui a campo hidden ou diretamente ao FormData
+ *      → POST /api/Viagens/Salvar { conteudo: htmlEditor, ... }
+ * 
+ * 💡 FLUXO 3: Editar viagem (carregar dados existentes)
+ *    GET /api/Viagens/ObterDetalhes/{id} → response { conteudo: "<p>Relatório...</p>" }
+ *      → setarConteudoEditor(response.conteudo)
+ *      → Valida _kendoEditorUpsert !== null
+ *      → Chama _kendoEditorUpsert.value(html) → define conteúdo no editor
+ *      → User vê texto formatado no WYSIWYG
+ * 
+ * 💡 FLUXO 4: Limpar editor (novo cadastro ou reset form)
+ *    Botão "Nova Viagem" → limparFormulario() → limparEditor()
+ *      → Valida _kendoEditorUpsert !== null
+ *      → Chama _kendoEditorUpsert.value("") → editor fica vazio (placeholder visível)
+ * 
+ * ================================================================================================
+ * 🔍 OBSERVAÇÕES TÉCNICAS
+ * ================================================================================================
+ * 
+ * 🎨 TOOLBAR KENDO CUSTOMIZADA:
+ *    - Grupos: Formatting (bold/italic/underline), Alignment (left/center/right/justify)
+ *    - Listas: insertUnorderedList, insertOrderedList, indent, outdent
+ *    - Links/Imagens: createLink, unlink, insertImage, insertFile
+ *    - Tabelas: tableWizard, createTable, addRow/Column, deleteRow/Column
+ *    - Avançado: viewHtml (code view), fontName, fontSize, foreColor, backColor
+ *    - Utilidades: cleanFormatting, print, pdf
+ * 
+ * 🔄 MIGRAÇÃO SYNCFUSION → KENDO:
+ *    - Syncfusion API antiga: ej.richtexteditor.RichTextEditor({ ... }), .getHtml(), .setHtml()
+ *    - Kendo API nova: $("#rte").kendoEditor({ ... }), .value(), .value(html)
+ *    - Funções wrapper mantêm nomes antigos: salvarConteudoEditor, setarConteudoEditor
+ *    - Permite refatoração gradual (backend não precisa mudar)
+ * 
+ * ⚠️ VALIDAÇÃO:
+ *    - Todas as funções checam if (!_kendoEditorUpsert) → console.error + alerta
+ *    - Previne erro "Cannot read properties of undefined" se init() não for chamado
+ *    - Try-catch em initKendoEditorUpsert() para capturar erros de ausência do Kendo lib
+ * 
+ * 🌐 INTERNACIONALIZAÇÃO (pt-BR):
+ *    - messages: { bold: "Negrito", italic: "Itálico", ... } (opcional)
+ *    - Fallback: usa labels padrão em inglês se messages não definido
+ *    - Kendo suporta 40+ idiomas via kendo.culture("pt-BR")
+ * 
+ * 📏 DIMENSÕES:
+ *    - height: 450px (padrão, ajustável)
+ *    - width: 100% (responsivo, ocupa container pai)
+ *    - min-height: opcional para evitar colapso em mobile
+ * 
+ * 🗑️ LIMPEZA:
+ *    - Não há destroy() explícito (Kendo gerencia internamente)
+ *    - Se precisar destruir: _kendoEditorUpsert.destroy() → remove eventos + DOM
+ * 
+ * 🎯 CASOS DE USO:
+ *    - Página Viagens/Upsert.cshtml (criar/editar viagem com relatório rico)
+ *    - Página Manutenção/Upsert.cshtml (se houver campo descrição rica no futuro)
+ *    - Qualquer formulário FrotiX que necessite editor WYSIWYG
+ * 
+ * 🚨 TRATAMENTO DE ERROS:
+ *    - Try-catch em initKendoEditorUpsert()
+ *    - Alerta.TratamentoErroComLinha('kendo-editor-upsert.js', 'initKendoEditorUpsert', error)
+ *    - Fallback: textarea original permanece editável (graceful degradation)
+ * 
+ * **************************************************************************************** */
+
 /**
  * ============================================
  * KENDO EDITOR HELPER - Página de Viagens (Upsert)

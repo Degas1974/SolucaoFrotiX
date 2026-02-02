@@ -1,3 +1,130 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ocorrencia-viagem.js
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Gerenciador de ocorrências no modal de finalização de viagem. Permite adicionar, editar
+ *    e remover múltiplos cards de ocorrências (Acidente, Multa, Defeito Mecânico, Outros) com
+ *    campos customizados: descrição (textarea), tipo (dropdown), data/hora (datetime-local),
+ *    observações. Sistema de contador visual, validação de campos obrigatórios e coleta de
+ *    dados para envio ao backend. Pattern Revealing Module (IIFE).
+ * 
+ * 🔢 PARÂMETROS DE ENTRADA:
+ *    - Clicks UI: botão adicionar ocorrência, botão remover (× em cada card)
+ *    - Campos card: tipo ocorrência (dropdown 1-4), descrição (textarea), data/hora, obs
+ *    - Método obterOcorrencias(): retorna array de objetos coletados de todos os cards
+ * 
+ * 📤 SAÍDAS PRODUZIDAS:
+ *    - Cards HTML dinâmicos: badge tipo colorido, campos de entrada, contador visual
+ *    - Array ocorrencias: [{ tipo, descricao, dataHora, observacoes, ... }]
+ *    - Badge contador: "2 Ocorrências Registradas" (atualizado dinamicamente)
+ *    - Validações: alerta se campos obrigatórios vazios antes de submit
+ * 
+ * 🔗 DEPENDÊNCIAS:
+ *    • BIBLIOTECAS: jQuery 3.x, Bootstrap 5.x (tooltips)
+ *    • ARQUIVOS FROTIX: FrotiX.css (badges, cards)
+ *    • HTML REQUIRED: #btnAdicionarOcorrencia, #listaOcorrencias (container), #contadorOcorrencias
+ * 
+ * ================================================================================================
+ * 📑 ÍNDICE DE FUNÇÕES (8 funções públicas + 5 privadas)
+ * ================================================================================================
+ * 
+ * ┌─────────────────────────────────────────────────────────────────────────────────────────┐
+ * │ 🔧 PÚBLICAS (exports)                                                                    │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • init()                                   → Inicializa listeners + contador             │
+ * │ • obterOcorrencias()                       → Retorna array de dados coletados           │
+ * │ • limpar()                                 → Remove todos os cards, reset contador       │
+ * │ • validar()                                → Verifica campos obrigatórios preenchidos   │
+ * │ • contarOcorrencias()                      → Retorna quantidade de cards ativos         │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🔒 PRIVADAS                                                                              │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • adicionarOcorrencia()                    → Cria novo card, incrementa contador        │
+ * │ • criarCardOcorrencia(index)               → Gera HTML do card (badge + campos)         │
+ * │ • removerOcorrencia(index)                 → Remove card do DOM, atualiza contador      │
+ * │ • atualizarContador()                      → Badge "X Ocorrências Registradas"          │
+ * │ • obterDescricaoTipo(tipo)                 → Converte 1-4 → texto legível               │
+ * └─────────────────────────────────────────────────────────────────────────────────────────┘
+ * 
+ * ================================================================================================
+ * 🔄 FLUXOS TÍPICOS
+ * ================================================================================================
+ * 
+ * 💡 FLUXO 1: Adicionar ocorrência
+ *    Click btnAdicionarOcorrencia → adicionarOcorrencia()
+ *      → Incrementa contadorOcorrencias
+ *      → criarCardOcorrencia(contador) → HTML card com badge, campos
+ *      → Append card em #listaOcorrencias
+ *      → Bootstrap.Tooltip.init() nos elementos [data-bs-toggle="tooltip"]
+ *      → atualizarContador() → badge "2 Ocorrências Registradas"
+ * 
+ * 💡 FLUXO 2: Remover ocorrência
+ *    Click botão ×  → removerOcorrencia(index)
+ *      → Remove .card-ocorrencia[data-index="${index}"] do DOM
+ *      → atualizarContador() → badge "1 Ocorrência Registrada" (decremento)
+ * 
+ * 💡 FLUXO 3: Coletar dados para submit (chamado por página pai)
+ *    Viagem.Finalizar() → OcorrenciaViagem.obterOcorrencias()
+ *      → Loop em $('.card-ocorrencia')
+ *      → Coleta: tipo (dropdown), descricao (textarea), dataHora, observacoes
+ *      → Retorna array: [{ tipo: 1, descricao: "Pneu furado", dataHora: "2025-02-02T14:30", ... }]
+ * 
+ * 💡 FLUXO 4: Validar antes de enviar
+ *    Viagem.Finalizar() → OcorrenciaViagem.validar()
+ *      → Loop em $('.card-ocorrencia')
+ *      → Verifica campos obrigatórios: tipo, descricao
+ *      → Se vazio: alerta "Preencha todos os campos obrigatórios", return false
+ *      → Se ok: return true
+ * 
+ * ================================================================================================
+ * 🔍 OBSERVAÇÕES TÉCNICAS
+ * ================================================================================================
+ * 
+ * 🏷️ BADGES TIPO OCORRÊNCIA (coloridos):
+ *    - tipo 1 (Acidente): badge-danger vermelho (#dc3545)
+ *    - tipo 2 (Multa): badge-warning amarelo (#ffc107)
+ *    - tipo 3 (Defeito Mecânico): badge-info ciano (#0dcaf0)
+ *    - tipo 4 (Outros): badge-secondary cinza (#6c757d)
+ * 
+ * 📄 CAMPOS DO CARD (por ocorrência):
+ *    - Tipo Ocorrência: <select> 4 opções (1-4), obrigatório
+ *    - Descrição: <textarea> rows=3, obrigatório, maxlength=500
+ *    - Data/Hora: <input type="datetime-local">, opcional
+ *    - Observações: <textarea> rows=2, opcional, maxlength=250
+ *    - Campos têm IDs únicos: tipoOcorrencia_${index}, descricaoOcorrencia_${index}, etc
+ * 
+ * 🔢 CONTADOR VISUAL:
+ *    - Badge #contadorOcorrencias: "X Ocorrências Registradas" ou "Nenhuma Ocorrência"
+ *    - Classes Bootstrap: badge, rounded-pill
+ *    - Cores: bg-success (se > 0), bg-secondary (se = 0)
+ * 
+ * 🚦 VALIDAÇÃO:
+ *    - Campos obrigatórios: tipo, descricao
+ *    - Alerta se vazio: SweetAlert ou alert() simples
+ *    - Chamador (Viagem.Finalizar) decide se permite submit mesmo com ocorrências não salvas
+ * 
+ * 🗑️ REMOÇÃO:
+ *    - Botão × no topo direito do card (position: absolute, top: 10px, right: 10px)
+ *    - Remove apenas do DOM (não envia DELETE para backend até finalizar viagem)
+ *    - Índice permanece fixo (data-index="${index}") para simplificar remoção
+ * 
+ * ♻️ LIMPAR TUDO:
+ *    - limpar(): remove todos os cards, reset contadorOcorrencias=0, array ocorrencias=[]
+ *    - Chamado ao fechar modal de finalização ou após submit bem-sucedido
+ * 
+ * 🎨 TOOLTIPS BOOTSTRAP 5:
+ *    - Cada campo de input tem tooltip explicativo (ex: "Selecione o tipo de ocorrência")
+ *    - Inicializado via new bootstrap.Tooltip(element, { customClass: 'tooltip-ftx-azul' })
+ *    - customClass para estilização personalizada FrotiX
+ * 
+ * 📦 PATTERN REVEALING MODULE:
+ *    - IIFE envolto: var OcorrenciaViagem = (function () { ... return { init, obterOcorrencias, limpar, validar, ... } })();
+ *    - Variáveis privadas: ocorrencias[], contadorOcorrencias
+ *    - Exports públicos: init, obterOcorrencias, limpar, validar, contarOcorrencias
+ * 
+ * **************************************************************************************** */
+
 // =====================================================
 // OCORRENCIA-VIAGEM.JS
 // Gerencia ocorrências no modal de finalização de viagem
