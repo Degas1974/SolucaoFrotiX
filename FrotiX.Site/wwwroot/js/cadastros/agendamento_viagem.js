@@ -1,3 +1,41 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: agendamento_viagem.js (6600 lines - MEGA MODULE)
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Sistema completo de agendamento de viagens com controle de fluxo: solicitação → aprovação
+ *    → execução → finalização. Gerencia CRUD agendamentos, integração com FullCalendar,
+ *    múltiplos modals (solicitação, aprovação, cancelamento, alteração), validações de
+ *    disponibilidade (veículo/motorista), cálculos de combustível, envio WhatsApp notificações,
+ *    sincronização Viagens, sistema permissões (solicitante/aprovador/executor), histórico
+ *    completo, relatórios Excel/PDF, anexos, ocorrências, recorrência agendamentos.
+ * 
+ * 🔢 PARÂMETROS ENTRADA: agendamentoId (GUID), permissões usuário, filtros calendário
+ * 📤 SAÍDAS: POST /api/Agendamento/* (30+ endpoints), modals, FullCalendar events, toasts
+ * 
+ * 🔗 DEPENDÊNCIAS: jQuery, Syncfusion EJ2 (DropDownList/DatePicker/Grid/Scheduler), FullCalendar,
+ *    Bootstrap 5, SweetAlert2, AppToast, Alerta.js, FrotiXWhatsApp, moment.js
+ * 
+ * 📑 CATEGORIAS PRINCIPAIS (300+ funções organizadas em 25+ seções):
+ *    • Inicialização FullCalendar + carregamento eventos (20 funções)
+ *    • Modals (solicitação/aprovação/cancelamento/edição/detalhes) - 50 funções
+ *    • Validações disponibilidade veículo/motorista - 25 funções
+ *    • Fluxo aprovação (solicitar/aprovar/rejeitar/cancelar) - 30 funções
+ *    • Cálculos combustível, distância, custos - 20 funções
+ *    • Integração WhatsApp notificações - 15 funções
+ *    • Sincronização Viagens (criar viagem de agendamento) - 20 funções
+ *    • Recorrência (agendamentos repetidos diário/semanal/mensal) - 25 funções
+ *    • Histórico alterações timeline - 15 funções
+ *    • Exportação Excel/PDF, impressão - 12 funções
+ *    • Anexos (upload/preview/remoção) - 20 funções
+ *    • Sistema permissões (validação roles) - 10 funções
+ *    • Helpers formatação/conversão - 40+ funções
+ * 
+ * ⚠️ ARQUIVO CRÍTICO: 6600 linhas, núcleo módulo Agendamentos. Alterações requerem testes
+ *    extensivos em todos os fluxos (solicitar/aprovar/executar/cancelar/editar/recorrência).
+ * 
+ * **************************************************************************************** */
+
 // ====================================================================
 // CORREÇÕES APLICADAS:
 // 1. Corrigidos caracteres corrompidos nos comentários (Ã, Ãƒã, etc.)

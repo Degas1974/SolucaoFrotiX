@@ -1,3 +1,29 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: viagens_014.js (910 lines)
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Página de listagem de viagens com foco em cancelamento e gestão de status. Grid
+ *    Syncfusion interativa com ações: cancelar viagem (com motivo), editar, visualizar,
+ *    excluir, reativar. Modal cancelamento solicita motivo (textarea obrigatório). Filtros
+ *    avançados por status (ativa/cancelada/finalizada), data, veículo, motorista. Exportação
+ *    Excel, badges status coloridos (ativa=verde, cancelada=vermelho, finalizada=azul).
+ * 
+ * 🔢 PARÂMETROS ENTRADA: filtros grid (status/dataInicio/dataFim/veiculoId/motoristaId)
+ * 📤 SAÍDAS: GET /api/Viagens/Listar, POST /api/Viagens/Cancelar, DELETE /api/Viagens/Excluir
+ * 
+ * 🔗 DEPENDÊNCIAS: jQuery, Syncfusion EJ2 Grid, Bootstrap 5, SweetAlert (v1 legacy),
+ *    AppToast, Alerta.js
+ * 
+ * 📑 FUNÇÕES PRINCIPAIS (35+ funções):
+ *    • ListaTodasViagens() → Carrega grid com dados viagens (todas os status)
+ *    • cancelarViagem(viagemId) → SweetAlert modal motivo → POST /api/Viagens/Cancelar
+ *    • reativarViagem(viagemId) → SweetAlert confirmação → POST /api/Viagens/Reativar
+ *    • aplicarFiltros() → Recarrega grid com filtros aplicados
+ *    • limparFiltros() → Reset todos os filtros → recarrega grid
+ * 
+ * **************************************************************************************** */
+
 $(document).ready(function () {
     try {
         document.getElementById('ddtCombustivelInicial').ej2_instances[0].showPopup();

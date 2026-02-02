@@ -1,3 +1,40 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViagemUpsert.js (4924 lines - CORE MODULE)
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Formulário complexo de cadastro/edição de viagens com 200+ funções. Gerencia CRUD completo,
+ *    validações extensivas, integração com múltiplos dropdowns Syncfusion (veículo, motorista,
+ *    combustível, kit, solicitante), cálculos automáticos (combustível, custos, distâncias),
+ *    modal de finalização de viagem, modal KM ajuste, modal anexos (imagens/docs), sincronização
+ *    com agendamentos, exportação Excel, impressão relatório, histórico alterações. Sistema de
+ *    autosave rascunho (localStorage). Modal "Gravando viagem..." overlay durante POST.
+ * 
+ * 🔢 PARÂMETROS ENTRADA: viagemId (GUID URL ou input hidden), modo create/edit, dados form
+ * 📤 SAÍDAS: POST /api/Viagens/Salvar, modais interativos, validações, toasts, redirecionamentos
+ * 
+ * 🔗 DEPENDÊNCIAS: jQuery, Syncfusion EJ2 (DropDownList/DatePicker/NumericTextBox/Grid/RTE),
+ *    Bootstrap 5, SweetAlert2, AppToast, Alerta.js, OcorrenciaViagem module, KendoEditor
+ * 
+ * 📝 PRINCIPAIS CATEGORIAS (200+ funções organizadas em seções):
+ *    • Inicialização DOMContentLoaded + carregamentos iniciais (20+ funções)
+ *    • Dropdowns Syncfusion (veículo/motorista/combustível/kit/solicitante) - 30 funções
+ *    • Validações campos obrigatórios + regras negócio - 25 funções
+ *    • Cálculos automáticos (combustível inicial/final, custos, distância) - 15 funções
+ *    • Modal Finalizaração Viagem (ocorrências, KM final, combustível) - 20 funções
+ *    • Modal Anexos (upload imagens/documentos, preview, remoção) - 18 funções
+ *    • Modal KM Ajuste (correção km_rodado quando 0) - 10 funções
+ *    • Sincronização Agendamento (vincula viagem a agendamento) - 12 funções
+ *    • Autosave Rascunho (localStorage backup a cada 30s) - 8 funções
+ *    • Histórico Alterações (log mudanças, exibição timeline) - 10 funções
+ *    • Exportação Excel/PDF, Impressão Relatório - 8 funções
+ *    • CRUD Operations (save/update/delete/duplicate) - 15 funções
+ *    • Helpers formatação/conversão/validação - 25+ funções
+ * 
+ * ⚠️ ARQUIVO CRÍTICO: 4924 linhas, núcleo módulo Viagens. Alterações requerem testes extensivos.
+ * 
+ * **************************************************************************************** */
+
 // IIFE para não vazar variáveis no escopo global
 (function ()
 {

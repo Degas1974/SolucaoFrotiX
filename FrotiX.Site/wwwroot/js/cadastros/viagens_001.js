@@ -1,3 +1,29 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: viagens_001.js (1152 lines)
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Página de listagem e gestão de viagens com Syncfusion Grid interativo. Exibe todas as
+ *    viagens cadastradas em grid paginada com filtros, ordenação, busca. Ações inline: editar,
+ *    visualizar detalhes, excluir, finalizar viagem, ajustar KM. Modals: finalização viagem
+ *    (ocorrências, combustível final, KM final), ajuste KM (quando km_rodado = 0). Integração
+ *    OcorrenciaViagem module. Exportação Excel, impressão, filtros avançados.
+ * 
+ * 🔢 PARÂMETROS ENTRADA: filtros grid (dataInicio/dataFim/veiculoId/motoristaId/status)
+ * 📤 SAÍDAS: GET /api/Viagens/Listar, POST /api/Viagens/Finalizar, DELETE /api/Viagens/Excluir
+ * 
+ * 🔗 DEPENDÊNCIAS: jQuery, Syncfusion EJ2 Grid, Bootstrap 5, SweetAlert2, AppToast,
+ *    Alerta.js, OcorrenciaViagem module (ocorrencia-viagem.js)
+ * 
+ * 📑 FUNÇÕES PRINCIPAIS (50+ funções):
+ *    • ListaTodasViagens() → Carrega grid Syncfusion com dados viagens
+ *    • modalFinalizaViagem(viagemId) → Abre modal finalização
+ *    • salvarFinalizacaoViagem() → POST com ocorrências + KM final
+ *    • modalAjusteKM(viagemId) → Corrige KM quando km_rodado = 0
+ *    • excluirViagem(viagemId) → SweetAlert confirmação → DELETE
+ * 
+ * **************************************************************************************** */
+
 $(document).ready(function () {
     try
     {

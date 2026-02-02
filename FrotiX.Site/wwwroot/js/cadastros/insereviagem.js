@@ -1,4 +1,26 @@
-﻿
+﻿/* ****************************************************************************************
+ * ⚡ ARQUIVO: insereviagem.js (1501 lines)
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Formulário simplificado de inserção rápida de viagem (alternativo ao ViagemUpsert.js).
+ *    Permite cadastro expedito com campos essenciais: veículo, motorista, data_inicio, data_fim,
+ *    km_inicial, km_final, combustível_inicial/final, destino, observações. Auto-carrega dados
+ *    se viagemId fornecido (modo edição). Integração AJAX, validações básicas, toasts sucesso/erro.
+ * 
+ * 🔢 PARÂMETROS ENTRADA: txtViagemId (input hidden), form fields, API GET/POST
+ * 📤 SAÍDAS: POST /api/Agenda/RecuperaViagem, POST /api/Viagens/SalvarRapido, toasts
+ * 
+ * 🔗 DEPENDÊNCIAS: jQuery, Bootstrap, alerta.js, global-toast.js
+ * 
+ * 📑 FUNÇÕES PRINCIPAIS (40+ funções):
+ *    • ExibeViagem(viagem) → Popula campos com dados da viagem carregada
+ *    • SalvarViagemRapida() → Valida + POST /api/Viagens/SalvarRapido
+ *    • LimparFormulario() → Reset todos os campos
+ *    • ValidarCamposObrigatorios() → Verifica veículo, motorista, datas
+ * 
+ * **************************************************************************************** */
+
 $(document).ready(function () {
 
     var viagemId = document.getElementById("txtViagemId").value;
