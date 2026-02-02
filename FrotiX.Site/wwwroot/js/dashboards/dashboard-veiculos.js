@@ -516,83 +516,123 @@ function renderizarGraficosGerais(data) {
     }
 }
 
+/****************************************************************************************
+ * 🔧 FUNÇÃO: renderizarTabelasGerais
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Renderiza 4 tabelas HTML da Visão Geral com dados da frota (categoria, combustível,
+ *    unidade, TOP 10 KM) usando grid customizado FrotiX.
+ * 
+ * 📥 ENTRADAS:
+ *    • data {Object} - Objeto com 4 arrays:
+ *      - porCategoria {Array}   → [{categoria, quantidade}] - Ex: Passeio, Carga, PM
+ *      - porCombustivel {Array} → [{combustivel, quantidade}] - Ex: Gasolina, Diesel
+ *      - porUnidade {Array}     → [{unidade, quantidade}] - Ex: Sede, Filial 1
+ *      - topKm {Array}          → [{placa, modelo, km}] - TOP 10 veículos por KM
+ * 
+ * 📤 SAÍDAS:
+ *    • Atualiza innerHTML de 4 elementos:
+ *      - #tabelaCategoria: grid 2 colunas (categoria | qtd) + linha total
+ *      - #tabelaCombustivel: grid 2 colunas (combustível | qtd)
+ *      - #tabelaUnidade: grid 2 colunas (unidade | qtd)
+ *      - #tabelaTopKm: grid 3 colunas (rank | veículo+modelo | km)
+ * 
+ * 🔗 CHAMADA POR:
+ *    • carregarDadosGerais() → Após fetch API
+ * 
+ * 🔄 CHAMA:
+ *    - Nenhuma função (manipulação DOM pura)
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - Badges de ranking: .badge-rank-veic (padrão) + .top3 (ouro/prata/bronze)
+ *    - Fallback "Nenhum dado encontrado" se array vazio
+ *    - Linha de TOTAL apenas na tabela de Categorias (reduce sum)
+ *    - toLocaleString('pt-BR') para separador de milhares em KM
+ *    - Grid customizado: classes .grid-row, .grid-cell do FrotiX.css
+ * 
+ ****************************************************************************************/
 function renderizarTabelasGerais(data) {
-    // Tabela de Categorias
-    let htmlCategoria = '';
-    if (data.porCategoria && data.porCategoria.length > 0) {
-        data.porCategoria.forEach(c => {
-            htmlCategoria += `
-                <div class="grid-row">
-                    <div class="grid-cell">${c.categoria}</div>
-                    <div class="grid-cell text-end"><strong>${c.quantidade}</strong></div>
-                </div>
-            `;
-        });
-        // Total
-        const totalCat = data.porCategoria.reduce((sum, c) => sum + c.quantidade, 0);
-        htmlCategoria += `
-            <div class="grid-row grid-row-total">
-                <div class="grid-cell"><strong>TOTAL</strong></div>
-                <div class="grid-cell text-end"><strong>${totalCat}</strong></div>
-            </div>
-        `;
-    } else {
-        htmlCategoria = '<div class="grid-row"><div class="grid-cell" style="grid-column: span 2; text-align: center;">Nenhum dado encontrado</div></div>';
-    }
-    $('#tabelaCategoria').html(htmlCategoria);
-
-    // Tabela de Combustível
-    let htmlCombustivel = '';
-    if (data.porCombustivel && data.porCombustivel.length > 0) {
-        data.porCombustivel.forEach(c => {
-            htmlCombustivel += `
-                <div class="grid-row">
-                    <div class="grid-cell">${c.combustivel}</div>
-                    <div class="grid-cell text-end"><strong>${c.quantidade}</strong></div>
-                </div>
-            `;
-        });
-    } else {
-        htmlCombustivel = '<div class="grid-row"><div class="grid-cell" style="grid-column: span 2; text-align: center;">Nenhum dado encontrado</div></div>';
-    }
-    $('#tabelaCombustivel').html(htmlCombustivel);
-
-    // Tabela de Unidades
-    let htmlUnidade = '';
-    if (data.porUnidade && data.porUnidade.length > 0) {
-        data.porUnidade.forEach(u => {
-            htmlUnidade += `
-                <div class="grid-row">
-                    <div class="grid-cell">${u.unidade}</div>
-                    <div class="grid-cell text-end"><strong>${u.quantidade}</strong></div>
-                </div>
-            `;
-        });
-    } else {
-        htmlUnidade = '<div class="grid-row"><div class="grid-cell" style="grid-column: span 2; text-align: center;">Nenhum dado encontrado</div></div>';
-    }
-    $('#tabelaUnidade').html(htmlUnidade);
-
-    // Tabela Top KM
-    let htmlTopKm = '';
-    if (data.topKm && data.topKm.length > 0) {
-        data.topKm.forEach((v, i) => {
-            const badgeClass = i < 3 ? 'top3' : '';
-            htmlTopKm += `
-                <div class="grid-row">
-                    <div class="grid-cell"><span class="badge-rank-veic ${badgeClass}">${i + 1}</span></div>
-                    <div class="grid-cell">
-                        <strong>${v.placa}</strong>
-                        <small class="d-block text-muted">${v.modelo}</small>
+    try {
+        // Tabela de Categorias
+        let htmlCategoria = '';
+        if (data.porCategoria && data.porCategoria.length > 0) {
+            data.porCategoria.forEach(c => {
+                htmlCategoria += `
+                    <div class="grid-row">
+                        <div class="grid-cell">${c.categoria}</div>
+                        <div class="grid-cell text-end"><strong>${c.quantidade}</strong></div>
                     </div>
-                    <div class="grid-cell text-end"><strong>${v.km.toLocaleString('pt-BR')} km</strong></div>
+                `;
+            });
+            // Total
+            const totalCat = data.porCategoria.reduce((sum, c) => sum + c.quantidade, 0);
+            htmlCategoria += `
+                <div class="grid-row grid-row-total">
+                    <div class="grid-cell"><strong>TOTAL</strong></div>
+                    <div class="grid-cell text-end"><strong>${totalCat}</strong></div>
                 </div>
             `;
-        });
-    } else {
-        htmlTopKm = '<div class="grid-row"><div class="grid-cell" style="grid-column: span 3; text-align: center;">Nenhum dado encontrado</div></div>';
+        } else {
+            htmlCategoria = '<div class="grid-row"><div class="grid-cell" style="grid-column: span 2; text-align: center;">Nenhum dado encontrado</div></div>';
+        }
+        $('#tabelaCategoria').html(htmlCategoria);
+
+        // Tabela de Combustível
+        let htmlCombustivel = '';
+        if (data.porCombustivel && data.porCombustivel.length > 0) {
+            data.porCombustivel.forEach(c => {
+                htmlCombustivel += `
+                    <div class="grid-row">
+                        <div class="grid-cell">${c.combustivel}</div>
+                        <div class="grid-cell text-end"><strong>${c.quantidade}</strong></div>
+                    </div>
+                `;
+            });
+        } else {
+            htmlCombustivel = '<div class="grid-row"><div class="grid-cell" style="grid-column: span 2; text-align: center;">Nenhum dado encontrado</div></div>';
+        }
+        $('#tabelaCombustivel').html(htmlCombustivel);
+
+        // Tabela de Unidades
+        let htmlUnidade = '';
+        if (data.porUnidade && data.porUnidade.length > 0) {
+            data.porUnidade.forEach(u => {
+                htmlUnidade += `
+                    <div class="grid-row">
+                        <div class="grid-cell">${u.unidade}</div>
+                        <div class="grid-cell text-end"><strong>${u.quantidade}</strong></div>
+                    </div>
+                `;
+            });
+        } else {
+            htmlUnidade = '<div class="grid-row"><div class="grid-cell" style="grid-column: span 2; text-align: center;">Nenhum dado encontrado</div></div>';
+        }
+        $('#tabelaUnidade').html(htmlUnidade);
+
+        // Tabela Top KM
+        let htmlTopKm = '';
+        if (data.topKm && data.topKm.length > 0) {
+            data.topKm.forEach((v, i) => {
+                const badgeClass = i < 3 ? 'top3' : '';
+                htmlTopKm += `
+                    <div class="grid-row">
+                        <div class="grid-cell"><span class="badge-rank-veic ${badgeClass}">${i + 1}</span></div>
+                        <div class="grid-cell">
+                            <strong>${v.placa}</strong>
+                            <small class="d-block text-muted">${v.modelo}</small>
+                        </div>
+                        <div class="grid-cell text-end"><strong>${v.km.toLocaleString('pt-BR')} km</strong></div>
+                    </div>
+                `;
+            });
+        } else {
+            htmlTopKm = '<div class="grid-row"><div class="grid-cell" style="grid-column: span 3; text-align: center;">Nenhum dado encontrado</div></div>';
+        }
+        $('#tabelaTopKm').html(htmlTopKm);
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'renderizarTabelasGerais', error);
     }
-    $('#tabelaTopKm').html(htmlTopKm);
 }
 
 // ==============================================

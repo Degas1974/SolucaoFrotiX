@@ -640,28 +640,36 @@ function salvarObservacao() {
  ****************************************************************************************/
 function carregarObservacoesDia() {
     try {
+        // [DADOS] Obter data selecionada no filtro ou usar data atual como fallback
         var dataFiltro = obterValorComponente('DataEscala');
         var dataParam = dataFiltro ? new Date(dataFiltro).toISOString() : new Date().toISOString();
 
+        // [AJAX] Chamada para endpoint /api/Escala/GetObservacoesDia
+        // 📥 ENVIA: { data: ISO8601DateTime }
+        // 📤 RECEBE: { success: bool, data: [ObservacaoDiaDTO], message: string }
         $.ajax({
             url: '/api/Escala/GetObservacoesDia',
             type: 'GET',
             data: { data: dataParam },
             success: function (response) {
                 try {
+                    // [UI] Obter container onde renderizar observações
                     var container = document.getElementById('observacoesContainer');
                     if (!container) return;
 
                     if (response.success && response.data && response.data.length > 0) {
+                        // [UI] Renderizar observações como cards de alerta
                         var html = '';
                         response.data.forEach(function(obs) {
-                            var prioridadeClass = obs.prioridade === 'Alta' ? 'danger' : 
+                            // [LOGICA] Mapear prioridade para classe Bootstrap (danger/warning/secondary)
+                            var prioridadeClass = obs.prioridade === 'Alta' ? 'danger' :
                                                   obs.prioridade === 'Normal' ? 'warning' : 'secondary';
-                            
-                            // Usar diretamente as datas já formatadas pela API (dd/MM/yyyy)
+
+                            // [DADOS] Datas já vêm formatadas do servidor (dd/MM/yyyy)
                             var dataDeFormatada = obs.exibirDe;
                             var dataAteFormatada = obs.exibirAte;
-                            
+
+                            // [UI] Construir HTML do card de observação
                             html += '<div class="alert alert-' + prioridadeClass + ' mb-2">';
                             html += '<div class="d-flex justify-content-between align-items-start">';
                             html += '<div>';
@@ -679,6 +687,7 @@ function carregarObservacoesDia() {
                         });
                         container.innerHTML = html;
                     } else {
+                        // [UI] Mensagem quando não há observações
                         container.innerHTML = '<p class="text-muted">Nenhuma observação para este dia</p>';
                     }
                 } catch (error) {
@@ -686,7 +695,7 @@ function carregarObservacoesDia() {
                 }
             },
             error: function (xhr, status, error) {
-                console.error('Erro ao carregar observações:', error);
+                // [DEBUG] Erro silencioso (não mostrar toast para não sobrecarregar)
             }
         });
     } catch (error) {
@@ -718,8 +727,12 @@ function carregarObservacoesDia() {
  ****************************************************************************************/
 window.excluirObservacaoDia = function(observacaoId) {
     try {
+        // [UI] Pedir confirmação do usuário antes de excluir
         if (!confirm('Deseja excluir esta observação?')) return;
 
+        // [AJAX] Chamada para endpoint /api/Escala/ExcluirObservacaoDia
+        // 📥 ENVIA: { observacaoId: number }
+        // 📤 RECEBE: { success: bool, message: string }
         $.ajax({
             url: '/api/Escala/ExcluirObservacaoDia',
             type: 'POST',
@@ -729,6 +742,7 @@ window.excluirObservacaoDia = function(observacaoId) {
                 try {
                     if (response.success) {
                         AppToast.show('Verde', 'Observação excluída!', 2000);
+                        // [LOGICA] Recarregar lista de observações após exclusão
                         carregarObservacoesDia();
                     } else {
                         AppToast.show('Vermelho', response.message || 'Erro ao excluir', 3000);
@@ -769,8 +783,10 @@ window.excluirObservacaoDia = function(observacaoId) {
  ****************************************************************************************/
 function limparCampoComponente(elementId) {
     try {
+        // [DADOS] Obter elemento e sua instância Syncfusion
         const element = document.getElementById(elementId);
         if (element && element.ej2_instances && element.ej2_instances[0]) {
+            // [UI] Resetar valor do componente
             element.ej2_instances[0].value = null;
         }
     } catch (error) {
@@ -803,13 +819,15 @@ function limparCampoComponente(elementId) {
  ****************************************************************************************/
 function obterValorComponente(elementId) {
     try {
+        // [DADOS] Obter elemento e sua instância Syncfusion
         const element = document.getElementById(elementId);
         if (element && element.ej2_instances && element.ej2_instances[0]) {
+            // [DADOS] Retornar valor do componente
             return element.ej2_instances[0].value;
         }
         return null;
     } catch (error) {
-        console.warn(`⚠️ Erro ao obter valor do componente ${elementId}:`, error);
+        console.warn(`Erro ao obter valor do componente ${elementId}:`, error);
         return null;
     }
 }
@@ -845,10 +863,10 @@ function obterValorComponente(elementId) {
  ****************************************************************************************/
 function preencherModalVisualizacao(dados) {
     try {
-        console.log('📝 Preenchendo modal com:', dados);
-
+        // [UI] Preencher nome do motorista
         document.getElementById('viewNomeMotorista').textContent = dados.nomeMotorista || '-';
 
+        // [UI] Preencher foto do motorista (base64 ou padrão)
         var fotoElement = document.getElementById('viewFotoMotorista');
         if (dados.fotoBase64 && dados.fotoBase64 !== '') {
             fotoElement.src = 'data:image/png;base64,' + dados.fotoBase64;
@@ -856,11 +874,13 @@ function preencherModalVisualizacao(dados) {
             fotoElement.src = '/images/default-driver.png';
         }
 
+        // [UI] Preencher status com badge colorido
         var statusBadge = document.getElementById('viewStatusBadge');
         var statusTexto = dados.statusMotorista || 'Indefinido';
         statusBadge.textContent = statusTexto;
         statusBadge.className = 'badge mt-2 status-' + getStatusClass(statusTexto);
 
+        // [UI] Preencher data da escala (formato pt-BR)
         var dataFormatada = '-';
         if (dados.dataEscala) {
             var data = new Date(dados.dataEscala);
@@ -870,6 +890,7 @@ function preencherModalVisualizacao(dados) {
         }
         document.getElementById('viewDataEscala').textContent = dataFormatada;
 
+        // [UI] Preencher horários (HH:mm)
         var horarioTexto = '-';
         if (dados.horaInicio) {
             horarioTexto = dados.horaInicio.substring(0, 5);
@@ -879,6 +900,7 @@ function preencherModalVisualizacao(dados) {
         }
         document.getElementById('viewHorario').textContent = horarioTexto;
 
+        // [UI] Preencher informações do turno, veículo e serviço
         document.getElementById('viewTurno').textContent = dados.nomeTurno || '-';
         document.getElementById('viewPlaca').textContent = dados.placa || 'Sem veículo';
         document.getElementById('viewLotacao').textContent = dados.lotacao || '-';
@@ -887,11 +909,13 @@ function preencherModalVisualizacao(dados) {
         document.getElementById('viewRequisitante').textContent = dados.nomeRequisitante || '-';
         document.getElementById('viewObservacoes').textContent = dados.observacoes || 'Nenhuma observação registrada';
 
+        // [UI] Obter divs de alerta (cobertura/cobrindo)
         var divCobertura = document.getElementById('divCoberturaInfo');
         var divCobrindo = document.getElementById('divCobrindoInfo');
+        // [LOGICA] Normalizar status para comparação
         var statusLower = (statusTexto || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-        // Alerta quando motorista está INDISPONÍVEL (sendo coberto)
+        // [REGRA] Alerta quando motorista está INDISPONÍVEL (sendo coberto por outro)
         if (statusLower.includes('indisponivel')) {
             divCobertura.style.display = 'block';
             document.getElementById('viewNomeCobertor').textContent = dados.nomeMotoristaCobertor || dados.nomeCobertor || 'Não definido';
@@ -900,7 +924,7 @@ function preencherModalVisualizacao(dados) {
             divCobertura.style.display = 'none';
         }
 
-        // Alerta quando motorista está COBRINDO outro
+        // [REGRA] Alerta quando motorista está COBRINDO outro motorista
         if (dados.nomeMotoristaCobrindo && dados.nomeMotoristaCobrindo !== '') {
             divCobrindo.style.display = 'block';
             document.getElementById('viewNomeCoberto').textContent = dados.nomeMotoristaCobrindo;
@@ -909,13 +933,13 @@ function preencherModalVisualizacao(dados) {
             divCobrindo.style.display = 'none';
         }
 
+        // [UI] Configurar link de edição
         document.getElementById('btnEditarEscala').href = '/Escalas/UpsertEEscala?id=' + dados.escalaDiaId;
-
-        console.log('✅ Modal preenchido com sucesso');
 
     } catch (error) {
         Alerta.TratamentoErroComLinha('ListaEscala.js', 'preencherModalVisualizacao', error);
     }
 }
 
-console.log('📄 ListaEscala.js carregado');
+// [DEBUG] Arquivo carregado com sucesso
+console.log('✅ ListaEscala.js carregado');
