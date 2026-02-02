@@ -1,6 +1,301 @@
-// ========================================
-// DASHBOARD DE VIAGENS - FROTIX
-// ========================================
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: dashboard-viagens.js
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Dashboard analítico e interativo de viagens do sistema FrotiX. Apresenta métricas
+ *    consolidadas, gráficos dinâmicos com Syncfusion EJ2 Charts, filtros temporais
+ *    (ano/mês/período personalizado), TOP 10 viagens mais caras, heatmap dia/hora e
+ *    análises de custos por categoria, motorista, veículo, finalidade e requisitante.
+ *    Inclui modal de detalhes de viagem com breakdown de custos e edição via botão externo.
+ * 
+ * 🔢 PARÂMETROS DE ENTRADA:
+ *    - Filtros de período: ano, mês (dropdowns), dataInicio, dataFim (date inputs)
+ *    - Botões de período rápido: 7, 15, 30, 60, 90, 180, 365 dias
+ *    - Click em linhas do TOP 10: abre modal com detalhes da viagem
+ *    - Click em card "KM Rodado": abre modal de ajuste de KM (se zero)
+ * 
+ * 📤 SAÍDAS PRODUZIDAS:
+ *    - 15 gráficos Syncfusion (Column, Bar, Area, Pie, Heatmap, Line)
+ *    - 21 cards estatísticos com métricas de viagem/custo/KM
+ *    - Tabela TOP 10 viagens mais caras (clicável para modal)
+ *    - Modal detalhamento de viagem (custos breakdown + botão editar)
+ *    - Modal ajuste de KM rodado (caso viagem tenha KmRodado = 0)
+ *    - Indicadores de variação percentual vs período anterior
+ * 
+ * 🔗 DEPENDÊNCIAS:
+ *    • BIBLIOTECAS:
+ *      - Syncfusion EJ2 Charts (ej.charts.Chart, ej.charts.AccumulationChart)
+ *      - jQuery 3.x (AJAX, DOM manipulation)
+ *      - Bootstrap 5.x (Grid, Modal, Tooltip)
+ *      - Moment.js (manipulação de datas)
+ *    • ARQUIVOS FROTIX:
+ *      - alerta.js (Alerta.TratamentoErroComLinha)
+ *      - sweetalert_interop.js (SweetAlert para confirmações)
+ *      - global-toast.js (AppToast.show)
+ *      - FrotiX.css (estilos de cards, badges, loadings)
+ *    • APIS:
+ *      - /api/DashboardViagens/ObterEstatisticasGerais (GET)
+ *      - /api/DashboardViagens/ObterViagensPorDia (GET)
+ *      - /api/DashboardViagens/ObterViagensPorStatus (GET)
+ *      - /api/DashboardViagens/ObterViagensPorMotorista (GET, top=10)
+ *      - /api/DashboardViagens/ObterViagensPorVeiculo (GET, top=10)
+ *      - /api/DashboardViagens/ObterCustosPorDia (GET)
+ *      - /api/DashboardViagens/ObterCustosPorTipo (GET)
+ *      - /api/DashboardViagens/ObterViagensPorFinalidade (GET, top=10)
+ *      - /api/DashboardViagens/ObterViagensPorRequisitante (GET, top=6)
+ *      - /api/DashboardViagens/ObterViagensPorSetor (GET, top=6)
+ *      - /api/DashboardViagens/ObterCustosPorMotorista (GET, top=10)
+ *      - /api/DashboardViagens/ObterCustosPorVeiculo (GET, top=10)
+ *      - /api/DashboardViagens/ObterTop10ViagensMaisCaras (GET)
+ *      - /api/DashboardViagens/ObterHeatmapViagens (GET)
+ *      - /api/DashboardViagens/ObterTop10VeiculosPorKm (GET)
+ *      - /api/DashboardViagens/ObterCustoMedioPorFinalidade (GET)
+ * 
+ * ================================================================================================
+ * 📑 ÍNDICE DE FUNÇÕES (81 funções)
+ * ================================================================================================
+ * 
+ * ┌─────────────────────────────────────────────────────────────────────────────────────────┐
+ * │ 🎯 FUNÇÕES PRINCIPAIS DE INICIALIZAÇÃO E CARREGAMENTO                                    │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • inicializarDashboard()                   → Entry point, define período padrão          │
+ * │ • carregarDadosDashboard()                 → Promise.allSettled 16 endpoints paralelos   │
+ * │ • carregarEstatisticasGerais()             → Cards principais + variações                │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🏗️ FUNÇÕES DE RENDERIZAÇÃO DE GRÁFICOS SYNCFUSION                                       │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • renderizarGraficoViagensPorDia(dados)    → Column chart (7 dias da semana)            │
+ * │ • renderizarGraficoViagensPorStatus(dados) → Donut chart (Finalizadas/Andamento/etc)    │
+ * │ • renderizarGraficoViagensPorMotorista()   → Column chart TOP 10 motoristas             │
+ * │ • renderizarGraficoViagensPorVeiculo()     → Column chart TOP 10 veículos               │
+ * │ • renderizarGraficoCustosPorDia()          → Area chart (série temporal)                │
+ * │ • renderizarGraficoCustosPorTipo()         → Donut chart (5 tipos: combustível/veic)    │
+ * │ • renderizarGraficoViagensPorFinalidade()  → Column chart TOP 10 finalidades            │
+ * │ • renderizarGraficoViagensPorRequisitante()→ Bar chart TOP 6 requisitantes              │
+ * │ • renderizarGraficoViagensPorSetor()       → Bar chart TOP 6 setores                    │
+ * │ • renderizarGraficoCustosPorMotorista()    → Column chart TOP 10 custos/motorista       │
+ * │ • renderizarGraficoCustosPorVeiculo()      → Column chart TOP 10 custos/veículo         │
+ * │ • renderizarTop10VeiculosKm()              → Bar chart TOP 10 KM rodado                 │
+ * │ • renderizarCustoMedioPorFinalidade()      → Dual-axis (bars + line overlay)            │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 📊 CARREGAMENTO DE DADOS INDIVIDUAIS (13 endpoints)                                     │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • carregarViagensPorDia()                  → Fetch + render gráfico dia semana          │
+ * │ • carregarViagensPorStatus()               → Fetch + render donut status                │
+ * │ • carregarViagensPorMotorista()            → Fetch + render column motorista            │
+ * │ • carregarViagensPorVeiculo()              → Fetch + render column veículo              │
+ * │ • carregarCustosPorDia()                   → Fetch + render area temporal               │
+ * │ • carregarCustosPorTipo()                  → Fetch + render donut custos                │
+ * │ • carregarViagensPorFinalidade()           → Fetch + render column finalidade           │
+ * │ • carregarViagensPorRequisitante()         → Fetch + render bar TOP 6 requisitante      │
+ * │ • carregarViagensPorSetor()                → Fetch + render bar TOP 6 setor             │
+ * │ • carregarCustosPorMotorista()             → Fetch + render column custos/motorista     │
+ * │ • carregarCustosPorVeiculo()               → Fetch + render column custos/veículo       │
+ * │ • carregarTop10ViagensMaisCaras()          → Fetch + render tabela TOP 10 clicável      │
+ * │ • carregarHeatmapViagens()                 → Fetch + render heatmap 7x24 (dia/hora)     │
+ * │ • carregarTop10VeiculosKm()                → Fetch + render bar TOP 10 KM               │
+ * │ • carregarCustoMedioPorFinalidade()        → Fetch + render dual-axis chart             │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🎨 FORMATAÇÃO E HELPERS VISUAIS                                                          │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • formatarNumero(valor, casasDecimais)     → Formato pt-BR (1.234.567,89)               │
+ * │ • formatarValorMonetario(valor)            → <100: 2 casas; ≥100: 0 casas               │
+ * │ • formatarDuracao(minutos)                 → "2h 05min" ou "45min"                      │
+ * │ • formatarDataParaInput(data)              → YYYY-MM-DD para input[type=date]           │
+ * │ • atualizarVariacao(elemId, atual, anterior) → Badge verde/vermelho/neutro             │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🔧 FILTROS E MANIPULAÇÃO DE PERÍODO                                                      │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • aplicarFiltroPeriodo(dias)               → Define últimos N dias (7/15/30/60/etc)     │
+ * │ • aplicarFiltroPersonalizado()             → Valida dataInicio/dataFim → carrega        │
+ * │ • limparFiltroPeriodo()                    → Reset para últimos 30 dias                 │
+ * │ • inicializarCamposData()                  → Preenche inputs com datas padrão            │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🗂️ TABELAS E RENDERIZAÇÕES TABULARES                                                    │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • renderizarTabelaTop10(dados)             → Tabela clicável TOP 10 viagens mais caras  │
+ * │ • renderizarHeatmapViagens(dados, maxV)    → Grid 7x24 com cores por intensidade        │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🎭 MODAIS E INTERAÇÕES                                                                   │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • abrirModalDetalhesViagem(index)          → Modal viagem do TOP10 com breakdown custos │
+ * │ • inicializarModalAjuste()                 → Prepara modal Bootstrap p/ ajustar KM      │
+ * │ • abrirModalAjustarKmViagem()              → Modal p/ corrigir KmRodado=0               │
+ * │ • carregarDetalhesViagemParaAjuste(id)     → Busca dados viagem p/ modal ajuste         │
+ * │ • salvarAjusteKmViagem()                   → PATCH p/ atualizar KM via API               │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🖼️ LOADING E FEEDBACK VISUAL                                                             │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • mostrarLoadingInicial()                  → Overlay logo FrotiX inicial                │
+ * │ • esconderLoadingInicial()                 → Fade out overlay inicial                   │
+ * │ • mostrarLoadingGeral()                    → Loading overlay em operações AJAX          │
+ * │ • esconderLoadingGeral()                   → Remove loading overlay                     │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🔁 EXPORTAÇÃO E RELATÓRIOS                                                               │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • gerarRelatorioPDF()                      → Exporta dashboard para PDF via endpoint    │
+ * │ • exportarDadosExcel()                     → Exporta planilha Excel com dados filtrados │
+ * └─────────────────────────────────────────────────────────────────────────────────────────┘
+ * 
+ * ================================================================================================
+ * 🔄 FLUXOS TÍPICOS  
+ * ================================================================================================
+ * 
+ * 💡 FLUXO 1: Inicialização padrão (últimos 30 dias)
+ *    ┌─────────────────────────────────────────────────────────────────────────────────────┐
+ *    │ DOMContentLoaded → inicializarDashboard()                                            │
+ *    │   ↓ Define periodoAtual (hoje - 30 dias)                                            │
+ *    │   ↓ inicializarCamposData() → preenche inputs date                                  │
+ *    │   ↓ inicializarModalAjuste() → prepara modal Bootstrap                              │
+ *    │   ↓ carregarDadosDashboard()                                                         │
+ *    │      ↓ Promise.allSettled → 16 endpoints paralelos (não bloqueia se 1 falhar)       │
+ *    │      ↓ carregarEstatisticasGerais() → 21 cards + variações                          │
+ *    │      ↓ carregarViagensPorDia() → gráfico column 7 dias                              │
+ *    │      ↓ carregarViagensPorStatus() → donut 4 status                                  │
+ *    │      ↓ carregarViagensPorMotorista() → column TOP 10                                │
+ *    │      ↓ carregarTop10ViagensMaisCaras() → tabela clicável                            │
+ *    │      ↓ carregarHeatmapViagens() → grid 7x24                                         │
+ *    │   ↓ esconderLoadingInicial()                                                         │
+ *    │   ↓ AppToast.show('Verde', 'Dashboard carregado', 3000)                             │
+ *    └────────────────────────────────────────────────────────────────────────────────────┘
+ * 
+ * 💡 FLUXO 2: Filtro de período rápido (ex: últimos 7 dias)
+ *    ┌─────────────────────────────────────────────────────────────────────────────────────┐
+ *    │ Click botão "7 dias" → aplicarFiltroPeriodo(7)                                      │
+ *    │   ↓ Calcula: hoje - 7 dias                                                          │
+ *    │   ↓ Atualiza periodoAtual.dataInicio/dataFim                                        │
+ *    │   ↓ Atualiza inputs date HTML                                                       │
+ *    │   ↓ carregarDadosDashboard()                                                         │
+ *    │      ↓ Todos os 16 endpoints recebem novos params (dataInicio, dataFim)             │
+ *    │      ↓ Re-renderiza todos os gráficos e tabelas                                     │
+ *    └─────────────────────────────────────────────────────────────────────────────────────┘
+ * 
+ * 💡 FLUXO 3: Click em viagem do TOP 10 → detalhes
+ *    ┌─────────────────────────────────────────────────────────────────────────────────────┐
+ *    │ Click <tr> tabela TOP 10 → abrirModalDetalhesViagem(index)                          │
+ *    │   ↓ Obtém dados da viagem de dadosTop10Viagens[index]                               │
+ *    │   ↓ Preenche modal: Nº Ficha, Status, Data, Motorista, Veículo                     │
+ *    │   ↓ Preenche breakdown custos: Combustível, Veículo, Motorista, Operador, Lavador  │
+ *    │   ↓ Se kmRodado = 0 → exibe alerta amarelo com botão "Ajustar KM"                  │
+ *    │   ↓ Botão "Editar Viagem" → redireciona p/ /Viagens/Upsert/{viagemId}              │
+ *    │   ↓ new bootstrap.Modal().show()                                                    │
+ *    └─────────────────────────────────────────────────────────────────────────────────────┘
+ * 
+ * 💡 FLUXO 4: Ajuste de KM para viagem com KmRodado = 0
+ *    ┌─────────────────────────────────────────────────────────────────────────────────────┐
+ *    │ Click card "KM Rodado" (quando valor = 0) → abrirModalAjustarKmViagem()            │
+ *    │   ↓ carregarDetalhesViagemParaAjuste(viagemAtualId)                                 │
+ *    │      ↓ GET /api/Viagem/ObterDetalhes/{id}                                           │
+ *    │      ↓ Preenche modal: Nº Ficha, Motorista, Veículo, Data Inicial                  │
+ *    │      ↓ Input KM Rodado com valor atual (0)                                          │
+ *    │   ↓ Usuário digita novo KM                                                          │
+ *    │   ↓ salvarAjusteKmViagem()                                                           │
+ *    │      ↓ Validação: KM > 0 e ≤ 999999                                                 │
+ *    │      ↓ PATCH /api/Viagem/AtualizarKmRodado                                          │
+ *    │         { viagemId, kmRodado }                                                       │
+ *    │      ↓ Success → AppToast.show('Verde') + recalcula custos + atualiza card          │
+ *    │      ↓ Erro → AppToast.show('Vermelho')                                             │
+ *    └─────────────────────────────────────────────────────────────────────────────────────┘
+ * 
+ * ================================================================================================
+ * 🔍 OBSERVAÇÕES TÉCNICAS
+ * ================================================================================================
+ * 
+ * 🎨 PALETA DE CORES FROTIX (8 cores padrão):
+ *    - azul: #0D47A1 (gráficos principais)
+ *    - verde: #16a34a (badges sucesso)
+ *    - laranja: #d97706 (alertas)
+ *    - amarelo: #f59e0b (warnings)
+ *    - vermelho: #dc2626 (erros)
+ *    - roxo: #9d4edd (heatmap alta intensidade)
+ *    - ciano: #22d3ee (gráficos secundários)
+ *    - rosa: #ec4899 (destaques)
+ * 
+ * 📊 SYNCFUSION EJ2 CHARTS - Tipos usados:
+ *    - ej.charts.Chart → Column, Bar, Line, Area, SplineArea, StackingColumn
+ *    - ej.charts.AccumulationChart → Pie, Donut (innerRadius: 40%)
+ *    - Configurações padrão:
+ *      • tooltip: { enable: true, format: personalizado }
+ *      • legendSettings: { visible: true/false, position: 'Bottom' }
+ *      • chartArea: { border: { width: 0 } }
+ *      • axisLabelRender: formatação pt-BR com formatarNumero()
+ *      • tooltipRender: formatação customizada em callbacks
+ * 
+ * 🔄 PROMISE.ALLSETTLED (não bloqueia):
+ *    - Se 1 endpoint falhar, os outros 15 continuam processando
+ *    - Log de falhas: console.error com nome do endpoint
+ *    - Tempo total logado: console.log(`✅ Dashboard carregado em ${tempo}s`)
+ * 
+ * 🗂️ HEATMAP 7x24 (Dia da Semana x Hora):
+ *    - 7 linhas (Dom-Sáb) × 24 colunas (00h-23h) = 168 células
+ *    - Cor baseada em intensidade: obterCorHeatmap(valor, max)
+ *      • 0-20% → #e8f5e9 (verde muito claro)
+ *      • 20-40% → #c8e6c9
+ *      • 40-60% → #81c784
+ *      • 60-80% → #4caf50
+ *      • 80-100% → #2e7d32 (verde escuro)
+ *    - Hover: transform: scale(1.1) + zIndex: 10
+ *    - Tooltip nativo com `title` attribute
+ * 
+ * 📱 RESPONSIVIDADE:
+ *    - Gráficos com height fixa em px (280px-420px)
+ *    - Grid Bootstrap 5: col-lg-3/4/6 com ordem responsiva
+ *    - Tabela TOP 10: overflow-x-auto em mobile
+ *    - Modal: max-width 90% em telas < 768px
+ * 
+ * 🏷️ BADGES E VARIAÇÕES:
+ *    - Variação positiva: verde + ↑ (crescimento bom)
+ *    - Variação negativa: vermelho + ↓ (queda ruim)
+ *    - Variação neutra: cinza + = (sem mudança)
+ *    - Cálculo: ((atual - anterior) / anterior * 100).toFixed(1) + '%'
+ * 
+ * 🚨 TRATAMENTO DE ERROS:
+ *    - Try-catch em TODAS as funções
+ *    - Alerta.TratamentoErroComLinha('dashboard-viagens.js', funcao, error)
+ *    - Fallback: gráfico vazio com mensagem "<div class='text-center text-muted'>Sem dados</div>"
+ *    - Nunca trava a página, apenas loga erro no console
+ * 
+ * 🔐 PERMISSÕES:
+ *    - Botão "Editar Viagem" visível apenas se usuário tiver permissão
+ *    - Verificação via atributo data-can-edit no botão (definido no backend)
+ *    - Botão "Ajustar KM" visível apenas para gestores (role check server-side)
+ * 
+ * 🎯 PERFORMANCE:
+ *    - 16 requests paralelos (Promise.allSettled) reduz tempo total em ~70%
+ *    - Gráficos destruídos antes de recriar (chart.destroy())
+ *    - Throttle no resize: recalcula gráficos apenas após 300ms sem resize
+ *    - Cache de dados em variáveis globais (dadosTop10Viagens)
+ * 
+ * ================================================================================================
+ * 📌 CONVENÇÕES DE NOMENCLATURA
+ * ================================================================================================
+ * 
+ * FUNÇÕES:
+ *    • camelCase: inicializarDashboard, carregarDadosDashboard
+ *    • Prefixos:
+ *      - carregar* → fetch de API + renderização
+ *      - renderizar* → apenas renderização (recebe dados)
+ *      - aplicar* → ações de filtro/configuração
+ *      - formatar* → conversão de valores (string, número, data)
+ *      - abrir/fechar* → controle de modais
+ *      - inicializar* → setup inicial de componentes
+ * 
+ * VARIÁVEIS:
+ *    • camelCase: periodoAtual, chartViagensPorStatus
+ *    • Constantes: MAIÚSCULAS com underscore (CORES_FROTIX)
+ *    • Arrays de dados cache: prefixo "dados" (dadosTop10Viagens)
+ *    • Instâncias de gráfico: prefixo "chart" (chartCustosPorTipo)
+ *    • Modais: sufixo "Modal" (modalAjustaViagemDashboard)
+ * 
+ * IDS DE ELEMENTOS:
+ *    • Cards: prefixo "stat" (statTotalViagens, statCustoTotal)
+ *    • Gráficos: prefixo "chart" (chartViagensPorDia)
+ *    • Inputs: prefixo "filtro" ou nome descritivo (dataInicio, filtroAno)
+ *    • Botões: prefixo "btn" (btnFiltrar, btnLimpar)
+ *    • Variações: prefixo "variacao" (variacaoCusto)
+ * 
+ * **************************************************************************************** */
 
 // Paleta de Cores FrotiX
 const CORES_FROTIX = {

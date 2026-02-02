@@ -1,3 +1,34 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: dashboard-abastecimento.js
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Dashboard analítico de abastecimento com análise detalhada de consumo, custos,
+ *    eficiência energética e padrões de uso. Sistema de 3 abas: Visão Geral (métricas
+ *    agregadas, TOP 10 veículos/combustíveis/postos), Análise Mensal (evolução temporal
+ *    com gráficos duais litros×custo), e Análise por Veículo (comparação individual de
+ *    km/l, custo/km, frequência). Suporte CLDR pt-BR para formatação de números/datas.
+ *    Filtros ano/mês/período/veículo. Paleta visual: Âmbar/Dourado (#f59e0b → #fbbf24).
+ * 
+ * 🔢 PARÂMETROS DE ENTRADA:
+ *    - Filtro Ano/Mês: dropdowns com anos/meses disponíveis (auto-seleção + recente)
+ *    - Filtro Veículo: Select2 pesquisável (ID GUID) para análise individual (aba 3)
+ *    - Período personalizado: dataInicio/dataFim (validado com Moment.js)
+ *    - Períodos rápidos: 7, 15, 30, 60, 90, 180, 365 dias
+ * 
+ * 📤 SAÍDAS PRODUZIDAS:
+ *    - 27 cards estatísticos (litros/custo/km/media/eficiência/frequência)
+ *    - 17 gráficos Syncfusion (Column, Bar, Line, SplineArea, Donut, Dual Axis)
+ *    - 5 tabelas TOP 10 (veículos consumo/custo, postos, combustíveis)
+ * 
+ * 🔗 DEPENDÊNCIAS:
+ *    • BIBLIOTECAS: Syncfusion EJ2 Charts, jQuery 3.x, Bootstrap 5.x, Select2
+ *    • CLDR: pt-BR (syncfusion-cldr-data/main/pt/*.json)
+ *    • ARQUIVOS FROTIX: alerta.js, global-toast.js, FrotiX.css
+ *    • APIS: /api/DashboardAbastecimento/* (12 endpoints GET)
+ * 
+ * **************************************************************************************** */
+
 /**
  * Dashboard de Abastecimentos - Refatorado
  * FrotiX - Câmara dos Deputados

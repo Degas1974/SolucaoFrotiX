@@ -1,3 +1,34 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: dashboard-lavagem.js
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Dashboard analítico de lavagem de veículos com métricas de frequência, custo, duração
+ *    e produtividade. Exibe heatmap de serviços por dia/hora (7×24), análise TOP 10
+ *    (lavadores/veículos/setores), distribuição por tipo de lavagem (Interna/Externa/Completa),
+ *    comparativo mensal de gastos e evolução temporal de quantidade de lavagens. Sistema de
+ *    filtros permitindo análise por ano/mês, período personalizado ou períodos rápidos
+ *    (7/15/30 dias). Paleta visual: Ciano Água Limpa (#0891b2 → #22d3ee).
+ * 
+ * 🔢 PARÂMETROS DE ENTRADA:
+ *    - Filtro Ano/Mês: dropdowns com anos/meses disponíveis (auto-seleção mais recente)
+ *    - Período personalizado: dataInicio/dataFim (date inputs com validação)
+ *    - Períodos rápidos: 7, 15, 30 dias (botões de atalho)
+ *    - APIs recebem: ano, mes, dataInicio, dataFim
+ * 
+ * 📤 SAÍDAS PRODUZIDAS:
+ *    - 12 cards estatísticos (total lavagens, custo médio, tempo médio, produtividade)
+ *    - 8 gráficos Syncfusion (Donut, Column, Line, Bar horizontal)
+ *    - 3 tabelas TOP 10 (lavadores, veículos, setores)
+ *    - Label período ativo: "Exibindo dados de: Mês/Ano" ou "DD/MM/YYYY - DD/MM/YYYY"
+ * 
+ * 🔗 DEPENDÊNCIAS:
+ *    • BIBLIOTECAS: Syncfusion EJ2 Charts, jQuery 3.x, Bootstrap 5.x
+ *    • ARQUIVOS FROTIX: alerta.js, global-toast.js, FrotiX.css
+ *    • APIS: /api/DashboardLavagem/* (8 endpoints GET)
+ * 
+ * **************************************************************************************** */
+
 /**
  * Dashboard de Lavagem de Veiculos
  * FrotiX - Sistema de Gestao de Frotas

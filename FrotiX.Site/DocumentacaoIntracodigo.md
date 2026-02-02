@@ -9,15 +9,15 @@
 ## 📊 Progresso Geral
 
 ```
-█████████████████████████████████████░░░░░░░░░░░░░ 74.5%
+████████████████████████████████████████░░░░░░░░░ 76.3%
 ```
 
 | Métrica | Valor |
 |---------|-------|
 | Total de Arquivos | 967 |
-| Documentados | 720 |
-| Percentual | 74.5% |
-| Última Atualização | 01/02/2026 12:00 |
+| Documentados | 738 |
+| Percentual | 76.3% |
+| Última Atualização | 02/02/2026 14:30 |
 
 ---
 
@@ -43,7 +43,7 @@
 | 16 | Services | 48 | 30 | 62.5% | 🟡 Em Progresso |
 | 17 | Settings | 4 | 4 | 100% | ✅ Completo |
 | 18 | Tools | 1 | 1 | 100% | ✅ Completo |
-| 19 | **JavaScript** | **132** | **10** | **7.6%** | 🔴 **Pendente** |
+| 19 | **JavaScript** | **132** | **28** | **21.2%** | 🟡 **Em Progresso** |
 
 ---
 
@@ -1254,15 +1254,15 @@
 
 ---
 
-## 🎯 ARQUIVOS FALTANTES (247/967)
+## 🎯 ARQUIVOS FALTANTES (229/967)
 
-### 📂 JavaScript - wwwroot/js (122/132 pendentes) 🔴 PRIORIDADE MÁXIMA
+### 📂 JavaScript - wwwroot/js (104/132 pendentes) 🟡 EM PROGRESSO
 
 #### Distribuição por Diretório:
 
 | Diretório | Total | Documentados | Pendentes | Prioridade |
 |-----------|-------|--------------|-----------|------------|
-| **Raiz** | 30 | 5 | 25 | 🔴 CRÍTICA |
+| **Raiz** | 30 | 23 | 7 | 🟢 QUASE COMPLETO |
 | **cadastros/** | 59 | 0 | 59 | 🔴 ALTA |
 | **agendamento/** | 28 | 5 | 23 | 🟡 MÉDIA |
 | **dashboards/** | 6 | 0 | 6 | 🟡 MÉDIA |
@@ -1270,31 +1270,47 @@
 | **viagens/** | 3 | 0 | 3 | 🟡 MÉDIA |
 | **outros** | 2 | 0 | 2 | 🟢 BAIXA |
 
-#### Arquivos Críticos na Raiz (Prioridade Imediata):
+#### Arquivos Críticos na Raiz (23/30 documentados):
 
 ```javascript
-🔴 PRIORIDADE MÁXIMA (Core do Sistema):
-✅ alerta.js (header de referência externa)
-✅ console-interceptor.js (documentado - Lote 182)
-✅ frotix-api-client.js (documentado - Lote 182)
-✅ global-error-handler.js (documentado - Lote 182)
-✅ frotix-error-logger.js (documentado - Lote 182)
-❌ frotix.js ⭐ ARQUIVO PRINCIPAL - PENDENTE
-❌ sweetalert_interop.js ⭐ CORE - PENDENTE
-❌ syncfusion_tooltips.js ⭐ CORE - PENDENTE
-❌ signalr_manager.js - PENDENTE
-❌ site.js - PENDENTE
+🔴 CORE DO SISTEMA (5 arquivos):
+✅ frotix.js ⭐ ARQUIVO PRINCIPAL (Lote 195 - 1247 linhas, 28 funções)
+✅ sweetalert_interop.js ⭐ CORE (Lote 195 - 955 linhas, 12 funções)
+✅ syncfusion_tooltips.js ⭐ CORE (Lote 195 - 327 linhas, tooltips globais)
+✅ signalr_manager.js (Lote 195 - 1038 linhas, gerenciador SignalR)
+✅ site.js (Lote 195 - 215 linhas, modals AJAX + DataTable)
 
-🟡 PRIORIDADE ALTA:
-❌ administracao.js
-❌ botao-loading.js
-❌ custom.js
-❌ dt-better-errors.js
-❌ error_handler.js
-❌ ftx-datatable-style.js
-❌ global-toast.js
-❌ pdf-export-profissional.js
-❌ whatsapp.js
+🟡 HANDLERS DE ERRO (5 arquivos):
+✅ alerta.js (Lote 196 - 755 linhas, wrapper SweetAlert + tratamento)
+✅ error_handler.js (Lote 196 - 496 linhas, global error handler)
+✅ error-hook-global_001.js (Lote 196 - 203 linhas, HTTP 5xx interceptor)
+✅ frotix-error-logger.js (Lote 182 - 560 linhas, log para servidor)
+✅ global-error-handler.js (Lote 182 - 258 linhas, captura global)
+
+🔵 INTERCEPTADORES E LOGGING (2 arquivos):
+✅ console-interceptor.js (Lote 182 - 305 linhas, log console)
+✅ kendo-error-suppressor.js (Lote 196 - 117 linhas, suprime erros Kendo)
+
+🟢 API E INTEGRAÇÃO (2 arquivos):
+✅ frotix-api-client.js (Lote 182 - 385 linhas, cliente HTTP robusto)
+✅ whatsapp.js (Lote 196 - 263 linhas, WhatsApp API)
+
+🎨 UI E VISUAL (6 arquivos):
+✅ administracao.js (Lote 196 - 1285 linhas, 36 funções, 10 charts)
+✅ botao-loading.js (Lote 196 - 113 linhas, loading automático)
+✅ custom.js (Lote 196 - 110 linhas, sidebar controls)
+✅ dt-better-errors.js (Lote 196 - 568 linhas, DataTables error handler)
+✅ ftx-datatable-style.js (Lote 196 - 429 linhas, estilos DataTable)
+✅ global-toast.js (Lote 196 - 484 linhas, toast nativo)
+✅ pdf-export-profissional.js (Lote 196 - 391 linhas, PDF export)
+
+🌐 LOCALIZAÇÃO E UTILITIES (3 arquivos):
+✅ higienizarviagens_054.js (Lote 196 - 479 linhas, unificação viagens)
+✅ localization-init.js (Lote 196 - 269 linhas, Syncfusion pt-BR)
+
+🟡 PENDENTES (7 arquivos):
+❌ toastHelper_006.js (48 linhas, Syncfusion toast - PRECISA DOCUMENTAR)
+❌ Outros 6 arquivos de bibliotecas terceiras (não requerem documentação FrotiX)
 ```
 
 ### 📂 Models (5/140 pendentes)

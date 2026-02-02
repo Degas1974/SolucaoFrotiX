@@ -1,8 +1,154 @@
-/**
- * Dashboard de Veículos - FrotiX
- * Tema: Verde Sage/Oliva
- * Versão: 1.0
- */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: dashboard-veiculos.js
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Dashboard analítico de gestão da frota com foco em veículos. Apresenta visão geral da
+ *    frota (ativo/inativo/reserva/efetivo), métricas de uso (viagens/km/abastecimentos),
+ *    análise de custos mensais (abastecimento/manutenção) e comparativos por categoria.
+ *    Sistema de abas permite alternar entre: Visão Geral, Uso dos Veículos e Custos.
+ *    Paleta visual: Verde Sage (#5f8575) para harmonia com identidade FrotiX Frota.
+ * 
+ * 🔢 PARÂMETROS DE ENTRADA:
+ *    - Aba "Uso": ano (dropdown), mês (dropdown), período personalizado (date inputs)
+ *    - Aba "Custos": ano (dropdown para filtrar custos anuais)
+ *    - Botões período rápido: 7, 15, 30, 60, 90 dias (apenas Aba Uso)
+ *    - Filtros aceitos por APIs: ano, mes, dataInicio, dataFim
+ * 
+ * 📤 SAÍDAS PRODUZIDAS:
+ *    - 14 gráficos Syncfusion (Donut, Column, Bar, Area, Line, Grouped)
+ *    - 24 cards estatísticos (composição frota, totais uso, custos)
+ *    - 7 tabelas grid customizadas (TOP KM, TOP Viagens, TOP Consumo)
+ *    - Filtros dinâmicos com auto-seleção do ano/mês mais recente
+ * 
+ * 🔗 DEPENDÊNCIAS:
+ *    • BIBLIOTECAS: Syncfusion EJ2 Charts, jQuery 3.x, Bootstrap 5.x
+ *    • ARQUIVOS FROTIX: alerta.js, global-toast.js, FrotiX.css
+ *    • APIS:
+ *      - /api/DashboardVeiculos/DashboardDados (GET) → Visão Geral
+ *      - /api/DashboardVeiculos/DashboardUso (GET) → Uso Veículos + Anos/Meses disponíveis
+ *      - /api/DashboardVeiculos/DashboardCustos (GET) → Custos anuais
+ * 
+ * ================================================================================================
+ * 📑 ÍNDICE DE FUNÇÕES (38 funções)
+ * ================================================================================================
+ * 
+ * ┌─────────────────────────────────────────────────────────────────────────────────────────┐
+ * │ 🎯 INICIALIZAÇÃO E NAVEGAÇÃO                                                             │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • $(document).ready()                      → Inicializa tabs e carrega dados gerais     │
+ * │ • initTabs()                               → Configura eventos de troca de abas         │
+ * │ • carregarDadosGerais()                    → Fetch visão geral da frota                 │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🛠️ FILTROS E PERÍODO (Aba Uso)                                                           │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • inicializarFiltrosUso()                  → Detecta ano/mês mais recente, auto-seleciona│
+ * │ • popularMesesDoAnoECarregar()             → Popula meses do ano, seleciona mais recente │
+ * │ • aplicarFiltroAnoMes()                    → Filtra por ano/mês selecionado             │
+ * │ • aplicarFiltroPeriodo(dias, btnElement)   → Aplica período rápido (ex: últimos 30 dias)│
+ * │ • aplicarFiltroPersonalizado()             → Valida dataInicio/dataFim → carrega        │
+ * │ • limparFiltroAnoMes()                     → Reset filtros ano/mês                       │
+ * │ • limparFiltroPeriodo()                    → Limpa período personalizado                │
+ * │ • atualizarPeriodoAtualLabel()             → Atualiza label "Exibindo dados de: ..."    │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 📊 RENDERIZAÇÃO - ABA GERAL (11 funções)                                                │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • atualizarCardsGerais(totais)             → 9 cards (ativo/reserva/próprio/locado)     │
+ * │ • renderizarGraficosGerais(data)           → 5 gráficos (categoria/status/origem/modelo)│
+ * │ • renderizarTabelasGerais(data)            → 4 tabelas (categoria/combustível/unidade)  │
+ * │ • renderizarChartPie(containerId, dados)   → Gráfico Donut genérico                     │
+ * │ • renderizarChartBarH(containerId, dados)  → Gráfico Bar horizontal genérico            │
+ * │ • renderizarChartColumn(containerId, dados)→ Gráfico Column genérico                    │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 📈 RENDERIZAÇÃO - ABA USO (8 funções)                                                   │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • carregarDadosUso(params)                 → Fetch dados de uso com filtros             │
+ * │ • atualizarCardsUso(totais)                → 5 cards (viagens/km/abastecimentos/litros) │
+ * │ • renderizarGraficosUso(data)              → 2 gráficos (viagens mês, abastecimento mês)│
+ * │ • renderizarTabelasUso(data)               → 5 tabelas TOP (viagens/abastecimento/km)   │
+ * │ • renderizarChartArea(containerId, dados)  → Gráfico SplineArea genérico                │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 💰 RENDERIZAÇÃO - ABA CUSTOS (5 funções)                                                │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • carregarDadosCustos(ano)                 → Fetch custos anuais                        │
+ * │ • atualizarCardsCustos(totais)             → 4 cards (abastecimento/manutenção/qtds)    │
+ * │ • renderizarGraficosCustos(data)           → 2 gráficos (comparativo mensal/categoria)  │
+ * │ • renderizarTabelasCustos(data)            → Tabela custos por categoria                │
+ * │ • renderizarChartColumnGrouped()           → Gráfico barras agrupadas (abast+manut)     │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🎨 HELPERS E FORMATAÇÃO                                                                  │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • formatarMoeda(valor)                     → R$ 1.234,56 (pt-BR)                        │
+ * │ • formatarDataBR(dataStr)                  → DD/MM/YYYY                                  │
+ * │ • preencherSelectAnos(seletor, anos)       → Popula dropdown com anos disponíveis       │
+ * │ • mostrarLoading(mensagem)/ocultarLoading()→ Overlay loading FrotiX                     │
+ * │ • mostrarErro(mensagem)                    → SweetAlert erro                             │
+ * └─────────────────────────────────────────────────────────────────────────────────────────┘
+ * 
+ * ================================================================================================
+ * 🔄 FLUXOS TÍPICOS
+ * ================================================================================================
+ * 
+ * 💡 FLUXO 1: Inicialização (carrega Visão Geral automaticamente)
+ *    DOMContentLoaded → initTabs() + carregarDadosGerais()
+ *      → Fetch /api/DashboardVeiculos/DashboardDados
+ *      → Renderiza 9 cards, 5 gráficos, 4 tabelas
+ * 
+ * 💡 FLUXO 2: Troca para Aba "Uso dos Veículos" (auto-seleciona ano/mês mais recente)
+ *    Click aba "Uso" → inicializarFiltrosUso()
+ *      → Fetch anos disponíveis → Seleciona ano mais recente
+ *      → Fetch meses do ano → Seleciona mês mais recente
+ *      → Fetch /api/DashboardVeiculos/DashboardUso?ano=X&mes=Y
+ *      → Renderiza 5 cards, 2 gráficos, 5 tabelas TOP
+ * 
+ * 💡 FLUXO 3: Filtro período rápido "Últimos 30 dias"
+ *    Click btn "30 dias" → aplicarFiltroPeriodo(30, btnElement)
+ *      → Calcula dataInicio/dataFim
+ *      → Limpa filtros ano/mês
+ *      → Fetch /api/DashboardVeiculos/DashboardUso?dataInicio=X&dataFim=Y
+ *      → Re-renderiza gráficos e tabelas
+ * 
+ * ================================================================================================
+ * 🔍 OBSERVAÇÕES TÉCNICAS
+ * ================================================================================================
+ * 
+ * 🎨 PALETA VERDE SAGE (harmonia com tema Frota FrotiX):
+ *    - primary: #5f8575, secondary: #7aa390, accent: #8fb8a4
+ *    - dark: #4a6b5c, cream: #e8f2ed
+ *    - chart[]: 10 tons variados para gráficos
+ * 
+ * 🔄 AUTO-SELEÇÃO INTELIGENTE (Aba Uso):
+ *    - Ao abrir aba, detecta ano/mês mais recente COM DADOS (não apenas ano atual)
+ *    - Função popularMesesDoAnoECarregar() com callback para selecionar mês após popular
+ *    - Label atualizada automaticamente: "Exibindo dados de: Dezembro/2025"
+ * 
+ * FLUXO USO INTELIGENTE: Para a aba Uso dos Veículos, obtem os anos disponíveis, seleciona o mais recente,
+ * carrega os meses daquele ano, seleciona o mês mais recente, e então carrega os dados com esses filtros pré-selecionados.
+ * 
+ * 📊 GRÁFICOS SYNCFUSION:
+ *    - Donut (innerRadius: 50%): categoria, status, origem
+ *    - Bar horizontal: modelos, requisitantes, setores
+ *    - Column: ano fabricação, categoria custos
+ *    - SplineArea (opacity: 0.5): viagens mês, abastecimento mês
+ *    - Column Grouped: comparativo abastecimento × manutenção
+ * 
+ * 🏷️ BADGES CUSTOMIZADOS:
+ *    - badge-rank-veic: ranking TOP (1º-10º)
+ *    - badge-rank-veic.top3: ouro/prata/bronze (medalhas)
+ *    - badge-tipo-categoria: Passeio/Carga/PM/etc
+ * 
+ * 🚨 TRATAMENTO DE ERROS:
+ *    - Try-catch em todas as funções assíncronas
+ *    - Fallback: gráfico vazio com "<div class='text-center text-muted'>Nenhum dado encontrado</div>"
+ *    - Alerta backend via Alerta.TratamentoErroComLinha() (não implementado neste arquivo,
+ *      mas padrão FrotiX)
+ * 
+ * ⚡ PERFORMANCE:
+ *    - Gráficos destruídos antes de recriar (.destroy() callback)
+ *    - Cache local: dadosGerais, dadosUso, dadosCustos
+ *    - Lazy loading: abas só carregam dados ao serem ativadas
+ * 
+ * **************************************************************************************** */
 
 // Paleta de cores do tema Verde Sage
 const CORES_VEIC = {

@@ -1,6 +1,202 @@
-// ========================================
-// DASHBOARD DE MOTORISTAS - FROTIX
-// ========================================
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: dashboard-motoristas.js
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Dashboard analítico de gestão de motoristas com métricas individuais e coletivas,
+ *    filtros temporais (ano/mês/período), análise TOP 10 (viagens/km/horas/abastecimentos/multas),
+ *    heatmap de viagens (dia×hora), distribuição por tipo (Efetivo/Ferista/Cobertura) e
+ *    status CNH (vencidas/vencendo). Inclui comparação motorista individual vs TOP 10 com
+ *    destaque visual (estrela dourada) e posição real no ranking quando fora do TOP 10.
+ *    Paleta: Verde Esmeralda (#059669) para identidade visual motoristas.
+ * 
+ * 🔢 PARÂMETROS DE ENTRADA:
+ *    - Filtro Ano/Mês: dropdowns com anos/meses disponíveis (auto-seleção do mais recente)
+ *    - Filtro Motorista: Select2 pesquisável (ID GUID) para análise individual
+ *    - Período personalizado: dataInicio/dataFim (date inputs)
+ *    - Períodos rápidos: 7, 15, 30, 60, 90, 180, 365 dias
+ * 
+ * 📤 SAÍDAS PRODUZIDAS:
+ *    - 21 cards estatísticos (total/ativos/inativos/CNH/multas/horas)
+ *    - 12 gráficos Syncfusion (Column, Pie, Line, SplineArea, Heatmap customizado)
+ *    - 2 tabelas comparativas clicáveis: TOP 10 Viagens, TOP 10 KM (com destaque motorista)
+ *    - Tabela CNH problema (vencidas/vencendo 30 dias)
+ *    - Tabela TOP 10 Performance (viagens/km/horas/multas)
+ *    - Heatmap 7×24 (Dia da Semana × Hora do Dia) com código DIV customizado
+ * 
+ * 🔗 DEPENDÊNCIAS:
+ *    • BIBLIOTECAS: Syncfusion EJ2 Charts, jQuery 3.x, Bootstrap 5.x, Select2
+ *    • ARQUIVOS FROTIX: alerta.js, global-toast.js, FrotiX.css
+ *    • APIS (14 endpoints):
+ *      - /api/DashboardMotoristas/ObterAnosMesesDisponiveis (GET)
+ *      - /api/DashboardMotoristas/ObterMesesPorAno (GET)
+ *      - /api/DashboardMotoristas/ObterListaMotoristas (GET)
+ *      - /api/DashboardMotoristas/ObterEstatisticasGerais (GET)
+ *      - /api/DashboardMotoristas/ObterTop10PorViagens (GET)
+ *      - /api/DashboardMotoristas/ObterTop10PorKm (GET)
+ *      - /api/DashboardMotoristas/ObterDistribuicaoPorTipo (GET)
+ *      - /api/DashboardMotoristas/ObterDistribuicaoPorStatus (GET)
+ *      - /api/DashboardMotoristas/ObterEvolucaoViagens (GET)
+ *      - /api/DashboardMotoristas/ObterTop10PorHoras (GET)
+ *      - /api/DashboardMotoristas/ObterTop10PorAbastecimentos (GET)
+ *      - /api/DashboardMotoristas/ObterMotoristasComMaisMultas (GET)
+ *      - /api/DashboardMotoristas/ObterDistribuicaoPorTempoEmpresa (GET)
+ *      - /api/DashboardMotoristas/ObterMotoristasComCnhProblema (GET)
+ *      - /api/DashboardMotoristas/ObterTop10Performance (GET)
+ *      - /api/DashboardMotoristas/ObterHeatmapViagens (GET)
+ *      - /api/DashboardMotoristas/ObterDadosMotorista (GET) → dados individuais
+ *      - /api/DashboardMotoristas/ObterPosicaoMotorista (GET) → ranking real
+ * 
+ * ================================================================================================
+ * 📑 ÍNDICE DE FUNÇÕES (52 funções)
+ * ================================================================================================
+ * 
+ * ┌─────────────────────────────────────────────────────────────────────────────────────────┐
+ * │ 🎯 INICIALIZAÇÃO E NAVEGAÇÃO                                                             │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • inicializarDashboard()                   → Entry point: carrega anos/meses/motoristas │
+ * │ • carregarAnosMesesDisponiveis()           → Popula dropdowns, seleciona mais recente   │
+ * │ • carregarMesesPorAno(ano)                 → Popula meses do ano, seleciona + recente   │
+ * │ • carregarListaMotoristas()                → Popula Select2 pesquisável                 │
+ * │ • carregarDadosDashboard()                 → Promise.allSettled 13 endpoints paralelos  │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🔧 FILTROS E PERÍODO                                                                     │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • aplicarFiltroAnoMes()                    → Valida ano/mês → atualiza label → carrega  │
+ * │ • aplicarFiltroPersonalizado()             → Valida dataInicio/dataFim → carrega        │
+ * │ • aplicarFiltroPeriodo(dias, btnElement)   → Período rápido (7/15/30/...365 dias)       │
+ * │ • limparFiltroMotorista()                  → Reset Select2 → esconde seção individual   │
+ * │ • limparFiltroAnoMes()                     → Volta ao ano/mês mais recente              │
+ * │ • limparFiltroPeriodo()                    → Reset campos date → volta ano/mês          │
+ * │ • atualizarPeriodoAtualLabel()             → Label "Exibindo dados de: Dez/2025"        │
+ * │ • obterParametrosFiltro()                  → Retorna params ano/mes ou dataInicio/dataFim│
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 📊 ESTATÍSTICAS GERAIS E CARDS (21 cards)                                               │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • carregarEstatisticasGerais()             → 21 cards (total/ativos/CNH/multas/etc)     │
+ * │ • atualizarElemento(id, valor)             → Helper para atualizar textContent          │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🚗 DADOS MOTORISTA INDIVIDUAL (seção com destaque)                                      │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • carregarDadosMotoristaIndividual(id)     → Foto, CNH, estatísticas pessoais          │
+ * │ • mostrarSecaoIndividual()                 → Exibe seção → esconde coletivas            │
+ * │ • esconderSecaoIndividual()                → Esconde seção → mostra coletivas           │
+ * │ • esconderSecoesColetivas()                → Oculta gráficos TOP 10 coletivos           │
+ * │ • mostrarSecoesColetivas()                 → Restaura gráficos TOP 10 coletivos         │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 📈 GRÁFICOS SYNCFUSION (12 gráficos)                                                    │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • carregarTop10PorViagens()                → Column TOP 10 (clicável p/ comparação)     │
+ * │ • carregarTop10PorKm()                     → Column TOP 10 km (destaque motorista)      │
+ * │ • carregarDistribuicaoPorTipo()            → Donut (Efetivo/Ferista/Cobertura)          │
+ * │ • carregarDistribuicaoPorStatus()          → Donut (Ativos/Inativos)                    │
+ * │ • carregarEvolucaoViagens()                → SplineArea temporal (filtro motorista)     │
+ * │ • carregarTop10PorHoras()                  → Column horas dirigidas                     │
+ * │ • carregarTop10PorAbastecimentos()         → Column quantidade abastecimentos           │
+ * │ • carregarMotoristasComMaisMultas()        → Column multas (vermelho #dc2626)           │
+ * │ • carregarDistribuicaoPorTempoEmpresa()    → Donut faixas tempo (0-1, 1-3, 3-5, etc)    │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🗂️ TABELAS E COMPARAÇÕES                                                                 │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • carregarMotoristasComCnhProblema()       → Tabela vencidas/vencendo (badges vermelho) │
+ * │ • carregarTop10Performance()               → Tabela medalhas (🥇🥈🥉) com 7 colunas      │
+ * │ • carregarTabelasComparativas(motoristaId) → 2 tabelas: TOP 10 Viagens + TOP 10 KM      │
+ * │ • montarTabelaComparativaViagens()         → Destaca motorista com estrela ⭐           │
+ * │ • montarTabelaComparativaKm()              → Destaca motorista com estrela ⭐           │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🔥 HEATMAP CUSTOMIZADO 7×24 (168 células)                                               │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • carregarHeatmapViagens()                 → Fetch API → criarHeatmapDivs()             │
+ * │ • criarHeatmapDivs(dados, maxValor)        → Gera <table> 7 dias × 24 horas            │
+ * │    - Cores: 7 tons verde (#ecfdf5 → #047857)                                           │
+ * │    - Hover: escala 1.1 + tooltip nativo                                                │
+ * │    - Filtra por motorista se selecionado                                               │
+ * └─────────────────────────────────────────────────────────────────────────────────────────┘
+ * 
+ * ================================================================================================
+ * 🔄 FLUXOS TÍPICOS
+ * ================================================================================================
+ * 
+ * 💡 FLUXO 1: Inicialização (auto-seleciona ano/mês mais recente)
+ *    DOMContentLoaded → inicializarDashboard()
+ *      → carregarAnosMesesDisponiveis() → seleciona ano + mês mais recente
+ *      → carregarListaMotoristas() → popula Select2 (300+ motoristas)
+ *      → carregarDadosDashboard() → Promise.allSettled 13 endpoints
+ *      → Renderiza 21 cards, 12 gráficos, 3 tabelas
+ * 
+ * 💡 FLUXO 2: Seleção de motorista individual
+ *    Select2.change → aplicarFiltroMotorista()
+ *      → carregarDadosMotoristaIndividual(motoristaId)
+ *         → Foto (ou ícone placeholder), badge tipo/status, CNH vencimento
+ *         → 7 cards individuais (viagens/km/horas/abastecimentos/multas)
+ *      → carregarTabelasComparativas(motoristaId)
+ *         → Fetch ObterPosicaoMotorista → ranking real (ex: 25º)
+ *         → Tabela TOP 10 Viagens: destaca motorista com ⭐ (linha laranja)
+ *         → Se motorista fora TOP 10: adiciona linha separadora "· · ·" + posição real
+ *      → Atualiza heatmap e evolução com filtro de motorista
+ * 
+ * 💡 FLUXO 3: Filtro Ano/Mês
+ *    btnFiltrarAnoMes.click → aplicarFiltroAnoMes()
+ *      → Valida ano E mês selecionados (obrigatórios)
+ *      → Limpa período personalizado
+ *      → atualizarPeriodoAtualLabel() → "Período: Dezembro/2025"
+ *      → carregarDadosDashboard() → todos endpoints recebem {ano, mes}
+ *      → Se motorista selecionado: recarrega individuais + comparações
+ * 
+ * 💡 FLUXO 4: Período rápido "Últimos 90 dias"
+ *    btn90Dias.click → aplicarFiltroPeriodo(90, btnElement)
+ *      → Calcula dataInicio = hoje - 90 dias
+ *      → Limpa dropdowns ano/mês
+ *      → Marca botão como .active (visual laranja)
+ *      → carregarDadosDashboard() → endpoints recebem {dataInicio, dataFim}
+ * 
+ * ================================================================================================
+ * 🔍 OBSERVAÇÕES TÉCNICAS
+ * ================================================================================================
+ * 
+ * 🎨 PALETA VERDE ESMERALDA:
+ *    - esmeralda: #059669 (principal), verde: #16a34a, azul: #0D47A1
+ *    - warmth: laranja #d97706, amarelo #f59e0b, vermelho #dc2626
+ *    - accent: roxo #9d4edd, ciano #22d3ee, rosa #ec4899
+ * 
+ * 🏅 COMPARAÇÃO MOTORISTA VS TOP 10:
+ *    • Se motorista no TOP 10: linha destacada com fundo #fff8dc (bege claro) + estrela ⭐
+ *    • Se motorista fora TOP 10:
+ *      - Exibe TOP 10 normalmente
+ *      - Adiciona linha separadora: <td colspan="3">· · · · · · · · · ·</td>
+ *      - Adiciona linha motorista: posição real (ex: 25º) + estrela ⭐ + valores
+ *    • Função obterPosicaoMotorista() retorna ranking real (não apenas TOP 10)
+ * 
+ * 📊 HEATMAP 7×24 (Dia × Hora):
+ *    - Gerado com DIVs (não Syncfusion) para controle total de estilo
+ *    - 7 linhas: Dom, Seg, Ter, Qua, Qui, Sex, Sáb
+ *    - 24 colunas: 00:00 a 23:00
+ *    - Cores graduais: #ecfdf5 (0 viagens) → #047857 (máximo)
+ *    - Filtro por motorista: atualiza apenas células daquele motorista
+ * 
+ * 🔒 CNH VENCIMENTO:
+ *    - Badge vermelho: CNH vencida há X dias (diasParaVencerCnh < 0)
+ *    - Badge amarelo: CNH vencendo em X dias (0 < diasParaVencerCnh ≤ 30)
+ *    - Badge verde: CNH OK (diasParaVencerCnh > 30)
+ *    - Tabela "Motoristas com CNH Problema" exibe apenas vencidas/vencendo 30 dias
+ * 
+ * 🚦 TIPO DE MOTORISTA (badges coloridos):
+ *    - badge-efetivo: verde #059669
+ *    - badge-ferista: ciano #22d3ee
+ *    - badge-cobertura: roxo #9d4edd
+ * 
+ * 🚨 TRATAMENTO DE ERROS:
+ *    - Try-catch em todas as funções assíncronas
+ *    - Alerta.TratamentoErroComLinha('dashboard-motoristas.js', funcao, error)
+ *    - Fallback: gráfico/tabela vazia com mensagem orientativa
+ * 
+ * ⚡ PERFORMANCE:
+ *    - Select2 com lazy loading (não renderiza 300+ opções de uma vez)
+ *    - Gráficos destruídos antes de recriar (.destroy())
+ *    - Promise.allSettled: falha em 1 endpoint não bloqueia os outros 12
+ *    - Cache: dadosMotoristaAtual para comparações
+ * 
+ * **************************************************************************************** */
 
 // Paleta de Cores FrotiX - Verde Esmeralda
 const CORES_MOTORISTAS = {
