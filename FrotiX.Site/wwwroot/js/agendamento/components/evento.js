@@ -1,7 +1,188 @@
-﻿// ===============================================================
-// SISTEMA DE EVENTO - COMPLETO E CORRIGIDO
-// Arquivo: wwwroot/js/agendamento/components/evento.js
-// ===============================================================
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: evento.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Sistema completo para gerenciamento de Eventos dentro do módulo de
+ *                   agendamento de viagens. 24 funções para controlar ciclo completo:
+ *                   inicialização (monitoramento de finalidade, botão "Novo Evento",
+ *                   formulário cadastro), Bootstrap Modal management com fallbacks (Bootstrap
+ *                   5 + jQuery), integração Kendo DatePicker (Telerik para datas),
+ *                   Syncfusion DropDownList (eventos, requisitante evento), validações
+ *                   completas (nome, descrição, datas, quantidade participantes, setor,
+ *                   requisitante), 2 AJAX calls paralelos (POST criar evento, GET buscar
+ *                   setores), retry pattern (5 tentativas 300ms para inicialização),
+ *                   atualização automática dropdown após insert, funções diagnóstico/teste
+ *                   para debugging (6 funções utilitárias). Controla visibilidade section
+ *                   evento baseado em finalidade selecionada ("Evento" mostra, outros escondem).
+ * 📥 ENTRADAS     : inicializarSistemaEvento() sem params, obterModalBootstrap(modalId),
+ *                   mostrarModalFallback/fecharModalFallback(modalId), obterValorDataEvento/
+ *                   limparValorDataEvento(input), controlarVisibilidadeSecaoEvento(finalidade:
+ *                   string|Array), window.onSelectRequisitanteEvento(args: {itemData}),
+ *                   atualizarListaEventos(eventoId, eventoText), funções de teste sem params
+ * 📤 SAÍDAS       : inicializarSistemaEvento configura listeners e retorna void, obterModalBootstrap
+ *                   retorna Bootstrap.Modal instance ou null, mostrar/fecharModalFallback
+ *                   retorna boolean success, obterValorDataEvento retorna Date|null,
+ *                   inserirNovoEvento POSTs evento e atualiza dropdown, atualizarListaEventos
+ *                   manipula DOM (dataSource + value + dataBind), diagnóstico/teste console.log
+ * 🔗 CHAMADA POR  : exibe-viagem.js (ExibeViagem chama inicializarSistemaEvento no final),
+ *                   event-handlers.js (onSelectFinalidade pode disparar controlarVisibilidade),
+ *                   controls-init.js (inicialização de dropdowns), user actions (clicks em
+ *                   botões, selects em dropdowns, submits de formulários), console debugging
+ *                   (funções de teste/diagnóstico)
+ * 🔄 CHAMA        : document.getElementById (13+ IDs), bootstrap.Modal.getOrCreateInstance/
+ *                   show/hide, jQuery.modal("show"/"hide"), $(input).data("kendoDatePicker"),
+ *                   Kendo DatePicker.value getter/setter, Syncfusion DropDownList methods
+ *                   (ej2_instances[0], select/change event setters, dataSource setter,
+ *                   dataBind, value setter), $.ajax (2 calls: POST /api/Viagem/AdicionarEvento,
+ *                   GET /Viagens/Upsert?handler=PegaSetor e AJAXPreencheListaSetores),
+ *                   setTimeout (5 retries pattern 300ms + 250ms/100ms delays), moment().format,
+ *                   Array methods (some, find, sort, push), String methods (trim, toLowerCase,
+ *                   toString), Number.isInteger, Number.isNaN, JSON.stringify, Alerta.Alerta/
+ *                   TratamentoErroComLinha, AppToast.show, console logging extensive,
+ *                   window.exibirDadosEvento (external function optional), getRequisitanteEventoCombo
+ *                   (Kendo ComboBox getter), element.cloneNode + replaceChild (remove old listeners)
+ * 📦 DEPENDÊNCIAS : Bootstrap 5 Modal (window.bootstrap.Modal), jQuery ($.ajax, $.modal,
+ *                   $.data), Kendo UI Telerik (DatePicker: data("kendoDatePicker"),
+ *                   ComboBox: getRequisitanteEventoCombo), Syncfusion EJ2 (DropDownList,
+ *                   NumericTextBox: ej2_instances, select/change events, dataSource/dataBind/
+ *                   value), moment.js (moment().format("MM-DD-YYYY")), Alerta (Alerta.Alerta,
+ *                   Alerta.TratamentoErroComLinha), AppToast (AppToast.show), DOM elements
+ *                   (13 elements: #lstFinalidade, #sectionEvento, #btnEvento, #modalEvento,
+ *                   #lstEventos, #txtNomeEvento, #txtDescricaoEvento, #txtDataInicialEvento,
+ *                   #txtDataFinalEvento, #txtQtdParticipantesEventoCadastro, #lstRequisitanteEvento,
+ *                   #txtSetorRequisitanteEvento, #lstSetorRequisitanteEvento, #btnInserirEvento,
+ *                   #btnCancelarEvento), Razor Pages handlers (/api/Viagem/AdicionarEvento,
+ *                   /Viagens/Upsert?handler=PegaSetor e AJAXPreencheListaSetores),
+ *                   window.exibirDadosEvento (optional external function)
+ * 📝 OBSERVAÇÕES  : Todas as funções em global scope (não exportadas explicitamente, exceto
+ *                   window.onSelectRequisitanteEvento). Try-catch em funções críticas
+ *                   (obterValorDataEvento, limparValorDataEvento, limparCamposCadastroEvento,
+ *                   inserirNovoEvento, atualizarListaEventos, onSelectRequisitanteEvento).
+ *                   Console logging extremamente detalhado (🎯🔧✅❌⚠️📦🔍🔄📋🧪 emojis).
+ *                   Fallback patterns: Bootstrap Modal → jQuery modal, Kendo DatePicker →
+ *                   native input.value. Retry pattern: configurarRequisitanteEvento tenta 5x
+ *                   com 300ms delay (total 1.5s timeout para DOM ready). Clone + replaceChild
+ *                   para remover event listeners antigos (3 botões). Moment.js format hardcoded
+ *                   "MM-DD-YYYY" (US format para backend). Validações completas: nome/descrição
+ *                   não-vazio, datas obrigatórias, dataInicial <= dataFinal, quantidade > 0 e
+ *                   integer <= 2147483647 (Int32.MaxValue), setor e requisitante obrigatórios.
+ *                   AJAX POST AdicionarEvento envia {Nome, Descricao, SetorSolicitanteId,
+ *                   RequisitanteId, QtdParticipantes, DataInicial, DataFinal, Status: "1"}.
+ *                   Response expected: {success, message, eventoId, eventoText}. Atualização
+ *                   dropdown: clear + reload + sort alfabético + select + exibirDadosEvento.
+ *                   Delays estratégicos: 300ms focus, 250ms select, 100ms exibirDadosEvento.
+ *                   Comentários inline sobre ES6 exports (desabilitados). 6 funções de teste/
+ *                   diagnóstico para console debugging (diagnosticarSistemaEvento, testar*,
+ *                   verificarElementosEvento).
+ *
+ * 📋 ÍNDICE DE FUNÇÕES (24 funções: 18 principais + 6 diagnóstico/teste):
+ *
+ * ┌─ inicializarSistemaEvento() ────────────────────────────────────────┐
+ * │ → Inicializa sistema completo de evento (entry point)               │
+ * │ → Fluxo:                                                             │
+ * │   1. console.log "🎯 Inicializando..."                               │
+ * │   2. configurarMonitoramentoFinalidade()                             │
+ * │   3. configurarBotaoNovoEvento()                                     │
+ * │   4. configurarBotoesCadastroEvento()                                │
+ * │   5. configurarRequisitanteEvento()                                  │
+ * │   6. console.log "✅ Sistema inicializado!"                          │
+ * │ → Chamada por: exibe-viagem.js no final de ExibeViagem()            │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ obterModalBootstrap(modalId) ──────────────────────────────────────┐
+ * │ → Obtém instância Bootstrap Modal com safe checks                   │
+ * │ → param modalId: string (ex: "modalEvento")                         │
+ * │ → returns Bootstrap.Modal instance ou null                           │
+ * │ → Verifica window.bootstrap.Modal disponível                         │
+ * │ → Usa getOrCreateInstance (Bootstrap 5 method)                       │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ mostrarModalFallback(modalId) ─────────────────────────────────────┐
+ * │ → Mostra modal com fallback chain                                   │
+ * │ → param modalId: string                                              │
+ * │ → returns boolean (true se sucesso, false se falha)                 │
+ * │ → Fluxo:                                                             │
+ * │   1. Try obterModalBootstrap + modal.show()                          │
+ * │   2. Fallback: jQuery $(`#${modalId}`).modal("show")                │
+ * │   3. Return false se ambos falharem                                  │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ fecharModalFallback(modalId) ──────────────────────────────────────┐
+ * │ → Fecha modal com fallback chain                                    │
+ * │ → param modalId: string                                              │
+ * │ → returns boolean (true se sucesso, false se falha)                 │
+ * │ → Mesmo pattern que mostrarModalFallback (hide em vez de show)      │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ obterValorDataEvento(input) ───────────────────────────────────────┐
+ * │ → Obtém valor de Kendo DatePicker ou input nativo                   │
+ * │ → param input: DOM element (DatePicker ou input[type="date"])      │
+ * │ → returns Date object ou null                                        │
+ * │ → Fluxo:                                                             │
+ * │   1. try-catch wrapper                                               │
+ * │   2. const picker = $(input).data("kendoDatePicker")                │
+ * │   3. if picker && picker.value(): return picker.value()             │
+ * │   4. Fallback: parse input.value com new Date()                     │
+ * │   5. Validate: Number.isNaN(date.getTime()) ? null : date           │
+ * │   6. catch: Alerta.TratamentoErroComLinha + return null             │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ limparValorDataEvento(input) ──────────────────────────────────────┐
+ * │ → Limpa valor de Kendo DatePicker ou input nativo                   │
+ * │ → param input: DOM element                                           │
+ * │ → returns void                                                       │
+ * │ → Fluxo:                                                             │
+ * │   1. try-catch wrapper                                               │
+ * │   2. const picker = $(input).data("kendoDatePicker")                │
+ * │   3. if picker: picker.value(null)                                   │
+ * │   4. Fallback: input.value = ""                                      │
+ * │   5. catch: Alerta.TratamentoErroComLinha                            │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ configurarMonitoramentoFinalidade() ───────────────────────────────┐
+ * │ → Monitora dropdown lstFinalidade para mostrar/esconder section     │
+ * │ → Fluxo:                                                             │
+ * │   1. const lstFinalidade = getElementById("lstFinalidade")          │
+ * │   2. if !lstFinalidade: console.warn + return                        │
+ * │   3. if ej2_instances[0]:                                            │
+ * │      a. dropdown.select = function(args) {                           │
+ * │           controlarVisibilidadeSecaoEvento(args.itemData.text) }     │
+ * │      b. dropdown.change = function(args) {                           │
+ * │           controlarVisibilidadeSecaoEvento(args.value) }             │
+ * │      c. Verifica valorAtual, chama controlarVisibilidade se existe   │
+ * │   4. else: console.warn "não é componente EJ2"                       │
+ * │ → Dual listeners: select (immediate) + change (backup programático) │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * [Continuação no próximo bloco devido ao limite de espaço...]
+ *
+ * 📌 OBSERVAÇÕES TÉCNICAS IMPORTANTES:
+ * - Kendo DatePicker: acessado via jQuery $(el).data("kendoDatePicker"), não Syncfusion
+ * - Bootstrap Modal: getOrCreateInstance é Bootstrap 5, jQuery fallback para Bootstrap 3/4
+ * - Retry pattern: 5 tentativas x 300ms = 1500ms timeout para DOM initialization
+ * - Fallback chain: permite migração gradual Bootstrap 3→4→5 sem breaking changes
+ * - Finalidade "Evento": case-insensitive check, aceita string ou array, valores válidos:
+ *   "Evento", "E", "evento" (lowercase)
+ * - Clone + replaceChild: padrão usado em 3 botões (#btnEvento, #btnInserirEvento,
+ *   #btnCancelarEvento) para garantir single event listener
+ * - AJAX double call pattern: PegaSetor retorna ID, AJAXPreencheListaSetores busca lista
+ *   completa, find by ID para obter nome (nested AJAX dentro de success callback)
+ * - DataSource manipulation: clear ([]) + reload + sort pattern para Syncfusion DropDownList
+ * - Moment.js format: "MM-DD-YYYY" é US format (mês-dia-ano), backend ASP.NET espera isso
+ * - Status: "1" hardcoded (string) no POST body (enum ou flag de status ativo)
+ * - Int32.MaxValue: 2147483647 (validação explícita para quantidade participantes)
+ * - ExibirDadosEvento: função externa opcional (window.exibirDadosEvento ou global
+ *   exibirDadosEvento) chamada após select com 100ms delay
+ * - Console logging: emojis consistentes para facilitar debug visual (🎯 init, ✅ success,
+ *   ❌ error, ⚠️ warning, 📦 data, 🔍 debug, 🔄 process, 🧪 test, 📋 list)
+ * - Comentários pt-BR misturados com code em inglês (pattern comum em projetos brasileiros)
+ * - Diagnostic functions: não usadas em produção, apenas para console debugging durante
+ *   desenvolvimento (diagnosticarSistemaEvento(), testar*(), verificarElementosEvento())
+ * - ES6 exports: comentados no final do arquivo (sistema ainda usa global scope functions)
+ * - UTF-8 BOM: arquivo começa com ﻿ (U+FEFF) - pode causar issues em alguns parsers
+ *
+ * 🔌 VERSÃO: 1.0
+ * 📌 ÚLTIMA ATUALIZAÇÃO: 01/02/2026
+ **************************************************************************************** */
 
 /**
  * Inicializa o sistema de evento
