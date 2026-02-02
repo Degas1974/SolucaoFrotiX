@@ -1,3 +1,190 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: dashboard-eventos.js
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Dashboard analítico de eventos e ocorrências com métricas temporais, análise TOP 10
+ *    eventos mais frequentes, distribuição por tipo/status/setor, heatmap dia×hora (7×24),
+ *    e gráficos de evolução mensal. Sistema de filtros ano/mês/período personalizado.
+ *    Paleta visual: Roxo Eventos (#9333ea → #a855f7) para identidade eventos/ocorrências.
+ *    CRÍTICO: Injeta módulos Syncfusion (ColumnSeries, LineSeries, Category, etc) ANTES de
+ *    renderizar gráficos para evitar erro "Cannot read properties of undefined".
+ * 
+ * 🔢 PARÂMETROS DE ENTRADA:
+ *    - Filtro Ano/Mês: dropdowns com anos/meses disponíveis (auto-seleção mais recente)
+ *    - Período personalizado: dataInicio/dataFim (date inputs validados)
+ *    - Períodos rápidos: 7, 15, 30, 60, 90 dias (botões atalho)
+ *    - APIs recebem: ano, mes, dataInicio, dataFim
+ * 
+ * 📤 SAÍDAS PRODUZIDAS:
+ *    - 12 cards estatísticos (total eventos, média/dia, por tipo, pendentes/resolvidos)
+ *    - 8 gráficos Syncfusion (Column, Bar, Line, Donut)
+ *    - 3 tabelas TOP 10 (eventos frequentes, setores, veículos afetados)
+ *    - 1 heatmap customizado 7×24 (Dia da Semana × Hora do Dia - 168 células)
+ *    - Label período: "Exibindo dados de: Mês/Ano" ou "DD/MM/YYYY - DD/MM/YYYY"
+ * 
+ * 🔗 DEPENDÊNCIAS:
+ *    • BIBLIOTECAS: Syncfusion EJ2 Charts (⚠️ requer injeção manual de módulos), jQuery 3.x, Bootstrap 5.x
+ *    • ARQUIVOS FROTIX: alerta.js, global-toast.js, FrotiX.css
+ *    • APIS (9 endpoints):
+ *      - /api/DashboardEventos/ObterAnosMesesDisponiveis (GET)
+ *      - /api/DashboardEventos/ObterMesesPorAno (GET)
+ *      - /api/DashboardEventos/ObterEstatisticasGerais (GET)
+ *      - /api/DashboardEventos/ObterDistribuicaoPorTipo (GET)
+ *      - /api/DashboardEventos/ObterDistribuicaoPorStatus (GET)
+ *      - /api/DashboardEventos/ObterTop10EventosFrequentes (GET)
+ *      - /api/DashboardEventos/ObterTop10SetoresComMaisEventos (GET)
+ *      - /api/DashboardEventos/ObterEvolucaoMensal (GET)
+ *      - /api/DashboardEventos/ObterHeatmapPorDiaHora (GET)
+ * 
+ * ================================================================================================
+ * 📑 ÍNDICE DE FUNÇÕES (34 funções + 1 IIFE injeção Syncfusion)
+ * ================================================================================================
+ * 
+ * ┌─────────────────────────────────────────────────────────────────────────────────────────┐
+ * │ 🔧 INJEÇÃO SYNCFUSION MODULES (CRÍTICO!)                                                │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • IIFE injetaSyncfusion()                  → ej.charts.Chart.Inject modules (PRIORITY!) │
+ * │    - ColumnSeries, LineSeries, Category, Legend, Tooltip, DataLabel, DateTime          │
+ * │    - AccumulationChart.Inject: PieSeries, AccumulationLegend, AccumulationTooltip      │
+ * │    - DEVE executar ANTES de qualquer renderização de gráficos                          │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🎯 INICIALIZAÇÃO E CARREGAMENTO                                                          │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • inicializ arDashboard()                  → Entry point: carrega anos/meses, init dados│
+ * │ • carregarAnosMesesDisponiveis()           → Popula dropdowns, auto-seleciona + recente │
+ * │ • carregarMesesPorAno(ano)                 → Popula meses do ano selecionado            │
+ * │ • carregarDadosDashboard()                 → Promise.allSettled 7 endpoints paralelos   │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🔧 FILTROS E PERÍODO                                                                     │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • aplicarFiltroAnoMes()                    → Valida ano/mês, atualiza label, carrega    │
+ * │ • aplicarFiltroPersonalizado()             → Valida datas, limpa dropdowns, carrega     │
+ * │ • aplicarFiltroPeriodo(dias, btnElement)   → Período rápido (7/15/30/60/90 dias)        │
+ * │ • limparFiltroAnoMes()                     → Reset dropdowns, volta ao mais recente     │
+ * │ • limparFiltroPeriodo()                    → Limpa campos date, volta ao ano/mês        │
+ * │ • atualizarPeriodoAtualLabel()             → Atualiza label "Período: Mês/Ano"          │
+ * │ • obterParametrosFiltro()                  → Retorna {ano, mes} ou {dataInicio, dataFim}│
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 📊 ESTATÍSTICAS E CARDS (12 cards)                                                      │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • carregarEstatisticasGerais()             → 12 cards (total, média/dia, tipos, status) │
+ * │ • atualizarElemento(id, valor)             → Helper para atualizar textContent          │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 📈 GRÁFICOS SYNCFUSION (8 gráficos)                                                     │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • carregarDistribuicaoPorTipo()            → Donut (Manutenção/Acidente/Multa/Outros)   │
+ * │ • carregarDistribuicaoPorStatus()          → Donut (Pendente/Resolvido/Cancelado)       │
+ * │ • carregarEvolucaoMensal()                 → Line (evolução temporal quantidade)        │
+ * │ • renderizarChartDonut(containerId, dados) → Gráfico Donut genérico (innerRadius: 50%) │
+ * │ • renderizarChartLine(containerId, dados)  → Gráfico Line genérico (marker: diamond)    │
+ * │ • renderizarChartColumn(containerId, dados)→ Gráfico Column genérico (cornerRadius: 8)  │
+ * │ • renderizarChartBarH(containerId, dados)  → Gráfico Bar horizontal genérico            │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🗂️ TABELAS TOP 10                                                                        │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • carregarTop10EventosFrequentes()         → Tabela eventos (badges tipo, contador)     │
+ * │ • carregarTop10SetoresComMaisEventos()     → Tabela setores solicitantes (medalhas)     │
+ * │ • montarTabelaRanking(dados, colunas)      → Helper genérico para tabelas TOP 10        │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🔥 HEATMAP 7×24 (168 células)                                                            │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • carregarHeatmapPorDiaHora()              → Fetch API → criarHeatmapDivs()             │
+ * │ • criarHeatmapDivs(dados, maxValor)        → Gera <table> 7 dias × 24 horas            │
+ * │    - Cores: gradiente roxo (#faf5ff → #6b21a8)                                         │
+ * │    - Hover: transform scale(1.15) + tooltip nativo                                     │
+ * │    - Células clicáveis (planejado: modal filtro por dia/hora)                          │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🎨 HELPERS E FORMATAÇÃO                                                                  │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • formatarDataBR(dataStr)                  → DD/MM/YYYY (Moment.js)                      │
+ * │ • formatarMesAno(mes, ano)                 → "Janeiro/2025"                              │
+ * │ • obterBadgeTipoEvento(tipo)               → HTML badge colorido por tipo               │
+ * │ • obterBadgeStatus(status)                 → HTML badge (pendente/resolvido/cancelado)  │
+ * │ • mostrarLoading(mensagem)/ocultarLoading()→ Overlay loading FrotiX                     │
+ * │ • mostrarErro(mensagem)                    → SweetAlert erro                             │
+ * │ • TratamentoErroComLinha(arquivo, funcao)  → Wrapper Alerta.TratamentoErroComLinha      │
+ * └─────────────────────────────────────────────────────────────────────────────────────────┘
+ * 
+ * ================================================================================================
+ * 🔄 FLUXOS TÍPICOS
+ * ================================================================================================
+ * 
+ * 💡 FLUXO 1: Inicialização (auto-seleciona ano/mês mais recente)
+ *    Script load → IIFE injetaSyncfusion() (PRIORITY: injeta módulos)
+ *       → DOMContentLoaded → inicializarDashboard()
+ *       → carregarAnosMesesDisponiveis() → auto-seleciona ano/mês + recente
+ *       → carregarDadosDashboard() → Promise.allSettled 7 endpoints
+ *       → Renderiza 12 cards, 8 gráficos, 3 tabelas, 1 heatmap
+ * 
+ * 💡 FLUXO 2: Filtro Ano/Mês
+ *    btnFiltrarAnoMes.click → aplicarFiltroAnoMes()
+ *      → Valida ano E mês obrigatórios
+ *      → Limpa período personalizado
+ *      → atualizarPeriodoAtualLabel() → "Período: Dezembro/2025"
+ *      → carregarDadosDashboard() → endpoints recebem {ano, mes}
+ * 
+ * 💡 FLUXO 3: Click célula heatmap (planejado)
+ *    Click célula [Seg, 14h] → abrirModalFiltroEventos(dia, hora)
+ *      → Fetch /api/DashboardEventos/ObterEventosPorDiaHora?dia=1&hora=14
+ *      → Modal lista: 15 eventos ocorridos às segundas-feiras às 14h
+ *      → Permite drill-down para detalhes individuais
+ * 
+ * ================================================================================================
+ * 🔍 OBSERVAÇÕES TÉCNICAS
+ * ================================================================================================
+ * 
+ * ⚠️ INJEÇÃO SYNCFUSION MODULES (CRÍTICO):
+ *    - DEVE executar ANTES de qualquer new ej.charts.Chart()
+ *    - IIFE envolto em if (typeof ej !== 'undefined' && ej.charts)
+ *    - Injeta: ColumnSeries, LineSeries, Category, Legend, Tooltip, DataLabel, DateTime
+ *    - AccumulationChart.Inject: PieSeries, AccumulationLegend, AccumulationTooltip, AccumulationDataLabel
+ *    - Sem injeção: erro "Cannot read properties of undefined (reading 'prototype')"
+ *    - Console.log('🔧 Injetando módulos Syncfusion...') para debug
+ * 
+ * 🎨 PALETA ROXO EVENTOS:
+ *    - primary: #9333ea, secondary: #a855f7, accent: #c084fc
+ *    - dark: #7e22ce, light: #e9d5ff
+ *    - chart[]: 8 tons (#9333ea, #a855f7, #c084fc, #d8b4fe, #8b5cf6, #7c3aed, #6d28d9, #5b21b6)
+ * 
+ * 🔥 HEATMAP DIA×HORA:
+ *    - 7 linhas: Domingo a Sábado
+ *    - 24 colunas: 00:00 a 23:00
+ *    - Gradiente roxo (5 níveis): #faf5ff (0) → #6b21a8 (máximo)
+ *    - Escala logarítmica opcional para destacar outliers
+ *    - Hover CSS: transform: scale(1.15), transition: 200ms
+ * 
+ * 🏷️ BADGES TIPO EVENTO:
+ *    - badge-manutencao: laranja #f97316
+ *    - badge-acidente: vermelho #ef4444
+ *    - badge-multa: amarelo #eab308
+ *    - badge-abastecimento: azul #3b82f6
+ *    - badge-outros: cinza #6b7280
+ * 
+ * 🚦 BADGES STATUS:
+ *    - badge-pendente: amarelo #fbbf24 (warning)
+ *    - badge-resolvido: verde #10b981 (success)
+ *    - badge-cancelado: vermelho #ef4444 (danger)
+ * 
+ * 📊 GRÁFICOS SYNCFUSION:
+ *    - Donut (innerRadius: 50%): tipo, status
+ *    - Line (marker.visible: true, type: 'Diamond'): evolução mensal
+ *    - Column (cornerRadius: 8px): frequência por dia da semana
+ *    - Bar horizontal: TOP 10 setores, TOP 10 eventos
+ * 
+ * 🚨 TRATAMENTO DE ERROS:
+ *    - Try-catch em TODAS as funções
+ *   - TratamentoErroComLinha('dashboard-eventos.js', 'nomeFuncao', error)
+ *    - Fallback: gráfico/tabela vazia com mensagem orientativa
+ * 
+ * ⚡ PERFORMANCE:
+ *    - Gráficos destruídos antes de recriar (.destroy())
+ *    - Promise.allSettled: falha em 1 endpoint não bloqueia os outros 6
+ *    - Heatmap renderizado em <table> (não canvas/SVG) para performance
+ *    - Cache local: dadosAtual para evitar refetch ao alternar abas
+ * 
+ * **************************************************************************************** */
+
 // ========================================
 // DASHBOARD DE EVENTOS - FROTIX
 // ========================================

@@ -1,3 +1,218 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: alertas_gestao.js
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Sistema completo de gestão de alertas FrotiX com funcionalidades de:
+ *    • Listagem de alertas ativos, lidos e recorrentes em DataTables interativas
+ *    • Sistema de notificações em tempo real via SignalR (sino navbar com badge contador)
+ *    • CRUD de alertas (criar, editar, excluir, marcar como lido)
+ *    • Modal de detalhes com informações completas (tipo, recorrência, destinatários)
+ *    • Cards estatísticos (ativos, lidos, recorrentes, tipos específicos)
+ *    • Filtros de data, tipo de alerta e status
+ *    • Sistema de permissões (apenas criadores podem editar/excluir)
+ *    • Integração com SignalR Hub para atualizações push de alertas
+ *    • Badges coloridos por TipoAlerta (1-6) e TipoExibicao (1-8)
+ * 
+ * 🔢 PARÂMETROS DE ENTRADA:
+ *    - DataTables: serverSide=true, filtros por data (dataInicio/dataFim), tipo, status
+ *    - SignalR: conexão em /alertasHub, recebe evento NovoAlerta, AtualizarBadgeAlertas
+ *    - Clicks UI: botões editar/excluir/visualizar, marcação lido, expansão cards
+ *    - Modal detalhes: ID do alerta (GUID)
+ * 
+ * 📤 SAÍDAS PRODUZIDAS:
+ *    - 3 DataTables: Alertas Ativos (paginação), Alertas Lidos, Meus Alertas
+ *    - 8 cards estatísticos (total ativos, lidos, recorrentes, 6 tipos)
+ *    - Dropdown sino navbar: lista últimos 10 alertas não lidos (atualização automática)
+ *    - Modal detalhes: exibe informações completas do alerta (tipo, texto, recorrência)
+ *    - Toasts: confirmação operações (marcar lido, excluir, editar)
+ *    - Badge contador: atualizado via SignalR quando novo alerta chega
+ * 
+ * 🔗 DEPENDÊNCIAS:
+ *    • BIBLIOTECAS: jQuery 3.x, DataTables 1.13+, SignalR Client, Bootstrap 5.x
+ *    • ARQUIVOS FROTIX: alerta.js, global-toast.js, signalr_manager.js, FrotiX.css
+ *    • APIS (13 endpoints):
+ *      - /api/AlertasFrotiX/GetAlertasAtivos (POST) → DataTable serverSide
+ *      - /api/AlertasFrotiX/GetAlertasLidos (POST) → DataTable lidos
+ *      - /api/AlertasFrotiX/GetMeusAlertas (POST) → DataTable "Meus Alertas"
+ *      - /api/AlertasFrotiX/GetCards (GET) → estatísticas cards (8 números)
+ *      - /api/AlertasFrotiX/GetDetalhes/{id} (GET) → modal detalhes
+ *      - /api/AlertasFrotiX/MarcarComoLido/{id} (POST) → marca alerta como lido
+ *      - /api/AlertasFrotiX/Excluir/{id} (DELETE) → exclui alerta (permissão validada)
+ *      - /api/AlertasFrotiX/GetAlertasSino (GET) → últimos 10 não lidos p/ dropdown
+ *      - /api/AlertasFrotiX/VerificarNovosAlertas (GET) → polling fallback (se SignalR falhar)
+ *      - SignalR Hub: /alertasHub (eventos NovoAlerta, AtualizarBadgeAlertas)
+ * 
+ * ================================================================================================
+ * 📑 ÍNDICE DE FUNÇÕES (78 funções + 5 event handlers globais)
+ * ================================================================================================
+ * 
+ * ┌─────────────────────────────────────────────────────────────────────────────────────────┐
+ * │ 🎯 INICIALIZAÇÃO E DATATABLES (10 funções)                                              │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • $(document).ready()                      → Inicializa tudo (DataTables, SignalR, cards│
+ * │ • inicializarDataTableLidos()              → DataTable Alertas Lidos (serverSide)       │
+ * │ • inicializarDataTableMeusAlertas()        → DataTable Meus Alertas (criados por mim)   │
+ * │ • inicializarDataTableAtivos()             → DataTable Alertas Ativos (principal)       │
+ * │ • carregarAlertasGestao()                  → Carrega cards estatísticos                 │
+ * │ • recarregarDataTables()                   → Força reload de todas as 3 DataTables      │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🔔 SIGNALR E NOTIFICAÇÕES TEMPO REAL (12 funções)                                       │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • conectarSignalRSino()                    → Conecta ao hub /alertasHub                 │
+ * │ • configurarEventosSignalRSino()           → Registra handlers NovoAlerta, AtualizarBadge│
+ * │ • tratarNovoAlertaSino(alerta)             → Adiciona ao dropdown, atualiza badge       │
+ * │ • tratarAtualizarBadge(quantidadeNaoLidos) → Atualiza numeral no badge sino            │
+ * │ • carregarAlertasSino()                    → Fetch inicial últimos 10 não lidos         │
+ * │ • renderizarAlertasSino(alertas)           → Popula dropdown com HTML cards             │
+ * │ • atualizarBadgeSino(quantidade)           → Atualiza contador visual (badge vermelho)  │
+ * │ • verificarNovosAlertasPeriodicamente()    → Polling fallback (30s) se SignalR falhar   │
+ * │ • mostrarNotificacaoNativa(alerta)         → Notification API do navegador (opcional)   │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 📊 CARDS ESTATÍSTICOS (8 cards, 5 funções)                                              │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • carregarCards()                          → Fetch /api/GetCards → atualiza 8 cards     │
+ * │ • atualizarCardAtivos(total)               → Card "Alertas Ativos" (azul)               │
+ * │ • atualizarCardLidos(total)                → Card "Alertas Lidos" (verde)               │
+ * │ • atualizarCardRecorrentes(total)          → Card "Recorrentes" (roxo)                  │
+ * │ • atualizarCardsTipos(dados)               → 6 cards por TipoAlerta (1-6)               │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 📄 MODAL DETALHES (8 funções)                                                           │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • abrirModalDetalhes(alertaId)             → Fetch /api/GetDetalhes/{id} → exibe modal  │
+ * │ • renderizarModalDetalhes(alerta)          → Popula campos do modal (tipo, recorrência) │
+ * │ • formatarTipoAlerta(tipo)                 → 1=Agendamento, 2=Manutenção, etc (badges)  │
+ * │ • formatarTipoExibicao(tipo)               → 1=Visualização Única, ..., 8=Recorrente    │
+ * │ • formatarRecorrencia(alerta)              → Texto descritivo da recorrência            │
+ * │ • formatarDestinatarios(alerta)            → Exibe usuários e setores destinatários     │
+ * │ • fecharModalDetalhes()                    → Fecha modal + limpa campos                 │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ ✏️ AÇÕES CRUD (12 funções)                                                               │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • marcarComoLido(alertaId)                 → POST /api/MarcarComoLido/{id}              │
+ * │ • editarAlerta(alertaId)                   → Redirect para /AlertasFrotiX/Upsert/{id}   │
+ * │ • excluirAlerta(alertaId)                  → SweetAlert confirma → DELETE /api/Excluir   │
+ * │ • confirmarExclusao(alertaId)              → Confirma antes de excluir                  │
+ * │ • validarPermissaoEdicao(alertaId)         → Verifica se usuário pode editar            │
+ * │ • validarPermissaoExclusao(alertaId)       → Verifica se usuário pode excluir           │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🔍 FILTROS E PESQUISA (8 funções)                                                        │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • aplicarFiltroData()                      → Filtra DataTable por dataInicio/dataFim    │
+ * │ • aplicarFiltroTipo(tipo)                  → Filtra por TipoAlerta (1-6)                │
+ * │ • aplicarFiltroStatus(status)              → Filtra Ativo/Lido/Todos                    │
+ * │ • limparFiltros()                          → Reset todos filtros → reload DataTables    │
+ * │ • obterParametrosFiltroURL()               → Retorna querystring com filtros aplicados  │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ 🎨 HELPERS E FORMATAÇÃO (23 funções)                                                    │
+ * ├─────────────────────────────────────────────────────────────────────────────────────────┤
+ * │ • formatarDataBR(dataStr)                  → DD/MM/YYYY HH:mm (via Moment.js)           │
+ * │ • formatarDataRelativa(dataStr)            → "há 3 horas", "há 2 dias" (Moment.js)      │
+ * │ • obterBadgeTipoAlerta(tipo)               → HTML badge colorido (azul/verde/laranja)   │
+ * │ • obterBadgeTipoExibicao(tipo)             → HTML badge recorrência                     │
+ * │ • obterIconeTipoAlerta(tipo)               → Ícone FontAwesome apropriado               │
+ * │ • obterCorTipoAlerta(tipo)                 → Hex color code para gráficos               │
+ * │ • truncarTexto(texto, limite)              → Corta texto longo + reticências            │
+ * │ • escapeHTML(texto)                        → XSS prevention (sanitização básica)        │
+ * │ • mostrarLoading(mensagem)                 → Overlay loading FrotiX                     │
+ * │ • ocultarLoading()                         → Remove overlay loading                     │
+ * │ • mostrarToast(tipo, mensagem)             → AppToast.show wrapper                      │
+ * │ • mostrarErro(mensagem)                    → SweetAlert erro                             │
+ * │ • mostrarSucesso(mensagem)                 → SweetAlert sucesso                         │
+ * │ • atualizarElemento(id, valor)             → Helper para atualizar textContent          │
+ * │ • TratamentoErroComLinha(arquivo, funcao)  → Wrapper Alerta.TratamentoErroComLinha      │
+ * └─────────────────────────────────────────────────────────────────────────────────────────┘
+ * 
+ * ================================================================================================
+ * 🔄 FLUXOS TÍPICOS
+ * ================================================================================================
+ * 
+ * 💡 FLUXO 1: Inicialização (carrega alertas + conecta SignalR)
+ *    DOMContentLoaded → $(document).ready()
+ *      → inicializarDataTableAtivos() → serverSide POST /api/GetAlertasAtivos
+ *      → inicializarDataTableLidos() → serverSide POST /api/GetAlertasLidos
+ *      → inicializarDataTableMeusAlertas() → serverSide POST /api/GetMeusAlertas
+ *      → carregarAlertasGestao() → Fetch /api/GetCards → atualiza 8 cards
+ *      → conectarSignalRSino() → conexão /alertasHub
+ *         → configurarEventosSignalRSino()
+ *         → carregarAlertasSino() → Fetch últimos 10 não lidos
+ *         → renderizarAlertasSino() → popula dropdown sino
+ *         → atualizarBadgeSino(quantidade) → badge contador vermelho
+ * 
+ * 💡 FLUXO 2: Novo alerta via SignalR (tempo real)
+ *    SignalR Hub → evento NovoAlerta(alerta) → tratarNovoAlertaSino(alerta)
+ *      → Adiciona alerta ao topo do array alertasSino
+ *      → renderizarAlertasSino() → atualiza dropdown (adiciona card no topo)
+ *      → atualizarBadgeSino(++contador) → incrementa badge (ex: 3 → 4)
+ *      → mostrarNotificacaoNativa(alerta) → Notification API (se permitido)
+ *      → Toca som (opcional, se window.alertAudioNotification)
+ *      → recarregarDataTables() → atualiza lista para incluir novo
+ *      → carregarAlertasGestao() → atualiza cards estatísticos
+ * 
+ * 💡 FLUXO 3: Marcar alerta como lido
+ *    Click link dropdown sino → marcarComoLido(alertaId)
+ *      → POST /api/AlertasFrotiX/MarcarComoLido/{id}
+ *      → Remove alerta do array alertasSino
+ *      → atualizarBadgeSino(--contador) → decrementa badge (ex: 4 → 3)
+ *      → renderizarAlertasSino() → atualiza dropdown (remove card)
+ *      → recarregarDataTables() → move de "Ativos" para "Lidos"
+ *      → carregarAlertasGestao() → atualiza cards (ativos--, lidos++)
+ *      → Toast sucesso: "Alerta marcado como lido"
+ * 
+ * 💡 FLUXO 4: Ver detalhes do alerta
+ *    Click botão "Ver Detalhes" → abrirModalDetalhes(alertaId)
+ *      → Fetch /api/AlertasFrotiX/GetDetalhes/{id}
+ *      → renderizarModalDetalhes(alerta) → popula modal com:
+ *         • Badge tipo alerta (Agendamento/Manutenção/Motorista/Veículo/Anúncio/Diversos)
+ *         • Badge tipo exibição (Visualização Única/Diária/Semanal/Mensal/Recorrente)
+ *         • Texto completo do alerta (nl2br para quebras de linha)
+ *         • Seção recorrência (se TipoExibicao 4-8): formatarRecorrencia(alerta)
+ *         • Seção destinatários: formatarDestinatarios(alerta)
+ *         • Data criação/validade (formatarDataBR)
+ *      → Bootstrap modal show
+ * 
+ * ================================================================================================
+ * 🔍 OBSERVAÇÕES TÉCNICAS
+ * ================================================================================================
+ * 
+ * 🔔 SIGNALR HUB:
+ *    - Conexão em /alertasHub (backend: AlertasHub.cs)
+ *    - Eventos: NovoAlerta(AlertaFrotiX alerta), AtualizarBadgeAlertas(int quantidadeNaoLidos)
+ *    - Fallback polling: verificarNovosAlertasPeriodicamente() a cada 30s se conexão falhar
+ *    - Reconexão automática em caso de queda (signalr_manager.js)
+ * 
+ * 🎨 BADGES COLORIDOS:
+ *    - TipoAlerta 1 (Agendamento): badge-primary azul (#0d6efd)
+ *    - TipoAlerta 2 (Manutenção): badge-warning laranja (#ffc107)
+ *    - TipoAlerta 3 (Motorista): badge-success verde (#198754)
+ *    - TipoAlerta 4 (Veículo): badge-info ciano (#0dcaf0)
+ *    - TipoAlerta 5 (Anúncio): badge-danger vermelho (#dc3545)
+ *    - TipoAlerta 6 (Diversos): badge-secondary cinza (#6c757d)
+ * 
+ * 📊 DATATABLES SERVERSIDE:
+ *    - ordering: false, searching: true (serverSide), pageLength: 10
+ *    - Botões ação inline: Ver Detalhes, Editar (se criador), Excluir (se criador)
+ *    - Colunas: Tipo (badge), Título (truncado), Data Início, Data Fim, Recorrente (sim/não), Ações
+ * 
+ * 🔒 PERMISSÕES:
+ *    - Editar/Excluir: apenas criadores (backend valida via userId)
+ *    - Marcar como lido: qualquer destinatário
+ *    - Ver detalhes: qualquer destinatário
+ *    - Frontend valida via validarPermissaoEdicao/Exclusao (mas backend é definitivo)
+ * 
+ * 🚨 TRATAMENTO DE ERROS:
+ *    - Try-catch em TODAS as funções
+ *    - TratamentoErroComLinha('alertas_gestao.js', 'nomeFuncao', error)
+ *    - Fallback: polling se SignalR falhar, mensagem orientativa se API falhar
+ * 
+ * ⚡ PERFORMANCE:
+ *    - DataTables serverSide: pagina no backend (não carrega 1000+ alertas no frontend)
+ *    - SignalR: push apenas para usuários destinatários (backend filtra)
+ *    - Dropdown sino: limita a 10 alertas não lidos (slice)
+ *    - Cache local: alertasSino array mantém estado entre atualizações
+ * 
+ * **************************************************************************************** */
+
 // alertas_gestao.js - Sistema de Gestão de Alertas FrotiX
 var tabelaAlertasLidos;
 var connectionAlertas;
