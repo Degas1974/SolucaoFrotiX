@@ -1,6 +1,290 @@
-// ====================================================================
-// VALIDAÇÃO - Funções de validação de formulário
-// ====================================================================
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: validacao.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Validação completa de formulários de agendamento e viagens. Classe
+ *                   ValidadorAgendamento orquestra todas as validações de campos
+ *                   obrigatórios, regras de negócio (km, datas, recorrência), e
+ *                   confirmações de usuário. Suporta validação condicional (agendamento
+ *                   vs viagem realizada), múltiplos componentes UI (Syncfusion, Kendo,
+ *                   jQuery), e flags de confirmação para evitar prompts repetidos.
+ * 📥 ENTRADAS     : viagemId (string, opcional), valores de campos DOM (Syncfusion
+ *                   ej2_instances, Kendo data(), jQuery val()), flags globais
+ *                   (window.transformandoEmViagem, window.CarregandoAgendamento),
+ *                   texto de botão (#btnConfirma)
+ * 📤 SAÍDAS       : Promises<boolean> (true=válido, false=inválido), arrays this.erros,
+ *                   Alerta.Erro/Confirmar dialogs, foco em campos inválidos, limpeza
+ *                   de campos (val(""))
+ * 🔗 CHAMADA POR  : Formulários de agendamento (main.js, dialogs.js), botões de submit,
+ *                   event handlers de campos
+ * 🔄 CHAMA        : document.getElementById, jQuery ($), Syncfusion ej2_instances,
+ *                   Kendo $(el).data("kendoComboBox"), moment.js, Alerta.Erro/Confirmar,
+ *                   window.parseDate, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 (DatePicker, DropDownList, Calendar), Kendo UI
+ *                   (ComboBox), jQuery, moment.js, Alerta.js, window.parseDate
+ * 📝 OBSERVAÇÕES  : Exporta window.ValidadorAgendamento (instância global) e 3 funções
+ *                   legacy (ValidaCampos, validarDatas, validarDatasInicialFinal).
+ *                   Todos os métodos async retornam Promises<boolean>. Flags de
+ *                   confirmação (_kmConfirmado, _finalizacaoConfirmada) resetadas a
+ *                   cada validação. Validação condicional baseada em botão e flags.
+ *                   Typos: "padrío" (line 379), console.log em produção (lines 375-445).
+ *
+ * 📋 ÍNDICE DE MÉTODOS DA CLASSE (21 métodos + constructor):
+ *
+ * ┌─ CONSTRUCTOR ─────────────────────────────────────────────────────────┐
+ * │ 1. constructor()                                                      │
+ * │    → Inicializa this.erros = []                                      │
+ * └───────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ MÉTODO PRINCIPAL DE ORQUESTRAÇÃO ───────────────────────────────────┐
+ * │ 2. async validar(viagemId = null)                                    │
+ * │    → param {string} viagemId - ID da viagem (opcional)               │
+ * │    → returns {Promise<boolean>} true se válido                       │
+ * │    → Reseta this.erros = [], _kmConfirmado=false, _finalizacaoConfirmada=false│
+ * │    → Executa validações em ordem (retorna false no primeiro erro):   │
+ * │      1. validarDataInicial()                                         │
+ * │      2. validarFinalidade()                                          │
+ * │      3. validarOrigem()                                              │
+ * │      4. validarDestino()                                             │
+ * │      5. Se algumFinalPreenchido: validarFinalizacao()                │
+ * │      6. Se !ehAgendamento OU algumFinalPreenchido: validarCamposViagem()│
+ * │      7. validarRequisitante()                                        │
+ * │      8. validarRamal()                                               │
+ * │      9. validarSetor()                                               │
+ * │      10. validarEvento()                                             │
+ * │      11. Se !transformandoEmViagem: validarRecorrencia()             │
+ * │      12. validarPeriodoRecorrencia()                                 │
+ * │      13. validarDiasVariados()                                       │
+ * │      14. validarKmFinal()                                            │
+ * │      15. Se algumFinalPreenchido: confirmarFinalizacao()             │
+ * │    → ehAgendamento detectado por texto do botão:                     │
+ * │      "Edita Agendamento" OU "Confirma Agendamento" OU "Confirmar"    │
+ * │    → try-catch: Alerta.TratamentoErroComLinha, retorna false         │
+ * └───────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ VALIDAÇÕES DE CAMPOS OBRIGATÓRIOS ──────────────────────────────────┐
+ * │ 3. async validarDataInicial()                                        │
+ * │    → Valida txtDataInicial (Syncfusion DatePicker)                  │
+ * │    → Se inválido/null: seta moment().toDate() + dataBind()          │
+ * │    → returns true sempre (corrige automaticamente)                  │
+ * │                                                                       │
+ * │ 4. async validarFinalidade()                                         │
+ * │    → Valida lstFinalidade (Syncfusion DropDownList)                 │
+ * │    → Se vazio/null: Alerta.Erro + retorna false                     │
+ * │                                                                       │
+ * │ 5. async validarOrigem()                                             │
+ * │    → Valida cmbOrigem (Syncfusion)                                   │
+ * │    → Se vazio/null: Alerta.Erro + retorna false                     │
+ * │                                                                       │
+ * │ 6. async validarDestino()                                            │
+ * │    → Valida cmbDestino (Syncfusion)                                  │
+ * │    → Se vazio/null: Alerta.Erro + retorna false                     │
+ * │                                                                       │
+ * │ 7. async validarRequisitante()                                       │
+ * │    → Valida lstRequisitante (Kendo ComboBox)                         │
+ * │    → Usa $(element).data("kendoComboBox").value()                    │
+ * │    → Se vazio/null: Alerta.Erro + retorna false                     │
+ * │                                                                       │
+ * │ 8. async validarRamal()                                              │
+ * │    → Valida txtRamalRequisitanteSF (Syncfusion) ou txtRamalRequisitante (HTML)│
+ * │    → Tenta Syncfusion primeiro: ej2_instances[0] + .value           │
+ * │    → Fallback HTML: $("#txtRamalRequisitante").val()                │
+ * │    → console.log em ambos os casos (produção!)                       │
+ * │    → Se vazio/null: Alerta.Erro + retorna false                     │
+ * │                                                                       │
+ * │ 9. async validarSetor()                                              │
+ * │    → Valida lstSetorRequisitanteAgendamento (Syncfusion)             │
+ * │    → Verifica visibilidade: offsetWidth>0 && offsetHeight>0          │
+ * │    → Se oculto: retorna true (pula validação)                        │
+ * │    → Verifica ej2_instances inicializado                             │
+ * │    → Valida valor (pode ser array ou string): !== "" && length>0    │
+ * │    → console.log/error em vários pontos (produção!)                  │
+ * │    → Se vazio/null: Alerta.Erro + retorna false                     │
+ * │                                                                       │
+ * │ 10. async validarEvento()                                            │
+ * │     → Se finalidade[0]==="Evento": valida lstEventos (Syncfusion)    │
+ * │     → Se vazio/null: Alerta.Erro + retorna false                    │
+ * └───────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ VALIDAÇÕES DE FINALIZAÇÃO ──────────────────────────────────────────┐
+ * │ 11. verificarCamposFinalizacao()                                     │
+ * │     → Não-async, returns boolean                                    │
+ * │     → Verifica se ALGUM campo final preenchido:                      │
+ * │       txtDataFinal || txtHoraFinal || ddtCombustivelFinal || txtKmFinal│
+ * │     → returns true se algum preenchido                              │
+ * │                                                                       │
+ * │ 12. async validarFinalizacao()                                       │
+ * │     → Valida TODOS campos de finalização preenchidos:                │
+ * │       dataFinal && horaFinal && combustivelFinal && kmFinal          │
+ * │     → Se incompleto: Alerta.Erro com lista de campos + retorna false│
+ * │     → Valida dataFinal <= dataAtual (comparação sem hora)            │
+ * │     → Se dataFinal > hoje: Alerta.Erro + limpa campo + focus        │
+ * │     → Valida destino obrigatório quando finalizado                   │
+ * │                                                                       │
+ * │ 13. async confirmarFinalizacao()                                     │
+ * │     → Se todos campos finais preenchidos && !_finalizacaoConfirmada: │
+ * │       Alerta.Confirmar "Você está criando a viagem como Realizada"  │
+ * │     → Se !confirmacao: retorna false                                │
+ * │     → Marca _finalizacaoConfirmada=true (evita re-prompt)            │
+ * └───────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ VALIDAÇÕES DE VIAGEM (não-agendamento) ─────────────────────────────┐
+ * │ 14. async validarCamposViagem()                                      │
+ * │     → Valida campos obrigatórios para viagem aberta/realizada:       │
+ * │       - Motorista (lstMotorista): obrigatório                        │
+ * │       - Veículo (lstVeiculo): obrigatório                            │
+ * │       - KM: validarKmInicialFinal()                                  │
+ * │       - Combustível Inicial (ddtCombustivelInicial): obrigatório     │
+ * │     → Nota: Ficha de Vistoria NÃO é mais obrigatória (comentário)   │
+ * └───────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ VALIDAÇÕES DE RECORRÊNCIA ──────────────────────────────────────────┐
+ * │ 15. async validarRecorrencia()                                       │
+ * │     → Valida lstRecorrente e lstPeriodos                             │
+ * │     → Se recorrente="S" && !periodo: Alerta.Erro                    │
+ * │     → Se periodo="S" OU "Q" (Semanal/Quinzenal):                    │
+ * │       lstDias.value.length > 0 (dias da semana obrigatório)          │
+ * │     → Se periodo="M" (Mensal):                                       │
+ * │       lstDiasMes.value !== "" (dia do mês obrigatório)              │
+ * │                                                                       │
+ * │ 16. async validarPeriodoRecorrencia()                                │
+ * │     → Se periodo ∈ ["D","S","Q","M"]:                               │
+ * │       txtFinalRecorrencia.value obrigatório (data final)             │
+ * │                                                                       │
+ * │ 17. async validarDiasVariados()                                      │
+ * │     → Se periodo="V" (Dias Variados):                                │
+ * │       Verifica calDatasSelecionadas (Syncfusion Calendar)            │
+ * │       Se não disponível: retorna true (editando existente)           │
+ * │       Se disponível: calendarObj.values.length > 0 (ao menos 1 dia)  │
+ * └───────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ VALIDAÇÕES DE KM ────────────────────────────────────────────────────┐
+ * │ 18. async validarKmInicialFinal()                                    │
+ * │     → Compara txtKmInicial vs txtKmFinal                             │
+ * │     → Se !kmInicial || !kmFinal: retorna true (não aplica)          │
+ * │     → Converte para float: replace(",",".") + parseFloat             │
+ * │     → Valida kmFinal >= kmInicial (erro bloqueante)                  │
+ * │     → Valida diff <= 2000km (erro bloqueante, limpa campo)           │
+ * │     → Se diff > 100km && !_kmConfirmado:                            │
+ * │       Alerta.Confirmar "excede em 100km... Tem certeza?"            │
+ * │       Se !confirmacao: limpa campo + focus + retorna false           │
+ * │       Se confirmacao: marca _kmConfirmado=true (evita re-prompt)     │
+ * │                                                                       │
+ * │ 19. async validarKmFinal()                                           │
+ * │     → Se kmFinal preenchido: parseFloat(kmFinal) > 0                │
+ * │     → Se <=0: Alerta.Erro                                           │
+ * └───────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ FUNÇÕES GLOBAIS LEGACY ─────────────────────────────────────────────┐
+ * │ 20. window.ValidaCampos(viagemId)                                    │
+ * │     → Wrapper legacy para window.ValidadorAgendamento.validar()      │
+ * │     → returns await ValidadorAgendamento.validar(viagemId)           │
+ * │                                                                       │
+ * │ 21. window.validarDatas()                                            │
+ * │     → Valida txtDataInicial vs txtDataFinal (jQuery val())           │
+ * │     → Se diferença >= 5 dias: Alerta.Confirmar                      │
+ * │     → Se !confirmacao: limpa txtDataFinal + focus                   │
+ * │     → Usa window.parseDate + setHours(0,0,0,0)                      │
+ * │                                                                       │
+ * │ 22. window.validarDatasInicialFinal(DataInicial, DataFinal)         │
+ * │     → Valida diferença entre datas (params)                          │
+ * │     → Idêntico a validarDatas mas recebe strings como params         │
+ * │     → Se diferença >= 5 dias: Alerta.Confirmar                      │
+ * │     → Se !confirmacao: limpa txtDataFinal.value=null + focus        │
+ * └───────────────────────────────────────────────────────────────────────┘
+ *
+ * 🔄 FLUXO DE VALIDAÇÃO COMPLETA (validar):
+ * 1. Reseta erros e flags de confirmação
+ * 2. Valida campos obrigatórios base (data, finalidade, origem, destino)
+ * 3. Verifica campos de finalização (verificarCamposFinalizacao)
+ * 4. Se algum campo final preenchido: valida finalização completa
+ * 5. Detecta se é agendamento (texto do botão #btnConfirma)
+ * 6. Se NÃO agendamento OU tem finalização: valida campos de viagem
+ * 7. Valida requisitante, ramal, setor
+ * 8. Se finalidade="Evento": valida evento
+ * 9. Se !transformandoEmViagem: valida recorrência
+ * 10. Valida período de recorrência e dias variados
+ * 11. Valida km final e confirma finalização se aplicável
+ * 12. Retorna true se todas validações passaram
+ *
+ * 🔄 FLUXO DE VALIDAÇÃO CONDICIONAL (agendamento vs viagem):
+ * 1. Lê texto do botão #btnConfirma
+ * 2. ehAgendamento = texto contém "Edita/Confirma Agendamento" OU "Confirmar"
+ * 3. algumFinalPreenchido = verificarCamposFinalizacao()
+ * 4. Se !ehAgendamento OU algumFinalPreenchido:
+ *    - Valida motorista, veículo, km, combustível (campos de viagem)
+ * 5. Senão: pula validação de campos de viagem (agendamento não precisa)
+ *
+ * 🔄 FLUXO DE VALIDAÇÃO KM COM CONFIRMAÇÃO:
+ * 1. validarKmInicialFinal() chamado
+ * 2. Calcula diff = kmFinal - kmInicial
+ * 3. Se diff < 0: erro bloqueante (km final < inicial)
+ * 4. Se diff > 2000: erro bloqueante (excede 2000km)
+ * 5. Se diff > 100 && !_kmConfirmado:
+ *    a. Alerta.Confirmar "excede em 100km"
+ *    b. Se !confirmacao: limpa campo + retorna false
+ *    c. Se confirmacao: marca _kmConfirmado=true
+ * 6. _kmConfirmado=true evita re-prompt na mesma sessão de validação
+ * 7. Flag resetada no início de validar()
+ *
+ * 🔄 FLUXO DE VALIDAÇÃO RECORRÊNCIA:
+ * 1. Se recorrente="S" (Sim): valida periodo obrigatório
+ * 2. Se periodo="S" ou "Q" (Semanal/Quinzenal):
+ *    - lstDias deve ter ao menos 1 dia selecionado
+ * 3. Se periodo="M" (Mensal):
+ *    - lstDiasMes deve ter dia do mês selecionado
+ * 4. Se periodo="V" (Dias Variados):
+ *    - calDatasSelecionadas.values deve ter ao menos 1 data
+ *    - Se calendário não disponível: retorna true (editando existente)
+ * 5. Se periodo ∈ ["D","S","Q","M"]:
+ *    - txtFinalRecorrencia obrigatório (data final da recorrência)
+ *
+ * 📌 COMPONENTES UI SUPORTADOS:
+ * - Syncfusion EJ2: ej2_instances[0].value, .dataBind(), .values (Calendar)
+ * - Kendo UI: $(element).data("kendoComboBox").value()
+ * - jQuery: $("#element").val()
+ * - HTML native: document.getElementById("element").value
+ *
+ * 📌 FLAGS DE CONTROLE:
+ * - this._kmConfirmado: evita re-prompt de confirmação de km > 100
+ * - this._finalizacaoConfirmada: evita re-prompt de confirmação de finalização
+ * - window.transformandoEmViagem: pula validação de recorrência
+ * - window.CarregandoAgendamento: flag de carregamento (não usada aqui)
+ *
+ * 📌 VALIDAÇÕES BLOQUEANTES vs NÃO-BLOQUEANTES:
+ * - Bloqueante (Alerta.Erro, retorna false): todos os campos obrigatórios, km > 2000
+ * - Não-bloqueante (Alerta.Confirmar, pode continuar): km > 100, datas diff > 5 dias
+ *
+ * 📌 REGRAS DE NEGÓCIO:
+ * - Data Final <= Data Atual (finalização)
+ * - KM Final > KM Inicial
+ * - Diferença KM <= 2000km (bloqueante)
+ * - Diferença KM > 100km (confirmação)
+ * - Diferença datas >= 5 dias (confirmação)
+ * - Finalidade="Evento" → Evento obrigatório
+ * - Recorrente="S" → Periodo obrigatório
+ * - Periodo="S"/"Q" → Dias da Semana obrigatório
+ * - Periodo="M" → Dia do Mês obrigatório
+ * - Periodo="V" → Datas Variadas obrigatório
+ * - Periodo ∈ ["D","S","Q","M"] → Data Final Recorrência obrigatório
+ * - Campos de finalização: todos ou nenhum (não aceita parcial)
+ * - Agendamento: motorista/veículo/km/combustível opcional
+ * - Viagem Realizada: motorista/veículo/km/combustível obrigatório
+ *
+ * 📝 OBSERVAÇÕES ADICIONAIS:
+ * - Typo "padrío" (line 379) deveria ser "padrão"
+ * - console.log/error presentes em produção (lines 375, 387, 411, 420, 427, 445, 450, 579)
+ * - validarSetor verifica visibilidade (pode estar oculto dinamicamente)
+ * - parseFloat usa replace(",",".") para aceitar formato pt-BR
+ * - Comparação de datas sempre com setHours(0,0,0,0) para ignorar hora
+ * - this.erros array inicializado mas nunca populado (possível uso futuro)
+ * - Ficha de Vistoria removida como obrigatória (comentário line 286)
+ * - Kendo ComboBox usa pattern diferente ($.data) vs Syncfusion (ej2_instances)
+ * - validarRamal tem fallback HTML para compatibilidade
+ * - toLocaleString('pt-BR') para formatação de números (linha 630)
+ *
+ * 🔌 VERSÃO: 1.0
+ * 📌 ÚLTIMA ATUALIZAÇÃO: 01/02/2026
+ **************************************************************************************** */
 
 /**
  * Classe para validação de campos
