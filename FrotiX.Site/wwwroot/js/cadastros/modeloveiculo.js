@@ -1,3 +1,26 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: modeloveiculo.js (214 lines)
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Página de listagem de modelos de veículos (Fiesta, Corsa, Gol, etc) em DataTable jQuery.
+ *    CRUD simplificado: adicionar, editar, excluir modelos. Vinculação obrigatória a uma marca.
+ *    Modal inline para cadastro rápido (marca dropdown + nome modelo). Validação: não permite
+ *    excluir modelo vinculado a veículos cadastrados.
+ * 
+ * 🔢 PARÂMETROS ENTRADA: modeloId, marcaId, nome modelo
+ * 📤 SAÍDAS: GET/POST/DELETE /api/ModeloVeiculo/*, toasts, DataTable reload
+ * 
+ * 🔗 DEPENDÊNCIAS: jQuery, DataTables, Bootstrap 5, SweetAlert2, Alerta.js
+ * 
+ * 📑 FUNÇÕES PRINCIPAIS (10+ funções):
+ *    • loadList() → DataTable jQuery com modelos
+ *    • adicionarModelo() → Modal (marca + modelo) → POST /api/ModeloVeiculo/Salvar
+ *    • editarModelo(id) → Modal preenchido → PUT
+ *    • excluirModelo(id) → Confirmação → DELETE
+ * 
+ * **************************************************************************************** */
+
 var dataTable;
 
 $(document).ready(function ()

@@ -1,3 +1,27 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: marcaveiculo.js (228 lines)
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Página de listagem de marcas de veículos (GM, Ford, Fiat, VW, etc) em DataTable jQuery.
+ *    CRUD simplificado: adicionar, editar, excluir marcas. Modal inline para cadastro rápido.
+ *    Validação: não permite excluir marca vinculada a modelos de veículos.
+ * 
+ * 📋 DOCUMENTAÇÃO COMPLETA: Documentacao/Pages/MarcaVeiculo - Index.md (v2.0)
+ * 
+ * 🔢 PARÂMETROS ENTRADA: marcaId, nome marca
+ * 📤 SAÍDAS: GET/POST/DELETE /api/MarcaVeiculo/*, toasts, DataTable reload
+ * 
+ * 🔗 DEPENDÊNCIAS: jQuery, DataTables, Bootstrap 5, SweetAlert2, Alerta.js
+ * 
+ * 📑 FUNÇÕES PRINCIPAIS (10+ funções):
+ *    • loadList() → DataTable jQuery com marcas
+ *    • adicionarMarca() → Modal → POST /api/MarcaVeiculo/Salvar
+ *    • editarMarca(id) → Modal preenchido → PUT
+ *    • excluirMarca(id) → Confirmação → DELETE
+ * 
+ * **************************************************************************************** */
+
 /*
     ═══════════════════════════════════════════════════════════════════════════════
     📄 DOCUMENTAÇÃO COMPLETA DISPONÍVEL

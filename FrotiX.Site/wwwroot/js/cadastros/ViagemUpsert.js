@@ -1,38 +1,198 @@
 /* ****************************************************************************************
- * ⚡ ARQUIVO: ViagemUpsert.js (4924 lines - CORE MODULE)
- * ================================================================================================
- * 
- * 📋 OBJETIVO:
- *    Formulário complexo de cadastro/edição de viagens com 200+ funções. Gerencia CRUD completo,
- *    validações extensivas, integração com múltiplos dropdowns Syncfusion (veículo, motorista,
- *    combustível, kit, solicitante), cálculos automáticos (combustível, custos, distâncias),
- *    modal de finalização de viagem, modal KM ajuste, modal anexos (imagens/docs), sincronização
- *    com agendamentos, exportação Excel, impressão relatório, histórico alterações. Sistema de
- *    autosave rascunho (localStorage). Modal "Gravando viagem..." overlay durante POST.
- * 
- * 🔢 PARÂMETROS ENTRADA: viagemId (GUID URL ou input hidden), modo create/edit, dados form
- * 📤 SAÍDAS: POST /api/Viagens/Salvar, modais interativos, validações, toasts, redirecionamentos
- * 
- * 🔗 DEPENDÊNCIAS: jQuery, Syncfusion EJ2 (DropDownList/DatePicker/NumericTextBox/Grid/RTE),
- *    Bootstrap 5, SweetAlert2, AppToast, Alerta.js, OcorrenciaViagem module, KendoEditor
- * 
- * 📝 PRINCIPAIS CATEGORIAS (200+ funções organizadas em seções):
- *    • Inicialização DOMContentLoaded + carregamentos iniciais (20+ funções)
- *    • Dropdowns Syncfusion (veículo/motorista/combustível/kit/solicitante) - 30 funções
- *    • Validações campos obrigatórios + regras negócio - 25 funções
- *    • Cálculos automáticos (combustível inicial/final, custos, distância) - 15 funções
- *    • Modal Finalizaração Viagem (ocorrências, KM final, combustível) - 20 funções
- *    • Modal Anexos (upload imagens/documentos, preview, remoção) - 18 funções
- *    • Modal KM Ajuste (correção km_rodado quando 0) - 10 funções
- *    • Sincronização Agendamento (vincula viagem a agendamento) - 12 funções
- *    • Autosave Rascunho (localStorage backup a cada 30s) - 8 funções
- *    • Histórico Alterações (log mudanças, exibição timeline) - 10 funções
- *    • Exportação Excel/PDF, Impressão Relatório - 8 funções
- *    • CRUD Operations (save/update/delete/duplicate) - 15 funções
- *    • Helpers formatação/conversão/validação - 25+ funções
- * 
- * ⚠️ ARQUIVO CRÍTICO: 4924 linhas, núcleo módulo Viagens. Alterações requerem testes extensivos.
- * 
+ * ⚡ ARQUIVO: ViagemUpsert.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar o formulário completo de criação e edição de viagens no
+ *                   sistema FrotiX. Controla todas as interações, validações, cálculos
+ *                   automáticos (KM, combustível, duração), integração com agendamentos,
+ *                   sistema de ocorrências de veículos e viagens, upload de ficha de
+ *                   vistoria, modal de finalização, e sincronização com FrotiX Mobile
+ *                   (rubricas e documentos). Arquivo core do módulo Viagens com ~5000
+ *                   linhas e 40+ funções principais.
+ *
+ * 📥 ENTRADAS     : - ViagemId (GUID): ID da viagem via URL ou campo hidden
+ *                   - Dados do formulário: veículo, motorista, datas, KMs, combustível
+ *                   - Inputs de usuário: dropdowns Syncfusion, DatePicker, NumericTextBox
+ *                   - FichaVistoria: imagem Base64 da ficha amarela
+ *                   - Ocorrências: lista JSON de ocorrências da viagem e do veículo
+ *                   - Dados Mobile: rubricas e documentos do app móvel
+ *
+ * 📤 SAÍDAS       : - POST para /Viagens/Upsert?handler=Create ou handler=Edit
+ *                   - FormData com todos os campos + FotoBase64 da ficha vistoria
+ *                   - Toasts de feedback (AppToast): sucesso, erro, avisos
+ *                   - Redirecionamento para /Viagens após salvar
+ *                   - Modais interativos: salvando, ocorrências veículo, ver ocorrência
+ *                   - Validações IA (ValidadorFinalizacaoIA): KM, datas, duração
+ *
+ * 🔗 CHAMADA POR  : - Página Razor: /Pages/Viagens/Upsert.cshtml
+ *                   - Eventos de usuário: botões salvar, cancelar, adicionar ocorrência
+ *                   - Eventos de campos: focusout, change em KMs, datas, dropdowns
+ *                   - DOMContentLoaded: inicialização automática ao carregar página
+ *
+ * 🔄 CHAMA        : - /api/Viagem/PegaFicha (GET): busca imagem da ficha de vistoria
+ *                   - /api/Agenda/RecuperaViagem (GET): carrega dados da viagem existente
+ *                   - /Viagens/Upsert?handler=* (AJAX): diversos handlers Razor Pages
+ *                     * AJAXPreencheListaSetores, PegaSetor, PegaRamal
+ *                     * VerificaMotoristaViagem, VerificaVeiculoViagem
+ *                     * GetKmAtual, GetCombustivelAtual
+ *                   - Alerta.* (alerta.js): mensagens SweetAlert2 padronizadas
+ *                   - AppToast.show(): notificações toast Syncfusion
+ *                   - ValidadorFinalizacaoIA.*: validações inteligentes (KM, datas)
+ *                   - FieldUX.* (FieldUX.js): controle de estados de campos (invalid)
+ *                   - OcorrenciaViagem.*: módulo de ocorrências de viagens
+ *                   - carregarOcorrenciasVeiculoUpsert(): lista de ocorrências do veículo
+ *
+ * 📦 DEPENDÊNCIAS : - jQuery 3.x: manipulação DOM, AJAX, eventos
+ *                   - Syncfusion EJ2: DropDownList, TreeView, DatePicker, NumericTextBox,
+ *                     RichTextEditor, Toast, Grid
+ *                   - Moment.js: cálculos de datas e duração
+ *                   - Bootstrap 5: modais, grid system, utilitários CSS
+ *                   - SweetAlert2: alertas customizados (via Alerta.js wrapper)
+ *                   - KendoEditor: editor rich text de observações
+ *                   - Alerta.js: wrapper SweetAlert2 com padrões FrotiX
+ *                   - AppToast.js: wrapper Toast Syncfusion
+ *                   - FieldUX.js: controle de estados visuais de campos
+ *                   - ValidadorFinalizacaoIA.js: validações IA (KM, datas, combustível)
+ *
+ * 📝 OBSERVAÇÕES  : • ARQUIVO CRÍTICO: ~5000 linhas, núcleo do módulo Viagens
+ *                   • Todas as funções possuem try-catch obrigatório (padrão FrotiX)
+ *                   • Variável global CarregandoViagemBloqueada controla tooltips
+ *                   • Modal overlay "Gravando viagem..." durante POST (UX padrão)
+ *                   • Sistema de validação IA opcional (ValidadorFinalizacaoIA)
+ *                   • Integração com FrotiX Mobile: rubricas e documentos anexos
+ *                   • Viagens com status "Realizada" ou "Cancelada" ficam readonly
+ *                   • KM Inicial deve ser >= KM Atual do veículo (validação rigorosa)
+ *                   • Duração > 120 min exibe tooltip de validação (FieldUX)
+ *                   • Data Final não pode ser futura (validação IA ou fallback)
+ *                   • Ocorrências de veículos carregadas dinamicamente via AJAX
+ *                   • RTE (Syncfusion) desabilitado em viagens finalizadas
+ *                   • IIFE inicial captura nome do script para logs de erro
+ *
+ * 📋 ÍNDICE DE FUNÇÕES:
+ *
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ 🔧 OVERLAY E SUBMISSÃO DE FORMULÁRIO                                     │
+ * ├─────────────────────────────────────────────────────────────────────────┤
+ * │ • mostrarModalSalvando()         - Exibe overlay "Gravando viagem..."   │
+ * │ • esconderModalSalvando()        - Esconde overlay após salvar          │
+ * │ • enviarFormularioViaAjax()      - Submit AJAX com FormData + imagem    │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ 🔢 VALIDAÇÕES DE QUILOMETRAGEM (KM)                                      │
+ * ├─────────────────────────────────────────────────────────────────────────┤
+ * │ • validarKmAtualInicial()        - Valida KM inicial >= KM atual        │
+ * │ • validarKmInicialFinal()        - Valida KM final >= KM inicial        │
+ * │ • calcularKmPercorrido()         - Calcula KM final - KM inicial        │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ 📅 VALIDAÇÕES DE DATAS E DURAÇÃO                                         │
+ * ├─────────────────────────────────────────────────────────────────────────┤
+ * │ • validarDatasInicialFinal()     - Valida intervalo >= 5 dias (alerta)  │
+ * │ • calcularDuracaoViagem()        - Calcula duração com Moment.js        │
+ * │                                    e exibe em "X dias e Y horas"        │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ 📋 DROPDOWNS E LISTAS (PREENCHIMENTO)                                    │
+ * ├─────────────────────────────────────────────────────────────────────────┤
+ * │ • PreencheListaEventos()         - Popula dropdown de eventos           │
+ * │ • PreencheListaRequisitantes()   - Popula dropdown de solicitantes      │
+ * │ • PreencheListaSetores()         - Popula TreeView de setores           │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ 🔄 EVENTOS DE MUDANÇA DE VALORES (ValueChange)                           │
+ * ├─────────────────────────────────────────────────────────────────────────┤
+ * │ • RequisitanteValueChange()      - Atualiza setor e ramal ao trocar     │
+ * │ • RequisitanteEventoValueChange()- Atualiza setor em modal de evento    │
+ * │ • MotoristaValueChange()         - Verifica se motorista está viajando  │
+ * │ • VeiculoValueChange()           - Verifica se veículo está em viagem   │
+ * │                                    e habilita seção de ocorrências      │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ 🗂️ CARREGAMENTO E EXIBIÇÃO DE VIAGEM                                     │
+ * ├─────────────────────────────────────────────────────────────────────────┤
+ * │ • ExibeViagem()                  - Preenche formulário com dados da     │
+ * │                                    viagem existente, desabilita campos  │
+ * │                                    se status for Realizada/Cancelada    │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ 🖼️ FICHA DE VISTORIA (UPLOAD E PREVIEW)                                  │
+ * ├─────────────────────────────────────────────────────────────────────────┤
+ * │ • VisualizaImagem()              - Converte imagem para Base64 e exibe  │
+ * │                                    preview no imgViewer                 │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ 📝 MODAL DE REQUISITANTE E SETOR                                         │
+ * ├─────────────────────────────────────────────────────────────────────────┤
+ * │ • BuscarSetoresPorMotorista()    - Busca setores vinculados ao motorista│
+ * │ • InserirNovoRequisitante()      - Salva novo solicitante via modal     │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ 💾 SALVAR FORMULÁRIO                                                     │
+ * ├─────────────────────────────────────────────────────────────────────────┤
+ * │ • salvarFormulario()             - Validações finais + trigger submit   │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ 🚗 OCORRÊNCIAS DE VEÍCULO (MODAL E LISTAGEM)                             │
+ * ├─────────────────────────────────────────────────────────────────────────┤
+ * │ • verificarOcorrenciasVeiculo()  - Conta ocorrências ativas do veículo  │
+ * │ • habilitarBotaoOcorrenciasVeiculo() - Habilita botão com badge         │
+ * │ • desabilitarBotaoOcorrenciasVeiculo() - Desabilita botão               │
+ * │ • carregarOcorrenciasVeiculoUpsert() - AJAX: busca lista de ocorrências │
+ * │ • renderizarTabelaOcorrenciasVeiculoUpsert() - Renderiza tabela HTML    │
+ * │ • excluirOcorrenciaVeiculoUpsert() - Exclui ocorrência (soft delete)    │
+ * │ • baixarOcorrenciaVeiculoUpsert() - Marca ocorrência como resolvida     │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ 📱 INTEGRAÇÃO FROTIX MOBILE (RUBRICAS E DOCUMENTOS)                      │
+ * ├─────────────────────────────────────────────────────────────────────────┤
+ * │ • carregarDadosMobile()          - AJAX: carrega rubricas + anexos      │
+ * │ • carregarRubricas()             - Renderiza lista de rubricas          │
+ * │ • carregarDocumentosItensMobile() - Renderiza anexos com preview        │
+ * │ • inicializarIntegracaoMobile()  - Setup inicial da seção Mobile        │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ 📋 OCORRÊNCIAS DA VIAGEM (ADICIONAR, LISTAR, VISUALIZAR)                 │
+ * ├─────────────────────────────────────────────────────────────────────────┤
+ * │ • inicializarSistemaOcorrencias() - Setup inicial seção de ocorrências  │
+ * │ • verificarVeiculoParaOcorrencias() - Valida se veículo foi selecionado │
+ * │ • abrirModalInserirOcorrencia()  - Exibe modal para nova ocorrência     │
+ * │ • previewImagemOcorrencia()      - Preview de imagem anexada            │
+ * │ • limparImagemOcorrencia()       - Remove preview de imagem             │
+ * │ • confirmarOcorrencia()          - Adiciona ocorrência à lista local    │
+ * │ • removerOcorrencia()            - Remove ocorrência da lista           │
+ * │ • verImagemOcorrencia()          - Exibe imagem em modal fullscreen     │
+ * │ • renderizarListaOcorrencias()   - Renderiza cards de ocorrências       │
+ * │ • atualizarBadgeOcorrencias()    - Atualiza contador de ocorrências     │
+ * │ • atualizarHiddenOcorrencias()   - Atualiza campo hidden com JSON       │
+ * │ • carregarOcorrenciasExistentes()- Carrega ocorrências salvas no BD     │
+ * │ • carregarOcorrenciasViagem()    - Parser JSON para array de ocorrências│
+ * │ • verOcorrenciaViagem()          - Modal detalhes de ocorrência         │
+ * │ • obterClasseStatusOcorrencia()  - Retorna classe CSS do status         │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ 🛠️ HELPERS E UTILITÁRIOS                                                 │
+ * ├─────────────────────────────────────────────────────────────────────────┤
+ * │ • formatarHora()                 - Formata hora para HH:mm              │
+ * │ • aplicarFormatacaoHoras()       - Aplica formatação em campos de hora  │
+ * │ • truncarTextoMobile()           - Trunca texto com "..."               │
+ * │ • escapeHtmlMobile()             - Escapa HTML em strings               │
+ * │ • escapeHtml()                   - Escapa HTML (versão genérica)        │
+ * │ • upload()                       - Callback upload Syncfusion           │
+ * │ • toolbarClick()                 - Callback toolbar RTE                 │
+ * │ • configurarCampoNoFichaVistoria() - Valida campo Nº Ficha Vistoria    │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
  * **************************************************************************************** */
 
 // IIFE para não vazar variáveis no escopo global

@@ -1,3 +1,26 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: veiculosunidade.js (149 lines)
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Página de gerenciamento de associação Veículos × Unidades Usuárias (departamentos/setores).
+ *    Permite vincular/desvincular veículos de unidades específicas. DataTable jQuery lista
+ *    veículos da unidade selecionada. Ações: adicionar veículo à unidade, remover vinculação.
+ *    Validação: veículo pode estar em múltiplas unidades simultaneamente (compartilhado).
+ * 
+ * 🔢 PARÂMETROS ENTRADA: unidadeId, veiculoId
+ * 📤 SAÍDAS: GET/POST/DELETE /api/VeiculosUnidade/*, toasts, DataTable reload
+ * 
+ * 🔗 DEPENDÊNCIAS: jQuery, DataTables, Bootstrap 5, SweetAlert2, Alerta.js
+ * 
+ * 📑 FUNÇÕES PRINCIPAIS (8+ funções):
+ *    • loadList() → DataTable jQuery com veículos da unidade
+ *    • adicionarVeiculoUnidade(unidadeId) → Modal veículo dropdown → POST
+ *    • removerVeiculoUnidade(veiculoId) → Confirmação → DELETE
+ *    • selecionarUnidade(unidadeId) → Recarrega grid da unidade
+ * 
+ * **************************************************************************************** */
+
 var dataTable;
 
 $(document).ready(function ()

@@ -1,3 +1,27 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: veiculo_upsert.js (540 lines)
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Formulário de cadastro/edição de veículos com validações, dropdowns cascata (marca → modelo),
+ *    campos condicionais (próprio/locado: exibe/oculta contrato), upload foto veículo, calculos
+ *    automáticos (depreciação, valor atual), integração RENAVAM, IPVA, licenciamento, seguro.
+ * 
+ * 🔢 PARÂMETROS ENTRADA: veiculoId (GUID), form fields (placa, marca, modelo, ano, km, etc)
+ * 📤 SAÍDAS: POST /api/Veiculos/Salvar, validations, toasts, redirects
+ * 
+ * 🔗 DEPENDÊNCIAS: jQuery, Syncfusion EJ2 (DropDownList/DatePicker/NumericTextBox),
+ *    Bootstrap 5, SweetAlert2, AppToast, Alerta.js
+ * 
+ * 📑 FUNÇÕES PRINCIPAIS (30+ funções):
+ *    • inicializarCampos() → Configura visibilidade campos (próprio/locado)
+ *    • GetModeloList(marcaId) → Carrega dropdown modelos (cascata)
+ *    • GetItemContratualList(contratoId) → Carrega itens do contrato
+ *    • setupEventListeners() → Registra listeners marca/modelo/origem
+ *    • salvarVeiculo() → Valida + POST /api/Veiculos/Salvar
+ * 
+ * **************************************************************************************** */
+
 (function () {
     "use strict";
 

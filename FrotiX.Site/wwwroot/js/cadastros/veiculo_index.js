@@ -1,3 +1,27 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: veiculo_index.js (301 lines)
+ * ================================================================================================
+ * 
+ * 📋 OBJETIVO:
+ *    Página de listagem de veículos em DataTable jQuery interativa. Exibe grid com filtros,
+ *    ordenação, busca. Ações inline: editar, visualizar detalhes, excluir. Badges status
+ *    (ativo=verde, inativo=cinza), badges origem (próprio=azul, locado=laranja). Exportação
+ *    Excel. Modal confirmação exclusão (SweetAlert). Validação: não permite excluir veículo
+ *    vinculado a viagens/agendamentos.
+ * 
+ * 🔢 PARÂMETROS ENTRADA: filtros (status/origem/marca/modelo), pagination DataTable
+ * 📤 SAÍDAS: GET /api/Veiculos/Listar, DELETE /api/Veiculos/Excluir, toasts, redirects
+ * 
+ * 🔗 DEPENDÊNCIAS: jQuery, DataTables, Bootstrap 5, SweetAlert2, AppToast, Alerta.js
+ * 
+ * 📑 FUNÇÕES PRINCIPAIS (15+ funções):
+ *    • loadList() → Inicializa DataTable jQuery com dados veículos
+ *    • excluirVeiculo(id) → SweetAlert confirmação → DELETE
+ *    • aplicarFiltros() → Recarrega grid com filtros aplicados
+ *    • limparFiltros() → Reset → recarrega grid
+ * 
+ * **************************************************************************************** */
+
 (function ()
 {
     "use strict";
