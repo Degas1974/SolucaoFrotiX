@@ -1,3 +1,21 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: anulacao_001.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar exclusão de anulações de empenho e empenho-multa
+ *                   com confirmação via modal e recarregamento de DataTable
+ * 📥 ENTRADAS     : Clique em .btn-deleteanulacao (data-id, data-context),
+ *                   Resposta Alerta.Confirmar (willDelete boolean)
+ * 📤 SAÍDAS       : DELETE via AJAX para /api/Empenho/DeleteMovimentacao,
+ *                   AppToast (Verde/Vermelho), reload DataTable e location,
+ *                   Alerta.TratamentoErroComLinha em caso de erro
+ * 🔗 CHAMADA POR  : Event handler .btn-deleteanulacao (páginas de empenho)
+ * 🔄 CHAMA        : Alerta.Confirmar, $.ajax, AppToast.show, location.reload,
+ *                   $("#tblGlosa").DataTable().ajax.reload, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, Alerta.js, AppToast (toast notifications)
+ * 📝 OBSERVAÇÕES  : Context diferencia empenho vs empenhoMulta. Try-catch aninhado
+ *                   em todos os níveis (ready, click, .then, success, error).
+ **************************************************************************************** */
+
 var GlosaTable;
 
 $(document).ready(function () {

@@ -1,86 +1,25 @@
-﻿/* ================================================================================================
- * ⚡ ARQUIVO: insereviagem.js (1523 linhas)
+﻿/* ****************************************************************************************
+ * ⚡ ARQUIVO: insereviagem.js (1501 lines)
  * ================================================================================================
- *
+ * 
  * 📋 OBJETIVO:
- *    Formulário simplificado de inserção rápida de viagem. Gerencia cadastro expedito de viagens
- *    com campos essenciais: veículo, motorista, data_inicio, data_fim, km_inicial, km_final,
- *    combustível_inicial/final, destino e observações. Auto-carrega dados se viagemId fornecido
- *    (modo edição). Integração AJAX com validações client-side robustas e toasts de feedback.
- *
- * 🔢 PARÂMETROS ENTRADA:
- *    • txtViagemId (input hidden) - ID da viagem para modo edição
- *    • form fields - Todos os campos do formulário (txtDataInicial, txtHoraInicial, etc)
- *    • API GET/POST - Chamadas AJAX para endpoints /api/Agenda/RecuperaViagem,
- *                     /api/Viagens/SalvarRapido, /api/Viagem/* diversos
- *
- * 📤 SAÍDAS:
- *    • GET /api/Agenda/RecuperaViagem - Recupera dados da viagem para edição
- *    • POST /api/Viagem/AdicionarEvento - Insere novo evento
- *    • POST /api/Viagem/AdicionarRequisitante - Insere novo requisitante
- *    • POST /api/Viagem/AdicionarSetor - Insere novo setor
- *    • Toasts SweetAlert (sucesso, erro, alerta)
- *
- * 🔗 DEPENDÊNCIAS:
- *    • jQuery - Manipulação DOM e AJAX
- *    • Bootstrap Modal - Modais de eventos, requisitantes e setores
- *    • SweetAlert2 (swal) - Alertas interativos
- *    • Syncfusion EJ2 - Dropdowns e controles (ddtFinalidade, cmbMotorista, ddtSetor, etc)
- *    • Moment.js - Formatação de datas
- *    • Toastr - Notificações Toast (sucesso/erro)
- *    • alerta.js - Sistema de alertas padrão FrotiX
- *
+ *    Formulário simplificado de inserção rápida de viagem (alternativo ao ViagemUpsert.js).
+ *    Permite cadastro expedito com campos essenciais: veículo, motorista, data_inicio, data_fim,
+ *    km_inicial, km_final, combustível_inicial/final, destino, observações. Auto-carrega dados
+ *    se viagemId fornecido (modo edição). Integração AJAX, validações básicas, toasts sucesso/erro.
+ * 
+ * 🔢 PARÂMETROS ENTRADA: txtViagemId (input hidden), form fields, API GET/POST
+ * 📤 SAÍDAS: POST /api/Agenda/RecuperaViagem, POST /api/Viagens/SalvarRapido, toasts
+ * 
+ * 🔗 DEPENDÊNCIAS: jQuery, Bootstrap, alerta.js, global-toast.js
+ * 
  * 📑 FUNÇÕES PRINCIPAIS (40+ funções):
- *    • $(document).ready() - Inicializa o formulário, carrega dados se em modo edição
- *    • ExibeViagem(viagem) - Popula campos com dados da viagem carregada, bloqueia se finalizada
- *    • RequisitanteValueChange() - Carrega setor e ramal padrão do requisitante selecionado
- *    • MotoristaValueChange() - Verifica se motorista está em viagem em andamento
- *    • VeiculoValueChange() - Verifica se veículo está em viagem, carrega KM atual
- *    • btnSubmit.click() - Valida todos os campos obrigatórios antes de enviar
- *    • PreencheListaEventos() - Recarrega dropdown de eventos após inserção
- *    • PreencheListaRequisitantes() - Recarrega dropdown de requisitantes após inserção
- *    • PreencheListaSetores() - Recarrega dropdown de setores após inserção
- *    • btnInserirEvento.click() - Valida e insere novo evento via POST /api/Viagem/AdicionarEvento
- *    • btnInserirRequisitante.click() - Valida e insere novo requisitante via AJAX
- *    • btnInserirSetor.click() - Valida e insere novo setor via AJAX
- *    • Validadores focusout - Data Final > Data Inicial, Hora Final > Hora Inicial, KM Final > KM Inicial
- *
- * 🔒 SEGURANÇA:
- *    • Validação client-side em múltiplas camadas (focusout e submit)
- *    • XSRF-TOKEN incluído em upload de imagens
- *    • Verificação de duplicatas (Ficha Vistoria, Requisitante)
- *    • Bloqueio de alterações em viagens Realizada/Cancelada
- *
- * ⚠️ NOTAS IMPORTANTES:
- *    • Muitas funções estão comentadas (herança do código anterior)
- *    • Modal cleanup manual (remove .modal-backdrop para evitar duplicatas)
- *    • Compatibilidade com Syncfusion EJ2 (uso de .ej2_instances[0])
- *    • Toasts usam toastr (verificar importação em view/página)
- *    • Data/Hora formatadas em padrão ISO (YYYY-MM-DD e HH:mm)
- *
- * 📊 FLUXO PRINCIPAL:
- *    1. Page load → $(document).ready() verifica txtViagemId
- *    2. Se ID válido → GET /api/Agenda/RecuperaViagem → ExibeViagem()
- *    3. User preenche formulário → Validadores focusout verificam valores
- *    4. User clica Salvar → btnSubmit valida tudo → Salva via AJAX
- *    5. Requisitante/Evento/Setor → Click no botão → Modal abre → Insere → Recarrega dropdown
- *
- * 🎨 UI ELEMENTS:
- *    • #divPainel - Contém todos os campos, bloqueado se viagem finalizada
- *    • #modalEvento, #modalRequisitante, #modalSetor - Modais para inserção rápida
- *    • #ddtFinalidade, #cmbMotorista, #cmbVeiculo, #ddtSetor - Syncfusion Dropdowns
- *    • #txtDataInicial, #txtDataFinal, #txtHoraInicial, #txtHoraFinal - Inputs date/time
- *    • #txtKmInicial, #txtKmFinal, #txtKmAtual - Inputs numéricos quilometragem
- *    • #ddtCombustivelInicial, #ddtCombustivelFinal - Syncfusion Dropdowns (tank levels)
- *    • #btnSubmit, #btnEscondido - Botões hidden para controlar submit
- *
- * 🔄 ATUALIZAÇÕES FREQUENTES:
- *    • Validação de combustível inicial/final adicionada
- *    • Bloqueio de viagens realizadas/canceladas implementado
- *    • Modal cleanup para evitar duplicatas de backdrop
- *    • Verificação de KM atual vs KM inicial
- *
- * ================================================================================================ */
+ *    • ExibeViagem(viagem) → Popula campos com dados da viagem carregada
+ *    • SalvarViagemRapida() → Valida + POST /api/Viagens/SalvarRapido
+ *    • LimparFormulario() → Reset todos os campos
+ *    • ValidarCamposObrigatorios() → Verifica veículo, motorista, datas
+ * 
+ * **************************************************************************************** */
 
 $(document).ready(function () {
 
@@ -1290,7 +1229,7 @@ function RequisitanteEventoValueChange() {
 
             },
             error: function (data) {
-                toastr.error("Já existe um requisitante com este ponto/nome");
+                AppToast.show('Vermelho', 'Já existe requisitante com este ponto/nome', 3000);
                 console.log(data);
             }
         });
@@ -1366,7 +1305,7 @@ function RequisitanteEventoValueChange() {
 
             },
             error: function (data) {
-                alert('error');
+                AppToast.show('Vermelho', 'Erro ao adicionar setor', 3000);
                 console.log(data);
             }
         });

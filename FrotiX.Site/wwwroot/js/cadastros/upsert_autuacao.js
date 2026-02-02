@@ -538,9 +538,7 @@ $(document).on('focusout', '#txtNumeroInfracao', function () {
                                 'Já existe uma Multa inserida com esta numeração'
                             );
                         } else {
-                            alert(
-                                'Já existe uma Multa inserida com esta numeração'
-                            );
+                            console.error('[upsert_autuacao.js] Já existe uma Multa inserida com esta numeração');
                         }
                     }
                 } catch (error) {
@@ -664,9 +662,7 @@ function lstVeiculo_Change() {
                                 'O veículo escolhido não possui contrato ou ata'
                             );
                         } else {
-                            alert(
-                                'O veículo escolhido não possui contrato ou ata'
-                            );
+                            console.error('[upsert_autuacao.js] O veículo escolhido não possui contrato ou ata');
                         }
                     }
                 } catch (innerError) {
@@ -743,9 +739,7 @@ function lstContratoVeiculo_Change() {
                             'O veículo escolhido não pertence a esse contrato'
                         );
                     } else {
-                        alert(
-                            'O veículo escolhido não pertence a esse contrato'
-                        );
+                        console.error('[upsert_autuacao.js] O veículo escolhido não pertence a esse contrato');
                     }
 
                     const lstV =
@@ -812,7 +806,7 @@ function lstAtaVeiculo_Change() {
                             'O veículo escolhido não pertence a essa ata'
                         );
                     } else {
-                        alert('O veículo escolhido não pertence a essa ata');
+                        console.error('[upsert_autuacao.js] O veículo escolhido não pertence a essa ata');
                     }
 
                     const lstV =
@@ -877,7 +871,7 @@ function lstMotorista_Change() {
                             'O motorista escolhido não possui contrato'
                         );
                     } else {
-                        alert('O motorista escolhido não possui contrato');
+                        console.error('[upsert_autuacao.js] O motorista escolhido não possui contrato');
                     }
                 }
             },
@@ -933,9 +927,7 @@ function lstContratoMotorista_Change() {
                             'O motorista escolhido não pertence a esse contrato'
                         );
                     } else {
-                        alert(
-                            'O motorista escolhido não pertence a esse contrato'
-                        );
+                        console.error('[upsert_autuacao.js] O motorista escolhido não pertence a esse contrato');
                     }
 
                     const lstM =

@@ -643,15 +643,53 @@ function renderizarTabelasGerais(data) {
 let filtroUsoAtual = { tipo: 'todos' };
 let filtrosUsoInicializados = false;
 
-/**
- * Inicializa filtros da aba Uso dos Veículos
- * Detecta o ano mais recente com registros e pré-seleciona
- */
+/****************************************************************************************
+ * 🔧 FUNÇÃO: inicializarFiltrosUso
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Inicializa filtros da Aba "Uso dos Veículos" com auto-seleção inteligente do
+ *    ano/mês mais recente COM DADOS (não apenas ano atual). Usa 2 chamadas Ajax
+ *    encadeadas para determinar período ótimo.
+ * 
+ * 📥 ENTRADAS:
+ *    - Nenhuma (busca anos disponíveis da API)
+ * 
+ * 📤 SAÍDAS:
+ *    • filtrosUsoInicializados {Boolean} - Flag global setada como true
+ *    • Popula #filtroAnoUso com anos disponíveis (pré-seleciona mais recente)
+ *    • Popula #filtroMesUso com mês mais recente com dados
+ *    • Atualiza label: "Período: Dezembro/2025"
+ *    • Renderiza cards, gráficos e tabelas da aba Uso
+ * 
+ * 🔗 CHAMADA POR:
+ *    • initTabs() → Primeira vez que usuário clica na aba "Uso"
+ * 
+ * 🔄 CHAMA:
+ *    - mostrarLoading() / esconderLoading()
+ *    - preencherSelectAnos()
+ *    - atualizarPeriodoAtualLabel()
+ *    - atualizarCardsUso(), renderizarGraficosUso(), renderizarTabelasUso()
+ *    - mostrarErro() (em caso de falha)
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - **FLUXO COMPLEXO COM 2 AJAX ANINHADOS:**
+ *      1. Fetch /DashboardUso (sem params) → obtém anosDisponiveis
+ *      2. Seleciona ano mais recente (anos[0])
+ *      3. Fetch /DashboardUso?ano=X → obtém viagensPorMes do ano
+ *      4. Filtra meses com total > 0, ordena desc, seleciona mês mais recente
+ *      5. Popula dropdowns + renderiza dashboard
+ *    - Se anos.length === 0: renderiza vazio sem erro
+ *    - Ajax aninhado com error fallback: usa dados da 1ª chamada se 2ª falhar
+ *    - Flag filtrosUsoInicializados previne reinicialização desnecessária
+ * 
+ ****************************************************************************************/
 function inicializarFiltrosUso() {
-    mostrarLoading('Carregando estatísticas de uso...');
+    try {
+        mostrarLoading('Carregando estatísticas de uso...');
 
-    // Primeira chamada: obter anos disponíveis
-    $.ajax({
+        // Primeira chamada: obter anos disponíveis
+        $.ajax({
         url: '/api/DashboardVeiculos/DashboardUso',
         method: 'GET',
         data: {},
@@ -736,9 +774,51 @@ function inicializarFiltrosUso() {
             mostrarErro('Erro ao carregar estatísticas de uso');
         }
     });
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'inicializarFiltrosUso', error);
+        esconderLoading();
+    }
 }
 
+/****************************************************************************************
+ * 🔧 FUNÇÃO: carregarDadosUso
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Carrega dados da Aba "Uso dos Veículos" com filtros aplicados (ano/mês ou
+ *    período personalizado) e renderiza 5 cards, 2 gráficos e 5 tabelas TOP.
+ * 
+ * 📥 ENTRADAS:
+ *    • params {Object} [opcional={}] - Parâmetros de filtro:
+ *      - ano {String}       → Filtro por ano (ex: "2025")
+ *      - mes {String}       → Filtro por mês (ex: "12")
+ *      - dataInicio {String}→ Data início (YYYY-MM-DD)
+ *      - dataFim {String}   → Data fim (YYYY-MM-DD)
+ * 
+ * 📤 SAÍDAS:
+ *    • dadosUso {Object} - Cache global atualizado
+ *    • Renderiza em tela:
+ *      - 5 cards: viagens/km/abastecimentos/litros/valor
+ *      - 2 gráficos Syncfusion SplineArea: viagens por mês, abastecimento por mês
+ *      - 5 tabelas TOP: viagens, abastecimento, litros, consumo (pior), eficiência (melhor)
+ * 
+ * 🔗 CHAMADA POR:
+ *    • Event handlers: #btnFiltrarAnoMesUso, #btnFiltrarPeriodoUso, .btn-period-veic
+ * 
+ * 🔄 CHAMA:
+ *    - mostrarLoading() / esconderLoading()
+ *    - preencherSelectAnos() (se select vazio)
+ *    - atualizarCardsUso(), renderizarGraficosUso(), renderizarTabelasUso()
+ *    - mostrarErro() (em caso de falha)
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - API: GET /api/DashboardVeiculos/DashboardUso?ano=X&mes=Y
+ *    - Se #filtroAnoUso vazio, popula com anosDisponiveis do response
+ *    - Parâmetros aceitos: {ano, mes} OU {dataInicio, dataFim} (mutuamente exclusivos)
+ * 
+ ****************************************************************************************/
 function carregarDadosUso(params = {}) {
+    try {
     mostrarLoading('Carregando estatísticas de uso...');
 
     $.ajax({
@@ -764,10 +844,44 @@ function carregarDadosUso(params = {}) {
             mostrarErro('Erro ao carregar estatísticas de uso');
         }
     });
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'carregarDadosUso', error);
+        esconderLoading();
+    }
 }
 
-// Atualiza o label do período atual
+/****************************************************************************************
+ * 🔧 FUNÇÃO: atualizarPeriodoAtualLabel
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Atualiza label de período exibido acima dos gráficos da Aba Uso com texto
+ *    amigável baseado no filtro ativo (ano/mês, período ou rápido).
+ * 
+ * 📥 ENTRADAS:
+ *    - Nenhuma (lê variável global filtroUsoAtual)
+ * 
+ * 📤 SAÍDAS:
+ *    • Atualiza textContent de #periodoAtualLabelUso com:
+ *      - "Período: Dezembro/2025" (tipo anoMes)
+ *      - "Período: 01/01/2026 a 31/01/2026" (tipo periodo)
+ *      - "Período: Últimos 30 dias" (tipo rapido)
+ *      - "Exibindo todos os dados" (tipo todos)
+ * 
+ * 🔗 CHAMADA POR:
+ *    • inicializarFiltrosUso(), event handlers de filtros
+ * 
+ * 🔄 CHAMA:
+ *    - formatarDataBR() (converte YYYY-MM-DD → DD/MM/YYYY)
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - Array meses[1-12] começa com '' no índice 0 para facilitar acesso direto
+ *    - Trata 4 tipos: 'anoMes', 'periodo', 'rapido', 'todos'
+ *    - Lógica condicional complexa para combinações (ano sem mês, mês sem ano)
+ * 
+ ****************************************************************************************/
 function atualizarPeriodoAtualLabel() {
+    try {
     const meses = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
     let label = 'Exibindo todos os dados';
 
@@ -791,13 +905,46 @@ function atualizarPeriodoAtualLabel() {
         label = `Período: Últimos ${filtroUsoAtual.dias} dias`;
     }
 
-    $('#periodoAtualLabelUso').text(label);
+        $('#periodoAtualLabelUso').text(label);
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'atualizarPeriodoAtualLabel', error);
+    }
 }
 
+/****************************************************************************************
+ * 🔧 FUNÇÃO: formatarDataBR
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Converte data formato ISO (YYYY-MM-DD) para formato brasileiro (DD/MM/YYYY).
+ * 
+ * 📥 ENTRADAS:
+ *    • dataStr {String} - Data em formato "YYYY-MM-DD" (ex: "2026-02-02")
+ * 
+ * 📤 SAÍDAS:
+ *    • {String} "DD/MM/YYYY" (ex: "02/02/2026") ou "" se dataStr vazio/nulo
+ * 
+ * 🔗 CHAMADA POR:
+ *    • atualizarPeriodoAtualLabel() → Label de período personalizado
+ * 
+ * 🔄 CHAMA:
+ *    - String.split() (manipulação básica)
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - Simples split por '-' e reordenação [ano, mes, dia] → [dia, mes, ano]
+ *    - Não valida formato - assume entrada sempre YYYY-MM-DD
+ *    - Sem tratamento de timezone (trabalha com strings puras)
+ * 
+ ****************************************************************************************/
 function formatarDataBR(dataStr) {
-    if (!dataStr) return '';
-    const partes = dataStr.split('-');
-    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    try {
+        if (!dataStr) return '';
+        const partes = dataStr.split('-');
+        return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'formatarDataBR', error);
+        return '';
+    }
 }
 
 // Eventos dos filtros - Ano/Mês
@@ -909,15 +1056,85 @@ $(document).on('click', '.btn-period-veic', function () {
     carregarDadosUso({ dataInicio, dataFim });
 });
 
+/****************************************************************************************
+ * 🔧 FUNÇÃO: atualizarCardsUso
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Atualiza os 5 cards estatísticos da Aba "Uso dos Veículos" com totais de
+ *    viagens, quilometragem, abastecimentos e custos.
+ * 
+ * 📥 ENTRADAS:
+ *    • totais {Object} - Objeto com propriedades:
+ *      - totalViagens {Number}          → Quantidade de viagens realizadas
+ *      - kmTotalRodado {Number}         → Quilometragem total percorrida
+ *      - totalAbastecimentos {Number}   → Quantidade de abastecimentos
+ *      - totalLitros {Number}           → Litros abastecidos (total)
+ *      - valorTotalAbastecimento {Number} → Valor em reais gasto
+ * 
+ * 📤 SAÍDAS:
+ *    • Atualiza textContent de 5 elementos:
+ *      - #totalViagensUso, #kmTotalRodado, #totalAbastecimentosUso,
+ *        #totalLitrosUso, #valorAbastecimentoUso
+ *    • Formata valores com separador milhares (pt-BR)
+ *    • Litros: 0 casas decimais, Valor: formatarMoeda()
+ * 
+ * 🔗 CHAMADA POR:
+ *    • inicializarFiltrosUso(), carregarDadosUso()
+ * 
+ * 🔄 CHAMA:
+ *    - formatarMoeda() → Formatação R$ para valor abastecimento
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - toLocaleString('pt-BR') com opções min/max para litros (0 decimais)
+ *    - Sufixos ' km' e ' L' adicionados aos valores
+ * 
+ ****************************************************************************************/
 function atualizarCardsUso(totais) {
-    $('#totalViagensUso').text(totais.totalViagens.toLocaleString('pt-BR'));
-    $('#kmTotalRodado').text(totais.kmTotalRodado.toLocaleString('pt-BR') + ' km');
-    $('#totalAbastecimentosUso').text(totais.totalAbastecimentos.toLocaleString('pt-BR'));
-    $('#totalLitrosUso').text(totais.totalLitros.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' L');
-    $('#valorAbastecimentoUso').text(formatarMoeda(totais.valorTotalAbastecimento));
+    try {
+        $('#totalViagensUso').text(totais.totalViagens.toLocaleString('pt-BR'));
+        $('#kmTotalRodado').text(totais.kmTotalRodado.toLocaleString('pt-BR') + ' km');
+        $('#totalAbastecimentosUso').text(totais.totalAbastecimentos.toLocaleString('pt-BR'));
+        $('#totalLitrosUso').text(totais.totalLitros.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' L');
+        $('#valorAbastecimentoUso').text(formatarMoeda(totais.valorTotalAbastecimento));
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'atualizarCardsUso', error);
+    }
 }
 
+/****************************************************************************************
+ * 🔧 FUNÇÃO: renderizarGraficosUso
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Renderiza 2 gráficos Syncfusion SplineArea da Aba "Uso dos Veículos":
+ *    viagens por mês (12 meses) e abastecimento por mês (12 meses).
+ * 
+ * 📥 ENTRADAS:
+ *    • data {Object} - Objeto com 2 arrays:
+ *      - viagensPorMes {Array}       → [{mes: 1-12, quantidade}]
+ *      - abastecimentoPorMes {Array} → [{mes: 1-12, valor}]
+ * 
+ * 📤 SAÍDAS:
+ *    • 2 gráficos Syncfusion renderizados:
+ *      1. chartViagensMes (SplineArea verde sage): Jan-Dez com quantidade de viagens
+ *      2. chartAbastecimentoMes (SplineArea laranja #f59e0b): Jan-Dez com valor R$
+ * 
+ * 🔗 CHAMADA POR:
+ *    • inicializarFiltrosUso(), carregarDadosUso()
+ * 
+ * 🔄 CHAMA:
+ *    - renderizarChartArea() (2x com cores diferentes)
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - Array meses[]: nomes abreviados Jan-Dez
+ *    - Loop 1-12: busca dados do mês na API, fallback 0 se não encontrado
+ *    - Cores: CORES_VEIC.primary (verde sage) vs #f59e0b (laranja padrão)
+ *    - Preenche TODOS os 12 meses mesmo sem dados (gráfico completo)
+ * 
+ ****************************************************************************************/
 function renderizarGraficosUso(data) {
+    try {
     // Gráfico Viagens por Mês
     const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
     const dadosViagens = [];
@@ -939,10 +1156,54 @@ function renderizarGraficosUso(data) {
             y: item ? item.valor : 0
         });
     }
-    renderizarChartArea('chartAbastecimentoMes', dadosAbast, '#f59e0b');
+        renderizarChartArea('chartAbastecimentoMes', dadosAbast, '#f59e0b');
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'renderizarGraficosUso', error);
+    }
 }
 
+/****************************************************************************************
+ * 🔧 FUNÇÃO: renderizarTabelasUso
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Renderiza 5 tabelas HTML grid da Aba "Uso" com rankings TOP 10 de veículos
+ *    por viagens, abastecimento (valor), litros abastecidos, menor consumo (km/L)
+ *    e maior eficiência (km/L).
+ * 
+ * 📥 ENTRADAS:
+ *    • data {Object} - Objeto com 5 arrays:
+ *      - topViagens {Array}         → [{placa, modelo, quantidade, kmTotal}]
+ *      - topAbastecimento {Array}   → [{placa, modelo, litros, valor}]
+ *      - topLitrosAbastecidos {Array} → [{placa, modelo, litros, qtdAbastecimentos}]
+ *      - topConsumo {Array}         → [{placa, modelo, consumo km/L, kmRodado}] (PIOR)
+ *      - topEficiencia {Array}      → [{placa, modelo, consumo km/L, kmRodado}] (MELHOR)
+ * 
+ * 📤 SAÍDAS:
+ *    • Atualiza innerHTML de 5 elementos:
+ *      - #tabelaTopViagens: grid 4 colunas (rank | veículo+modelo | qtd | km)
+ *      - #tabelaTopAbastecimento: grid 4 colunas (rank | veículo+modelo | litros | valor)
+ *      - #tabelaTopLitros: grid 4 colunas (rank | veículo+modelo | litros | qtd)
+ *      - #tabelaTopConsumo: grid 4 colunas (rank | veículo+modelo | km/L VERMELHO | km)
+ *      - #tabelaTopEficiencia: grid 4 colunas (rank | veículo+modelo | km/L VERDE | km)
+ * 
+ * 🔗 CHAMADA POR:
+ *    • inicializarFiltrosUso(), carregarDadosUso()
+ * 
+ * 🔄 CHAMA:
+ *    - formatarMoeda() → Formatação valores abastecimento
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - Badges ranking: .badge-rank-veic (padrão) + .top3 (ouro/prata/bronze)
+ *    - Consumo vermelho (#ef4444): PIOR km/L (menor é pior)
+ *    - Eficiência verde (#10b981): MELHOR km/L (maior é melhor)
+ *    - Litros: 1 casa decimal, Km/L: 2 casas decimais
+ *    - Fallback "Nenhum dado encontrado" se array vazio
+ *    - Grid customizado FrotiX: .grid-row, .grid-cell
+ * 
+ ****************************************************************************************/
 function renderizarTabelasUso(data) {
+    try {
     // Tabela Top Viagens
     let htmlViagens = '';
     if (data.topViagens && data.topViagens.length > 0) {
@@ -1052,17 +1313,58 @@ function renderizarTabelasUso(data) {
         htmlEficiencia = '<div class="grid-row"><div class="grid-cell" style="grid-column: span 4; text-align: center;">Nenhum dado encontrado</div></div>';
     }
     $('#tabelaTopEficiencia').html(htmlEficiencia);
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'renderizarTabelasUso', error);
+    }
 }
 
 // ==============================================
 // ABA 3: CUSTOS
 // ==============================================
+
+/****************************************************************************************
+ * 🔧 FUNÇÃO: carregarDadosCustos
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Carrega dados da Aba "Custos" com filtro de ano e renderiza 4 cards,
+ *    2 gráficos e 1 tabela com distribuição de custos por categoria.
+ * 
+ * 📥 ENTRADAS:
+ *    • ano {Number|null} [opcional=null] - Ano para filtrar (ex: 2025)
+ *      Se null: exibe todos os anos
+ * 
+ * 📤 SAÍDAS:
+ *    • dadosCustos {Object} - Cache global atualizado
+ *    • Renderiza em tela:
+ *      - 4 cards: custo abastecimento/manutenção, qtd abastecimentos/manutenções
+ *      - 2 gráficos: comparativo mensal (barras agrupadas), custo por categoria
+ *      - 1 tabela: custo por categoria (com linha TOTAL)
+ * 
+ * 🔗 CHAMADA POR:
+ *    • initTabs() → Primeira vez que abre aba "Custos"
+ *    • Event handler: #btnFiltrarCusto
+ * 
+ * 🔄 CHAMA:
+ *    - mostrarLoading() / esconderLoading()
+ *    - preencherSelectAnos() (se select vazio)
+ *    - atualizarCardsCustos(), renderizarGraficosCustos(), renderizarTabelasCustos()
+ *    - mostrarErro() (em caso de falha)
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - API: GET /api/DashboardVeiculos/DashboardCustos?ano=X
+ *    - Fallback inteligente: usa dadosUso.anosDisponiveis se disponível,
+ *      senão usa ano atual para popular select
+ *    - Lazy loading: aba só carrega dados na primeira abertura
+ * 
+ ****************************************************************************************/
 function carregarDadosCustos(ano = null) {
-    mostrarLoading('Carregando dados de custos...');
+    try {
+        mostrarLoading('Carregando dados de custos...');
 
-    const params = ano ? { ano: ano } : {};
+        const params = ano ? { ano: ano } : {};
 
-    $.ajax({
+        $.ajax({
         url: '/api/DashboardVeiculos/DashboardCustos',
         method: 'GET',
         data: params,
@@ -1090,16 +1392,87 @@ function carregarDadosCustos(ano = null) {
             mostrarErro('Erro ao carregar dados de custos');
         }
     });
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'carregarDadosCustos', error);
+        esconderLoading();
+    }
 }
 
+/****************************************************************************************
+ * 🔧 FUNÇÃO: atualizarCardsCustos
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Atualiza os 4 cards estatísticos da Aba "Custos" com totais de abastecimento,
+ *    manutenção e quantidades.
+ * 
+ * 📥 ENTRADAS:
+ *    • totais {Object} - Objeto com propriedades:
+ *      - totalAbastecimento {Number} → Valor total gasto em abastecimento (R$)
+ *      - totalManutencao {Number}    → Valor total gasto em manutenção (R$)
+ *      - qtdAbastecimentos {Number}  → Quantidade de abastecimentos realizados
+ *      - qtdManutencoes {Number}     → Quantidade de manutenções realizadas
+ * 
+ * 📤 SAÍDAS:
+ *    • Atualiza textContent de 4 elementos:
+ *      - #custoAbastecimento, #custoManutencao (formatado R$)
+ *      - #qtdAbastecimentosCusto, #qtdManutencoesCusto (separador milhares)
+ * 
+ * 🔗 CHAMADA POR:
+ *    • carregarDadosCustos() → Após fetch API
+ * 
+ * 🔄 CHAMA:
+ *    - formatarMoeda() (2x para valores monetários)
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - toLocaleString('pt-BR') para quantidades (separador milhares)
+ *    - formatarMoeda() para valores (R$ 1.234,56)
+ * 
+ ****************************************************************************************/
 function atualizarCardsCustos(totais) {
-    $('#custoAbastecimento').text(formatarMoeda(totais.totalAbastecimento));
-    $('#custoManutencao').text(formatarMoeda(totais.totalManutencao));
-    $('#qtdAbastecimentosCusto').text(totais.qtdAbastecimentos.toLocaleString('pt-BR'));
-    $('#qtdManutencoesCusto').text(totais.qtdManutencoes.toLocaleString('pt-BR'));
+    try {
+        $('#custoAbastecimento').text(formatarMoeda(totais.totalAbastecimento));
+        $('#custoManutencao').text(formatarMoeda(totais.totalManutencao));
+        $('#qtdAbastecimentosCusto').text(totais.qtdAbastecimentos.toLocaleString('pt-BR'));
+        $('#qtdManutencoesCusto').text(totais.qtdManutencoes.toLocaleString('pt-BR'));
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'atualizarCardsCustos', error);
+    }
 }
 
+/****************************************************************************************
+ * 🔧 FUNÇÃO: renderizarGraficosCustos
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Renderiza 2 gráficos Syncfusion da Aba "Custos": comparativo mensal
+ *    (abastecimento vs manutenção) e custo por categoria de veículo.
+ * 
+ * 📥 ENTRADAS:
+ *    • data {Object} - Objeto com 2 arrays:
+ *      - comparativoMensal {Array}  → [{abastecimento, manutencao}] 12 meses
+ *      - custoPorCategoria {Array} → [{categoria, valorAbastecimento}]
+ * 
+ * 📤 SAÍDAS:
+ *    • 2 gráficos Syncfusion renderizados:
+ *      1. chartComparativoMensal (Column Grouped): 12 meses, 2 séries (laranja/verde)
+ *      2. chartCustoCategoria (Bar horizontal laranja): categorias de veículos
+ * 
+ * 🔗 CHAMADA POR:
+ *    • carregarDadosCustos() → Após fetch API
+ * 
+ * 🔄 CHAMA:
+ *    - renderizarChartColumnGrouped() → Gráfico barras agrupadas
+ *    - renderizarChartBarH() → Gráfico barras horizontais
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - Array meses[]: nomes abreviados Jan-Dez
+ *    - comparativoMensal: laranja (#f59e0b) abastecimento, verde sage manutenção
+ *    - Validação data.length > 0 antes de renderizar categoria
+ * 
+ ****************************************************************************************/
 function renderizarGraficosCustos(data) {
+    try {
     // Gráfico Comparativo Mensal (Barras Agrupadas)
     const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
     const seriesAbast = [];
@@ -1119,9 +1492,43 @@ function renderizarGraficosCustos(data) {
             y: c.valorAbastecimento
         })), '#f59e0b');
     }
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'renderizarGraficosCustos', error);
+    }
 }
 
+/****************************************************************************************
+ * 🔧 FUNÇÃO: renderizarTabelasCustos
+ * ================================================================================================
+ * 
+ * 🎯 OBJETIVO:
+ *    Renderiza tabela HTML grid da Aba "Custos" com custo de abastecimento por
+ *    categoria de veículo (Passeio/Carga/PM/etc) e linha de TOTAL.
+ * 
+ * 📥 ENTRADAS:
+ *    • data {Object} - Objeto com 1 array:
+ *      - custoPorCategoria {Array} → [{categoria, valorAbastecimento}]
+ * 
+ * 📤 SAÍDAS:
+ *    • Atualiza innerHTML de #tabelaCustoCategoria:
+ *      - Grid 2 colunas: categoria | valor R$
+ *      - Linha TOTAL com soma de todos valores (reduce)
+ * 
+ * 🔗 CHAMADA POR:
+ *    • carregarDadosCustos() → Após fetch API
+ * 
+ * 🔄 CHAMA:
+ *    - formatarMoeda() → Formatação valores (R$ 1.234,56)
+ * 
+ * 📝 OBSERVAÇÕES:
+ *    - Usa Array.reduce() para calcular total acumulado
+ *    - Linha TOTAL com classe .grid-row-total (destaque visual)
+ *    - Fallback "Nenhum dado encontrado" se array vazio
+ *    - Grid customizado FrotiX: .grid-row, .grid-cell
+ * 
+ ****************************************************************************************/
 function renderizarTabelasCustos(data) {
+    try {
     // Tabela Custo por Categoria
     let html = '';
     if (data.custoPorCategoria && data.custoPorCategoria.length > 0) {
@@ -1145,6 +1552,9 @@ function renderizarTabelasCustos(data) {
         html = '<div class="grid-row"><div class="grid-cell" style="grid-column: span 2; text-align: center;">Nenhum dado encontrado</div></div>';
     }
     $('#tabelaCustoCategoria').html(html);
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'renderizarTabelasCustos', error);
+    }
 }
 
 // Evento do botão filtrar Custos
@@ -1158,11 +1568,12 @@ $(document).on('click', '#btnFiltrarCusto', function () {
 // ==============================================
 
 function renderizarChartPie(containerId, dados, cores = CORES_VEIC.chart) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    container.innerHTML = '';
+    try {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
 
-    const chart = new ej.charts.AccumulationChart({
+        const chart = new ej.charts.AccumulationChart({
         series: [{
             dataSource: dados,
             xName: 'x',
@@ -1193,9 +1604,13 @@ function renderizarChartPie(containerId, dados, cores = CORES_VEIC.chart) {
         enableSmartLabels: true
     });
     chart.appendTo(container);
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'renderizarChartPie', error);
+    }
 }
 
 function renderizarChartBarH(containerId, dados, cor = CORES_VEIC.primary) {
+    try {
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = '';
@@ -1225,9 +1640,13 @@ function renderizarChartBarH(containerId, dados, cor = CORES_VEIC.primary) {
         background: 'transparent'
     });
     chart.appendTo(container);
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'renderizarChartBarH', error);
+    }
 }
 
 function renderizarChartColumn(containerId, dados, cor = CORES_VEIC.primary) {
+    try {
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = '';
@@ -1257,9 +1676,13 @@ function renderizarChartColumn(containerId, dados, cor = CORES_VEIC.primary) {
         background: 'transparent'
     });
     chart.appendTo(container);
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'renderizarChartColumn', error);
+    }
 }
 
 function renderizarChartArea(containerId, dados, cor = CORES_VEIC.primary) {
+    try {
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = '';
@@ -1296,9 +1719,13 @@ function renderizarChartArea(containerId, dados, cor = CORES_VEIC.primary) {
         background: 'transparent'
     });
     chart.appendTo(container);
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'renderizarChartArea', error);
+    }
 }
 
 function renderizarChartColumnGrouped(containerId, series1, series2, nome1, nome2) {
+    try {
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = '';
@@ -1344,6 +1771,9 @@ function renderizarChartColumnGrouped(containerId, series1, series2, nome1, nome
         background: 'transparent'
     });
     chart.appendTo(container);
+    } catch (error) {
+        Alerta.TratamentoErroComLinha('dashboard-veiculos.js', 'renderizarChartColumnGrouped', error);
+    }
 }
 
 // ==============================================

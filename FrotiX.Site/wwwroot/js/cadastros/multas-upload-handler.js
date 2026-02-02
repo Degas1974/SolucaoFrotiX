@@ -121,7 +121,7 @@ var MultasUpload = (function ()
                 }
                 else
                 {
-                    alert("Apenas arquivos PDF são permitidos.");
+                    console.error('[multas-upload-handler.js] Apenas arquivos PDF são permitidos');
                 }
             }
         }
@@ -154,7 +154,7 @@ var MultasUpload = (function ()
             }
             else
             {
-                alert(msg);
+                console.error('[multas-upload-handler.js] Falha no upload:', msg);
             }
         }
         catch (error)

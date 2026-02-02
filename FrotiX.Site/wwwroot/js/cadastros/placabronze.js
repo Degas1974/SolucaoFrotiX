@@ -67,8 +67,7 @@ $(document).ready(function ()
                                             }
                                             else
                                             {
-                                                console.warn('AppToast não disponível');
-                                                alert(data.message);
+                                                console.error('[placabronze.js] Sucesso -', data.message);
                                             }
                                             dataTable.ajax.reload();
                                         }
@@ -80,7 +79,7 @@ $(document).ready(function ()
                                             }
                                             else
                                             {
-                                                alert(data.message);
+                                                console.error('[placabronze.js] Delete error -', data.message);
                                             }
                                         }
                                     }
@@ -100,7 +99,7 @@ $(document).ready(function ()
                                         }
                                         else
                                         {
-                                            alert("Erro ao excluir a placa de bronze. Tente novamente.");
+                                            console.error('[placabronze.js] Erro ao excluir a placa de bronze.');
                                         }
                                     }
                                     catch (error)
@@ -166,7 +165,7 @@ $(document).ready(function ()
                                             }
                                             else
                                             {
-                                                alert(data.message);
+                                                console.error('[placabronze.js] Sucesso -', data.message);
                                             }
                                             dataTable.ajax.reload();
                                         }
@@ -178,7 +177,7 @@ $(document).ready(function ()
                                             }
                                             else
                                             {
-                                                alert(data.message);
+                                                console.error('[placabronze.js] Desvincula error -', data.message);
                                             }
                                         }
                                     }
@@ -198,7 +197,7 @@ $(document).ready(function ()
                                         }
                                         else
                                         {
-                                            alert("Erro ao desvincular o veículo. Tente novamente.");
+                                            console.error('[placabronze.js] Erro ao desvincular o veículo.');
                                         }
                                     }
                                     catch (error)
@@ -265,7 +264,7 @@ $(document).ready(function ()
                             }
                             else
                             {
-                                alert("Erro ao alterar o status. Tente novamente.");
+                                console.error('[placabronze.js] Erro ao alterar o status.');
                             }
                         }
                     }
@@ -285,7 +284,7 @@ $(document).ready(function ()
                             }
                             else
                             {
-                                alert("Ocorreu um erro ao alterar o status da placa");
+                                console.error('[placabronze.js] Ocorreu um erro ao alterar o status da placa');
                             }
                         }
                         catch (error)

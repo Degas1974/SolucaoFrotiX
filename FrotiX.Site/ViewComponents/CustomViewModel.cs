@@ -1,4 +1,25 @@
-﻿using System;
+﻿/* ****************************************************************************************
+ * ⚡ ARQUIVO: CustomViewModel.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : ViewModel de demonstração com exemplos de validações customizadas
+ *                   (ValidateStrings, OnlyUrls, DateRange, DomainAtEnd, etc.).
+ *
+ * 📥 ENTRADAS     : Propriedades variadas com Data Annotations customizadas.
+ *
+ * 📤 SAÍDAS       : Objeto validado para binding em formulários de exemplo.
+ *
+ * 🔗 CHAMADA POR  : Controllers que demonstram validações (páginas de exemplo/demo).
+ *
+ * 🔄 CHAMA        : Atributos de validação customizados do namespace FrotiX.Validations.
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations, FrotiX.Validations.
+ *
+ * 📝 OBSERVAÇÕES  : Arquivo de exemplo/template. Não usado em produção. Demonstra uso
+ *                   de ValidateStrings, OnlyDigits, DateRange, ValidateDomainAtEnd,
+ *                   ValidateMinAge, e outros atributos customizados do FrotiX.
+ **************************************************************************************** */
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,6 +29,26 @@ using FrotiX.Validations;
 
 namespace FrotiX.ViewModels
     {
+    /****************************************************************************************
+     * ⚡ CLASSE: CustomViewModel
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Modelo de exemplo com 16 tipos diferentes de validações customizadas
+     *                   para demonstrar capacidades de validação do FrotiX.
+     *
+     * 📥 ENTRADAS     : 16 propriedades string com atributos de validação variados
+     *
+     * 📤 SAÍDAS       : Instância validada pronta para binding
+     *
+     * 🔗 CHAMADA POR  : Páginas de demonstração/exemplo
+     *
+     * 🔄 CHAMA        : Atributos: ValidateStrings, OnlyUrls, OnlyDigits, ValidateDate,
+     *                   DateRange, ValidateDomainAtEnd, NumOrChars, ValidateDecimals, etc.
+     *
+     * 📦 DEPENDÊNCIAS : FrotiX.Validations (atributos customizados)
+     *
+     * 📝 OBSERVAÇÕES  : Arquivo de template/exemplo. Validações são case sensitive ou não
+     *                   conforme atributo. Campos opcionais usam vírgula final (eg: "Yes,No,").
+     ****************************************************************************************/
     public class CustomViewModel
         {
         /* ---------------------------------------1---------------------------------*/

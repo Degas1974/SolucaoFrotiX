@@ -1,3 +1,23 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ata.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : CRUD de Ata de Registro de Preços com DataTable, modais, verificação
+ *                   de dependências (itens/veículos vinculados), exclusão segura, e
+ *                   integração com Alerta/AppToast. Carrega lista via loadList().
+ * 📥 ENTRADAS     : Cliques em .btn-delete (data-id), eventos de formulário,
+ *                   respostas AJAX (/api/AtaRegistroPrecos/VerificarDependencias, Delete)
+ * 📤 SAÍDAS       : DataTable renderizado (#dataTableAta), AppToast notificações,
+ *                   Alerta.Warning (dependências), Alerta.Confirmar (exclusão),
+ *                   DataTable.ajax.reload, Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready, event handlers (.btn-delete), loadList() (DOMContentLoaded)
+ * 🔄 CHAMA        : loadList(), $.ajax, Alerta.Confirmar, Alerta.Warning, AppToast.show,
+ *                   dataTable.ajax.reload, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables, Alerta.js, AppToast (toast notifications)
+ * 📝 OBSERVAÇÕES  : Verifica dependências ANTES de permitir exclusão (itens/veículos).
+ *                   Botão .disabled ignora clique se há dependências. Try-catch em
+ *                   todos os event handlers (ready, click, success, error).
+ **************************************************************************************** */
+
 var dataTable;
 
 $(document).ready(function () {

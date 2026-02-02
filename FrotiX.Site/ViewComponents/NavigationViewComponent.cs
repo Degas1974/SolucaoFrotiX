@@ -1,4 +1,28 @@
-﻿using FrotiX.Models;
+﻿/* ****************************************************************************************
+ * ⚡ ARQUIVO: NavigationViewComponent.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : ViewComponent de navegação (menu lateral) com fallback inteligente
+ *                   (tenta BD primeiro, fallback para nav.json se falhar).
+ *
+ * 📥 ENTRADAS     : HttpContext.User (Claims do usuário autenticado).
+ *
+ * 📤 SAÍDAS       : IViewComponentResult com View("TreeView") ou View(items).
+ *
+ * 🔗 CHAMADA POR  : Layout principal (_Layout.cshtml) via @await Component.InvokeAsync().
+ *
+ * 🔄 CHAMA        : IUnitOfWork.Recurso.GetAll(), IUnitOfWork.ControleAcesso.GetAll(),
+ *                   INavigationModel.Full, MontarArvoreRecursiva().
+ *
+ * 📦 DEPENDÊNCIAS : INavigationModel, IUnitOfWork, RecursoTreeDTO, ASP.NET Core MVC.
+ *
+ * 📝 OBSERVAÇÕES  : 1) Prioridade: Banco de dados (hierarquia Recurso)
+ *                   2) Fallback: nav.json (INavigationModel.Full)
+ *                   3) Filtra por ControleAcesso.Acesso = true para usuário logado
+ *                   4) Inclui pais necessários para manter hierarquia visual
+ *                   5) Se usuário sem acessos configurados, concede acesso total (admin temp)
+ **************************************************************************************** */
+
+using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -8,28 +32,79 @@ using System.Security.Claims;
 
 namespace FrotiX.ViewComponents
 {
+    /****************************************************************************************
+     * ⚡ CLASSE: NavigationViewComponent
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Renderizar menu de navegação lateral com base em permissões do usuário
+     *
+     * 📥 ENTRADAS     : HttpContext.User.Claims (NameIdentifier)
+     *
+     * 📤 SAÍDAS       : View("TreeView", arvore) ou View(items)
+     *
+     * 🔗 CHAMADA POR  : _Layout.cshtml
+     *
+     * 🔄 CHAMA        : GetTreeFromDatabase(), MontarArvoreRecursiva()
+     *
+     * 📦 DEPENDÊNCIAS : INavigationModel, IUnitOfWork
+     *
+     * 📝 OBSERVAÇÕES  : Usa arquitetura de fallback: BD → JSON → Vazio
+     ****************************************************************************************/
     public class NavigationViewComponent : ViewComponent
     {
         private readonly INavigationModel _navigationModel;
         private readonly IUnitOfWork _unitOfWork;
 
+        /****************************************************************************************
+         * ⚡ CONSTRUTOR: NavigationViewComponent
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Inicializar dependências via injeção (NavigationModel e UnitOfWork)
+         *
+         * 📥 ENTRADAS     : [INavigationModel] navigationModel - Acesso ao nav.json
+         *                   [IUnitOfWork] unitOfWork - Acesso ao banco (Recurso/ControleAcesso)
+         *
+         * 📤 SAÍDAS       : Instância configurada do ViewComponent
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core DI Container
+         *
+         * 🔄 CHAMA        : Nenhum
+         *
+         * 📦 DEPENDÊNCIAS : INavigationModel, IUnitOfWork
+         ****************************************************************************************/
         public NavigationViewComponent(INavigationModel navigationModel, IUnitOfWork unitOfWork)
         {
             _navigationModel = navigationModel;
             _unitOfWork = unitOfWork;
         }
 
+        /****************************************************************************************
+         * ⚡ MÉTODO: Invoke
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Renderizar menu de navegação com fallback inteligente (BD → JSON)
+         *
+         * 📥 ENTRADAS     : Nenhuma (usa HttpContext.User interno)
+         *
+         * 📤 SAÍDAS       : [IViewComponentResult] View("TreeView", arvore) ou View(items)
+         *
+         * 🔗 CHAMADA POR  : ASP.NET Core quando ViewComponent é invocado no layout
+         *
+         * 🔄 CHAMA        : GetTreeFromDatabase(), _navigationModel.Full
+         *
+         * 📦 DEPENDÊNCIAS : HttpContext.User, INavigationModel.Full
+         *
+         * 📝 OBSERVAÇÕES  : Try-catch garante que erros no BD não quebram a navegação
+         *                   (sempre tem fallback para JSON). Logs via Console.WriteLine.
+         ****************************************************************************************/
         public IViewComponentResult Invoke()
         {
             try
             {
-                // Tenta ler do banco de dados primeiro
+                // [DOC] Tenta ler do banco de dados primeiro (prioridade)
                 var arvoreDb = GetTreeFromDatabase();
 
                 if (arvoreDb != null && arvoreDb.Any())
                 {
                     Console.WriteLine($"NavigationViewComponent: Usando TreeView com {arvoreDb.Count} itens raiz do banco de dados");
-                    // Usa Syncfusion TreeView com dados do BD
+                    // [DOC] Usa Syncfusion TreeView com dados do BD
                     return View("TreeView", arvoreDb);
                 }
                 else
@@ -39,7 +114,7 @@ namespace FrotiX.ViewComponents
             }
             catch (Exception ex)
             {
-                // Log do erro, mas continua com fallback
+                // [DOC] Log do erro, mas continua com fallback (não quebra a navegação)
                 Console.WriteLine($"NavigationViewComponent: Erro ao ler navegação do BD: {ex.Message}");
                 if (ex.InnerException != null)
                 {
@@ -47,12 +122,33 @@ namespace FrotiX.ViewComponents
                 }
             }
 
-            // Fallback: usa nav.json
+            // [DOC] Fallback: usa nav.json quando BD falha ou está vazio
             Console.WriteLine("NavigationViewComponent: Usando navegação do JSON");
             var items = _navigationModel.Full;
             return View(items);
         }
 
+        /****************************************************************************************
+         * ⚡ MÉTODO: GetTreeFromDatabase
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Carregar árvore de navegação do banco com filtro de permissões
+         *
+         * 📥 ENTRADAS     : HttpContext.User (NameIdentifier Claim)
+         *
+         * 📤 SAÍDAS       : [List<RecursoTreeDTO>] Árvore hierárquica ou null se falhar
+         *
+         * 🔗 CHAMADA POR  : Invoke()
+         *
+         * 🔄 CHAMA        : _unitOfWork.Recurso.GetAll(), _unitOfWork.ControleAcesso.GetAll(),
+         *                   MontarArvoreRecursiva()
+         *
+         * 📦 DEPENDÊNCIAS : IUnitOfWork, RecursoTreeDTO, HttpContext.User
+         *
+         * 📝 OBSERVAÇÕES  : 1) Retorna null se usuário não autenticado
+         *                   2) Se usuário sem acessos configurados, concede acesso total (admin temp)
+         *                   3) Inclui pais necessários para manter hierarquia visual
+         *                   4) Filtra por Ativo = true e ordena por Ordem
+         ****************************************************************************************/
         /// <summary>
         /// Lê a árvore de navegação do banco de dados
         /// </summary>
@@ -62,17 +158,18 @@ namespace FrotiX.ViewComponents
 
             Console.WriteLine($"NavigationViewComponent: UserId = {userId ?? "NULL"}");
 
+            // [DOC] Retorna null se usuário não autenticado (fallback para JSON)
             if (string.IsNullOrEmpty(userId))
             {
                 Console.WriteLine("NavigationViewComponent: UserId não encontrado, usando JSON");
                 return null;
             }
 
-            // Busca todos os recursos
+            // [DOC] Busca todos os recursos do banco
             var todoRecursos = _unitOfWork.Recurso.GetAll().ToList();
             Console.WriteLine($"NavigationViewComponent: Total de recursos no banco: {todoRecursos.Count}");
 
-            // Verifica se a migração hierárquica foi feita (recursos de nível 0 com filhos)
+            // [DOC] Verifica se a migração hierárquica foi feita (recursos de nível 0 com filhos)
             var temHierarquia = todoRecursos.Any(r => r.Nivel == 0) && todoRecursos.Any(r => r.ParentId != null);
 
             if (!temHierarquia && todoRecursos.Count == 0)
@@ -81,7 +178,7 @@ namespace FrotiX.ViewComponents
                 return null;
             }
 
-            // Busca recursos ativos ordenados
+            // [DOC] Busca recursos ativos ordenados
             var recursosAtivos = todoRecursos
                 .Where(r => r.Ativo)
                 .OrderBy(r => r.Ordem)
@@ -89,7 +186,7 @@ namespace FrotiX.ViewComponents
 
             Console.WriteLine($"NavigationViewComponent: Recursos ativos: {recursosAtivos.Count}");
 
-            // Busca controle de acesso do usuário
+            // [DOC] Busca controle de acesso do usuário (Acesso = true)
             var controlesAcesso = _unitOfWork.ControleAcesso
                 .GetAll(ca => ca.UsuarioId == userId && ca.Acesso == true)
                 .Select(ca => ca.RecursoId)
@@ -97,7 +194,7 @@ namespace FrotiX.ViewComponents
 
             Console.WriteLine($"NavigationViewComponent: Controles de acesso do usuário: {controlesAcesso.Count}");
 
-            // Se usuário não tem nenhum acesso configurado, dá acesso a tudo (admin temporário)
+            // [DOC] Se usuário não tem nenhum acesso configurado, dá acesso a tudo (admin temporário)
             HashSet<Guid> idsComAcessoDireto;
             if (controlesAcesso.Count == 0)
             {
@@ -112,13 +209,13 @@ namespace FrotiX.ViewComponents
                     .ToHashSet();
             }
 
-            // Inclui pais de recursos com acesso (para manter hierarquia)
+            // [DOC] Inclui pais de recursos com acesso (para manter hierarquia visual)
             var idsComAcessoEPais = new HashSet<Guid>(idsComAcessoDireto);
             foreach (var recurso in recursosAtivos)
             {
                 if (idsComAcessoDireto.Contains(recurso.RecursoId) && recurso.ParentId.HasValue)
                 {
-                    // Adiciona todos os ancestrais
+                    // [DOC] Adiciona todos os ancestrais (para evitar itens órfãos na árvore)
                     var parentId = recurso.ParentId;
                     while (parentId.HasValue)
                     {
@@ -129,7 +226,7 @@ namespace FrotiX.ViewComponents
                 }
             }
 
-            // Filtra recursos com acesso ou que são pais necessários
+            // [DOC] Filtra recursos com acesso ou que são pais necessários
             var recursosComAcesso = recursosAtivos
                 .Where(r => idsComAcessoEPais.Contains(r.RecursoId))
                 .ToList();
@@ -142,10 +239,30 @@ namespace FrotiX.ViewComponents
                 return null;
             }
 
-            // Monta árvore hierárquica
+            // [DOC] Monta árvore hierárquica recursiva
             return MontarArvoreRecursiva(recursosComAcesso, null);
         }
 
+        /****************************************************************************************
+         * ⚡ MÉTODO: MontarArvoreRecursiva
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Construir árvore hierárquica recursiva de recursos (Parent-Child)
+         *
+         * 📥 ENTRADAS     : [List<Recurso>] recursos - Lista flat de recursos
+         *                   [Guid?] parentId - ID do pai (null para raiz)
+         *
+         * 📤 SAÍDAS       : [List<RecursoTreeDTO>] Árvore hierárquica de DTOs
+         *
+         * 🔗 CHAMADA POR  : GetTreeFromDatabase(), MontarArvoreRecursiva() (recursão)
+         *
+         * 🔄 CHAMA        : MontarArvoreRecursiva() (recursão para filhos)
+         *
+         * 📦 DEPENDÊNCIAS : RecursoTreeDTO, LINQ
+         *
+         * 📝 OBSERVAÇÕES  : Recursão termina quando não há mais filhos.
+         *                   Ordena por Ordem antes de retornar.
+         *                   Expanded = true para expandir árvore por padrão.
+         ****************************************************************************************/
         /// <summary>
         /// Monta a árvore hierárquica de recursos
         /// </summary>
