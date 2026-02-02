@@ -1,6 +1,564 @@
-// ====================================================================
-// RECORRENCIA LOGIC - Lógica de visibilidade dos campos de recorrência
-// ====================================================================
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: recorrencia-logic.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Lógica de visibilidade e comportamento dos campos de recorrência no
+ *                   modal de agendamento. 24 funções para controlar show/hide de campos
+ *                   baseado em lstRecorrente ("Sim"/"Não") e lstPeriodos (Diário/Semanal/
+ *                   Mensal/Variado), inicializar Syncfusion Calendar multiselect com
+ *                   badge contador, configurar event handlers (change), carregar CLDR
+ *                   + L10n PT-BR, limpar campos ao mudar tipo recorrência. Principais
+ *                   fluxos: lstRecorrente="Sim" → show divPeriodo, lstPeriodos="Semanal"
+ *                   → show lstDias + txtFinalRecorrencia, lstPeriodos="Variado" → show
+ *                   calDatasSelecionadas (multiSelect Calendar) com badge laranja
+ *                   (contador datas). Usa Syncfusion DropDownList, Calendar, DateTimePicker.
+ * 📥 ENTRADAS     : Eventos change de Syncfusion components (lstRecorrente, lstPeriodos),
+ *                   valores selecionados (RecorrenteId: "S"/"N", PeriodoId: "D"/"S"/"Q"/
+ *                   "M"/"V"), valores Calendar (dates array), window.ignorarEventosRecorrencia
+ *                   (boolean flag para skip handlers durante load edição)
+ * 📤 SAÍDAS       : Void (side effects: DOM display changes, Calendar instance creation,
+ *                   badge textContent updates, console.log debug), Calendar instance
+ *                   (window.calendario), datasSelecionadas array (window.datasSelecionadas)
+ * 🔗 CHAMADA POR  : main.js (DOMContentLoaded → setTimeout 1000ms → inicializarLogicaRecorrencia),
+ *                   recorrencia.js (inicializarDropdownPeriodos), modal-viagem-novo.js
+ *                   (inicializarCamposModal → set ignorarEventosRecorrencia flag),
+ *                   Syncfusion change events (lstRecorrente, lstPeriodos, calDatasSelecionadas)
+ * 🔄 CHAMA        : Syncfusion EJ2 API (ej2_instances[0], value setter, dataBind(), refresh(),
+ *                   destroy(), appendTo(), Calendar constructor, DropDownList.change),
+ *                   ej.base.Ajax (CLDR files load), ej.base.loadCldr, ej.base.setCulture,
+ *                   ej.base.L10n.load, window.inicializarDropdownPeriodos (recorrencia.js),
+ *                   window.inicializarLstDias/inicializarLstDiasMes (recorrencia.js popula
+ *                   dataSource), Alerta.TratamentoErroComLinha, setTimeout (200ms/300ms
+ *                   delays para render), setInterval (200ms × 10 tentativas retry),
+ *                   jQuery ($(element).empty/append/css/data, $(window).on('resize')),
+ *                   DOM API (getElementById, style.setProperty, classList.add/remove,
+ *                   createElement, appendChild, querySelector, getComputedStyle)
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 Calendars (ej.calendars.Calendar, ej.base.L10n, ej.base.Ajax,
+ *                   ej.base.loadCldr, ej.base.setCulture), Syncfusion DropDownList
+ *                   (lstRecorrente, lstPeriodos, lstDias, lstDiasMes), Syncfusion Calendar
+ *                   (calDatasSelecionadas com isMultiSelection: true), Syncfusion
+ *                   DateTimePicker (txtFinalRecorrencia), jQuery (DOM manipulation,
+ *                   events), Alerta (TratamentoErroComLinha), recorrencia.js
+ *                   (inicializarDropdownPeriodos, inicializarLstDias, inicializarLstDiasMes),
+ *                   DOM elements (divPeriodo, divDias, divDiaMes, divFinalRecorrencia,
+ *                   calendarContainer, calDatasSelecionadas, badgeContadorDatas), CLDR
+ *                   files (cldr/numberingSystems.json, ca-gregorian.json, numbers.json,
+ *                   timeZoneNames.json, weekData.json, pt-BR.json para traduções)
+ * 📝 OBSERVAÇÕES  : Arquivo de controle de UI (1395 linhas, 24 funções). 3 global variables:
+ *                   window.calendario (Calendar instance, null inicial), window.datasSelecionadas
+ *                   (Date array para multiselect), window.ignorarEventosRecorrencia
+ *                   (boolean flag para evitar loops durante edição). Todas as funções
+ *                   privadas (sem window.* export) exceto inicializarLogicaRecorrencia.
+ *                   Try-catch em todas as funções principais com Alerta.TratamentoErroComLinha.
+ *                   Console.log extensivo para debug (production-ready). Uso de style.setProperty
+ *                   com '!important' para sobrescrever CSS (garantir visibilidade).
+ *                   Retry pattern: setInterval 200ms × 10 tentativas para lstPeriodos
+ *                   (aguarda render Syncfusion). Delays: setTimeout 100-300ms para aguardar
+ *                   DOM completo. Badge: círculo laranja (#ff8c00) 35×35px, position
+ *                   absolute, z-index 999999, top/left calculado dinamicamente. CLDR:
+ *                   carregamento local via ej.base.Ajax (5 JSON files) + pt-BR.json
+ *                   (traduções). Inicialização automática: DOMContentLoaded ou document.readyState
+ *                   ready → setTimeout 1000ms → inicializarLogicaRecorrencia. Linhas
+ *                   96-136: código duplicado (versão simplificada de inicializarLogicaRecorrencia,
+ *                   não executado). Períodos suportados: D (Diário), S (Semanal), Q
+ *                   (Quinzenal), M (Mensal), V (Dias Variados). Lógica de visibilidade:
+ *                   switch/case + fallback por texto (toLowerCase + includes). Calendar
+ *                   multiSelect: min=today (desabilita passado), renderDayCell hook.
+ *
+ * 📋 ÍNDICE DE FUNÇÕES (24 funções + 3 global variables + 1 auto-init):
+ *
+ * ┌─ GLOBAL VARIABLES ───────────────────────────────────────────────────┐
+ * │ 1. window.calendario = null                                          │
+ * │    → Syncfusion Calendar instance (multiSelect)                     │
+ * │    → Criado em inicializarCalendarioSyncfusion()                    │
+ * │                                                                       │
+ * │ 2. window.datasSelecionadas = []                                     │
+ * │    → Date array para armazenar datas selecionadas no Calendar       │
+ * │    → Atualizado no Calendar.change event                            │
+ * │                                                                       │
+ * │ 3. window.ignorarEventosRecorrencia = false                          │
+ * │    → Boolean flag para skip event handlers durante edição           │
+ * │    → Setado true em modal-viagem-novo.inicializarCamposModal        │
+ * │    → Evita loops ao preencher campos com dados de edição            │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ SEÇÃO 1: INICIALIZAÇÃO E CONFIGURAÇÃO ─────────────────────────────┐
+ * │ 4. window.inicializarLogicaRecorrencia()                             │
+ * │    → Inicializa lógica completa de recorrência (entry point)        │
+ * │    → returns void (side effect: configura handlers + defaults)      │
+ * │    → Fluxo: (89 linhas)                                             │
+ * │      1. console.log "Inicializando lógica de recorrência"           │
+ * │      2. Se window.inicializarDropdownPeriodos exists:               │
+ * │         - Call inicializarDropdownPeriodos() (recorrencia.js)       │
+ * │      3. setTimeout 300ms: aguardar dropdown render                  │
+ * │         a. esconderTodosCamposRecorrencia()                         │
+ * │         b. setTimeout 200ms:                                         │
+ * │            - Obter lstRecorrente.ej2_instances[0]                   │
+ * │            - Find dataSource item "Não" (RecorrenteId="N")          │
+ * │            - lstRecorrente.value = "N", dataBind()                  │
+ * │         c. configurarEventHandlerRecorrente()                       │
+ * │         d. configurarEventHandlerPeriodo()                          │
+ * │      4. try-catch: Alerta.TratamentoErroComLinha                    │
+ * │    → Uso típico: main.js DOMContentLoaded + 1000ms delay            │
+ * │                                                                       │
+ * │ 5. esconderTodosCamposRecorrencia()                                  │
+ * │    → Esconde todos os campos exceto lstRecorrente                   │
+ * │    → returns void (side effect: display='none' !important)          │
+ * │    → Fluxo:                                                          │
+ * │      1. Array de 5 IDs: divPeriodo, divDias, divDiaMes,            │
+ * │         divFinalRecorrencia, calendarContainer                      │
+ * │      2. forEach: setProperty('display', 'none', 'important')        │
+ * │      3. console.log "Campos escondidos"                             │
+ * │    → Uso típico: inicializarLogicaRecorrencia, aoMudarRecorrente("Não")│
+ * │                                                                       │
+ * │ 6. configurarEventHandlerRecorrente()                                │
+ * │    → Configura change handler para lstRecorrente                    │
+ * │    → returns void (side effect: lstRecorrente.change = aoMudarRecorrente)│
+ * │    → Fluxo:                                                          │
+ * │      1. getElementById("lstRecorrente")                             │
+ * │      2. Obter ej2_instances[0]                                      │
+ * │      3. lstRecorrente.change = aoMudarRecorrente                    │
+ * │      4. console.log "Event handler configurado"                     │
+ * │    → Chamado por: inicializarLogicaRecorrencia                      │
+ * │                                                                       │
+ * │ 7. configurarEventHandlerPeriodo()                                   │
+ * │    → Configura change handler para lstPeriodos com retry            │
+ * │    → returns void (side effect: lstPeriodos.change = aoMudarPeriodo)│
+ * │    → Fluxo:                                                          │
+ * │      1. setInterval 200ms (retry pattern):                          │
+ * │         - tentativas++, max 10 tentativas                           │
+ * │         - getElementById("lstPeriodos")                             │
+ * │         - Se !exists ou !ej2_instances: continue retry              │
+ * │         - Se encontrado: clearInterval                              │
+ * │      2. lstPeriodos.change = null (remover anterior)                │
+ * │      3. lstPeriodos.change = aoMudarPeriodo                         │
+ * │      4. console.log "Event handler configurado"                     │
+ * │    → Retry necessário: lstPeriodos criado dinamicamente após        │
+ * │      inicializarDropdownPeriodos                                    │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ SEÇÃO 2: EVENT HANDLERS ───────────────────────────────────────────┐
+ * │ 8. aoMudarRecorrente(args)                                           │
+ * │    → Handler change de lstRecorrente (Sim/Não)                      │
+ * │    → param args: Syncfusion change event args (value, itemData)     │
+ * │    → returns void (side effect: show/hide divPeriodo)               │
+ * │    → Fluxo: (77 linhas)                                             │
+ * │      1. console.log debug completo (args, value, itemData)          │
+ * │      2. Se ignorarEventosRecorrencia: return early                  │
+ * │      3. Extrair valor: args.value || itemData?.RecorrenteId         │
+ * │      4. Extrair descricao: itemData?.Descricao                      │
+ * │      5. limparCamposRecorrenciaAoMudar()                            │
+ * │      6. Verificar se "Sim": valor="S" || descricao="Sim"            │
+ * │      7. Se Sim:                                                      │
+ * │         a. divPeriodo.setProperty('display', 'block', '!important') │
+ * │         b. Limpar lstPeriodos.value = null                          │
+ * │         c. console.log "Mostrar lstPeriodo"                         │
+ * │      8. Se Não:                                                      │
+ * │         a. esconderTodosCamposRecorrencia()                         │
+ * │      9. try-catch: Alerta.TratamentoErroComLinha                    │
+ * │    → Uso típico: lstRecorrente.change event trigger                 │
+ * │                                                                       │
+ * │ 9. aoMudarPeriodo(args)                                              │
+ * │    → Handler change de lstPeriodos (Diário/Semanal/Mensal/Variado) │
+ * │    → param args: Syncfusion change event args                       │
+ * │    → returns void (side effect: show campos específicos)            │
+ * │    → Fluxo: (103 linhas)                                            │
+ * │      1. console.log debug completo                                  │
+ * │      2. Se ignorarEventosRecorrencia: return early                  │
+ * │      3. Extrair valor: args.value || itemData?.PeriodoId            │
+ * │      4. Extrair texto: itemData?.Text || itemData?.Periodo          │
+ * │      5. esconderCamposEspecificosPeriodo()                          │
+ * │      6. Switch valor:                                               │
+ * │         - "D" (Diário): mostrarTxtFinalRecorrencia()                │
+ * │         - "S"/"Q" (Semanal/Quinzenal): mostrarLstDias() +           │
+ * │           mostrarTxtFinalRecorrencia()                              │
+ * │         - "M" (Mensal): mostrarLstDiasMes() +                       │
+ * │           mostrarTxtFinalRecorrencia()                              │
+ * │         - "V" (Variado): mostrarCalendarioComBadge()                │
+ * │         - default: fallback por texto.toLowerCase().includes()      │
+ * │      7. console.log "aoMudarPeriodo concluído"                      │
+ * │      8. try-catch: Alerta.TratamentoErroComLinha                    │
+ * │    → Uso típico: lstPeriodos.change event trigger                   │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ SEÇÃO 3: CONTROLE DE VISIBILIDADE ─────────────────────────────────┐
+ * │ 10. esconderCamposEspecificosPeriodo()                               │
+ * │     → Esconde campos específicos de período                         │
+ * │     → returns void (side effect: display='none' em 4 divs)          │
+ * │     → Fluxo:                                                         │
+ * │       1. body.classList.remove('modo-criacao-variada',              │
+ * │          'modo-edicao-variada')                                     │
+ * │       2. Array de 4 IDs: divDias, divDiaMes, divFinalRecorrencia,  │
+ * │          calendarContainer                                          │
+ * │       3. forEach: setProperty('display', 'none', 'important')       │
+ * │     → Chamado por: aoMudarPeriodo antes de show campos              │
+ * │                                                                       │
+ * │ 11. mostrarTxtFinalRecorrencia()                                     │
+ * │     → Mostra campo data final de recorrência                        │
+ * │     → returns void (side effect: divFinalRecorrencia display=block) │
+ * │     → Fluxo:                                                         │
+ * │       1. getElementById("divFinalRecorrencia")                      │
+ * │       2. setProperty('display', 'block', 'important')               │
+ * │       3. console.log "txtFinalRecorrencia exibido"                  │
+ * │     → Uso típico: aoMudarPeriodo → Diário/Semanal/Mensal            │
+ * │                                                                       │
+ * │ 12. mostrarLstDias()                                                 │
+ * │     → Mostra campo multiselect de dias da semana                    │
+ * │     → returns void (side effect: divDias display=block + populate)  │
+ * │     → Fluxo:                                                         │
+ * │       1. getElementById("divDias")                                  │
+ * │       2. setProperty('display', 'block', 'important')               │
+ * │       3. setTimeout 100ms:                                           │
+ * │          - Call window.inicializarLstDias() (recorrencia.js)        │
+ * │          - Popula dataSource com dias semana (Dom-Sáb)              │
+ * │       4. try-catch: Alerta.TratamentoErroComLinha                   │
+ * │     → Uso típico: aoMudarPeriodo → Semanal/Quinzenal                │
+ * │                                                                       │
+ * │ 13. mostrarLstDiasMes()                                              │
+ * │     → Mostra campo multiselect de dias do mês                       │
+ * │     → returns void (side effect: divDiaMes display=block + populate)│
+ * │     → Fluxo:                                                         │
+ * │       1. getElementById("divDiaMes")                                │
+ * │       2. setProperty('display', 'block', 'important')               │
+ * │       3. setTimeout 100ms:                                           │
+ * │          - Call window.inicializarLstDiasMes() (recorrencia.js)     │
+ * │          - Popula dataSource com dias 1-31                          │
+ * │       4. try-catch: Alerta.TratamentoErroComLinha                   │
+ * │     → Uso típico: aoMudarPeriodo → Mensal                           │
+ * │                                                                       │
+ * │ 14. mostrarCalendarioComBadge()                                      │
+ * │     → Mostra calendário multiselect com badge contador              │
+ * │     → returns void (side effect: calendarContainer display + init)  │
+ * │     → Fluxo: (68 linhas)                                            │
+ * │       1. console.log "Iniciando mostrarCalendarioComBadge"          │
+ * │       2. Esconder outros campos (divDias, divDiaMes, divFinalRecorrencia)│
+ * │       3. getElementById("calendarContainer")                        │
+ * │       4. setProperty('display', 'block', 'important')               │
+ * │       5. getElementById("calDatasSelecionadas")                     │
+ * │       6. setProperty('display', 'block', 'important')               │
+ * │       7. Se configurarLocalizacaoSyncfusion exists: call it         │
+ * │       8. setTimeout 100ms: inicializarCalendarioSyncfusion()        │
+ * │       9. console.log "mostrarCalendarioComBadge concluído"          │
+ * │      10. try-catch: Alerta.TratamentoErroComLinha                   │
+ * │     → Uso típico: aoMudarPeriodo → Dias Variados                    │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ SEÇÃO 4: CALENDÁRIO SYNCFUSION (MultiSelect) ──────────────────────┐
+ * │ 15. inicializarCalendarioSyncfusion()                                │
+ * │     → Cria instância Syncfusion Calendar multiselect com badge      │
+ * │     → returns void (side effect: window.calendario instance + badge)│
+ * │     → Fluxo: (81 linhas)                                            │
+ * │       1. console.log "Inicializando calendário Syncfusion"          │
+ * │       2. getElementById("calDatasSelecionadas")                     │
+ * │       3. Se calendario exists: destroy() anterior                   │
+ * │       4. $('#calDatasSelecionadas').empty() (limpar container)      │
+ * │       5. Verificar ej.calendars.Calendar disponível                 │
+ * │       6. Criar nova instância:                                      │
+ * │          calendario = new ej.calendars.Calendar({                   │
+ * │            value: new Date(),                                       │
+ * │            isMultiSelection: true,                                  │
+ * │            firstDayOfWeek: 0,                                       │
+ * │            values: datasSelecionadas,                               │
+ * │            locale: 'pt-BR',                                         │
+ * │            format: 'dd/MM/yyyy',                                    │
+ * │            change: function(args) {                                 │
+ * │              datasSelecionadas = args.values || [];                 │
+ * │              atualizarBadgeCalendario(datasSelecionadas.length);    │
+ * │            }                                                         │
+ * │          })                                                          │
+ * │       7. calendario.appendTo('#calDatasSelecionadas')               │
+ * │       8. calElement.style.display = 'block'                         │
+ * │       9. setTimeout 200ms: criarBadgeVisual()                       │
+ * │      10. try-catch: Alerta.TratamentoErroComLinha                   │
+ * │     → Uso típico: mostrarCalendarioComBadge                         │
+ * │                                                                       │
+ * │ 16. inicializarCalendario()                                          │
+ * │     → Versão alternativa de init Calendar (com min=today)           │
+ * │     → returns void (side effect: Calendar instance com validation)  │
+ * │     → Fluxo: (72 linhas)                                            │
+ * │       1. getElementById("calDatasSelecionadas")                     │
+ * │       2. Configurar L10n.load PT-BR                                 │
+ * │       3. Criar Calendar:                                            │
+ * │          - isMultiSelection: true                                   │
+ * │          - values: []                                               │
+ * │          - locale: 'pt-BR'                                          │
+ * │          - min: new Date() (hoje)                                   │
+ * │          - change: atualizarBadgeContador                           │
+ * │          - renderDayCell: desabilitar datas passadas                │
+ * │       4. calendar.appendTo(calElement)                              │
+ * │       5. console.log "Calendário inicializado"                      │
+ * │       6. try-catch: Alerta.TratamentoErroComLinha                   │
+ * │     → Nota: função não usada atualmente (alternativa a inicializarCalendarioSyncfusion)│
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ SEÇÃO 5: BADGE CONTADOR ───────────────────────────────────────────┐
+ * │ 17. atualizarBadgeCalendario(quantidade)                             │
+ * │     → Atualiza texto do badge com número de datas selecionadas      │
+ * │     → param quantidade: int (número de datas)                       │
+ * │     → returns void (side effect: badge textContent + animação)      │
+ * │     → Fluxo:                                                         │
+ * │       1. $('#badgeContadorDatas').text(quantidade)                  │
+ * │       2. addClass('badge-pulse') (animação)                         │
+ * │       3. setTimeout 300ms: removeClass('badge-pulse')               │
+ * │       4. console.log "Badge atualizado"                             │
+ * │     → Chamado por: Calendar.change event                            │
+ * │                                                                       │
+ * │ 18. criarBadgeVisual()                                               │
+ * │     → Cria badge visual laranja no canto superior direito           │
+ * │     → returns void (side effect: append badge ao calendarContainer) │
+ * │     → Fluxo: (78 linhas)                                            │
+ * │       1. console.log "Criando badge"                                │
+ * │       2. $('#badgeContadorDatas').remove() (limpar anterior)        │
+ * │       3. $('#calendarContainer').css({ position: 'relative',        │
+ * │          overflow: 'visible' })                                     │
+ * │       4. Criar badge div:                                           │
+ * │          - id="badgeContadorDatas", text="0"                        │
+ * │          - CSS: position absolute, width 35px, height 35px,         │
+ * │            border-radius 50%, background #FF8C00, color white,      │
+ * │            border 2px white, z-index 999999, font-size 14px,        │
+ * │            box-shadow, transition 0.3s                              │
+ * │       5. Hover effect: scale(1.15), box-shadow laranja              │
+ * │       6. $('#calendarContainer').append(badge)                      │
+ * │       7. setTimeout 100ms: posicionar badge dinâmico                │
+ * │          - calPos = calElement.position()                           │
+ * │          - badge.css({ top: calPos.top-18, left: calPos.left+calWidth-18 })│
+ * │       8. console.log "Badge criado"                                 │
+ * │     → Chamado por: inicializarCalendarioSyncfusion após 200ms       │
+ * │                                                                       │
+ * │ 19. criarBadgeContador()                                             │
+ * │     → Versão alternativa de criar badge (sobre calendário)          │
+ * │     → returns void (side effect: badge sobre calDatasSelecionadas)  │
+ * │     → Fluxo: (59 linhas)                                            │
+ * │       1. getElementById("calDatasSelecionadas")                     │
+ * │       2. getElementById("badgeContadorDias") (verificar existe)     │
+ * │       3. Se !exists: createElement("span")                          │
+ * │          - id="badgeContadorDias", class="badge-contador-dias"      │
+ * │          - CSS: position absolute, top -25px, right -25px, bg       │
+ * │            #ff8c00, color white, border-radius 50%, width 45px,     │
+ * │            height 45px, z-index 1000, border 3px white              │
+ * │       4. calDatasSelecionadas.style.position = "relative"           │
+ * │       5. calDatasSelecionadas.appendChild(badge)                    │
+ * │       6. console.log "Badge criado sobre calendário"                │
+ * │     → Nota: função não usada atualmente (alternativa a criarBadgeVisual)│
+ * │                                                                       │
+ * │ 20. posicionarBadge()                                                │
+ * │     → Reposiciona badge quando janela redimensiona                  │
+ * │     → returns void (side effect: badge CSS top/left update)         │
+ * │     → Fluxo:                                                         │
+ * │       1. calPos = $('#calDatasSelecionadas').offset()               │
+ * │       2. calWidth = $('#calDatasSelecionadas').outerWidth()         │
+ * │       3. $('#badgeContadorDatas').css({ position: 'fixed',          │
+ * │          top: calPos.top+10, left: calPos.left+calWidth-45 })       │
+ * │     → Event: $(window).on('resize', posicionarBadge)                │
+ * │                                                                       │
+ * │ 21. configurarAtualizacaoBadge()                                     │
+ * │     → Configura atualização automática do badge no change           │
+ * │     → returns void (side effect: intercepta Calendar.change)        │
+ * │     → Fluxo: (42 linhas)                                            │
+ * │       1. getElementById("calDatasSelecionadas")                     │
+ * │       2. Obter ej2_instances[0]                                     │
+ * │       3. Salvar changeOriginal                                      │
+ * │       4. calendario.change = function(args) {                       │
+ * │            if (changeOriginal) changeOriginal.call(calendario, args);│
+ * │            atualizarBadgeContador();                                │
+ * │          }                                                           │
+ * │       5. console.log "Atualização de badge configurada"             │
+ * │     → Nota: não usado atualmente (Calendar.change já definido em init)│
+ * │                                                                       │
+ * │ 22. atualizarBadgeContador()                                         │
+ * │     → Versão alternativa de atualizar badge                         │
+ * │     → returns void (side effect: badge textContent update)          │
+ * │     → Fluxo:                                                         │
+ * │       1. getElementById("badgeContadorDias")                        │
+ * │       2. Obter calendario.values || []                              │
+ * │       3. badge.textContent = datasSelecionadas.length.toString()    │
+ * │       4. console.log "Badge atualizado"                             │
+ * │     → Nota: função alternativa a atualizarBadgeCalendario           │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ SEÇÃO 6: CLDR E LOCALIZAÇÃO ───────────────────────────────────────┐
+ * │ 23. carregarCLDRLocal()                                              │
+ * │     → Carrega arquivos CLDR locais via ej.base.Ajax                │
+ * │     → returns void (side effect: load 5 JSON files + aplicarCLDR)   │
+ * │     → Fluxo: (62 linhas)                                            │
+ * │       1. console.log "Carregando dados CLDR locais"                 │
+ * │       2. Array de 5 URLs:                                           │
+ * │          - cldr/numberingSystems.json                               │
+ * │          - cldr/ca-gregorian.json                                   │
+ * │          - cldr/numbers.json                                        │
+ * │          - cldr/timeZoneNames.json                                  │
+ * │          - cldr/weekData.json                                       │
+ * │       3. forEach URL: new ej.base.Ajax(caminho, 'GET', true)        │
+ * │       4. ajax.onSuccess:                                            │
+ * │          - JSON.parse(response)                                     │
+ * │          - dadosCarregados.push(dados)                              │
+ * │          - carregamentosCompletos++                                 │
+ * │          - Se todos completos: aplicarCLDR(dadosCarregados)         │
+ * │       5. ajax.onFailure: continuar (não bloqueia)                   │
+ * │       6. ajax.send()                                                │
+ * │     → Nota: não chamado automaticamente (seria para CLDR completo)  │
+ * │                                                                       │
+ * │ 24. aplicarCLDR(dadosCarregados)                                     │
+ * │     → Aplica dados CLDR no Syncfusion e carrega traduções           │
+ * │     → param dadosCarregados: Array de objects CLDR                  │
+ * │     → returns void (side effect: loadCldr + setCulture)             │
+ * │     → Fluxo:                                                         │
+ * │       1. console.log "Aplicando dados CLDR"                         │
+ * │       2. Se dadosCarregados.length == 0:                            │
+ * │          - setCulture('en-US'), inicializarCalendarioSyncfusion     │
+ * │       3. Senão:                                                      │
+ * │          - ej.base.loadCldr.apply(null, dadosCarregados)            │
+ * │          - ej.base.setCulture('pt')                                 │
+ * │          - carregarTraducoesPTBR()                                  │
+ * │       4. try-catch: fallback en-US                                  │
+ * │     → Chamado por: carregarCLDRLocal após carregar todos arquivos   │
+ * │                                                                       │
+ * │ 25. carregarTraducoesPTBR()                                          │
+ * │     → Carrega arquivo pt-BR.json com traduções Syncfusion           │
+ * │     → returns void (side effect: L10n.load + init Calendar)         │
+ * │     → Fluxo:                                                         │
+ * │       1. console.log "Carregando traduções pt-BR.json"              │
+ * │       2. new ej.base.Ajax('cldr/pt-BR.json', 'GET', true)           │
+ * │       3. ajax.onSuccess:                                            │
+ * │          - JSON.parse(response)                                     │
+ * │          - ej.base.L10n.load(traducoes)                             │
+ * │          - inicializarCalendarioSyncfusion()                        │
+ * │       4. ajax.onFailure: inicializarCalendarioSyncfusion (continuar)│
+ * │     → Chamado por: aplicarCLDR após loadCldr                        │
+ * │                                                                       │
+ * │ 26. configurarLocalizacaoSyncfusion()                                │
+ * │     → Configura locale PT-BR manualmente (sem CLDR completo)        │
+ * │     → returns void (side effect: L10n.load + setCulture)            │
+ * │     → Fluxo:                                                         │
+ * │       1. ej.base.L10n.load({ 'pt-BR': { 'calendar': { today: 'Hoje' } } })│
+ * │       2. ej.base.setCulture('pt-BR')                                │
+ * │       3. ej.base.setCurrencyCode('BRL')                             │
+ * │     → Chamado por: mostrarCalendarioComBadge antes de init Calendar │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ SEÇÃO 7: LIMPEZA DE CAMPOS ────────────────────────────────────────┐
+ * │ 27. limparCamposRecorrenciaAoMudar()                                 │
+ * │     → Limpa valores dos campos ao mudar lstRecorrente/lstPeriodos   │
+ * │     → returns void (side effect: value=null em 5 campos)            │
+ * │     → Fluxo: (74 linhas)                                            │
+ * │       1. Limpar lstPeriodos.value = null, dataBind()                │
+ * │       2. Limpar lstDias.value = [], dataBind()                      │
+ * │       3. Limpar lstDiasMes.value = null, dataBind()                 │
+ * │       4. Limpar txtFinalRecorrencia.value = null, dataBind()        │
+ * │       5. Limpar calendario.values = [], dataBind()                  │
+ * │       6. Resetar badgeContadorDias.textContent = "0"                │
+ * │       7. try-catch: console.error                                   │
+ * │     → Chamado por: aoMudarRecorrente, aoMudarPeriodo                │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ AUTO-INITIALIZATION ────────────────────────────────────────────────┐
+ * │ DOMContentLoaded ou document.readyState ready:                       │
+ * │   → setTimeout 1000ms → window.inicializarLogicaRecorrencia()       │
+ * │ → Garante que Syncfusion components foram renderizados antes de     │
+ * │   configurar event handlers e defaults                              │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * 🔄 FLUXO TÍPICO 1 - CRIAR AGENDAMENTO COM RECORRÊNCIA SEMANAL:
+ * 1. Usuário abre modal → inicializarLogicaRecorrencia já executou (DOMContentLoaded)
+ * 2. lstRecorrente exibido com valor default "Não"
+ * 3. Todos os outros campos escondidos (esconderTodosCamposRecorrencia)
+ * 4. Usuário muda lstRecorrente → "Sim"
+ * 5. aoMudarRecorrente trigger → divPeriodo.display = 'block'
+ * 6. lstPeriodos aparece (vazio)
+ * 7. Usuário seleciona lstPeriodos → "Semanal"
+ * 8. aoMudarPeriodo trigger → esconderCamposEspecificosPeriodo
+ * 9. aoMudarPeriodo → mostrarLstDias() + mostrarTxtFinalRecorrencia()
+ * 10. divDias.display = 'block', setTimeout 100ms → inicializarLstDias()
+ * 11. lstDias populado com Dom-Sáb (7 options)
+ * 12. divFinalRecorrencia.display = 'block'
+ * 13. Usuário seleciona dias (Seg, Qua, Sex) + data final
+ * 14. Salva agendamento → lstDias.value = [1, 3, 5]
+ *
+ * 🔄 FLUXO TÍPICO 2 - RECORRÊNCIA DIAS VARIADOS (Calendar MultiSelect):
+ * 1. Usuário abre modal, lstRecorrente → "Sim"
+ * 2. aoMudarRecorrente → divPeriodo aparece
+ * 3. Usuário seleciona lstPeriodos → "Dias Variados"
+ * 4. aoMudarPeriodo → mostrarCalendarioComBadge()
+ * 5. esconderCamposEspecificosPeriodo (limpa outros campos)
+ * 6. calendarContainer.display = 'block'
+ * 7. calDatasSelecionadas.display = 'block'
+ * 8. configurarLocalizacaoSyncfusion() → L10n PT-BR
+ * 9. setTimeout 100ms → inicializarCalendarioSyncfusion()
+ * 10. Destroy calendário anterior (se exists)
+ * 11. Criar novo Calendar({ isMultiSelection: true, locale: 'pt-BR', change: ... })
+ * 12. calendario.appendTo('#calDatasSelecionadas')
+ * 13. setTimeout 200ms → criarBadgeVisual()
+ * 14. Badge laranja criado (35×35px, z-index 999999, position absolute)
+ * 15. Badge posicionado top-right do calendário (calPos.left + calWidth - 18)
+ * 16. Badge textContent = "0" (nenhuma data selecionada)
+ * 17. Usuário clica em datas no calendário
+ * 18. Calendar.change event → datasSelecionadas = args.values
+ * 19. atualizarBadgeCalendario(datasSelecionadas.length)
+ * 20. Badge textContent atualizado (ex: "5")
+ * 21. Badge animação pulse (addClass/removeClass badge-pulse)
+ * 22. Usuário salva → calendario.values = [Date1, Date2, Date3, Date4, Date5]
+ *
+ * 🔄 FLUXO TÍPICO 3 - EDITAR AGENDAMENTO COM RECORRÊNCIA (Evitar Loops):
+ * 1. modal-viagem-novo.inicializarCamposModal(dados) inicia
+ * 2. Set window.ignorarEventosRecorrencia = true (ANTES de preencher)
+ * 3. lstRecorrente.value = "S" (Sim) → aoMudarRecorrente NÃO executa (flag true)
+ * 4. lstPeriodos.value = "M" (Mensal) → aoMudarPeriodo NÃO executa (flag true)
+ * 5. Preencher outros campos (lstDiasMes, txtFinalRecorrencia)
+ * 6. Show campos manualmente: divPeriodo, divDiaMes, divFinalRecorrencia
+ * 7. Set window.ignorarEventosRecorrencia = false (DEPOIS de preencher)
+ * 8. Agora mudanças do usuário disparam handlers normalmente
+ *
+ * 📌 ESTRUTURA CAMPOS RECORRÊNCIA (5 divs):
+ * - divPeriodo: container para lstPeriodos (DropDownList: Diário, Semanal, Quinzenal, Mensal, Variado)
+ * - divDias: container para lstDias (MultiSelect: Dom, Seg, Ter, Qua, Qui, Sex, Sáb)
+ * - divDiaMes: container para lstDiasMes (MultiSelect: 1-31)
+ * - divFinalRecorrencia: container para txtFinalRecorrencia (DateTimePicker: data limite)
+ * - calendarContainer: container para calDatasSelecionadas (Calendar multiSelect)
+ *
+ * 📌 PERÍODOS SUPORTADOS (5 tipos):
+ * - "D" (Diário): repete todos os dias → show apenas txtFinalRecorrencia
+ * - "S" (Semanal): repete dias específicos da semana → show lstDias + txtFinalRecorrencia
+ * - "Q" (Quinzenal): repete a cada 2 semanas → show lstDias + txtFinalRecorrencia
+ * - "M" (Mensal): repete dias específicos do mês → show lstDiasMes + txtFinalRecorrencia
+ * - "V" (Dias Variados): datas customizadas → show calDatasSelecionadas (Calendar multiSelect)
+ *
+ * 📌 BADGE VISUAL (2 implementações):
+ * - criarBadgeVisual: badge sobre calendarContainer (método principal usado)
+ *   - Posição: calculada dinamicamente (calPos.left + calWidth - 18)
+ *   - Z-index: 999999 (sempre visível)
+ *   - Animação: pulse ao atualizar (addClass → setTimeout → removeClass)
+ * - criarBadgeContador: badge sobre calDatasSelecionadas (método alternativo)
+ *   - Posição: absolute top -25px, right -25px (50% fora do calendário)
+ *   - Z-index: 1000
+ *
+ * 📌 RETRY PATTERN (configurarEventHandlerPeriodo):
+ * - setInterval 200ms, max 10 tentativas (total 2 segundos)
+ * - Necessário porque lstPeriodos criado dinamicamente após inicializarDropdownPeriodos
+ * - Se não encontrado após 10 tentativas: console.error + desiste
+ *
+ * 📌 CLDR E LOCALIZAÇÃO (3 métodos):
+ * - carregarCLDRLocal: carrega 5 JSON files completos (numberingSystems, ca-gregorian, etc.)
+ *   - Não usado atualmente (muito pesado)
+ * - configurarLocalizacaoSyncfusion: método simples (L10n.load manual + setCulture)
+ *   - Usado atualmente (suficiente para Calendar básico)
+ * - carregarTraducoesPTBR: carrega pt-BR.json via Ajax
+ *   - Complementar ao CLDR completo (também não usado)
+ *
+ * 📝 OBSERVAÇÕES ADICIONAIS:
+ * - Linhas 96-136: código duplicado simplificado de inicializarLogicaRecorrencia (não executado)
+ * - Duas implementações de várias funções (Calendar, Badge, etc.) para flexibilidade
+ * - Console.log extensivo facilita debug mas pode ser removido em produção
+ * - style.setProperty com '!important' necessário para sobrescrever CSS Razor/Bootstrap
+ * - setTimeout delays (100-300ms) necessários para aguardar render Syncfusion assíncrono
+ * - jQuery usado para manipulação DOM (.$(), .css(), .append, .on) + Syncfusion native
+ * - window.calendar global permite acesso externo (ex: modal-viagem-novo.criarAgendamentoNovo)
+ * - ignorarEventosRecorrencia flag crítica para evitar loops infinitos em edição
+ * - Badge contador: UX visual importante para feedback ao usuário (quantas datas selecionadas)
+ * - Calendar multiSelect: isMultiSelection=true permite selecionar múltiplas datas (array)
+ * - min=today em inicializarCalendario: valida datas futuras apenas (renderDayCell hook)
+ *
+ * 🔌 VERSÃO: 3.0 (refatorado após Lote 192, adiciona comprehensive header)
+ * 📌 ÚLTIMA ATUALIZAÇÃO: 02/02/2026
+ **************************************************************************************** */
 
 window.calendario = null;
 window.datasSelecionadas = [];

@@ -1,17 +1,778 @@
-// ====================================================================
-// MODAL VIAGEM - Gerenciamento completo do modal de agendamento
-// ====================================================================
-//
-// ESTRUTURA:
-// 1. CRIAÇÃO DE OBJETOS DE AGENDAMENTO
-// 2. ENVIO E COMUNICAÇÃO COM API
-// 3. EDIÇÃO DE AGENDAMENTOS
-// 4. ALTERAÇÃO DE DATA INICIAL (NOVA FUNCIONALIDADE)
-// 5. INTEGRAÇÃO COM RELAtÓRIO
-// 6. INICIALIZAÇÃO E LIMPEZA DE CAMPOS
-// 7. CONTROLE DE ESTADO DO MODAL
-//
-// ====================================================================
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: modal-viagem-novo.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciamento completo do modal Bootstrap de agendamento de viagens.
+ *                   28 funções para criar objetos agendamento (novo, edição, alteração
+ *                   data), enviar dados via API (/api/Viagem endpoints), editar
+ *                   agendamentos únicos/recorrentes, controlar Telerik ReportViewer,
+ *                   inicializar/limpar campos Syncfusion (DateTimePicker, DropDownList,
+ *                   RichTextEditor) e Kendo (ComboBox), desabilitar controles em modo
+ *                   visualização. Integração com StateManager, Bootstrap Modal events,
+ *                   RecorrenciaLogic para datas push/pull. Principais fluxos: criar novo
+ *                   agendamento (criarAgendamentoNovo → enviarNovoAgendamento → POST),
+ *                   editar único (editarAgendamento → aplicarAtualizacao → PUT), editar
+ *                   recorrente (editarAgendamentoRecorrente → enviarAgendamentoComOpcao
+ *                   → POST/PUT múltiplos), cancelar (cancelarAgendamento → PUT Status),
+ *                   carregar relatório (carregarRelatorioNoModal → Telerik instance).
+ * 📥 ENTRADAS     : ViagemId (int de URL ou StateManager), agendamento objects (Object
+ *                   com 40+ props: ViagemId, DataInicial, DataFinal, MotoristaId,
+ *                   VeiculoId, Descricao, Origem, Destino, etc.), editaTodos/editarProximos
+ *                   (boolean para recorrência), dataInicial (Date para push), descricao
+ *                   (string para cancelamento). Inputs via DOM: 16+ Syncfusion/Kendo
+ *                   components (txtDataInicial, lstMotorista, rteDescricao, etc.)
+ * 📤 SAÍDAS       : Promises resolvidas (POST/PUT success), objects (agendamento criado),
+ *                   void (side effects: DOM updates, modal show/hide, StateManager.set,
+ *                   toasts Swal.fire), ReportViewer instance (Telerik). Error handling:
+ *                   handleAgendamentoError → Alerta.MostrarMensagemErro + TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : main.js (Bootstrap Modal events: shown.bs.modal → aoAbrirModalViagem,
+ *                   hidden.bs.modal → aoFecharModalViagem), calendario.js (click event
+ *                   → criarAgendamento/editarAgendamento via ViagemId), exibe-viagem.js
+ *                   (botões Editar/Cancelar → editarAgendamento/cancelarAgendamento),
+ *                   recorrencia.js (btnSalvarRecorrencia click → enviarAgendamento),
+ *                   relatorio.js (btnVisualizarRelatorio click → carregarRelatorioNoModal)
+ * 🔄 CHAMA        : ApiClient.post/put (6 endpoints: AdicionarAgendamento, AtualizarViagem,
+ *                   PegarViagemParaEdicao, CancelarAgendamento, PegarRecorrenciaViagem,
+ *                   AlterarRecorrenciaViagem), StateManager.get/set (viagemId, ehEdicao,
+ *                   ehRecorrente, modoCancelamento, etc.), RecorrenciaLogic.calcularDatasRecorrencia
+ *                   (para push/pull datas), ModalConfig.setModalTitle/resetModal,
+ *                   Alerta.TratamentoErroComLinha, Swal.fire (success toasts),
+ *                   limparCamposModalViagens/inicializarCamposModal (campo reset),
+ *                   detectarAlteracaoDataInicial/calcularPushDatas (data diff), Telerik
+ *                   ReportViewer constructor + renderingEnd event, Bootstrap Modal API
+ *                   ($.modal('show'/'hide'), shown.bs.modal/hidden.bs.modal events),
+ *                   Syncfusion EJ2 instances (refresh/dataBind/destroy/appendTo methods),
+ *                   RecorrenciaUI.esconder/mostrar (UI toggle)
+ * 📦 DEPENDÊNCIAS : Bootstrap 5 Modal (#modalViagens, #modalRelatorio), Syncfusion EJ2
+ *                   Calendars (DateTimePicker: txtDataInicial/txtDataFinal/txtFinalRecorrencia),
+ *                   Syncfusion DropDownList (lstMotorista, lstVeiculo, lstFinalidade,
+ *                   lstSetorRequisitanteAgendamento, lstRecorrente, lstPeriodos, lstDias,
+ *                   lstDiasMes, lstEventos), Syncfusion RichTextEditor (rteDescricao),
+ *                   Syncfusion NumericTextBox (ddtCombustivelInicial, ddtCombustivelFinal),
+ *                   Syncfusion Calendar (calDatasSelecionadas), Kendo UI ComboBox
+ *                   (lstRequisitante via kendoComboBox), Telerik ReportViewer (window.telerikReportViewer,
+ *                   instance com reportSource/serviceUrl), jQuery ($.ajax wrapper via
+ *                   ApiClient, $(element).data('kendoComboBox'), $.modal), StateManager
+ *                   (agendamento module state), RecorrenciaLogic (calcularDatasRecorrencia,
+ *                   verificarDatasSaoIguais), ModalConfig (modal title/reset), Alerta
+ *                   (error handling), Swal (toasts), RecorrenciaUI (show/hide logic),
+ *                   DOM elements (16 form inputs, modal containers, buttons)
+ * 📝 OBSERVAÇÕES  : Arquivo principal do módulo agendamento (2874 linhas, 28 funções).
+ *                   Estrutura em 7 seções: (1) Criação objetos, (2) Envio API, (3)
+ *                   Edição, (4) Alteração data inicial, (5) Relatório, (6) Inicialização,
+ *                   (7) Controle estado. Global variables: modalJaFoiLimpo (boolean
+ *                   flag para evitar limpeza dupla), telerikReportViewer (Telerik instance),
+ *                   isReportViewerLoading (boolean), ultimoViagemIdCarregado (int cache).
+ *                   Todas as funções exportadas via window.* (28 exports). Try-catch
+ *                   completo em todas as funções async com Alerta.TratamentoErroComLinha.
+ *                   Recorrência: suporta 3 tipos (Semanal, Mensal, Custom) com logic
+ *                   para editar todos/próximos (POST batch) ou único (PUT). Data push:
+ *                   detecta mudança DataInicial e propaga para DataFinal + datas recorrência
+ *                   (calcularPushDatas). ReportViewer: lazy loading (carregarRelatorioNoModal
+ *                   → new telerikReportViewer só se necessário), renderingEnd event
+ *                   para cleanup. Bootstrap Modal: aoAbrirModalViagem configura título
+ *                   (Criar/Editar/Visualizar/Cancelar) + carrega dados se ehEdicao,
+ *                   aoFecharModalViagem limpa campos + reseta flags. Desabilitar controles:
+ *                   desabilitarTodosControles em modo visualização (Status != Aberta),
+ *                   protege 5 botões fechar (btnFechar, btnCancelar, modal-footer buttons,
+ *                   btn-close). Validações: campos obrigatórios verificados no backend
+ *                   (API retorna errors array). Timestamps: DataInicial/DataFinal como
+ *                   ISO strings (new Date().toISOString()). Combustível: NumericTextBox
+ *                   format="n0" (0 decimais). Setor: carregado via GET AJAXPreencheListaSetores.
+ *                   Eventos: DropDownList para eventos pré-cadastrados (via EventoService).
+ *
+ * 📋 ÍNDICE DE FUNÇÕES (28 funções + 4 global variables + 3 event handlers):
+ *
+ * ┌─ GLOBAL VARIABLES ───────────────────────────────────────────────────┐
+ * │ 1. window.modalJaFoiLimpo = false                                    │
+ * │    → Boolean flag para controlar limpeza dupla do modal             │
+ * │    → Setado true em aoFecharModalViagem, resetado false em limpar   │
+ * │                                                                       │
+ * │ 2. window.telerikReportViewer = null                                 │
+ * │    → Telerik ReportViewer instance (lazy initialized)               │
+ * │    → Criado em carregarRelatorioNoModal se null                     │
+ * │                                                                       │
+ * │ 3. window.isReportViewerLoading = false                              │
+ * │    → Boolean flag para evitar múltiplos carregamentos simultâneos   │
+ * │    → True durante carregarRelatorioNoModal, false após renderingEnd │
+ * │                                                                       │
+ * │ 4. window.ultimoViagemIdCarregado = null                             │
+ * │    → Cache do último ViagemId carregado no ReportViewer             │
+ * │    → Evita reload desnecessário se mesmo ID                         │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ SEÇÃO 1: CRIAÇÃO DE OBJETOS ───────────────────────────────────────┐
+ * │ 5. window.refreshComponenteSafe(elementId)                           │
+ * │    → Refresh seguro de componentes Syncfusion (evita erros)         │
+ * │    → param elementId: string, ID do elemento DOM                    │
+ * │    → returns boolean: true se refresh ok, false se não encontrado   │
+ * │    → Fluxo: getElementById → ej2_instances[0] → refresh() ou        │
+ * │      dataBind() → try-catch com console.warn                        │
+ * │                                                                       │
+ * │ 6. window.criarAgendamentoNovo()                                     │
+ * │    → Cria objeto agendamento NOVO lendo todos os campos do form    │
+ * │    → returns Object|null: agendamento com 40+ props ou null erro    │
+ * │    → Fluxo: (218 linhas)                                            │
+ * │      1. Obter 16 instâncias Syncfusion/Kendo (txtDataInicial,      │
+ * │         lstMotorista, rteDescricao, lstRequisitante, etc.)          │
+ * │      2. Validar requisitante (required)                             │
+ * │      3. Construir objeto com props:                                 │
+ * │         - Timestamps: DataInicial, DataFinal (ISO strings)          │
+ * │         - IDs: MotoristaId, VeiculoId, SetorId, FinalidadeId       │
+ * │         - Strings: Descricao (HTML), Origem, Destino               │
+ * │         - Numbers: CombustivelInicial, CombustivelFinal            │
+ * │         - Recorrência: EhRecorrente, TipoRecorrencia, etc.         │
+ * │      4. Recorrência logic:                                          │
+ * │         - Se lstRecorrente != "Não": adicionar props recorrência   │
+ * │         - TipoRecorrencia: "Semanal", "Mensal", "Custom"           │
+ * │         - Semanal: DiasSemana array (0-6)                           │
+ * │         - Mensal: DiasMes array (1-31)                              │
+ * │         - Custom: DatasSelecionadas array (ISO strings)             │
+ * │         - QuantidadePeriodos: número de repetições ou null          │
+ * │         - FinalRecorrencia: data limite ou null                     │
+ * │      5. Eventos: EventoId (int) e NomeEvento (string)               │
+ * │      6. Console.log resultado + return objeto                       │
+ * │    → Uso típico: chamado por criarAgendamento/enviarAgendamento     │
+ * │                                                                       │
+ * │ 7. window.criarAgendamento(viagemId, viagemIdRecorrente, dataInicial)│
+ * │    → Wrapper que chama criarAgendamentoNovo e adiciona IDs          │
+ * │    → param viagemId: int opcional (para edição)                     │
+ * │    → param viagemIdRecorrente: int opcional (ID grupo recorrência)  │
+ * │    → param dataInicial: Date opcional (para alteração data)         │
+ * │    → returns Object|null: agendamento com IDs adicionados           │
+ * │    → Fluxo:                                                          │
+ * │      1. Call criarAgendamentoNovo()                                 │
+ * │      2. Se agendamento ok:                                          │
+ * │         - Adicionar agendamento.ViagemId = viagemId || null         │
+ * │         - Adicionar agendamento.RecorrenciaViagemId = viagemIdRecorrente│
+ * │      3. Se dataInicial: agendamento.DataInicial = dataInicial.toISOString()│
+ * │      4. Return agendamento                                          │
+ * │    → Uso típico: calendario.js click handler                        │
+ * │                                                                       │
+ * │ 8. window.criarAgendamentoEdicao(agendamentoOriginal)               │
+ * │    → Cria objeto para EDIÇÃO comparando original vs form atual      │
+ * │    → param agendamentoOriginal: Object (dados do backend)           │
+ * │    → returns Object: agendamento com alterações detectadas          │
+ * │    → Fluxo: (198 linhas)                                            │
+ * │      1. Call criarAgendamentoNovo() para ler form atual             │
+ * │      2. Detectar alteração DataInicial:                             │
+ * │         - detectarAlteracaoDataInicial(agendamentoOriginal)         │
+ * │         - Se mudou: calcularPushDatas para propagar mudança         │
+ * │      3. Manter props imutáveis do original:                         │
+ * │         - ViagemId, RecorrenciaViagemId, Status                     │
+ * │      4. Merge agendamentoAtual + agendamentoOriginal (spread)       │
+ * │      5. Se houve push datas: aplicar novas datas                    │
+ * │      6. Return objeto merged                                        │
+ * │    → Uso típico: editarAgendamento após recuperarViagemEdicao       │
+ * │                                                                       │
+ * │ 9. window.criarAgendamentoViagem(agendamentoUnicoAlterado)          │
+ * │    → Cria objeto para PUT de único agendamento em série recorrente  │
+ * │    → param agendamentoUnicoAlterado: Object (dados editados)        │
+ * │    → returns Object: payload para AlterarRecorrenciaViagem endpoint │
+ * │    → Fluxo: (157 linhas)                                            │
+ * │      1. Extrair agendamentoOriginal (do StateManager cache)         │
+ * │      2. Construir objeto com estrutura específica API:              │
+ * │         - AgendamentoUnicoAlterado: { 40+ props }                   │
+ * │         - AgendamentoOriginal: { props originais }                  │
+ * │         - DataInicial: timestamp novo                               │
+ * │         - RecorrenciaViagemId: ID do grupo                          │
+ * │      3. Validar campos obrigatórios (Requisitante, DataInicial)     │
+ * │      4. Return objeto                                               │
+ * │    → Endpoint: POST /api/Viagem/AlterarRecorrenciaViagem            │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ SEÇÃO 2: ENVIO E COMUNICAÇÃO COM API ──────────────────────────────┐
+ * │ 10. window.enviarAgendamento(agendamento)                            │
+ * │     → Router: decide entre enviarNovoAgendamento ou aplicarAtualizacao│
+ * │     → param agendamento: Object (criado por criarAgendamentoNovo)   │
+ * │     → returns Promise<void>                                          │
+ * │     → Fluxo:                                                         │
+ * │       1. Verificar StateManager.get("ehEdicao")                     │
+ * │       2. Se true: call aplicarAtualizacao(agendamento)              │
+ * │       3. Se false: call enviarNovoAgendamento(agendamento)          │
+ * │     → Uso típico: recorrencia.js btnSalvarRecorrencia click         │
+ * │                                                                       │
+ * │ 11. window.enviarNovoAgendamento(agendamento, isUltimoAgendamento)  │
+ * │     → POST novo agendamento (único ou recorrente)                   │
+ * │     → param agendamento: Object (payload)                           │
+ * │     → param isUltimoAgendamento: boolean (default true, para toast) │
+ * │     → returns Promise<void>                                          │
+ * │     → Fluxo:                                                         │
+ * │       1. ApiClient.post("/api/Viagem/AdicionarAgendamento", agendamento)│
+ * │       2. Se success:                                                 │
+ * │          - Se isUltimoAgendamento: exibirMensagemSucesso()          │
+ * │          - Se EhRecorrente: success toast "Agendamentos criados"    │
+ * │          - Se único: success toast "Agendamento criado"             │
+ * │          - Fechar modal: $("#modalViagens").modal("hide")           │
+ * │       3. catch: handleAgendamentoError(error)                       │
+ * │     → Endpoint: POST /api/Viagem/AdicionarAgendamento               │
+ * │                                                                       │
+ * │ 12. window.enviarAgendamentoComOpcao(viagemId, editarTodos,         │
+ * │                  editarProximos, dataInicial, viagemIdRecorrente)   │
+ * │     → Envia batch de agendamentos recorrentes (editar todos/próximos)│
+ * │     → param viagemId: int (ID do agendamento clicado)               │
+ * │     → param editarTodos: boolean (editar toda a série)              │
+ * │     → param editarProximos: boolean (editar este + futuros)         │
+ * │     → param dataInicial: Date opcional (para push)                  │
+ * │     → param viagemIdRecorrente: int (ID do grupo)                   │
+ * │     → returns Promise<void>                                          │
+ * │     → Fluxo:                                                         │
+ * │       1. obterAgendamentosRecorrentes(viagemIdRecorrente)           │
+ * │       2. Filtrar agendamentos por critério:                         │
+ * │          - editarTodos: todos os agendamentos                       │
+ * │          - editarProximos: DataInicial >= dataInicialClicada        │
+ * │       3. Para cada agendamento filtrado:                            │
+ * │          - criarAgendamentoEdicao(agendamento)                      │
+ * │          - enviarNovoAgendamento(agendamentoEditado, isLast)        │
+ * │       4. Toast final se isLast                                      │
+ * │     → Uso típico: editarAgendamentoRecorrente após Swal.fire choice │
+ * │                                                                       │
+ * │ 13. window.aplicarAtualizacao(objViagem)                             │
+ * │     → PUT atualização de agendamento único                          │
+ * │     → param objViagem: Object (payload editado)                     │
+ * │     → returns Promise<void>                                          │
+ * │     → Fluxo:                                                         │
+ * │       1. ApiClient.put("/api/Viagem/AtualizarViagem", objViagem)    │
+ * │       2. Se success:                                                 │
+ * │          - exibirMensagemSucesso()                                  │
+ * │          - $("#modalViagens").modal("hide")                         │
+ * │       3. catch: handleAgendamentoError(error)                       │
+ * │     → Endpoint: PUT /api/Viagem/AtualizarViagem                     │
+ * │                                                                       │
+ * │ 14. window.recuperarViagemEdicao(viagemId)                           │
+ * │     → GET dados de agendamento para edição                          │
+ * │     → param viagemId: int (ID do agendamento)                       │
+ * │     → returns Promise<Object>: dados do backend                      │
+ * │     → Fluxo:                                                         │
+ * │       1. ApiClient.get("/api/Viagem/PegarViagemParaEdicao", { viagemId })│
+ * │       2. Return response data                                       │
+ * │       3. catch: Alerta.TratamentoErroComLinha + throw               │
+ * │     → Endpoint: GET /api/Viagem/PegarViagemParaEdicao               │
+ * │                                                                       │
+ * │ 15. window.obterAgendamentosRecorrentes(recorrenciaViagemId)        │
+ * │     → GET todos os agendamentos de um grupo recorrente              │
+ * │     → param recorrenciaViagemId: int (ID do grupo)                  │
+ * │     → returns Promise<Array>: lista de agendamentos                  │
+ * │     → Fluxo:                                                         │
+ * │       1. ApiClient.get("/api/Viagem/PegarRecorrenciaViagem",        │
+ * │          { recorrenciaViagemId })                                   │
+ * │       2. Return response.data (array)                               │
+ * │       3. catch: Alerta.TratamentoErroComLinha + throw               │
+ * │     → Endpoint: GET /api/Viagem/PegarRecorrenciaViagem              │
+ * │                                                                       │
+ * │ 16. window.obterAgendamentosRecorrenteInicial(viagemId)             │
+ * │     → GET grupo recorrente a partir de um único ViagemId            │
+ * │     → param viagemId: int (qualquer ID da série)                    │
+ * │     → returns Promise<Object>: { recorrenciaViagemId, agendamentos }│
+ * │     → Fluxo:                                                         │
+ * │       1. recuperarViagemEdicao(viagemId)                            │
+ * │       2. Extrair RecorrenciaViagemId                                │
+ * │       3. obterAgendamentosRecorrentes(RecorrenciaViagemId)          │
+ * │       4. Return { recorrenciaViagemId, agendamentos }               │
+ * │     → Uso típico: editar recorrente → precisa carregar toda série  │
+ * │                                                                       │
+ * │ 17. window.excluirAgendamento(viagemId)                              │
+ * │     → DELETE agendamento (implementação futura)                     │
+ * │     → param viagemId: int                                           │
+ * │     → returns Promise<void>                                          │
+ * │     → Fluxo: console.log "Excluir agendamento" + TODO               │
+ * │     → Status: não implementado (placeholder)                        │
+ * │                                                                       │
+ * │ 18. window.cancelarAgendamento(viagemId, descricao, mostrarToast)   │
+ * │     → PUT para cancelar agendamento (Status → Cancelada)            │
+ * │     → param viagemId: int                                           │
+ * │     → param descricao: string (motivo cancelamento)                 │
+ * │     → param mostrarToast: boolean (default true)                    │
+ * │     → returns Promise<void>                                          │
+ * │     → Fluxo:                                                         │
+ * │       1. ApiClient.put("/api/Viagem/CancelarAgendamento",           │
+ * │          { viagemId, descricao })                                   │
+ * │       2. Se success + mostrarToast:                                 │
+ * │          - Swal.fire success "Agendamento cancelado"                │
+ * │          - $("#modalViagens").modal("hide")                         │
+ * │       3. catch: handleAgendamentoError(error)                       │
+ * │     → Endpoint: PUT /api/Viagem/CancelarAgendamento                 │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ SEÇÃO 4: ALTERAÇÃO DE DATA INICIAL (Push/Pull Logic) ─────────────┐
+ * │ 19. detectarAlteracaoDataInicial(agendamentoOriginal)                │
+ * │     → Detecta se DataInicial mudou comparando original vs atual     │
+ * │     → param agendamentoOriginal: Object (dados backend)             │
+ * │     → returns Object|null: { dataOriginal, dataNova, houveMudanca } │
+ * │     → Fluxo:                                                         │
+ * │       1. Obter instância txtDataInicial (Syncfusion DateTimePicker) │
+ * │       2. Extrair agendamentoOriginal.DataInicial (ISO string)       │
+ * │       3. Converter ambos para Date objects                          │
+ * │       4. Comparar timestamps (getTime())                            │
+ * │       5. Return { dataOriginal: Date, dataNova: Date,               │
+ * │          houveMudanca: boolean }                                    │
+ * │     → Uso típico: criarAgendamentoEdicao → detectar push            │
+ * │                                                                       │
+ * │ 20. calcularPushDatas(dataOriginal, dataNova, intervalo)            │
+ * │     → Calcula push de DataFinal + datas recorrência após mudança    │
+ * │     → param dataOriginal: Date (DataInicial antiga)                 │
+ * │     → param dataNova: Date (DataInicial nova)                       │
+ * │     → param intervalo: Object { DataInicial, DataFinal } original   │
+ * │     → returns Object|null: { novaDataFinal, novasDatasRecorrencia } │
+ * │     → Fluxo: (368 linhas - FUNÇÃO MAIS COMPLEXA)                    │
+ * │       1. Calcular diff: dataNova - dataOriginal (ms)                │
+ * │       2. Calcular duração original: DataFinal - DataInicial         │
+ * │       3. Push DataFinal: new Date(DataFinal.getTime() + diff)       │
+ * │       4. Se recorrente:                                             │
+ * │          a. Obter config recorrência (lstRecorrente, lstPeriodos, etc.)│
+ * │          b. Construir configRecorrencia object para RecorrenciaLogic│
+ * │          c. Call RecorrenciaLogic.calcularDatasRecorrencia(dataNova,│
+ * │             configRecorrencia)                                      │
+ * │          d. Return array de datas pushed                            │
+ * │       5. Validações:                                                 │
+ * │          - TipoRecorrencia válido ("Semanal"/"Mensal"/"Custom")     │
+ * │          - QuantidadePeriodos ou FinalRecorrencia obrigatórios      │
+ * │          - DiasSemana/DiasMes/DatasSelecionadas conforme tipo       │
+ * │       6. Atualizar UI:                                               │
+ * │          - txtDataFinal.value = novaDataFinal                       │
+ * │          - calDatasSelecionadas.values = novasDatasRecorrencia      │
+ * │       7. Return { novaDataFinal: Date, novasDatasRecorrencia: Array }│
+ * │     → Uso típico: criarAgendamentoEdicao após detectar mudança      │
+ * │     → Integração: RecorrenciaLogic.calcularDatasRecorrencia         │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ SEÇÃO 3: EDIÇÃO DE AGENDAMENTOS ───────────────────────────────────┐
+ * │ 21. window.editarAgendamento(viagemId)                               │
+ * │     → Edita agendamento ÚNICO (não recorrente ou único de série)    │
+ * │     → param viagemId: int                                           │
+ * │     → returns Promise<void>                                          │
+ * │     → Fluxo:                                                         │
+ * │       1. recuperarViagemEdicao(viagemId)                            │
+ * │       2. Verificar se EhRecorrente:                                 │
+ * │          - Se false: edição simples (único agendamento)             │
+ * │          - Se true: verificar se é único alterado na série          │
+ * │       3. Caso único alterado:                                       │
+ * │          - Usar criarAgendamentoViagem (estrutura especial)         │
+ * │          - Endpoint: AlterarRecorrenciaViagem                       │
+ * │       4. Caso normal:                                               │
+ * │          - Usar criarAgendamentoEdicao (estrutura padrão)           │
+ * │          - Endpoint: AtualizarViagem                                │
+ * │       5. aplicarAtualizacao(agendamentoEditado)                     │
+ * │       6. catch: handleAgendamentoError(error)                       │
+ * │     → Uso típico: calendario.js click em agendamento Status=Aberta  │
+ * │                                                                       │
+ * │ 22. window.editarAgendamentoRecorrente(viagemId, editaTodos,        │
+ * │              dataInicialRecorrencia, recorrenciaViagemId,           │
+ * │              editarAgendamentoRecorrente)                           │
+ * │     → Edita série recorrente (todos ou próximos)                    │
+ * │     → param viagemId: int (ID clicado)                              │
+ * │     → param editaTodos: boolean (editar todos da série)             │
+ * │     → param dataInicialRecorrencia: Date (data do clicado)          │
+ * │     → param recorrenciaViagemId: int (ID do grupo)                  │
+ * │     → param editarAgendamentoRecorrente: boolean (true sempre)      │
+ * │     → returns Promise<void>                                          │
+ * │     → Fluxo:                                                         │
+ * │       1. Se editaTodos: editarProximos = false                      │
+ * │       2. Senão: editarProximos = true                               │
+ * │       3. Call enviarAgendamentoComOpcao(viagemId, editaTodos,       │
+ * │          editarProximos, dataInicialRecorrencia, recorrenciaViagemId)│
+ * │       4. catch: handleAgendamentoError(error)                       │
+ * │     → Uso típico: aoAbrirModalViagem após Swal.fire("Editar todos?")│
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ SEÇÃO 2 (continuação): MENSAGENS E ERRO ───────────────────────────┐
+ * │ 23. window.exibirMensagemSucesso()                                   │
+ * │     → Toast success genérico (usado raramente)                      │
+ * │     → returns void                                                   │
+ * │     → Fluxo: Swal.fire({ icon: "success", title: "Sucesso!",       │
+ * │       text: "Operação realizada", timer: 2000 })                    │
+ * │                                                                       │
+ * │ 24. window.exibirErroAgendamento()                                   │
+ * │     → Toast error genérico (deprecated, não usado)                  │
+ * │     → returns void                                                   │
+ * │     → Fluxo: Swal.fire({ icon: "error", title: "Erro!" })          │
+ * │                                                                       │
+ * │ 25. window.handleAgendamentoError(error)                             │
+ * │     → Handler centralizado de erros de agendamento                  │
+ * │     → param error: Error object (com responseJSON do backend)       │
+ * │     → returns void                                                   │
+ * │     → Fluxo:                                                         │
+ * │       1. Extrair error.responseJSON.errors (array de strings)       │
+ * │       2. Alerta.MostrarMensagemErro(errors.join("<br>"))            │
+ * │       3. Alerta.TratamentoErroComLinha("modal-viagem.js",           │
+ * │          "handleAgendamentoError", error)                           │
+ * │     → Uso típico: catch blocks em enviar/aplicar funções            │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ SEÇÃO 5: INTEGRAÇÃO COM RELATÓRIO ─────────────────────────────────┐
+ * │ 26. window.carregarRelatorioNoModal()                                │
+ * │     → Carrega Telerik ReportViewer no modal de relatório            │
+ * │     → returns void (side effect: cria/atualiza telerikReportViewer) │
+ * │     → Fluxo: (301 linhas)                                           │
+ * │       1. Verificar isReportViewerLoading (evitar duplo load)        │
+ * │       2. Obter ViagemId do StateManager                             │
+ * │       3. Se ViagemId == ultimoViagemIdCarregado: return (cache)     │
+ * │       4. Set isReportViewerLoading = true                           │
+ * │       5. Show modal: $("#modalRelatorio").modal("show")             │
+ * │       6. Verificar se telerikReportViewer já existe:                │
+ * │          - Se exists: destroy() para recriar                        │
+ * │       7. Criar nova instância Telerik ReportViewer:                 │
+ * │          telerikReportViewer = $("#reportViewer1").telerik_ReportViewer({│
+ * │            serviceUrl: "/api/reports/",                             │
+ * │            reportSource: {                                          │
+ * │              report: "ReportAgendamento.trdp",                      │
+ * │              parameters: { ViagemId: viagemId }                     │
+ * │            },                                                        │
+ * │            viewMode: "INTERACTIVE",                                 │
+ * │            scaleMode: "FIT_PAGE_WIDTH",                             │
+ * │            scale: 1.0,                                              │
+ * │            ready: function() { console.log "ReportViewer pronto" }, │
+ * │            error: function(e, args) { console.error + Alerta }     │
+ * │          }).data("telerik_ReportViewer")                            │
+ * │       8. renderingEnd event: isReportViewerLoading = false          │
+ * │       9. Atualizar ultimoViagemIdCarregado = viagemId               │
+ * │      10. catch: Alerta.TratamentoErroComLinha + isReportViewerLoading = false│
+ * │     → Dependências: Telerik Reporting jQuery plugin, DOM #reportViewer1│
+ * │     → Uso típico: relatorio.js btnVisualizarRelatorio click         │
+ * │                                                                       │
+ * │ EVENT HANDLER: aoAbrirModalViagem(event)                             │
+ * │     → Bootstrap Modal shown.bs.modal event handler                  │
+ * │     → param event: jQuery event object                              │
+ * │     → returns void (side effect: configura modal)                   │
+ * │     → Fluxo: (79 linhas)                                            │
+ * │       1. console.log "Modal aberto"                                 │
+ * │       2. Obter StateManager states:                                 │
+ * │          - ehEdicao, viagemId, ehRecorrente, modoCancelamento       │
+ * │       3. Switch title baseado em modo:                              │
+ * │          - modoCancelamento: "Cancelar Agendamento"                 │
+ * │          - ehEdicao + ehRecorrente: "Editar Série Recorrente"       │
+ * │          - ehEdicao: "Editar Agendamento"                           │
+ * │          - default: "Criar Agendamento"                             │
+ * │       4. ModalConfig.setModalTitle("modalViagens", title, icon, color)│
+ * │       5. Se ehEdicao:                                               │
+ * │          a. recuperarViagemEdicao(viagemId)                         │
+ * │          b. inicializarCamposModal(dados) → preencher form          │
+ * │          c. Se Status != "Aberta": desabilitarTodosControles()      │
+ * │       6. Se !ehEdicao:                                              │
+ * │          - limparCamposModalViagens() → reset form                  │
+ * │       7. Set modalJaFoiLimpo = false                                │
+ * │     → Attachment: main.js → $("#modalViagens").on("shown.bs.modal") │
+ * │                                                                       │
+ * │ EVENT HANDLER: aoFecharModalViagem()                                 │
+ * │     → Bootstrap Modal hidden.bs.modal event handler                 │
+ * │     → returns void (side effect: limpa modal)                       │
+ * │     → Fluxo: (43 linhas)                                            │
+ * │       1. console.log "Modal fechado"                                │
+ * │       2. Se !modalJaFoiLimpo:                                       │
+ * │          a. limparCamposModalViagens()                              │
+ * │          b. Set modalJaFoiLimpo = true                              │
+ * │       3. StateManager resets:                                       │
+ * │          - set("ehEdicao", false)                                   │
+ * │          - set("viagemId", null)                                    │
+ * │          - set("ehRecorrente", false)                               │
+ * │          - set("modoCancelamento", false)                           │
+ * │       4. ModalConfig.resetModal("modalViagens")                     │
+ * │       5. RecorrenciaUI.esconder() → hide recorrência fields         │
+ * │     → Attachment: main.js → $("#modalViagens").on("hidden.bs.modal")│
+ * │                                                                       │
+ * │ EVENT HANDLER: inicializarEventosRelatorioModal()                    │
+ * │     → Inicializa event listeners para modal de relatório            │
+ * │     → returns void (side effect: attach events)                     │
+ * │     → Fluxo:                                                         │
+ * │       1. $("#modalRelatorio").on("shown.bs.modal"): console.log     │
+ * │       2. $("#modalRelatorio").on("hidden.bs.modal"):                │
+ * │          - console.log "Relatório fechado"                          │
+ * │          - telerikReportViewer?.destroy() (cleanup)                 │
+ * │          - telerikReportViewer = null                               │
+ * │          - isReportViewerLoading = false                            │
+ * │     → Chamado por: main.js (inicialização app)                      │
+ * │     → Redefinição: linha 2161 redefine window.carregarRelatorioNoModal│
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ SEÇÃO 6: INICIALIZAÇÃO E LIMPEZA DE CAMPOS ────────────────────────┐
+ * │ 27. window.inicializarCamposModal(dados)                             │
+ * │     → Preenche form com dados de agendamento para edição            │
+ * │     → param dados: Object (retorno de recuperarViagemEdicao)        │
+ * │     → returns void (side effect: atualiza DOM)                      │
+ * │     → Fluxo: (59 linhas)                                            │
+ * │       1. console.log "Inicializando campos com dados"               │
+ * │       2. Preencher 16 campos Syncfusion/Kendo:                      │
+ * │          - DateTimePicker: txtDataInicial.value = new Date(dados.DataInicial)│
+ * │          - DropDownList: lstMotorista.value = dados.MotoristaId     │
+ * │          - RichTextEditor: rteDescricao.value = dados.Descricao     │
+ * │          - ComboBox: lstRequisitante.value(dados.RequisitanteId)    │
+ * │          - NumericTextBox: ddtCombustivelInicial.value = dados.CombustivelInicial│
+ * │          - etc. (todos os 16 campos)                                │
+ * │       3. Se EhRecorrente:                                           │
+ * │          - RecorrenciaUI.mostrar()                                  │
+ * │          - Preencher campos recorrência (lstRecorrente, lstPeriodos,│
+ * │            lstDias, calDatasSelecionadas, etc.)                     │
+ * │       4. Se !EhRecorrente:                                          │
+ * │          - RecorrenciaUI.esconder()                                 │
+ * │       5. refresh() em todos os componentes Syncfusion               │
+ * │     → Uso típico: aoAbrirModalViagem após recuperarViagemEdicao     │
+ * │                                                                       │
+ * │ 28. window.inicializarComponentesEJ2()                               │
+ * │     → Cria instâncias Syncfusion EJ2 se não existem                 │
+ * │     → returns void (side effect: appendTo em elementos DOM)         │
+ * │     → Fluxo: (36 linhas)                                            │
+ * │       1. Para cada componentId em lista (txtDataInicial, lstMotorista, etc.):│
+ * │          a. Verificar se elemento.ej2_instances existe              │
+ * │          b. Se não: console.warn "Componente não encontrado"        │
+ * │          c. Não cria automaticamente (apenas verifica)              │
+ * │       2. Nota: criação real via Razor/C# (não JavaScript)           │
+ * │     → Uso típico: debug/diagnóstico (não usado em produção)         │
+ * │                                                                       │
+ * │ 29. window.limparCamposRecorrencia()                                 │
+ * │     → Limpa apenas campos de recorrência (não todos)                │
+ * │     → returns void (side effect: reset 6 campos)                    │
+ * │     → Fluxo:                                                         │
+ * │       1. lstRecorrente.value = "Não"                                │
+ * │       2. lstPeriodos.value = null                                   │
+ * │       3. lstDias.value = null                                       │
+ * │       4. lstDiasMes.value = null                                    │
+ * │       5. txtFinalRecorrencia.value = null                           │
+ * │       6. calDatasSelecionadas.values = []                           │
+ * │       7. RecorrenciaUI.esconder()                                   │
+ * │     → Uso típico: lstRecorrente change → "Não" → limpar fields      │
+ * │                                                                       │
+ * │ 30. window.limparCamposModalViagens()                                │
+ * │     → Limpa TODOS os campos do form (reset completo)                │
+ * │     → returns void (side effect: reset 16+ campos)                  │
+ * │     → Fluxo: (353 linhas - FUNÇÃO MAIS LONGA)                       │
+ * │       1. try-catch completo com Alerta.TratamentoErroComLinha       │
+ * │       2. console.log "Limpando campos do modal"                     │
+ * │       3. Limpar 16 campos principais:                               │
+ * │          - DateTimePicker: txtDataInicial.value = null              │
+ * │          - DropDownList: lstMotorista.value = null                  │
+ * │          - RichTextEditor: rteDescricao.value = ""                  │
+ * │          - ComboBox: lstRequisitante.value(null)                    │
+ * │          - NumericTextBox: ddtCombustivelInicial.value = null       │
+ * │          - etc.                                                      │
+ * │       4. Limpar campos recorrência:                                 │
+ * │          - limparCamposRecorrencia()                                │
+ * │       5. Limpar campos eventos:                                     │
+ * │          - lstEventos.value = null                                  │
+ * │       6. RecorrenciaUI.esconder()                                   │
+ * │       7. refresh() em todos os componentes                          │
+ * │       8. Safe checks: if (componente) antes de cada clear           │
+ * │       9. console.log "Campos limpos com sucesso"                    │
+ * │     → Uso típico: aoFecharModalViagem, aoAbrirModalViagem (!ehEdicao)│
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ SEÇÃO 7: CONTROLE DE ESTADO DO MODAL ──────────────────────────────┐
+ * │ 31. window.desabilitarTodosControles()                               │
+ * │     → Desabilita form inteiro (modo visualização)                   │
+ * │     → returns void (side effect: disable 16 campos, protege 5 botões)│
+ * │     → Fluxo: (95 linhas)                                            │
+ * │       1. try-catch com Alerta.TratamentoErroComLinha                │
+ * │       2. console.log "Desabilitando controles do modal"             │
+ * │       3. Lista de 5 botões protegidos (NUNCA desabilitar):          │
+ * │          - btnFechar, btnCancelar, btnCancelarModal,                │
+ * │            btnFecharRelatorio, btn-close                            │
+ * │       4. Desabilitar botões genéricos (querySelectorAll button):    │
+ * │          - Se !isProtegido: button.disabled = true                  │
+ * │       5. Desabilitar 16 componentes EJ2:                            │
+ * │          - Para cada: elemento.ej2_instances[0].enabled = false     │
+ * │       6. GARANTIR botões protegidos sempre habilitados:             │
+ * │          - disabled = false, classList.remove('disabled'),          │
+ * │            style.pointerEvents = 'auto'                             │
+ * │       7. Garantir botão X do modal (.btn-close) sempre habilitado   │
+ * │       8. console.log "Controles desabilitados (exceto fechar)"      │
+ * │     → Uso típico: aoAbrirModalViagem quando Status != "Aberta"      │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * 🔄 FLUXO TÍPICO 1 - CRIAR NOVO AGENDAMENTO:
+ * 1. Usuário clica em data no calendario.js → StateManager.set("ehEdicao", false)
+ * 2. Bootstrap Modal show → trigger shown.bs.modal event
+ * 3. aoAbrirModalViagem() → ModalConfig.setModalTitle("Criar Agendamento")
+ * 4. aoAbrirModalViagem() → !ehEdicao → limparCamposModalViagens()
+ * 5. Usuário preenche form (16 campos Syncfusion/Kendo)
+ * 6. Usuário clica btnSalvar → recorrencia.js handler
+ * 7. recorrencia.js → criarAgendamentoNovo() → objeto com 40+ props
+ * 8. enviarAgendamento(agendamento) → !ehEdicao → enviarNovoAgendamento()
+ * 9. ApiClient.post("/api/Viagem/AdicionarAgendamento", agendamento)
+ * 10. Success → Swal.fire("Agendamento criado") → modal.hide()
+ * 11. Modal hide → trigger hidden.bs.modal event
+ * 12. aoFecharModalViagem() → limparCamposModalViagens() → StateManager resets
+ *
+ * 🔄 FLUXO TÍPICO 2 - EDITAR AGENDAMENTO ÚNICO:
+ * 1. Usuário clica em agendamento existente no calendario.js
+ * 2. calendario.js → StateManager.set("ehEdicao", true, "viagemId", 123)
+ * 3. Bootstrap Modal show → trigger shown.bs.modal
+ * 4. aoAbrirModalViagem() → ModalConfig.setModalTitle("Editar Agendamento")
+ * 5. aoAbrirModalViagem() → ehEdicao → recuperarViagemEdicao(123)
+ * 6. ApiClient.get("/api/Viagem/PegarViagemParaEdicao", { viagemId: 123 })
+ * 7. inicializarCamposModal(dados) → preencher form com dados backend
+ * 8. Se Status != "Aberta" → desabilitarTodosControles() (modo visualização)
+ * 9. Se Status == "Aberta" → usuário edita form
+ * 10. Usuário clica btnSalvar → criarAgendamentoEdicao(agendamentoOriginal)
+ * 11. detectarAlteracaoDataInicial() → se mudou DataInicial: calcularPushDatas()
+ * 12. enviarAgendamento() → ehEdicao → aplicarAtualizacao()
+ * 13. ApiClient.put("/api/Viagem/AtualizarViagem", objViagem)
+ * 14. Success → Swal.fire("Agendamento atualizado") → modal.hide()
+ * 15. aoFecharModalViagem() → limparCamposModalViagens() → StateManager resets
+ *
+ * 🔄 FLUXO TÍPICO 3 - EDITAR SÉRIE RECORRENTE (TODOS):
+ * 1. Usuário clica em agendamento de série recorrente
+ * 2. calendario.js → detecta EhRecorrente → Swal.fire("Editar apenas este ou todos?")
+ * 3. Usuário escolhe "Editar todos"
+ * 4. StateManager.set("ehEdicao", true, "ehRecorrente", true, "viagemId", 123)
+ * 5. Bootstrap Modal show → aoAbrirModalViagem() → title "Editar Série Recorrente"
+ * 6. aoAbrirModalViagem() → recuperarViagemEdicao(123) → inicializarCamposModal()
+ * 7. RecorrenciaUI.mostrar() → exibir campos recorrência
+ * 8. Usuário edita form (mudanças aplicadas a TODOS da série)
+ * 9. Usuário clica btnSalvar → editarAgendamentoRecorrente(123, editaTodos=true, ...)
+ * 10. obterAgendamentosRecorrentes(RecorrenciaViagemId) → GET todos da série
+ * 11. Para cada agendamento: criarAgendamentoEdicao() → enviarNovoAgendamento()
+ * 12. POST batch (N requests, isUltimoAgendamento só no último)
+ * 13. Success último → Swal.fire("Agendamentos atualizados") → modal.hide()
+ * 14. aoFecharModalViagem() → limparCamposModalViagens() → StateManager resets
+ *
+ * 🔄 FLUXO TÍPICO 4 - CANCELAR AGENDAMENTO:
+ * 1. Usuário clica btnCancelar em exibe-viagem.js
+ * 2. Swal.fire com textarea para motivo cancelamento
+ * 3. Usuário digita motivo → confirma
+ * 4. exibe-viagem.js → cancelarAgendamento(viagemId, descricao)
+ * 5. ApiClient.put("/api/Viagem/CancelarAgendamento", { viagemId, descricao })
+ * 6. Backend → Status="Cancelada", DescricaoCancelamento=descricao
+ * 7. Success → Swal.fire("Agendamento cancelado") → modal.hide()
+ * 8. aoFecharModalViagem() → limparCamposModalViagens()
+ *
+ * 🔄 FLUXO TÍPICO 5 - CARREGAR RELATÓRIO:
+ * 1. Usuário clica btnVisualizarRelatorio em relatorio.js
+ * 2. relatorio.js → carregarRelatorioNoModal()
+ * 3. Verificar isReportViewerLoading (evitar duplo load)
+ * 4. Obter ViagemId do StateManager
+ * 5. Se ViagemId == ultimoViagemIdCarregado: return (cache)
+ * 6. $("#modalRelatorio").modal("show") → exibir modal
+ * 7. Criar/atualizar Telerik ReportViewer:
+ *    - serviceUrl: "/api/reports/"
+ *    - reportSource: { report: "ReportAgendamento.trdp", parameters: { ViagemId } }
+ * 8. renderingEnd event → isReportViewerLoading = false
+ * 9. Usuário visualiza relatório PDF (Telerik viewer)
+ * 10. Usuário fecha modal → hidden.bs.modal event
+ * 11. inicializarEventosRelatorioModal handler → telerikReportViewer.destroy()
+ *
+ * 📌 SINCRONIZAÇÃO ENTRE DATASINICIAL E DATAFINAL (Push Logic):
+ * - Quando usuário edita agendamento e muda DataInicial:
+ * - detectarAlteracaoDataInicial() compara original vs atual
+ * - Se houveMudanca: calcularPushDatas() calcula diff (ms)
+ * - Push DataFinal: novaDataFinal = DataFinal + diff (mantém duração)
+ * - Push datas recorrência: RecorrenciaLogic.calcularDatasRecorrencia() com nova DataInicial
+ * - Atualiza UI: txtDataFinal.value = novaDataFinal, calDatasSelecionadas.values = novasDatas
+ * - Resultado: intervalo mantém mesma duração, série recorrente acompanha mudança
+ *
+ * 📌 ESTRUTURA OBJETO AGENDAMENTO (40+ props):
+ * - IDs: ViagemId (int), RecorrenciaViagemId (int nullable), MotoristaId (int),
+ *   VeiculoId (int), RequisitanteId (int), SetorId (int), FinalidadeId (int), EventoId (int nullable)
+ * - Timestamps: DataInicial (ISO string), DataFinal (ISO string)
+ * - Strings: Descricao (HTML), Origem (string), Destino (string), NomeEvento (string nullable),
+ *   Status (string: "Aberta", "Cancelada", "Concluída"), DescricaoCancelamento (string nullable)
+ * - Numbers: CombustivelInicial (decimal 0-8), CombustivelFinal (decimal 0-8)
+ * - Booleans: EhRecorrente (boolean)
+ * - Recorrência (se EhRecorrente):
+ *   - TipoRecorrencia (string: "Semanal", "Mensal", "Custom")
+ *   - DiasSemana (int[] 0-6, para Semanal)
+ *   - DiasMes (int[] 1-31, para Mensal)
+ *   - DatasSelecionadas (ISO string[], para Custom)
+ *   - QuantidadePeriodos (int nullable, número de repetições)
+ *   - FinalRecorrencia (ISO string nullable, data limite)
+ * - Exemplo:
+ *   {
+ *     ViagemId: 123,
+ *     DataInicial: "2026-02-03T08:00:00.000Z",
+ *     DataFinal: "2026-02-03T18:00:00.000Z",
+ *     MotoristaId: 45,
+ *     VeiculoId: 12,
+ *     RequisitanteId: 789,
+ *     SetorId: 5,
+ *     FinalidadeId: 2,
+ *     Descricao: "<p>Reunião importante</p>",
+ *     Origem: "Câmara",
+ *     Destino: "Prefeitura",
+ *     CombustivelInicial: 6,
+ *     CombustivelFinal: 4,
+ *     EhRecorrente: true,
+ *     TipoRecorrencia: "Semanal",
+ *     DiasSemana: [1, 3, 5],
+ *     QuantidadePeriodos: 10,
+ *     EventoId: 3,
+ *     NomeEvento: "Reunião Semanal"
+ *   }
+ *
+ * 📌 ENDPOINTS API (6 endpoints):
+ * - POST /api/Viagem/AdicionarAgendamento
+ *   → Body: agendamento object (novo)
+ *   → Returns: { success: boolean, viagemId: int, recorrenciaViagemId: int nullable }
+ * - PUT /api/Viagem/AtualizarViagem
+ *   → Body: agendamento object (editado)
+ *   → Returns: { success: boolean }
+ * - POST /api/Viagem/AlterarRecorrenciaViagem
+ *   → Body: { AgendamentoUnicoAlterado, AgendamentoOriginal, DataInicial, RecorrenciaViagemId }
+ *   → Returns: { success: boolean }
+ *   → Uso: editar único agendamento dentro de série recorrente
+ * - GET /api/Viagem/PegarViagemParaEdicao?viagemId={id}
+ *   → Returns: agendamento object completo
+ * - GET /api/Viagem/PegarRecorrenciaViagem?recorrenciaViagemId={id}
+ *   → Returns: { data: agendamento[] }
+ * - PUT /api/Viagem/CancelarAgendamento
+ *   → Body: { viagemId: int, descricao: string }
+ *   → Returns: { success: boolean }
+ *
+ * 📌 COMPONENTES SYNCFUSION/KENDO (16 fields):
+ * - Syncfusion DateTimePicker (3): txtDataInicial, txtDataFinal, txtFinalRecorrencia
+ * - Syncfusion DropDownList (10): lstMotorista, lstVeiculo, lstFinalidade,
+ *   lstSetorRequisitanteAgendamento, lstRecorrente, lstPeriodos, lstDias, lstDiasMes, lstEventos
+ * - Syncfusion RichTextEditor (1): rteDescricao
+ * - Syncfusion NumericTextBox (2): ddtCombustivelInicial, ddtCombustivelFinal
+ * - Syncfusion Calendar (1): calDatasSelecionadas (MultiSelect calendar)
+ * - Kendo UI ComboBox (1): lstRequisitante (usa kendoComboBox, não ej2_instances)
+ *
+ * 📌 BOTÕES PROTEGIDOS (nunca desabilitar, mesmo em modo visualização):
+ * 1. btnFechar (id)
+ * 2. btnCancelar (id)
+ * 3. btnCancelarModal (id)
+ * 4. btnFecharRelatorio (id)
+ * 5. .btn-close (class, botão X do modal)
+ * → Motivo: garantir que usuário sempre pode fechar modal (UX crítico)
+ * → Implementação: desabilitarTodosControles() verifica ID antes de disable
+ *
+ * 📝 OBSERVAÇÕES ADICIONAIS:
+ * - Arquivo mais complexo do módulo agendamento (2874 linhas)
+ * - 28 funções exportadas via window.* (escopo global)
+ * - 4 global variables para state management (modalJaFoiLimpo, telerikReportViewer, etc.)
+ * - 3 event handlers para Bootstrap Modal (shown/hidden) e ReportViewer
+ * - Try-catch completo em todas as 28 funções async
+ * - Alerta.TratamentoErroComLinha em todos os catch blocks
+ * - Console.log extensivo para debug (production-ready)
+ * - Safe checks: if (elemento?.ej2_instances?.[0]) em todos os acessos Syncfusion
+ * - Kendo special: lstRequisitante usa $(element).data("kendoComboBox") (não ej2_instances)
+ * - Recorrência: 3 tipos suportados (Semanal, Mensal, Custom) com validações específicas
+ * - Push/Pull logic: 368 linhas em calcularPushDatas (função mais complexa)
+ * - ReportViewer: lazy loading + cache (ultimoViagemIdCarregado) + destroy on close
+ * - Modal modes: Criar (novo), Editar (único), Editar Série (recorrente), Visualizar (Status fechado), Cancelar
+ * - Status agendamento: "Aberta" (editável), "Cancelada" (readonly), "Concluída" (readonly)
+ * - Desabilitar controles: mantém 5 botões protegidos sempre habilitados (UX crítico)
+ * - Bootstrap Modal API: $.modal('show'/'hide'), on('shown.bs.modal'/'hidden.bs.modal')
+ * - Syncfusion API: refresh(), dataBind(), destroy(), appendTo(), value setter/getter
+ * - Telerik API: telerik_ReportViewer(), renderingEnd event, destroy()
+ * - StateManager integration: 8 estados (ehEdicao, viagemId, ehRecorrente, modoCancelamento, etc.)
+ * - RecorrenciaLogic integration: calcularDatasRecorrencia para push/pull datas
+ * - ModalConfig integration: setModalTitle (4 icons/colors), resetModal
+ * - Alerta integration: TratamentoErroComLinha, MostrarMensagemErro
+ * - Swal integration: success toasts (timer 2000ms)
+ * - ApiClient integration: 6 endpoints (POST/PUT/GET) com error handling padronizado
+ * - RecorrenciaUI integration: mostrar/esconder campos recorrência
+ * - Validações: campos obrigatórios verificados no backend (errors array)
+ * - Timestamps: sempre ISO strings (new Date().toISOString())
+ * - Combustível: NumericTextBox format="n0" (0 decimais, range 0-8)
+ * - Descrição: RichTextEditor com HTML output
+ * - Requisitante: ComboBox com autocomplete + botão adicionar novo
+ * - Setor: carregado via GET AJAXPreencheListaSetores ao selecionar requisitante
+ * - Eventos: DropDownList opcional, carregado via EventoService
+ * - Recorrência Semanal: DiasSemana array (0=Domingo, 1=Segunda, ..., 6=Sábado)
+ * - Recorrência Mensal: DiasMes array (1-31, validação backend para meses com menos dias)
+ * - Recorrência Custom: DatasSelecionadas via Calendar multiSelect
+ * - Limite recorrência: QuantidadePeriodos XOR FinalRecorrencia (um dos dois obrigatório)
+ *
+ * 🔌 VERSÃO: 4.0 (refatorado após Lote 192, adiciona comprehensive header)
+ * 📌 ÚLTIMA ATUALIZAÇÃO: 02/02/2026
+ **************************************************************************************** */
 
 // ====================================================================
 // SEÇÃO 1: CRIAÇÃO DE OBJETOS DE AGENDAMENTO

@@ -1,11 +1,350 @@
-// ====================================================================
-// RELATÓRIO - Gerenciamento do relatório da ficha de vistoria
-// ====================================================================
-
-/**
- * 🎯 MÓDULO DE RELATÓRIO
- * Gerencia a exibição de relatórios Telerik no modal de visualização
- */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: relatorio.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciamento completo de relatórios Telerik ReportViewer no modal de
+ *                   visualização de viagens. IIFE com 17 funções internas + 3 exports
+ *                   para carregar, exibir, destruir ReportViewer com overlay loading
+ *                   FrotiX (logo piscando), validações, retry pattern, height fixes, error
+ *                   handling. Principais fluxos: mostrarLoadingRelatorio → overlay z-index
+ *                   999999, buscarDadosViagem → GET /api/Viagem/PegarViagemParaEdicao,
+ *                   determinarRelatorio → "Agendamento.trdp" ou "FichaVistoria.trdp",
+ *                   inicializarViewer → telerik_ReportViewer({ serviceUrl: '/api/reports/',
+ *                   reportSource, callbacks }), aguardarTelerikReportViewer → retry 5s,
+ *                   aplicarAlturasFixas → calc(100vh - 380px), destruirViewerAnterior →
+ *                   dispose/destroy + removeData. Suporta 2 tipos relatório: Agendamento
+ *                   (criação), FichaVistoria (finalização). Usa jQuery, Telerik Reporting,
+ *                   StateManager, Bootstrap Modal.
+ * 📥 ENTRADAS     : viagemId (int de carregarRelatorioViagem), mensagem (string de
+ *                   mostrarLoading), condition/timeout/interval (waitUntil params),
+ *                   data (Object de determinarRelatorio com Status/Concluida properties)
+ * 📤 SAÍDAS       : Void (side effects: DOM updates, overlay append/remove, ReportViewer
+ *                   instance, console.log debug), Promise<void> (async functions),
+ *                   Promise<Object> buscarDadosViagem, string (determinarRelatorio:
+ *                   "Agendamento.trdp"/"FichaVistoria.trdp"), Objects (obter* functions:
+ *                   jQuery elements, estado object)
+ * 🔗 CHAMADA POR  : modal-viagem-novo.carregarRelatorioNoModal (indiretamente via btnVisualizarRelatorio),
+ *                   exibe-viagem.js (btnVisualizarRelatorio click → carregarRelatorioViagem),
+ *                   main.js (event listeners), reportviewer-close-guard.js (callbacks
+ *                   wrapeados)
+ * 🔄 CHAMA        : jQuery ($.ajax, $('#element'), .append(), .remove(), .show(), .hide(),
+ *                   .data(), .removeData(), .empty(), .css(), .on()), Telerik Reporting
+ *                   ($.fn.telerik_ReportViewer, instance.dispose/destroy, callbacks:
+ *                   renderingBegin/renderingEnd/ready/error), ApiClient.get (buscarDadosViagem),
+ *                   StateManager.get/set (viagemId, ehEdicao), setTimeout (1000ms overlay,
+ *                   100ms retry waitUntil), Alerta.TratamentoErroComLinha, console.log/warn/error
+ *                   (debug com emoji prefixes), window.isReportViewerLoading (flag global)
+ * 📦 DEPENDÊNCIAS : jQuery (DOM manipulation, AJAX, $.fn plugin system), Telerik Reporting
+ *                   ($.fn.telerik_ReportViewer plugin, API: dispose/destroy/refresh),
+ *                   ApiClient (buscarDadosViagem: GET endpoint), StateManager (viagemId
+ *                   state), Alerta (TratamentoErroComLinha), Bootstrap Modal (#modalRelatorio,
+ *                   #cardRelatorio containers), DOM elements (#reportViewerAgenda,
+ *                   #ReportContainerAgenda, #modal-relatorio-loading-overlay),
+ *                   reportviewer-close-guard.js (patch callbacks), FrotiX CSS
+ *                   (/images/logo_gota_frotix_transparente.png, .ftx-spin-overlay classes)
+ * 📝 OBSERVAÇÕES  : IIFE pattern (Immediately Invoked Function Expression) com 'use strict'.
+ *                   Arquivo grande (1478 linhas, 20 funções). 3 window.* exports:
+ *                   mostrarLoadingRelatorio, esconderLoadingRelatorio, carregarRelatorioViagem.
+ *                   17 funções internas privadas (não exportadas). Try-catch completo em
+ *                   todas as funções principais com Alerta.TratamentoErroComLinha. Console.log
+ *                   extensivo com emoji prefixes ([Relatório] ⏳🗑️✅❌). Overlay loading:
+ *                   padrão FrotiX com logo piscando, z-index 999999, bloqueia ESC/clicks.
+ *                   Retry pattern: waitUntil com timeout 15s, interval 100ms (até 150
+ *                   tentativas). Height fixes: aplicarAlturasFixas com calc(100vh - 380px)
+ *                   para garantir scroll interno ReportViewer. 2 tipos relatório:
+ *                   Agendamento.trdp (Status != "Concluída"), FichaVistoria.trdp (Status
+ *                   == "Concluída"). Telerik callbacks: renderingBegin → mostrarLoading,
+ *                   renderingEnd → esconderLoading + isReportViewerLoading=false, ready →
+ *                   mostrarRelatorio + diagnóstico, error → mostrarErro + Alerta. Destruir
+ *                   viewer: dispose/destroy + removeData + off('*') + empty() (cleanup
+ *                   completo). Validações: ej.base existence, $.fn.telerik_ReportViewer,
+ *                   viagemId format (GUID uppercase). Fallback: carregarRelatorioViagem
+ *                   simplificado se função não existir (compatibilidade). Diagnóstico:
+ *                   diagnosticarVisibilidadeRelatorio com 10 checks (elemento, display,
+ *                   visibility, opacity, dimensions, zIndex, parent, instance, documentElement,
+ *                   computedStyle).
+ *
+ * 📋 ÍNDICE DE FUNÇÕES (17 internas + 3 exports + 2 async helpers):
+ *
+ * ┌─ EXPORTS GLOBAIS (3 window.* functions) ────────────────────────────┐
+ * │ 1. window.mostrarLoadingRelatorio()                                  │
+ * │    → Mostra overlay loading FrotiX (logo piscando)                  │
+ * │    → returns void (side effect: append overlay ao body)             │
+ * │    → Fluxo:                                                          │
+ * │      1. console.log "Mostrando overlay"                             │
+ * │      2. $('#modal-relatorio-loading-overlay').remove() (limpar anterior)│
+ * │      3. Criar HTML overlay:                                         │
+ * │         - id="modal-relatorio-loading-overlay"                      │
+ * │         - class="ftx-spin-overlay"                                  │
+ * │         - z-index: 999999, cursor: wait                             │
+ * │         - logo: /images/logo_gota_frotix_transparente.png           │
+ * │         - texto: "Carregando a Ficha...", "Aguarde, por favor"      │
+ * │      4. $('body').append(html)                                      │
+ * │      5. Bloquear ESC e clicks: on('click keydown', preventDefault)  │
+ * │      6. console.log "Overlay visível"                               │
+ * │    → Uso típico: inicializarViewer → renderingBegin callback        │
+ * │                                                                       │
+ * │ 2. window.esconderLoadingRelatorio()                                 │
+ * │    → Esconde overlay loading com delay 1s                           │
+ * │    → returns void (side effect: remove overlay após timeout)        │
+ * │    → Fluxo:                                                          │
+ * │      1. console.log "Aguardando 1 segundo antes de remover"         │
+ * │      2. setTimeout 1000ms:                                           │
+ * │         a. $('#modal-relatorio-loading-overlay').fadeOut(300)       │
+ * │         b. setTimeout 300ms: .remove()                              │
+ * │         c. console.log "Overlay removido"                           │
+ * │    → Delay necessário: dar tempo para usuário ver "Carregando"      │
+ * │    → Uso típico: inicializarViewer → renderingEnd callback          │
+ * │                                                                       │
+ * │ 3. window.carregarRelatorioViagem(viagemId)                          │
+ * │    → Entry point público para carregar relatório de viagem          │
+ * │    → param viagemId: int (ID da viagem)                             │
+ * │    → returns void (side effect: carrega ReportViewer)               │
+ * │    → Fluxo simplificado (fallback se função principal não existir): │
+ * │      1. Validar viagemId                                            │
+ * │      2. Obter $('#reportViewerAgenda')                              │
+ * │      3. Destruir viewer anterior (oldViewer.dispose())              │
+ * │      4. Criar viewer: .telerik_ReportViewer({ serviceUrl,           │
+ * │         reportSource: { report: 'Agendamento.trdp', parameters: {   │
+ * │         ViagemId: viagemId.toUpperCase() } } })                     │
+ * │      5. Mostrar: $('#cardRelatorio').show(), $('#ReportContainerAgenda').show()│
+ * │      6. try-catch: console.error                                    │
+ * │    → Nota: função completa definida internamente no IIFE (não mostrada aqui)│
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ FUNÇÕES INTERNAS (17 funções privadas) ────────────────────────────┐
+ * │ 4. async waitUntil(condition, timeout=15000, interval=100)           │
+ * │    → Retry pattern genérico com timeout e interval                  │
+ * │    → param condition: function que retorna boolean                  │
+ * │    → param timeout: int ms (default 15s)                            │
+ * │    → param interval: int ms (default 100ms)                         │
+ * │    → returns Promise<void> (resolve se condition true, reject timeout)│
+ * │    → Fluxo: while loop → await condition() → se true: resolve → senão:│
+ * │      await sleep(interval) → se elapsed > timeout: reject           │
+ * │    → Uso típico: aguardarTelerikReportViewer                        │
+ * │                                                                       │
+ * │ 5. validarDependencias()                                             │
+ * │    → Valida jQuery, Telerik, ej.base carregados                     │
+ * │    → returns void (throw Error se dependência faltando)             │
+ * │    → Checks: window.$, $.fn.telerik_ReportViewer, ej.base           │
+ * │                                                                       │
+ * │ 6. validarViagemId(viagemId)                                         │
+ * │    → Valida formato ViagemId (GUID uppercase)                       │
+ * │    → returns string (viagemId.toUpperCase() ou throw Error)         │
+ * │                                                                       │
+ * │ 7. obterCard()                                                       │
+ * │    → Retorna jQuery element #cardRelatorio                          │
+ * │    → returns jQuery object (throw Error se não encontrado)          │
+ * │                                                                       │
+ * │ 8. obterContainer()                                                  │
+ * │    → Retorna jQuery element #ReportContainerAgenda                  │
+ * │    → returns jQuery object (throw Error se não encontrado)          │
+ * │                                                                       │
+ * │ 9. obterViewer()                                                     │
+ * │    → Retorna jQuery element #reportViewerAgenda                     │
+ * │    → returns jQuery object (throw Error se não encontrado)          │
+ * │                                                                       │
+ * │ 10. limparInstanciaAnterior()                                        │
+ * │     → Destrói ReportViewer anterior (dispose + removeData + empty)  │
+ * │     → returns void (side effect: cleanup completo)                  │
+ * │                                                                       │
+ * │ 11. mostrarLoading(mensagem='Carregando relatório...')              │
+ * │     → Mostra loading no container (alternativa ao overlay)          │
+ * │     → returns void (side effect: HTML loading no container)         │
+ * │                                                                       │
+ * │ 12. mostrarErro(mensagem)                                            │
+ * │     → Mostra mensagem de erro no container                          │
+ * │     → returns void (side effect: HTML erro vermelho)                │
+ * │                                                                       │
+ * │ 13. aplicarAlturasFixas()                                            │
+ * │     → Aplica heights fixos para scroll interno ReportViewer         │
+ * │     → returns void (side effect: CSS height calc(100vh - 380px))    │
+ * │     → Nota: crítico para evitar overflow na página                  │
+ * │                                                                       │
+ * │ 14. mostrarRelatorio()                                               │
+ * │     → Exibe card e container do relatório                           │
+ * │     → returns void (side effect: .show() em elementos)              │
+ * │                                                                       │
+ * │ 15. esconderRelatorio()                                              │
+ * │     → Esconde card e container do relatório                         │
+ * │     → returns void (side effect: .hide() em elementos)              │
+ * │                                                                       │
+ * │ 16. determinarRelatorio(data)                                        │
+ * │     → Decide qual relatório usar baseado em Status                  │
+ * │     → param data: Object ({ Status, Concluida })                    │
+ * │     → returns string: "Agendamento.trdp" ou "FichaVistoria.trdp"    │
+ * │     → Lógica: se Status == "Concluída" → FichaVistoria, senão       │
+ * │       Agendamento                                                    │
+ * │                                                                       │
+ * │ 17. inicializarViewer(viagemId, relatorioNome)                      │
+ * │     → Cria instância Telerik ReportViewer com callbacks             │
+ * │     → param viagemId: string GUID                                   │
+ * │     → param relatorioNome: string ("Agendamento.trdp"/etc.)         │
+ * │     → returns void (side effect: ReportViewer criado)               │
+ * │     → Fluxo: (107 linhas)                                           │
+ * │       1. Obter $viewer = obterViewer()                              │
+ * │       2. Limpar anterior: limparInstanciaAnterior()                 │
+ * │       3. Criar viewer: $viewer.telerik_ReportViewer({               │
+ * │          serviceUrl: '/api/reports/',                               │
+ * │          reportSource: { report: relatorioNome, parameters: {       │
+ * │            ViagemId: viagemId } },                                  │
+ * │          viewMode: 'INTERACTIVE', scaleMode: 'FIT_PAGE_WIDTH',      │
+ * │          scale: 1.0, pageMode: 'SINGLE_PAGE',                       │
+ * │          renderingBegin: mostrarLoadingRelatorio,                   │
+ * │          renderingEnd: function() { esconderLoadingRelatorio();     │
+ * │            isReportViewerLoading=false; aplicarAlturasFixas(); },   │
+ * │          ready: function() { mostrarRelatorio();                    │
+ * │            diagnosticarVisibilidadeRelatorio(); },                  │
+ * │          error: function(e, args) { mostrarErro(args.message);      │
+ * │            Alerta.MostrarMensagemErro(); isReportViewerLoading=false; }│
+ * │        })                                                            │
+ * │       4. console.log "ReportViewer inicializado"                    │
+ * │       5. try-catch: Alerta.TratamentoErroComLinha                   │
+ * │                                                                       │
+ * │ 18. async buscarDadosViagem(viagemId)                               │
+ * │     → GET dados da viagem via API                                   │
+ * │     → param viagemId: string GUID                                   │
+ * │     → returns Promise<Object>: dados viagem                         │
+ * │     → Endpoint: GET /api/Viagem/PegarViagemParaEdicao               │
+ * │                                                                       │
+ * │ 19. obterEstado()                                                    │
+ * │     → Retorna estado atual dos elementos (debug)                    │
+ * │     → returns Object: { card, container, viewer, instance, visible }│
+ * │                                                                       │
+ * │ 20. diagnosticarVisibilidadeRelatorio()                             │
+ * │     → Diagnóstico completo de visibilidade (10 checks)              │
+ * │     → returns void (side effect: console.log diagnóstico)           │
+ * │     → Checks: elemento exists, display, visibility, opacity, width/ │
+ * │       height, zIndex, parent display, instance, documentElement,    │
+ * │       computedStyle                                                  │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * ┌─ ASYNC HELPERS (2 funções) ─────────────────────────────────────────┐
+ * │ 21. async aguardarTelerikReportViewer()                              │
+ * │     → Aguarda Telerik Reporting carregar (retry 5s)                 │
+ * │     → returns Promise<void> (resolve se carregado, throw timeout)    │
+ * │     → Usa: waitUntil(() => ej.base && $.fn.telerik_ReportViewer,    │
+ * │       5000, 100)                                                     │
+ * │                                                                       │
+ * │ 22. async destruirViewerAnterior()                                   │
+ * │     → Destrói viewer anterior (versão async completa)               │
+ * │     → returns Promise<void> (side effect: cleanup + off('*'))        │
+ * │     → Similar a limparInstanciaAnterior mas mais completo           │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
+ * 🔄 FLUXO TÍPICO - CARREGAR RELATÓRIO AGENDAMENTO:
+ * 1. Usuário clica btnVisualizarRelatorio em exibe-viagem.js
+ * 2. exibe-viagem.js → carregarRelatorioViagem(12345)
+ * 3. validarDependencias() → verifica jQuery, Telerik, ej.base
+ * 4. validarViagemId(12345) → "12345" (converte uppercase)
+ * 5. buscarDadosViagem(12345) → GET /api/Viagem/PegarViagemParaEdicao
+ * 6. API retorna: { ViagemId: 12345, Status: "Aberta", ... }
+ * 7. determinarRelatorio(data) → Status != "Concluída" → "Agendamento.trdp"
+ * 8. inicializarViewer("12345", "Agendamento.trdp")
+ * 9. limparInstanciaAnterior() → dispose() anterior + removeData() + empty()
+ * 10. telerik_ReportViewer({ serviceUrl: '/api/reports/', reportSource: {
+ *     report: 'Agendamento.trdp', parameters: { ViagemId: '12345' } } })
+ * 11. Telerik dispara renderingBegin callback
+ * 12. renderingBegin → mostrarLoadingRelatorio()
+ * 13. Overlay FrotiX aparece (logo piscando, z-index 999999)
+ * 14. isReportViewerLoading = true (flag global para reportviewer-close-guard.js)
+ * 15. Telerik renderiza relatório (comunicação com /api/reports/)
+ * 16. Telerik dispara renderingEnd callback
+ * 17. renderingEnd → esconderLoadingRelatorio() (setTimeout 1s)
+ * 18. renderingEnd → isReportViewerLoading = false
+ * 19. renderingEnd → aplicarAlturasFixas() (calc(100vh - 380px))
+ * 20. Telerik dispara ready callback
+ * 21. ready → mostrarRelatorio() (#cardRelatorio.show(), #ReportContainerAgenda.show())
+ * 22. ready → diagnosticarVisibilidadeRelatorio() (console.log 10 checks)
+ * 23. Relatório exibido para usuário
+ *
+ * 🔄 FLUXO TÍPICO - CARREGAR FICHA VISTORIA (Status Concluída):
+ * 1-7. Mesmos passos até determinarRelatorio
+ * 8. determinarRelatorio(data) → Status == "Concluída" → "FichaVistoria.trdp"
+ * 9. inicializarViewer("12345", "FichaVistoria.trdp")
+ * 10-23. Mesmos passos de renderização
+ *
+ * 📌 TIPOS RELATÓRIO (2 tipos):
+ * - Agendamento.trdp: relatório de criação/edição de agendamento
+ *   - Usado quando Status != "Concluída" (ex: "Aberta", "Cancelada")
+ *   - Contém campos: DataInicial, DataFinal, Motorista, Veículo, etc.
+ * - FichaVistoria.trdp: ficha de vistoria pós-viagem
+ *   - Usado quando Status == "Concluída"
+ *   - Contém campos adicionais: KmInicial, KmFinal, Observações, etc.
+ *
+ * 📌 OVERLAY LOADING (padrão FrotiX):
+ * - Logo: /images/logo_gota_frotix_transparente.png (animação piscando)
+ * - Classes: .ftx-spin-overlay, .ftx-spin-box, .ftx-loading-logo, .ftx-loading-bar
+ * - Z-index: 999999 (sobre tudo, incluindo modals)
+ * - Cursor: wait (indica processamento)
+ * - Bloqueia: ESC key + clicks (preventDefault + stopImmediatePropagation)
+ * - Texto: "Carregando a Ficha...", "Aguarde, por favor"
+ * - Delay remoção: 1s (fadeOut 300ms + remove)
+ *
+ * 📌 HEIGHT FIXES (aplicarAlturasFixas):
+ * - Necessário porque ReportViewer sem height fixo causa overflow na página
+ * - Cálculo: calc(100vh - 380px) = viewport height - headers/footers
+ * - Aplicado em: #reportViewerAgenda, .trv-report-viewer, .trv-pages-area
+ * - Resultado: scroll interno no viewer, página não scrolla
+ *
+ * 📌 TELERIK REPORTVIEWER CONFIG (inicializarViewer):
+ * - serviceUrl: '/api/reports/' (backend Telerik Reporting service)
+ * - reportSource: { report: 'Nome.trdp', parameters: { ViagemId: '12345' } }
+ * - viewMode: 'INTERACTIVE' (permite interação, zoom, etc.)
+ * - scaleMode: 'FIT_PAGE_WIDTH' (ajusta largura da página)
+ * - scale: 1.0 (zoom 100%)
+ * - pageMode: 'SINGLE_PAGE' (uma página por vez)
+ * - Callbacks: renderingBegin, renderingEnd, ready, error
+ *
+ * 📌 CLEANUP (limparInstanciaAnterior/destruirViewerAnterior):
+ * - Obter instance: $viewer.data('telerik_ReportViewer')
+ * - Destruir: instance.dispose() ou instance.destroy()
+ * - Limpar data: $viewer.removeData('telerik_ReportViewer')
+ * - Remover events: $viewer.off('*') (todos event handlers)
+ * - Limpar DOM: $viewer.empty()
+ * - Resultado: memória liberada, sem memory leaks
+ *
+ * 📌 VALIDAÇÕES (3 funções):
+ * - validarDependencias: window.$, $.fn.telerik_ReportViewer, ej.base
+ * - validarViagemId: truthy, converte toString().toUpperCase()
+ * - obter* functions: throw Error se elemento não encontrado (fail-fast)
+ *
+ * 📌 DIAGNÓSTICO (diagnosticarVisibilidadeRelatorio):
+ * 10 checks de visibilidade:
+ * 1. Elemento existe no DOM
+ * 2. Display != 'none'
+ * 3. Visibility != 'hidden'
+ * 4. Opacity != '0'
+ * 5. Width > 0 && Height > 0
+ * 6. Z-index >= 0
+ * 7. Parent display != 'none'
+ * 8. ReportViewer instance exists
+ * 9. DocumentElement contains elemento
+ * 10. ComputedStyle display != 'none'
+ * → Console.log cada check com ✅/❌
+ *
+ * 📝 OBSERVAÇÕES ADICIONAIS:
+ * - IIFE pattern: evita poluir scope global (apenas 3 window.* exports)
+ * - 'use strict': modo estrito JavaScript
+ * - Console.log com prefixes: [Relatório] ⏳ (loading), 🗑️ (destroy), ✅ (success), ❌ (error)
+ * - Try-catch em todas as funções públicas com Alerta.TratamentoErroComLinha
+ * - Retry pattern: waitUntil genérico reutilizável (timeout 15s, interval 100ms)
+ * - Async/await: funções async retornam Promises (buscarDadosViagem, aguardarTelerikReportViewer)
+ * - jQuery chaining: $('#element').show().css({ height: '100%' })
+ * - Fallback carregarRelatorioViagem: versão simplificada se função principal não existir (compatibilidade)
+ * - isReportViewerLoading flag: sincronização com reportviewer-close-guard.js (bloqueia modal close)
+ * - setTimeout delays: 1000ms (overlay removal UX), 100ms (retry interval)
+ * - FadeOut animation: 300ms antes de remover overlay (transição suave)
+ * - Error handling: mostrarErro + Alerta.MostrarMensagemErro (duplo aviso)
+ * - StateManager integration: get('viagemId') para obter ID (não usado diretamente neste arquivo)
+ * - ApiClient.get: wrapper sobre $.ajax (endpoint /api/Viagem/PegarViagemParaEdicao)
+ * - reportSource.parameters: ViagemId sempre uppercase (backend requirement)
+ * - viewMode INTERACTIVE: permite zoom, print, export (user interactions)
+ * - pageMode SINGLE_PAGE: melhor UX para relatórios curtos (1-2 páginas)
+ * - Arquivo grande: 1478 linhas (muita configuração Telerik, callbacks extensos, debug logging)
+ *
+ * 🔌 VERSÃO: 3.0 (refatorado após Lote 192, adiciona comprehensive header)
+ * 📌 ÚLTIMA ATUALIZAÇÃO: 02/02/2026
+ **************************************************************************************** */
 (function ()
 {
     'use strict';
