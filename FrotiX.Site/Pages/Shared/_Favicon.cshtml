@@ -1,3 +1,22 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_Favicon.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view que define os links de favicon para múltiplos dispositivos
+ *                   (Apple Touch Icon, PNG padrão, Safari mask). Incluído no <head>.
+ * 📥 ENTRADAS     : Chamada via @await Html.PartialAsync("_Favicon") ou similar do _Layout.cshtml
+ * 📤 SAÍDAS       : 3 <link> tags HTML: apple-touch-icon (180x180), favicon-32x32.png,
+ *                   safari-pinned-tab.svg (mask-icon color #5bbad5), referenciando
+ *                   arquivos em ~/css/img/favicon/
+ * 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml (provavelmente na seção <head>), _Head.cshtml
+ * 🔄 CHAMA        : Arquivos estáticos: apple-touch-icon.png, favicon-32x32.png,
+ *                   safari-pinned-tab.svg (wwwroot/css/img/favicon/)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views), arquivos de favicon em wwwroot/,
+ *                   Tag Helper ~ (resolve para wwwroot/)
+ * 📝 OBSERVAÇÕES  : 2 linhas (3 links). Partial view minimalista para organização. Suporte
+ *                   multi-plataforma: Apple (180x180), padrão web (32x32), Safari pinned tab
+ *                   (SVG com color #5bbad5 - verde azulado). Convencao: favicon em css/img/favicon/
+ *                   (é incomum - geralmente fica em wwwroot/images/ ou wwwroot/ direto).
+ **************************************************************************************** *@
 <link rel="apple-touch-icon" sizes="180x180" href="~/css/img/favicon/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="~/css/img/favicon/favicon-32x32.png">
 <link rel="mask-icon" href="~/css/img/favicon/safari-pinned-tab.svg" color="#5bbad5">

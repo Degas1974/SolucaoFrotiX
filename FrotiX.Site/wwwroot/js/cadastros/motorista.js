@@ -1,22 +1,28 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║                                                                          ║
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║                                                                          ║
- * ║  Este arquivo está completamente documentado em:                         ║
- * ║  📄 Documentacao/Pages/Motorista - Index.md                               ║
- * ║                                                                          ║
- * ║  A documentação inclui:                                                   ║
- * ║  • Explicação detalhada de todas as funções principais                   ║
- * ║  • Inicialização do DataTable                                            ║
- * ║  • Gestão de status e exclusão                                           ║
- * ║  • Handlers de eventos                                                   ║
- * ║  • Interconexões com outros módulos                                      ║
- * ║                                                                          ║
- * ║  Última atualização: 08/01/2026                                          ║
- * ║                                                                          ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: motorista.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : CRUD de motoristas com DataTable configurável (Excel/PDF export),
+ *                   exclusão com confirmação e gestão de status Ativo/Inativo com
+ *                   atualização dinâmica de tooltips Syncfusion.
+ * 📥 ENTRADAS     : DataTable #tblMotorista, botões delegados (.btn-delete com data-id,
+ *                   .updateStatusMotorista com data-url), AJAX GET para status
+ * 📤 SAÍDAS       : POST /api/Motorista/Delete (exclusão), GET data-url (toggle status),
+ *                   AppToast.show notificações (Verde/Vermelho), dataTable.ajax.reload(),
+ *                   atualização visual do botão de status (classes btn-verde/fundo-cinza,
+ *                   ícones fa-circle-check/fa-circle-xmark, tooltips data-ejtip)
+ * 🔗 CHAMADA POR  : Pages/Motorista/Index.cshtml, $(document).ready() inicialização
+ * 🔄 CHAMA        : loadList() (inicialização DataTable com botões Excel/PDF), $.ajax() DELETE,
+ *                   $.get() toggle status, Alerta.Confirmar (SweetAlert confirmação),
+ *                   Alerta.TratamentoErroComLinha (tratamento de erros global), AppToast.show
+ * 📦 DEPENDÊNCIAS : jQuery, DataTables (dom: "Bfrtip", buttons: pageLength/excel/pdfHtml5),
+ *                   Alerta.js (SweetAlert wrapper), AppToast.js, Syncfusion EJ2 tooltips
+ * 📝 OBSERVAÇÕES  : DataTable com lengthMenu customizado ([10,25,50,-1] linhas). Exportação
+ *                   PDF em orientação landscape/pageSize LEGAL. Status binário (0=Ativo Verde,
+ *                   1=Inativo Cinza). Tooltips descritivos dinâmicos ("clique para ativar/inativar").
+ *                   Try-catch aninhado em todos os event handlers (ready, click, ajax callbacks).
+ *                   316 linhas incluindo configuração completa de DataTable. Confirmação antes
+ *                   de exclusão: "Não será possível recuperar os dados eliminados!".
+ **************************************************************************************** */
 
 var dataTable;
 

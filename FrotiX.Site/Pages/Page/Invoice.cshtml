@@ -1,4 +1,54 @@
 @page
+
+@* ========================================================================================
+ * ARQUIVO: Pages/Page/Invoice.cshtml
+ * OBJETIVO: Pagina DEMO de fatura (invoice) do template SmartAdmin exibindo nota fiscal
+ *           estatica (hardcoded HTML) com logo empresa, dados do cliente, itens da fatura,
+ *           subtotal/taxes/total, botao Print, usado como referencia de layout para futuras
+ *           faturas reais no FrotiX (abastecimentos, manutencoes, contratos).
+ * ENTRADAS: Model InvoiceModel (code-behind vazio sem dados dinamicos), fatura estatica
+ *           hardcoded (Invoice numero 0000123, Date 01/01/2023, From: SmartAdmin LLC, To: John Doe,
+ *           5 itens com descricao/quantidade/preco unitario/total, Subtotal $1234.56,
+ *           Tax 10% $123.45, Total $1358.01), botao Print (handler JavaScript window.print)
+ * SAIDAS: Fatura renderizada com logo empresa topo esquerda, dados empresa/cliente topo direita,
+ *         tabela de itens (colunas: Item, Description, Qty, Unit Price, Total), subtotal/tax/total
+ *         destacados em negrito box direita, botao Print azul com icone fa-print (executa
+ *         window.print abrindo dialog de impressao do navegador), layout responsivo col-md-8
+ *         offset-md-2 centralizado, styles inline CSS para impressao media query (oculta botoes,
+ *         ajusta margens, preto e branco)
+ * CHAMADA POR: Route /Page/Invoice via diretiva page, link demonstrativo no menu de paginas
+ *              demo do template SmartAdmin, navegacao direta URL, InvoiceModel.OnGet metodo
+ *              backend vazio (nao carrega dados reais, fatura e estatica hardcoded no HTML)
+ * CHAMA: window.print (funcao nativa JavaScript abre dialog de impressao do navegador),
+ *        nenhum endpoint API (fatura e estatica demonstrativa sem CRUD real), nenhum JavaScript
+ *        externo (logica inline no onclick do botao Print)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Bootstrap 5.3.8 (table-bordered, grid row/col,
+ *               cards, botoes), Font Awesome 6 Duotone (icone fa-print), CSS customizado section
+ *               HeadBlock com media query print (oculta botoes, ajusta margens, preto e branco)
+ * OBSERVACOES: 245 linhas de pagina DEMO template SmartAdmin NAO integrada ao sistema FrotiX
+ *              real. Utilizada como referencia visual de layout para implementar tela de fatura
+ *              real futuramente (faturas de abastecimentos, manutencoes, contratos de terceirizacao).
+ *              Fatura demonstrativa: logo SmartAdmin topo esquerda, Invoice hash 0000123,
+ *              Date 01/01/2023, From SmartAdmin LLC endereco/telefone/email, To John Doe
+ *              endereco, tabela com 5 itens (Web Design Service 2 x $500 = $1000, Logo Design
+ *              1 x $150 = $150, Business Card 3 x $20 = $60, Flyer Design 1 x $24.56 = $24.56,
+ *              Total $1234.56), Subtotal $1234.56, Tax 10% $123.45, Total $1358.01 destacado
+ *              box verde. Botao Print: onclick="window.print()" abre dialog de impressao,
+ *              styles CSS media print oculta botoes com .no-print display none, ajusta margens
+ *              body margin 0, table-bordered preto e branco border 1px solid black. Layout
+ *              responsivo: col-md-8 offset-md-2 centraliza conteudo em desktop, col-12 ocupa
+ *              tela inteira em mobile. Considerar ADAPTAR este layout para faturas reais do
+ *              FrotiX: (1) Faturas de abastecimentos (itens = litros combustivel x preco unitario),
+ *              (2) Faturas de manutencoes (itens = pecas trocadas, servicos realizados),
+ *              (3) Faturas de contratos de terceirizacao (itens = horas de servico, veiculos locados).
+ *              Se implementar faturas reais: criar entidade Fatura, FaturaItem no banco de dados,
+ *              controller/page model carrega dados reais via IUnitOfWork, implementar endpoint
+ *              GET /Fatura/Invoice?id=X retorna HTML renderizado, adicionar botao Download PDF
+ *              (gerar PDF via biblioteca iTextSharp ou Syncfusion PDF), enviar fatura por email
+ *              (smtp service com attachment PDF).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model InvoiceModel
 @{ 
 	ViewData["Title"] = "Invoice";

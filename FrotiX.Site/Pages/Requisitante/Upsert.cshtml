@@ -1,6 +1,57 @@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 
+@* ========================================================================================
+ * ARQUIVO: Pages/Requisitante/Upsert.cshtml
+ * OBJETIVO: Formulario de criacao e edicao de requisitantes com Syncfusion DropDownTree para
+ *           selecao de Setor Solicitante hierarquico (arvore de setores), validacao de campos
+ *           obrigatorios (nome, CPF, email, telefone, setor), mascara de CPF/telefone, checkbox
+ *           status Ativo, sistema padrao FrotiX para gerenciar pessoas autorizadas a requisitar veiculos.
+ * ENTRADAS: Model FrotiX.Pages.Requisitante.UpsertModel (code-behind C# com propriedades Id, Nome,
+ *           CPF, Email, Telefone, SetorSolicitanteId, Status), parametro query string id (edicao
+ *           carrega dados existentes via OnGet, ausente indica criacao), ViewData com lista
+ *           setores hierarquica carregada no OnGet via IUnitOfWork, formulario HTML5 com input text
+ *           (nome, CPF mascara XXX.XXX.XXX-XX, email, telefone mascara (XX) XXXXX-XXXX), Syncfusion
+ *           DropDownTree (setor solicitante exibe arvore hierarquica de setores com expand/collapse),
+ *           checkbox (status Ativo checked default), botoes Salvar POST form/Cancelar volta /Requisitante
+ * SAIDAS: Formulario renderizado com campos preenchidos (edicao) ou vazios (criacao), DropDownTree
+ *         funcional exibindo arvore de setores com expand/collapse, validacao HTML5 frontend
+ *         (required nos campos obrigatorios, pattern email/telefone), validacao JavaScript
+ *         customizada (CPF valido 11 digitos com calculo verificadores, email formato correto,
+ *         telefone mascara valida), POST /Requisitante/Upsert (submit envia FormData com validacao
+ *         backend, salva entidade Requisitante no banco via IUnitOfWork), redirect para /Requisitante
+ *         apos sucesso com notificacao AppToast Verde, erro exibe AppToast Vermelho
+ * CHAMADA POR: Link /Requisitante/Upsert (criacao novo sem parametro id), link /Requisitante/Upsert?id=X
+ *              (edicao carrega dados existentes), botao + Novo Requisitante da pagina /Requisitante/Index,
+ *              botao Editar na coluna Acoes do DataTable tblRequisitante, UpsertModel.OnGet metodo
+ *              backend C# executa no carregamento (se id presente carrega dados do banco via
+ *              IUnitOfWork, se ausente retorna model vazio, carrega lista setores hierarquica)
+ * CHAMA: requisitante_upsert.js (arquivo JavaScript externo com inicializacao do DropDownTree
+ *        Syncfusion, handlers de validacao customizada campos, mascara CPF/telefone via jQuery
+ *        Mask Plugin, submit handler capturando FormData e enviando via AJAX POST), POST /Requisitante/Upsert
+ *        endpoint (backend UpsertModel.OnPost recebe FormData, valida CPF/email/telefone, salva
+ *        entidade Requisitante no banco via IUnitOfWork, retorna JSON com success/error),
+ *        AppToast.show (notificacoes toast Verde sucesso/Vermelho erro), funcoes utilitarias
+ *        JavaScript (validarCPF calculo verificadores, validarEmail regex, formatarTelefone mascara)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1, Bootstrap 5.3.8 (cards, form-control,
+ *               form-label, form-check checkbox, grid row/col, botoes), Syncfusion EJ2 ASP.NET Core
+ *               (DropDownTree para exibir arvore hierarquica de setores com expand/collapse,
+ *               configuracao TreeSettings para hierarquia parentId), jQuery Mask Plugin (mascara
+ *               CPF XXX.XXX.XXX-XX, telefone (XX) XXXXX-XXXX ou (XX) XXXX-XXXX), requisitante_upsert.js
+ *               (arquivo JavaScript externo), AppToast.js (notificacoes toast), Font Awesome 6
+ *               Duotone (icone fa-user-check), IUnitOfWork (Entity Framework Core para acesso ao banco)
+ * OBSERVACOES: 415 linhas com formulario completo padrao FrotiX (layout responsivo col-md-6, cards
+ *              arredondados, labels em negrito, inputs com form-control, validacao frontend/backend).
+ *              DropDownTree Syncfusion exibe arvore hierarquica de Setores Solicitantes permitindo
+ *              selecionar setor especifico navegando pela estrutura organizacional (Diretoria >
+ *              Coordenacao > Divisao > Secao). Sistema gerencia pessoas autorizadas a requisitar
+ *              veiculos para viagens oficiais (servidores, gestores, diretores) vinculando requisitante
+ *              a setor solicitante da organizacao. Requisitantes sao usados na Agenda de viagens
+ *              como solicitantes das viagens. Validacao CPF completa: verifica 11 digitos numericos,
+ *              calcula digitos verificadores, impede CPFs invalidos (000.000.000-00, sequencias repetidas).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model FrotiX.Pages.Requisitante.UpsertModel
 
 @{

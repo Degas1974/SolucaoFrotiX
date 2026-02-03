@@ -1,3 +1,20 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: condutorapoio_001.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : CRUD de condutores de apoio com DataTable e exclusão segura via
+ *                   confirmação modal. Gerencia listagem (loadList) e delete de condutores.
+ * 📥 ENTRADAS     : Clique em .btn-delete (data-id), resposta Alerta.Confirmar (willDelete)
+ * 📤 SAÍDAS       : DELETE via AJAX para /api/CondutorApoio/Delete,
+ *                   AppToast (Verde/Vermelho), dataTable.ajax.reload,
+ *                   Alerta.TratamentoErroComLinha em caso de erro
+ * 🔗 CHAMADA POR  : $(document).ready (loadList), event handler .btn-delete
+ * 🔄 CHAMA        : loadList(), Alerta.Confirmar, $.ajax, AppToast.show,
+ *                   dataTable.ajax.reload, Alerta.TratamentoErroComLinha, console.log
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables, Alerta.js, AppToast (toast notifications)
+ * 📝 OBSERVAÇÕES  : Padrão similar a outros CRUDs (anulacao, aporte). Try-catch aninhado
+ *                   em todos os níveis (ready, click, .then, success, error). 221 linhas total.
+ **************************************************************************************** */
+
 var dataTable;
 
 $(document).ready(function () {

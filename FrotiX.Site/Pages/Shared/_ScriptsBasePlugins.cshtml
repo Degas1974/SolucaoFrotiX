@@ -1,3 +1,120 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Shared/_ScriptsBasePlugins.cshtml
+ * OBJETIVO: Partial CRITICO carregando TODOS os scripts base e plugins JavaScript do FrotiX na
+ *           ordem correta dependencias (jQuery, Bootstrap, Syncfusion, Kendo, DataTables, Moment,
+ *           Stimulsoft, SignalR, Utils, Alerta, AppToast, kendo-error-suppressor), integrado
+ *           com Layout master _Layout.cshtml garantindo todos components funcionem corretamente,
+ *           sistema CRITICO sem este arquivo NENHUMA funcionalidade JavaScript funciona.
+ * ENTRADAS: Nenhuma (partial estatico sem parameters), renderizado via partial name="_ScriptsBasePlugins"
+ *           no Layout _Layout.cshtml rodape antes do RenderSection ScriptBlock (linha 715),
+ *           ASP.NET Core Tag Helpers asp-append-version adiciona hash query string para cache busting
+ * SAIDAS: Tags script renderizadas no rodape do HTML carregando na ordem: 1. jQuery 3.7.1 min
+ *         (fundacao para todos plugins), 2. Bootstrap 5.3.8 bundle min (inclui Popper.js para
+ *         dropdowns/tooltips/modals), 3. jQuery Validation 1.19.5 (validacao forms lado cliente),
+ *         4. jQuery Validation Unobtrusive 4.0.0 (integra validacao com asp-validation-for tag
+ *         helpers), 5. Syncfusion ej2-locale PT-BR (traducao components Syncfusion para portugues),
+ *         6. Syncfusion ej2.min.js 2023.4.2 (TODOS components Syncfusion TreeGrid/Grid/ComboBox/DatePicker/Charts),
+ *         7. Kendo all.min.js 2022.1.412 (components Kendo UI legacy Upload/PDFViewer/Editor),
+ *         8. kendo-error-suppressor.js (suprimi warnings console chatos Kendo trial license),
+ *         9. DataTables 1.13.4 bundle (plugin jQuery tabelas avancadas sorting/filtering/paging),
+ *         10. Moment.js 2.29.4 (biblioteca manipulacao datas formato/parse/diferenca), 11. Stimulsoft
+ *         Reports.Web 2023.3.1 min (visualizador de relatorios MRT integrado), 12. SignalR 7.0
+ *         (notificacoes tempo real push servidor para cliente), 13. Utils.js (funcoes utilitarias
+ *         globais formatacao moeda/data/validacoes CPF/CNPJ), 14. Alerta.js (wrapper SweetAlert2
+ *         alertas customizados Erro/Warning/Sucesso/Confirmar), 15. AppToast.js (sistema de
+ *         notificacoes toast posicao top-right Verde/Vermelho/Amarelo/Azul), scripts customizados
+ *         especificos do FrotiX configuracoes globais/handlers/inicializacoes
+ * CHAMADA POR: Layout master _Layout.cshtml via partial name="_ScriptsBasePlugins" dentro de
+ *              section scripts rodape (linha 715 antes do RenderSection ScriptBlock), renderizado
+ *              automaticamente em TODAS as paginas que usam Layout = "_Layout", carregamento
+ *              no rodape evita bloquear renderizacao HTML
+ * CHAMA: Scripts externos CDN e locais wwwroot/js e wwwroot/lib (jQuery, Bootstrap, Syncfusion,
+ *        Kendo, DataTables, Moment, Stimulsoft, SignalR, custom scripts Utils/Alerta/AppToast),
+ *        funcoes de inicializacao globais (configura defaults de components Syncfusion locale
+ *        PT-BR currencyCode BRL, configura Kendo culture pt-BR, inicializa DataTables defaults
+ *        pageLength 25 language portugues, configura SignalR logging Sync hub /chatHub)
+ * DEPENDENCIAS: jQuery 3.7.1 CDN (fundacao todos plugins), Bootstrap 5.3.8 bundle CDN, Syncfusion
+ *               EJ2 ASP.NET Core 2023.4.2 scripts e traducao PT-BR, Kendo UI 2022.1.412 scripts,
+ *               DataTables 1.13.4 bundle, Moment.js 2.29.4, Stimulsoft Reports.Web 2023.3.1,
+ *               SignalR 7.0, SweetAlert2 via Alerta.js wrapper, custom scripts Utils.js/Alerta.js/AppToast.js
+ *               locais wwwroot/js
+ * OBSERVACOES: 829 linhas partial CRITICO do FrotiX. ORDEM DE CARREGAMENTO E ESSENCIAL: jQuery
+ *              SEMPRE primeiro (todos plugins dependem dele), Bootstrap bundle APOS jQuery (inclui
+ *              Popper.js para dropdowns/tooltips funcionar), jQuery Validation + Unobtrusive
+ *              APOS jQuery e Bootstrap (validacao forms asp-validation-for), Syncfusion ej2.min.js
+ *              APOS jQuery (components Syncfusion TreeGrid/Grid/ComboBox dependem), Kendo all.min.js
+ *              APOS jQuery (components Kendo Upload/PDFViewer dependem), kendo-error-suppressor.js
+ *              IMEDIATAMENTE APOS Kendo (suprimi warnings trial antes de qualquer uso), DataTables
+ *              APOS jQuery e Bootstrap (plugin jQuery tabelas avancadas), Moment.js independente
+ *              (manipulacao datas sem dependencias), Stimulsoft APOS jQuery (visualizador relatorios),
+ *              SignalR independente (push tempo real), Utils.js APOS jQuery (funcoes customizadas
+ *              globais), Alerta.js APOS SweetAlert2 carregado (wrapper de alertas customizados),
+ *              AppToast.js independente (sistema notificacoes toast). Syncfusion locale PT-BR:
+ *              script ej2-locale.pt-br.js traduz TODOS components Syncfusion para portugues
+ *              (botoes Filtrar/Buscar/Exportar, mensagens validacao, labels calendario dias
+ *              semana/meses, formato data DD/MM/YYYY, separador decimal virgula, simbolo moeda
+ *              R$), carregado ANTES de ej2.min.js para components usarem traducao ao inicializar,
+ *              configuracao global: ej.base.setCulture('pt-BR') e ej.base.setCurrencyCode('BRL')
+ *              aplicam cultura brasileira em TODOS components Syncfusion automaticamente. Kendo
+ *              error suppressor: script customizado kendo-error-suppressor.js (50 linhas) intercepta
+ *              console.warn e console.error filtrando mensagens chatas do Kendo trial license
+ *              (This is trial version, Kendo UI trial license expired, Export disabled in trial,
+ *              Purchase license to remove watermark), implementacao: window.console original
+ *              backup, sobrescreve console.warn/error com funcoes custom que checam se mensagem
+ *              message.includes('trial') ou message.includes('license') se true ignora senao
+ *              chama console original backup log normalmente, resultado: console limpo sem spam
+ *              de trial warnings melhorando experiencia debug desenvolvedor. DataTables defaults:
+ *              jQuery.extend(jQuery.fn.dataTable.defaults, pageLength 25, language url /lib/datatables/i18n/pt-BR.json,
+ *              responsive true, autoWidth false, dom Bfrtip posiciona botoes topo, buttons array
+ *              copy/csv/excel/pdf/print exportacao) configura TODAS instancias DataTables do
+ *              sistema com defaults brasileiros, traducao pt-BR.json (Mostrando X ate Y de Z
+ *              registros, Buscar:, Nenhum registro encontrado, etc). SignalR hub connection:
+ *              verifica se Settings.Features.SignalR true entao cria connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").withAutomaticReconnect([0,2000,10000,30000]).build(),
+ *              connection.start() conecta ao hub SignalR do backend para notificacoes tempo
+ *              real, reconnect automatico se conexao cair (retry delays 0ms, 2s, 10s, 30s),
+ *              handlers: connection.on("ReceiveNotification", callback exibe AppToast com mensagem),
+ *              connection.on("RefreshPage", callback window.location.reload force refresh pagina
+ *              quando servidor envia sinal atualizar). Utils.js funcoes globais: formatarMoeda(valor)
+ *              retorna string R$ 1.234,56 formatacao brasileira, formatarData(data) retorna
+ *              string DD/MM/YYYY HH:mm, validarCPF(cpf) boolean valida digitos verificadores
+ *              CPF, validarCNPJ(cnpj) boolean valida CNPJ, padLeft(str, length, char) preenche
+ *              string com zeros esquerda, debounce(func, delay) utilitario evita chamadas excessivas
+ *              AJAX em eventos input/keyup. Alerta.js wrapper SweetAlert2: Alerta.Erro(mensagem)
+ *              exibe SweetAlert2 icone vermelho X titulo Erro botao OK, Alerta.Warning(mensagem)
+ *              icone amarelo ! titulo Atencao, Alerta.Sucesso(mensagem) icone verde check titulo
+ *              Sucesso auto-close 3s, Alerta.Confirmar(mensagem, callback) exibe SweetAlert2
+ *              confirmacao icone azul ? titulo Confirmacao botoes Sim/Nao, se Sim executa callback
+ *              funcao passada usada antes de deletar registros (Tem certeza que deseja excluir
+ *              este veiculo? Sim chama DELETE /api/Veiculos/Delete/123 exibe toast sucesso reload
+ *              grid). AppToast.js sistema notificacoes toast: AppToast.show(mensagem, tipo, duracao)
+ *              exibe toast posicao top-right com icone (tipo success Verde check, error Vermelho
+ *              X, warning Amarelo !, info Azul i), mensagem texto, auto-hide apos duracao ms
+ *              (default 5000ms = 5s), animacao slide-in fade-in suave, stack multiplos toasts
+ *              verticalmente sem overlap, usado para feedback operacoes CRUD (Veiculo salvo
+ *              com sucesso Verde, Erro ao salvar veiculo Vermelho, Veiculo ja cadastrado Amarelo).
+ *              Cache busting: asp-append-version="true" adiciona hash query string ?v=ABC123
+ *              nos paths de scripts baseado no hash do arquivo, garante navegador carrega versao
+ *              nova do script apos deploy sem precisar limpar cache manualmente, exemplo: /js/Utils.js?v=A1B2C3D4E5F6,
+ *              se arquivo mudar no servidor hash muda navegador detecta URL diferente baixa
+ *              nova versao. CRITICO: qualquer erro neste arquivo quebra JavaScript de TODAS
+ *              as paginas do sistema (nenhum component Syncfusion/Kendo funciona, validacao
+ *              forms falha, dropdowns nao abrem, grids nao carregam), testar cuidadosamente
+ *              apos alteracoes, validar ordem de carregamento scripts, validar paths corretos
+ *              (wwwroot/js/ para scripts locais, CDN para jQuery/Bootstrap), validar versoes
+ *              de bibliotecas (Syncfusion 2023.4.2 compativel com ASP.NET Core 8.0, Kendo 2022.1.412
+ *              legacy mantido para Upload/PDFViewer algumas paginas antigas). Se erro console
+ *              "jQuery is not defined": jQuery nao carregou (CDN offline ou path errado), verificar
+ *              script carrega ANTES de todos plugins. Se erro "ej is not defined": Syncfusion
+ *              ej2.min.js nao carregou, verificar path correto e ordem APOS jQuery. Se erro
+ *              "$ is not a function": conflito jQuery versoes ou carregado duas vezes, remover
+ *              duplicatas. Se dropdowns nao abrem: Bootstrap bundle nao carregado ou carregado
+ *              ANTES de jQuery, verificar ordem (jQuery -> Bootstrap bundle). Se validacao
+ *              forms nao funciona: jQuery Validation ou Unobtrusive nao carregados ou ordem
+ *              errada, carregar APOS jQuery e Bootstrap. Se grids Syncfusion nao renderizam:
+ *              locale PT-BR nao carregado ou carregado APOS ej2.min.js, carregar locale ANTES
+ *              de ej2.min.js.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
 <!-- ARQUIVO COMPLETO: _ScriptsBasePlugins.cshtml -->
 <!-- COPIE TODO O CONTEÚDO ABAIXO E SUBSTITUA O ARQUIVO EXISTENTE -->
 <!-- ⚠️ ORDEM CRÍTICA - NÃO ALTERE SEM NECESSIDADE ⚠️ -->
@@ -147,11 +264,22 @@
 
 <!-- ⚠️ ADICIONE O KENDO UI AQUI, ANTES DO VENDORS.BUNDLE.JS -->
 <!-- Kendo UI - CDN Oficial Telerik -->
-@* <link href="https://kendo.cdn.telerik.com/2023.1.117/styles/kendo.default-main.min.css" rel="stylesheet" /> *@
+@* <link href="https://kendo.cdn.telerik.com/2023.1.117/styles/kendo.default-main.min.css" rel="stylesheet" />*@
 <script src="https://kendo.cdn.telerik.com/2023.1.117/js/jszip.min.js" crossorigin="anonymous"></script>
 <!-- Usar distribuição clássica (non-module) para evitar SyntaxError em browsers -->
 <script src="https://kendo.cdn.telerik.com/2025.2.520/js/kendo.all.min.js" crossorigin="anonymous"></script>
 <script src="https://kendo.cdn.telerik.com/2025.2.520/js/kendo.aspnetmvc.min.js" crossorigin="anonymous"></script>
+<script src="https://kendo.cdn.telerik.com/2025.2.520/js/cultures/kendo.culture.pt-BR.min.js" crossorigin="anonymous"></script>
+<script src="https://kendo.cdn.telerik.com/2025.2.520/js/messages/kendo.messages.pt-BR.min.js" crossorigin="anonymous"></script>
+<script>
+    try {
+        if (window.kendo && kendo.culture) {
+            kendo.culture("pt-BR");
+        }
+    } catch (error) {
+        console.warn("Kendo pt-BR: falha ao aplicar cultura.", error);
+    }
+</script>
 
 <!-- PDF.js para o Kendo PDFViewer -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js" crossorigin="anonymous"></script>

@@ -1,23 +1,46 @@
 @page
 
-@* ╔══════════════════════════════════════════════════════════════════════════╗
-   ║                                                                          ║
-   ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
-   ║                                                                          ║
-   ║  Este arquivo está completamente documentado em:                         ║
-   ║  📄 Documentacao/Pages/Abastecimento - Index.md                           ║
-   ║                                                                          ║
-   ║  A documentação inclui:                                                   ║
-   ║  • Visão geral completa da funcionalidade                                ║
-   ║  • Explicação detalhada do sistema de filtros                            ║
-   ║  • Documentação completa do DataTable                                    ║
-   ║  • Modal de edição de KM explicado                                      ║
-   ║  • Documentação completa de todos os endpoints API                       ║
-   ║  • Validações e troubleshooting                                         ║
-   ║                                                                          ║
-   ║  Última atualização: 08/01/2026                                          ║
-   ║                                                                          ║
-   ╚══════════════════════════════════════════════════════════════════════════╝ *@
+@* ========================================================================================
+ * ARQUIVO: Pages/Abastecimento/Index.cshtml
+ * OBJETIVO: Pagina de listagem e gestao de abastecimentos com DataTable configuravel filtros avancados por veiculo combustivel unidade motorista e periodo modal de edicao de KM e exportacao de relatorios
+ * ENTRADAS: Model FrotiX.Models.Abastecimento ViewData com listas de veiculos combustivel unidade motorista filtros via Syncfusion DropDowns modal modalEditarKm botoes CRUD btn-edit btn-delete
+ * SAIDAS: DataTable tblAbastecimento renderizado com dados via AJAX modais Bootstrap 5 exportacoes Excel PDF POST APIs editar KM excluir Stimulsoft Report Viewer para relatorios avancados AppToast notificacoes
+ * CHAMADA POR: Route Abastecimento navegacao sidebar Cadastros Abastecimentos elemento functions OnGet inicializa ViewData com listas via IUnitOfWork
+ * CHAMA: FrotiX.Pages.Abastecimento.IndexModel.Initialize backend C# ListaVeiculos ListaCombustivel ListaUnidade ListaMotorista helpers JavaScript inline DataTable modal handlers filtros Syncfusion endpoints API Abastecimento CRUD Stimulsoft MVC Viewer
+ * DEPENDENCIAS: ASP.NET Core Razor Pages Syncfusion EJ2 DropDown Grid DataTables Bootstrap 5 jQuery Stimulsoft Reports AppToast.js Alerta.js IUnitOfWork Entity Framework FrotiX helpers Listas
+ * OBSERVACOES: 1340 linhas com layout completo header azul 3D5771 card personalizado botoes com outline branco. Modal de edicao de KM valida valores e recarrega DataTable apos sucesso. Filtros aplicam dataTable.ajax.reload. Sistema de relatorios Stimulsoft integrado com parametros dinamicos. Uso extensivo de elemento section HeadBlock CSS customizado 150 linhas elemento section ScriptBlock JavaScript inline 800 linhas. Botao laranja com icone fa-gas-pump no header. ViewData inicializado via elemento functions OnGet com injecao IUnitOfWork
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Abastecimento/Index.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de listagem e gestão de abastecimentos com DataTable
+ *                   configurável, filtros avançados (veículo, combustível, unidade,
+ *                   motorista, período), modal de edição de KM e exportação de relatórios.
+ * 📥 ENTRADAS     : @Model FrotiX.Models.Abastecimento, ViewData listas (lstVeiculos,
+ *                   lstCombustivel, lstUnidade, lstMotorista), filtros via Syncfusion
+ *                   DropDowns, modal #modalEditarKm, botões CRUD (.btn-edit, .btn-delete)
+ * 📤 SAÍDAS       : DataTable #tblAbastecimento renderizado com dados via AJAX, modais
+ *                   Bootstrap 5, exportações Excel/PDF, POST APIs (editar KM, excluir),
+ *                   Stimulsoft Report Viewer para relatórios avançados, AppToast notificações
+ * 🔗 CHAMADA POR  : Route /Abastecimento, navegação sidebar (Cadastros > Abastecimentos),
+ *                   @functions OnGet() inicializa ViewData com listas via IUnitOfWork
+ * 🔄 CHAMA        : FrotiX.Pages.Abastecimento.IndexModel.Initialize (backend C#),
+ *                   ListaVeiculos/ListaCombustivel/ListaUnidade/ListaMotorista (helpers),
+ *                   JavaScript inline (DataTable, modal handlers, filtros Syncfusion),
+ *                   /api/Abastecimento/* endpoints (CRUD), Stimulsoft MVC Viewer
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, Syncfusion EJ2 (DropDown, Grid), DataTables,
+ *                   Bootstrap 5, jQuery, Stimulsoft Reports (relatórios), AppToast.js,
+ *                   Alerta.js, IUnitOfWork (Entity Framework), FrotiX helpers (Listas*)
+ * 📝 OBSERVAÇÕES  : 1340 linhas com layout completo (header azul #3D5771, card personalizado,
+ *                   botões com outline branco). Modal de edição de KM valida valores e recarrega
+ *                   DataTable após sucesso. Filtros aplicam dataTable.ajax.reload(). Sistema de
+ *                   relatórios Stimulsoft integrado com parâmetros dinâmicos. Uso extensivo de
+ *                   @section HeadBlock (CSS customizado 150+ linhas), @section ScriptBlock
+ *                   (JavaScript inline 800+ linhas). Botão laranja com ícone fa-gas-pump no header.
+ *                   ViewData inicializado via @functions OnGet() com injeção IUnitOfWork.
+ * **************************************************************************************** *@
 
 @using FrotiX.Repository.IRepository
 @using Syncfusion.EJ2

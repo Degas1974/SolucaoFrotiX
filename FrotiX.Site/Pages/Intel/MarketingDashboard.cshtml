@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Intel/MarketingDashboard.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Dashboard de marketing com gráficos de demonstração (Flot.js), cards de métricas simuladas e tabela DataTables de vendas fictícias
+ * 📥 ENTRADAS     : @page, @model MarketingDashboardModel, ViewData (Title, PageName, Category1, Heading), dados estáticos JavaScript (arrays simulados)
+ * 📤 SAÍDAS       : HTML com 4 cards de métricas (fake), 3 painéis com gráficos Flot (Marketing profits, Returning Target, Effective Marketing), DataTable com 95 registros simulados de vendas, exports (Excel, PDF, CSV, Print)
+ * 🔗 CHAMADA POR  : Menu Intel > Marketing Dashboard (possivelmente), rota direta /Intel/MarketingDashboard
+ * 🔄 CHAMA        : Nenhuma API ou backend - tudo estático, JavaScript inline para renderização de gráficos Flot e inicialização DataTables
+ * 📦 DEPENDÊNCIAS : ~/css/datagrid/datatables/datatables.bundle.css, ~/js/statistics/peity/peity.bundle.js, ~/js/statistics/flot/flot.bundle.js, ~/js/statistics/easypiechart/easypiechart.bundle.js, ~/js/datagrid/datatables/datatables.bundle.js, Font Awesome Duotone, Bootstrap DataTables, Flot Charts, Peity, EasyPieChart, jQuery
+ * 📝 OBSERVAÇÕES  : Total: ~584 linhas. Página TOTALMENTE ESTÁTICA com dados hard-coded. NÃO conectada ao backend real. Dados de vendas são fictícios (95 linhas de <tr>). Gráficos Flot com datasets estáticos (dataTargetProfit, dataProfit, dataSignups, dataSet1, dataSet2). Layout vertical com 4 painéis (panel-1 a panel-4). Color variables usam "color" global no JavaScript (possível undefined). DataTables com botões colvis, CSV, Copy, Print. Página serve como TEMPLATE/EXEMPLO - não usar em produção sem conectar dados reais. Script inline extenso (~370 linhas) para gráficos - considerar mover para arquivo externo. CSS de cores usa "color.info._400" e similares (verificar se "color" está definido).
+ **************************************************************************************** *@
 @page
 @model MarketingDashboardModel
 @{ 

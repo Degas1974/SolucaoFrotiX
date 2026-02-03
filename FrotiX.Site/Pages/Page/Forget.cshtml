@@ -1,3 +1,47 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Page/Forget.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página Forgot Password (recuperação senha) com form input username/email,
+ *                   envia email com instruções reset, template SmartAdmin n/ão customizado FrotiX.
+ * 📥 ENTRADAS     : @page route /Page/Forget, @model ForgetModel (code-behind), input email/username
+ *                   #lostaccount (required validation), submit form #js-login, ViewBag.CopyrightInverse
+ * 📤 SAÍDAS       : Página full-height auth layout com header brand-gradient (logo + link "Secure Login"),
+ *                   hero "My dog ate my password" text, form card bg-faded com input recovery email +
+ *                   botão btn-vinho "Recover", footer copyright, background pattern-1.svg, jQuery validation
+ * 🔗 CHAMADA POR  : Link "Forgot password?" na página /page/login, route /Page/Forget, ForgetModel.OnGet()
+ * 🔄 CHAMA        : ForgetModel (code-behind OnGet/OnPost), Settings (App, AppName, IconPrefix),
+ *                   /page/login (link "Secure Login" header), ~/img/logo.png, ~/img/svg/pattern-1.svg background,
+ *                   ViewBag.CopyrightInverse (Html.Raw), jQuery #js-login validation, form.checkValidity(),
+ *                   form action condicional **SYNTAX ERROR** {{#if app-flavor-subscript}} Handlebars em Razor!
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, ForgetModel (code-behind), SmartSettings injection (@Settings),
+ *                   Bootstrap 5 (container, card, form-group, btn btn-vinho, form validation invalid-feedback/help-block),
+ *                   jQuery (validation #js-login-btn click), HTML5 form validation (checkValidity(), was-validated),
+ *                   CSS classes custom (auth, bg-brand-gradient, page-logo width-mobile-auto, opacity-50,
+ *                   rounded-plus, fs-xxl fw-500, hidden-sm-down)
+ * 📝 OBSERVAÇÕES  : 77 linhas. Página FORGOT PASSWORD template SmartAdmin - n/ão customizado FrotiX. ViewData:
+ *                   - Title: "Login" (ERRADO! deve ser "Forget Password" ou "Password Recovery")
+ *                   - PageName: "page_forget"
+ *                   Layout auth (page-wrapper auth, page-inner bg-brand-gradient, page-content-wrapper bg-transparent).
+ *                   Header height-10 com logo + link "Already a member? Secure Login" (/page/login). Hero
+ *                   flex-1 background pattern-1.svg centered bottom fixed, h2 text-white fs-xxl fw-500
+ *                   "My dog ate my password" + small opacity-60 "Not a problem, happens to the best of us".
+ *                   Form #js-login col-xl-6 centered, card p-4 rounded-plus bg-faded:
+ *                   - **SYNTAX ERROR linha 42**: form {{#if app-flavor-subscript}} action="intel_introduction.html"
+ *                     } else { } action="intel_analytics_dashboard.html" (Handlebars syntax em Razor - n/ão funciona!)
+ *                   - Input email #lostaccount required, placeholder "Recovery email", class form-control
+ *                   - Invalid-feedback "No, you missed this one." (mensagem genérica)
+ *                   - Help-block "We will email you the instructions"
+ *                   - Botão #js-login-btn btn-vinho "Recover" col-md-4 ml-auto (direita)
+ *                   Footer position text-center Html.Raw(ViewBag.CopyrightInverse). @section ScriptsBlock:
+ *                   jQuery validation #js-login-btn click (prevent default se checkValidity false, adiciona
+ *                   was-validated, coment;ário "Perform ajax submit here..."). Para produção FrotiX:
+ *                   1. Corrigir Handlebars syntax (usar asp-action ou JavaScript condicional)
+ *                   2. Implementar OnPost real com Identity PasswordReset (UserManager.GeneratePasswordResetTokenAsync)
+ *                   3. Enviar email real (SmtpClient ou SendGrid)
+ *                   4. Trocar texto "My dog ate my password" por profissional
+ *                   5. Adicionar reCAPTCHA (prevenir spam)
+ *                   6. Corrigir Title "Login" para "Recuperar Senha"
+ **************************************************************************************** *@
 @page
 @model ForgetModel
 @{ 

@@ -1,3 +1,38 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_AlertasSino.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view do sistema de alertas FrotiX com sino (bell icon) no header,
+ *                   badge contador, menu dropdown com lista de alertas e link "Ver todos".
+ * 📥 ENTRADAS     : Clique no #alertasSinoBtn (toggle menu), clique #btnMarcarTodosLidos,
+ *                   JavaScript carrega alertas via AJAX (/api/AlertasFrotiX?), popula #listaAlertasSino,
+ *                   atualiza #badgeAlertasSino com contagem não lidos
+ * 📤 SAÍDAS       : <div class="alertas-sino-container"> com botão sino (fa-bell), badge contador
+ *                   (display: none por padrão), menu dropdown (#alertasMenu) com header (título +
+ *                   botão "Marcar todos"), body (#listaAlertasSino - loading spinner por padrão),
+ *                   footer com link "Ver todos os alertas" (/AlertasFrotiX/AlertasFrotiX)
+ * 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml (provavelmente na navbar/header ao lado do usuário),
+ *                   <partial name="_AlertasSino"/> ou @await Html.PartialAsync
+ * 🔄 CHAMA        : JavaScript handler (provavelmente em alertas-sino.js) para toggle menu, carregar
+ *                   alertas via AJAX GET /api/AlertasFrotiX (ou similar), marcar lidos via POST,
+ *                   atualizar badge contador, popular #listaAlertasSino dinamicamente, Font Awesome
+ *                   icons (fa-bell, fa-check-double, fa-spinner fa-spin, fa-list), link para
+ *                   /AlertasFrotiX/AlertasFrotiX (página completa de alertas)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views), Font Awesome 6 Duotone (fa-bell,
+ *                   fa-check-double, fa-spinner, fa-list, me-2 me-1 spacing helpers), JavaScript
+ *                   para AJAX loading e interação (alertas-sino.js?), CSS classes custom
+ *                   (alertas-sino-container, alertas-sino-btn, alertas-badge, alertas-menu,
+ *                   alertas-menu-header/body/footer, alertas-vazio, btn-marcar-todos)
+ * 📝 OBSERVAÇÕES  : 32 linhas. Sistema de notificações FrotiX (CUSTOMIZADO - não SmartAdmin).
+ *                   Badge contador #badgeAlertasSino oculto por padrão (display: none), exibido via
+ *                   JavaScript quando count > 0. Botão "Marcar todos" #btnMarcarTodosLidos também
+ *                   hidden (display: none), exibido se existem alertas não lidos. #listaAlertasSino
+ *                   inicia com placeholder loading (fa-spinner fa-spin "Carregando alertas..."),
+ *                   substituído por cards dinâmicos via JavaScript. Link footer vai para página
+ *                   completa /AlertasFrotiX/AlertasFrotiX (listagem total). Estrutura: container >
+ *                   botão (sino + badge) + menu (header > body > footer). Menu provavelmente
+ *                   position-absolute dropdown (CSS não inline). CSS classes custom (não Bootstrap),
+ *                   sugerem arquivo alertas-sino.css dedicado.
+ **************************************************************************************** *@
 @* _AlertasSino.cshtml - Sistema de Alertas no Sino *@
 
 <!-- HTML do Sino de Alertas -->

@@ -1,3 +1,57 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/ModeloVeiculo/Index.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de listagem de Modelos de Veículos (cadastro auxiliar Marca+Modelo) com DataTable
+ *                   #tblModeloVeiculo (4 colunas: Marca/Modelo/Status/Ação), botão adicionar, modeloveiculo.js.
+ * 📥 ENTRADAS     : @page route /ModeloVeiculo/Index, @model ModeloVeiculo (MODEL DIRETO n/ão PageModel!
+ *                   INCONSISTENTE!), clique botão link /ModeloVeiculo/Upsert, modeloveiculo.js (AJAX loadList)
+ * 📤 SAÍDAS       : Panel ftx-card-header (titulo-paginas fa-car-bus "Listagem de Modelos de Veículos" +
+ *                   btn-fundo-laranja data-ftx-loading fa-clone-plus "Adicionar Modelo" outline white hover),
+ *                   DataTable #tblModeloVeiculo (4 colunas tbody vazio), Bootstrap 5 CDN (REDUNDANTE!),
+ *                   modeloveiculo.js cache busting
+ * 🔗 CHAMADA POR  : Menu "Cadastros > Modelos de Veículos", route /ModeloVeiculo/Index, sidebar navigation
+ * 🔄 CHAMA        : @model ModeloVeiculo (MODEL DIRETO - ERRADO! falta PageModel ModeloVeiculoIndexModel),
+ *                   /ModeloVeiculo/Upsert (link adicionar), ~/js/cadastros/modeloveiculo.js (AJAX GET /api/ModeloVeiculo
+ *                   loadList DataTable), Bootstrap 5 CDN (jsdelivr.net v5.3.8 CSS + JS bundle), ViewData
+ *                   (breadcrumb/heading fa-car-garage), Font Awesome Duotone (fa-car-garage heading, fa-car-bus
+ *                   title, fa-clone-plus botão), CSS inline (outline white @section HeadBlock + .fundo-cinza
+ *                   .label N/ÃO usados!), DataTables API
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, ModeloVeiculo model (N/ÃO PageModel! falta ModeloVeiculoIndexModel),
+ *                   Bootstrap 5 CDN (REDUNDANTE - já _Layout), modeloveiculo.js (AJAX list/delete/toggle),
+ *                   DataTables jQuery plugin, Font Awesome 6 Duotone, CSS classes custom (ftx-card-header,
+ *                   ftx-card-actions, titulo-paginas, btn-fundo-laranja, icon-pulse me-1), data-ftx-loading,
+ *                   asp-append-version (cache busting)
+ * 📝 OBSERVAÇÕES  : 87 linhas. Página cadastro auxiliar Modelos Veículos (relaciona MarcaVeiculo + ModeloVeiculo).
+ *                   ViewData config:
+ *                   - Title: "Modelos de Veículos"
+ *                   - PageName: "modeloveiculo_index"
+ *                   - Heading: "<i class='fa-duotone fa-car-garage'></i> Cadastros: <span class='fw-300'>Modelos de Veículos</span>"
+ *                   - Category1: "Cadastros"
+ *                   - PageIcon: "fa-duotone fa-car-garage"
+ *                   @section HeadBlock: CSS inline **OUTLINE BRANCO PADR/ÃO FROTIX** (comentário explícito):
+ *                   .ftx-card-header .btn-fundo-laranja outline 2px solid rgba(255,255,255,0.5) outline-offset 1px
+ *                   transition 0.2s, hover outline 0.8 offset 2px. CSS inline adicional (N/ÃO usado):
+ *                   .fundo-cinza {background:#2F4F4F; color:aliceblue;}, .label {color:white;} (remover - sobras).
+ *                   Estrutura ftx-card-header:
+ *                   - h2 titulo-paginas fa-car-bus "Listagem de Modelos de Veículos"
+ *                   - div ftx-card-actions: link /ModeloVeiculo/Upsert btn-fundo-laranja data-ftx-loading
+ *                     fa-clone-plus icon-pulse me-1 "Adicionar Modelo"
+ *                   Panel-content: <br/><br/> (espaçamento desnecessário - remover) + table #tblModeloVeiculo
+ *                   width 100% table-bordered table-striped. DataTable 4 colunas thead:
+ *                   1. Marca do Veículo (join MarcaVeiculo - ex: Fiat, VW, Renault)
+ *                   2. Modelo do Veículo (ex: Uno, Gol, Sandero)
+ *                   3. Status (Ativo/Inativo)
+ *                   4. Ação (botões edit/delete/toggle)
+ *                   Tbody vazio (preenchido via modeloveiculo.js AJAX). @section ScriptsBlock:
+ *                   **Bootstrap 5 CDN REDUNDANTE** (v5.3.8 CSS + JS bundle - JÁ incluído no _Layout.cshtml!).
+ *                   modeloveiculo.js asp-append-version="true" cache busting. **PROBLEMAS**:
+ *                   1. @model ModeloVeiculo (MODEL direto n/ão PageModel - criar ModeloVeiculoIndexModel.cs)
+ *                   2. Bootstrap CDN redundante (remover)
+ *                   3. CSS .fundo-cinza .label n/ão usado (remover)
+ *                   4. <br/><br/> espaçamento manual (usar mt-3 margin top)
+ *                   modeloveiculo.js deve: loadList() GET /api/ModeloVeiculo, botões ação edit/delete/toggle,
+ *                   DataTable config. Relacionamento: MarcaVeiculo (1) → ModeloVeiculo (N) → Veiculo (N).
+ **************************************************************************************** *@
 @page
 @model FrotiX.Models.ModeloVeiculo
 

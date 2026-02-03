@@ -1,3 +1,25 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Multa/PreencheListas.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página Razor VAZIA servindo como endpoint para AJAX handler ou PageModel.
+ *                   Lógica provavelmente em PreencheListasModel.OnGet/OnGetData (code-behind).
+ *                   Usado para popular dropdowns/listas via AJAX sem renderizar view.
+ * 📥 ENTRADAS     : Requisições AJAX GET/POST para /Multa/PreencheListas (possivelmente com
+ *                   ?handler=NomeHandler), parâmetros via query string ou form data
+ * 📤 SAÍDAS       : JSON/data response do code-behind (PreencheListasModel methods), status codes,
+ *                   sem renderização HTML (sem conteúdo no @{ } block)
+ * 🔗 CHAMADA POR  : JavaScript em Pages/Multa (provavelmente Multa/Upsert.cshtml ou multa.js),
+ *                   $.ajax() ou fetch() para carregar dados dinamicamente (dropdowns, filtros)
+ * 🔄 CHAMA        : PreencheListasModel.OnGet* handlers (code-behind em PreencheListas.cshtml.cs),
+ *                   provavelmente consultas ao banco via Repository (MultaRepository?),
+ *                   retorna JSON via return new JsonResult(data)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (PageModel com handlers), PreencheListasModel (code-behind),
+ *                   Repository/Service layer (dados de multas), JavaScript caller (AJAX)
+ * 📝 OBSERVAÇÕES  : 4 linhas. Página VAZIA (@page + @model + @{ } vazio) - padrão para AJAX endpoints.
+ *                   Toda lógica fica no code-behind (PreencheListasModel.cs). Típico uso: popular
+ *                   dropdowns de veículos, motoristas, tipos de multa, etc. via handler GET
+ *                   /Multa/PreencheListas?handler=Veiculos. Não renderiza HTML - só retorna dados.
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Multa.PreencheListasModel
 @{

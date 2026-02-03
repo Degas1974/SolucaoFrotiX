@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Escalas/ListaEscala.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Listagem de escalas com filtros, DataTable, ações editar/excluir/visualizar ficha
+ * 📥 ENTRADAS     : @page, @model ListaEscalaModel, filtros (período, status, tipo escala), cliques ações
+ * 📤 SAÍDAS       : DataTable #tblEscala (JSON /api/Escalas/Lista), redirects ./UpsertCEscala, ./UpsertEEscala, ./FichaEscalas
+ * 🔗 CHAMADA POR  : Menu Escalas, navegação, botão "Adicionar Escala"
+ * 🔄 CHAMA        : /api/Escalas/Lista, /api/Escalas/Excluir, ./UpsertCEscala, ./UpsertEEscala, ./FichaEscalas, ~/js/cadastros/escalas.js
+ * 📦 DEPENDÊNCIAS : DataTables, Syncfusion EJ2 (DateRangePicker, ComboBox), Bootstrap 5, jQuery, Font Awesome
+ * 📝 OBSERVAÇÕES  : Total: 546 linhas. ISSUES: CSS inline ~200 linhas, JavaScript inline ~150 linhas, filtros sem debounce, DataTable sem paginação server-side, badges status duplicados, 2 tipos de Upsert (C e E escalas) pode confundir
+ **************************************************************************************** *@
 @page
 
 @using FrotiX.Repository.IRepository

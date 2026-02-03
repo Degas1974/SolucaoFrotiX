@@ -1,3 +1,54 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Uploads/UploadPDF.cshtml
+ * OBJETIVO: Pagina utilitaria upload arquivo PDF com visualizacao integrada exibindo Kendo
+ *           Upload component async + Kendo PDFViewer renderizando PDF carregado inline,
+ *           usado como template para upload documentos (CNH motoristas, CRLV veiculos,
+ *           contratos, notas fiscais).
+ * ENTRADAS: route /Uploads/UploadPDF, model UploadPDFModel PageModel, Kendo Upload async
+ *           POST /Uploads/SavePDF aceita arquivo PDF ate 10MB, retorna JSON {fileName,
+ *           filePath} do arquivo salvo servidor wwwroot/uploads/pdfs/, Kendo PDFViewer
+ *           carrega PDF via URL retornada exibe inline com toolbar zoom/print/download
+ * SAIDAS: Pagina renderizada com card header (titulo Upload e Visualizacao PDF, icone
+ *         fa-file-pdf), card body com: 1. Kendo Upload component (botao Browse seleciona
+ *         arquivo PDF restricao accept .pdf maxFileSize 10MB, async auto-upload true
+ *         envia automaticamente apos selecao, progress bar animada durante upload, success
+ *         event recebe response JSON fileName/filePath carrega no PDFViewer, error exibe
+ *         Alerta.Erro mensagem), 2. Kendo PDFViewer component (inicialmente vazio exibe
+ *         placeholder Nenhum PDF carregado, apos upload success carrega PDF via pdfjsProcessing
+ *         renderiza inline, toolbar topo com botoes Zoom In/Out/Fit Page/Fit Width, Print,
+ *         Download, navegacao paginas se PDF multiplas, scroll vertical se PDF longo)
+ * CHAMADA POR: Nao linkada diretamente no menu (pagina utilitaria template), pode ser
+ *              integrada em outras paginas via iframe ou copiando codigo Kendo Upload/PDFViewer
+ *              (exemplo: Motorista/Upsert.cshtml upload CNH usa codigo similar)
+ * CHAMA: PageModel UploadPDFModel.cshtml.cs OnPost handler SavePDF (recebe IFormFile
+ *        arquivo PDF, valida extensao .pdf e tamanho max 10MB, salva arquivo wwwroot/uploads/pdfs/
+ *        usando fileName gerado GUID + extensao evita sobrescrever arquivos existentes,
+ *        retorna JSON {fileName, filePath:/uploads/pdfs/abc123.pdf}), Kendo Upload component
+ *        (upload async restricoes accept/maxFileSize, eventos uploading/success/failure),
+ *        Kendo PDFViewer component (pdfjsProcessing renderiza PDF usando PDF.js library,
+ *        toolbar zoom/print/download built-in), antiforgery token XSRF validation
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Kendo UI 2022.1.412 (Upload, PDFViewer),
+ *               jQuery 3.7.1, Bootstrap 5.3.8, Font Awesome 6 Duotone, PDF.js library
+ *               (included in Kendo PDFViewer)
+ * OBSERVACOES: 155 linhas pagina template upload/visualizacao PDF. Kendo PDFViewer usa
+ *              PDF.js Mozilla library para renderizar PDF client-side sem plugin Adobe
+ *              Reader (funciona em todos navegadores modernos). Restricao 10MB maxFileSize
+ *              evita uploads excessivos PDFs muito grandes podem travar renderizacao browser,
+ *              se necessario PDFs maiores aumentar limite e considerar renderizacao server-side
+ *              convertendo PDF para imagens PNG via library como Ghostscript. Validacao
+ *              backend OnPost SavePDF essencial: verifica extensao arquivo real via FileSignature
+ *              magic bytes nao apenas extensao nome arquivo (usuario malicioso pode renomear
+ *              EXE para .pdf bypassar validacao accept client-side), verifica ContentType
+ *              application/pdf. GUID filename evita conflitos sobrescrever arquivos existentes
+ *              e previne path traversal attacks (se usar fileName original do usuario sanitizar
+ *              removendo ../ caracteres especiais). Considerar implementar soft delete:
+ *              tabela Uploads (Id, FileName, FilePath, ContentType, SizeBytes, UploadedBy
+ *              UsuarioId, UploadedAt DateTime, EntityType string, EntityId int FK, Deleted
+ *              boolean) para rastrear arquivos carregados vincular a entidades especificas
+ *              (Motorista CNH, Veiculo CRLV) e permitir exclusao logica sem deletar arquivo
+ *              fisico disco.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
 @page
 @model FrotiX.Pages.Uploads.UploadPDFModel
 
@@ -19,6 +70,17 @@
 	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 	<script src="https://kendo.cdn.telerik.com/2022.1.412/js/kendo.all.min.js"></script>
 	<script src="https://kendo.cdn.telerik.com/2022.1.412/js/kendo.aspnetmvc.min.js"></script>
+	<script src="https://kendo.cdn.telerik.com/2022.1.412/js/cultures/kendo.culture.pt-BR.min.js"></script>
+	<script src="https://kendo.cdn.telerik.com/2022.1.412/js/messages/kendo.messages.pt-BR.min.js"></script>
+	<script>
+		try {
+			if (window.kendo && kendo.culture) {
+				kendo.culture("pt-BR");
+			}
+		} catch (error) {
+			console.warn("Kendo pt-BR: falha ao aplicar cultura.", error);
+		}
+	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.2/pdf.js"></script>
 	<script>
 		window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.2/pdf.worker.js';

@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Multa/ListaEmpenhosMulta.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gestão de empenhos de órgãos autuantes (listar por órgão, aportar valores, anular valores, visualizar multas pagas)
+ * 📥 ENTRADAS     : @page, @model (init UnitOfWork), filtro: lstOrgaosAutuantes, cliques: btn-abrir-aporte, btn-abrir-anulacao, btn-ver-multas-empenho, btn-delete, btn-delete-multa
+ * 📤 SAÍDAS       : DataTable #tblEmpenho (JSON /api/multa/PegaEmpenhos), modais aporte/anulação/multas, POST /api/Multa/Aporte|anulacao, AppToast feedback
+ * 🔗 CHAMADA POR  : Menu Multas, ./UpsertEmpenhosMulta (após salvar), navegação direta
+ * 🔄 CHAMA        : /api/multa/PegaEmpenhos, /api/Multa/Aporte, /api/Multa/anulacao, /api/multa/multaempenho, /api/Multa/DeleteEmpenhoMulta, /api/Multa/Delete, ./UpsertEmpenhosMulta, ./UpsertAutuacao, ./UpsertPenalidade
+ * 📦 DEPENDÊNCIAS : Syncfusion.EJ2 (ComboBox), Bootstrap 5.3.8 (CDN redundante), DataTables, Font Awesome Duotone, moeda() function inline
+ * 📝 OBSERVAÇÕES  : Total: 798 linhas (EXTENSO). PROBLEMA: Bootstrap CDN redundante, CSS inline grande (419 linhas) - extrair, JavaScript inline extenso (379 linhas) - mover para JS externo, DUPLICAÇÃO: função moeda() repetida em vários arquivos (deveria ser global ou module), BUG POTENCIAL: Modal aporte/anulação - validações básicas mas sem verificação de saldo disponível antes de enviar, Delegação de eventos $(document).on() correta para elementos dinâmicos, Handlers "btn-ver-multas-empenho" - armazena ID em variável global (empenhoSelecionadoId) - pode causar race condition
+ **************************************************************************************** *@
 @page
 @using FrotiX.Repository.IRepository
 @using Syncfusion.EJ2

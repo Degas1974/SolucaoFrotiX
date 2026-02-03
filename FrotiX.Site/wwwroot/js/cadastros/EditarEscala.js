@@ -1,3 +1,27 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: EditarEscala.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar edição de Escala de motoristas com formulário Syncfusion,
+ *                   submit handler customizado, componentes de indisponibilidade
+ *                   (categoria, datas, motorista cobertor), validações e AJAX POST.
+ * 📥 ENTRADAS     : Formulário #formEditarEscala (submit), campos Syncfusion
+ *                   (dataEscala, horaInicio/Fim, turno, veiculo, tipoServico,
+ *                   lotacao, requisitante, observacoes, categoriaIndisponibilidade),
+ *                   hidden #hiddenEscalaDiaId
+ * 📤 SAÍDAS       : AJAX POST para salvar escala, AppToast notificações (Amarelo/Verde/Vermelho),
+ *                   console.log (debug produção!), valores extraídos de Syncfusion,
+ *                   Alerta.TratamentoErroComLinha em caso de erro
+ * 🔗 CHAMADA POR  : $(document).ready (inicializarEventosEditarEscala, inicializarSubmitEscala),
+ *                   event handler form.submit, Pages/Escala/Editar.cshtml
+ * 🔄 CHAMA        : inicializarEventosEditarEscala(), inicializarSubmitEscala(),
+ *                   e.preventDefault(), document.getElementById, ej2_instances[0],
+ *                   $.val(), AppToast.show, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, Syncfusion EJ2 (DatePicker, TimePicker, DropDown, TextBox),
+ *                   AppToast, Alerta.js
+ * 📝 OBSERVAÇÕES  : Valida EscalaDiaId antes de salvar. Extrai valores de 10+ componentes
+ *                   Syncfusion. Try-catch em submit handler e inicialização (488 linhas total).
+ **************************************************************************************** */
+
 $(document).ready(function () {
     try {
         inicializarEventosEditarEscala();

@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Motorista/Upsert.cshtml (Motorista)
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Form completo motorista com 6 seções (cards leves), upload foto preview, validações, dropdowns, checkbox, máscaras CPF/Celular
+ * 📥 ENTRADAS     : @page, @model UpsertModel, campos (Nome, CPF, DataNascimento, Celular, CNH, Categoria, Veículo, DataIngresso, ContratoId, Status, FotoUpload), route parameter id para edição
+ * 📤 SAÍDAS       : POST asp-page-handler="Submit|Edit", redirect /Motorista, preview foto, máscaras via JS externo
+ * 🔗 CHAMADA POR  : Motorista/Index (botão "Adicionar Motorista", editar)
+ * 🔄 CHAMA        : asp-page-handler="Submit" (POST create), asp-page-handler="Edit" (POST update), /api/Motorista/PegaFoto (GET foto base64), /Motorista (redirect), ~/js/cadastros/motorista_upsert.js (máscaras CPF/Celular, validações)
+ * 📦 DEPENDÊNCIAS : ASP.NET TagHelpers, Bootstrap 5, jQuery, Syncfusion EJ2 (DatePicker, ComboBox), ~/Images/barbudo.jpg (placeholder), Font Awesome, Google Fonts Outfit, CSS inline ~320 linhas, motorista_upsert.js (externo)
+ * 📝 OBSERVAÇÕES  : Total: ~496 linhas. Form completo motorista com 6 seções (cards leves), upload foto preview, validações, dropdowns, checkbox, máscaras CPF/Celular via ~/js/cadastros/motorista_upsert.js (externo - bom padrão!), CSS inline ~320 linhas padrão FrotiX (extrair), JavaScript inline mínimo (~40 linhas - preview foto), responsivo
+ **************************************************************************************** *@
 @page
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @model FrotiX.Pages.Motorista.UpsertModel

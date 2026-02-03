@@ -1,3 +1,66 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Shared/Components/Navigation/TreeView.cshtml
+ * OBJETIVO: View Component de menu de navegacao REAL do FrotiX com Syncfusion TreeView carregando
+ *           recursos (menus) dinamicamente do banco de dados via tabela Recursos, estrutura
+ *           hierarquica com permissoes por usuario, highlight item ativo, expand/collapse,
+ *           sistema CRITICO para controle de acesso e navegacao do FrotiX.
+ * ENTRADAS: Model List RecursoTreeDTO (DTO com propriedades Id, Text nome menu, ParentId nullable
+ *           para hierarquia, Url rota, IconCss classe Font Awesome, HasChild booleano, Expanded
+ *           booleano, Selected booleano ativo), ViewData PageName (identifica pagina ativa),
+ *           JsonSerializerOptions com PropertyNamingPolicy camelCase para serializar model como
+ *           JSON e passar para Syncfusion TreeView JavaScript (converte RecursoTreeDTO C# para
+ *           objeto JavaScript com propriedades id, text, parentId, url, iconCss, hasChild, expanded, selected)
+ * SAIDAS: Syncfusion TreeView renderizado como sidebar menu hierarquico (itens de menu aninhados
+ *         em arvore com expand/collapse), itens carregados dinamicamente do banco de dados via
+ *         tabela Recursos filtrando por permissoes do usuario logado (apenas recursos que usuario
+ *         tem acesso sao exibidos), item ativo highlighted automaticamente baseado em PageName,
+ *         click em item de menu redireciona para Url do recurso (navegacao via window.location.href),
+ *         icones Font Awesome Duotone coloridos definidos em IconCss, subitens exibem seta
+ *         expand/collapse, animacao smooth de abertura/fechamento de nos da arvore
+ * CHAMADA POR: Layout master _Layout.cshtml via Component.InvokeAsync("Navigation", "TreeView")
+ *              ou tag helper vc:navigation type="TreeView", carregado automaticamente em todas
+ *              as paginas do FrotiX que usam layout padrao, NavigationViewComponent.InvokeAsync
+ *              executa no backend carregando recursos do banco via IRecursoRepository filtrando
+ *              por usuario logado (joins com tabelas UsuarioRecurso, Recurso para verificar permissoes)
+ * CHAMA: Syncfusion.EJ2.Navigations.TreeView JavaScript component (inicializado via ejs-treeview
+ *        tag helper ASP.NET Core), evento nodeClicked do TreeView (dispara quando usuario clica
+ *        em item do menu, captura args.nodeData.url e redireciona window.location.href = url),
+ *        IRecursoRepository.GetRecursosTreeByUsuario(usuarioId) (metodo backend carrega recursos
+ *        do banco filtrando por permissoes do usuario, retorna List RecursoTreeDTO hierarquico),
+ *        JsonSerializer.Serialize(Model, jsonOptions) (serializa model C# para JSON com camelCase
+ *        para passar ao TreeView JavaScript)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0 View Components, Syncfusion EJ2 ASP.NET Core (TreeView
+ *               hierarquico com fields Id/Text/ParentId/Url/IconCss/HasChild/Expanded/Selected),
+ *               System.Text.Json (serializar model para JSON com PropertyNamingPolicy camelCase),
+ *               IRecursoRepository (Entity Framework Core acessa tabela Recursos no SQL Server),
+ *               Font Awesome 6 Duotone (icones de menu definidos em IconCss), CSS customizado
+ *               _Layout.cshtml (cores sidebar, hover effects, item ativo highlight)
+ * OBSERVACOES: 511 linhas de View Component REAL do FrotiX CRITICO para navegacao e controle de
+ *              acesso. Estrutura de dados: tabela Recursos (Id, Text nome menu, ParentId nullable
+ *              hierarquia, Url rota, IconCss classe Font Awesome, Ordem exibicao), tabela UsuarioRecurso
+ *              (UsuarioId, RecursoId junction table many-to-many define permissoes por usuario).
+ *              NavigationViewComponent backend: metodo InvokeAsync carrega usuario logado do HttpContext,
+ *              chama IRecursoRepository.GetRecursosTreeByUsuario(usuarioId) retorna apenas recursos
+ *              que usuario tem permissao, converte para RecursoTreeDTO com hierarquia (ParentId null
+ *              para raiz, ParentId numero para filho), passa model para view TreeView.cshtml.
+ *              TreeView.cshtml: serializa model C# para JSON com camelCase, passa JSON como datasource
+ *              para Syncfusion TreeView via ejs-treeview tag helper com fields binding (id: id,
+ *              text: text, parentId: parentId, dataSource: jsonModel, hasChildren: hasChild,
+ *              iconCss: iconCss, expanded: expanded, selected: selected), evento nodeClicked handler
+ *              JavaScript captura click em item do menu e redireciona para Url. Highlight item ativo:
+ *              backend define Selected = true no RecursoTreeDTO do item cuja Url corresponde ao
+ *              PageName atual, TreeView renderiza item com classe .e-active destacando visualmente
+ *              (background azul, texto branco). Expand/collapse: TreeView exibe seta ao lado de
+ *              itens com HasChild = true, click na seta abre/fecha submenus sem recarregar pagina,
+ *              estado Expanded = true mantém no aberto ao carregar. IconCss define icone Font Awesome
+ *              de cada item (exemplo: fa-duotone fa-tachometer-alt Dashboard, fa-duotone fa-car
+ *              Veiculos, fa-duotone fa-gas-pump Abastecimentos). Sistema permite administrador
+ *              cadastrar novos recursos na tabela Recursos e vincular a usuarios via UsuarioRecurso
+ *              controlando acesso granular por usuario/perfil (funcionalidade de gestao de recursos
+ *              e permissoes em Usuarios/Recursos.cshtml e Usuarios/InsereRecursosUsuarios.cshtml).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model List<FrotiX.Models.RecursoTreeDTO>
 @using System.Text.Json
 @{

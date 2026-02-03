@@ -1,4 +1,41 @@
 @page
+
+@* ========================================================================================
+ * ARQUIVO: Pages/Page/Contacts.cshtml
+ * OBJETIVO: Pagina DEMO de contatos do template SmartAdmin exibindo lista de contatos estaticos
+ *           (hardcoded no HTML) com alternancia visual entre Grid Cards e Table List via
+ *           toggle button, filtros de busca por nome e tag, paginacao, acoes de editar/deletar
+ *           simuladas. Usado como referencia de layout para futuras telas de contatos reais.
+ * ENTRADAS: Model ContactsModel (code-behind vazio sem dados dinamicos), toggle button para
+ *           alternar Grid/Table view (classe .view-grid ativa cards, .view-table ativa tabela),
+ *           input search box para filtrar contatos por nome (JavaScript filtra DOM), botoes
+ *           de filtro por tag (All/Family/Friends/Business/Important filtra via atributo
+ *           data-filter-tags), botoes Edit/Delete em cada contato (handlers vazios demonstrativos)
+ * SAIDAS: Grid de cards responsivo com 12 contatos estaticos (foto circular, nome, cargo,
+ *         empresa, tags coloridas, botoes Edit/Delete) OU tabela HTML alternativa com mesmos
+ *         12 contatos (colunas: Foto, Nome, Cargo, Empresa, Tags, Acoes), paginacao visual
+ *         (1 2 3 Next sem funcionalidade real), filtros funcionais via JavaScript (busca nome
+ *         ignora case, filtro tag exibe/oculta cards baseado em data-filter-tags), animacao
+ *         smooth de transicao Grid/Table via CSS transitions
+ * CHAMADA POR: Route /Page/Contacts via diretiva page, link demonstrativo no menu de paginas
+ *              demo do template SmartAdmin, navegacao direta URL, ContactsModel.OnGet metodo
+ *              backend vazio (nao carrega dados reais, contatos sao hardcoded no HTML)
+ * CHAMA: contacts.js (arquivo JavaScript externo hipotetico com handlers de toggle Grid/Table,
+ *        filtro de busca por nome, filtro por tag, animacoes, caso exista - se nao existe
+ *        toda logica esta inline no section Scripts), nenhum endpoint API (contatos sao
+ *        estaticos demonstrativos, nao ha CRUD real)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1 (se usado para manipulacao DOM),
+ *               Bootstrap 5.3.8 (grid row/col, cards, badges para tags, table responsiva,
+ *               botoes), Font Awesome 6 Duotone (icones fa-user foto placeholder, fa-edit,
+ *               fa-trash, fa-th grid view, fa-list table view), CSS customizado no section
+ *               HeadBlock (transicoes smooth Grid/Table, hover effects, foto circular, badges tags)
+ * OBSERVACOES: 437 linhas de pagina DEMO template SmartAdmin NAO integrada ao sistema FrotiX
+ *              real (contatos sao estaticos hardcoded, nenhum dado vem do banco de dados).
+ *              Considerar REMOVER esta pagina demo apos implementar tela de contatos real
+ *              integrada ao FrotiX, ou mover para secao de demos desativadas.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model ContactsModel
 @{ 
 	ViewData["Title"] = "Contacts";

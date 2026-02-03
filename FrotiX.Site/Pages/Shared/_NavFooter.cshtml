@@ -1,3 +1,33 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_NavFooter.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view do footer da sidebar (nav-footer) com botão de minimizar menu
+ *                   e 3 botões de ação rápida (Chat logs, Support Chat, Make a call) com tooltips.
+ * 📥 ENTRADAS     : Clique no botão minimize (data-action="toggle" data-class="nav-function-minify"),
+ *                   cliques nos botões de ação (javascript:void(0);), Settings.Theme.IconPrefix
+ * 📤 SAÍDAS       : <div class="nav-footer shadow-top"> com botão chevron duplo (minimize sidebar),
+ *                   3 botões com ícones Font Awesome (fa-comments, fa-life-ring, fa-phone),
+ *                   tooltips Bootstrap (data-bs-toggle="tooltip" data-placement="top"), toggle
+ *                   CSS class "nav-function-minify" no body/html (minimiza menu)
+ * 🔗 CHAMADA POR  : Pages/Shared/_LeftPanel.cshtml (<partial name="_NavFooter"/> comentado),
+ *                   originalmente no rodapé da sidebar, mas DESABILITADO no FrotiX
+ * 🔄 CHAMA        : JavaScript data-action="toggle" handler (app.navigation.js?), CSS class toggle
+ *                   nav-function-minify, Bootstrap tooltip initialization (data-bs-toggle="tooltip"),
+ *                   @Settings.Theme.IconPrefix (fa-solid, fa-duotone), CSS classes (shadow-top,
+ *                   list-table, m-auto, nav-footer-buttons, hidden-md-down)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views), SmartSettings injection (@Settings),
+ *                   Bootstrap 5 (tooltips, data-bs-toggle, data-placement), Font Awesome 6
+ *                   (fa-comments, fa-life-ring, fa-phone), NI icons (ni ni-chevron-right - template
+ *                   SmartAdmin custom icon font), JavaScript data-action handler, CSS classes custom
+ *                   (nav-footer, shadow-top, nav-footer-buttons, hidden-md-down)
+ * 📝 OBSERVAÇÕES  : 23 linhas. Partial COMENTADO no _LeftPanel.cshtml - NÃO usado no FrotiX atualmente.
+ *                   Botão minimize (chevron duplo) hidden-md-down (só em telas grandes). Toggle
+ *                   nav-function-minify adiciona classe CSS ao body que encolhe sidebar (width reduzida,
+ *                   texto escondido, apenas ícones). 3 botões de ação apontam para javascript:void(0);
+ *                   (sem ações reais - placeholders SmartAdmin). Para reativar: descomentar em
+ *                   _LeftPanel.cshtml e implementar handlers reais (chat, suporte, chamada).
+ *                   NI icons (ni ni-chevron-right) são custom do SmartAdmin (non-Font Awesome).
+ *****************************************************************************************@
 <div class="nav-footer shadow-top">
 	<a href="#" onclick="return false;" data-action="toggle" data-class="nav-function-minify" class="hidden-md-down">
 		<i class="ni ni-chevron-right"></i>

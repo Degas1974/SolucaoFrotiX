@@ -1,5 +1,46 @@
 @page
 
+@* ========================================================================================
+ * ARQUIVO: Pages/SetorSolicitante/Index.cshtml
+ * OBJETIVO: Pagina de listagem e gestao de Setores Solicitantes (estrutura organizacional
+ *           hierarquica do orgao) com Syncfusion TreeGrid exibindo arvore de setores
+ *           (Diretorias > Coordenacoes > Divisoes > Secoes), CRUD completo, Stimulsoft Report
+ *           para impressao da estrutura, sistema CRITICO para organizacao administrativa.
+ * ENTRADAS: Model FrotiX.Pages.SetorSolicitante.IndexModel, Syncfusion TreeGrid hash tblSetorSolicitante
+ *           com DataSource URL /api/SetorSolicitante/GetTreeData (retorna JSON hierarquico com
+ *           IdSetorPai para montar arvore), botoes CRUD (Editar/Excluir/Novo), botao Imprimir
+ *           Organograma (abre modal Stimulsoft Report com estrutura hierarquica visual)
+ * SAIDAS: TreeGrid Syncfusion renderizado hierarquico (colunas: Codigo, Nome Setor, Sigla,
+ *         Nivel Hierarquico numero, Setor Pai nome, Status badge Verde/Cinza, Acoes com botoes
+ *         Editar/Excluir), expand/collapse de nos da arvore, botao + Novo Setor redireciona
+ *         /SetorSolicitante/Upsert, botao Imprimir Organograma abre modal com Stimulsoft Report
+ *         renderizando estrutura hierarquica visual em formato de organograma grafico, exportacoes
+ *         Excel/PDF via toolbar TreeGrid, exclusao com confirmacao SweetAlert2
+ * CHAMADA POR: Route /SetorSolicitante via diretiva page, navegacao sidebar menu (Cadastros >
+ *              Estrutura Organizacional), link direto URL, IndexModel.OnGet metodo backend executa
+ * CHAMA: setorsolicitante.js (arquivo JavaScript externo com handlers TreeGrid hierarquico,
+ *        expand/collapse, CRUD, Stimulsoft Report), GET /api/SetorSolicitante/GetTreeData
+ *        (retorna JSON hierarquico com Id, Nome, Codigo, Sigla, IdSetorPai null para raiz ou
+ *        numero para filho, NivelHierarquico 1 para Diretoria ate 4 para Secao), POST /api/SetorSolicitante/Delete,
+ *        Stimulsoft.Report.Mvc componente (renderiza organograma MRT template), Alerta.Confirmar,
+ *        AppToast.show
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 ASP.NET Core (TreeGrid hierarquico
+ *               com TreeColumnIndex, IdMapping, ParentIdMapping), Stimulsoft Reports.Web 2023.3.1
+ *               (componente para renderizar organograma hierarquico visual com template MRT),
+ *               jQuery 3.7.1, Bootstrap 5.3.8, setorsolicitante.js, Alerta.js, AppToast.js, IUnitOfWork
+ * OBSERVACOES: 1008 LINHAS - pagina COMPLEXA com TreeGrid hierarquico + Stimulsoft Report organograma.
+ *              Sistema CRITICO para gestao da estrutura organizacional do orgao (Diretorias,
+ *              Coordenacoes, Divisoes, Secoes) usada em multiplos modulos (Requisitantes vinculados
+ *              a setores, Viagens por setor solicitante, Relatorios por setor). TreeGrid exibe
+ *              arvore completa com 4 niveis hierarquicos: Nivel 1 Diretorias (IdSetorPai null),
+ *              Nivel 2 Coordenacoes (IdSetorPai = Id Diretoria), Nivel 3 Divisoes (IdSetorPai =
+ *              Id Coordenacao), Nivel 4 Secoes (IdSetorPai = Id Divisao). Stimulsoft Report
+ *              renderiza organograma visual grafico com caixas conectadas por linhas mostrando
+ *              hierarquia completa (template MRT customizado). Section ScriptBlock extensa 600+
+ *              linhas JavaScript inline com inicializacao TreeGrid, handlers CRUD, modal Stimulsoft.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @using FrotiX.Repository.IRepository
 @using Syncfusion.EJ2
 @using Stimulsoft.Report.Mvc

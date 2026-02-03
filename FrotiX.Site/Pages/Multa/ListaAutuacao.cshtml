@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Multa/ListaAutuacao.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Listagem de autuações de multas com filtros (órgão, infração, veículo, motorista, status), visualização/upload PDF, transformação em penalidade
+ * 📥 ENTRADAS     : @page, @model Multa, filtros: lstOrgao, lstTiposMulta, lstVeiculos, lstMotorista, lstStatus, clique botões ação (editar, status, penalidade, apagar, PDF)
+ * 📤 SAÍDAS       : DataTable #tblMulta (JSON /api/multa/listamultas), modais (PDF vistoria, PDF autuação, alterar status, transformar penalidade), AppToast feedback
+ * 🔗 CHAMADA POR  : Menu Multas, botão "Adicionar Autuação", navegação direta
+ * 🔄 CHAMA        : /api/multa/listamultas, /api/Multa/PegaStatus, /api/Multa/AlteraStatus, /api/Multa/PegaObservacao, /api/Multa/TransformaPenalidade, /api/Multa/Delete, /api/MultaPdfViewer, /api/MultaUpload/save|remove, ~/js/cadastros/listaautuacao.js, ./UpsertAutuacao
+ * 📦 DEPENDÊNCIAS : Syncfusion.EJ2 (ComboBox, PDFViewer, RichTextEditor, Uploader), Bootstrap 5.3.8 (CDN redundante), DataTables, Font Awesome Duotone, Stimulsoft.Report.Mvc
+ * 📝 OBSERVAÇÕES  : Total: 1307 linhas (MUITO EXTENSO). PROBLEMA CRÍTICO: Bootstrap CDN redundante, CSS inline GIGANTE (569 linhas) - DEVE ser extraído, JavaScript inline ENORME (738+ linhas) - DEVE ser extraído, DUPLICAÇÃO: Múltiplas funções inline (moeda, toolbarClick, handlers modais, event listeners) quando deveriam estar no listaautuacao.js, BUG POTENCIAL: Uploader "uploaderPenalidade" eventos vinculados inline E no document.ready (duplicação), CSS: Badges status customizados com gradientes e shadows (bonito mas pode ser componentizado), Modal transform penalidade: RTE + uploader + PDF viewer (complexo) - considerar partial view
+ **************************************************************************************** *@
 @page
 @using FrotiX.Repository.IRepository
 @using Syncfusion.EJ2

@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Contrato/Upsert.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário completo criar/editar contrato com dados, itens, empenhos, anexos, repactuações
+ * 📥 ENTRADAS     : @page, @model UpsertModel, campos contrato (número, objeto, vigência, valores), grids (itens, empenhos), uploads anexos
+ * 📤 SAÍDAS       : POST /api/Contrato/Insere ou Edita (JSON), redirect /Contrato, modais (itens, empenhos, anexos), AppToast feedback
+ * 🔗 CHAMADA POR  : Contrato/Index (botão "Adicionar Contrato", editar linha)
+ * 🔄 CHAMA        : /api/Contrato/Insere, /api/Contrato/Edita, /api/Contrato/SalvarItem, /api/Contrato/SalvarEmpenho, /api/Contrato/UploadAnexo
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 (DatePicker, ComboBox, Grid, Upload), Bootstrap 5, jQuery, DataTables, moeda() inline
+ * 📝 OBSERVAÇÕES  : Total: 1595 linhas. PROBLEMAS: Arquivo MASSIVO, CSS inline ~400 linhas, JavaScript inline ~600 linhas, múltiplos grids e modais, função moeda() duplicada, validações fracas, sem lazy loading modais, double-submit possível
+ **************************************************************************************** *@
 @page
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 

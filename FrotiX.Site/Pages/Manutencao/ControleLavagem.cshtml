@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Manutencao/ControleLavagem.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Controle de lavagens com filtros, inserção via modal Kendo MultiSelect, DataTable, 3 seções (Inserir, Filtros, Tabela)
+ * 📥 ENTRADAS     : @page, @model ControleLavagemModel, filtros (período, status, veículo), modal inserção (Kendo MultiSelect veículos, data, hora), cliques ações
+ * 📤 SAÍDAS       : DataTable #tblLavagem (JSON /api/Manutencao/ListaLavagens), modal inserção, POST /api/Manutencao/InserirLavagem, AppToast feedback
+ * 🔗 CHAMADA POR  : Menu Manutenção → Controle de Lavagem
+ * 🔄 CHAMA        : /api/Manutencao/ListaLavagens, /api/Manutencao/InserirLavagem, /api/Manutencao/ExcluirLavagem, ~/js/cadastros/controlelavagem.js
+ * 📦 DEPENDÊNCIAS : Syncfusion ComboBox + Kendo UI (MultiSelect, DatePicker, TimePicker), DataTables, Bootstrap 5, jQuery
+ * 📝 OBSERVAÇÕES  : Total: ~629 linhas. PROBLEMA: Mix de frameworks (Syncfusion + Kendo), CSS inline massivo (~480 linhas) extrair urgente, JavaScript inline ~150 linhas, modal inserção sem validações robustas, DataTable sem paginação server-side, filtros sem debounce
+ **************************************************************************************** *@
 @page
 
 @using FrotiX.Repository.IRepository
@@ -613,6 +624,17 @@
     <script src="https://kendo.cdn.telerik.com/2022.1.412/js/jszip.min.js"></script>
     <script src="https://kendo.cdn.telerik.com/2022.1.412/js/kendo.all.min.js"></script>
     <script src="https://kendo.cdn.telerik.com/2022.1.412/js/kendo.aspnetmvc.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2022.1.412/js/cultures/kendo.culture.pt-BR.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2022.1.412/js/messages/kendo.messages.pt-BR.min.js"></script>
+    <script>
+        try {
+            if (window.kendo && kendo.culture) {
+                kendo.culture("pt-BR");
+            }
+        } catch (error) {
+            console.warn("Kendo pt-BR: falha ao aplicar cultura.", error);
+        }
+    </script>
 
     <script>
         // ==================== LISTA TODAS LAVAGENS ====================

@@ -1,3 +1,22 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: orgaoautuante.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Lista de Órgãos Autuantes com DataTable, exclusão delegada via
+ *                   confirmação modal, botões GLOW e ícones duotone (padrão FrotiX).
+ * 📥 ENTRADAS     : Clique em .btn-delete (data-id), resposta Alerta.Confirmar (confirmed)
+ * 📤 SAÍDAS       : DELETE via AJAX para /api/Multa/DeleteOrgaoAutuante,
+ *                   AppToast (Verde/Vermelho), dataTable.ajax.reload,
+ *                   Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready (loadList), event handler .btn-delete,
+ *                   Pages/OrgaoAutuante/Index.cshtml
+ * 🔄 CHAMA        : loadList(), Alerta.Confirmar, $.ajax, AppToast.show,
+ *                   dataTable.ajax.reload, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables, Alerta.js, AppToast (toast notifications)
+ * 📝 OBSERVAÇÕES  : Handler delegado para compatibilidade com DataTable dinâmico.
+ *                   Try-catch aninhado em todos os níveis (ready, click, .then,
+ *                   success, error). 165 linhas total.
+ **************************************************************************************** */
+
 // ============================================================================
 // ORGAOAUTUANTE.JS - Lista de Órgãos Autuantes
 // Padrão FrotiX com botões GLOW e ícones duotone

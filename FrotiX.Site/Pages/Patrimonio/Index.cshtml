@@ -2,6 +2,33 @@
 @using FrotiX.Repository.IRepository
 @using Syncfusion.EJ2
 @addTagHelper *, Syncfusion.EJ2
+
+@* ========================================================================================
+ * ARQUIVO: Pages/Patrimonio/Index.cshtml
+ * OBJETIVO: Pagina de listagem e gestao de patrimonios com Syncfusion TreeGrid hierarquico
+ *           (exibe patrimonios com setores patrimoniais aninhados em arvore), filtros de
+ *           Secao Patrimonial e Setor Patrimonial via Syncfusion DropDownList, CRUD completo
+ *           (criacao/edicao via /Patrimonio/Upsert, exclusao com confirmacao), exportacao Excel/PDF.
+ * ENTRADAS: Model FrotiX.Models.Patrimonio (code-behind), ViewData com listas (secoes patrimoniais,
+ *           setores patrimoniais carregadas via IUnitOfWork no OnGet), Syncfusion TreeGrid hash tblPatrimonio
+ *           com DataSource URL /api/Patrimonio/GetTreeData (retorna JSON hierarquico), filtros
+ *           DropDownList (ddlSecao, ddlSetor) com eventos change recarregam TreeGrid via AJAX
+ * SAIDAS: TreeGrid Syncfusion renderizado hierarquico (colunas: Codigo, Descricao, Secao, Setor,
+ *         Status badge, Acoes com botoes Editar/Excluir), filtros funcionais (mudar secao/setor
+ *         filtra TreeGrid via AJAX), botao + Novo Patrimonio redireciona /Patrimonio/Upsert,
+ *         exportacoes Excel/PDF via toolbar TreeGrid, exclusao com confirmacao SweetAlert2
+ * CHAMADA POR: Route /Patrimonio via diretiva page, navegacao sidebar menu (Cadastros > Patrimonios),
+ *              IndexModel.OnGet metodo backend carrega secoes/setores via IUnitOfWork
+ * CHAMA: patrimonio.js (arquivo JavaScript externo com handlers TreeGrid, filtros, CRUD),
+ *        GET /api/Patrimonio/GetTreeData (retorna JSON hierarquico de patrimonios), POST /api/Patrimonio/Delete
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 ASP.NET Core (TreeGrid, DropDownList),
+ *               jQuery 3.7.1, Bootstrap 5.3.8, patrimonio.js, Alerta.js, AppToast.js
+ * OBSERVACOES: 155 linhas com TreeGrid hierarquico mostrando patrimonios organizados por setores.
+ *              Sistema permite gestao de bens patrimoniais do orgao (veiculos, equipamentos,
+ *              imoveis) classificados em secoes e setores patrimoniais conforme normas contabeis.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model FrotiX.Models.Patrimonio
 
 @inject IUnitOfWork _unitOfWork

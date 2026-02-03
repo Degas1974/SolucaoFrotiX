@@ -438,8 +438,8 @@ class GerenciadorRecorrencia
                 return datas.length > 0 ? datas : null;
             }
 
-            let dataAtual = document.getElementById("txtDataInicial")?.ej2_instances?.[0]?.value;
-            const dataFinal = document.getElementById("txtFinalRecorrencia")?.ej2_instances?.[0]?.value;
+            let dataAtual = window.getKendoDateValue("txtDataInicial");
+            const dataFinal = window.getKendoDateValue("txtFinalRecorrencia");
 
             if (!dataAtual || !dataFinal)
             {

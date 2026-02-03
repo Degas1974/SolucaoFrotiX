@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Administracao/GerarEstatisticasViagens.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerar estatísticas compiladas de viagens em lote com progresso em tempo real
+ * 📥 ENTRADAS     : @page, @model GerarEstatisticasViagensModel, botão de acionamento do processo
+ * 📤 SAÍDAS       : Progress bar customizada, cards de estatísticas (total, processadas, erros), polling de status
+ * 🔗 CHAMADA POR  : Menu "Administração > Gerar Estatísticas de Viagens"
+ * 🔄 CHAMA        : /api/viagem/GerarEstatisticasViagens (POST), /api/viagem/ObterProgressoEstatisticas (GET polling)
+ * 📦 DEPENDÊNCIAS : jQuery, Bootstrap 5, setInterval para polling (1s), toastr notifications
+ * 📝 OBSERVAÇÕES  : Total: 469 linhas. ISSUES: Mesmos problemas de CalculaCustoViagensTotal - polling sem cleanup, falta tratamento de timeout. Lógica duplicada entre os dois arquivos
+ **************************************************************************************** *@
 @page "/Administracao/gerarestatisticasviagens"  // ← Rota em minúsculas
 @model FrotiX.Pages.Administracao.GerarEstatisticasViagensModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers

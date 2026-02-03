@@ -1,3 +1,39 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_ComposeLayout.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view do layout/formulário de composição de nova mensagem/e-mail com
+ *                   campos To/Cc/Subject, editor WYSIWYG (contenteditable), botões toolbar e assinatura.
+ * 📥 ENTRADAS     : Input usuário nos campos #message-to, #message-to-cc (toggle via link Cc), Subject,
+ *                   #fake_textarea contenteditable (editor rich text), cliques nos botões toolbar
+ *                   (Send, Formatting, Attach, Photo, Trash, More), _Signature partial
+ * 📤 SAÍDAS       : Formulário de email com 3 inputs border-bottom only (To/Cc/Subject), editor
+ *                   contenteditable #fake_textarea com _Signature incluída, toolbar com 8 botões
+ *                   (Send azul + 7 icon buttons com tooltips), layout flex vertical (flex-1 editor,
+ *                   flex-shrink-0 toolbar), tabindex 2-5 para acessibilidade
+ * 🔗 CHAMADA POR  : Pages/Shared/_Compose.cshtml (dentro do modal #panel-compose), <partial name="_ComposeLayout"/>,
+ *                   renderizado no panel-container flex-1
+ * 🔄 CHAMA        : Shared/_Signature.cshtml (assinatura email com logo/social), JavaScript
+ *                   data-action="toggle" data-class="d-block" data-bs-target="#message-to-cc"
+ *                   (toggle campo Cc), data-focus="message-to-cc" (focus após toggle), Bootstrap
+ *                   tooltips (data-bs-toggle, data-placement), Font Awesome icons (fa-font, fa-paperclip,
+ *                   fa-camera, fa-trash, fa-ellipsis-v-alt), CSS classes (form-control, border-top-0,
+ *                   border-left-0 border-right-0, px-0 rounded-0, fs-md, position-absolute pos-right pos-top)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views), Shared/_Signature.cshtml, Bootstrap 5
+ *                   (form-control, btn btn-info btn-icon, d-flex flex-row align-items-center flex-wrap,
+ *                   px-3 py-4 py-3, mr-3 mr-1, ml-auto, fs-xl), Font Awesome 6 Duotone (5 ícones toolbar),
+ *                   JavaScript contenteditable API (#fake_textarea), data-action toggle handler (SmartAdmin),
+ *                   CSS classes custom (color-fusion-300 icons, rounded-0, pos-right pos-top)
+ * 📝 OBSERVAÇÕES  : 33 linhas. Layout de email composer SIMPLES (sem WYSIWYG real editor - apenas
+ *                   contenteditable). Input To com link "Cc" no canto superior direito (position-absolute
+ *                   pos-right pos-top mt-3 mr-4) toggle campo #message-to-cc (d-none por padrão).
+ *                   Campos border-top-0 border-left-0 border-right-0 (só border-bottom - estilo minimal).
+ *                   px-0 (sem padding horizontal), rounded-0 (sem border-radius). #fake_textarea 
+ *                   contenteditable=true simula editor rich text (2 <br> iniciais + _Signature). Toolbar
+ *                   com 7 ícones: Formatting (fa-font), Attach (fa-paperclip), Photo (fa-camera),
+ *                   Trash (fa-trash), More (fa-ellipsis-v-alt - width-1 fix). Todos color-fusion-300
+ *                   (cinza tema SmartAdmin). Botão Send btn-info (azul). Todos tooltips top placement
+ *                   (exceto Cc que é bottom). overflow-y: auto no editor container (flex-1).
+ **************************************************************************************** *@
 <div class="px-3">
 	<input id="message-to" type="text" placeholder="Recipients" class="form-control border-top-0 border-left-0 border-right-0 px-0 rounded-0 fs-md mt-2 pr-5" tabindex="2">
 	<a href="javascript:void(0)" class="position-absolute pos-right pos-top mt-3 mr-4" data-action="toggle" data-class="d-block" data-bs-target="#message-to-cc" data-focus="message-to-cc" data-bs-toggle="tooltip" data-original-title="Add Cc recipients" data-placement="bottom">Cc</a>

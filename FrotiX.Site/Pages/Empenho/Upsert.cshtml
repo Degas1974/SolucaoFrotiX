@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Empenho/Upsert.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário completo criar/editar empenho com dados (nota, vigência, saldo), grid itens, anexos
+ * 📥 ENTRADAS     : @page, @model UpsertModel, campos empenho (NotaEmpenho, DataEmpenho, Vigencia, Saldo), grid itens, upload anexos
+ * 📤 SAÍDAS       : POST /api/Empenho/Insere ou Edita (JSON), redirect /Empenho, modal grid itens, AppToast feedback
+ * 🔗 CHAMADA POR  : Empenho/Index (botão "Adicionar Empenho", editar linha)
+ * 🔄 CHAMA        : /api/Empenho/Insere, /api/Empenho/Edita, /api/Empenho/SalvarItem, /api/Empenho/Upload, ~/js/cadastros/empenho_upsert.js
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 (DatePicker, ComboBox, Grid, Upload), Bootstrap 5, jQuery, DataTables, moeda() inline
+ * 📝 OBSERVAÇÕES  : Total: 2012 linhas. PROBLEMAS: Arquivo MUITO EXTENSO (2000+ linhas), CSS inline ~450 linhas (extrair urgente), JavaScript inline ~800 linhas (extrair urgente), função moeda() duplicada, grid itens sem validação, upload sem progresso visual, validações fracas, double-submit possível
+ **************************************************************************************** *@
 @page
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 

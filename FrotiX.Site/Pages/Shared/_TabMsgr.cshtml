@@ -1,3 +1,50 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Shared/_TabMsgr.cshtml
+ * OBJETIVO: Partial DEMO de tab de messenger (mensageiro) do template SmartAdmin exibindo
+ *           interface chat completa (lista contatos sidebar esquerda, area mensagens direita,
+ *           form envio mensagem rodape), usado como referencia de layout. NAO integrado ao
+ *           FrotiX real.
+ * ENTRADAS: Nenhuma (partial estatico sem model), renderizado via partial name="_TabMsgr"
+ *           em paginas que exibem chat demo, lista de 12 contatos estaticos hardcoded (Oliver
+ *           Kopyuv, Alita Gray, Barney Cull, etc), mensagens demo hardcoded por contato
+ * SAIDAS: Interface de chat renderizada como layout 2 colunas: sidebar esquerda width 280px
+ *         com search box filtra contatos, lista de 12 contatos (avatar circular 40x40px,
+ *         nome, status badge Verde online/Cinza offline, ultimo horario conexao, contador
+ *         mensagens nao lidas badge vermelho), click em contato carrega mensagens na area
+ *         direita (lista de mensagens com avatar, texto, timestamp, alterna alinhamento
+ *         esquerda mensagens recebidas/direita enviadas), form rodape com textarea input
+ *         mensagem + botoes emoji/anexo/enviar (handlers nao implementados), scroll customizado,
+ *         area mensagens vazia inicialmente ate selecionar contato
+ * CHAMADA POR: Layout master _Layout.cshtml ou paginas especificas via partial name="_TabMsgr",
+ *              pode ser usada em modal ou tab de chat se sistema de mensagens for implementado
+ * CHAMA: Nenhum JavaScript externo (logica de click/envio estaria em messenger.js se implementado),
+ *        CSS customizado template SmartAdmin (layout 2 colunas, scroll customizado, badges
+ *        status, hover effects, alinhamento mensagens enviadas/recebidas), Font Awesome 6
+ *        Duotone (icones emoji/attachment/send)
+ * DEPENDENCIAS: Bootstrap 5.3.8 (grid layout, badges, form controls), Font Awesome 6 Duotone
+ *               (icones chat), jQuery 3.7.1 (handler click contatos se implementado), CSS
+ *               customizado template SmartAdmin (estilos messenger layout/cores/animacoes)
+ * OBSERVACOES: 258 linhas partial DEMO template SmartAdmin NAO integrado ao FrotiX real.
+ *              Interface de chat completa incluindo lista contatos + area mensagens + form
+ *              envio, mas dados estaticos hardcoded sem comunicacao real. Considerar REMOVER
+ *              ou IMPLEMENTAR sistema de mensagens internas real integrado ao FrotiX (mensagens
+ *              usuario-usuario para coordenacao de viagens, notificacoes coordenador para
+ *              motoristas, chat grupo para equipes, integracao SignalR para mensagens tempo
+ *              real push). Se implementar chat real: criar tabelas Mensagens (Id, RemetenteUsuarioId,
+ *              DestinatarioUsuarioId, Texto, DataEnvio, Lida boolean), MensagensGrupo para
+ *              chat multiplos usuarios, controller/API endpoints POST /api/Mensagens/Enviar,
+ *              GET /api/Mensagens/GetConversa carrega historico mensagens entre 2 usuarios,
+ *              SignalR hub envia push quando nova mensagem criada atualiza interface destinatario
+ *              tempo real sem refresh, form envio POST AJAX textarea mensagem valida nao
+ *              vazio, botao emoji abre picker de emojis, botao anexo upload de arquivos
+ *              (imagens, PDFs, documentos ate 5MB), scroll automatico para ultima mensagem
+ *              ao carregar conversa ou receber nova mensagem, badge contador mensagens nao
+ *              lidas atualiza dinamicamente ao enviar/receber, status online/offline baseado
+ *              em SignalR connection.state do usuario, ultimo horario conexao atualiza ao
+ *              desconectar SignalR.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 <div class="msgr-list d-flex flex-column bg-faded border-faded border-top-0 border-right-0 border-bottom-0 position-absolute pos-top pos-bottom">
 	<div>
 		<div class="height-4 width-3 h3 m-0 d-flex justify-content-center flex-column color-primary-500 pl-3 mt-2">

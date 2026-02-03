@@ -1,3 +1,39 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Viagens/ItensPendentes.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de listagem de Viagens com Itens Pendentes de devolução (Documento,
+ *                   Cartão Abastecimento, Cinta, Tablet, Arla, Cabo) via tabela Bootstrap.
+ * 📥 ENTRADAS     : @page route /Viagens/ItensPendentes, @model ItensPendentesModel (code-behind),
+ *                   Model.ViagensComItensPendentes (IList<Viagem> filtrada - Status="Realizada" com
+ *                   6 condições item Entregue=true AND Devolvido=false), includeProperties Motorista/Veiculo
+ * 📤 SAÍDAS       : <table class="table table-striped table-bordered"> com 4 colunas (Motorista, Veículo,
+ *                   Data da Viagem, Itens Pendentes), foreach @foreach (var item in Model.ViagensComItensPendentes),
+ *                   <ul> com <li> para cada item pendente (6 verificações @if Entregue=true && Devolvido=false)
+ * 🔗 CHAMADA POR  : Link no menu "Viagens > Itens Pendentes" ou dashboard widget, route /Viagens/ItensPendentes,
+ *                   ItensPendentesModel.OnGet() (code-behind com LINQ complexo)
+ * 🔄 CHAMA        : ItensPendentesModel (code-behind - Pages/Viagens/ItensPendentes.cshtml.cs, documentado
+ *                   anteriormente), Model.ViagensComItensPendentes (LINQ query Status="Realizada" AND
+ *                   6 condições OR: DocumentoEntregue/CartaoAbastecimento/Cinta/Tablet/Arla/Cabo),
+ *                   item.Motorista.Nome, item.Veiculo.Placa, item.DataInicial.Value.ToString("dd/MM/yyyy"),
+ *                   Bootstrap table classes (table-striped table-bordered)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, ItensPendentesModel (code-behind com LINQ complexo),
+ *                   Bootstrap 5 (table, table-striped, table-bordered, container, my-4),
+ *                   Viagem model (navigation properties Motorista.Nome, Veiculo.Placa, 12 propriedades
+ *                   item: DocumentoEntregue/Devolvido, CartaoAbastecimento, Cinta, Tablet, Arla, Cabo)
+ * 📝 OBSERVAÇÕES  : 58 linhas. Página SIMPLES de controle de pendências de devolução. ViewData["Title"]
+ *                   "Viagens com Itens Pendentes" (SEM breadcrumb/heading config completo - arquivo basic).
+ *                   Tabela 4 colunas, última coluna "Itens Pendentes" com <ul> dinâmica:
+ *                   - Documento (DocumentoEntregue && !DocumentoDevolvido)
+ *                   - Cartão Abastecimento (CartaoAbastecimentoEntregue && !CartaoAbastecimentoDevolvido)
+ *                   - Cinta (CintaEntregue && !CintaDevolvida)
+ *                   - Tablet (TabletEntregue && !TabletDevolvido)
+ *                   - Arla (ArlaEntregue && !ArlaDevolvido)
+ *                   - Cabo (CaboEntregue && !CaboDevolvido)
+ *                   Layout container (sem panel/card wrapper). DataInicial.Value.ToString "dd/MM/yyyy"
+ *                   (potencial NullReferenceException se DataInicial null - usar ?? format). Para melhorar:
+ *                   adicionar ViewData breadcrumb, panel wrapper FrotiX, botão "Finalizar Devolução",
+ *                   ordenação/filtros DataTable, destaque visual itens críticos (tempo > X dias).
+ *****************************************************************************************@
 @page
 @model FrotiX.Pages.Viagens.ItensPendentesModel
 @{

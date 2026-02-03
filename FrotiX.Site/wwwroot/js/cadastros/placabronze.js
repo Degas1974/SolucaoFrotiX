@@ -1,3 +1,28 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: placabronze.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciamento de Placas Bronze com DataTable, CRUD completo
+ *                   (exclusão, desvinculação, atualização de status), flag anti-inicialização
+ *                   dupla (placaBronzeInitialized), event handlers delegados.
+ * 📥 ENTRADAS     : Cliques em .btn-delete (data-id), .btn-desvincular (data-url),
+ *                   .updateStatusPlacaBronze (data-url), resposta Alerta.Confirmar
+ * 📤 SAÍDAS       : DELETE/POST via AJAX (/api/PlacaBronze/Delete, data-url),
+ *                   AppToast (Verde/Vermelho), dataTable.ajax.reload,
+ *                   console.log/warn (debug), e.preventDefault/stopImmediatePropagation,
+ *                   Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready (loadList), event handlers (.btn-delete,
+ *                   .btn-desvincular, .updateStatusPlacaBronze),
+ *                   Pages/PlacaBronze/Index.cshtml
+ * 🔄 CHAMA        : loadList(), Alerta.Confirmar, $.ajax, AppToast.show,
+ *                   dataTable.ajax.reload, $(document).off (remover listeners anteriores),
+ *                   e.preventDefault, e.stopImmediatePropagation, console.log/warn,
+ *                   Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables, Alerta.js, AppToast (toast notifications)
+ * 📝 OBSERVAÇÕES  : Flag placaBronzeInitialized previne inicialização múltipla.
+ *                   Remove event listeners anteriores (.off) antes de adicionar novos.
+ *                   stopImmediatePropagation previne propagação duplicada. 439 linhas total.
+ **************************************************************************************** */
+
 var dataTable;
 var placaBronzeInitialized = false; // Flag para prevenir inicialização dupla
 

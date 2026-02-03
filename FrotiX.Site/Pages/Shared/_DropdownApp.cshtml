@@ -1,3 +1,26 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Shared/_DropdownApp.cshtml
+ * OBJETIVO: Partial DEMO de dropdown de atalhos rapidos (apps) do template SmartAdmin exibindo
+ *           grid de 9 icones de aplicativos estaticos (hardcoded HTML) com links demonstrativos,
+ *           usado como referencia de layout. NAO integrado ao FrotiX real.
+ * ENTRADAS: Nenhuma (partial estatico sem model), renderizado via partial name="_DropdownApp"
+ *           no header _PageHeader.cshtml dentro de dropdown, 9 apps estaticos hardcoded (Calendar,
+ *           Chat, Contacts, Settings, Email, Photos, Tasks, Reports, Documents)
+ * SAIDAS: Dropdown renderizado como menu com header gradient, grid 3x3 de icones apps (Font Awesome
+ *         Duotone 48x48px coloridos, label texto abaixo), click em icone redireciona para link
+ *         demonstrativo (handlers nao implementados), footer com link View more apps
+ * CHAMADA POR: Partial _PageHeader.cshtml via partial name="_DropdownApp" dentro de dropdown
+ *              trigger (botao icone fa-th no header), exibido quando usuario clica no botao
+ * CHAMA: Nenhum JavaScript externo (dropdown e gerenciado por Bootstrap 5), links estaticos
+ *        demonstrativos (hash # ou /Page/Demo), CSS customizado template SmartAdmin (gradient
+ *        header, hover effects icones, grid layout)
+ * DEPENDENCIAS: Bootstrap 5.3.8 (dropdown component), Font Awesome 6 Duotone (icones apps coloridos),
+ *               CSS customizado template SmartAdmin
+ * OBSERVACOES: 160 linhas partial DEMO template SmartAdmin NAO integrado ao FrotiX real. Considerar
+ *              REMOVER ou ADAPTAR para atalhos rapidos reais do FrotiX (Dashboard, Viagens, Abastecimentos).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 <div class="dropdown-header bg-trans-gradient d-flex justify-content-center align-items-center rounded-top">
 	<h4 class="m-0 text-center color-white">
 		Quick Shortcut

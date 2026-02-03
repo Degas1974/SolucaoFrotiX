@@ -1,3 +1,63 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Multa/ExibePDFAutuacao.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de visualização PDF notificação de autuação multa (VARIANTE ExibePDFComprovante)
+ *                   com Syncfusion EJ2 PDFViewer, carrega /DadosEditaveis/Multas/{AutuacaoPDF} (campo DIFERENTE!),
+ *                   botão voltar ./ListaAutuacao (não ListaPenalidade), CSS .fundo-chocolate adicional.
+ * 📥 ENTRADAS     : @page route /Multa/ExibePDFAutuacao, @model ExibePDFAutuacaoModel (code-behind),
+ *                   Model.MultaObj.Multa.NumInfracao, Model.MultaObj.Multa.AutuacaoPDF (string filename PDF**DIFERENTE!**)
+ * 📤 SAÍDAS       : Panel botão center absolute btn-voltar ./ListaAutuacao (não ListaPenalidade), h2 text-primary
+ *                   "Autuação da Infração nº: {NumInfracao}", <ejs-pdfviewer id="pdfViewer" serviceUrl="/api/PdfViewer"
+ *                   height:100%>, JavaScript pdfViewer.load(/DadosEditaveis/Multas/{AutuacaoPDF}) ou alert danger
+ *                   "PDF não disponível", Bootstrap 5 CDN (REDUNDANTE!)
+ * 🔗 CHAMADA POR  : Link "Ver Autuação" em ListaAutuacao DataTable ação, route /Multa/ExibePDFAutuacao,
+ *                   ExibePDFAutuacaoModel.OnGet(id) (code-behind)
+ * 🔄 CHAMA        : ExibePDFAutuacaoModel (code-behind Multa/ExibePDFAutuacao.cshtml.cs), Model.MultaObj.Multa
+ *                   (NumInfracao, **AutuacaoPDF** campo DIFERENTE ExibePDFComprovante que usa ComprovantePDF),
+ *                   ./ListaAutuacao (link voltar DIFERENTE), /api/PdfViewer (Syncfusion service), /DadosEditaveis/Multas/
+ *                   {filename}.pdf, ejs-pdfviewer TagHelper, ej2_instances[0], pdfViewer.load(), AppToast.show
+ *                   (mensagem DIFERENTE "Arquivo de autuação não encontrado"), Alerta.TratamentoErroComLinha
+ *                   ("ExibePDFAutuacao.cshtml" DIFERENTE), ViewData, Font Awesome (fa-pen-to-square DIFERENTE),
+ *                   Bootstrap 5 CDN, AntiForgeryToken (linha 27 DENTRO form), stopEnterSubmitting, form enctype,
+ *                   CSS inline (.center + .fundo-chocolate #7B3F00 ADICIONAL NÃO usado!)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, ExibePDFAutuacaoModel, Syncfusion EJ2 PDFViewer (ejs-pdfviewer,
+ *                   /api/PdfViewer, ej2_instances), Bootstrap 5 CDN (REDUNDANTE), Font Awesome Duotone, CSS inline
+ *                   (.center + .fundo-chocolate), JavaScript DOMContentLoaded, AppToast, Alerta, AntiForgeryToken
+ * 📝 OBSERVAÇÕES  : 113 linhas. Página visualização PDF notificação autuação (VARIANTE ExibePDFComprovante).
+ *                   **DIFERENÇAS vs ExibePDFComprovante** (estrutura 95% idêntica):
+ *                   1. **ViewData Title**: "Notificações" vs "Pagamento da Penalidade"
+ *                   2. **ViewData PageName**: "notificacao_index" (MESMO ERRADO! ambos usam "notificacao_index")
+ *                   3. **ViewData Heading icon**: fa-pen-to-square vs fa-cash-register
+ *                   4. **ViewData Heading text**: "Notificação de Autuação - PDF" vs "Registro de Pagamento da Penalidade - PDF"
+ *                   5. **ViewData PageIcon**: fa-pen-to-square vs fa-cash-register
+ *                   6. **CSS inline**: .fundo-chocolate {background:#7B3F00; color:#fff;} **ADICIONAL** (NÃO usado!)
+ *                   7. **Link voltar**: ./ListaAutuacao vs ./ListaPenalidade
+ *                   8. **H2 text**: "Autuação da Infração nº" vs "Registro de Pagamento da Infração nº"
+ *                   9. **Campo PDF**: Model.MultaObj?.Multa?.AutuacaoPDF vs ComprovantePDF  (DIFERENÇA CRÍTICA!)
+ *                   10. **AppToast mensagem**: "Arquivo de autuação não encontrado" vs "Arquivo de comprovante"
+ *                   11. **Alerta string**: "ExibePDFAutuacao.cshtml" vs "ExibePDFComprovante.cshtml"
+ *                   **TODO O RESTO IDÊNCTICO**: Form asp-action "Upsert" (NÃO faz sentido), enctype multipart/form-data
+ *                   (NÃO usado), stopEnterSubmitting, ejs-pdfviewer config, JavaScript structure, Bootstrap CDN redundante.
+ *                   ViewData config:
+ *                   - Title: "Notificações"
+ *                   - PageName: "notificacao_index" (ERRADO! deve ser "multa_exibepdfautuacao" - mesmo bug
+ *                     ExibePDFComprovante/Penalidade todos 3 usam "notificacao_index"!)
+ *                   - Heading: "<i class='fa-duotone fa-pen-to-square'></i> Cadastros: <span class='fw-300'>Notificação de Autuação - PDF</span>"
+ *                   - Category1: "Cadastros"
+ *                   - PageIcon: "fa-duotone fa-pen-to-square"
+ *                   CSS inline: .center {position:absolute; left:50%; top:30px; transform:translate(-50%,-50%);
+ *                   padding:10px;} + .fundo-chocolate {background-color:#7B3F00; color:#fff;} **NÃO usado!**
+ *                   (adicional esta página - remover). Estrutura IDÊNCTICA ExibePDFComprovante exceto diferenças
+ *                   listadas acima. **PROBLEMAS IDÊNCTICOS ExibePDFComprovante**:
+ *                   1. PageName "notificacao_index" ERRADO (todos 3 arquivos ExibePDF* usam mesmo PageName bug)
+ *                   2. Form asp-action "Upsert" NÃO faz sentido (remover)
+ *                   3. Enctype multipart/form-data NÃO usado
+ *                   4. Bootstrap CDN redundante
+ *                   5. CSS .fundo-chocolate NÃO usado (remover)
+ *                   **CORRETO neste arquivo**: Campo AutuacaoPDF APROPRIADO (não ComprovantePDF), link ./ListaAutuacao
+ *                   APROPRIADO, mensagens erro contextualizadas. **ARQUIVOS RELACIONADOS**: ExibePDFComprovante.cshtml
+ *                   (comprovante pagamento), ExibePDFPenalidade.cshtml (DUPLICADO ExibePDFComprovante - mesmo campo!).
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Multa.ExibePDFAutuacaoModel
 

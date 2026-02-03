@@ -1,3 +1,250 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Viagens/DashboardViagens.cshtml
+ * OBJETIVO: Dashboard MASSIVE CRITICO gerencial de viagens exibindo 25+ Syncfusion Charts
+ *           (pie/bar/line/heatmap/gauge) com KPIs completos frota em 4 tabs categorias
+ *           (Viagens Geral/Custos/Motoristas/Heatmap Geografico), filtros avancados
+ *           periodo/veiculos/centros custo, sistema MAIS IMPORTANTE visualizacao metricas
+ *           viagens tempo real.
+ * ENTRADAS: route /Viagens/DashboardViagens (dashboard principal pos-login), ViewData
+ *           (Title, PageName, Heading), filtros toolbar complexos: DatePicker DataInicio/DataFim
+ *           range periodo (default mes atual), ComboBox Veiculos multi-select filterable
+ *           (seleciona veiculos especificos ou todos), ComboBox TipoViagem (Urbana/Interurbana/Especial),
+ *           ComboBox Motoristas multi-select, ComboBox CentroCusto departamentos, ComboBox
+ *           Status (Planejada/EmAndamento/Concluida/Cancelada), botao Atualizar Dashboard
+ *           primary trigger reload AJAX GET /api/Dashboard/GetViagensData retorna JSON
+ *           metricas calculadas backend queries complexas, botao Exportar Relatorio secondary
+ *           gera PDF Stimulsoft Report dashboard completo
+ * SAIDAS: Pagina renderizada com 4 Tabs Bootstrap Pills: 1. Tab Viagens Geral (grid
+ *         4x4 cards KPIs: Total Viagens contador badge, Planejadas badge azul, Em Andamento
+ *         badge amarelo pisca animacao, Concluidas badge verde, Canceladas badge vermelho,
+ *         Km Total Percorridos sum decimal com sufixo K/M, Tempo Medio Viagem horas:minutos,
+ *         Velocidade Media km/h, Distancia Media por Viagem km, Viagens por Dia Media,
+ *         Ocupacao Media Veiculos percentual passageiros, Taxa Conclusao percentual
+ *         Concluidas/Planejadas, Combustivel Total Consumido litros sum, Custo Total
+ *         Viagens moeda R$ sum massive, Passageiros Transportados contador sum, Viagens
+ *         Canceladas Motivo badge principais 3 motivos), 8 charts Syncfusion: Pie Viagens
+ *         por Tipo (Urbana 60pc azul, Interurbana 30pc verde, Especial 10pc amarelo),
+ *         Pie Viagens por Status (Concluida 70pc, Planejada 20pc, EmAndamento 5pc, Cancelada
+ *         5pc), Bar horizontal Top 15 Veiculos Mais Viagens contador barras ordenadas
+ *         desc, Line Evolucao Viagens Ultimos 12 Meses multi-series 4 linhas Status
+ *         coloridas empilhadas temporal x=mes y=count, Gauge Ocupacao Frota percentual
+ *         ponteiro 0-100pc ranges Verde>80pc Amarelo 50-80pc Vermelho<50pc, Bar Viagens
+ *         por Centro Custo horizontal departamentos, Column Viagens por Dia Semana agrupa
+ *         (Segunda maior pico, Sabado/Domingo menor), Area Evolucao Km Rodados Mes
+ *         area filled gradient azul temporal), 2. Tab Custos (grid 3x4 cards KPIs: Custo
+ *         Total Mes moeda R$ massive 6 digitos, Custo Medio por Viagem R$/viagem, Custo
+ *         por Km Rodado R$/km eficiencia, Combustivel Viagens litros sum + R$ cost,
+ *         Pedagios Viagens R$ sum, Estacionamentos R$ sum, Alimentacao Motoristas R$
+ *         sum, Hospedagens R$ sum, Outros Custos R$ sum, Custo Fixo Veiculos R$ depreciacao/seguro
+ *         rateado, Custo Variavel R$ combustivel/manutencao, ROI Viagens percentual
+ *         Receita-Custo/Custo se aplicavel), 10 charts: Pie Distribuicao Custos por
+ *         Categoria cores (Combustivel 50pc, Pedagio 20pc, Alimentacao 15pc, Hospedagem
+ *         10pc, Outros 5pc), Bar Custos Mensais Ultimos 12 Meses barras empilhadas
+ *         categorias cores stacked, Line Custo por Km Evolucao temporal linha R$/km
+ *         identifica tendencia crescimento, Bar Top 15 Viagens Mais Caras horizontal
+ *         ViagemId + Origem>Destino + Custo R$ barras sorted desc, Pie Custos por Centro
+ *         Custo departamentos percentuais, Bar Combustivel por Tipo Veiculo grouped
+ *         (Carro/Caminhonete/Onibus litros comparacao), Column Custos por Tipo Viagem
+ *         (Urbana/Interurbana/Especial R$ medio), Line Evolucao Pedagios Mes temporal
+ *         R$ line, Gauge Meta Custo Mes ponteiro 0-100pc Verde<meta Amarelo proximo
+ *         Vermelho>meta alerta estouro orcamento, Waterfall Breakdown Custos cascata
+ *         visualiza composicao Total=Combustivel+Pedagio+Alimentacao+...+Outros), 3.
+ *         Tab Motoristas (grid 2x4 cards KPIs: Motoristas Ativos contador, Viagens
+ *         por Motorista Media decimal, Km por Motorista Media, Horas Dirigidas Total
+ *         sum, Multas Motoristas contador, Acidentes contador, Avaliacao Media Motoristas
+ *         rating 1-5 estrelas, Motoristas Disponiveis contador verde), 8 charts: Bar
+ *         Top 15 Motoristas Mais Viagens horizontal Nome + contador sorted desc, Bar
+ *         Top 15 Motoristas Mais Km horizontal Km sorted, Bar Motoristas Mais Multas
+ *         horizontal contador vermelho alerta problematico, Column Viagens por Turno
+ *         (Manha/Tarde/Noite/Madrugada) identifica padrao demanda, Pie Motoristas
+ *         por Centro Custo distribuicao departamentos, Line Evolucao Horas Dirigidas
+ *         Mes temporal compliance jornada trabalho, Gauge Disponibilidade Motoristas
+ *         percentual (Disponiveis-EmViagem)/Total, Heatmap Motorista x Veiculo matrix
+ *         mostra quais combinacoes mais utilizadas cores intensidade), 4. Tab Heatmap
+ *         Geografico (mapa Google Maps integrado markers viagens origens/destinos,
+ *         heatmap layer intensidade cores sobreposicao rotas mais utilizadas quente
+ *         vermelho menos frio azul, cluster markers agrupa viagens proximas zoom out,
+ *         info windows click marker exibe detalhes viagem popup Origem/Destino/Motorista/Veiculo/Data/Km/Custo,
+ *         filtros mapa: toggle Mostrar Todas Viagens ou Apenas Mes Atual, ComboBox
+ *         Tipo Viagem filtra markers, drawing tools permite usuario desenhar poligonos
+ *         mapa seleciona viagens dentro area, estatisticas painel lateral: Viagens
+ *         Regiao selecionada contador, Km Total Regiao, Custo Total Regiao, Principais
+ *         Origens top 5 cidades, Principais Destinos top 5, botao Gerar Relatorio
+ *         Regiao), loading spinner full screen overlay durante AJAX initial load,
+ *         toast notifications bottom-right exibem alertas (Dados atualizados com sucesso
+ *         Verde, Erro ao carregar dashboard Vermelho retry button, Dashboard desatualizado
+ *         clique Atualizar Amarelo auto-hide 10s), botao flutuante bottom-right Ajuda
+ *         icone question abre tour guiado Intro.js explica filtros/KPIs/charts interativo
+ * CHAMADA POR: Menu Dashboard > Viagens (link sidebar default principal), redirect
+ *              automatico pos-login se usuario perfil Gestor Frota ou Coordenador,
+ *              usuarios com permissao Dashboard.Viagens (role Admin/Coordenador/Operador),
+ *              pagina MAIS ACESSADA sistema FrotiX centro gestao frota
+ * CHAMA: API DashboardController GET /api/Dashboard/GetViagensData (recebe 10+ query
+ *        params DataInicio/DataFim/VeiculosIds/TipoViagemId/MotoristasIds/CentroCustoId/StatusId,
+ *        query EF Core MASSIVA complexidade extrema: Join 8 tabelas (Viagens + Veiculos
+ *        + Motoristas + Passageiros + Itinerarios + Custos + Abastecimentos + Ocorrencias),
+ *        Where filters periodo/veiculos/motoristas/status, Include eager loading relacionamentos,
+ *        calcula 50+ metricas agregadas: COUNT Viagens group by Status/Tipo/Mes/DiaSemana/Motorista/Veiculo,
+ *        SUM Km/Custos/Combustivel/Passageiros group by categorias, AVG Tempo/Velocidade/Distancia/Ocupacao,
+ *        TOP 15 veiculos/motoristas sorted by viagens/km desc, Heatmap data lat/lng
+ *        coordinates origens/destinos aggregate count, Waterfall custos breakdown
+ *        acumula categorias, Gauge calculations disponibilidade/ocupacao/meta percentuais,
+ *        calcula tendencias Line charts compara mes atual vs anterior delta percentual,
+ *        mapeia DTO JSON gigante 500+ linhas {kpis:{totalViagens, planejadas, emAndamento,
+ *        ...}, chartViagensPorTipo:[{tipo, count, percentage, color}], chartKmRodados:[{mes,
+ *        km, delta}], chartCustosPorCategoria:[{categoria, valor, percentage}], heatmapData:[{lat,
+ *        lng, weight: count}], ...}, retorna JSON 100-200KB payload, execution time
+ *        5-15s queries pesadas), Google Maps JavaScript API (map initialization center
+ *        Brasil zoom 5, markers viagens lat/lng InfoWindow details, heatmap layer
+ *        visualization MapsHeatmapLayer, cluster MarkerClusterer library agrupa markers,
+ *        drawing manager DrawingManager tools polygon/rectangle selection, geocoding
+ *        reverse lat/lng to address, directions API rota otima origem>destino polyline),
+ *        Syncfusion Charts components (Pie configure dataSource/pointColorMapping/legendSettings/tooltipRender,
+ *        Bar/Column allowSorting/dataLabel, Line/Area multi-series axes/crosshair/zoom/tooltip,
+ *        Gauge circular pointer ranges annotations, Heatmap xAxis/yAxis/cellSettings/paletteSettings,
+ *        Waterfall connector intermediate/sum), Stimulsoft Report Viewer (carrega
+ *        MRT template dashboard-viagens.mrt, passa DataSet viagens filtradas parameters
+ *        DataInicio/DataFim, renderiza PDF multi-page landscape A4, toolbar export
+ *        PDF/Excel/Word), Bootstrap 5 Tabs Pills navigation (4 tabs click active/inactive
+ *        classes), jQuery AJAX (reload dashboard change filters debounce 500ms, error
+ *        handling retry exponential backoff, loading states show/hide spinner), Moment.js
+ *        (formatacao datas labels charts DD/MM/YYYY, calcula diferencas periodo days/months,
+ *        humanize relative time 2 horas atras), numeral.js (formatacao valores moeda
+ *        R$ 1.234.567,89, numeros grandes 1.5M/987.6K abbreviate, percentuais 85.3pc),
+ *        Intro.js library (tour guiado dashboard steps highlight elementos tooltips
+ *        Next/Prev buttons)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 Charts 2023.4.2 (Pie/Bar/Line/Gauge/Heatmap/Waterfall),
+ *               Syncfusion EJ2 DatePicker/ComboBox/MultiSelect, Google Maps JavaScript
+ *               API v3 (Maps/Heatmap/Marker/Clustering/Drawing), Stimulsoft Reports.Web
+ *               2023.3.1, Bootstrap 5.3.8 Tabs/Cards, Font Awesome 6 Duotone, jQuery
+ *               3.7.1, Moment.js 2.29.4, numeral.js 2.0.6, Intro.js 7.0, EF Core 8.0,
+ *               MarkerClusterer Plus library clustering
+ * OBSERVACOES: 1124 linhas pagina MASSIVE CRITICA MAIS COMPLEXA FrotiX. Dashboard principal
+ *              gerencial centro gestao frota exibe TODAS metricas importantes tempo
+ *              real. Query backend /api/Dashboard/GetViagensData E EXTREMAMENTE PESADA:
+ *              Join 8 tabelas filtra periodo calcula 50+ agregacoes multiplas group
+ *              by, execution time 5-15s base dados grande (100k+ viagens, 500+ veiculos,
+ *              200+ motoristas), OTIMIZACOES CRITICAS ESSENCIAIS: 1. Indexes compostos
+ *              banco (DataInicio, DataFim, VeiculoId, MotoristaId, Status) cobertura
+ *              WHERE clauses, indexes em FKs Join rapido, 2. Cache server-side Redis/Memory
+ *              Cache.Set key="DashboardViagens_{DataInicio}_{DataFim}_{...params}" expiracao
+ *              10min (metricas dashboard nao precisam tempo real absoluto lag 10min
+ *              aceitavel, evita query gigante toda request 100+ usuarios simultaneos
+ *              mataria servidor), 3. Pre-calculo noturno Job Hangfire/Quartz agendado
+ *              3AM calcula metricas diarias/mensais salva tabela DashboardMetricasCache
+ *              (Data, TotalViagens, KmRodados, CustoTotal, ...) 1 row por dia, dashboard
+ *              le tabela cache instantaneo sem queries pesadas, recalcula apenas dia
+ *              atual queries leves, 4. Paginacao server-side TOP 15 veiculos/motoristas
+ *              retorna apenas necessario nao 500+ registros completos, 5. Lazy loading
+ *              tabs renderiza apenas Tab ativa (ao carregar dashboard renderiza Tab
+ *              Viagens Geral charts, ao clicar Tab Custos AJAX carrega dados desta
+ *              tab sob demanda renderiza charts custos, evita renderizar 25+ charts
+ *              simultaneamente travaria navegador baixo desempenho), 6. Chart virtualization
+ *              Syncfusion Heatmap large data enabled (matriz Motorista x Veiculo 200x500=100k
+ *              cells renderiza apenas visiveis scroll viewport virtual scrolling),
+ *              7. Google Maps optimization (cluster markers agrupa milhares viagens
+ *              proximas zoom out performance, heatmap layer maxIntensity weighted reduce
+ *              points, restrict bounds Brasil zoom limits evita load global desnecessario).
+ *              Filtros avancados: DatePicker range permite drill-down temporal granular
+ *              (seleciona apenas semana especifica 01-07/Fev analisa pico/vale, seleciona
+ *              Q1 2026 compara com Q1 2025 year-over-year growth), ComboBox Veiculos
+ *              multi-select permite comparacao fleet subset (seleciona 5 veiculos especificos
+ *              charts exibem apenas estes 5 identifica qual melhor desempenho custo/km
+ *              eficiencia), ComboBox Motoristas multi-select compara performance individual
+ *              (seleciona 3 motoristas top vs 3 bottom charts mostram gap skills necessita
+ *              treinamento), ComboBox Status filtra lifecycle (seleciona apenas Canceladas
+ *              analisa motivos cancelamento identifica problemas recorrentes clima/veiculo/passageiro).
+ *              KPIs cards topo: valores massive (Total Viagens 12.345, Km Rodados 9.876.543)
+ *              formatados abreviacao numeral.js '0.0a' exibe 12.3K viagens 9.9M km,
+ *              hover tooltip mostra valor exato completo 12.345 viagens 9.876.543 km,
+ *              cards KPIs importantes pisca animacao CSS @keyframes blink se alerta
+ *              critico (Viagens Canceladas >10pc badge vermelho pisca, Custo por Km
+ *              >R$2.50 badge amarelo alerta ineficiencia), click card KPI drill-down
+ *              abre modal detalhes (click Total Viagens abre modal lista viagens DataTable
+ *              filtrado permite export Excel). Charts Syncfusion interativos: hover
+ *              tooltip exibe valores detalhados formatados moeda/percentual, click
+ *              legend toggle series visibility (Line Evolucao 4 linhas Status click
+ *              Cancelada oculta linha foca Concluidas), click bar/pie segment drill-down
+ *              detalhe (click Pie slice Urbana filtra dashboard apenas Urbana atualiza
+ *              todos charts contexto), toolbar export permite salvar cada chart individualmente
+ *              PNG/SVG/PDF incluir relatorios externos PowerPoint, zoom/pan Line/Area
+ *              charts permite aproximar periodo especifico analise granular. Gauge
+ *              Ocupacao Frota: calcula (Passageiros Transportados) / (Capacidade Total
+ *              Veiculos * Viagens) * 100pc percentual utilizacao, exibe ponteiro rotativo
+ *              0-100pc com 3 ranges coloridos (0-50pc Vermelho CRITICO subutilizacao
+ *              desperdicio recursos, 50-80pc Amarelo OK razoavel, 80-100pc Verde OTIMO
+ *              maximizando capacidade otimizacao custos), meta ideal 75-85pc balanceia
+ *              utilizacao com flexibilidade, se Ocupacao <50pc alerta gestor considerar
+ *              reduzir frota ou aumentar viagens, se >95pc alerta capacidade limite
+ *              considerar expandir frota. Pie Custos por Categoria: mostra composicao
+ *              principal custo viagens (Combustivel normalmente maior fatia 50pc, se
+ *              Pedagio >30pc indica muitas viagens interurbanas pedagiadas considerar
+ *              rotas alternativas economicas, se Alimentacao >20pc indica viagens longas
+ *              multiplos dias hospedagens, se Outros >10pc investigar categorizar melhor
+ *              custos hidden identificar vazamentos). Waterfall Custos breakdown: chart
+ *              cascata visualiza composicao incremental Total Custo Viagens = Combustivel
+ *              (barra verde base R$ 50k) + Pedagio (barra azul +R$ 20k acumula R$
+ *              70k) + Alimentacao (barra amarelo +R$ 15k acumula R$ 85k) + Hospedagem
+ *              (barra laranja +R$ 10k acumula R$ 95k) + Outros (barra cinza +R$ 5k)
+ *              = Total (barra vermelha final R$ 100k connector lines), permite identificar
+ *              visualmente qual categoria contribui mais custo total priorizar otimizacoes.
+ *              Top 15 Motoristas charts: identifica patterns extremos high/low performers
+ *              (Top Mais Viagens mostra quais motoristas sobrecarregados necessitam
+ *              redistribuicao carga, Top Mais Km mostra utilizacao intensa desgaste
+ *              maior necessita revezamento, Top Mais Multas CRITICO mostra motoristas
+ *              problematicos imprudentes necessitam treinamento urgente ou desligamento
+ *              se recorrente, comparacao cross-charts identifica correlacoes: se motorista
+ *              top Mais Km tambem top Mais Multas indica fadiga excesso jornada). Heatmap
+ *              Motorista x Veiculo matrix: visualiza quais combinacoes mais utilizadas
+ *              cores intensidade (celula Motorista A x Veiculo X cor vermelha quente
+ *              indica muitas viagens juntos familiaridade, celula Motorista B x Veiculo
+ *              Y cor azul frio indica pouco uso desconhecimento considerar treinamento,
+ *              identifica especializacoes motorista prefere certos veiculos performance
+ *              melhor, identifica gaps motorista nunca usou certos veiculos necessita
+ *              treinamento cross-training), matrix pode ser gigante 200 motoristas
+ *              x 500 veiculos = 100k celulas Syncfusion Heatmap virtualization renderiza
+ *              apenas viewport scroll performance. Tab Heatmap Geografico: Google Maps
+ *              integrado exibe todas viagens geograficamente markers lat/lng origens/destinos
+ *              (cada marker representa viagem InfoWindow popup click mostra detalhes
+ *              ViagemId/Placa/Motorista/Passageiros/Data/Origem/Destino/Km/Custo/Status),
+ *              heatmap layer sobreposicao visualiza intensidade rotas (areas quente
+ *              vermelho intenso indicam rotas muito utilizadas concentracao viagens
+ *              Sao Paulo>Rio Janeiro centenas viagens, areas frio azul claro indicam
+ *              rotas raras esporadicas interior, ajuda identificar corredores principais
+ *              otimizar planejamento), cluster markers MarkerClusterer agrupa viagens
+ *              proximas zoom out (zoom Brasil nivel 5 mostra 10 clusters numerados
+ *              SP(523) RJ(412) MG(287), zoom aumenta clusters expand individual markers,
+ *              performance critica renderiza 10k+ markers seria impossivel sem clustering),
+ *              drawing tools permite usuario desenhar poligono/retangulo mapa seleciona
+ *              viagens dentro area geografica (desenha retangulo envolvendo Grande
+ *              SP filtra apenas viagens regiao estatisticas painel lateral atualizam
+ *              Viagens Regiao: 1.234, Km Total: 567.890, Custo Total: R$ 123.456,
+ *              Principais Origens: Sao Paulo 45pc, Osasco 20pc, ..., gerar Relatorio
+ *              Regiao especifico PDF). Stimulsoft Report PDF: botao Exportar Relatorio
+ *              gera PDF profissional multi-page landscape A4 com logo FrotiX header,
+ *              capa titulo Dashboard Viagens periodo DataInicio-DataFim, sumario executivo
+ *              pagina 1 KPIs principais badges grandes, paginas 2-10 charts embedded
+ *              imagens PNG 1 chart por pagina ou 2x2 grid, tabelas detalhadas viagens
+ *              top/bottom performers, rodape paginacao numeracao, assinatura digital
+ *              gerado por Usuario data/hora, permite gestores incluir relatorios apresentacoes
+ *              executivas board diretoria reunioes gerenciais. Toast notifications:
+ *              exibe alertas bottom-right position-fixed width 300px auto-hide 5s animacao
+ *              slide-in (Dados atualizados Verde check icon, Erro carregar Vermelho
+ *              X icon + botao Tentar Novamente retry AJAX, Dashboard desatualizado
+ *              Amarelo warning icon + link Clique Atualizar, usuario fez alteracoes
+ *              filtros Azul info icon Aplicando filtros aguarde), melhor UX feedback
+ *              visual que alerts bloqueantes. Tour guiado Intro.js: botao Ajuda flutuante
+ *              bottom-right icone question circle click inicia tour onboarding (step
+ *              1 highlight filtros tooltip Selecione periodo veiculos para analisar
+ *              botao Next, step 2 highlight KPIs tooltip Metricas principais viagens
+ *              tempo real, step 3 highlight charts tooltip Charts interativos clique
+ *              para drill-down, step 4 highlight tabs tooltip Navegue pelas categorias
+ *              custos motoristas mapa, step 5 highlight export tooltip Exporte relatorio
+ *              PDF completo botao Concluir), essencial onboarding novos usuarios aprender
+ *              funcionalidades dashboard rapido sem manual, tour pulavel Skip/Dont
+ *              show again localStorage.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
 @page
 @model FrotiX.Pages.Viagens.DashboardViagensModel
 @using Syncfusion.EJ2

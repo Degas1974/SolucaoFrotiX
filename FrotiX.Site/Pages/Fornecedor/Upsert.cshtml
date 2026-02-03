@@ -1,3 +1,31 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Fornecedor/Upsert.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário de criação/edição de Fornecedores com validação server-side
+ *                   e JavaScript inline para formatar CNPJ automaticamente (mask dinâmica).
+ * 📥 ENTRADAS     : @Model FrotiX.Pages.Fornecedor.UpsertModel, POST form submission,
+ *                   FornecedorObj properties (FornecedorId, CNPJ, DescricaoFornecedor,
+ *                   Contato01/02, Telefone01/02, Status), input #cnpj (formatado via JS)
+ * 📤 SAÍDAS       : POST para OnPostSubmit (UpsertModel code-behind), CNPJ formatado
+ *                   00.000.000/0000-00 (JavaScript inline com Regex), validação asp-validation-*,
+ *                   redirect para ./Index após sucesso, AppToast notificações
+ * 🔗 CHAMADA POR  : Pages/Fornecedor/Index.cshtml (botão + Adicionar Fornecedor),
+ *                   DataTable edit links, UpsertModel.OnGet()
+ * 🔄 CHAMA        : UpsertModel.OnPostSubmit (code-behind), ./Index (cancelamento),
+ *                   JavaScript inline addEventListener (input #cnpj), Alerta.TratamentoErroComLinha
+ *                   (try-catch em JS), ASP.NET validation system
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, Bootstrap 5 (CDN), Font Awesome 6 Duotone,
+ *                   Tag Helpers (asp-for, asp-validation-*), Alerta.js (tratamento de erros JS),
+ *                   JavaScript nativo (addEventListener, Regex /\D/g)
+ * 📝 OBSERVAÇÕES  : 191 linhas. **JAVASCRIPT INLINE**: Input listener formata CNPJ automaticamente
+ *                   (line ~180): Regex remove não-dígitos, match groups (\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2}),
+ *                   formata 00.000.000/0000-00. Try-catch aninhado (setup + listener). Form com
+ *                   2 contatos/telefones (Contato01/02 - label-required só no primeiro). CNPJ no
+ *                   col-4 (33% width), Descrição col-8 (66%). Status checkbox (Ativo/Inativo).
+ *                   Header dinâmico (Criar/Atualizar baseado em FornecedorId != Empty). Input
+ *                   hidden para FornecedorId em edição. Botão submit azul com spinner (btn-submit-spin).
+ *                   Placeholders descritivos. Col-8 layout (66%). CSS inline minimalista.
+ **************************************************************************************** *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 

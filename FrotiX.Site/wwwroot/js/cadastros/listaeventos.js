@@ -1,3 +1,26 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: listaeventos.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Carregar detalhamento de custos de viagem em modal (evento) com
+ *                   formatação de datas, horários, valores monetários, e exibição de
+ *                   custos por categoria (motorista, veículo, combustível, total).
+ * 📥 ENTRADAS     : carregarDetalhamentoCustos(viagemId),
+ *                   GET /api/ViagemEvento/ObterDetalhamentoCustosViagem,
+ *                   response.data (objeto com dados da viagem)
+ * 📤 SAÍDAS       : Campos de modal preenchidos (#nomeEventoDetalhes, #dataHoraInicialDetalhes,
+ *                   #dataHoraFinalDetalhes, #tempoTotalDetalhes, #custoMotoristaDetalhes,
+ *                   #custoVeiculoDetalhes, #custoCombustivelDetalhes, #custoTotalDetalhes),
+ *                   AppToast (Vermelho em caso de erro), Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : Funções externas (modal de evento), carregarDetalhamentoCustos(viagemId),
+ *                   Pages/Evento/*.cshtml
+ * 🔄 CHAMA        : $.ajax, formatarData(), formatarMoeda(), $.text, toFixed,
+ *                   substring, AppToast.show, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, AppToast (toast notifications), Alerta.js
+ * 📝 OBSERVAÇÕES  : Formatação defensiva (|| 0, || '--'). Correção aplicada:
+ *                   dataFinal minúsculo (foi dataFinal maiúsculo). 119 linhas total.
+ *                   Função principal: carregarDetalhamentoCustos.
+ **************************************************************************************** */
+
 // ============================================
 // FUNÇÃO: Carregar Detalhamento de Custos
 // ============================================

@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/AlertasFrotiX/AlertasFrotiX.cshtml (850 linhas + JavaScript inline)
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Dashboard principal para gestão de alertas do sistema FrotiX com três abas (Inativos, Ativos, Meus Alertas)
+ * 📥 ENTRADAS     : @page, @model IndexModel, ViewData, SignalR Hub, API /api/Alertas/BuscaAlerta/{id}
+ * 📤 SAÍDAS       : HTML (três DataTables), modal visualização, SignalR notificações toast, redirects /AlertasFrotiX/Upsert
+ * 🔗 CHAMADA POR  : Navegação principal (menu Cadastros), links diretos, notificações de alertas
+ * 🔄 CHAMA        : ~/js/cadastros/alertas_gestao.js, /api/Alertas/BuscaAlerta (AJAX), /alertasHub (SignalR), /AlertasFrotiX/Upsert?id={AlertaId}
+ * 📦 DEPENDÊNCIAS : jQuery, DataTables, Bootstrap 5, Font Awesome Duotone, SignalR (@microsoft/signalr), Google Fonts Outfit, Alerta.TratamentoErroComLinha()
+ * 📝 OBSERVAÇÕES  : Total: 850 linhas. ISSUES: JavaScript inline ~150 linhas (deveria estar em alertas_gestao.js), tabs customizados sem acessibilidade (aria-selected, role="tabpanel"), CSS inline ~250 linhas duplicado, SignalR sem retry logic, DataTables sem state saving, modal statistics overflow sem limite altura
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.AlertasFrotiX.IndexModel
 @{

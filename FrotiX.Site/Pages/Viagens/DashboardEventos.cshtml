@@ -1,3 +1,54 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Viagens/DashboardEventos.cshtml
+ * OBJETIVO: Dashboard gerencial de eventos viagens exibindo Syncfusion Charts (pie/bar/line)
+ *           com KPIs metricas eventos (abastecimentos, manutencoes, multas, acidentes)
+ *           ocorridos durante viagens, filtros periodo e categorias, sistema usado para
+ *           analises gerenciais identificar padroes eventos frota.
+ * ENTRADAS: route /Viagens/DashboardEventos, ViewData (Title, PageName), filtros toolbar:
+ *           DatePicker DataInicio/DataFim range periodo (default mes atual), ComboBox
+ *           TipoEvento multi-select (Abastecimento/Manutencao/Multa/Acidente/Outros),
+ *           ComboBox Veiculos multi-select, ComboBox CentroCusto, botao Atualizar Dashboard
+ *           trigger reload AJAX GET /api/Dashboard/GetEventosData retorna JSON metricas
+ * SAIDAS: Pagina renderizada com grid 2x4 cards KPIs: Total Eventos contador, Abastecimentos
+ *         contador + litros totalizado, Manutencoes contador + custo total R$, Multas
+ *         contador + valor total R$, Acidentes contador + custo total R$, Custo Total
+ *         Eventos moeda R$, Frequencia Media eventos/veiculo/mes decimal, Veiculos
+ *         com Mais Eventos badge top 3, grid 2x3 charts Syncfusion: Pie Eventos por
+ *         Tipo (Abastecimentos 60pc, Manutencoes 25pc, Multas 10pc, Acidentes 5pc),
+ *         Bar Eventos por Mes Ultimos 12 (barras empilhadas tipos cores), Line Evolucao
+ *         Custos Eventos (linha R$ temporal), Bar Top 10 Veiculos Mais Eventos (Placa
+ *         + contador barras), Pie Eventos por Centro Custo (departamentos), Bar Eventos
+ *         por Dia Semana (identifica padrao Segunda mais eventos), todos charts interativos
+ *         tooltips hover, legends bottom, paleta FrotiX, export PNG/PDF, loading spinner
+ *         overlay AJAX
+ * CHAMADA POR: Menu Dashboard > Eventos Viagens (link interno sidebar), usuarios com
+ *              permissao Dashboard.Eventos (role Admin ou Coordenador Frota), usado
+ *              para analises gerenciais identificar padroes (exemplo: Segundas-feiras
+ *              mais abastecimentos indica motoristas abastecem inicio semana, veiculos
+ *              X/Y/Z mais multas indica motoristas problematicos necessitam treinamento)
+ * CHAMA: API DashboardController GET /api/Dashboard/GetEventosData (query EF Core Join
+ *        Viagens + Eventos (Abastecimentos/Manutencoes/Multas/Acidentes), Where periodo
+ *        filters TipoEvento/VeiculoId/CentroCustoId, calcula agregacoes COUNT eventos
+ *        group by Tipo/Mes/Veiculo/DiaSemana, SUM custos/litros, AVG frequencia eventos/veiculo/mes,
+ *        TOP 10 veiculos mais eventos, mapeia DTO JSON {kpis:{totalEventos, abastecimentos,
+ *        manutencoes, ...}, chartEventosPorTipo:[{tipo, count, percentage}], chartEventosPorMes:[{mes,
+ *        abastecimentos, manutencoes, multas}], ...}), Syncfusion Charts (Pie/Bar/Line
+ *        configure dataSource/xName/yName/palettes), Bootstrap cards KPIs, jQuery AJAX
+ *        reload, Moment.js formatacao datas
+ * DEPENDENCIAS: Syncfusion EJ2 Charts 2023.4.2, Syncfusion DatePicker/ComboBox, Bootstrap
+ *               5.3.8, Font Awesome 6, jQuery 3.7.1, Moment.js, EF Core 8.0
+ * OBSERVACOES: 425 linhas dashboard eventos viagens. Chart Eventos por Dia Semana identifica
+ *              padroes temporais uteis planejamento (Segundas mais abastecimentos indica
+ *              inicio semana, Sextas mais viagens indica final semana demanda pico).
+ *              TOP 10 Veiculos Mais Eventos identifica veiculos problematicos (se veiculo
+ *              X tem 50 eventos enquanto outros 10 indica problemas recorrentes considerar
+ *              venda/substituicao). Custos Eventos totaliza gastos extraordinarios viagens
+ *              (exclui custos fixos combustivel normal inclui apenas eventos inesperados
+ *              manutencoes corretivas/multas/acidentes). Query backend pode ser pesada
+ *              Join multiplas tabelas eventos, considerar cache 5min ou pre-calculo
+ *              noturno.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
 @page
 @model FrotiX.Pages.Eventos.DashboardEventosModel
 @{

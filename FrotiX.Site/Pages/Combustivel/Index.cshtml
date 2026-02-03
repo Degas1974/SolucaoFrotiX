@@ -1,18 +1,55 @@
 @page
 
-/*
-    ═══════════════════════════════════════════════════════════════════════════════
-    📄 DOCUMENTAÇÃO COMPLETA DISPONÍVEL
-    ═══════════════════════════════════════════════════════════════════════════════
-    
-    📍 Localização: Documentacao/Pages/Combustivel - Index.md
-    📅 Última Atualização: 08/01/2026
-    📋 Versão: 2.0 (Padrão FrotiX Simplificado)
-    
-    Este arquivo contém a View Razor da página de listagem de Combustíveis.
-    Para entender completamente a funcionalidade, consulte a documentação acima.
-    ═══════════════════════════════════════════════════════════════════════════════
-*/
+@* ========================================================================================
+ * ARQUIVO: Pages/Combustivel/Index.cshtml
+ * OBJETIVO: Pagina de listagem de Tipos de Combustivel com DataTable jQuery e CRUD completo
+ *           via JavaScript externo (combustivel.js), layout padrao FrotiX com header azul
+ *           e botao laranja no topo com outline branco no hover.
+ * ENTRADAS: Model FrotiX.Models.Combustivel (entidade do banco linkada ao IndexModel code-behind),
+ *           route /Combustivel via diretiva page, botoes CRUD delegados no DataTable via jQuery
+ *           (classe .btn-editar para edicao, .btn-delete para exclusao, .updateStatusCombustivel
+ *           para toggle Ativo/Inativo), chamada automatica do metodo OnGet do IndexModel no
+ *           carregamento da pagina (backend C#)
+ * SAIDAS: DataTable hash tblCombustivel renderizado vazio (populado via AJAX) com 3 colunas
+ *         principais (Descricao texto, Status badge Verde/Cinza, Acao com botoes Editar/Excluir),
+ *         link para /Combustivel/Upsert no botao + Novo Tipo de Combustivel (criacao),
+ *         botoes de exportacao Excel/PDF do DataTables (extensoes buttons), chamadas AJAX
+ *         para /api/Combustivel endpoints (GET lista, POST cria, PUT edita, DELETE exclui via
+ *         combustivel.js arquivo externo)
+ * CHAMADA POR: Route /Combustivel definida pela diretiva page no topo, navegacao sidebar
+ *              menu principal (Cadastros > Tipos de Combustivel), link direto via URL,
+ *              IndexModel.OnGet metodo do code-behind executa automaticamente no carregamento
+ *              (backend ASP.NET Core Razor Pages)
+ * CHAMA: combustivel.js (arquivo JavaScript externo 84 linhas com funcoes loadList para carregar
+ *        DataTable via AJAX, delete handler com confirmacao SweetAlert2, status toggle handler
+ *        para Ativo/Inativo), pagina /Combustivel/Upsert (criacao de novo registro e edicao de
+ *        existente via parametro query string id), endpoints API REST /api/Combustivel/GetAll GET
+ *        (retorna lista JSON), /api/Combustivel/Create POST, /api/Combustivel/Update PUT,
+ *        /api/Combustivel/Delete DELETE, atributo data-ftx-loading customizado (gerencia loading
+ *        state visual do botao laranja com spinner), DataTables API completa (initialization,
+ *        buttons extension, responsive, column rendering)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1, DataTables 1.13.x plugin completo
+ *               (table-bordered table-striped classes, buttons extension para Excel/PDF export,
+ *               responsive extension, pageLength configuravel), combustivel.js (arquivo JavaScript
+ *               externo na pasta wwwroot/js com logica de CRUD), Bootstrap 5.3.8 (cards, badges,
+ *               grid system, botoes), Font Awesome 6 Duotone (icone fa-gas-pump para combustivel),
+ *               atributo customizado data-ftx-loading (gerencia loading state do botao)
+ * OBSERVACOES: 82 linhas total. Pagina simples de listagem seguindo padrao FrotiX consistente
+ *              (layout limpo, cores definidas, interacoes via JavaScript externo). Header com
+ *              fundo azul escuro hash 3D5771 e botao laranja + Novo Tipo de Combustivel com efeito
+ *              outline branco no hover (CSS inline 6 linhas na section HeadBlock). DataTable
+ *              carregado via JavaScript AJAX (tabela vazia no HTML, populada dinamicamente pela
+ *              funcao loadList do combustivel.js). Toda logica CRUD concentrada no arquivo externo
+ *              combustivel.js (separation of concerns, manutencao facilitada). Section ScriptsBlock
+ *              referencia combustivel.js via tag script src. CSS inline minimalista (apenas outline
+ *              branco 2px solid no botao do header ftx-card-header .btn-fundo-laranja hover/focus).
+ *              ViewData define metadados da pagina: Title = Tipos de Combustivel, PageName =
+ *              combustivel_index, Heading com icone fa-gas-pump, Category1 = Cadastros, PageIcon.
+ *              Layout ftx-card-header padrao (header + body com card Bootstrap arredondado 14px).
+ *              Pagina utilizada para gerenciar tipos de combustivel cadastrados no sistema FrotiX
+ *              (Gasolina, Etanol, Diesel, GNV etc) linkados a abastecimentos e veiculos.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
 
 @model FrotiX.Models.Combustivel
 

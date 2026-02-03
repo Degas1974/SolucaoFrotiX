@@ -1,3 +1,23 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: notafiscal.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : CRUD de Notas Fiscais com exclusão delegada via confirmação modal
+ *                   e recarga de DataTable (#tblNotaFiscal).
+ * 📥 ENTRADAS     : Clique em .btn-delete (data-id), resposta Alerta.Confirmar (willDelete)
+ * 📤 SAÍDAS       : DELETE via AJAX para /api/NotaFiscal/Delete,
+ *                   AppToast (Verde/Vermelho), DataTable.ajax.reload (#tblNotaFiscal),
+ *                   console.log (debug), Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready, event handler .btn-delete (delegado),
+ *                   Pages/NotaFiscal/Index.cshtml
+ * 🔄 CHAMA        : Alerta.Confirmar, $.ajax, AppToast.show,
+ *                   $("#tblNotaFiscal").DataTable().ajax.reload,
+ *                   console.log, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables, Alerta.js, AppToast (toast notifications)
+ * 📝 OBSERVAÇÕES  : Handler delegado para compatibilidade com DataTable dinâmico.
+ *                   Try-catch aninhado em todos os níveis (ready, click, .then,
+ *                   success, error). 141 linhas total.
+ **************************************************************************************** */
+
 $(document).ready(function () {
     try
     {

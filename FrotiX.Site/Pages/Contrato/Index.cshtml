@@ -1,23 +1,88 @@
 @page
 
-@* ╔══════════════════════════════════════════════════════════════════════════╗
-   ║                                                                          ║
-   ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
-   ║                                                                          ║
-   ║  Este arquivo está completamente documentado em:                         ║
-   ║  📄 Documentacao/Pages/Contrato - Index.md                                ║
-   ║                                                                          ║
-   ║  A documentação inclui:                                                   ║
-   ║  • Visão geral completa da funcionalidade                                ║
-   ║  • Explicação detalhada do DataTable                                     ║
-   ║  • Sistema de validação de dependências explicado                        ║
-   ║  • Sistema de gestão de status com bloqueio de ações                    ║
-   ║  • Documentação completa de todos os endpoints API                       ║
-   ║  • Validações e troubleshooting                                         ║
-   ║                                                                          ║
-   ║  Última atualização: 08/01/2026                                          ║
-   ║                                                                          ║
-   ╚══════════════════════════════════════════════════════════════════════════╝ *@
+@* ========================================================================================
+ * ARQUIVO: Pages/Contrato/Index.cshtml
+ * OBJETIVO: Pagina de listagem e gestao completa de contratos com DataTable jQuery, sistema
+ *           INTELIGENTE de validacao de dependencias antes da exclusao (verifica 7 entidades
+ *           linkadas: veiculosContrato, encarregados, operadores, lavadores, motoristas,
+ *           empenhos, notasFiscais) e gestao dinamica de status Ativo/Inativo com bloqueio
+ *           automatico de acoes (botoes Documentos/Itens/Repactuacao desabilitados quando
+ *           contrato esta inativo, hrefs removidos, tooltips atualizados).
+ * ENTRADAS: Model FrotiX.Pages.Contrato.IndexModel (code-behind C#), DataTable hash tblContrato
+ *           vazio populado via AJAX, botoes CRUD delegados via jQuery (classe .btn-editar
+ *           para edicao redireciona /Contrato/Upsert?id=X, classe .btn-delete para exclusao
+ *           com confirmacao SweetAlert2, classe .updateStatusContrato para toggle Ativo/Inativo,
+ *           classe .btn-documentos para modal de upload documentos, classe .btn-itens para
+ *           /Contrato/ItensContrato, classe .btn-repactuacao para /Contrato/RepactuacaoContrato),
+ *           atributos data-id e data-status nos botoes, onclick events delegados no document.body
+ * SAIDAS: DataTable hash tblContrato renderizado com 11 colunas (Numero do Contrato texto,
+ *         Objeto descricao, Empresa Contratada, Data Inicio formatada DD/MM/YYYY, Data Termino
+ *         formatada DD/MM/YYYY, Valor Total formatado moeda R$, Status badge Verde Ativo/Cinza
+ *         Inativo, Acoes com 6 botoes: Editar/Excluir/Status/Documentos/Itens/Repactuacao),
+ *         botoes com estados dinamicos (habilitados/desabilitados baseado em data-status),
+ *         links para /Contrato/Upsert (criacao novo/edicao existente), /Contrato/ItensContrato
+ *         (gestao de itens do contrato), /Contrato/RepactuacaoContrato (reajustes de preco),
+ *         modal hash modalDocumentosContrato (upload/visualizacao de anexos PDF/imagens),
+ *         exportacoes Excel/PDF via DataTables buttons extension, POST /api/Contrato/Delete
+ *         (exclusao com validacao de dependencias), GET /api/Contrato/VerificarDependencias
+ *         (retorna JSON com 7 contadores de entidades linkadas), PUT /api/Contrato/UpdateStatus
+ *         (toggle Ativo/Inativo), notificacoes AppToast verde/vermelho, alertas SweetAlert2
+ * CHAMADA POR: Route /Contrato via diretiva page, navegacao sidebar menu principal (Cadastros >
+ *              Contratos), link direto URL, IndexModel.OnGet metodo backend C# executa no
+ *              carregamento da pagina (code-behind ASP.NET Core Razor Pages)
+ * CHAMA: contrato.js (arquivo JavaScript externo 462 linhas com logica COMPLEXA incluindo
+ *        funcao loadList para carregar DataTable via AJAX GET /api/Contrato/GetAll, delete
+ *        handler com validacao de dependencias chamando GET /api/Contrato/VerificarDependencias
+ *        antes de confirmar exclusao exibindo mensagem detalhada se impedido, status toggle
+ *        handler PUT /api/Contrato/UpdateStatus com atualizacao visual dinamica dos botoes de
+ *        acao habilitando/desabilitando baseado no novo status, documentos handler abrindo modal),
+ *        endpoints API REST /api/Contrato/VerificarDependencias GET (retorna objeto JSON com
+ *        7 propriedades: veiculosContrato int, encarregados int, operadores int, lavadores int,
+ *        motoristas int, empenhos int, notasFiscais int, total int calculado), /api/Contrato/Delete
+ *        POST (so executa se VerificarDependencias.total == 0), /api/Contrato/UpdateStatus PUT
+ *        (recebe id e novo status booleano), Alerta.Warning (funcao do Alerta.js wrapper do
+ *        SweetAlert2 para exibir aviso quando exclusao impedida listando dependencias),
+ *        Alerta.Confirmar (confirmacao antes de deletar), Alerta.TratamentoErroComLinha (catch
+ *        de erros AJAX com numero da linha), AppToast.show (notificacoes toast Verde sucesso/Vermelho
+ *        erro), window.ejTooltip.refresh (atualiza tooltips Syncfusion EJ2 apos mudanca de status),
+ *        DataTables API completa (initialization, column rendering customizado, buttons extension,
+ *        responsive, pageLength)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1, DataTables 1.13.x plugin (Excel/PDF
+ *               export via buttons extension, responsive mode, column defs customizados),
+ *               Bootstrap 5.3.8 (cards arredondados, badges, modals, grid system, botoes),
+ *               Syncfusion EJ2 ASP.NET Core (tooltips via atributo data-ejtip, window.ejTooltip.refresh
+ *               API), contrato.js (arquivo JavaScript externo na pasta wwwroot/js com 462 linhas
+ *               de logica CRUD complexa), Alerta.js (wrapper customizado do SweetAlert2 para
+ *               Warning/Confirmar/Erro/TratamentoErroComLinha), AppToast.js (sistema de notificacoes
+ *               toast Verde/Vermelho com posicao top-right), Font Awesome 6 Duotone (icones
+ *               fa-file-contract, fa-edit, fa-trash, fa-file-pdf, fa-list, fa-dollar-sign)
+ * OBSERVACOES: 361 linhas total com layout customizado FrotiX consistente (header com fundo
+ *              azul escuro hash 3D5771 e gradient radial sutil, body com gradient vertical
+ *              azul claro, cards arredondados border-radius 14px, botoes com efeito outline
+ *              branco 2px no hover/focus). Sistema INTELIGENTE de gestao de contratos:
+ *              (1) Validacao de dependencias ANTES de excluir previne erros de integridade
+ *              referencial verificando 7 entidades linkadas (veiculosContrato, encarregados,
+ *              operadores, lavadores, motoristas, empenhos, notasFiscais), se alguma tiver
+ *              registros vinculados exibe mensagem detalhada via Alerta.Warning listando
+ *              quantidades e impede exclusao. (2) Status dinamico: quando contrato muda para
+ *              Inativo, JavaScript atualiza visualmente os botoes de acoes adicionando classe
+ *              .disabled, removendo atributo href dos links, alterando tooltips para Bloqueado
+ *              por Contrato Inativo, garantindo que acoes criticas (Documentos/Itens/Repactuacao)
+ *              nao sejam executadas em contratos inativos. (3) Section HeadBlock extensa (120+
+ *              linhas CSS inline) customiza cores (azul escuro header, gradient body, badges
+ *              verde/cinza status), hover effects (outline branco botoes, background buttons
+ *              acoes), tooltips (posicionamento, cores, setas). (4) Botao laranja + Novo Contrato
+ *              com icone fa-file-contract no header com efeito outline branco. (5) DataTable
+ *              carregado via AJAX na funcao loadList do contrato.js (tabela vazia no HTML,
+ *              populada dinamicamente com JSON do backend). (6) Try-catch aninhado em todos os
+ *              handlers JavaScript para tratamento robusto de erros (catch interno para parsing
+ *              JSON, catch externo para erros AJAX, ambos chamando Alerta.TratamentoErroComLinha).
+ *              Sistema CRITICO para gestao contratual no FrotiX usado para controlar todos os
+ *              contratos de terceirizacao de frota (detalhes de empresas contratadas, vigencia,
+ *              valores, itens, repactuacoes, documentos anexos). ATENCAO: Modal de documentos
+ *              referenciado mas nao implementado neste arquivo (provavelmente em partial separado).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
 @model FrotiX.Pages.Contrato.IndexModel
 
 @{

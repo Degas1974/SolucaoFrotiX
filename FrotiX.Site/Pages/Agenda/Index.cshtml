@@ -1,25 +1,77 @@
 @page
 
-@* ╔══════════════════════════════════════════════════════════════════════════╗
-   ║                                                                          ║
-   ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
-   ║                                                                          ║
-   ║  Este arquivo está completamente documentado em:                         ║
-   ║  📄 Documentacao/Pages/Agenda - Index.md                                 ║
-   ║                                                                          ║
-   ║  A documentação inclui:                                                   ║
-   ║  • Visão geral completa da funcionalidade                                ║
-   ║  • Explicação detalhada de cada componente JavaScript                    ║
-   ║  • Documentação completa de todos os endpoints API                       ║
-   ║  • Sistema de recorrência explicado em detalhes                          ║
-   ║  • Validações frontend e backend documentadas                            ║
-   ║  • Interconexões entre todos os arquivos                                 ║
-   ║  • Exemplos práticos de uso                                              ║
-   ║  • Troubleshooting completo com soluções                                 ║
-   ║                                                                          ║
-   ║  Última atualização: 08/01/2026                                          ║
-   ║                                                                          ║
-   ╚══════════════════════════════════════════════════════════════════════════╝ *@
+@* ========================================================================================
+ * ARQUIVO: Pages/Agenda/Index.cshtml
+ * OBJETIVO: Pagina COMPLEXA de agenda de eventos com FullCalendar v6 integrado,
+ *           sistema de recorrencia (diaria/semanal/mensal/customizada), modais Bootstrap 5
+ *           dinamicos (criacao/edicao com Syncfusion EJ2), validacoes frontend/backend
+ *           robustas (duracao minima 5min, distancias, conflitos), calculos automaticos
+ *           (duracao hora inicial/final, distancia via API), expansao de recorrencia no
+ *           backend. Sistema crítico para agendamento de viagens/eventos no FrotiX.
+ * ENTRADAS: Model FrotiX.Models.Agenda, ViewData com 12+ listas (dataMotorista, dataVeiculo,
+ *           dataSetor, dataRequisitante, dataFinalidade, dataEvento, dataSetorEvento,
+ *           dataPeriodo, dataRecorrente, dataCombustivel, listaOrigem, listaDestino),
+ *           RecorrenciaToggleSettings (injecao de dependencia via decorator Inject),
+ *           cliques no calendario FullCalendar (eventClick/dateClick/eventDrop/eventResize),
+ *           modal hash modalEvento com 20+ campos Syncfusion EJ2 (DropDown, DatePicker, TimePicker,
+ *           NumericTextBox), tabs (Dados Basicos/Recorrencia/Participantes), formulario com
+ *           validacao HTML5 + JavaScript customizada antes da submissao
+ * SAIDAS: Calendario FullCalendar v6 renderizado (hash calendar) com locale pt-br, 3 views
+ *         (dayGridMonth/timeGridWeek/listWeek), eventos carregados via GET /api/ViagemAgenda/GetEventos,
+ *         modais Bootstrap 5 (criacao com campos limpos, edicao com dados preenchidos),
+ *         POST /api/ViagemAgenda/Salvar (criacao de evento unico ou recorrente), PUT (edicao),
+ *         DELETE (exclusao), resposta JSON com success/error, recorrencia expandida no backend
+ *         (gera multiplos eventos 'clone' linkados pelo RecorrenciaId original),
+ *         notificacoes SweetAlert2 (erros/avisos) e AppToast (sucesso verde/erro vermelho)
+ * CHAMADA POR: Route /Agenda via diretiva page, navegacao sidebar (Cadastros > Agenda), link direto
+ *              no menu principal, funcao OnGet do IndexModel (backend C# code-behind) executa no
+ *              carregamento da pagina inicializando 12+ ViewData com listas via IUnitOfWork,
+ *              calendario carrega eventos automaticamente via AJAX apos renderizacao do DOM
+ * CHAMA: FrotiX.Pages.Agenda.IndexModel.Initialize (metodo backend C# injetando IUnitOfWork +
+ *        RecorrenciaToggleSettings), helpers de lista (ListaNivelCombustivel, ListaMotorista,
+ *        ListaVeiculos, ListaSetores, ListaRequisitante, ListaFinalidade, ListaEvento,
+ *        ListaSetoresEvento, ListaPeriodos, ListaRecorrente), modal_agenda.js (arquivo JavaScript
+ *        externo 1099 linhas com handler complexo de modal incluindo Syncfusion components,
+ *        validacoes inline, calculo de recorrencia, formatacao de dados), endpoints API REST
+ *        /api/ViagemAgenda/GetEventos GET (carrega eventos existentes + recorrentes),
+ *        /api/ViagemAgenda/Salvar POST (cria evento unico ou com recorrencia), PUT (edita),
+ *        DELETE (exclui), FullCalendar v6 API completa (initialization, eventClick handler,
+ *        dateClick handler, eventDrop drag&drop handler, eventResize resize handler, refetchEvents
+ *        para reload apos mudancas), funcoes utilitarias JavaScript (moeda formatacao R$,
+ *        dateToSQL conversao ISO8601, validacoes campo a campo)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, FullCalendar v6.1.8 (pacote completo com
+ *               dayGridPlugin/timeGridPlugin/listPlugin/interactionPlugin), Syncfusion EJ2
+ *               ASP.NET Core Tag Helpers (DropDownList, DatePicker, TimePicker, NumericTextBox,
+ *               Calendar, Modal/Popups), jQuery 3.7.1, Bootstrap 5.3.8 (cards, modals, tabs,
+ *               form-control, grid system), SweetAlert2 (alertas customizados via Alerta.js),
+ *               AppToast.js (notificacoes toast Verde/Vermelho), Stimulsoft Reports (para
+ *               impressao de relatorios de agenda), Kendo UI 2022.1.412 (alguns components legados
+ *               como DatePicker/TimePicker em modo misto), IUnitOfWork (Entity Framework Core
+ *               pattern para acesso ao banco de dados SQL Server), RecorrenciaToggleSettings
+ *               (classe customizada de configuracao lida do appsettings.json para habilitar/desabilitar
+ *               funcionalidade de recorrencia dinamicamente), Font Awesome 6 Duotone (icones)
+ * OBSERVACOES: 2008 LINHAS - pagina GIGANTE com funcionalidade complexa. Sistema de recorrencia
+ *              completo com 2 modos: (1) Padrao (diaria/semanal/mensal simples), (2) Customizado
+ *              (dias da semana especificos via checkboxes, intervalo de repeticao configuravel,
+ *              data final limite). Validacoes robustas: duracao minima 5 minutos, distancia maxima
+ *              permitida entre origem/destino, deteccao de conflitos de horario para mesmo motorista/veiculo,
+ *              participantes obrigatorios (motorista + requisitante). FullCalendar configurado com
+ *              locale pt-br completo, 3 views alternativas (mes/semana/lista), drag&drop de eventos
+ *              habilitado (eventDrop handler atualiza banco), resize de eventos permitido (eventResize
+ *              handler recalcula duracao). Modal hash modalEvento com 20+ campos Syncfusion incluindo
+ *              tabs Bootstrap 5 (Dados Basicos/Recorrencia/Participantes), calculos automaticos em
+ *              tempo real (duracao ao alterar hora inicial/final, distancia via chamada API externa
+ *              ao selecionar origem/destino). Secoes grandes: section HeadBlock (250+ linhas CSS
+ *              inline customizando calendario, modal, botoes, cores), section ScriptBlock (1000+ linhas
+ *              JavaScript inline incluindo funcoes de inicializacao do FullCalendar, handlers de
+ *              eventos, validacoes, formatacao, chamadas AJAX, alem de referencia ao arquivo externo
+ *              modal_agenda.js). RecorrenciaToggle controlado via appsettings.json permite habilitar/desabilitar
+ *              funcionalidade dinamicamente sem recompilar (feature flag). Sistema CRITICO para
+ *              agendamento de viagens/eventos no FrotiX usado diariamente por multiplos usuarios.
+ *              ATENCAO: Mistura de Syncfusion EJ2 + Kendo UI legado gera inconsistencia visual e
+ *              aumenta tamanho do bundle JavaScript (considerar padronizar apenas Syncfusion EJ2).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
 
 @using FrotiX.Repository.IRepository
 @using Syncfusion.EJ2
@@ -1900,7 +1952,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     @* REMOVIDO: locales-all.js (arquivo não existe, FullCalendar v6 já inclui locales) *@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
-    <script src="/api/reports/resources/js/telerikReportViewer-19.1.25.521.min.js"></script>
+    <script src="/api/reports/resources/js/telerikReportViewer-18.1.24.514.min.js"></script>
 
     @* ============================================
        LOCALIZATION - Inicialização CLDR para Syncfusion pt-BR

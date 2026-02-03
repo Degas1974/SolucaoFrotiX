@@ -253,6 +253,20 @@ namespace FrotiX.Controllers
                     .Where(v => v.DataInicial.HasValue
                         && v.DataInicial >= startMenos3
                         && v.DataInicial < endMenos3)
+                    .Select(v => new
+                    {
+                        v.ViagemId ,
+                        v.Titulo ,
+                        v.Start ,
+                        v.DataInicial ,
+                        v.CorEvento ,
+                        v.CorTexto ,
+                        v.Descricao ,
+                        v.Placa ,
+                        v.NomeMotorista ,
+                        v.NomeEventoFull ,
+                        v.Finalidade
+                    })
                     .ToList();
 
                 _logger.LogInformation($"[TesteCarregaViagens] Registros encontrados: {viagensRaw.Count}");
@@ -1132,6 +1146,20 @@ namespace FrotiX.Controllers
                     .Where(v => v.DataInicial.HasValue
                         && v.DataInicial >= startMenos3
                         && v.DataInicial < endMenos3)
+                    .Select(v => new
+                    {
+                        v.ViagemId ,
+                        v.Titulo ,
+                        v.Start ,
+                        v.DataInicial ,
+                        v.CorEvento ,
+                        v.CorTexto ,
+                        v.Descricao ,
+                        v.Placa ,
+                        v.NomeMotorista ,
+                        v.NomeEventoFull ,
+                        v.Finalidade
+                    })
                     .ToList();
 
                 // Processar em memória com validações robustas de NULL
@@ -1187,18 +1215,12 @@ namespace FrotiX.Controllers
         {
             try
             {
-                var objViagens = _unitOfWork.Viagem.GetAllReduced(selector: v => new
-                {
-                    v.DataInicial ,
-                    v.RecorrenciaViagemId ,
-                    v.ViagemId ,
-                });
-
                 List<DateTime> datasOrdenadas;
 
                 if (recorrenciaViagemId == Guid.Empty)
                 {
-                    datasOrdenadas = objViagens
+                    datasOrdenadas = _context.Viagem
+                        .AsNoTracking()
                         .Where(v => v.ViagemId == viagemId || v.RecorrenciaViagemId == viagemId)
                         .Select(v => v.DataInicial)
                         .Where(d => d.HasValue)
@@ -1208,13 +1230,16 @@ namespace FrotiX.Controllers
                 }
                 else if (editarProximos)
                 {
-                    var dataAtual = objViagens
-                        .FirstOrDefault(v => v.ViagemId == viagemId)
-                        ?.DataInicial;
+                    var dataAtual = _context.Viagem
+                        .AsNoTracking()
+                        .Where(v => v.ViagemId == viagemId)
+                        .Select(v => v.DataInicial)
+                        .FirstOrDefault();
 
                     if (dataAtual.HasValue)
                     {
-                        datasOrdenadas = objViagens
+                        datasOrdenadas = _context.Viagem
+                            .AsNoTracking()
                             .Where(v =>
                                 v.RecorrenciaViagemId == recorrenciaViagemId
                                 && v.DataInicial >= dataAtual
@@ -1238,7 +1263,8 @@ namespace FrotiX.Controllers
                 }
                 else
                 {
-                    datasOrdenadas = objViagens
+                    datasOrdenadas = _context.Viagem
+                        .AsNoTracking()
                         .Where(v =>
                             v.RecorrenciaViagemId == recorrenciaViagemId
                             || v.ViagemId == viagemId

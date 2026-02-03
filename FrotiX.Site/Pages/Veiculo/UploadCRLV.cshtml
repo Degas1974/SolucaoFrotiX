@@ -1,3 +1,107 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Veiculo/UploadCRLV.cshtml
+ * OBJETIVO: Pagina de upload e visualizacao de CRLV (Certificado Registro Licenciamento
+ *           Veiculo) documento PDF por veiculo exibindo Syncfusion Uploader async + Syncfusion
+ *           PDFViewer renderizando PDF inline, permite motoristas/admins anexar CRLV
+ *           digital veiculo para consulta mobile campo evitando carregar documento fisico.
+ * ENTRADAS: route /Veiculo/UploadCRLV?id=123 (id do veiculo obrigatorio), model UploadCRLVModel
+ *           PageModel (properties: VeiculoId int, Veiculo entity Include Placa/Modelo
+ *           exibir header, CRLVExistente string path PDF ja anexado load inicial PDFViewer),
+ *           Syncfusion Uploader async POST /Veiculo/SaveCRLV aceita arquivo PDF ate
+ *           5MB restricao accept .pdf, retorna JSON {success, fileName, filePath} PDF
+ *           salvo servidor
+ * SAIDAS: Pagina renderizada com card header (titulo Upload CRLV Veiculo: [Placa Modelo],
+ *         icone fa-file-pdf, breadcrumb Frota > Veiculos > Upload CRLV, link Voltar
+ *         /Veiculo/Index), card body com: 1. Alert Info topo (instrucoes: Selecione
+ *         arquivo PDF do CRLV veiculo tamanho maximo 5MB, PDF sera salvo e vinculado
+ *         ao veiculo para consulta, CRLV vigente obrigatorio circular veiculo), 2.
+ *         Syncfusion Uploader component (botao Browse seleciona arquivo PDF restricao
+ *         accept .pdf maxFileSize 5MB, drag-drop area permite arrastar PDF, async auto-upload
+ *         true envia automaticamente apos selecao, progress bar animada durante upload,
+ *         success event recebe response JSON fileName/filePath atualiza PDFViewer carrega
+ *         novo PDF exibe AppToast Verde CRLV salvo com sucesso, failure event exibe
+ *         Alerta.Erro mensagem erro validacao tamanho/extensao), 3. Syncfusion PDFViewer
+ *         component (se CRLVExistente not null carrega PDF inicial exibe documento vigente,
+ *         senao exibe placeholder Nenhum CRLV anexado upload documento, toolbar topo
+ *         botoes Zoom In/Out/Fit Page/Fit Width/Rotate, Print imprime PDF, Download
+ *         baixa PDF original, navegacao paginas se CRLV multiplas paginas, scroll vertical
+ *         se PDF longo, annotation tools permite adicionar comentarios/highlight no
+ *         PDF se necessario marcar informacoes importantes), 4. Botao Excluir CRLV rodape
+ *         danger (disabled se CRLVExistente null, click Alerta.Confirmar popup Tem
+ *         certeza excluir CRLV?, se Sim POST /Veiculo/DeleteCRLV?id=123 soft delete
+ *         seta Veiculo.CRLVPath=null DataExclusaoCRLV=now, success limpa PDFViewer
+ *         exibe placeholder exibe AppToast amarelo CRLV excluido)
+ * CHAMADA POR: Grid /Veiculo/Index coluna Acoes botao CRLV icone file-pdf azul (link
+ *              /Veiculo/UploadCRLV?id=123), botao Upload CRLV em /Veiculo/Upsert form
+ *              (abre modal iframe ou redirect), usado por Admins Frota atualizar CRLVs
+ *              apos renovacao anual licenciamento, usado por Motoristas mobile consultar
+ *              CRLV digital se fiscalizacao solicitar documento estrada
+ * CHAMA: PageModel UploadCRLVModel.cshtml.cs: OnGet (recebe id query param valida veiculo
+ *        existe carrega Veiculo Include CRLVPath, se CRLVPath not null passa para ViewBag
+ *        PDFViewer load inicial, se null PDFViewer vazio), OnPost SaveCRLV (recebe
+ *        IFormFile arquivo PDF e VeiculoId hidden field, valida extensao .pdf real
+ *        via FileSignature magic bytes nao apenas nome arquivo, valida tamanho max
+ *        5MB, valida ContentType application/pdf, gera fileName GUID+.pdf evita conflitos,
+ *        salva arquivo wwwroot/uploads/crlv/ usando IWebHostEnvironment.WebRootPath,
+ *        atualiza Veiculo entity seta CRLVPath=/uploads/crlv/abc123.pdf DataAtualizacaoCRLV=now,
+ *        DbContext.SaveChanges, retorna JSON {success:true, fileName, filePath}),
+ *        OnPost DeleteCRLV (recebe id query param, carrega Veiculo verifica CRLVPath
+ *        not null, soft delete seta CRLVPath=null DataExclusaoCRLV=now UsuarioExclusaoId=User.Id
+ *        mantem historico auditoria, considera deletar arquivo fisico disco se politica
+ *        retencao permite senao manter backup, SaveChanges, retorna JSON success),
+ *        Syncfusion Uploader component (upload async restricoes accept/maxFileSize,
+ *        eventos uploading/success/failure, localization PT-BR), Syncfusion PDFViewer
+ *        component (renderiza PDF usando PDF.js library, toolbar zoom/print/download/annotation,
+ *        scroll virtual lazy loading paginas grandes), Alerta.Confirmar (confirmacao
+ *        exclusao), AppToast.show Verde/Amarelo (feedback success/warning)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 Uploader/PDFViewer 2023.4.2,
+ *               Bootstrap 5.3.8, Font Awesome 6 Duotone, jQuery 3.7.1, PDF.js library
+ *               (included Syncfusion), EF Core 8.0
+ * OBSERVACOES: 352 linhas pagina upload CRLV veiculo. CRLV (Certificado Registro Licenciamento
+ *              Veiculo) documento obrigatorio circular veiculo emitido anualmente pelo
+ *              DETRAN apos pagamento IPVA/multas/seguro obrigatorio, contem dados veiculo
+ *              (Placa, Chassi, Renavam, Proprietario, Marca/Modelo, Ano Fabricacao/Modelo,
+ *              Capacidade passageiros/carga, Restricoes judiciais/financeiras), fiscalizacao
+ *              transito pode solicitar CRLV motorista deve apresentar sob pena multa
+ *              gravissima R$ 293,47 + 7 pontos CNH + apreensao veiculo (Art 232 CTB),
+ *              FrotiX permite digitalizar CRLV upload PDF vincula veiculo motoristas
+ *              consultam mobile app campo dispensando documento fisico (alguns estados
+ *              ja permitem CRLV digital app Carteira Digital Transito aceito fiscalizacao).
+ *              Validacao backend ESSENCIAL: verifica extensao arquivo real via FileSignature
+ *              magic bytes PDF inicia com %PDF (bytes 25 50 44 46 hex) nao confiar apenas
+ *              extensao nome arquivo usuario malicioso pode renomear EXE para .pdf bypassar
+ *              validacao client-side, verifica ContentType application/pdf, valida tamanho
+ *              max 5MB (CRLV digitalizado scan geralmente 1-2 paginas 500KB-1MB, limite
+ *              5MB generoso mas evita uploads abusivos PDFs enormes 100MB+ travam renderizacao).
+ *              GUID filename: gera nome arquivo unico abc123-def456-ghi789.pdf evita
+ *              conflitos sobrescrever CRLVs de outros veiculos e previne path traversal
+ *              attacks (se usar fileName original sanitizar removendo ../ caracteres
+ *              especiais). Soft delete: seta CRLVPath=null DataExclusaoCRLV=now UsuarioExclusaoId
+ *              mantem auditoria (rastrear quem excluiu CRLV quando para compliance),
+ *              considera manter arquivo fisico disco backup 30 dias apos exclusao caso
+ *              erro usuario precise recuperar senao deletar arquivo libera espaco disco.
+ *              Syncfusion PDFViewer: renderiza PDF client-side usando PDF.js Mozilla
+ *              library sem plugin Adobe Reader (funciona todos navegadores modernos),
+ *              annotation tools permitem adicionar comentarios/highlight no PDF (exemplo:
+ *              destacar data vencimento CRLV 31/12/2026, adicionar nota Renovar IPVA
+ *              ate Janeiro 2027, anotacoes salvas separado nao modificam PDF original).
+ *              Mobile consulta: motoristas campo acessam FrotiX mobile app /Veiculo/UploadCRLV?id=123
+ *              visualizam CRLV digital PDF, se fiscalizacao solicitar documento mostram
+ *              tela smartphone oficial aceita (verificar legislacao estadual alguns
+ *              estados ainda exigem CRLV fisico outros aceitam digital), considera adicionar
+ *              botao Enviar CRLV Email permite motorista enviar PDF proprio email se
+ *              preferir ter copia offline. Renovacao anual: CRLV vencimento anual geralmente
+ *              mes aniversario final placa (placas finais 1-2 vencem Janeiro, 3-4 Fevereiro,
+ *              ...), sistema pode alertar automaticamente Veiculos com CRLV Vencido:
+ *              query Where DataAtualizacaoCRLV < 1 year ago exibe dashboard badge vermelho,
+ *              Job agendado envia email alerta Admin Frota 30 dias antes vencimento
+ *              lista veiculos renovar IPVA obter novo CRLV upload atualizar sistema.
+ *              Integracao API DETRAN: futuramente considerar integracao automatica API
+ *              DETRAN (se disponibilizada) busca CRLV digital automaticamente via Renavam/Placa
+ *              sem necessidade upload manual, atualiza dados veiculo proprietario restricoes
+ *              sincroniza base FrotiX com base DETRAN tempo real.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
 @page
 @model FrotiX.Pages.Veiculo.UploadCRLVModel
 

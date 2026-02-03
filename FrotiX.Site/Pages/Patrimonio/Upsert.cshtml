@@ -1,6 +1,33 @@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 
+@* ========================================================================================
+ * ARQUIVO: Pages/Patrimonio/Upsert.cshtml
+ * OBJETIVO: Formulario de criacao e edicao de patrimonios com Syncfusion ComboBox para selecao
+ *           de Secao Patrimonial e Setor Patrimonial (com autocomplete), validacao de campos
+ *           obrigatorios (codigo, descricao, secao, setor), checkbox status Ativo.
+ * ENTRADAS: Model FrotiX.Pages.Patrimonio.UpsertModel (code-behind com propriedades Id, Codigo,
+ *           Descricao, SecaoPatrimonialId, SetorPatrimonialId, Status), parametro query string id
+ *           (edicao carrega dados existentes via OnGet, ausente indica criacao), ViewData com listas
+ *           (secoes, setores carregadas no OnGet), formulario HTML5 com input text (codigo, descricao),
+ *           Syncfusion ComboBox (secao, setor com autocomplete), checkbox (status Ativo checked default)
+ * SAIDAS: Formulario renderizado com campos preenchidos (edicao) ou vazios (criacao), ComboBox
+ *         funcional com autocomplete, validacao HTML5 frontend (required nos campos obrigatorios),
+ *         POST /Patrimonio/Upsert (submit salva no banco via IUnitOfWork), redirect para /Patrimonio
+ *         apos sucesso com AppToast Verde, erro exibe AppToast Vermelho
+ * CHAMADA POR: Link /Patrimonio/Upsert (criacao novo), link /Patrimonio/Upsert?id=X (edicao),
+ *              botao + Novo Patrimonio da pagina /Patrimonio/Index, botao Editar no TreeGrid
+ * CHAMA: patrimonio_upsert.js (arquivo JavaScript externo com validacao customizada, submit handler),
+ *        POST /Patrimonio/Upsert endpoint (backend salva entidade Patrimonio, retorna JSON success/error),
+ *        AppToast.show (notificacoes toast)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 ASP.NET Core (ComboBox com autocomplete),
+ *               jQuery 3.7.1, Bootstrap 5.3.8, patrimonio_upsert.js, AppToast.js, IUnitOfWork
+ * OBSERVACOES: 404 linhas com formulario completo padrao FrotiX. ComboBox Syncfusion permite
+ *              autocomplete ao digitar nome da secao/setor facilitando selecao. Sistema integrado
+ *              com contabilidade publica para classificacao de bens patrimoniais do orgao.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model FrotiX.Pages.Patrimonio.UpsertModel
 @using Syncfusion.Blazor.Inputs
 

@@ -420,26 +420,20 @@ window.inicializarTxtFinalRecorrencia = function ()
 {
     try
     {
-        const txtFinalRecorrenciaElement = document.getElementById("txtFinalRecorrencia");
+        const txtFinalRecorrenciaObj = window.getKendoDatePicker("txtFinalRecorrencia");
 
-        if (!txtFinalRecorrenciaElement)
+        if (!txtFinalRecorrenciaObj)
         {
-            console.warn("⚠️ txtFinalRecorrencia não encontrado no DOM");
+            console.warn("⚠️ txtFinalRecorrencia não encontrado ou não inicializado (Kendo)");
             return false;
         }
-
-        // Aguardar instância Syncfusion
-        if (!txtFinalRecorrenciaElement.ej2_instances || !txtFinalRecorrenciaElement.ej2_instances[0])
-        {
-            console.warn("⚠️ txtFinalRecorrencia ainda não foi renderizado");
-            return false;
-        }
-
-        const txtFinalRecorrenciaObj = txtFinalRecorrenciaElement.ej2_instances[0];
 
         // Definir data mínima como hoje
         const hoje = new Date();
-        txtFinalRecorrenciaObj.min = hoje;
+        if (typeof txtFinalRecorrenciaObj.min === "function")
+        {
+            txtFinalRecorrenciaObj.min(hoje);
+        }
 
         console.log("✅ txtFinalRecorrencia configurado");
         return true;

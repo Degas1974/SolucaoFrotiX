@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Lavador/Index.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Listagem de lavadores com DataTable, modal para visualizar foto, badges de status Ativo/Inativo, botões de ação (Editar, Foto, Apagar)
+ * 📥 ENTRADAS     : @page, @model IndexModel, ViewData (Title, PageName, Heading, Category1, PageIcon), cliques em botões de ação na tabela
+ * 📤 SAÍDAS       : HTML DataTable (#tblLavador) populado via AJAX (/api/Lavador/ListaLavadores), modal Bootstrap 5 (#modalFoto) com preview de foto via API, redirects para /Lavador/Upsert, chamadas AJAX: /api/Lavador/PegaFotoModal, /api/Lavador/Apagar
+ * 🔗 CHAMADA POR  : Menu Cadastros > Lavadores, link "Voltar à Lista" em Upsert
+ * 🔄 CHAMA        : /Lavador/Upsert (novo/editar), /api/Lavador/ListaLavadores (GET DataTable), /api/Lavador/PegaFotoModal (GET foto base64), /api/Lavador/Apagar (POST delete), JavaScript ~/js/cadastros/lavador.js, Alerta.TratamentoErroComLinha (global), bootstrap.Modal (modal), DataTables, AppToast (toasts), SweetAlertInterop (confirmações)
+ * 📦 DEPENDÊNCIAS : Bootstrap 5.3.8 (modal), Google Fonts Outfit (700/800/900), DataTables, ~/css/ (custom cards), ~/js/cadastros/lavador.js, Font Awesome Duotone, ~/Images/barbudo.jpg (placeholder foto), jQuery, Alerta, AppToast, SweetAlertInterop, data-ftx-loading (links)
+ * 📝 OBSERVAÇÕES  : Total: ~222 linhas. CSS inline extenso (~190 linhas) com padrão visual FrotiX (ftx-card-header azul, badges, botões). Handler delegado para .btn-foto funcional. Modal renderiza foto via base64 ou placeholder. DataTable inicializado em lavador.js (externo). Badges Ativo (verde brilhante) e Inativo (cinza escuro) com box-shadow. Botões de ação: Editar (azul), Foto (chocolate), Apagar (vinho). Responsivo via media queries. Header azul com animação shimmer. CSS bem organizado em seções. JavaScript inline mínimo (~60 linhas) para modal de foto. Limpa modal ao fechar. Tratamento de erro robusto com try-catch. Carrega lavador.js que contém lógica principal (verificar se arquivo existe).
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Lavador.IndexModel
 

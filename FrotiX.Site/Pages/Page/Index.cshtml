@@ -1,3 +1,44 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Page/Index.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : **ARQUIVO DUPLICADO** de SecaoPatrimonial/Index.cshtml - página listagem Seções
+ *                   Patrimoniais com DataTable #tblSecao (4 colunas). ERRO: arquivo no namespace ERRADO
+ *                   (Page/ em vez de SecaoPatrimonial/), MODEL inconsistente, link botão errado.
+ * 📥 ENTRADAS     : @page route /Page/Index (CONFUSO! normalmente Home page), @model SecaoPatrimonial
+ *                   (MODEL DIRETO não PageModel!), JavaScript secao_patrimonial.js (carrega DataTable)
+ * 📤 SAÍDAS       : Panel width 90% centered com header flexbox (título fa-warehouse + botão btn-azul
+ *                   "Adicionar Seção" link ERRADO ./SetorPatrimonial/Upsert), border-bottom #325d88,
+ *                   DataTable #tblSecao (4 colunas: Seção/Setor/Status/Ação), Bootstrap 5 CDN,
+ *                   secao_patrimonial.js (loadList AJAX populate)
+ * 🔗 CHAMADA POR  : **PROVAVELMENTE NÃO USADO** - route /Page/Index confuso (normalmente seria Home),
+ *                   duplicação de SecaoPatrimonial/Index.cshtml, possivelmente copy/paste error
+ * 🔄 CHAMA        : @model SecaoPatrimonial (MODEL DIRETO - ERRADO!), ViewData (breadcrumb/heading),
+ *                   ./SetorPatrimonial/Upsert (link ERRADO! deve ser ./SecaoPatrimonial/Upsert),
+ *                   ~/js/cadastros/secao_patrimonial.js (AJAX loadList #tblSecao), Bootstrap 5 CDN
+ *                   (jsdelivr.net v5.3.8), CSS inline (.fundo-cinza #2F4F4F, .label white),
+ *                   Font Awesome Duotone (fa-shop, fa-warehouse, fa-file-plus icon-pulse)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, SecaoPatrimonial model (NÃO PageModel!), Bootstrap 5 CDN,
+ *                   secao_patrimonial.js (cadastros folder), DataTables (table-bordered table-striped),
+ *                   Font Awesome 6 Duotone, CSS inline + btn-azul (FrotiX), asp-append-version (cache busting)
+ * 📝 OBSERVAÇÕES  : 73 linhas. **ARQUIVO PROBLEMÁTICO - DUPLICAÇÃO**:
+ *                   1. **DUPLICADO**: IDÊNCTICO a SecaoPatrimonial/Index.cshtml (mesmas 73 linhas)
+ *                   2. **NAMESPACE ERRADO**: arquivo em Page/ mas ViewData/Title "Seções Patrimoniais"
+ *                   3. **MODEL INCONSISTENTE**: @model SecaoPatrimonial (MODEL direto, não PageModel SecaoPatrimonialIndexModel)
+ *                   4. **LINK ERRADO**: botão "Adicionar Seção" aponta ./SetorPatrimonial/Upsert (deve ser SecaoPatrimonial!)
+ *                   5. **ROUTE CONFUSO**: /Page/Index normalmente seria Home page, não cadastro Seção
+ *                   ViewData config:
+ *                   - Title: "Seções Patrimoniais" (incoerente com Page/)
+ *                   - PageName: "secaopatrimonial_index" (correto)
+ *                   - Heading: "<i class='fa-duotone fa-shop'></i> Cadastros: Seções Patrimoniais"
+ *                   - PageIcon: "fa-duotone fa-shop"
+ *                   CSS inline: .fundo-cinza #2F4F4F, .label white (não usado na página). Panel width 90%
+ *                   margin auto (centralizado). Header d-flex justify-content-between flex-nowrap,
+ *                   h2 titulo-pagina fa-warehouse, botão btn-azul fa-file-plus icon-space icon-pulse
+ *                   white-space: nowrap. Border-bottom #325d88 (azul petróleo FrotiX). DataTable #tblSecao
+ *                   tbody vazio (preenchido via secao_patrimonial.js AJAX). Bootstrap 5 CDN REDUNDANTE
+ *                   (já no _Layout). **AÇÃO RECOMENDADA**: DELETE este arquivo, usar SecaoPatrimonial/Index.cshtml,
+ *                   corrigir links referenciados (se existirem).
+ **************************************************************************************** *@
 @page
 @model FrotiX.Models.Cadastros.SecaoPatrimonial
 @{

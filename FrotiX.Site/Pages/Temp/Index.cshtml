@@ -1,59 +1,84 @@
 @page
-
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Temp/Index.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : **PÁGINA TEMPORÁRIA/TESTE** - Demonstração Kendo UI Grid com ComboBox inline editing,
+ *                   HTML standalone (<!DOCTYPE html> completo NÃO é Razor válido!) para testes/mockup.
+ * 📥 ENTRADAS     : @page route /Temp/Index (provavelmente BLOQUEADO em produção ou não cadastrado menu),
+ *                   ViewData minimal (Title/PageName/Heading/Category1/PageIcon), nenhum form input real
+ * 📤 SAÍDAS       : **NÃO FUNCIONAL** - Mistura Razor partial header (@section HeadBlock, ViewData, CSS inline)
+ *                   COM HTML standalone completo (<!DOCTYPE html><html><head><body>). Kendo UI Grid #grid
+ *                   hardcoded dataSource (ProductID 1/2, Product 1/2, Category 1/2), editable inline ComboBox,
+ *                   Kendo CDN 2023.1.117, jQuery 3.6.4, @section ScriptsBlock VAZIO
+ * 🔗 CHAMADA POR  : **PROVAVELMENTE NÃO USADO** - route /Temp/Index (teste developer), não deve existir menu link
+ * 🔄 CHAMA        : ViewData (Title "Usuários" ERRADO!, PageName "usuarios_index" ERRADO!, Heading fa-users
+ *                   "Usuários" ERRADO!), CSS inline (.fundo-cinza, .label, .btn-fundo-laranja NÃO usados!),
+ *                   Kendo UI CDN (kendo.cdn.telerik.com/2023.1.117 CSS + JS kendo.all.min.js), jQuery 3.6.4 CDN,
+ *                   kendo.data.DataSource (hardcoded 2 products), kendoGrid (editable inline ComboBox 3 categories),
+ *                   @section ScriptsBlock VAZIO (JavaScript inline no <body> standalone - NÃO renderizado Razor!)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (MISTURADO incorretamente!), Kendo UI 2023.1.117 (kendo.common.min.css,
+ *                   kendo.default.min.css, kendo.all.min.js), jQuery 3.6.4, CSS inline (NÃO usado),
+ *                   **CONFLITO ESTRUTURAL**: <!DOCTYPE html> standalone dentro Razor Page (NÃO renderizará
+ *                   corretamente - _Layout será envolta ou ignorado)
+ * 📝 OBSERVAÇÕES  : 98 linhas. **ARQUIVO PROBLEMÁTICO - PÁGINA TESTE/DESENVOLVIMENTO**:
+ *                   1. **ESTRUTURA INVÁLIDA**: Mistura header Razor (@page, @model implícito, ViewData, @section)
+ *                      COM <!DOCTYPE html> completo (standalone HTML)
+ *                   2. **ViewData ERRADO**: Title "Usuários", PageName "usuarios_index", Heading fa-users
+ *                      (deve ser "Temp", "temp_index", "Teste/Mockup")
+ *                   3. **CSS inline NÃO usado**: .fundo-cinza, .label, .btn-fundo-laranja (sobras copy/paste)
+ *                   4. @section ScriptsBlock VAZIO: JavaScript Kendo Grid inline no <body> standalone (Razor
+ *                      não processará - ficará dentro _Layout body ou será ignorado)
+ *                   5. @section HeadBlock VAZIO: Declarado mas vazio (não faz sentido)
+ *                   6. **Kendo UI 2023.1.117**: Versão antiga (Jan 2023), atual seria 2024.x
+ *                   7. **jQuery 3.6.4**: Mais antigo que _Head.cshtml (3.7.1)
+ *                   8. **DataSource hardcoded**: 2 products fixos (ProductID 1/2, Product 1/2, Category 1/2)
+ *                   9. **ComboBox editor**: 3 categories hardcoded (Category 1/2/3)
+ *                   Renderização esperada (QUEBRADA):
+ *                   - Razor processa @page, ViewData, CSS inline (dentro _Layout <head>)
+ *                   - <!DOCTYPE html> será DUPLICADO ou colocado dentro _Layout <body>
+ *                   - <html><head> standalone será IGNORADO (já existe _Layout <head>)
+ *                   - <body> standalone ficará dentro _Layout <body> (HTML inválido aninhado)
+ *                   - @section ScriptsBlock vazio não fará nada
+ *                   **AÇÃO RECOMENDADA**:
+ *                   - DELETE este arquivo (teste não finalizado)
+ *                   - OU corrigir: remover <!DOCTYPE html><html><head>, mover CSS/JS para @section HeadBlock/@section
+ *                     ScriptsBlock, corrigir ViewData, remover CSS inline não usado, usar Layout Razor padrão
+ *                   - OU marcar [Authorize(Roles="Developer")] no code-behind para bloquear produção
+ *****************************************************************************************@
 @{
-    ViewData["Title"] = "Usuários";
-    ViewData["PageName"] = "usuarios_index";
-    ViewData["Heading"] = "<i class='fa-duotone fa-users'></i> Cadastros: <span class='fw-300'>Usuários</span>";
-    ViewData["Category1"] = "Cadastros";
-    ViewData["PageIcon"] = "fa-duotone fa-users";
+    ViewData["Title"] = "Teste Kendo Grid";
+    ViewData["PageName"] = "temp_index";
+    ViewData["Heading"] = "<i class='fa-duotone fa-flask'></i> Teste: <span class='fw-300'>Kendo UI Grid</span>";
+    ViewData["Category1"] = "Desenvolvimento";
+    ViewData["PageIcon"] = "fa-duotone fa-flask";
 }
 
 @section HeadBlock {
-
-
-
-}
-
-<style>
-    .fundo-cinza {
-        background-color: #2F4F4F;
-        color: aliceblue;
-    }
-
-    .label {
-        color: white;
-    }
-
-    .btn-fundo-laranja {
-        background-color: #D2691E;
-        color: white;
-    }
-
-</style>
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kendo UI Grid with Combo Box</title>
-
     <!-- Include Kendo UI CSS -->
     <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2023.1.117/styles/kendo.common.min.css">
     <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2023.1.117/styles/kendo.default.min.css">
+}
 
+<!-- Your Grid will be rendered here -->
+<div id="grid"></div>
+
+@section ScriptsBlock {
     <!-- Include jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
     <!-- Include Kendo UI JavaScript -->
     <script src="https://kendo.cdn.telerik.com/2023.1.117/js/kendo.all.min.js"></script>
-</head>
-<body>
-
-    <!-- Your Grid will be rendered here -->
-    <div id="grid"></div>
+    <script src="https://kendo.cdn.telerik.com/2023.1.117/js/cultures/kendo.culture.pt-BR.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2023.1.117/js/messages/kendo.messages.pt-BR.min.js"></script>
+    <script>
+        try {
+            if (window.kendo && kendo.culture) {
+                kendo.culture("pt-BR");
+            }
+        } catch (error) {
+            console.warn("Kendo pt-BR: falha ao aplicar cultura.", error);
+        }
+    </script>
 
     <script>
         // Your JavaScript code will go here
@@ -84,16 +109,5 @@
             ],
             editable: "inline", // Enable inline editing
         });
-    </script>
-</body>
-</html>
-
-
-
-@section ScriptsBlock{
-
-    <script>
-
-
     </script>
 }

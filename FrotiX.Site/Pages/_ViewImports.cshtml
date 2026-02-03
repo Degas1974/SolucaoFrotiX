@@ -1,3 +1,29 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/_ViewImports.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Definir imports globais (using directives), namespaces e Tag Helpers para
+ *                   TODAS as páginas Razor em Pages/. Evita repetição de @using em cada arquivo.
+ * 📥 ENTRADAS     : Processamento automático pelo ASP.NET Core Razor Pages engine ao compilar
+ *                   qualquer .cshtml em Pages/ ou subpastas
+ * 📤 SAÍDAS       : Namespaces disponíveis globalmente (Microsoft.AspNetCore.Identity, FrotiX,
+ *                   FrotiX.Data, FrotiX.Extensions, FrotiX.Models), Tag Helpers registrados
+ *                   (ASP.NET MVC, Syncfusion EJ2, Kendo.Mvc, FrotiX custom), SmartSettings
+ *                   injetado via @inject (disponível como @Settings em todas as views)
+ * 🔗 CHAMADA POR  : ASP.NET Core Razor Pages pipeline automaticamente ao compilar views
+ * 🔄 CHAMA        : FrotiX namespace imports, SmartSettings (dependency injection),
+ *                   Syncfusion.EJ2 TagHelpers, Kendo.Mvc TagHelpers
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (ViewImports convention), Microsoft.AspNetCore.Identity,
+ *                   Syncfusion.EJ2 (Tag Helpers), Kendo.Mvc (Telerik UI), FrotiX assemblies
+ * 📝 OBSERVAÇÕES  : 12 linhas. Arquivo FUNDAMENTAL - configura imports de TODAS as páginas.
+ *                   @namespace FrotiX.Pages define namespace base para PageModels. @inject
+ *                   SmartSettings Settings torna configurações acessíveis como @Settings.
+ *                   TagHelpers registrados: ASP.NET MVC (@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+ *                   - duplicado line 8 e 11, pode ser limpo), Syncfusion EJ2 (@addTagHelper *, Syncfusion.EJ2),
+ *                   Kendo.Mvc (@addTagHelper *, Kendo.Mvc), FrotiX custom (@addTagHelper *, FrotiX).
+ *                   Convenção ASP.NET Core: _ViewImports.cshtml aplica-se hierarquicamente
+ *                   (combina com _ViewImports em pastas superiores). Sobrescrito em Areas/
+ *                   com seus próprios _ViewImports.cshtml específicos.
+ **************************************************************************************** *@
 @using Microsoft.AspNetCore.Identity
 @using FrotiX
 @using FrotiX.Data

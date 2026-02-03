@@ -1,3 +1,34 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: movimentacaopatrimonio.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar movimentação de bens patrimoniais entre setores/seções com
+ *                   CRUD completo (criar, editar, excluir), DataTable com filtros avançados
+ *                   (data, setor/seção origem/destino, responsável), loading overlay,
+ *                   combos Syncfusion EJ2, e controle de status (Ativo/Baixado).
+ * 📥 ENTRADAS     : Formulário #formsMovimentacaoPatrimonio, cliques de ação (criar/editar/excluir),
+ *                   filtros de DataTable, Syncfusion componentes (#cmbPatrimonio,
+ *                   #cmbSetorDestino, #cmbSecoesDestino, #ddtSetorSecaoOrigem/Destino,
+ *                   #dataMov, #StatusCheckbox)
+ * 📤 SAÍDAS       : DataTable renderizado (#tblMovimentacaoPatrimonio), AJAX POST/GET
+ *                   para /api/Patrimonio/* (MovimentacaoPatrimonioGrid, GetMovimentacao,
+ *                   Create/UpdateMovimentacao, DeleteMovimentacaoPatrimonio), loading overlay
+ *                   exibido (#loadingOverlayMovPatrimonio), AppToast notificações,
+ *                   Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready, event handlers (submit, cliques, filtros), botões
+ *                   (#btnSalvar, .btn-delete, .btn-edit), Pages/Patrimonio/Movimentacao.cshtml
+ * 🔄 CHAMA        : $.ajax (8 endpoints: lista, get, create, update, delete, combos),
+ *                   DataTable API, Syncfusion EJ2 API (ComboBox, DropDownTree,
+ *                   DatePicker, Checkbox), Alerta.Confirmar, AppToast.show,
+ *                   mostrarLoadingMovPatrimonio(), esconderLoadingMovPatrimonio(),
+ *                   Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables, Syncfusion EJ2 (ComboBox, DropDownTree,
+ *                   DatePicker, Checkbox), Alerta.js, AppToast
+ * 📝 OBSERVAÇÕES  : Arquivo MUITO grande (1562 linhas). Estrutura: MovimentacaoPatrimonioId,
+ *                   PatrimonioId, DataMovimentacao, SetorOrigemId/SecaoOrigemId,
+ *                   SetorDestinoId/SecaoDestinoId, ResponsavelMovimentacao, StatusPatrimonio.
+ *                   Múltiplos endpoints API documentados no cabeçalho JSDoc original.
+ **************************************************************************************** */
+
 /**
  * 📦 MÓDULO: Movimentação de Patrimônio
  *

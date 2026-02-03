@@ -1,3 +1,27 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_Logo.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view que renderiza o logo FrotiX no cabeçalho da sidebar (page-logo)
+ *                   com link para dashboard. Substítulo anteriormente do SmartAdmin (comentado).
+ * 📥 ENTRADAS     : @Settings.AppFlavor (nome da aplicação), ~/Images/frotix.png (arquivo de imagem),
+ *                   link para /intel/analyticsdashboard, configuração SmartSettings
+ * 📤 SAÍDAS       : <div class="page-logo"> com <a> para dashboard, <img src="~/Images/frotix.png"
+ *                   alt="@Settings.AppFlavor" aria-roledescription="logo">, imagem clicavel
+ * 🔗 CHAMADA POR  : Pages/Shared/_LeftPanel.cshtml (<partial name="_Logo"/>), renderizado no
+ *                   topo da sidebar (aside.page-sidebar)
+ * 🔄 CHAMA        : /intel/analyticsdashboard (link do logo), ~/Images/frotix.png (imagem estática),
+ *                   @Settings.AppFlavor (SmartSettings injection)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views), SmartSettings injection (@Settings),
+ *                   arquivo ~/Images/frotix.png (wwwroot/Images/), rota /intel/analyticsdashboard,
+ *                   CSS class .page-logo (estilo sidebar)
+ * 📝 OBSERVAÇÕES  : 13 linhas. Versão CUSTOMIZADA do SmartAdmin - manteve estrutura mas substituiu
+ *                   logo/link. Comentarios Razor (blocos de comentario) mostram codigo original:
+ *                   - Logo dinâmico ~/img/@(Settings.Theme.Logo) (REMOVIDO)
+ *                   - Texto page-logo-text com @Settings.AppName (REMOVIDO)
+ *                   - AppFlavorSubscript e ícone fa-angle-down (AppShortcutModal - REMOVIDOS)
+ *                   Versão FrotiX simplificada: apenas logo fixo frotix.png com link para dashboard.
+ *                   Acessibilidade: aria-roledescription="logo", alt text com AppFlavor.
+ *****************************************************************************************@
 
 <div class="page-logo">
     @*<a href="#" class="page-logo-link press-scale-down d-flex align-items-center position-relative">*@

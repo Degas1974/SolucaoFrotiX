@@ -1,3 +1,24 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: multas-upload-handler.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciador centralizado para múltiplos uploaders de PDF de multas.
+ *                   Fornece API modular (MultasUpload) para carregar PDFs em viewers,
+ *                   obter instâncias de viewers Syncfusion, e funções auxiliares.
+ * 📥 ENTRADAS     : Chamadas de funções (getViewer(viewerId), loadPdfInViewer(fileName, viewerId)),
+ *                   fileName (string do arquivo PDF), viewerId (ID do viewer Syncfusion)
+ * 📤 SAÍDAS       : PDF carregado em Syncfusion PDF Viewer, instância de viewer retornada
+ *                   (ej2_instances[0]), console.warn/error (debug), Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : Módulos externos (páginas de multas), funções internas (uploadSuccess callbacks),
+ *                   MultasUpload.loadPdfInViewer(), MultasUpload.getViewer()
+ * 🔄 CHAMA        : document.getElementById, ej2_instances[0] (Syncfusion API),
+ *                   console.warn/error, window.Alerta?.TratamentoErroComLinha,
+ *                   viewer.load() (Syncfusion PDF Viewer)
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 (PDF Viewer), Alerta.js (opcional - verifica existência)
+ * 📝 OBSERVAÇÕES  : Módulo IIFE (Immediately Invoked Function Expression) com encapsulamento
+ *                   'use strict'. Funções privadas (getViewer, loadPdfInViewer) acessíveis
+ *                   via objeto retornado MultasUpload. 337 linhas total.
+ **************************************************************************************** */
+
 // ====================================================================
 // MULTAS UPLOAD HANDLER
 // Gerenciador centralizado para múltiplos uploaders de PDF

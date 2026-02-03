@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Intel/PaginaPrincipal.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página principal alternativa (desatualizada) com 10 cards de acesso às funcionalidades
+ * 📥 ENTRADAS     : @page, @model PaginaPrincipalModel, ViewData (Title, PageName, Category1, Heading), cliques nos cards
+ * 📤 SAÍDAS       : HTML com 10 cards Bootstrap 4 (Agenda, Nova Viagem, Gestão Requisição, Gestão Viagens, Gestão Manutenção, Gestão Abastecimento, Gestão Contratos, Gestão Multas, Gestão Veículos, Administração), 3 links inoperantes (#), carrossel comentado
+ * 🔗 CHAMADA POR  : Menu principal (possível rota antiga), /Intel/PaginaPrincipal
+ * 🔄 CHAMA        : /agenda/index, /viagens/upsert, /viagens/index, /ocorrencia/ocorrencias, /abastecimento/index, /contrato/index, /veiculo/index, /usuarios/registrar, 3 links # (vazios: Gestão Requisição, Gestão Multas antiga), carrossel comentado
+ * 📦 DEPENDÊNCIAS : ~/css/miscellaneous/reactions/reactions.css, ~/css/miscellaneous/fullcalendar/fullcalendar.bundle.css, ~/css/miscellaneous/jqvmap/jqvmap.bundle.css, ~/Images/Frotix_cinza_sem_fundo.png, Bootstrap 4/5 (class="col p-2 h-100"), Font Awesome Duotone, Sem JavaScript
+ * 📝 OBSERVAÇÕES  : Total: ~123 linhas. Página DESATUALIZADA - AnalyticsDashboard é versão mais recente. 3 links placeholder (#) NÃO funcionais: "Gestão de Requisição", "Gestão de Multas" (old), outro card com "#". Carrossel comentado extenso (linhas 64-92) com 3 imagens - REMOVER código morto. CSS inline simples (20 linhas). Layout usa Bootstrap grid responsivo. Imagem logo hardcoded (~/Images/Frotix_cinza_sem_fundo.png). Link /ocorrencia/ocorrencias inconsistente (AnalyticsDashboard usa /manutencao/listamanutencao). Considerar deprecar esta página e usar apenas AnalyticsDashboard. Sem feedback visual de loading. Sem JavaScript inline. Muito mais simples que AnalyticsDashboard.
+ **************************************************************************************** *@
 @page
 
 @model PaginaPrincipalModel

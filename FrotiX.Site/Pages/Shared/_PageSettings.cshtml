@@ -1,3 +1,34 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_PageSettings.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view do modal de configurações de layout/tema (modal deslizante
+ *                   direita) com tabs de customização da interface (_TabSettings partial).
+ * 📥 ENTRADAS     : Settings.Features.LayoutSettings (flag booleano - habilita modal),
+ *                   Settings.Theme.IconPrefix (para ícone fa-times fechar), trigger JavaScript
+ *                   (botão que abre .js-modal-settings via data-bs-toggle="modal")
+ * 📤 SAÍDAS       : Bootstrap modal (.modal.js-modal-settings) deslizante direita (modal-dialog-right),
+ *                   header com título "Layout Settings" + subtitle "User Interface Settings",
+ *                   botão fechar (X no canto superior direito), body com _TabSettings partial
+ *                   (tabs de configuração), <span id="saving"> (provavelmente para feedback AJAX)
+ * 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml (provavelmente após <main>), botão trigger de settings
+ *                   (gear icon?) com data-bs-toggle="modal" data-bs-target=".js-modal-settings"
+ * 🔄 CHAMA        : Shared/_TabSettings.cshtml (tabs de configuração: tema, cores, sidebar, etc.),
+ *                   Bootstrap modal JavaScript (.modal()), #saving span (AJAX save feedback?),
+ *                   @Settings.Theme.IconPrefix (fa-solid, fa-duotone), CSS classes (modal-dialog-right,
+ *                   modal-backdrop-transparent, bg-trans-gradient, color-white)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views), SmartSettings injection (@Settings),
+ *                   Bootstrap 5 (modal, data-dismiss="modal", modal-dialog, modal-content),
+ *                   Shared/_TabSettings.cshtml (conteúdo do modal), Font Awesome (fa-times),
+ *                   CSS classes custom (modal-dialog-right, bg-trans-gradient, color-white, pos-top,
+ *                   pos-right), JavaScript para modal e saving feedback
+ * 📝 OBSERVAÇÕES  : 21 linhas. Renderização condicional: só mostra modal se Settings.Features.LayoutSettings
+ *                   = true. Modal deslizante DIREITA (modal-dialog-right - customização SmartAdmin).
+ *                   modal-backdrop-transparent deixa fundo visível (semi-opaco). Header com gradiente
+ *                   (bg-trans-gradient) e texto branco. Botão fechar posicionado absolutamente
+ *                   (position-absolute pos-top pos-right). _TabSettings partial contém tabs de
+ *                   configuração (tema claro/escuro, cores, compactação sidebar, etc.). #saving span
+ *                   provavelmente usado para mostrar "Salvando..." ou checkmark após AJAX.
+ **************************************************************************************** *@
 @if (Settings.Features.LayoutSettings)
 {
 <div class="modal fade js-modal-settings modal-backdrop-transparent" tabindex="-1" role="dialog" aria-hidden="true">

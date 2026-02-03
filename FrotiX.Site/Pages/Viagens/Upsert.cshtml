@@ -1230,7 +1230,7 @@ ViewData["valueTemplate"] = @"
                                                 Nº Ficha Vistoria
                                             </label>
                                             <span class="text-danger font-weight-light" asp-validation-for="ViagemObj.Viagem.NoFichaVistoria"></span>
-                                            @* Container para alternar entre campo numérico e texto mobile *@
+                                            @* Container para alternar entre campo numérico e texto mobile*@
                                             @{
                                                 // Determinar se é nova viagem ou edição
                                                 bool isNovaViagem = Model.ViagemObj?.Viagem?.ViagemId == null || 
@@ -2362,7 +2362,7 @@ ViewData["valueTemplate"] = @"
 
 @* ===============================================================================
    MODAL OCORRÊNCIAS DO VEÍCULO (UPSERT)
-   =============================================================================== *@
+   ===============================================================================*@
 <div class="modal fade" id="modalOcorrenciasVeiculoUpsert" tabindex="-1" aria-labelledby="modalOcorrenciasVeiculoUpsertLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
@@ -2406,7 +2406,7 @@ ViewData["valueTemplate"] = @"
 
 @* ===============================================================================
    MODAL IMAGEM DA OCORRÊNCIA (UPSERT)
-   =============================================================================== *@
+   ===============================================================================*@
 <div class="modal fade" id="modalImagemOcorrenciaUpsert" tabindex="-1" aria-labelledby="modalImagemOcorrenciaUpsertLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -2478,7 +2478,7 @@ ViewData["valueTemplate"] = @"
 
 @* ===============================================================================
    OVERLAY LOADING - GRAVANDO VIAGEM (PADRÃO FROTIX)
-   =============================================================================== *@
+   ===============================================================================*@
 <div id="loadingOverlaySalvando" class="ftx-spin-overlay" style="z-index: 999999; cursor: wait; display: none;">
     <div class="ftx-spin-box" style="text-align: center; min-width: 300px;">
         <img src="/images/logo_gota_frotix_transparente.png" alt="FrotiX" class="ftx-loading-logo" style="display: block;" />
@@ -2490,7 +2490,7 @@ ViewData["valueTemplate"] = @"
 
 @* ===============================================================================
    MODAL VISUALIZAR OCORRÊNCIA DA VIAGEM (MOBILE)
-   =============================================================================== *@
+   ===============================================================================*@
 <div class="modal fade" id="modalVerOcorrenciaViagem" tabindex="-1" aria-labelledby="modalVerOcorrenciaViagemLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">

@@ -1,3 +1,25 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: setor_patrimonial.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciamento de Setores Patrimoniais com DataTable, exclusão delegada,
+ *                   verificação de pathname para garantir execução apenas na página correta.
+ * 📥 ENTRADAS     : window.location.pathname (verificação de rota),
+ *                   clique em .btn-delete (data-id), resposta Alerta.Confirmar (willDelete)
+ * 📤 SAÍDAS       : DELETE via AJAX para /api/Setor/Delete,
+ *                   AppToast (Verde/Vermelho), dataTable.ajax.reload,
+ *                   console.log (debug), Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : Verificação de pathname (/setorpatrimonial/index ou /setorpatrimonial),
+ *                   loadGrid() (antes de $(document).ready!), $(document).ready,
+ *                   event handler .btn-delete, Pages/SetorPatrimonial/Index.cshtml
+ * 🔄 CHAMA        : window.location.pathname.toLowerCase(), loadGrid() (fora de ready),
+ *                   Alerta.Confirmar, $.ajax, AppToast.show, dataTable.ajax.reload,
+ *                   console.log, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables, Alerta.js, AppToast (toast notifications)
+ * 📝 OBSERVAÇÕES  : loadGrid() chamado ANTES de $(document).ready (diferença de secao_patrimonial).
+ *                   Verifica path ANTES de executar (evita conflitos em outras páginas).
+ *                   Try-catch aninhado nos event handlers. 416 linhas total.
+ **************************************************************************************** */
+
 var path = window.location.pathname.toLowerCase();
 console.log(path);
 

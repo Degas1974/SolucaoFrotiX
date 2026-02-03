@@ -1,3 +1,25 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: listaautuacao.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Listagem de autuações (notificações de multas) com overlay de loading
+ *                   padrão FrotiX, carregamento via ListaTodasNotificacoes(), e integração
+ *                   com sistema de autuações/multas.
+ * 📥 ENTRADAS     : $(document).ready, ListaTodasNotificacoes() calls,
+ *                   #loadingOverlayAutuacao (elemento DOM)
+ * 📤 SAÍDAS       : Overlay de loading exibido/oculto (flex/none), lista de notificações
+ *                   carregada, Alerta.TratamentoErroComLinha (try-catch duplo)
+ * 🔗 CHAMADA POR  : $(document).ready (ListaTodasNotificacoes), funções auxiliares
+ *                   (mostrarLoadingAutuacao, esconderLoadingAutuacao),
+ *                   Pages/Autuacao/Lista.cshtml
+ * 🔄 CHAMA        : ListaTodasNotificacoes(), mostrarLoadingAutuacao(),
+ *                   esconderLoadingAutuacao(), document.getElementById,
+ *                   Alerta.TratamentoErroComLinha, console (global)
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DTBetterErrors (DataTable), Alerta.js
+ * 📝 OBSERVAÇÕES  : Try-catch duplo (interno com Alerta, externo silencioso).
+ *                   Loading overlay personalizado (#loadingOverlayAutuacao).
+ *                   684 linhas total.
+ **************************************************************************************** */
+
 /* global $, DTBetterErrors, Alerta */
 
 // ====================================================================

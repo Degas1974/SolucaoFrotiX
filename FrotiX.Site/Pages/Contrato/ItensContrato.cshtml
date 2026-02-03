@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Contrato/ItensContrato.cshtml (1052 linhas - CSS/JS inline massivo)
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciamento completo de itens vinculados a contratos ou atas de registro de preços
+ * 📥 ENTRADAS     : @page, @model ItensContratoModel, ViewData, Segmented Control (Contrato/Ata), dropdowns lstInstrumento, modais 5 tipos
+ * 📤 SAÍDAS       : HTML 5 DataTables (tblVeiculos, tblEncarregados, tblOperadores, tblMotoristas, tblLavadores), 5 modais Bootstrap 5, contadores ativo/inativo
+ * 🔗 CHAMADA POR  : Menu navegação (Contratos → Itens do Contrato), links outras páginas contratos, breadcrumb
+ * 🔄 CHAMA        : ~/js/cadastros/itenscontrato.js (lógica principal), APIs internas (não especificado), DataTables (5 instâncias)
+ * 📦 DEPENDÊNCIAS : jQuery 3.6.0+, DataTables 1.13.8 (5 instâncias simultâneas), Bootstrap 5.3.8 Tabs/Modals, Font Awesome Duotone, Google Fonts Outfit
+ * 📝 OBSERVAÇÕES  : Total: 1052 linhas. PROBLEMAS CRÍTICOS: 🔥 CSS INLINE GIGANTE (~500 linhas), Shimmer animation duplicada, 5 DataTables iguais (código repetitivo), 5 modais quase idênticos (estrutura duplicada 5 vezes), sem virtualização (performance ruim), card contadores hard-coded, segmented control custom (poderia usar Bootstrap Nav Pills), loading overlay incompleto, filtro lstInstrumento sem debounce, badges sem acessibilidade
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Contrato.ItensContratoModel
 

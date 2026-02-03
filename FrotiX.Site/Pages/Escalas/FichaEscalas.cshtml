@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Escalas/FichaEscalas.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Exibir ficha de escala (relatório) com dados consolidados, filtros período, export PDF/Impressão
+ * 📥 ENTRADAS     : @page, @model FichaEscalasModel, filtros (dataInicio, dataFim, escalaId), clique botão gerar/exportar
+ * 📤 SAÍDAS       : HTML relatório formatado (print-friendly), botões export PDF (jsPDF), imprimir (window.print), dados escala
+ * 🔗 CHAMADA POR  : Menu Escalas → Ficha de Escala, link ListaEscala
+ * 🔄 CHAMA        : /api/Escalas/ObterFicha, jsPDF (export), window.print (impressão)
+ * 📦 DEPENDÊNCIAS : jsPDF, html2canvas, Bootstrap 5, jQuery, Google Fonts Outfit, CSS print-friendly inline
+ * 📝 OBSERVAÇÕES  : Total: 838 linhas. ISSUES: CSS inline ~250 linhas (estilos relatório), JavaScript inline ~150 linhas (export/print), sem lazy loading dados (carrega tudo), export PDF sem progress indicator, layout quebra com muitos dados
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Escalas.FichaEscalasModel
 @{

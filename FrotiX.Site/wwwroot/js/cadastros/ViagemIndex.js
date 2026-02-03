@@ -1,22 +1,37 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║                                                                          ║
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║                                                                          ║
- * ║  Este arquivo está completamente documentado em:                         ║
- * ║  📄 Documentacao/Pages/Viagens - Index.md                                 ║
- * ║                                                                          ║
- * ║  A documentação inclui:                                                   ║
- * ║  • Explicação detalhada de todas as funções principais                   ║
- * ║  • Sistema de lazy loading de fotos explicado                           ║
- * ║  • Handlers de modais e eventos                                          ║
- * ║  • Validações e processamento                                            ║
- * ║  • Interconexões com outros módulos                                      ║
- * ║                                                                          ║
- * ║  Última atualização: 08/01/2026                                          ║
- * ║                                                                          ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViagemIndex.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Sistema COMPLEXO de listagem e gestão de viagens com lazy loading
+ *                   inteligente de fotos de motoristas (cache + fila + limite concorrência),
+ *                   overlay de loading customizado FrotiX, filtros avançados, modais de
+ *                   finalização, ocorrências, anexos, validações e sincronização com DataTable.
+ * 📥 ENTRADAS     : DataTable #tblViagem com filtros (data inicial/final, veículo, motorista,
+ *                   status), GET /api/Viagem/FotoMotorista?motoristaId (lazy loading),
+ *                   modais de finalização/ocorrências/anexos, botões delegados (.btn-*)
+ * 📤 SAÍDAS       : Exibição de fotos via IntersectionObserver (lazy loading), cache em memória
+ *                   (FtxFotoCache Map), overlay #loadingOverlayViagens com mensagens dinâmicas,
+ *                   POST/GET diversas APIs (finalizar, ocorrências, anexos), dataTable.ajax.reload(),
+ *                   tooltips Syncfusion dinâmicos, exportação Excel/PDF
+ * 🔗 CHAMADA POR  : Pages/Viagens/Index.cshtml, $(document).ready() inicialização, eventos
+ *                   delegados (click, change), IntersectionObserver (fotos visíveis)
+ * 🔄 CHAMA        : FtxViagens.mostrarLoading/esconderLoading (overlay customizado módulo IIFE),
+ *                   FtxFotoCarregarLazy() (lazy loading com fila FTX_MAX_CONCURRENT=4),
+ *                   FtxFotoProcessarFila() (controle concorrência), FtxFotoBuscar() (fetch API),
+ *                   Alerta.* (Confirmar/Erro/Warning/TratamentoErroComLinha), AppToast.show,
+ *                   window.FTXSpinner/FtxSpin.hide() (spinners globais), $.ajax() múltiplos endpoints
+ * 📦 DEPENDÊNCIAS : jQuery, DataTables (dom: "Bfrtip", buttons Excel/PDF), Syncfusion EJ2
+ *                   (tooltips, dropdowns, modais), Alerta.js, AppToast.js, IntersectionObserver
+ *                   (API nativa), fetch API (nativa), Map (cache ES6)
+ * 📝 OBSERVAÇÕES  : 3604 LINHAS - arquivo GIGANTE com lógica complexa. LAZY LOADING: usa
+ *                   IntersectionObserver para carregar fotos só quando visíveis (threshold: 0.1),
+ *                   cache definitivo (FtxFotoCache Map), fila com limite de 4 requisições
+ *                   simultâneas (FTX_MAX_CONCURRENT), promises em voo (FtxFotoInflight Map).
+ *                   OVERLAY LOADING: módulo FtxViagens IIFE com mostrarLoading(mensagem) e
+ *                   esconderLoading(), esconde spinners globais antes de mostrar overlay.
+ *                   FILTROS: aviso visual "Filtra em todas as colunas" com ícone fa-lightbulb.
+ *                   DataTable com configuração complexa (multiple exports, custom lengthMenu).
+ *                   Try-catch aninhado em todos os níveis. Sistema crítico para operação do FrotiX.
+ **************************************************************************************** */
 
 // Para controlar a exibição de ToolTips
 var CarregandoViagemBloqueada = false;

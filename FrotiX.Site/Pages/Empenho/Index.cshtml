@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Empenho/Index.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Listagem de empenhos com filtros (contrato/ata, status, período), modal detalhes, ações editar/excluir
+ * 📥 ENTRADAS     : @page, @model IndexModel, filtros (lstInstrumento, lstStatus, lstContratos/Atas, dtpFiltroData)
+ * 📤 SAÍDAS       : DataTable #tblEmpenho (JSON /api/Empenho/Lista), modal detalhes empenho, redirects /Empenho/Upsert
+ * 🔗 CHAMADA POR  : Menu Empenhos, navegação, botão "Adicionar Empenho"
+ * 🔄 CHAMA        : /api/Empenho/Lista, /api/Empenho/Detalhes, /api/Empenho/Excluir, ./Upsert, ~/js/cadastros/empenho.js
+ * 📦 DEPENDÊNCIAS : DataTables, Syncfusion EJ2 (DateRangePicker, ComboBox), Bootstrap 5 (modal), jQuery, Font Awesome
+ * 📝 OBSERVAÇÕES  : Total: 1116 linhas. ISSUES: CSS inline ~350 linhas (extrair), JavaScript inline ~300 linhas (mover para JS externo), filtros cascata complexos (Instrumento → Contrato/Ata → Empenhos), modal detalhes sem lazy loading, DataTable sem paginação server-side (performance), badges status duplicados em vários arquivos
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Empenho.IndexModel
 

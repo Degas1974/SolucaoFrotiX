@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Manutencao/ListaManutencao.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Lista OS com filtros, DataTable, modal baixa OS, modal foto
+ * 📥 ENTRADAS     : @page, @model ListaManutencaoModel, filtros (período, status, veículo), cliques ações
+ * 📤 SAÍDAS       : DataTable #tblManutencao (JSON /api/Manutencao/Lista), modal baixa OS, modal foto, redirects /Manutencao/Upsert
+ * 🔗 CHAMADA POR  : Menu Manutenção, botão "Adicionar OS"
+ * 🔄 CHAMA        : /api/Manutencao/Lista, /api/Manutencao/BaixaOS, /api/Manutencao/PegaFoto, ./Upsert, ~/js/cadastros/manutencao.js
+ * 📦 DEPENDÊNCIAS : Syncfusion + Bootstrap 5 + CSS inline (~260 linhas), DataTables, jQuery
+ * 📝 OBSERVAÇÕES  : Total: ~465 linhas. Usa Syncfusion + Bootstrap 5 + CSS inline ~260 linhas
+ **************************************************************************************** *@
 @page
 
 @using FrotiX.Repository.IRepository

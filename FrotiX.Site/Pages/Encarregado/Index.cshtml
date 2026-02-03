@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Encarregado/Index.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Listagem de encarregados com filtros, DataTable, modal foto, badges status, ações editar/foto/excluir
+ * 📥 ENTRADAS     : @page, @model IndexModel, cliques em botões ação (btn-editar, btn-foto, btn-apagar)
+ * 📤 SAÍDAS       : DataTable #tblEncarregado (JSON /api/Encarregado/Lista), modal #modalFoto (preview foto base64), redirects /Encarregado/Upsert
+ * 🔗 CHAMADA POR  : Menu Cadastros → Encarregados, link "Voltar à Lista" em Upsert
+ * 🔄 CHAMA        : /api/Encarregado/Lista, /api/Encarregado/PegaFoto, /api/Encarregado/Excluir, ./Upsert, ~/js/cadastros/encarregado.js
+ * 📦 DEPENDÊNCIAS : DataTables, Bootstrap 5 (modal), jQuery, Font Awesome Duotone, ~/Images/barbudo.jpg (placeholder), Google Fonts Outfit
+ * 📝 OBSERVAÇÕES  : Total: 435 linhas. ISSUES: CSS inline ~250 linhas (padrão FrotiX: ftx-card-header, badges, botões), JavaScript inline ~100 linhas (modal foto), badges Ativo/Inativo com box-shadow, handler delegado .btn-foto funcional, DataTable inicializado em encarregado.js (externo), modal renderiza foto via base64 ou placeholder, responsivo via media queries, header azul com shimmer animation
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Encarregado.IndexModel
 

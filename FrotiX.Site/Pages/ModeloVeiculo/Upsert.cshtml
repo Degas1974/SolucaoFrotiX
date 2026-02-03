@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/ModeloVeiculo/Upsert.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Form com dropdown Marca + DescricaoModelo + Status
+ * 📥 ENTRADAS     : @page, @model UpsertModel, campos (MarcaVeiculoId dropdown, DescricaoModelo, Status checkbox)
+ * 📤 SAÍDAS       : POST asp-page-handler="Submit|Edit", redirect /ModeloVeiculo
+ * 🔗 CHAMADA POR  : ModeloVeiculo/Index (botão "Adicionar Modelo", editar)
+ * 🔄 CHAMA        : asp-page-handler="Submit" (POST create), asp-page-handler="Edit" (POST update), /ModeloVeiculo (redirect)
+ * 📦 DEPENDÊNCIAS : ASP.NET TagHelpers, Bootstrap 5, jQuery, Google Fonts Outfit
+ * 📝 OBSERVAÇÕES  : Total: ~105 linhas. Form com dropdown Marca + DescricaoModelo + Status. CSS inline (~55 linhas) com afastamentos específicos.
+ **************************************************************************************** *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 

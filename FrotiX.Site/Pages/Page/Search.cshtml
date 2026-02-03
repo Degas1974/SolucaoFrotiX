@@ -1,4 +1,32 @@
 @page
+
+@* ========================================================================================
+ * ARQUIVO: Pages/Page/Search.cshtml
+ * OBJETIVO: Pagina DEMO de interface de busca do template SmartAdmin exibindo resultados
+ *           estaticos (hardcoded HTML) com tabs (All/Images/Videos/News), usado como
+ *           referencia de layout para futuras telas de busca reais no FrotiX.
+ * ENTRADAS: Model SearchModel (code-behind vazio sem dados dinamicos), parametro query string q
+ *           (termo de busca exibido no input search mas nao usado para buscar dados reais),
+ *           30 resultados estaticos hardcoded divididos em 4 tabs (10 All, 8 Images, 6 Videos,
+ *           6 News), input search box para nova busca (submit form GET /Page/Search?q=termo)
+ * SAIDAS: Interface de busca renderizada com search box topo, tabs Bootstrap 5 (All/Images/Videos/News),
+ *         tab All com 10 resultados (titulo H5 clicavel, URL verde, snippet descricao, data),
+ *         tab Images com grid 4 colunas de 8 thumbnails clicaveis, tab Videos com grid 3 colunas
+ *         de 6 thumbnails com play button overlay, tab News com lista de 6 noticias (titulo,
+ *         fonte, data, snippet), paginacao visual (1 2 3 Next), contador total de resultados
+ *         (About 1,234 results encontrados em 0.42 seconds estatico)
+ * CHAMADA POR: Route /Page/Search via diretiva page, submit form de busca (GET /Page/Search?q=termo),
+ *              SearchModel.OnGet metodo backend vazio (nao busca dados reais, resultados sao hardcoded)
+ * CHAMA: search.js (arquivo JavaScript externo hipotetico com handlers de tabs, caso exista),
+ *        nenhum endpoint API (resultados sao estaticos demonstrativos, nao ha busca real)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1, Bootstrap 5.3.8 (tabs, cards,
+ *               grid row/col), Font Awesome 6 Duotone (icone fa-search, fa-play videos)
+ * OBSERVACOES: 662 linhas de pagina DEMO template SmartAdmin NAO integrada ao FrotiX real.
+ *              Considerar implementar busca real integrada ao FrotiX (buscar veiculos, motoristas,
+ *              viagens, abastecimentos por palavra-chave usando full-text search SQL Server).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model SearchModel
 @{ 
 	ViewData["Title"] = "Search";

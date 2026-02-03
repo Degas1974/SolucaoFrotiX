@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Administracao/LogErros.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Visualizar e analisar logs de erro do sistema com integração Claude AI para diagnóstico
+ * 📥 ENTRADAS     : @page, @model LogErrosModel, filtros (data, origem, nível, usuário)
+ * 📤 SAÍDAS       : Lista de erros estruturados, cards de filtros clicáveis, modal de análise IA, highlight.js para syntax
+ * 🔗 CHAMADA POR  : Menu "Administração > Logs de Erro"
+ * 🔄 CHAMA        : /api/LogErros/ObterLogs (GET), /api/LogErros/AnalisarErroTexto (POST para Claude AI)
+ * 📦 DEPENDÊNCIAS : Marked.js (markdown), Highlight.js (syntax), marked-highlight extension, jQuery, Claude AI
+ * 📝 OBSERVAÇÕES  : Total: 799 linhas. ISSUES: Inicialização do marked feita inline sem verificação de carregamento, botões de copiar código sem fallback para navegadores antigos, análise IA sem rate limiting ou cache
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Administracao.LogErrosModel
 

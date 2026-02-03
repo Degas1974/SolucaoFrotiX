@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Abastecimento/RegistraCupons.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Exibir histórico de registros de cupons de abastecimento com visualização PDF
+ * 📥 ENTRADAS     : @page, @model RegistraCuponsModel, filtros de data (dataInicio, dataFim)
+ * 📤 SAÍDAS       : HTML com DataTable, Modal PDF viewer usando Kendo PDFViewer
+ * 🔗 CHAMADA POR  : Menu "Abastecimentos > Registrar Cupons", botão da página Upsert
+ * 🔄 CHAMA        : /api/abastecimento/ListaRegistroCupons, /api/Abastecimento/DeleteRegistro
+ * 📦 DEPENDÊNCIAS : Kendo UI (PDFViewer, Upload), DataTables, jQuery, Bootstrap 5
+ * 📝 OBSERVAÇÕES  : Total: 688 linhas. ISSUES: CDN redundante Kendo (2022.1.412), botão excluir sem confirmação visual, evento onInputTyping sem uso
+ **************************************************************************************** *@
 @page
 
 @using FrotiX.Repository.IRepository
@@ -34,6 +45,28 @@
     <script src="https://cdn.kendostatic.com/2022.1.412/js/jszip.min.js"></script>
     <script src="https://cdn.kendostatic.com/2022.1.412/js/kendo.all.min.js"></script>
     <script src="https://cdn.kendostatic.com/2022.1.412/js/kendo.aspnetmvc.min.js"></script>
+    <script src="https://cdn.kendostatic.com/2022.1.412/js/cultures/kendo.culture.pt-BR.min.js"></script>
+    <script src="https://cdn.kendostatic.com/2022.1.412/js/messages/kendo.messages.pt-BR.min.js"></script>
+    <script>
+        try {
+            if (window.kendo && kendo.culture) {
+                kendo.culture("pt-BR");
+            }
+        } catch (error) {
+            console.warn("Kendo pt-BR: falha ao aplicar cultura.", error);
+        }
+    </script>
+    <script src="https://cdn.kendostatic.com/2022.1.412/js/cultures/kendo.culture.pt-BR.min.js"></script>
+    <script src="https://cdn.kendostatic.com/2022.1.412/js/messages/kendo.messages.pt-BR.min.js"></script>
+    <script>
+        try {
+            if (window.kendo && kendo.culture) {
+                kendo.culture("pt-BR");
+            }
+        } catch (error) {
+            console.warn("Kendo pt-BR: falha ao aplicar cultura.", error);
+        }
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.2/pdf.js"></script>
     <script>
         window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.2/pdf.worker.js';

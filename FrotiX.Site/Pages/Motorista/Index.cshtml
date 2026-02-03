@@ -1,23 +1,83 @@
 @page
 
-@* ╔══════════════════════════════════════════════════════════════════════════╗
-   ║                                                                          ║
-   ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
-   ║                                                                          ║
-   ║  Este arquivo está completamente documentado em:                         ║
-   ║  📄 Documentacao/Pages/Motorista - Index.md                               ║
-   ║                                                                          ║
-   ║  A documentação inclui:                                                   ║
-   ║  • Visão geral completa da funcionalidade                                ║
-   ║  • Explicação detalhada do DataTable                                     ║
-   ║  • Modal de foto explicado                                               ║
-   ║  • Sistema de gestão de status                                           ║
-   ║  • Documentação completa de todos os endpoints API                      ║
-   ║  • Validações e troubleshooting                                         ║
-   ║                                                                          ║
-   ║  Última atualização: 08/01/2026                                          ║
-   ║                                                                          ║
-   ╚══════════════════════════════════════════════════════════════════════════╝ *@
+@* ========================================================================================
+ * ARQUIVO: Pages/Motorista/Index.cshtml
+ * OBJETIVO: Pagina de listagem e gestao completa de motoristas com DataTable jQuery configuravel,
+ *           modal Bootstrap 5 para visualizacao de foto ampliada (zoom), exclusao com confirmacao
+ *           SweetAlert2 e gestao de status Ativo/Inativo com atualizacao visual dinamica
+ *           (badge Verde/Cinza, icone check/xmark, tooltips contextuais).
+ * ENTRADAS: Model FrotiX.Pages.Motorista.IndexModel (code-behind C#), DataTable hash tblMotorista
+ *           vazio populado via AJAX, botoes CRUD delegados via jQuery (classe .btn-editar para
+ *           edicao redireciona /Motorista/Upsert?id=X, classe .btn-delete para exclusao com
+ *           confirmacao, classe .updateStatusMotorista para toggle Ativo/Inativo, classe .btn-foto
+ *           para abrir modal de visualizacao de foto ampliada), modal hash modalFotoMotorista
+ *           com imagem responsiva para visualizar foto do motorista em tamanho maior
+ * SAIDAS: DataTable hash tblMotorista renderizado com 8 colunas principais (Nome completo texto,
+ *         CPF mascara XXX.XXX.XXX-XX, CNH numero, Validade CNH formatada DD/MM/YYYY, Telefone
+ *         mascara (XX) XXXXX-XXXX, Foto miniatura clicavel 40x40px border-radius 50% com shadow,
+ *         Status badge Verde Ativo fa-circle-check/Cinza Inativo fa-circle-xmark, Acoes com
+ *         3 botoes Editar/Excluir/Toggle Status), modal Bootstrap 5 para foto ampliada com
+ *         fechar X, links para /Motorista/Upsert (criacao novo/edicao existente parametro id),
+ *         exportacoes Excel/PDF via DataTables buttons extension, POST /api/Motorista/Delete
+ *         (exclusao com confirmacao), GET /api/Motorista/UpdateStatus (toggle status retorna
+ *         JSON com novo status), notificacoes AppToast Verde sucesso/Vermelho erro
+ * CHAMADA POR: Route /Motorista via diretiva page, navegacao sidebar menu principal (Cadastros >
+ *              Motoristas), link direto URL, IndexModel.OnGet metodo backend C# executa no
+ *              carregamento da pagina (code-behind ASP.NET Core Razor Pages)
+ * CHAMA: motorista.js (arquivo JavaScript externo 316 linhas com logica CRUD incluindo funcao
+ *        loadList para carregar DataTable via AJAX GET /api/Motorista/GetAll, delete handler
+ *        com confirmacao SweetAlert2 via Alerta.Confirmar antes de chamar POST /api/Motorista/Delete,
+ *        status toggle handler GET /api/Motorista/UpdateStatus?id=X com atualizacao visual dinamica
+ *        do badge Verde/Cinza e icone check/xmark sem reload da pagina, foto handler abrindo
+ *        modal hash modalFotoMotorista com src da imagem clicada), endpoints API REST /api/Motorista/GetAll
+ *        GET (retorna lista JSON de motoristas), /api/Motorista/Delete POST (recebe id e exclui
+ *        registro se nao houver dependencias), /api/Motorista/UpdateStatus GET (recebe id e
+ *        toggle status Ativo/Inativo retornando JSON com success e novo status), Alerta.Confirmar
+ *        (funcao do Alerta.js wrapper SweetAlert2 exibindo Are you sure? com texto Nao sera
+ *        possivel recuperar os dados eliminados!), Alerta.Erro (exibe erro customizado),
+ *        Alerta.TratamentoErroComLinha (catch de erros AJAX com numero da linha), AppToast.show
+ *        (notificacoes toast Verde sucesso top-right/Vermelho erro), DataTables API completa
+ *        (initialization com lengthMenu customizado, column rendering, buttons extension para
+ *        Excel/PDF export, responsive mode, pageLength configuravel), jQuery handlers (delegated
+ *        events no document.body para botoes dinamicos), Bootstrap 5 modals API (show/hide
+ *        modal hash modalFotoMotorista)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1, DataTables 1.13.x plugin (buttons
+ *               extension incluindo pageLength/excel/pdfHtml5 exports, responsive extension,
+ *               column defs customizados), Bootstrap 5.3.8 (cards arredondados, modals, badges,
+ *               grid system, botoes), Syncfusion EJ2 ASP.NET Core (tooltips via atributo data-ejtip),
+ *               motorista.js (arquivo JavaScript externo na pasta wwwroot/js com 316 linhas de
+ *               logica CRUD), Alerta.js (wrapper customizado SweetAlert2 para Confirmar/Erro/TratamentoErroComLinha),
+ *               AppToast.js (sistema de notificacoes toast Verde/Vermelho posicao top-right),
+ *               Font Awesome 6 Duotone (icones fa-user-tie para motorista, fa-circle-check para
+ *               status Ativo, fa-circle-xmark para status Inativo, fa-edit, fa-trash)
+ * OBSERVACOES: 421 linhas total com layout padrao FrotiX consistente (header com fundo azul
+ *              escuro hash 3D5771 e gradient radial sutil, card com border-radius 14px, botoes
+ *              com efeito outline branco 2px solid no hover/focus). DataTable com lengthMenu
+ *              customizado array [10, 25, 50, -1] exibindo opcoes 10/25/50/Todas as Linhas no
+ *              dropdown de paginacao. Exportacao PDF configurada com orientation landscape e
+ *              pageSize LEGAL (maior que A4 para caber mais colunas). Foto exibida como miniatura
+ *              clicavel (40x40px com border-radius 50% transformando em circulo, box-shadow para
+ *              destaque, cursor pointer), clique abre modal hash modalFotoMotorista com imagem
+ *              ampliada responsiva (max-width 100%, height auto) permitindo visualizacao detalhada
+ *              da foto do motorista. Status toggle interativo: badge Verde com icone fa-circle-check
+ *              quando Ativo, badge Cinza com icone fa-circle-xmark quando Inativo, tooltips
+ *              dinamicos data-ejtip exibindo clique para ativar ou clique para inativar baseado
+ *              no status atual. Confirmacao antes de exclusao: SweetAlert2 customizado via
+ *              Alerta.Confirmar com titulo Tem certeza?, texto Nao sera possivel recuperar os
+ *              dados eliminados!, botoes Sim delete ele!/Cancelar. Section HeadBlock extensa
+ *              (180+ linhas CSS inline) customiza cores (azul header, gradient body, badges
+ *              verde/cinza), hover effects (outline branco botoes, background escuro nos botoes
+ *              de acao ao passar mouse), miniatura foto (border-radius, shadow, transition),
+ *              modal (backdrop, dialog centralizado, imagem responsiva). Botao laranja + Novo
+ *              Motorista com icone fa-user-tie no header com efeito outline branco. Try-catch
+ *              aninhado em todos os handlers JavaScript para tratamento robusto de erros (catch
+ *              interno para parsing JSON, catch externo para erros AJAX, ambos chamando
+ *              Alerta.TratamentoErroComLinha com numero da linha do erro no codigo). Sistema
+ *              CRITICO para gestao de motoristas no FrotiX usado para controlar todos os
+ *              motoristas cadastrados (dados pessoais, CNH, validade, foto, status Ativo/Inativo)
+ *              linkados a viagens, agendamentos, abastecimentos, manutencoes.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
 @model FrotiX.Pages.Motorista.IndexModel
 
 @{

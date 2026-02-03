@@ -1,3 +1,21 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: veiculositenscontrato_001.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : DataTable de veículos em contrato com configuração de colunas
+ *                   (Placa, Marca/Modelo, Contrato, Sigla, Combustível, Status, etc.),
+ *                   loadList inicial.
+ * 📥 ENTRADAS     : $(document).ready, chamada loadList()
+ * 📤 SAÍDAS       : DataTable renderizado (#tblVeiculo) com columnDefs,
+ *                   console logs, Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready, Pages/ItensContrato/Veiculos.cshtml
+ * 🔄 CHAMA        : loadList(), $("#tblVeiculo").DataTable(),
+ *                   Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables, Alerta.js
+ * 📝 OBSERVAÇÕES  : DataTable com 6+ colunas (Placa text-center, Marca/Modelo text-left,
+ *                   Contrato, Sigla, Combustível, Status). Try-catch em ready e loadList.
+ *                   139 linhas total.
+ **************************************************************************************** */
+
 var dataTableVeiculo;
 
 $(document).ready(function () {

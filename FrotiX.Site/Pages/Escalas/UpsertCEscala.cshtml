@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Escalas/UpsertCEscala.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário criar/editar Escala tipo C (Circular?) com campos específicos, validações, dropdowns
+ * 📥 ENTRADAS     : @page, @model UpsertCEscalaModel, campos escala tipo C (descrição, período, recursos), route parameter id para edição
+ * 📤 SAÍDAS       : POST asp-page-handler="Submit|Edit", redirect ./ListaEscala, AppToast feedback
+ * 🔗 CHAMADA POR  : ListaEscala (botão "Adicionar Escala C", editar linha tipo C)
+ * 🔄 CHAMA        : asp-page-handler="Submit" (POST create), asp-page-handler="Edit" (POST update), ./ListaEscala (redirect)
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 (DatePicker, ComboBox, MultiSelect), Bootstrap 5, jQuery, ASP.NET TagHelpers, Google Fonts Outfit
+ * 📝 OBSERVAÇÕES  : Total: 467 linhas. ISSUES: CSS inline ~150 linhas (padrão FrotiX), JavaScript inline ~80 linhas (validações), função toCamelCase inline (duplicada em vários arquivos), validações fracas, sem loading state submit
+ **************************************************************************************** *@
 @page
 
 @model FrotiX.Pages.Escalas.UpsertCEscalaModel

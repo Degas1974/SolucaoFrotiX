@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Administracao/GestaoRecursosNavegacao.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar menu de navegação com drag-drop, transformação página↔grupo, ícones FontAwesome 7 Pro
+ * 📥 ENTRADAS     : @page, @model GestaoRecursosNavegacaoModel, estrutura hierárquica de recursos via TreeView
+ * 📤 SAÍDAS       : Syncfusion TreeView arrastável, modais de transformação de tipo, seletor de ícones duotone
+ * 🔗 CHAMADA POR  : Menu "Administração > Gestão de Recursos de Navegação"
+ * 🔄 CHAMA        : APIs para CRUD de recursos de navegação, drag-drop handlers customizados
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 TreeView (drag-drop), Font Awesome 7 Pro duotone, jQuery, Bootstrap 5
+ * 📝 OBSERVAÇÕES  : Total: 4946 linhas (LIDO PARCIAL até linha 2000). ISSUES: Arquivo MUITO extenso (1000+ linhas de CSS inline), lógica JavaScript complexa sem modularização, falta documentação inline dos métodos críticos de drag-drop
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Administracao.GestaoRecursosNavegacaoModel
 

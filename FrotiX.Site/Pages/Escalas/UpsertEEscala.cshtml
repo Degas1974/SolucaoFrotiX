@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Escalas/UpsertEEscala.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário criar/editar Escala tipo E (Especial?) com campos específicos, validações, dropdowns
+ * 📥 ENTRADAS     : @page, @model UpsertEEscalaModel, campos escala tipo E (descrição, período, recursos), route parameter id para edição
+ * 📤 SAÍDAS       : POST asp-page-handler="Submit|Edit", redirect ./ListaEscala, AppToast feedback
+ * 🔗 CHAMADA POR  : ListaEscala (botão "Adicionar Escala E", editar linha tipo E)
+ * 🔄 CHAMA        : asp-page-handler="Submit" (POST create), asp-page-handler="Edit" (POST update), ./ListaEscala (redirect)
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 (DatePicker, ComboBox, MultiSelect), Bootstrap 5, jQuery, ASP.NET TagHelpers, Google Fonts Outfit
+ * 📝 OBSERVAÇÕES  : Total: 508 linhas. ISSUES: CSS inline ~160 linhas (padrão FrotiX), JavaScript inline ~90 linhas (validações), função toCamelCase inline (duplicada), DUPLICAÇÃO com UpsertCEscala (90% código idêntico), validações fracas, sem loading state submit. SUGESTÃO: Unificar UpsertCEscala e UpsertEEscala em um único Upsert.cshtml com parâmetro tipo
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Escalas.UpsertEEscalaModel
 @{

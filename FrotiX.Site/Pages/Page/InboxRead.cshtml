@@ -1,4 +1,30 @@
 @page
+
+@* ========================================================================================
+ * ARQUIVO: Pages/Page/InboxRead.cshtml
+ * OBJETIVO: Pagina DEMO de leitura de email individual do template SmartAdmin exibindo
+ *           email estatico (hardcoded HTML) com remetente, destinatario, assunto, data,
+ *           corpo do email, botoes Reply/Forward/Delete, usado como referencia de layout.
+ * ENTRADAS: Model InboxReadModel (code-behind vazio sem dados dinamicos), parametro query
+ *           string emailId (identifica email mas nao e usado para carregar dados reais),
+ *           email estatico hardcoded (From: John Doe, To: Me, Subject: Meeting Tomorrow,
+ *           Date: Today 10:30 AM, Body: Lorem ipsum), botoes Reply/Forward/Delete (handlers vazios)
+ * SAIDAS: Email renderizado com avatar remetente 60x60px, nome do remetente em negrito,
+ *         email do remetente small, assunto H4, data relativa, corpo do email com formatacao
+ *         HTML (paragrafos, imagens, links), botoes Reply/Forward/Delete no topo e rodape,
+ *         sidebar com lista de emails anteriores (3 emails relacionados estaticos)
+ * CHAMADA POR: Route /Page/InboxRead via diretiva page, links de emails da pagina
+ *              /Page/InboxGeneral (passa emailId via query string), InboxReadModel.OnGet vazio
+ * CHAMA: inbox_read.js (arquivo JavaScript externo hipotetico com handlers de Reply/Forward/Delete,
+ *        caso exista), nenhum endpoint API (email e estatico demonstrativo sem CRUD real)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1, Bootstrap 5.3.8 (cards, botoes,
+ *               grid row/col), Font Awesome 6 Duotone (icones fa-reply, fa-share forward,
+ *               fa-trash), CSS customizado section HeadBlock
+ * OBSERVACOES: 184 linhas de pagina DEMO template SmartAdmin NAO integrada ao FrotiX real.
+ *              Considerar REMOVER se sistema de mensagens internas nao for implementado.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model InboxReadModel
 @{ 
 	ViewData["Title"] = "Inbox Read";

@@ -1,3 +1,48 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Unidade/VisualizaLotacoes.cshtml
+ * OBJETIVO: Pagina de visualizacao lotacoes motoristas por unidade com filtros multiplos
+ *           categorias (Diretoria/Coordenacao/Divisao/Secao/Periodo) exibindo Syncfusion
+ *           Grid paginado + Stimulsoft Report visualizador, permite exportar relatorio
+ *           PDF/Excel lotacoes filtradas, sistema usado para auditorias e controle RH.
+ * ENTRADAS: route /Unidade/VisualizaLotacoes, filtros toolbar: ComboBox Diretoria/Coordenacao/Divisao/Secao
+ *           cascading (seleciona nivel hierarquico filtra lotacoes), DatePicker DataInicio/DataFim
+ *           range (filtra lotacoes vigentes no periodo), Checkbox ApenasMotoristasAtivos
+ *           (filtra apenas motoristas com Ativo=true), botao Filtrar trigger reload Grid,
+ *           Grid dataSource URL GET /api/Unidade/GetLotacoesFiltradas retorna JSON lotacoes
+ *           paginado server-side
+ * SAIDAS: Pagina renderizada com card header (titulo Visualizar Lotacoes por Unidade,
+ *         icone fa-users-cog, breadcrumb), card body com: 1. Toolbar filtros (4 ComboBox
+ *         cascading hierarquia, 2 DatePickers range periodo, Checkbox ApenasMotoristasAtivos,
+ *         botao Filtrar primary, botao Limpar Filtros secondary reseta), 2. Syncfusion
+ *         Grid (colunas: UnidadeNome hierarquico Diretoria>Coordenacao>Divisao>Secao,
+ *         MotoristaMatricula, MotoristaNome, MotoristaStatus badge Ativo/Inativo, DataInicio
+ *         format DD/MM/YYYY, DataFim format DD/MM/YYYY ou Em vigor se null, TempoLotacao
+ *         calculated dias/meses/anos, Acoes links Editar/Encerrar), server-side paging
+ *         pageSize 50, allowSorting true, allowExcelExport/allowPdfExport true toolbar
+ *         buttons), 3. Botao Gerar Relatorio rodape (abre modal Stimulsoft Report Viewer
+ *         carrega MRT template relatorio-lotacoes.mrt passa filtros como parameters, permite
+ *         visualizar/imprimir/exportar PDF/Excel report formatado com logo/cabecalho/rodape)
+ * CHAMADA POR: Menu Relatorios > Lotacoes de Motoristas (link interno sidebar), usuarios
+ *              com permissao Relatorios.Lotacoes (role Admin ou Coordenador RH), usada
+ *              para auditorias verificar historico lotacoes motoristas e gerar relatorios
+ *              gerenciais estrutura organizacional
+ * CHAMA: API UnidadeController GET /api/Unidade/GetLotacoesFiltradas (query EF Core
+ *        LotacoesMotoristas Join Unidades Join Motoristas, Where filters UnidadeId/DataInicio/DataFim/MotoristaAtivo,
+ *        paginacao server-side Skip/Take, retorna JSON), Stimulsoft Report Viewer component
+ *        (carrega MRT template, passa DataSet lotacoes filtradas, renderiza report),
+ *        Syncfusion Grid/ComboBox/DatePicker components
+ * DEPENDENCIAS: Syncfusion EJ2 2023.4.2, Stimulsoft Reports.Web 2023.3.1, Bootstrap
+ *               5.3.8, EF Core 8.0
+ * OBSERVACOES: 1167 linhas pagina relatorio lotacoes. Filtros cascading permitem drill-down
+ *              hierarquico (seleciona Diretoria carrega apenas Coordenacoes desta Diretoria,
+ *              seleciona Coordenacao carrega apenas Divisoes). Coluna TempoLotacao calculada:
+ *              se DataFim null calcula DateTime.Now - DataInicio senao DataFim - DataInicio,
+ *              exibe formato humanizado (15 dias, 3 meses, 2 anos e 4 meses). Stimulsoft
+ *              Report permite relatorio profissional formatado com graficos distribuicao
+ *              motoristas por unidade, tabela detalhada lotacoes, totalizadores por nivel
+ *              hierarquico.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
 @page
 
 @using FrotiX.Repository.IRepository

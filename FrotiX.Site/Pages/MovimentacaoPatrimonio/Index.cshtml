@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/MovimentacaoPatrimonio/Index.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Listagem de movimentações de patrimônio com filtros dinâmicos (data, setor origem/destino, responsável)
+ * 📥 ENTRADAS     : @page, @model IndexModel, filtros: drpDataMovimentacao, ddtSetorSecaoOrigem, ddtSetorSecaoDestino, cmbResponsavel
+ * 📤 SAÍDAS       : DataTable #tblMovimentacaoPatrimonio (JSON via API), loading overlay ftx-spin-overlay, redirecionamento para Upsert
+ * 🔗 CHAMADA POR  : Menu navegação (Movimentações), links diretos, botão "Inserir Movimentação"
+ * 🔄 CHAMA        : /api/movimentacaopatrimonio (assumido), ~/js/cadastros/movimentacaopatrimonio.js, ./MovimentacaoPatrimonio/Upsert
+ * 📦 DEPENDÊNCIAS : Syncfusion.EJ2 (DateRangePicker, DropDownTree, ComboBox), Bootstrap 5.3.8 (CDN), DataTables (implícito no JS), Font Awesome Duotone
+ * 📝 OBSERVAÇÕES  : Total: 173 linhas. PROBLEMA: Bootstrap 5.3.8 CDN redundante (já carregado no _Layout), CSS inline pequeno (27 linhas) apenas para outline botão header - pode ser extraído, Loading overlay padrão FrotiX (bom padrão), JS externo correto (movimentacaopatrimonio.js), Falta validação: se filtros vazios DataTable pode tentar carregar tudo
+ **************************************************************************************** *@
 @page
 @using Syncfusion.EJ2
 @addTagHelper *, Syncfusion.EJ2

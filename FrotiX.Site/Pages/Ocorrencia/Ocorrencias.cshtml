@@ -1,4 +1,17 @@
 @page
+
+@* ========================================================================================
+ * ARQUIVO: Pages/Ocorrencia/Ocorrencias.cshtml
+ * OBJETIVO: Pagina de gestao de ocorrencias de viagem com DataTable filtros avancados data periodo veiculo motorista status modais de edicao e baixa rapida RichTextEditor Syncfusion para descricao e solucao upload de imagens videos
+ * ENTRADAS: Model FrotiX.Pages.Ocorrencia.OcorrenciasModel ViewData com listas lstMotoristas lstVeiculos lstStatus filtros via Syncfusion ComboBox DatePickers modais modalOcorrencia modalBaixaRapida modalVisualizarImagem
+ * SAIDAS: DataTable tblOcorrencia renderizado com dados via AJAX modais Bootstrap 5 edicao baixa rapida visualizacao imagem POST API OcorrenciaViagem Salvar PUT edicao DELETE exclusao notificacoes SweetAlert AppToast
+ * CHAMADA POR: Route Ocorrencia navegacao sidebar Vistoria Ocorrencias OnGet inicializa ViewData com listas via IUnitOfWork
+ * CHAMA: ocorrencias.js logica JavaScript de CRUD validacoes gestao de status endpoints API OcorrenciaViagem ListaMotoristaOcorrencias ListaVeiculosOcorrencias ListaStatusOcorrencias helpers Syncfusion EJ2 RichTextEditor DropDownTree ComboBox Bootstrap 5 modals
+ * DEPENDENCIAS: ASP.NET Core Razor Pages Syncfusion EJ2 RichTextEditor DropDown ComboBox jQuery DataTables Bootstrap 5 ocorrencias.js arquivo JavaScript externo Alerta.js AppToast.js IUnitOfWork Entity Framework Font Awesome 6 Duotone icons
+ * OBSERVACOES: Pagina complexa com sistema de filtros multiplos data especifica periodo datas veiculo motorista status. Modais distintos para edicao completa e baixa rapida de ocorrencia. RichTextEditor permite formatacao rica de texto e upload de imagens para descricao e solucao. Sistema de badges coloridos para status Aberta verde Baixada cinza Pendente laranja Manutencao azul. Validacao antes de dar baixa se solucao nao preenchida abre modal de baixa rapida. Overlay de loading customizado FrotiX com animacao. CSS extensivo para estilizacao de cards filtros tabela botoes badges. Sistema critico para gestao de ocorrencias no FrotiX
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model FrotiX.Pages.Ocorrencia.OcorrenciasModel
 
 @using FrotiX.Repository.IRepository

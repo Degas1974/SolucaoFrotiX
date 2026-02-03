@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Multa/ListaOrgaosAutuantes.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Listagem simples de órgãos autuantes com ações editar/apagar
+ * 📥 ENTRADAS     : @page, @model ListaOrgaosAutuantesModel, cliques: btn-editar, btn-delete (delegado)
+ * 📤 SAÍDAS       : DataTable #tblOrgaoAutuante (JSON /api/Multa/PegaTipoMulta - BUG: endpoint errado), DELETE /api/Multa/DeleteOrgaoAutuante (assumido)
+ * 🔗 CHAMADA POR  : Menu Multas/Cadastros, navegação, botão "Adicionar Órgão"
+ * 🔄 CHAMA        : /api/Multa/PegaTipoMulta (ERRADO - deveria ser PegaOrgaoAutuante), ~/js/cadastros/orgaoautuante.js, ./UpsertOrgaoAutuante
+ * 📦 DEPENDÊNCIAS : Bootstrap (implícito), DataTables, Font Awesome Duotone, orgaoautuante.js
+ * 📝 OBSERVAÇÕES  : Total: 180 linhas. BUG CRÍTICO: DataTable ajax.url = "/api/Multa/PegaTipoMulta" está ERRADO (deveria ser PegaOrgaoAutuante), CSS inline pequeno (114 linhas) - pode ser extraído, JavaScript externo correto (orgaoautuante.js) - bom padrão, Tabela simples (3 colunas: Sigla, Nome, Ação) - correto, Outline branco nos botões header (padrão FrotiX) - repetido em vários arquivos (componentizar)
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Multa.ListaOrgaosAutuantesModel
 

@@ -1,22 +1,26 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║                                                                          ║
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║                                                                          ║
- * ║  Este arquivo está completamente documentado em:                         ║
- * ║  📄 Documentacao/Pages/Unidade - Index.md                                  ║
- * ║                                                                          ║
- * ║  A documentação inclui:                                                   ║
- * ║  • Explicação detalhada de todas as funções principais                   ║
- * ║  • Inicialização do DataTable                                            ║
- * ║  • Gestão de status e exclusão                                           ║
- * ║  • Handlers de eventos                                                   ║
- * ║  • Interconexões com outros módulos                                      ║
- * ║                                                                          ║
- * ║  Última atualização: 08/01/2026                                          ║
- * ║                                                                          ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: unidade.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : CRUD de unidades com DataTable, exclusão com confirmação e gestão
+ *                   de status Ativo/Inativo com feedback visual (classes btn-verde/fundo-cinza).
+ * 📥 ENTRADAS     : DataTable #tblUnidade, botões delegados (.btn-delete com data-id,
+ *                   .updateStatus com data-url), AJAX GET para toggle status
+ * 📤 SAÍDAS       : POST /api/Unidade/Delete (exclusão), GET data-url (alteração status),
+ *                   AppToast.show notificações (Verde/Vermelho), dataTable.ajax.reload(),
+ *                   troca dinâmica de classes CSS (btn-verde ↔ fundo-cinza) e texto (Ativo/Inativo)
+ * 🔗 CHAMADA POR  : Pages/Unidade/Index.cshtml, $(document).ready() inicialização
+ * 🔄 CHAMA        : loadList() (inicialização DataTable com columnDefs), $.ajax() DELETE,
+ *                   $.get().fail() para status, Alerta.Confirmar (confirmação SweetAlert),
+ *                   Alerta.TratamentoErroComLinha (erro global), AppToast.show (notificações)
+ * 📦 DEPENDÊNCIAS : jQuery, DataTables (columnDefs para alinhamento/largura colunas),
+ *                   Alerta.js (SweetAlert wrapper), AppToast.js
+ * 📝 OBSERVAÇÕES  : DataTable configurado com columnDefs específicos (5 colunas: text-left,
+ *                   text-left, text-left, text-center, text-center com widths 6%/25%/15%/7%/8%).
+ *                   Status binário (0=Ativo, 1=Inativo). Confirmação de exclusão: "Não será
+ *                   possível recuperar os dados eliminados!". Try-catch aninhado em todos os
+ *                   handlers (ready, click, ajax success/error/fail). 289 linhas incluindo
+ *                   configuração detalhada de DataTable e handlers de erro com jqXHR logging.
+ **************************************************************************************** */
 
 var dataTable;
 

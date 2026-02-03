@@ -1,3 +1,58 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Veiculo/Index.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página principal de listagem/gestão de Veículos (frota FrotiX) com DataTable #tblVeiculo
+ *                   (10 colunas: Placa/Marca/Modelo/Contrato/Sigla/Combustível/Consumo/Km/Reserva/Status/Ação),
+ *                   botão adicionar, veiculo_index.js (AJAX list/delete/toggle).
+ * 📥 ENTRADAS     : @page route /Veiculo/Index, @model IndexModel (code-behind Veiculo/Index.cshtml.cs), clique
+ *                   botão "Adicionar Veículo" link /Veiculo/Upsert, veiculo_index.js (AJAX GET /api/Veiculo?)
+ * 📤 SAÍDAS       : Panel ftx-card-header dual-style (titulo-paginas fa-cars "Gestão de Veículos" + btn-fundo-laranja
+ *                   data-ftx-loading fa-clone-plus "Adicionar Veículo" outline white hover), DataTable #tblVeiculo
+ *                   10 colunas tbody vazio (preenchido via veiculo_index.js AJAX), veiculo_index.js cache busting
+ * 🔗 CHAMADA POR  : Menu principal "Cadastros > Veículos", route /Veiculo/Index, IndexModel.OnGet() (code-behind),
+ *                   sidebar navigation ViewComponent, dashboard widgets
+ * 🔄 CHAMA        : IndexModel (code-behind Veiculo/Index.cshtml.cs), /Veiculo/Upsert (link adicionar botão),
+ *                   ~/js/cadastros/veiculo_index.js (AJAX GET /api/Veiculo loadList DataTable, delete, toggle status),
+ *                   ViewData (Title "Veículos", PageName "veiculo_index", Heading fa-car, Category1 "Cadastros",
+ *                   PageIcon fa-car), Font Awesome Duotone (fa-car heading, fa-cars title, fa-clone-plus botão),
+ *                   CSS inline outline white (@section HeadBlock), DataTables API (table-bordered table-striped)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, IndexModel (code-behind), Bootstrap 5 (panel panel-container,
+ *                   table table-bordered table-striped, btn btn-fundo-laranja), veiculo_index.js (AJAX list),
+ *                   DataTables jQuery plugin, Font Awesome 6 Duotone, CSS classes custom (ftx-card-header,
+ *                   ftx-card-actions, titulo-paginas, btn-fundo-laranja outline hover, icon-pulse me-1),
+ *                   data-ftx-loading (loading state attribute - JavaScript handler), asp-append-version (cache busting)
+ * 📝 OBSERVAÇÕES  : 83 linhas. Página CENTRAL cadastro veículos FrotiX. ViewData config:
+ *                   - Title: "Veículos"
+ *                   - PageName: "veiculo_index"
+ *                   - Heading: "<i class='fa-duotone fa-car'></i> Cadastros: <span class='fw-300'>Veículos</span>"
+ *                   - Category1: "Cadastros"
+ *                   - PageIcon: "fa-duotone fa-car"
+ *                   @section HeadBlock: CSS inline **OUTLINE BRANCO PADRÃO FROTIX** (comentário explícito):
+ *                   .ftx-card-header .btn-fundo-laranja outline 2px solid rgba(255,255,255,0.5) outline-offset 1px
+ *                   transition 0.2s ease, hover outline 0.8 opacity offset 2px (efeito destaque botão laranja).
+ *                   Estrutura ftx-card-header (azul petróleo #325d88 gradient padrão FrotiX):
+ *                   - h2 titulo-paginas fa-cars "Gestão de Veículos"
+ *                   - div ftx-card-actions: link /Veiculo/Upsert btn-fundo-laranja data-ftx-loading fa-clone-plus
+ *                     icon-pulse me-1 "Adicionar Veículo"
+ *                   Panel-content: div #divVeiculos com table #tblVeiculo width 100% (DataTable target).
+ *                   DataTable 10 colunas thead:
+ *                   1. Placa (varchar 8 - AAA-1A23 Mercosul ou AAA-1234 antiga)
+ *                   2. Marca/Modelo (join MarcaVeiculo + ModeloVeiculo)
+ *                   3. Contrato (join Contratos? número contrato locação)
+ *                   4. Sigla (Unidade? sigla lotação)
+ *                   5. Combustível (tipo: Gasolina/Etanol/Diesel/Flex/GNV)
+ *                   6. Consumo (km/l média)
+ *                   7. Km (quilometragem atual odômetro)
+ *                   8. Reserva (indicador veículo reservado?)
+ *                   9. Status (Ativo/Inativo/Manutenção)
+ *                   10. Ação (botões edit/delete/toggle)
+ *                   Tbody vazio (preenchido via veiculo_index.js AJAX). @section ScriptsBlock:
+ *                   veiculo_index.js asp-append-version="true" (cache busting). veiculo_index.js deve:
+ *                   - loadList() AJAX GET /api/Veiculo (populate DataTable)
+ *                   - Botões ação: edit (redirect /Veiculo/Upsert/{id}), delete (AJAX DELETE confirm SweetAlert2),
+ *                     toggle status (AJAX PATCH /api/Veiculo/{id}/toggle)
+ *                   - DataTable config (paging, search, order, responsive?)
+ **************************************************************************************** *@
 @page
 
 @model FrotiX.Pages.Veiculo.IndexModel

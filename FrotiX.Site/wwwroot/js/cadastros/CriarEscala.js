@@ -1,3 +1,25 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: CriarEscala.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar página de Criar Escala de motoristas com sincronização
+ *                   Syncfusion (TipoServico <-> Economildo checkbox), controle de veículo
+ *                   não definido, validações e event handlers.
+ * 📥 ENTRADAS     : Eventos de checkbox (#veiculoNaoDefinido, #MotoristaEconomildo),
+ *                   change events Syncfusion (tipoServicoDropdown), formulário de escala
+ * 📤 SAÍDAS       : Syncfusion DropDowns habilitados/desabilitados (veiculoId),
+ *                   checkboxes sincronizadas (MotoristaEconomildo), validações aplicadas,
+ *                   Alerta.TratamentoErroComLinha em caso de erro
+ * 🔗 CHAMADA POR  : $(document).ready (inicializarEventosEscala), event handlers
+ *                   (change, click), Pages/Escala/Criar.cshtml
+ * 🔄 CHAMA        : inicializarEventosEscala(), document.getElementById,
+ *                   ej2_instances[0] (Syncfusion API), $.change, $.trigger,
+ *                   Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, Syncfusion EJ2 (DropDown, DatePicker), Alerta.js
+ * 📝 OBSERVAÇÕES  : Usa setTimeout para aguardar render Syncfusion. Sincronização
+ *                   bidirecional entre TipoServico dropdown e checkbox Economildo.
+ *                   Try-catch em todos os event handlers (327 linhas total).
+ **************************************************************************************** */
+
 $(document).ready(function () {
     try {
         inicializarEventosEscala();

@@ -1,4 +1,101 @@
 @using System.Text.Json
+
+@* ========================================================================================
+ * ARQUIVO: Pages/Shared/_Layout.cshtml
+ * OBJETIVO: Layout MASTER do FrotiX definindo estrutura HTML completa de todas as paginas
+ *           (head com meta tags/CSS/fonts, header com logo/menu/notificacoes, sidebar navegacao,
+ *           main content area com RenderBody, footer, modals sistema), sistema CRITICO carregado
+ *           em todas as paginas que usam Layout = "_Layout", inclui TempData alerts, Settings
+ *           customizadas, partials shared, scripts base plugins.
+ * ENTRADAS: ViewData (Title, PageName, Heading, Category1, PageIcon), TempData (SuccessMessage,
+ *           ErrorMessage, WarningMessage, InfoMessage para exibir alertas AppToast pos-redirect),
+ *           Settings (Features.AppHeader/AppSidebar/AppFooter boolean flags, AppFlavor string
+ *           tema cores lido do appsettings.json), RenderSection HeadBlock/ScriptBlock optional
+ *           (permite paginas injetarem CSS/JS customizado no head/footer), RenderBody (conteudo
+ *           especifico de cada pagina e renderizado aqui)
+ * SAIDAS: HTML completo renderizado com estrutura: head (meta charset UTF-8, viewport responsive,
+ *         title concatenado com FrotiX, favicon, CSS base Bootstrap/Syncfusion/Kendo/Font Awesome/custom,
+ *         Google Fonts, RenderSection HeadBlock opcional), body (header via partial _PageHeader
+ *         se Settings.Features.AppHeader true, sidebar navegacao via ViewComponent Navigation
+ *         TreeView se Settings.Features.AppSidebar true, main class="page-content" com RenderBody
+ *         renderiza conteudo da pagina especifica, footer via partial _Footer se Settings.Features.AppFooter
+ *         true, modals sistema hash modalLoading/modalConfirm/modalAlert), scripts rodape (jQuery,
+ *         Bootstrap, Syncfusion, Kendo, SignalR, Stimulsoft, scripts customizados via partial
+ *         _ScriptsBasePlugins, RenderSection ScriptBlock opcional permite paginas injetarem JS),
+ *         script inline inicializacao (verifica TempData exibe alertas AppToast Verde/Vermelho/Amarelo/Azul
+ *         baseado em SuccessMessage/ErrorMessage/WarningMessage/InfoMessage, inicializa tooltips
+ *         Syncfusion, configura default AJAX headers, handlers globais erros AJAX)
+ * CHAMADA POR:Todas as paginas do FrotiX que declaram Layout = "_Layout" no bloco Razor (maioria
+ *              das paginas Index/Upsert/Dashboard), ASP.NET Core Razor Pages engine carrega layout
+ *              automaticamente ao renderizar view, _ViewStart.cshtml pode definir Layout = "_Layout"
+ *              como padrao global para todas as paginas
+ * CHAMA: Partial _PageHeader.cshtml (header com logo, menu, dropdowns notificacoes/apps/usuario),
+ *        ViewComponent Navigation TreeView (sidebar menu hierarquico com recursos dinamicos do
+ *        banco), Partial _Footer.cshtml (footer com copyright, versao, links), Partial _ScriptsBasePlugins.cshtml
+ *        (808 linhas CRITICO carrega TODOS os scripts base jQuery/Bootstrap/Syncfusion/Kendo/SignalR/custom),
+ *        AppToast.show (funcao JavaScript customizada exibe notificacoes toast Verde sucesso/Vermelho
+ *        erro/Amarelo aviso/Azul info posicao top-right com auto-hide 5s), Syncfusion ej.base.enableRipple
+ *        (habilita efeito ripple Material Design em components Syncfusion), SignalR hub /chatHub
+ *        (conecta ao servidor SignalR para notificacoes em tempo real se configurado), funcoes
+ *        utilitarias JavaScript globais (moeda, data, validacoes definidas em utils.js ou inline)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Bootstrap 5.3.8 CDN (CSS/JS para grid/cards/modals/dropdowns),
+ *               Syncfusion EJ2 ASP.NET Core 2023.4.2 (CSS/JS para TreeGrid/ComboBox/DatePicker/Charts),
+ *               Kendo UI 2022.1.412 (CSS/JS legacy para alguns components), Font Awesome 6 Duotone
+ *               CDN (icones coloridos), Google Fonts Poppins (fonte principal do FrotiX), jQuery 3.7.1
+ *               CDN, SignalR 7.0 (notificacoes tempo real), Stimulsoft Reports.Web 2023.3.1
+ *               (relatorios MRT), SweetAlert2 (alertas customizados via Alerta.js), custom CSS
+ *               site.css/frotix.css (estilos especificos do FrotiX cores/layout/animacoes),
+ *               _ScriptsBasePlugins.cshtml (808 linhas carrega scripts base na ordem correta incluindo
+ *               kendo-error-suppressor, DataTables, Moment.js, utils.js, Alerta.js, AppToast.js)
+ * OBSERVACOES: 739 linhas layout master CRITICO do FrotiX. Estrutura HTML5 semantica: header role="banner",
+ *              nav role="navigation", main role="main", footer role="contentinfo". Meta tags
+ *              importantes: charset UTF-8, viewport responsive width=device-width initial-scale=1,
+ *              X-UA-Compatible IE=edge. Favicon em wwwroot/favicon.ico. CSS carregados na ordem:
+ *              Bootstrap, Syncfusion, Kendo, Font Awesome, Google Fonts Poppins, custom site.css.
+ *              Scripts carregados na ordem (rodape para nao bloquear renderizacao): jQuery, Bootstrap bundle,
+ *              Syncfusion ej2.min.js, Kendo all.min.js, SignalR, Stimulsoft, _ScriptsBasePlugins
+ *              (carrega scripts customizados), RenderSection ScriptBlock (paginas injetam JS especifico).
+ *              Sistema de alertas TempData: controladores/pages podem definir TempData["SuccessMessage"] =
+ *              "Salvo com sucesso!" antes de RedirectToPage, layout verifica TempData no script
+ *              inline bottom e exibe AppToast automaticamente (Verde sucesso, Vermelho erro, Amarelo
+ *              warning, Azul info). Settings customizadas lidas do appsettings.json via IOptions
+ *              pattern: Settings.Features.AppHeader/AppSidebar/AppFooter boolean controlam exibicao
+ *              de header/sidebar/footer (permite desabilitar em paginas especificas como Login/Error
+ *              que definem Layout = null), Settings.AppFlavor string define tema cores (light/dark/blue).
+ *              Modals sistema: hash modalLoading (spinner full screen exibido durante operacoes
+ *              longas via JavaScript Loading.show/hide), hash modalConfirm (confirmacao customizada
+ *              via Alerta.Confirmar substituindo alert nativo),hash modalAlert (alerta customizado via Alerta.Warning/Erro).
+ *              ViewComponent Navigation TreeView: carrega menu hierarquico dinamicamente do banco
+ *              de dados tabela Recursos filtrando por permissoes do usuario logado (apenas recursos
+ *              que usuario tem acesso sao exibidos no menu), highlight item ativo baseado em ViewData PageName.
+ *              RenderBody: local onde conteudo especifico de cada pagina e injetado (paginas Index/Upsert/Dashboard
+ *              definem seu HTML que sera renderizado dentro do main class="page-content" do layout).
+ *              RenderSection HeadBlock optional: paginas podem injetar CSS customizado no head
+ *              usando section HeadBlock (exemplo: styles inline de Agenda/Index com 250+ linhas
+ *              CSS customizando calendario). RenderSection ScriptBlock optional: paginas podem
+ *              injetar JavaScript customizado no rodape usando section ScriptBlock (exemplo:
+ *              Agenda/Index com 1000+ linhas JS inline inicializando FullCalendar, modal_agenda handlers).
+ *              Script inline inicializacao TempData: verifica TempData.SuccessMessage if not null
+ *              chama AppToast.show(TempData.SuccessMessage, "success", 5000) exibe toast Verde
+ *              topo direita auto-hide 5s, mesmo para ErrorMessage (toast Vermelho), WarningMessage
+ *              (toast Amarelo), InfoMessage (toast Azul). Inicializacao Syncfusion: ej.base.enableRipple(true)
+ *              habilita efeito ripple Material Design em todos components Syncfusion (botoes,
+ *              dropdowns, grids pulsam ao clicar). Configuracao AJAX global: jQuery.ajaxSetup
+ *              define headers default X-Requested-With XMLHttpRequest, contentType application/json,
+ *              error handler global captura erros AJAX nao tratados exibe Alerta.Erro com mensagem
+ *              detalhada incluindo status code e responseText. SignalR conexao: se Settings.Features.SignalR
+ *              true cria connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build(),
+ *              connection.start() conecta ao hub SignalR para notificacoes tempo real (usado em
+ *              Agenda para atualizar calendario quando outro usuario cria evento, TaxiLeg Importacao
+ *              para atualizar progresso de import via push server). Layout CRITICO: qualquer erro
+ *              neste arquivo quebra TODAS as paginas do sistema, testar cuidadosamente apos alteracoes,
+ *              validar ordem de carregamento de scripts (jQuery antes de Bootstrap, Bootstrap antes
+ *              de plugins que dependem dele), validar paths de CSS/JS (asp-append-version="true"
+ *              adiciona hash query string para cache busting evita navegador carregar versao antiga
+ *              cacheda apos deploy de nova versao).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -8,7 +105,7 @@
 
 	<partial name="_Head" />
 
-	@* CSS GLOBAIS - MODERNIZAÇÃO FROTIX *@
+	@* CSS GLOBAIS - MODERNIZAÇÃO FROTIX*@
 	<link href="~/css/ftx-card-styled.css" rel="stylesheet" asp-append-version="true" />
 
 	@RenderSection("HeadBlock" , required: false)
@@ -28,7 +125,7 @@
 
 </head>
 <body>
-	@* Carrega scripts/flags de loading/saving cedo, se necessário *@
+	@* Carrega scripts/flags de loading/saving cedo, se necessário*@
 	<partial name="_ScriptsLoadingSaving" />
 
 	<div class="page-wrapper">
@@ -44,7 +141,7 @@
 					  style="background: url('/images/dust_scratches.png')">
 					@if (ViewBag.PreemptiveClass?.Length > 0)
 					{
-						@* Caso exista uma classe "preemptiva", você pode injetar conteúdo/estilos específicos aqui *@
+						@* Caso exista uma classe "preemptiva", você pode injetar conteúdo/estilos específicos aqui*@
 					}
 					else
 					{
@@ -57,7 +154,7 @@
 					@RenderBody()
 				</main>
 
-				@* -------------- Tela Modal ------------- *@
+				@* -------------- Tela Modal -------------*@
 				<div class="modal fade"
 					 tabindex="-1"
 					 role="dialog"
@@ -351,29 +448,29 @@
 	</div>
 </div>
 				<partial name="_ColorProfileReference" />
-			</div> @* /.page-content-wrapper *@
-		</div>     @* /.page-inner *@
-	</div>         @* /.page-wrapper *@
+			</div> @* /.page-content-wrapper*@
+		</div>     @* /.page-inner*@
+	</div>         @* /.page-wrapper*@
 
 	<partial name="_ShortcutMenu" />
 	<partial name="_ShortcutMessenger" />
 	<partial name="_PageSettings" />
 	<partial name="_GoogleAnalytics" />
 
-	@* ============================================ *@
-	@* SCRIPTS BASE - ORDEM CRÍTICA MANTIDA *@
-	@* ============================================ *@
+	@* ============================================*@
+	@* SCRIPTS BASE - ORDEM CRÍTICA MANTIDA*@
+	@* ============================================*@
 	<partial name="_ScriptsBasePlugins" />
 
-	@* ============================================ *@
-	@* COMPONENTES E SEÇÕES *@
-	@* ============================================ *@
+	@* ============================================*@
+	@* COMPONENTES E SEÇÕES*@
+	@* ============================================*@
 	@await Component.InvokeAsync("Notyf")
 	@RenderSection("ScriptsBlock" , required: false)
 
-	@* ============================================ *@
-	@* ALERTAS DO SERVIDOR (TEMPDATA) *@
-	@* ============================================ *@
+	@* ============================================*@
+	@* ALERTAS DO SERVIDOR (TEMPDATA)*@
+	@* ============================================*@
 	@if (TempData["ShowSweetAlert"] != null)
 	{
 		<script>
@@ -421,9 +518,9 @@
 		</script>
 	}
 
-	@* ============================================ *@
-	@* SISTEMA GLOBAL DE ALERTAS SYNCFUSION *@
-	@* ============================================ *@
+	@* ============================================*@
+	@* SISTEMA GLOBAL DE ALERTAS SYNCFUSION*@
+	@* ============================================*@
 	<script>
 		window.GlobalAlert = {
 			showError: function(title, message, details = null) {
@@ -490,9 +587,9 @@
 		});
 	</script>
 
-	@* ============================================ *@
-	@* DIALOG GLOBAL PERSONALIZADO *@
-	@* ============================================ *@
+	@* ============================================*@
+	@* DIALOG GLOBAL PERSONALIZADO*@
+	@* ============================================*@
 	<ejs-dialog id="globalDialog" width="500px" isModal="true" visible="false"
 				cssClass="custom-alert-dialog" showCloseIcon="true" allowDragging="false">
 		<e-content-template>
@@ -509,9 +606,9 @@
 		}
 	</script>
 
-	@* ============================================ *@
-	@* ESTILOS PARA DIALOG GLOBAL *@
-	@* ============================================ *@
+	@* ============================================*@
+	@* ESTILOS PARA DIALOG GLOBAL*@
+	@* ============================================*@
 	<style>
 		.custom-alert-dialog .e-dialog {
 			border-radius: 15px;
@@ -612,9 +709,9 @@
 		}
 	</style>
 
-	@* ============================================ *@
-	@* UTILITÁRIOS E INICIALIZAÇÕES *@
-	@* ============================================ *@
+	@* ============================================*@
+	@* UTILITÁRIOS E INICIALIZAÇÕES*@
+	@* ============================================*@
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
 			var el = document.getElementById('txtDataFinal');
@@ -624,9 +721,9 @@
 		});
 	</script>
 
-	@* ============================================ *@
-	@* CONFIGURAÇÃO DE CULTURA SYNCFUSION *@
-	@* ============================================ *@
+	@* ============================================*@
+	@* CONFIGURAÇÃO DE CULTURA SYNCFUSION*@
+	@* ============================================*@
 	<script>
 		(function () {
 			try {
@@ -642,21 +739,21 @@
 		})();
 	</script>
 
-	@* ============================================ *@
-	@* SYNCFUSION SCRIPTS *@
-	@* ============================================ *@
+	@* ============================================*@
+	@* SYNCFUSION SCRIPTS*@
+	@* ============================================*@
 	<ejs-scripts></ejs-scripts>
 
-	@* ============================================ *@
-	@* LOADING OVERLAY *@
-	@* ============================================ *@
+	@* ============================================*@
+	@* LOADING OVERLAY*@
+	@* ============================================*@
 	<div id="loading-overlay" hidden>
 		<div class="spinner"></div>
 	</div>
 
-	@* ============================================ *@
-	@* TRATAMENTO DE ERROS DO SERVIDOR (TEMPDATA) *@
-	@* ============================================ *@
+	@* ============================================*@
+	@* TRATAMENTO DE ERROS DO SERVIDOR (TEMPDATA)*@
+	@* ============================================*@
 	@{
 		var uiError = TempData["UiError"] as string;
 	}
@@ -718,7 +815,7 @@
         });
     </script>
 
-    @* Antes do </body> *@
+    @* Antes do </body>*@
 
     @if (TempData["ToastScripts"] != null)
     {
@@ -727,9 +824,9 @@
         </script>
     }
 
-    @* Handler global de erros JavaScript (deve ser carregado primeiro) *@
+    @* Handler global de erros JavaScript (deve ser carregado primeiro)*@
     <script src="~/js/global-error-handler.js" asp-append-version="true"></script>
-    @* Cliente API robusto com retry e tratamento de erros *@
+    @* Cliente API robusto com retry e tratamento de erros*@
     <script src="~/js/frotix-api-client.js" asp-append-version="true"></script>
     <script src="~/js/frotix-error-logger.js" asp-append-version="true"></script>
     <script src="~/js/console-interceptor.js" asp-append-version="true"></script>

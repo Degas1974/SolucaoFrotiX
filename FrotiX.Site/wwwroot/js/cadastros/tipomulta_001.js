@@ -1,3 +1,22 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: tipomulta_001.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : CRUD de Tipos de Multa com DataTable e exclusão delegada via
+ *                   confirmação modal. Gerencia listagem (loadList) e delete.
+ * 📥 ENTRADAS     : Clique em .btn-delete (data-id), resposta Alerta.Confirmar (willDelete)
+ * 📤 SAÍDAS       : DELETE via AJAX para /api/Multa/DeleteTipoMulta,
+ *                   AppToast (Verde/Vermelho), dataTable.ajax.reload,
+ *                   Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready (loadList), event handler .btn-delete,
+ *                   Pages/TipoMulta/Index.cshtml
+ * 🔄 CHAMA        : loadList(), Alerta.Confirmar, $.ajax, AppToast.show,
+ *                   dataTable.ajax.reload, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables, Alerta.js, AppToast (toast notifications)
+ * 📝 OBSERVAÇÕES  : Handler delegado para compatibilidade com DataTable dinâmico.
+ *                   Try-catch aninhado em todos os níveis (ready, click, .then,
+ *                   success, error). 167 linhas total.
+ **************************************************************************************** */
+
 var dataTable;
 
 $(document).ready(function () {

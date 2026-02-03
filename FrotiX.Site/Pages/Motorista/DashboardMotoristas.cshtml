@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Motorista/DashboardMotoristas.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Dashboard motoristas com filtros, seção individual (cards/tabelas comparativas), seção coletiva (gráficos/tabelas), heatmap, Syncfusion Charts
+ * 📥 ENTRADAS     : @page, @model DashboardMotoristasModel, filtros (ano, mês, período, motorista), toggle individual/coletivo
+ * 📤 SAÍDAS       : Cards KPIs, gráficos Syncfusion (barras, pizza, heatmap), tabelas estatísticas, export PDF/Excel, paleta verde esmeralda
+ * 🔗 CHAMADA POR  : Menu Dashboards → Motoristas
+ * 🔄 CHAMA        : /api/Motorista/Dashboard/*, APIs REST dados gráficos
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 (Charts, Heatmap), jQuery, Bootstrap 5, jsPDF, html2canvas
+ * 📝 OBSERVAÇÕES  : Total: ~804 linhas. Dashboard motoristas, paleta verde esmeralda, CSS inline ~680 linhas (extrair urgente), filtros sem persist, gráficos sem debounce resize, sem lazy loading
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Motorista.DashboardMotoristasModel
 @using Syncfusion.EJ2

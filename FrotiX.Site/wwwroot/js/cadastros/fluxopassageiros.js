@@ -1,3 +1,25 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: fluxopassageiros.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar fluxo de passageiros (Economildo) com inserção de linhas
+ *                   em grids (ida/volta), validações de horários (sobreposição, hora
+ *                   fim anterior), cálculo de intervalos, consulta de categoria de
+ *                   veículo, e integração com Syncfusion componentes.
+ * 📥 ENTRADAS     : Eventos #txtData.change, executarInsercaoLinha(), campos Syncfusion
+ *                   (lstVeiculos, lstIdaVolta, txtHoraInicio/Fim, txtQtd),
+ *                   hidden fields (txtHoraFimAnteriorIda/Volta)
+ * 📤 SAÍDAS       : Linhas inseridas em grids (ida/volta), Alerta.Erro (validações),
+ *                   AJAX para validação de categoria, campos atualizados,
+ *                   Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready, executarInsercaoLinha(), event handlers,
+ *                   Pages/FluxoPassageiros.cshtml
+ * 🔄 CHAMA        : executarInsercaoLinha(), document.getElementById, ej2_instances[0],
+ *                   parseInt, Alerta.Erro, Alerta.TratamentoErroComLinha, $.ajax
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, Syncfusion EJ2 (DropDown, TextBox), Alerta.js
+ * 📝 OBSERVAÇÕES  : Valida intervalo mínimo entre viagens, sobreposição de horários,
+ *                   hora fim >= hora início, quantidade de passageiros. 581 linhas total.
+ **************************************************************************************** */
+
 $(document).ready(function ()
 {
     try

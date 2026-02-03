@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Administracao/HigienizarViagens.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Limpar/normalizar origens e destinos de viagens duplicados via transfer list
+ * 📥 ENTRADAS     : @page, @model HigienizarViagensModel, tipo de higienização (origem ou destino)
+ * 📤 SAÍDAS       : Dual Syncfusion ListBox (origem → seleção), badges customizadas, botão de atualização em lote
+ * 🔗 CHAMADA POR  : Menu "Administração > Higienizar Viagens"
+ * 🔄 CHAMA        : /api/viagem/HigienizarOrigens (POST), /api/viagem/HigienizarDestinos (POST)
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 ListBox, jQuery, Bootstrap 5, toastr
+ * 📝 OBSERVAÇÕES  : Total: 270 linhas. ISSUES: Interface simples mas sem preview das alterações antes de aplicar, falta indicação de quantos registros serão afetados, sem undo/rollback
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Administracao.HigienizarViagensModel
 @{

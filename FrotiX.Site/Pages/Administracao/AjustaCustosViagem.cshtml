@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Administracao/AjustaCustosViagem.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Ajustar manualmente custos de viagens com filtros e edição inline
+ * 📥 ENTRADAS     : @page, @model AjustaCustosViagemModel, filtros (data, veículo, placa, status)
+ * 📤 SAÍDAS       : DataTable com viagens, modal de edição, modal de visualização de ficha
+ * 🔗 CHAMADA POR  : Menu "Administração > Ajustar Custos de Viagem"
+ * 🔄 CHAMA        : /api/viagem/AjustarCustos (POST), atualizacustosviagem.js (inline tables)
+ * 📦 DEPENDÊNCIAS : DataTables, Bootstrap 5, Syncfusion ComboBox/DropDownTree, jQuery
+ * 📝 OBSERVAÇÕES  : Total: 654 linhas. ISSUES: Arquivo JS externo (atualizacustosviagem.js) não carregado em ScriptsBlock, modal ficha sem tratamento de erro de carregamento, CSS duplicado para loading overlay
+ **************************************************************************************** *@
 @page
 
 @using FrotiX.Repository.IRepository

@@ -1,3 +1,23 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: lavador.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : CRUD de lavadores com DataTable, exclusão delegada, alteração de
+ *                   status (updateStatusLavador), e integração com AppToast/Alerta.
+ * 📥 ENTRADAS     : Cliques em .btn-delete (data-id), .updateStatusLavador (data-url),
+ *                   resposta Alerta.Confirmar
+ * 📤 SAÍDAS       : DELETE/POST via AJAX (/api/Lavador/Delete, data-url),
+ *                   AppToast (Verde/Vermelho), dataTable.ajax.reload,
+ *                   Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready (loadList), event handlers (.btn-delete,
+ *                   .updateStatusLavador), Pages/Lavador/Index.cshtml
+ * 🔄 CHAMA        : loadList(), Alerta.Confirmar, $.ajax, AppToast.show,
+ *                   dataTable.ajax.reload, console.error, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables, Alerta.js, AppToast (toast notifications)
+ * 📝 OBSERVAÇÕES  : Handlers delegados para compatibilidade com DataTable dinâmico.
+ *                   Try-catch em todos os handlers (click, confirmar, success, error).
+ *                   192 linhas total.
+ **************************************************************************************** */
+
 var dataTable;
 
 $(document).ready(function () {

@@ -1,3 +1,44 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Usuarios/UpsertRecurso.cshtml
+ * OBJETIVO: Formulario simples de cadastro/edicao de Recursos (telas/funcionalidades)
+ *           do sistema FrotiX para controle de acesso granular, permite admin definir
+ *           novos recursos que podem ser atribuidos a usuarios via UsuarioRecursos table,
+ *           sistema CRITICO para gestao de permissoes.
+ * ENTRADAS: route /Usuarios/UpsertRecurso ou /Usuarios/UpsertRecurso?id=123 (edicao),
+ *           model UpsertRecursoModel PageModel (properties: Recurso entity, Categorias
+ *           List dropdown), form fields: Nome string 100 chars obrigatorio unique (nome
+ *           recurso formato Controller.Action exemplo Veiculos.Index), Descricao string
+ *           200 chars obrigatorio (descricao amigavel exibida no menu exemplo Cadastro
+ *           de Veiculos), CategoriaId int dropdown obrigatorio FK Categorias.Id (agrupa
+ *           recursos relacionados Cadastros/Relatorios/Admin), Icone string 50 chars
+ *           Font Awesome class (exemplo fa-car icone exibido no menu), Url string 200
+ *           chars route (exemplo /Veiculo/Index path da tela), Ordem int (ordem exibicao
+ *           menu sequencial), Ativo checkbox default true
+ * SAIDAS: Form renderizado com validacao client-side asp-validation-for, submit POST
+ *         /Usuarios/UpsertRecurso OnPost handler valida dados insere/atualiza Recursos
+ *         table, redirect /Usuarios/ListaRecursos com TempData SuccessMessage, validacoes:
+ *         Nome unique (query Where Nome=input.Nome AND Id!=input.Id verifica duplicata
+ *         retorna ModelState.AddModelError), Url valida path (valida formato /Controller/Action
+ *         ou vazio se recurso nao tem tela especifica apenas agrupador)
+ * CHAMADA POR: Menu Admin > Recursos > Novo Recurso (link /Usuarios/UpsertRecurso sem
+ *              id), botao Editar grid /Usuarios/ListaRecursos (link /Usuarios/UpsertRecurso?id=123),
+ *              usuarios com permissao Admin.Recursos (role Admin apenas)
+ * CHAMA: PageModel UpsertRecursoModel.cshtml.cs OnGet/OnPost handlers, EF Core DbContext
+ *        Recursos table CRUD, Syncfusion DropDownList component Categoria, asp-validation-for
+ *        Tag Helpers, jQuery Validation Unobtrusive client-side
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 DropDownList, Bootstrap
+ *               5.3.8 form controls, Font Awesome 6 Duotone, jQuery Validation
+ * OBSERVACOES: 222 linhas form simples cadastro recursos. Nome formato Controller.Action
+ *              padrao facilita verificacao permissoes codigo (User.HasPermission("Veiculos.Index")
+ *              verifica UsuarioRecursos.RecursoNome). Url opcional: recursos podem ser
+ *              agrupadores sem tela especifica (exemplo Categoria Relatorios nao tem
+ *              Url apenas agrupa relatorios filhos). Ordem define sequencia exibicao
+ *              menu Navigation TreeView (menor ordem exibido primeiro topo menu). Ativo
+ *              permite desabilitar recurso temporariamente sem deletar (recursos inativos
+ *              nao aparecem em dropdowns atribuicao permissoes mas permissoes existentes
+ *              usuarios continuam validas ate remover manualmente).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 

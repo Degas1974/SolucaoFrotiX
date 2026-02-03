@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Multa/ListaPenalidade.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Listagem de penalidades/boletos de multas com filtros, visualização PDFs (penalidade/comprovante), registro de pagamento, exclusão
+ * 📥 ENTRADAS     : @page, @model Multa, filtros: lstOrgao, lstTiposMulta, lstVeiculos, lstMotorista, lstStatus, cliques: btn-editar, btn-pagamento, btn-apagar, btn-exibe-penalidade, btn-exibe-comprovante
+ * 📤 SAÍDAS       : DataTable #tblMulta (JSON /api/multa/listamultas fase=Penalidade), modais (registrar pagamento, exibir PDFs), POST /api/Multa/RegistraPagamento, AppToast feedback
+ * 🔗 CHAMADA POR  : Menu Multas, ./UpsertPenalidade (após transformar autuação), navegação
+ * 🔄 CHAMA        : /api/multa/listamultas, /api/Multa/Delete, /api/Multa/PegaEmpenhoMultaId, /api/Multa/RegistraPagamento, /api/MultaPdfViewer, /api/MultaUpload/save|remove, ./UpsertPenalidade
+ * 📦 DEPENDÊNCIAS : Syncfusion.EJ2 (ComboBox, PDFViewer, Uploader), Bootstrap 5.3.8 (CDN redundante), DataTables (Buttons, Select), Font Awesome Duotone
+ * 📝 OBSERVAÇÕES  : Total: 2119 linhas (ARQUIVO MAIS LONGO - CRÍTICO). PROBLEMA GRAVÍSSIMO: 2119 linhas é INACEITÁVEL, Arquivo deve ser refatorado em componentes/partials, Bootstrap CDN redundante, CSS inline GIGANTE (647 linhas) - URGENTE extrair, JavaScript inline MASSIVO (1472 linhas) - URGENTE extrair, DUPLICAÇÃO EXTREMA: funções moeda(), parseCurrencyBR(), renderStatusBadge(), handlers uploaders, viewers - tudo inline, BUG: Modal pagamento (#modalRegistraPagamento) - z-index do footer VS container PDF viewer (comentário linha 508), Modal registrar pagamento: validação de valor (considera prefixo R$) - correto, PERFORMANCE: DataTable com 14 colunas - considerar paginação server-side, Uploader comprovante: eventos vinculados manualmente (onComprovanteUploadSuccess) - complexo
+ **************************************************************************************** *@
 @page
 
 @using FrotiX.Repository.IRepository

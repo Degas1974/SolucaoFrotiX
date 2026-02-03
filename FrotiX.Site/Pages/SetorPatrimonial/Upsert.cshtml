@@ -1,6 +1,26 @@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 
+@* ========================================================================================
+ * ARQUIVO: Pages/SetorPatrimonial/Upsert.cshtml
+ * OBJETIVO: Formulario simples de criacao e edicao de Setores Patrimoniais (classificacao
+ *           contabil de segundo nivel para patrimonios), com campos codigo, descricao,
+ *           link para Detentor (orgao responsavel) obrigatorio, checkbox status Ativo.
+ * ENTRADAS: Model FrotiX.Pages.Setor.UpsertModel (Id, Codigo, Descricao, DetentorId obrigatorio,
+ *           Status), parametro query string id (edicao carrega dados existentes), ViewData com
+ *           lista de detentores, formulario HTML5 com input text codigo/descricao, select detentor,
+ *           checkbox status
+ * SAIDAS: Formulario renderizado, validacao HTML5 required, POST /SetorPatrimonial/Upsert
+ *         (salva no banco via IUnitOfWork), redirect /Patrimonio com AppToast Verde sucesso/Vermelho erro
+ * CHAMADA POR: Links de criacao/edicao de setores patrimoniais, UpsertModel.OnGet carrega detentores
+ * CHAMA: POST /SetorPatrimonial/Upsert endpoint backend, AppToast.show notificacoes
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Bootstrap 5.3.8, AppToast.js, IUnitOfWork
+ * OBSERVACOES: 179 linhas formulario simples. Setores Patrimoniais sao classificacao contabil
+ *              de segundo nivel (exemplo: Veiculos Leves, Veiculos Pesados, Motos). Vinculados
+ *              a Detentor (orgao responsavel pelo patrimonio). Sistema integrado com contabilidade.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model FrotiX.Pages.Setor.UpsertModel
 
 @{

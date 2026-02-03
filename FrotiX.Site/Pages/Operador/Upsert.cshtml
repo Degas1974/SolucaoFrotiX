@@ -1,6 +1,52 @@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 
+@* ========================================================================================
+ * ARQUIVO: Pages/Operador/Upsert.cshtml
+ * OBJETIVO: Formulario de criacao e edicao de operadores de veiculos com upload de foto via
+ *           dropzone, validacao de campos obrigatorios (nome, CPF, CNH, telefone), preview
+ *           de foto selecionada antes do submit, mascara de CPF/telefone, validacao de
+ *           validade CNH, sistema identico ao Motorista/Upsert.cshtml adaptado para operadores.
+ * ENTRADAS: Model FrotiX.Pages.Operador.UpsertModel (code-behind C# com propriedades Id, Nome,
+ *           CPF, CNH, ValidadeCNH, Telefone, Foto, Status), parametro query string id (edicao
+ *           carrega dados existentes via OnGet, ausente indica criacao), formulario HTML5 com
+ *           input text (nome, CPF mascara, CNH, telefone mascara), input date (validade CNH),
+ *           input file hidden (foto manipulado via dropzone JavaScript), checkbox (status Ativo
+ *           checked default), dropzone area drag&drop para selecao de foto com preview instantaneo,
+ *           botoes Salvar POST form/Cancelar volta /Operador
+ * SAIDAS: Formulario renderizado com campos preenchidos (edicao) ou vazios (criacao), dropzone
+ *         funcional para upload foto com preview, validacao HTML5 frontend (required nos campos
+ *         obrigatorios, pattern para CPF/CNH), validacao JavaScript customizada (CPF valido
+ *         11 digitos, telefone formato correto, validade CNH futura), POST /Operador/Upsert
+ *         (submit envia FormData com foto incluida como multipart/form-data, backend salva no
+ *         banco e arquivo no servidor wwwroot/uploads/operadores/), redirect para /Operador
+ *         apos sucesso com notificacao AppToast Verde, erro exibe AppToast Vermelho
+ * CHAMADA POR: Link /Operador/Upsert (criacao novo sem parametro id), link /Operador/Upsert?id=X
+ *              (edicao carrega dados existentes), botao + Novo Operador da pagina /Operador/Index,
+ *              botao Editar na coluna Acoes do DataTable tblOperador, UpsertModel.OnGet metodo
+ *              backend C# executa no carregamento (se id presente carrega dados do banco via
+ *              IUnitOfWork, se ausente retorna model vazio)
+ * CHAMA: operador_upsert.js (arquivo JavaScript externo com inicializacao do dropzone, handlers
+ *        de preview foto, validacao customizada de campos, mascara de CPF/telefone via jQuery
+ *        Mask Plugin, submit handler capturando FormData e enviando via AJAX POST com foto),
+ *        POST /Operador/Upsert endpoint (backend UpsertModel.OnPost recebe FormData, valida,
+ *        salva entidade Operador no banco via IUnitOfWork, faz upload da foto para pasta
+ *        wwwroot/uploads/operadores/, retorna JSON com success/error), AppToast.show (notificacoes
+ *        toast Verde sucesso/Vermelho erro), funcoes utilitarias JavaScript (validarCPF,
+ *        formatarTelefone, validarDataFutura)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1, Bootstrap 5.3.8 (cards, form-control,
+ *               form-label, form-check checkbox, grid row/col, botoes), Dropzone.js 5.9.x (upload
+ *               drag&drop com preview, configuracao customizada maxFiles 1, acceptedFiles image/*,
+ *               thumbnailWidth/Height 150px), jQuery Mask Plugin (mascara CPF XXX.XXX.XXX-XX,
+ *               telefone (XX) XXXXX-XXXX), operador_upsert.js (arquivo JavaScript externo),
+ *               AppToast.js (notificacoes toast), Font Awesome 6 Duotone (icone fa-user-gear),
+ *               IUnitOfWork (Entity Framework Core para acesso ao banco)
+ * OBSERVACOES: 628 linhas com formulario completo padrao FrotiX (layout responsivo col-md-6,
+ *              cards arredondados, labels em negrito, inputs com form-control). Sistema identico
+ *              ao Motorista/Upsert.cshtml com terminologia adaptada para operadores de veiculos.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model FrotiX.Pages.Operador.UpsertModel
 
 @{

@@ -1,8 +1,22 @@
-/**
- * insereviagem.js - REFATORADO
- * Gerenciamento de inserção e validação de viagens
- * Sistema FrotiX - Versão com Alerta.*
- */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: insereviagem_001.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciamento de inserção e validação de viagens com verificação
+ *                   de ficha de vistoria (alerta se >100 do máximo), tooltips Syncfusion,
+ *                   e integração com formulário de viagens.
+ * 📥 ENTRADAS     : Eventos #txtNoFichaVistoria.focusout, GET /Viagens/Upsert?handler=MaxFicha,
+ *                   resposta AJAX (res.data com maxFichaVistoria)
+ * 📤 SAÍDAS       : Alerta.Warning (se ficha > max+100), tooltips Syncfusion inicializados,
+ *                   validação de ficha aplicada, Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready, event handler #txtNoFichaVistoria.focusout,
+ *                   Pages/Viagens/Upsert.cshtml
+ * 🔄 CHAMA        : window.SyncfusionTooltips.init(), $.focusout, parseInt, $.ajax,
+ *                   Alerta.Warning, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, Syncfusion EJ2 (Tooltips), Alerta.js
+ * 📝 OBSERVAÇÕES  : Refatorado com Alerta.*. Validação de ficha evita números
+ *                   muito discrepantes (+100). Try-catch em focusout e success
+ *                   handler. 353 linhas total.
+ **************************************************************************************** */
 
 $(document).ready(function ()
 {

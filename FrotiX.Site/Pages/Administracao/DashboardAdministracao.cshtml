@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Administracao/DashboardAdministracao.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Dashboard administrativo com gráficos Chart.js para análise geral do sistema
+ * 📥 ENTRADAS     : @page, @model DashboardAdministracaoModel, filtros de período (dataInicio, dataFim)
+ * 📤 SAÍDAS       : Cards de métricas clicáveis, gráficos de pizza/barras/heatmap usando Chart.js
+ * 🔗 CHAMADA POR  : Menu "Dashboards > Administração"
+ * 🔄 CHAMA        : administracao.js (external), APIs RESTful para dados dos gráficos
+ * 📦 DEPENDÊNCIAS : Chart.js, jQuery, Bootstrap 5, administracao.js
+ * 📝 OBSERVAÇÕES  : Total: 504 linhas. ISSUES: arquivo administracao.js externo não especificado em ScriptsBlock corretamente, falta de comentários nos blocos de código JavaScript, sem fallback se Chart.js não carregar
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Administracao.DashboardAdministracaoModel
 @{

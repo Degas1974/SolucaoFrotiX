@@ -1,3 +1,31 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/AtaRegistroPrecos/Index.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de listagem de Atas de Registro de Preços com DataTable customizado,
+ *                   badges de status estilizados (Verde Militar/Cinza Chumbo) e botões de ação.
+ * 📥 ENTRADAS     : @Model FrotiX.Models.AtaRegistroPrecos, route /AtaRegistroPrecos,
+ *                   botões delegados no DataTable (.btn-editar, .btn-delete, .updateStatus),
+ *                   OnGet() do IndexModel
+ * 📤 SAÍDAS       : DataTable #tblAtaRegistroPrecos renderizado, badges ftx-badge-status
+ *                   (btn-verde #4A5D23 / fundo-cinza #4A4A4A), botões ícone 28x28px (ftx-actions),
+ *                   link para /AtaRegistroPrecos/Upsert, exportações Excel/PDF, AJAX calls ata.js
+ * 🔗 CHAMADA POR  : Route /AtaRegistroPrecos, navegação sidebar (Cadastros > Atas),
+ *                   IndexModel.OnGet() (code-behind)
+ * 🔄 CHAMA        : ata.js (211 linhas - loadList, delete handlers com verificação de dependências,
+ *                   status toggle), /AtaRegistroPrecos/Upsert (criação/edição), /api/AtaRegistroPrecos/*
+ *                   endpoints, data-ftx-loading attribute, DataTables API
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, jQuery, DataTables, ata.js (arquivo externo),
+ *                   Bootstrap 5, Font Awesome 6 Duotone (fa-folders), ftx-card-header (layout)
+ * 📝 OBSERVAÇÕES  : 200 linhas. **CSS AVANÇADO**: ftx-badge-status com cores customizadas (Verde
+ *                   Militar #4A5D23 para Ativo, Cinza Chumbo #4A4A4A para Inativo), min-width 85px,
+ *                   uppercase, letter-spacing 0.3px, hover translateY(-1px). Botões de ação
+ *                   ftx-actions (flexbox gap 4px), btn-icon-28 (28x28px), border-radius 6px, hover
+ *                   translateY(-2px). Header ftx-card-header azul #3D5771 com botão laranja
+ *                   (outline branco hover). ViewData icon fa-folders. DataTable ftx-table
+ *                   (table-bordered table-striped). Layout moderno FrotiX completo. @section
+ *                   ScriptsBlock referencia ata.js. CSS inline extenso (~100 linhas). Sistema
+ *                   crítico para gestão contratual. Badges com texto branco (#fff color).
+ **************************************************************************************** *@
 @page
 @model FrotiX.Models.AtaRegistroPrecos
 

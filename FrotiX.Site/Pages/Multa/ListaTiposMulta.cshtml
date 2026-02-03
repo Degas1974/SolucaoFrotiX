@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Multa/ListaTiposMulta.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Listagem de infrações/tipos de multa (Código de Trânsito Brasileiro) com editar/excluir
+ * 📥 ENTRADAS     : @page, @model ListaTiposMultaModel, cliques: btn-delete (delegado)
+ * 📤 SAÍDAS       : DataTable #tblTipoMulta (JSON /api/Multa/PegaTipoMulta), POST /api/Multa/DeleteTipoMulta, AppToast feedback
+ * 🔗 CHAMADA POR  : Menu Multas/Cadastros, botão "Nova Infração", navegação
+ * 🔄 CHAMA        : /api/Multa/PegaTipoMulta, /api/Multa/DeleteTipoMulta, ./UpsertTipoMulta
+ * 📦 DEPENDÊNCIAS : DataTables (Buttons: pageLength, excel, pdfHtml5), Font Awesome Duotone, Bootstrap (implícito), Alerta.* (custom), AppToast
+ * 📝 OBSERVAÇÕES  : Total: 192 linhas. CSS inline pequeno (70 linhas) - pode extrair mas não crítico, JavaScript inline moderado (122 linhas) - mover para JS externo (bom candidato), PADRÃO CORRETO: Usa try-catch com Alerta.TratamentoErroComLinha em todos os handlers - excelente, DataTable: 5 colunas (Artigo, Denatran, Descrição, Infração, Ação) - correto, Botões DataTables: excel e PDF landscape - útil para relatórios, Token antiforgery via __RequestVerificationToken - segurança OK, loadList() destroi e recria DataTable - correto para evitar duplicação
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Multa.ListaTiposMultaModel
 

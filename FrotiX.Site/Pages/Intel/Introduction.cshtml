@@ -1,3 +1,63 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Intel/Introduction.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página About/Introduction SmartAdmin template ("Hi Everyone" survey results,
+ *                   team profiles Sunny A./Jos K./Jovanni L./Roberto R.), NÃO customizado FrotiX.
+ * 📥 ENTRADAS     : @page route /Intel/Introduction, @model IntroductionModel (code-behind), Settings
+ *                   (App, AppName, Theme.IconPrefix), nenhum form input (page informacional estática)
+ * 📤 SAÍDAS       : Div fs-lg fw-300 p-5 bg-white border-faded rounded com paragraphs "Hi Everyone" texto
+ *                   template (survey results 72% design refresh, 50% vue.js, 90% plugins), h3 "SmartAdmin Team",
+ *                   4 profiles rounded-pill shadow-sm (profile pics png + h5 name role + Twitter @/envelope links),
+ *                   footer paragraph "Ready to join our dedicated team?" partnership link, @section ScriptsBlock
+ *                   VAZIO, @section HeadBlock VAZIO
+ * 🔗 CHAMADA POR  : Menu "Application Intel > Introduction", route /Intel/Introduction, IntroductionModel.OnGet()
+ *                   (code-behind), sidebar navigation SmartAdmin demo
+ * 🔄 CHAMA        : IntroductionModel (code-behind Intel/Introduction.cshtml.cs), Settings (App, AppName,
+ *                   Theme.IconPrefix), avatar images (~/img/demo/authors/sunny.png, josh.png, jovanni.png,
+ *                   roberto.png - img-thumbnail rounded-circle 5rem), Twitter links (@myplaneticket, @atlantez,
+ *                   @lodev09, @sildur), WrapBootstrap user links (myorange, Walapa, lodev09, sildur profiles),
+ *                   ViewData (Title "Introduction", PageName "intel_introduction", Heading fa-info-circle,
+ *                   Category1 "Application Intel", PageDescription "A brief introduction to this WebApp"),
+ *                   Font Awesome Duotone (fa-info-circle heading, fa-envelope profiles), CSS classes custom
+ *                   (fs-lg fw-300, rounded-pill, shadow-sm, border-faded, d-flex flex-row flex-shrink-0,
+ *                   img-responsive rounded-circle, fs-sm, demo demo-h-spacing)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, IntroductionModel (code-behind), SmartSettings injection (@Settings),
+ *                   Bootstrap 5 (container, d-flex flex-wrap, rounded-pill, shadow-sm, border-faded, mb-g),
+ *                   Font Awesome 6 Duotone, CSS classes custom (fs-lg fw-300, demo demo-h-spacing, img-responsive)
+ * 📝 OBSERVAÇÕES  : 100 linhas. Página ABOUT SmartAdmin template - NÃO customizado FrotiX (manteve original).
+ *                   ViewData config:
+ *                   - Title: "Introduction"
+ *                   - PageName: "intel_introduction"
+ *                   - Heading: "<i class='fa-duotone fa-info-circle'></i> Introduction"
+ *                   - Category1: "Application Intel"
+ *                   - PageDescription: "A brief introduction to this WebApp"
+ *                   @section HeadBlock: VAZIO {}. Conteúdo:
+ *                   1. **Div texto principal** (fs-lg fw-300 p-5 bg-white border-faded rounded mb-g):
+ *                      - h3 "Hi Everyone,"
+ *                      - Parágrafo 1: "Some time ago we asked for your input... WOW, did you deliver!"
+ *                      - Survey results: 72% design refresh, 50% vue.js support, 90% plugins/updates
+ *                      - Parágrafo 2: SmartAdmin plugin support explanation
+ *                      - Parágrafo 3: Bootstrap 4.0 rewrite from ground-up
+ *                      - Parágrafo 4: HTML update free-of-charge
+ *                      - Parágrafo 5: "Thank you loyal customers!"
+ *                      - Assinatura: "Sincerely, The @Settings.App Team"
+ *                   2. **h3 SmartAdmin Team** (small "We build cool things...")
+ *                   3. **4 profiles** (d-flex flex-wrap demo demo-h-spacing mt-3 mb-3):
+ *                      Cada profile: rounded-pill bg-white shadow-sm p-2 border-faded mr-3 d-flex flex-row:
+ *                      - Avatar circular (img-thumbnail rounded-circle 5rem x 5rem)
+ *                      - h5 name + role (small m-0 fw-300)
+ *                      - Twitter link (text-info fs-sm @username target _blank)
+ *                      - WrapBootstrap envelope link (fa-envelope)
+ *                      **Profiles hardcoded**:
+ *                      1. Sunny A. (UI/UX Expert) - Lead Author - @myplaneticket - myorange
+ *                      2. Jos K. (ASP.NET Developer) - Partner & Contributor - @atlantez - Walapa
+ *                      3. Jovanni L. (PHP Developer) - Partner & Contributor - @lodev09 - lodev09
+ *                      4. Roberto R. (Rails Developer) - Partner & Contributor - @sildur - sildur
+ *                   4. **Footer paragraph** (fs-lg): "Ready to join our dedicated team?" partnership link
+ *                   @section ScriptsBlock: VAZIO {}. Para FrotiX: substituir por About real ("Sobre o FrotiX",
+ *                   equipe Câmara dos Deputados, histórico sistema, contato DETRAN/Coordenação Transportes,
+ *                   créditos/agradecimentos), remover demo content SmartAdmin.
+ **************************************************************************************** *@
 @page
 @model IntroductionModel
 @{ 

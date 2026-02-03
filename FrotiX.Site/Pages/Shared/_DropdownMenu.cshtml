@@ -1,3 +1,35 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_DropdownMenu.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view do dropdown menu do usuário (header direito) com foto, nome,
+ *                   opções desabilitadas (Reset/Settings/Fullscreen/Print/Language) e logout ativo.
+ * 📥 ENTRADAS     : @Settings.Theme.User (nome usuário), Settings.Theme.Avatar (COMENTADO),
+ *                   imagem ~/Images/barbudo.jpg (hardcoded), clique botão logout, asp-area Identity
+ * 📤 SAÍDAS       : Dropdown header com gradiente (bg-trans-gradient), foto circular barbudo.jpg,
+ *                   nome usuário (Settings.Theme.User), dropdown-divider, link logout Identity
+ *                   (asp-area="Identity" asp-page="/account/logout"), opções comentadas (15+ linhas)
+ * 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml header (provavelmente ao lado do sino alertas),
+ *                   <partial name="_DropdownMenu"/> ou dropdown-menu container
+ * 🔄 CHAMA        : Settings.Theme.User/Avatar (SmartSettings), ~/Images/barbudo.jpg (imagem custom),
+ *                   ASP.NET Core Identity logout (/Identity/Account/Logout), CSS classes (dropdown-header,
+ *                   bg-trans-gradient, rounded-circle profile-image, info-card-text, fs-lg text-truncate,
+ *                   dropdown-divider, dropdown-item fw-500 pt-3 pb-3)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views), SmartSettings injection (@Settings),
+ *                   ASP.NET Core Identity (asp-area="Identity" asp-page logout), Bootstrap 5 (dropdown
+ *                   classes), CSS classes custom (bg-trans-gradient, profile-image, info-card-text)
+ * 📝 OBSERVAÇÕES  : 48 linhas. Dropdown menu USER CUSTOMIZADO FrotiX (removeu muitas opções SmartAdmin).
+ *                   Imagem hardcoded ~/Images/barbudo.jpg (avatar genérico masculino) substitui
+ *                   Settings.Theme.Avatar comentado. APENAS LOGOUT ATIVO - todas outras opções comentadas:
+ *                   - Reset Layout (data-action="app-reset")
+ *                   - Settings modal (data-bs-toggle="modal" .js-modal-settings)
+ *                   - Fullscreen (data-action="app-fullscreen" F11)
+ *                   - Print (data-action="app-print" Ctrl+P)
+ *                   - Language dropdown multilevel (6 idiomas: FR/EN/ES/RU/JP/CH)
+ *                   Settings.Theme.Email comentado (linha 10), Twitter handle comentado (linha 43).
+ *                   Dropdown header com d-flex flex-row py-4 rounded-top, gradiente bg-trans-gradient.
+ *                   info-card-text com fs-lg text-truncate-lg. Logout link fw-500 pt-3 pb-3 (bold,
+ *                   padding vertical). Para produção: substituir barbudo.jpg por avatar dinâmico do usuário.
+ **************************************************************************************** *@
 <div class="dropdown-header bg-trans-gradient d-flex flex-row py-4 rounded-top">
 	<div class="d-flex flex-row align-items-center mt-1 mb-1 color-white">
         <span class="mr-2">

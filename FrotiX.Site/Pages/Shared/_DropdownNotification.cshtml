@@ -1,3 +1,36 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Shared/_DropdownNotification.cshtml
+ * OBJETIVO: Partial DEMO de dropdown de notificacoes do template SmartAdmin exibindo lista de
+ *           11 notificacoes estaticas (hardcoded HTML) com icones coloridos, timestamps, acoes
+ *           Mark all as read/Settings, usado como referencia de layout. NAO integrado ao FrotiX real.
+ * ENTRADAS: Nenhuma (partial estatico sem model), renderizado via partial name="_DropdownNotification"
+ *           no header _PageHeader.cshtml dentro de dropdown, 11 notificacoes estaticas hardcoded
+ *           (New user registered, Server downtime scheduled, New comment on your post, etc)
+ * SAIDAS: Dropdown renderizado como menu com header gradient exibindo contador 11 New, lista de
+ *         11 notificacoes (icone Font Awesome colorido, texto mensagem, timestamp relativo 2 minutes ago,
+ *         badge Unread em nao lidas), scroll customizado se lista exceder altura maxima, footer
+ *         com link View all notifications e botao Mark all as read, click em notificacao marca
+ *         como lida (handler nao implementado)
+ * CHAMADA POR: Partial _PageHeader.cshtml via partial name="_DropdownNotification" dentro de
+ *              dropdown trigger (botao icone fa-bell com badge contador 11 no header), exibido
+ *              quando usuario clica no botao notificacoes
+ * CHAMA: Nenhum JavaScript externo (dropdown e gerenciado por Bootstrap 5, handlers de Mark as read
+ *        estariam em notifications.js se implementado), CSS customizado template SmartAdmin
+ *        (gradient header, scroll customizado, hover effects, badge Unread, icones coloridos)
+ * DEPENDENCIAS: Bootstrap 5.3.8 (dropdown component, badges), Font Awesome 6 Duotone (icones
+ *               notificacoes coloridos: fa-user-plus azul, fa-server vermelho, fa-comment verde),
+ *               CSS customizado template SmartAdmin
+ * OBSERVACOES: 345 linhas partial DEMO template SmartAdmin NAO integrado ao FrotiX real. Notificacoes
+ *              sao estaticas hardcoded sem dados do banco. Considerar REMOVER ou IMPLEMENTAR sistema
+ *              de notificacoes real integrado ao FrotiX (notificacoes de viagens pendentes aprovacao,
+ *              alertas de vencimento CNH, alertas de manutencao programada, abastecimentos fora
+ *              do padrao). Se implementar notificacoes reais: criar tabela Notificacoes (Id,
+ *              UsuarioId, Tipo, Mensagem, Lida boolean, DataCriacao), controller/API carrega
+ *              notificacoes nao lidas do usuario logado, SignalR para notificacoes em tempo real
+ *              push, botao Mark all as read POST /api/Notificacoes/MarkAllAsRead.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 <div class="dropdown-header bg-trans-gradient d-flex justify-content-center align-items-center rounded-top mb-2">
 	<h4 class="m-0 text-center color-white">
 		11 New 

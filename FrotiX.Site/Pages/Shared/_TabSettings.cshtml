@@ -1,3 +1,60 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Shared/_TabSettings.cshtml
+ * OBJETIVO: Partial DEMO de painel de configuracoes de tema do template SmartAdmin exibindo
+ *           multiplas opcoes customizacao visual (layout fixo/boxed, cores navbar, skins,
+ *           logo background, menu position, atalhos, modo escuro), usado como referencia
+ *           de interface. NAO integrado ao FrotiX real.
+ * ENTRADAS: Nenhuma (partial estatico sem model), renderizado via partial name="_TabSettings"
+ *           em sidebar ou modal de configuracoes, 50+ opcoes de customizacao visual estaticas
+ *           hardcoded (radio buttons, checkboxes, color pickers, switches)
+ * SAIDAS: Painel de configuracoes renderizado como form com multiplas secoes: 1. App Layout
+ *         (Fixed Header/Navigation/Footer checkboxes, Container Width radio Fluid/Boxed),
+ *         2. Navbar (Color Scheme radio 10 opcoes cores), 3. Skins (Modern/Classic radio),
+ *         4. Logo Background (Color Picker 15 cores), 5. Menu Position (Top/Left/Right radio),
+ *         6. Shortcuts (Enable/Disable switch), 7. Dark Mode (Enable/Disable switch com preview),
+ *         8. Reset Settings (botao Reset to Default), cada opcao tem preview visual ao lado,
+ *         click em opcao aplica classe CSS dynamically no body alterando visual da pagina
+ *         em tempo real (handlers nao implementados), botao Save Settings rodape salva preferencias
+ *         localStorage (handler nao implementado)
+ * CHAMADA POR: Layout master _Layout.cshtml ou paginas especificas via partial name="_TabSettings",
+ *              tipicamente renderizado em sidebar direita offcanvas ou modal popup de configuracoes,
+ *              botao gear icon no header abre painel
+ * CHAMA: Nenhum JavaScript externo (logica de aplicar configuracoes estaria em theme-settings.js
+ *        se implementado), CSS customizado template SmartAdmin (estilos painel configuracoes,
+ *        color pickers, switches, preview boxes), Bootstrap 5 (form controls, radio/checkbox
+ *        groups), funcoes JavaScript theme aplicar classes CSS no body baseado em opcoes
+ *        selecionadas (exemplo: classe .fixed-header torna header fixo, .navbar-blue muda
+ *        cor navbar para azul, .dark-mode inverte cores para tema escuro)
+ * DEPENDENCIAS: Bootstrap 5.3.8 (form controls, offcanvas sidebar), Font Awesome 6 Duotone
+ *               (icones opcoes configuracoes), jQuery 3.7.1 (handlers change opcoes), CSS
+ *               customizado template SmartAdmin (classes temas cores/layouts), localStorage
+ *               API (salvar preferencias usuario)
+ * OBSERVACOES: 490 linhas partial DEMO template SmartAdmin NAO integrado ao FrotiX real.
+ *              Painel de configuracoes completo com 50+ opcoes customizacao visual, mas
+ *              handlers nao implementados (opcoes nao aplicam mudancas reais, botao Save
+ *              nao salva preferencias). Considerar REMOVER ou IMPLEMENTAR sistema de preferencias
+ *              real integrado ao FrotiX (salvar preferencias usuario no banco tabela UsuarioPreferencias:
+ *              Tema string light/dark, CorNavbar string, LayoutFixo boolean, persistir entre
+ *              sessoes, carregar preferencias ao login aplicar classes CSS body automaticamente).
+ *              Se implementar preferencias reais: criar tabela UsuarioPreferencias (Id, UsuarioId,
+ *              Tema, CorNavbar, LayoutFixo, MenuPosicao, DataAtualizacao), controller/API
+ *              endpoints GET /api/Usuarios/GetPreferencias carrega preferencias do usuario
+ *              logado, POST /api/Usuarios/SavePreferencias salva preferencias no banco,
+ *              JavaScript carrega preferencias ao inicializar pagina aplica classes CSS
+ *              body (exemplo: se Tema='dark' adiciona classe .dark-mode no body, se LayoutFixo=true
+ *              adiciona .fixed-header), handlers change de cada opcao aplica classe CSS
+ *              dinamicamente + debounce 500ms envia AJAX POST salva preferencia no banco
+ *              sem precisar botao Save manual, botao Reset to Default limpa preferencias
+ *              usuario volta para defaults do sistema (Tema light, CorNavbar azul, LayoutFixo
+ *              false). Opcoes recomendadas para FrotiX: simplificar painel configuracoes
+ *              apenas 5-6 opcoes essenciais (Tema light/dark, Tamanho fonte pequeno/medio/grande,
+ *              Sidebar colapsada por padrao sim/nao, Notificacoes push ativadas sim/nao),
+ *              remover opcoes avancadas desnecessarias (50+ opcoes confundem usuarios, maioria
+ *              nunca usadas), focar em preferencias que impactam usabilidade real nao apenas
+ *              estetica.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 <div class="settings-panel">
 	<div class="mt-4 d-table w-100 px-5">
 		<div class="d-table-cell align-middle">

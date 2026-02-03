@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/NotaFiscal/Upsert.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário criar/editar nota fiscal com seleção de instrumento (Contrato/Ata), status (toggle), empenho, e dados NF (número, data, tipo, valores)
+ * 📥 ENTRADAS     : @page, @model UpsertModel, filtros topo: lstInstrumento, toggleStatus (Ativo/Inativo), ListaContratos, ListaAtas, ListaEmpenhos, campos NF: txtNumeroNF, txtDataEmissao, lstTipoNF, lstMesRef, lstAnoRef, txtValorNF, txtObjeto, txtValorGlosa, txtMotivoGlosa
+ * 📤 SAÍDAS       : POST /api/NotaFiscal/Insere ou Edita (JSON), redirect para /notafiscal, AppToast feedback
+ * 🔗 CHAMADA POR  : NotaFiscal/Index (botão "Adicionar Nota Fiscal", editar linha)
+ * 🔄 CHAMA        : /api/Contrato/ListaContratosPorStatus, /api/AtaRegistroPrecos/ListaAtasPorStatus, /api/NotaFiscal/EmpenhoList|EmpenhoListAta, /api/NotaFiscal/Insere, /api/NotaFiscal/Edita, ~/js/cadastros/notafiscal.js, ./Index
+ * 📦 DEPENDÊNCIAS : Bootstrap 5.3.8, Font Awesome Duotone, CSS ftx-card-styled.css, moeda() function inline, parseCurrencyBR() inline
+ * 📝 OBSERVAÇÕES  : Total: 669 linhas. CSS inline extenso (283 linhas) - extrair (toggle switch, filtros, campos), JavaScript inline GRANDE (386 linhas) - DEVE extrair (toggle, cascatas, parseCurrency, submit), DUPLICAÇÃO: moeda(), parseCurrencyBR() inline - repetidas em múltiplos arquivos, FEATURE INTERESSANTE: Toggle switch visual (Ativo/Inativo) em vez de checkbox tradicional - ótimo UX, COMPLEXIDADE: Filtros em linha horizontal (ftx-filtros-row) com larguras fixas (120px, 440px) - responsivo?, BUG POTENCIAL: Em modo edição, converte GUIDs para lowercase para comparação (linha 651) - pode falhar se backend retornar uppercase, Validações: campo Empenho obrigatório - correto, Valores: usa parseCurrencyBR antes de enviar - correto, Callbacks: loadListaContratos/Atas/Empenhos com callback parameter - padrão async correto, AJAX: btnSubmit desabilita e mostra spinner durante POST - boa UX
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.NotaFiscal.UpsertModel
 

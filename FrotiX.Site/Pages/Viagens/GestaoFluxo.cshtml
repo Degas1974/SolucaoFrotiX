@@ -1,3 +1,146 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Viagens/GestaoFluxo.cshtml
+ * OBJETIVO: Pagina COMPLEXA de gestao operacional fluxo viagens tempo real exibindo Syncfusion
+ *           TreeGrid hierarquico rotas + Kanban board status viagens + mapa Google Maps
+ *           rastreamento, permite coordenadores gerenciar viagens em andamento realocar
+ *           recursos resolver imprevistos, sistema CRITICO controle operacional diario.
+ * ENTRADAS: route /Viagens/GestaoFluxo, ViewData (Title, PageName, Heading), auto-refresh
+ *           AJAX SignalR cada 30s atualiza viagens em andamento tempo real, filtros
+ *           toolbar: DatePicker Data (default hoje), ComboBox Motoristas, ComboBox
+ *           Veiculos, ComboBox Status (Planejada/EmAndamento/Concluida), toggle Apenas
+ *           Viagens Ativas, botao Atualizar Fluxo reload manual, TreeGrid dataSource
+ *           URL GET /api/Viagens/GetFluxoHierarquico retorna JSON hierarquia 2 niveis
+ *           (Nivel 1: Motoristas raiz, Nivel 2: Viagens do motorista filhos), Kanban
+ *           dataSource mesmo endpoint agrupa viagens por Status colunas drag-drop
+ *           muda status, Google Maps markers lat/lng veiculos em transito atualizado
+ *           SignalR push GPS tracking
+ * SAIDAS: Pagina renderizada layout 3 secoes: 1. Secao Esquerda width 40pc TreeGrid
+ *         Syncfusion hierarquico (treeColumnIndex coluna Motorista expand/collapse,
+ *         Nivel 1 Motoristas: Nome, Status badge Disponivel/EmViagem, Total Viagens
+ *         Dia, Horas Trabalhadas, Proxima Viagem horario, Nivel 2 Viagens filhos:
+ *         ViagemId, Origem>Destino, HoraInicio-HoraFim previsto, Status badge colorido,
+ *         Passageiros contador, KmPrevisto, Acoes botoes Detalhes/Cancelar/Realocar),
+ *         2. Secao Central width 30pc Kanban Board Syncfusion (4 colunas Status:
+ *         Planejada cards azul empilhados, Em Andamento cards amarelo piscando, Atrasada
+ *         cards vermelho alerta, Concluida cards verde, cada card exibe ViagemId,
+ *         Motorista, Veiculo, Origem>Destino, HoraInicio, Passageiros, drag-drop
+ *         card entre colunas muda Status viagem POST /api/Viagens/UpdateStatus, swimlane
+ *         groupBy Veiculo agrupa viagens mesmo veiculo), 3. Secao Direita width 30pc
+ *         Google Maps (markers veiculos em transito lat/lng GPS tracking InfoWindow
+ *         popup Placa/Motorista/Destino/ETA, polyline rotas planejadas azul vs rota
+ *         real percorrida verde compara desvios, traffic layer sobreposicao mostra
+ *         congestionamentos tempo real alerta atrasos, geofence circles origens/destinos
+ *         raio 500m trigger notificacao quando veiculo entra/sai area, painel inferior
+ *         estatisticas: Veiculos em Transito contador, Viagens Atrasadas contador
+ *         vermelho, ETA Medio minutos, Desvios Rota contador alerta), auto-refresh
+ *         SignalR: connection hub /viagemFluxoHub recebe push backend UpdateViagemStatus/UpdateVeiculoPosicao
+ *         atualiza TreeGrid/Kanban/Maps sem reload pagina, toast notifications exibem
+ *         alertas tempo real (Viagem 123 atrasada 30min Amarelo, Veiculo ABC-1234
+ *         fora rota planejada Vermelho alerta, Viagem 456 concluida sucesso Verde),
+ *         modal Realocar Viagem: form seleciona Motorista/Veiculo alternativos disponibilidade
+ *         real-time verifica conflitos horarios submit POST /api/Viagens/RealocarViagem
+ *         atualiza recursos
+ * CHAMADA POR: Menu Viagens > Gestao Fluxo Operacional (link sidebar), usuarios com
+ *              permissao Viagens.GerenciarFluxo (role Coordenador Viagens apenas),
+ *              pagina mantida aberta monitor tela grande central operacoes monitoramento
+ *              continuo 8h-18h horario comercial
+ * CHAMA: API ViagensController: GET /api/Viagens/GetFluxoHierarquico (query Data=hoje
+ *        carrega Motoristas Include Viagens do dia, mapeia TreeGrid format Nivel
+ *        1 Motoristas + Nivel 2 Viagens filhos, calcula agregacoes motorista Total
+ *        Viagens/Horas Trabalhadas/Proxima Viagem, Include Veiculo/Passageiros dados
+ *        viagem, retorna JSON hierarquia), POST /api/Viagens/UpdateStatus (recebe
+ *        ViagemId + NovoStatus, valida transicao status permitida state machine (Planejada>EmAndamento
+ *        OK, EmAndamento>Concluida OK, Concluida>Planejada NOK nao permite voltar),
+ *        atualiza Viagem.Status DbContext SaveChanges, envia SignalR broadcast Clients.All.SendAsync("UpdateViagemStatus")
+ *        notifica todos usuarios conectados fluxo atualizar grids, retorna JSON
+ *        success), POST /api/Viagens/RealocarViagem (recebe ViagemId + NovoMotoristaId
+ *        + NovoVeiculoId, valida disponibilidade motorista/veiculo horario viagem
+ *        query conflitos Where Data/Hora overlap, se conflito retorna error lista
+ *        conflitos, senao atualiza Viagem.MotoristaId/VeiculoId SaveChanges envia
+ *        SignalR update, retorna success), SignalR Hub ViagensFluxoHub (metodos:
+ *        UpdateViagemStatus broadcast atualiza status TreeGrid/Kanban, UpdateVeiculoPosicao
+ *        recebe lat/lng GPS tracking atualiza marker Maps tempo real, NotificarAtraso
+ *        envia toast alerta viagem atrasada, connection lifecycle OnConnectedAsync
+ *        adiciona usuario grupo ViagemFluxo permite broadcast targeted), Google
+ *        Maps API (map initialization, markers veiculos InfoWindow, polylines rotas
+ *        DirectionsService, traffic layer TrafficLayer realtime, geofence Circle
+ *        computeDistanceBetween trigger events), Syncfusion TreeGrid (hierarchical
+ *        binding idMapping/parentIdMapping, inline editing batch mode, toolbar refresh),
+ *        Syncfusion Kanban (cardSettings template, columns Status mapping, swimlaneSettings
+ *        groupBy Veiculo, dragStop event POST UpdateStatus, allowDragAndDrop true),
+ *        toast notifications custom, jQuery setInterval auto-refresh 30s fallback
+ *        se SignalR disconnect
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 TreeGrid/Kanban/DatePicker/ComboBox
+ *               2023.4.2, SignalR 7.0 realtime push, Google Maps JavaScript API v3,
+ *               jQuery 3.7.1, Bootstrap 5.3.8, Font Awesome 6, EF Core 8.0
+ * OBSERVACOES: 807 linhas pagina COMPLEXA CRITICA gestao operacional fluxo viagens
+ *              tempo real. SignalR push essencial: backend envia atualizacoes status
+ *              viagens GPS tracking veiculos automaticamente todos usuarios conectados
+ *              Gestao Fluxo veem mesmas informacoes sincronizadas tempo real, coordenador
+ *              A altera status viagem coordenador B ve atualização instantanea sem
+ *              refresh, elimina conflitos concorrencia decisoes desatualizadas. TreeGrid
+ *              hierarquico Motoristas>Viagens: visualiza carga trabalho por motorista
+ *              (Motorista A 5 viagens dia 8h trabalhadas sobrecarregado, Motorista
+ *              B 2 viagens 4h subutilizado, coordenador pode realocar viagens balancear
+ *              carga), expand motorista mostra viagens sequenciais horarios permite
+ *              identificar gaps tempo ocioso (viagem 1 termina 10h, viagem 2 inicia
+ *              14h = 4h gap pode encaixar viagem adicional otimiza utilizacao). Kanban
+ *              Board drag-drop: permite mudar status viagem visualmente intuitivo
+ *              (arrastar card coluna Planejada para Em Andamento inicia viagem POST
+ *              UpdateStatus backend valida motorista disponivel veiculo disponivel,
+ *              arrastar card coluna Atrasada para Concluida finaliza viagem mesmo
+ *              atrasada registra atraso historico), swimlane groupBy Veiculo agrupa
+ *              cards viagens mesmo veiculo (identifica se veiculo tem multiplas viagens
+ *              sequenciais planejamento logistica rota otima). Google Maps tracking:
+ *              markers exibem posicao GPS atual veiculos em transito atualizado SignalR
+ *              push cada 1-5min backend recebe telemetria GPS dispositivo veiculo
+ *              OBD-II/smartphone motorista envia lat/lng hub broadcast UpdateVeiculoPosicao
+ *              frontend atualiza marker Maps animacao smooth transition posicao anterior>nova,
+ *              polyline azul mostra rota planejada calculada DirectionsService Origem>Destino
+ *              via rota otima, polyline verde mostra rota real percorrida histórico
+ *              GPS points conectados, compara polylines identifica desvios (veiculo
+ *              saiu rota planejada >2km distance calcula alerta coordenador verificar
+ *              motivo motorista perdido? acidente forçou desvio? parada nao autorizada?),
+ *              traffic layer sobreposicao mostra congestionamentos tempo real cores
+ *              (verde livre, amarelo lento, vermelho congestionado intenso), se viagem
+ *              rota passa area vermelha sistema calcula atraso ETA adicional alerta
+ *              coordenador notificar passageiros atraso previsto, geofence circles
+ *              500m raio origem/destino trigger events (quando veiculo entra geofence
+ *              origem sistema registra Viagem.HoraInicioReal, quando entra geofence
+ *              destino registra Viagem.HoraFimReal, se veiculo demora >30min apos
+ *              entrar geofence destino alerta coordenador verificar motorista finalizou
+ *              viagem sistema esqueceu registrar). Realocacao viagens: modal permite
+ *              coordenador realocar viagem emergencial (motorista A ficou doente ultimo
+ *              momento viagem planejada 14h, coordenador abre modal Realocar seleciona
+ *              Motorista B disponivel horario verifica conflitos nao tem submit POST,
+ *              backend valida Motorista B nao tem outra viagem 14h Veiculo ABC disponivel,
+ *              atualiza Viagem.MotoristaId=B envia notificacao push app mobile Motorista
+ *              B Nova viagem atribuida confirme presenca, envia email Passageiros
+ *              informando mudanca motorista), modal exibe disponibilidade real-time
+ *              todos motoristas/veiculos cores (Verde disponivel, Amarelo ocupado
+ *              parcial pode encaixar, Vermelho indisponivel viagem curso) facilita
+ *              escolha recurso alternativo. Auto-refresh 30s: setInterval chama GET
+ *              /api/Viagens/GetFluxoHierarquico cada 30s reload dados TreeGrid/Kanban
+ *              fallback se SignalR connection cair (network instavel, servidor restart),
+ *              SignalR reconnect automatico withAutomaticReconnect tenta reconectar
+ *              delays [0, 2s, 10s, 30s], se reconnect falha apos 4 tentativas exibe
+ *              alert Conexao perdida usando auto-refresh 30s toast amarelo, setInterval
+ *              continua funcionando garante dados atualizados mesmo sem SignalR push
+ *              apenas lag 30s vs tempo real. Toast notifications tempo real: exibe
+ *              alertas importantes eventos viagens bottom-right stack (Viagem 123
+ *              iniciada motorista Joao click toast abre detalhes viagem modal, Viagem
+ *              456 atrasada 45min passageiros notificados click toast liga telefone
+ *              motorista verificar status, Veiculo ABC-1234 fora rota 5km desvio
+ *              click toast centra Maps marker veiculo zoom localização, acumulacao
+ *              multiplos toasts scroll vertical lista permite revisar alertas recentes),
+ *              som alerta beep notificacao importante chama atencao coordenador (configuravel
+ *              mute se incomodar). Pagina mantida aberta continuamente: tipicamente
+ *              1-2 coordenadores viagens monitora tela grande TV/monitor central
+ *              operações escritório, visualiza fluxo completo tempo real toma decisões
+ *              rapidas imprevistos atrasos/cancelamentos/realocacoes, essencial operacao
+ *              diaria transporte interno corporativo empresas grandes 100+ viagens/dia.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
 @page
 @using FrotiX.Repository.IRepository
 @using Syncfusion.EJ2

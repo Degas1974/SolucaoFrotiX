@@ -1,8 +1,21 @@
-/**
- * empenho.js - Gestão de Empenhos
- * FrotiX - Sistema de Gestão de Frotas
- * Padrão: Try-Catch com Alerta.TratamentoErroComLinha em TODAS as funções
- */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: empenho.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gestão de empenhos com DataTable, handlers delegados para exclusão,
+ *                   integração com AppToast e Alerta. Lógica principal no Index.cshtml,
+ *                   funções auxiliares aqui.
+ * 📥 ENTRADAS     : Clique em .btn-delete (data-id), resposta Alerta.Confirmar (willDelete)
+ * 📤 SAÍDAS       : DELETE via AJAX para /api/Empenho/Delete,
+ *                   AppToast (Verde/Vermelho), DataTable.ajax.reload (#tblEmpenho),
+ *                   console.error (debug), Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready, event handler .btn-delete (delegado para DataTable dinâmico),
+ *                   Pages/Empenho/Index.cshtml
+ * 🔄 CHAMA        : Alerta.Confirmar, $.ajax, AppToast.show, $("#tblEmpenho").DataTable().ajax.reload,
+ *                   console.error, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables, Alerta.js, AppToast (toast notifications)
+ * 📝 OBSERVAÇÕES  : Padrão: Try-Catch em TODAS as funções. Event handler delegado
+ *                   para funcionar com DataTable dinâmico. 276 linhas total.
+ **************************************************************************************** */
 
 var dataTable;
 

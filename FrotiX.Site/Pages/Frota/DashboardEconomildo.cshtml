@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Frota/DashboardEconomildo.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Dashboard específico para análise de frota Mob Economildo com gráficos, KPIs, filtros período
+ * 📥 ENTRADAS     : @page, @model DashboardEconomildoModel, filtros (ano, mês, período personalizado)
+ * 📤 SAÍDAS       : Cards KPIs clicáveis, gráficos Chart.js (pizza, barras, linhas), tabelas estatísticas, export PDF/Excel
+ * 🔗 CHAMADA POR  : Menu Dashboards → Frota Economildo, navegação direta
+ * 🔄 CHAMA        : /api/Frota/DashboardEconomildo/*, ~/js/dashboards/dashboard-economildo.js (external), APIs REST dados gráficos
+ * 📦 DEPENDÊNCIAS : Chart.js, Syncfusion EJ2 (Charts, Heatmap), Select2, jQuery, jsPDF, html2canvas, Bootstrap 5
+ * 📝 OBSERVAÇÕES  : Total: 1926 linhas. PROBLEMAS: Arquivo GIGANTE (1900+ linhas), CSS inline ~400 linhas (extrair urgente), JavaScript inline ~600 linhas (extrair urgente), sem lazy loading gráficos (carrega todos de uma vez - performance), filtros sem persist sessionStorage, gráficos sem debounce resize, cards KPIs sem animação transição, export PDF sem progress, selects Select2 sobreposição tooltip
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Frota.DashboardEconomildoModel
 @{

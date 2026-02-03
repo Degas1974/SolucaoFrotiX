@@ -262,10 +262,10 @@
                         const isRegistraViagem = $("#btnConfirma").text().includes("Registra Viagem");
                         if (isRegistraViagem && typeof window.validarFinalizacaoConsolidadaIA === 'function')
                         {
-                            const DataInicial = document.getElementById("txtDataInicial")?.ej2_instances?.[0]?.value;
-                            const HoraInicial = $("#txtHoraInicial").val();
+                            const DataInicial = window.getKendoDateValue("txtDataInicial");
+                            const HoraInicial = window.getKendoTimeValue("txtHoraInicial");
                             const DataFinal = $("#txtDataFinal").val();
-                            const HoraFinal = $("#txtHoraFinal").val();
+                            const HoraFinal = window.getKendoTimeValue("txtHoraFinal");
                             const KmInicial = parseInt($("#txtKmInicial").val()) || 0;
                             const KmFinal = parseInt($("#txtKmFinal").val()) || 0;
                             const veiculoId = document.getElementById("lstVeiculo")?.ej2_instances?.[0]?.value || '';
@@ -294,7 +294,7 @@
                         // ✅ TODAS AS VALIDAÇÕES PASSARAM - Agora sim exibir modal de espera
                         FtxSpin.show("Gravando Agendamento(s)");
 
-                        window.dataInicial = moment(document.getElementById("txtDataInicial").ej2_instances[0].value).toISOString().split("T")[0];
+                        window.dataInicial = moment(window.getKendoDateValue("txtDataInicial")).toISOString().split("T")[0];
                         const periodoRecorrente = document.getElementById("lstPeriodos").ej2_instances[0].value;
 
                         if (!viagemId)
@@ -448,8 +448,8 @@
             } else if (periodoRecorrente === "D")
             {
                 // DIÁRIA: Cria agendamento para cada dia entre data inicial e final (INCLUSIVE)
-                const dataInicial = document.getElementById("txtDataInicial")?.ej2_instances?.[0]?.value;
-                const dataFinalRecorrencia = document.getElementById("txtFinalRecorrencia")?.ej2_instances?.[0]?.value;
+                const dataInicial = window.getKendoDateValue("txtDataInicial");
+                const dataFinalRecorrencia = window.getKendoDateValue("txtFinalRecorrencia");
 
                 if (!dataInicial || !dataFinalRecorrencia)
                 {
@@ -492,8 +492,8 @@
                     throw new Error("Selecione pelo menos um dia da semana");
                 }
 
-                const dataInicial = document.getElementById("txtDataInicial")?.ej2_instances?.[0]?.value;
-                const dataFinalRecorrencia = document.getElementById("txtFinalRecorrencia")?.ej2_instances?.[0]?.value;
+                const dataInicial = window.getKendoDateValue("txtDataInicial");
+                const dataFinalRecorrencia = window.getKendoDateValue("txtFinalRecorrencia");
 
                 const datasRecorrentes = gerarDatasSemanais(
                     dataInicial,
@@ -509,8 +509,8 @@
             {
                 // MENSAL: Repete no mesmo dia do mês
                 const diaMes = document.getElementById("lstDiasMes")?.ej2_instances?.[0]?.value;
-                const dataInicial = document.getElementById("txtDataInicial")?.ej2_instances?.[0]?.value;
-                const dataFinalRecorrencia = document.getElementById("txtFinalRecorrencia")?.ej2_instances?.[0]?.value;
+                const dataInicial = window.getKendoDateValue("txtDataInicial");
+                const dataFinalRecorrencia = window.getKendoDateValue("txtFinalRecorrencia");
 
                 if (!diaMes)
                 {
@@ -953,14 +953,14 @@
                         if (!resultadoDataFutura.valido)
                         {
                             await Alerta.Erro(resultadoDataFutura.titulo, resultadoDataFutura.mensagem);
-                            $("#txtDataFinal").val("");
+                            window.setKendoDateValue("txtDataFinal", null);
                             return;
                         }
 
                         // Validar datas e horas com IA (não bloqueante - apenas aviso)
-                        const DataInicial = document.getElementById("txtDataInicial").ej2_instances?.[0]?.value;
-                        const HoraInicial = $("#txtHoraInicial").val();
-                        const HoraFinal = $("#txtHoraFinal").val();
+                        const DataInicial = window.getKendoDateValue("txtDataInicial");
+                        const HoraInicial = window.getKendoTimeValue("txtHoraInicial");
+                        const HoraFinal = window.getKendoTimeValue("txtHoraFinal");
 
                         if (DataInicial && HoraInicial && HoraFinal)
                         {
@@ -974,10 +974,10 @@
                             const resultadoDatas = await validador.analisarDatasHoras(dadosDatas);
                             if (!resultadoDatas.valido && resultadoDatas.nivel === 'erro')
                             {
-                                await Alerta.Erro(resultadoDatas.titulo, resultadoDatas.mensagem);
-                                $("#txtDataFinal").val("");
-                                return;
-                            }
+                            await Alerta.Erro(resultadoDatas.titulo, resultadoDatas.mensagem);
+                            window.setKendoDateValue("txtDataFinal", null);
+                            return;
+                        }
                             else if (!resultadoDatas.valido && resultadoDatas.nivel === 'aviso')
                             {
                                 const confirma = await Alerta.ValidacaoIAConfirmar(
@@ -988,7 +988,7 @@
                                 );
                                 if (!confirma)
                                 {
-                                    $("#txtDataFinal").val("");
+                                    window.setKendoDateValue("txtDataFinal", null);
                                     return;
                                 }
                             }
@@ -997,11 +997,12 @@
                     else
                     {
                         // Fallback: validação simples
-                        const DataInicial = document.getElementById("txtDataInicial").ej2_instances?.[0]?.value;
-                        if (DataFinal < DataInicial)
+                        const dataInicial = window.getKendoDateValue("txtDataInicial");
+                        const dataFinalDate = window.getKendoDateValue("txtDataFinal");
+                        if (dataFinalDate && dataInicial && dataFinalDate < dataInicial)
                         {
                             Alerta.Erro("Atenção", "A data final deve ser maior que a inicial");
-                            $("#txtDataFinal").val("");
+                            window.setKendoDateValue("txtDataFinal", null);
                         }
                     }
                 } catch (error)
@@ -1015,30 +1016,21 @@
             {
                 try
                 {
-                    const datePickerElement = document.getElementById("txtDataInicial");
+                    const selectedDate = window.getKendoDateValue("txtDataInicial");
 
-                    // ✅ VERIFICAR SE EXISTE E TEM INSTÂNCIA SYNCFUSION
-                    if (!datePickerElement || !datePickerElement.ej2_instances || !datePickerElement.ej2_instances[0])
+                    if (!selectedDate)
                     {
-                        console.warn("⚠️ txtDataInicial não está inicializado como DatePicker");
+                        console.warn("⚠️ txtDataInicial não está inicializado como Kendo DatePicker");
                         return;
                     }
 
-                    const datePickerInstance = datePickerElement.ej2_instances[0];
-                    const selectedDate = datePickerInstance.value;
-
-                    if (selectedDate)
+                    const dataFinalPicker = window.getKendoDatePicker("txtDataFinal");
+                    if (dataFinalPicker && typeof dataFinalPicker.min === "function")
                     {
-                        // Atualizar data final mínima
-                        const txtDataFinalElement = document.getElementById("txtDataFinal");
-                        if (txtDataFinalElement && txtDataFinalElement.ej2_instances && txtDataFinalElement.ej2_instances[0])
-                        {
-                            const dataFinalInstance = txtDataFinalElement.ej2_instances[0];
-                            dataFinalInstance.min = selectedDate;
-                        }
-
-                        window.calcularDuracaoViagem();
+                        dataFinalPicker.min(selectedDate);
                     }
+
+                    window.calcularDuracaoViagem();
                 } catch (error)
                 {
                     Alerta.TratamentoErroComLinha("main.js", "txtDataInicial_focusout", error);
@@ -1050,12 +1042,12 @@
             {
                 try
                 {
-                    const HoraFinal = $("#txtHoraFinal").val();
+                    const HoraFinal = window.getKendoTimeValue("txtHoraFinal");
                     const DataFinal = $("#txtDataFinal").val();
 
                     if (DataFinal === "")
                     {
-                        $("#txtHoraFinal").val("");
+                        window.setKendoTimeValue("txtHoraFinal", "");
                         Alerta.Erro("Atenção", "Preencha a Data Final para poder preencher a Hora Final");
                         return;
                     }
@@ -1070,8 +1062,8 @@
                     {
                         const validador = ValidadorFinalizacaoIA.obterInstancia();
 
-                        const DataInicial = document.getElementById("txtDataInicial").ej2_instances?.[0]?.value;
-                        const HoraInicial = $("#txtHoraInicial").val();
+                        const DataInicial = window.getKendoDateValue("txtDataInicial");
+                        const HoraInicial = window.getKendoTimeValue("txtHoraInicial");
 
                         if (DataInicial && HoraInicial)
                         {
@@ -1086,7 +1078,7 @@
                             if (!resultadoDatas.valido && resultadoDatas.nivel === 'erro')
                             {
                                 await Alerta.Erro(resultadoDatas.titulo, resultadoDatas.mensagem);
-                                $("#txtHoraFinal").val("");
+                                window.setKendoTimeValue("txtHoraFinal", "");
                                 return;
                             }
                             else if (!resultadoDatas.valido && resultadoDatas.nivel === 'aviso')
@@ -1099,7 +1091,7 @@
                                 );
                                 if (!confirma)
                                 {
-                                    $("#txtHoraFinal").val("");
+                                    window.setKendoTimeValue("txtHoraFinal", "");
                                     return;
                                 }
                             }
@@ -1108,12 +1100,13 @@
                     else
                     {
                         // Fallback: validação simples
-                        const HoraInicial = $("#txtHoraInicial").val();
-                        const DataInicial = document.getElementById("txtDataInicial").ej2_instances?.[0]?.value;
+                        const HoraInicial = window.getKendoTimeValue("txtHoraInicial");
+                        const DataInicial = window.getKendoDateValue("txtDataInicial");
+                        const DataFinalDate = window.getKendoDateValue("txtDataFinal");
 
-                        if (HoraFinal < HoraInicial && DataInicial === DataFinal)
+                        if (HoraFinal < HoraInicial && DataInicial && DataFinalDate && DataInicial.toDateString() === DataFinalDate.toDateString())
                         {
-                            $("#txtHoraFinal").val("");
+                            window.setKendoTimeValue("txtHoraFinal", "");
                             Alerta.Erro("Atenção", "A hora final deve ser maior que a inicial");
                         }
                     }
@@ -1128,14 +1121,14 @@
             {
                 try
                 {
-                    const HoraInicial = $("#txtHoraInicial").val();
-                    const HoraFinal = $("#txtHoraFinal").val();
+                            const HoraInicial = window.getKendoTimeValue("txtHoraInicial");
+                            const HoraFinal = window.getKendoTimeValue("txtHoraFinal");
 
                     if (HoraFinal === "") return;
 
                     if (HoraInicial > HoraFinal)
                     {
-                        $("#txtHoraInicial").val("");
+                        window.setKendoTimeValue("txtHoraInicial", "");
                         Alerta.Erro("Atenção", "A hora inicial deve ser menor que a final");
                     }
                 } catch (error)
@@ -1306,19 +1299,17 @@
             {
                 try
                 {
-                    const txtDataInicial = document.getElementById("txtDataInicial").ej2_instances[0].value;
-                    const txtFinalRecorrencia = $("#txtFinalRecorrencia").val();
+                    const dataInicial = window.getKendoDateValue("txtDataInicial");
+                    const dataFinalRecorrencia = window.getKendoDateValue("txtFinalRecorrencia");
 
-                    if (txtDataInicial && txtFinalRecorrencia)
+                    if (dataInicial && dataFinalRecorrencia)
                     {
-                        const dataInicial = moment(txtDataInicial, "DD-MM-YYYY");
-                        const dataFinal = moment(txtFinalRecorrencia, "DD-MM-YYYY");
-                        const diferencaDias = dataFinal.diff(dataInicial, "days");
+                        const diferencaDias = moment(dataFinalRecorrencia).diff(moment(dataInicial), "days");
 
                         if (diferencaDias > 365)
                         {
                             Alerta.Warning("Atenção", "A data final não pode ser maior que 365 dias após a data inicial");
-                            $("#txtFinalRecorrencia").val("");
+                            window.setKendoDateValue("txtFinalRecorrencia", null);
                         }
                     }
                 } catch (error)
@@ -1646,13 +1637,10 @@
                     const novaDataMinima = new Date();
                     // Zerar horas para comparar apenas a data
                     novaDataMinima.setHours(0, 0, 0, 0);
-                    const datePickerElement = document.getElementById("txtDataInicial");
-
-                    if (datePickerElement && datePickerElement.ej2_instances && datePickerElement.ej2_instances[0])
+                    const datePickerInstance = window.getKendoDatePicker("txtDataInicial");
+                    if (datePickerInstance && typeof datePickerInstance.min === "function")
                     {
-                        const datePickerInstance = datePickerElement.ej2_instances[0];
-                        datePickerInstance.setProperties({ min: novaDataMinima });
-                        datePickerInstance.min = novaDataMinima;
+                        datePickerInstance.min(novaDataMinima);
                         console.log("✅ Data mínima ajustada para hoje:", novaDataMinima);
                     }
 

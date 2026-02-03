@@ -1,18 +1,42 @@
 @page
 
-/*
-    ═══════════════════════════════════════════════════════════════════════════════
-    📄 DOCUMENTAÇÃO COMPLETA DISPONÍVEL
-    ═══════════════════════════════════════════════════════════════════════════════
-    
-    📍 Localização: Documentacao/Pages/Requisitante - Index.md
-    📅 Última Atualização: 08/01/2026
-    📋 Versão: 2.0 (Padrão FrotiX Simplificado)
-    
-    Este arquivo contém a View Razor da página de listagem de Requisitantes.
-    Para entender completamente a funcionalidade, consulte a documentação acima.
-    ═══════════════════════════════════════════════════════════════════════════════
-*/
+@* ========================================================================================
+ * ARQUIVO: Pages/Requisitante/Index.cshtml
+ * OBJETIVO: Pagina de listagem e gestao de requisitantes com DataTable jQuery configuravel,
+ *           badges coloridos de status (Ativo Verde/Inativo Cinza), CRUD completo (criacao/edicao
+ *           via /Requisitante/Upsert, exclusao com confirmacao SweetAlert2), exportacao Excel/PDF,
+ *           sistema padrao FrotiX para gerenciar pessoas autorizadas a requisitar veiculos.
+ * ENTRADAS: Model FrotiX.Pages.Requisitante.IndexModel (code-behind C#), DataTable hash tblRequisitante
+ *           vazio populado via AJAX, botoes CRUD delegados via jQuery (classe .btn-editar para
+ *           edicao redireciona /Requisitante/Upsert?id=X, classe .btn-delete para exclusao com
+ *           confirmacao, classe .updateStatusRequisitante para toggle Ativo/Inativo), atributos
+ *           data-id nos botoes
+ * SAIDAS: DataTable hash tblRequisitante renderizado com 6 colunas (Nome completo, CPF mascara
+ *         XXX.XXX.XXX-XX, Email, Telefone mascara (XX) XXXXX-XXXX, Status badge Verde Ativo/Cinza
+ *         Inativo, Acoes com 3 botoes Editar/Excluir/Toggle Status), links para /Requisitante/Upsert
+ *         (criacao novo/edicao existente), exportacoes Excel/PDF via DataTables buttons extension,
+ *         POST /api/Requisitante/Delete (exclusao com confirmacao), GET /api/Requisitante/UpdateStatus
+ *         (toggle status retorna JSON), notificacoes AppToast Verde sucesso/Vermelho erro
+ * CHAMADA POR: Route /Requisitante via diretiva page, navegacao sidebar menu principal (Cadastros >
+ *              Requisitantes), link direto URL, IndexModel.OnGet metodo backend C# executa no
+ *              carregamento da pagina (code-behind ASP.NET Core Razor Pages)
+ * CHAMA: requisitante.js (arquivo JavaScript externo com funcao loadList para carregar DataTable
+ *        via AJAX GET /api/Requisitante/GetAll, delete handler com confirmacao SweetAlert2 via
+ *        Alerta.Confirmar, status toggle handler GET /api/Requisitante/UpdateStatus?id=X com
+ *        atualizacao visual dinamica do badge sem reload), endpoints API REST /api/Requisitante/GetAll
+ *        GET (retorna lista JSON), /api/Requisitante/Delete POST (recebe id e exclui),
+ *        /api/Requisitante/UpdateStatus GET (toggle status), Alerta.Confirmar (SweetAlert2 wrapper),
+ *        Alerta.TratamentoErroComLinha, AppToast.show (notificacoes toast), DataTables API
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1, DataTables 1.13.x (buttons extension
+ *               pageLength/excel/pdfHtml5, responsive, column defs), Bootstrap 5.3.8 (cards,
+ *               badges, grid row/col), requisitante.js (arquivo JavaScript externo), Alerta.js
+ *               (SweetAlert2 wrapper), AppToast.js, Font Awesome 6 Duotone (icone fa-user-check)
+ * OBSERVACOES: 228 linhas com layout padrao FrotiX (header azul hash 3D5771 gradient, card
+ *              border-radius 14px). DataTable com lengthMenu customizado [10, 25, 50, -1].
+ *              Sistema gerencia pessoas autorizadas a requisitar veiculos para viagens oficiais
+ *              (servidores, gestores, diretores). Requisitantes sao vinculados a viagens na agenda.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
 
 @model FrotiX.Pages.Requisitante.IndexModel
 

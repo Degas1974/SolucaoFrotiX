@@ -1,4 +1,42 @@
 @page
+
+@* ========================================================================================
+ * ARQUIVO: Pages/Page/ForumList.cshtml
+ * OBJETIVO: Pagina DEMO de listagem de categorias de forum do template SmartAdmin exibindo
+ *           categorias estaticas (hardcoded no HTML) com contadores de topicos/posts/views,
+ *           ultimo post destacado, icones coloridos por categoria, usado como referencia de
+ *           layout para futuras telas de forum/discussoes reais no FrotiX.
+ * ENTRADAS: Model ForumListModel (code-behind vazio sem dados dinamicos), 8 categorias de forum
+ *           estaticas hardcoded (General Discussion, SmartAdmin Features, Bug Reports, Feature
+ *           Requests, Showcase, Off Topic, Announcements, Archives), cada categoria com icone
+ *           Font Awesome colorido, descricao breve, contadores (Topics, Posts, Views), ultimo
+ *           post (titulo, autor, data relativa)
+ * SAIDAS: Lista de categorias renderizada como cards responsivos (col-md-6 col-lg-4) ou tabela,
+ *         cada categoria exibe: icone grande 48x48px colorido (fa-comments azul General, fa-star
+ *         laranja Features, fa-bug vermelho Bugs, fa-lightbulb amarelo Requests, fa-trophy verde
+ *         Showcase, fa-coffee roxo Off Topic, fa-bullhorn azul claro Announcements, fa-archive
+ *         cinza Archives), titulo H4 nome da categoria em negrito clicavel, descricao paragrafo
+ *         cinza claro, contadores badges (X topics, Y posts, Z views estaticos), ultimo post small
+ * CHAMADA POR: Route /Page/ForumList via diretiva page, link demonstrativo no menu de paginas
+ *              demo do template SmartAdmin, navegacao direta URL, ForumListModel.OnGet metodo
+ *              backend vazio (nao carrega dados reais, categorias sao hardcoded no HTML)
+ * CHAMA: forum_list.js (arquivo JavaScript externo hipotetico com handlers de ordenacao, filtro,
+ *        animacoes, caso exista), links para /Page/ForumThreads?categoryId=X (lista topicos
+ *        da categoria X), links para /Page/ForumDiscussion?topicId=Y (abre topico especifico),
+ *        nenhum endpoint API (categorias sao estaticas demonstrativas, nao ha CRUD real)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1, Bootstrap 5.3.8 (cards, badges,
+ *               grid row/col, table responsiva), Font Awesome 6 Duotone (icones coloridos
+ *               fa-comments, fa-star, fa-bug, fa-lightbulb, fa-trophy, fa-coffee, fa-bullhorn,
+ *               fa-archive), CSS customizado no section HeadBlock (cores de icones por categoria,
+ *               hover effect elevacao shadow, badges contadores)
+ * OBSERVACOES: 688 linhas de pagina DEMO template SmartAdmin NAO integrada ao sistema FrotiX
+ *              real. Considerar REMOVER esta pagina demo se forum nao for necessario no FrotiX,
+ *              ou ADAPTAR layout para sistema de comunicacao interna (avisos, discussoes tecnicas,
+ *              suporte). Se implementar forum real: criar entidades ForumCategoria, ForumTopico,
+ *              ForumPost, migrar para banco SQL Server, implementar CRUD via API REST.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model ForumListModel
 @{ 
 	ViewData["Title"] = "List";

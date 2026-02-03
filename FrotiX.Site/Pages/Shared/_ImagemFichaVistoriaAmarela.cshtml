@@ -1,3 +1,37 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_ImagemFichaVistoriaAmarela.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view para upload e preview de Ficha de Vistoria com imagem amarela
+ *                   padrão ou base64 do banco. Upload via input file, preview imagem, botão inserir.
+ * 📥 ENTRADAS     : @model FrotiX.Pages.Viagens.UpsertModel, Model.ViagemObj.Viagem.FichaVistoria
+ *                   (byte[] - blob banco), input file #txtFile (onchange="VisualizaImagem(this)"),
+ *                   clique botão #btnFicha (asp-page-handler="InsereFicha")
+ * 📤 SAÍDAS       : Layout 3 colunas: input file type="file" asp-for="FotoUpload" (col-5), preview
+ *                   #imgViewer (col-5, 1500x1500px object-fit contain border), botão "Insere Ficha"
+ *                   btn-azul w-100 (col-2), imagem src data:image/jpeg;base64 ou default FichaAmarelaNova.JPG
+ * 🔗 CHAMADA POR  : Pages/Viagens/Upsert.cshtml (provavelmente antes seção Ocorrências ou Finalização),
+ *                   <partial name="_ImagemFichaVistoriaAmarela"/> ou @await Html.PartialAsync
+ * 🔄 CHAMA        : Viagens.UpsertModel.OnPostInsereFicha (PageHandler backend), JavaScript function
+ *                   VisualizaImagem(this) (atualiza preview #imgViewer.src com FileReader base64),
+ *                   ~/Images/FichaAmarelaNova.JPG (imagem padrão template), Url.Content() (resolve ~),
+ *                   Convert.ToBase64String() (converte byte[] banco), asp-route-id ViagemId
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views), Model UpsertModel (PageModel context),
+ *                   JavaScript function VisualizaImagem() (provavelmente em viagens.js ou inline),
+ *                   Bootstrap 5 (row, col-md-6 col-lg-5 col-lg-2, d-flex align-items-start/end, mb-3),
+ *                   Tag Helpers (asp-for, asp-page-handler, asp-route-id), CSS btn-azul w-100,
+ *                   arquivo ~/Images/FichaAmarelaNova.JPG (imagem template amarelo)
+ * 📝 OBSERVAÇÕES  : 54 linhas. Sistema upload ficha vistoria com PREVIEW instantâneo. Lógica C#:
+ *                   hasBytes = FichaVistoria != null; se true carrega base64 do banco (data:image/jpeg;base64,)
+ *                   senão usa default FichaAmarelaNova.JPG + cachebuster ?t=Ticks. Imagem 1500x1500px
+ *                   (dimensão fixa não responsiva!), object-fit: contain (mantém aspect ratio), border 1px.
+ *                   Input file asp-for="FotoUpload" onchange="VisualizaImagem(this)" atualiza preview
+ *                   dinamicamente antes do submit. Botão "Insere Ficha" asp-page-handler="InsereFicha"
+ *                   asp-route-id ViagemId (POST handler UpsertModel.OnPostInsereFicha). Layout 3 colunas:
+ *                   input (col-5) + preview (col-5) + botão (col-2). margin-top: 2rem (bottom-space).
+ *                   Classe .bottom-space custom (provavelmente margin-bottom também). Para mobile:
+ *                   colunas empilham (col-md-6 col-lg-5). Botão d-flex align-items-end (alinha base com imagem).
+ *                   Imagem FichaAmarelaNova.JPG sugere template físico de vistoria Câmara dos Deputados.
+ **************************************************************************************** *@
 @model FrotiX.Pages.Viagens.UpsertModel
 
 @{

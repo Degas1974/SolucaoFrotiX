@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Administracao/CalculaCustoViagensTotal.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Executar cálculo em lote de custos de viagens com acompanhamento em tempo real
+ * 📥 ENTRADAS     : @page, @model CalculaCustoViagensTotalModel, filtros de processo (período, status)
+ * 📤 SAÍDAS       : Progress bar animada, estatísticas (total, processados, erros, ignorados), polling de status
+ * 🔗 CHAMADA POR  : Menu "Administração > Calcular Custos (Batch)"
+ * 🔄 CHAMA        : /api/viagem/ExecutarCalculoCustoBatch (POST), /api/viagem/ObterProgressoCalculoCustoBatch (GET polling)
+ * 📦 DEPENDÊNCIAS : jQuery, Bootstrap 5, toastr, setInterval para polling (1s)
+ * 📝 OBSERVAÇÕES  : Total: 565 linhas. ISSUES: Polling sem cleanup quando página é deixada (memory leak), falta tratamento de timeout na requisição batch, animação de conclusão sem verificação de cancelamento
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Administracao.CalculaCustoViagensTotalModel
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers

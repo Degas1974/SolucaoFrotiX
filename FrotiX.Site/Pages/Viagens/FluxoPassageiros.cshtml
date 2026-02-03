@@ -1,3 +1,69 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Viagens/FluxoPassageiros.cshtml
+ * OBJETIVO: Pagina de analise fluxo passageiros por rotas/periodos exibindo Syncfusion
+ *           Grid paginado + Stimulsoft Report visualizador, permite identificar rotas
+ *           mais demandadas planejamento otimizado viagens, sistema usado para gestao
+ *           demanda transporte interno corporativo.
+ * ENTRADAS: route /Viagens/FluxoPassageiros, filtros toolbar: DatePicker DataInicio/DataFim
+ *           range periodo, ComboBox Origem/Destino cidades filtro rotas, ComboBox SetorSolicitante
+ *           filtra departamento, Checkbox ApenasViagensRecorrentes toggle, botao Analisar
+ *           Fluxo trigger reload Grid, Grid dataSource URL GET /api/Viagens/GetFluxoPassageiros
+ *           retorna JSON fluxo agregado rotas Origem>Destino count passageiros periodo
+ *           paginado server-side
+ * SAIDAS: Pagina renderizada com card header (titulo Analise Fluxo de Passageiros,
+ *         icone fa-route, breadcrumb Viagens > Fluxo Passageiros), card body com:
+ *         1. Toolbar filtros (DatePicker range periodo, 2 ComboBox cascading Origem/Destino
+ *         cidades, ComboBox SetorSolicitante departamentos, Checkbox ApenasViagensRecorrentes,
+ *         botao Analisar Fluxo primary, botao Limpar Filtros secondary), 2. Syncfusion
+ *         Grid (colunas: Origem cidade, Destino cidade, QuantidadeViagens contador,
+ *         TotalPassageiros sum, PassageirosPorViagem media decimal, DiasAtivos contador
+ *         dias com viagens periodo, FrequenciaMedia viagens/dia decimal, PrincipaisSetores
+ *         lista top 3 setores badge pills, CustoTotal moeda R$ sum, CustoMedioPassageiro
+ *         R$/passageiro calcula, Status badge Recorrente/Esporadica baseado frequencia,
+ *         Acoes link Detalhes abre modal lista viagens especificas rota), server-side
+ *         paging pageSize 50, allowSorting true, allowExcelExport/allowPdfExport toolbar,
+ *         groupBy Origem collapse expand rotas mesma origem), 3. Botao Gerar Relatorio
+ *         Fluxo rodape (abre modal Stimulsoft Report Viewer carrega MRT template relatorio-fluxo-passageiros.mrt
+ *         passa dados filtrados parameters, renderiza report formatado tabela fluxos
+ *         + grafico barras rotas mais demandadas, permite visualizar/imprimir/exportar
+ *         PDF/Excel)
+ * CHAMADA POR: Menu Viagens > Analises > Fluxo Passageiros (link interno sidebar),
+ *              usuarios com permissao Viagens.AnalisarFluxo (role Admin ou Coordenador),
+ *              usado para planejamento viagens identificar rotas demanda alta programar
+ *              viagens regulares fixas otimizar recursos
+ * CHAMA: API ViagensController GET /api/Viagens/GetFluxoPassageiros (query EF Core
+ *        Viagens Join Itinerarios Join Passageiros, Where DataViagem between DataInicio/DataFim
+ *        AND Origem/Destino filters, Group By Origem,Destino aggregate COUNT Viagens,
+ *        SUM Passageiros, AVG Passageiros per viagem, COUNT DISTINCT Date dias ativos,
+ *        calcula FrequenciaMedia=TotalViagens/DiasAtivos, Include SetorSolicitante
+ *        group count top 3, SUM CustoTotal, calcula CustoMedio/Passageiro, classifica
+ *        Status Recorrente se Frequencia>1viagem/dia senao Esporadica, paginacao
+ *        server-side Skip/Take, retorna JSON), Stimulsoft Report Viewer (carrega
+ *        MRT template, passa DataSet fluxos array, renderiza report), Syncfusion Grid/DatePicker/ComboBox
+ *        components
+ * DEPENDENCIAS: Syncfusion EJ2 Grid/DatePicker/ComboBox 2023.4.2, Stimulsoft Reports.Web
+ *               2023.3.1, Bootstrap 5.3.8, EF Core 8.0
+ * OBSERVACOES: 532 linhas pagina analise fluxo passageiros. Identifica rotas recorrentes
+ *              demanda alta (Origem Sao Paulo > Destino Campinas 150 viagens mes 600
+ *              passageiros frequencia 5 viagens/dia = Recorrente, considerar programar
+ *              viagem fixa diaria horarios fixos otimiza planejamento reduz custos
+ *              ad-hoc). Identifica rotas esporadicas baixa demanda (Origem Osasco >
+ *              Destino Sorocaba 5 viagens mes 10 passageiros frequencia 0.16 viagens/dia
+ *              = Esporadica, manter sob demanda nao vale viagem fixa). Custo medio
+ *              por passageiro permite comparar eficiencia rotas (rota A R$ 15/passageiro
+ *              eficiente ocupacao alta, rota B R$ 50/passageiro ineficiente ocupacao
+ *              baixa considerar consolidar viagens ou usar transporte alternativo taxi
+ *              se mais barato). PrincipaisSetores identifica quais departamentos mais
+ *              utilizam rota (Rh 40pc, TI 30pc, Financeiro 20pc permite direcionar
+ *              comunicacao interna divulgar horarios viagens setores interessados).
+ *              Grid groupBy Origem collapse/expand facilita navegacao (agrupa todas
+ *              rotas mesma origem Sao Paulo collapsed mostra apenas 1 linha Sao Paulo
+ *              (25 destinos), expand mostra 25 linhas detalhadas Sao Paulo>Campinas,
+ *              Sao Paulo>Santos, ...). Report Stimulsoft permite gestores gerar PDF
+ *              profissional analise fluxo incluir apresentacoes executivas planejamento
+ *              estrategico frota.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
 @page
 
 @using FrotiX.Repository.IRepository

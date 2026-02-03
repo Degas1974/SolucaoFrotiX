@@ -1,3 +1,30 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_LeftPanel.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view da sidebar esquerda principal do sistema FrotiX com logo,
+ *                   navegação hierárquica (ViewComponent Navigation) e card de info do usuário.
+ * 📥 ENTRADAS     : Settings.Features.AppSidebar (flag booleano), partials _Logo/_NavInfoCard,
+ *                   ViewComponent <vc:navigation />, configuração SmartSettings
+ * 📤 SAÍDAS       : <aside class="page-sidebar"> com logo FrotiX no topo, <nav id="js-primary-nav"
+ *                   class="primary-nav">, card de info do usuário (_NavInfoCard), menu hierárquico
+ *                   dinâmico (ViewComponent Navigation - renderiza tree de páginas)
+ * 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml (provavelmente após <header>), conditional rendering
+ *                   @if (Settings.Features.AppSidebar) wrapper
+ * 🔄 CHAMA        : Shared/_Logo.cshtml (logo FrotiX com link dashboard), Shared/_NavInfoCard.cshtml
+ *                   (card com foto/nome do usuário), ViewComponent Navigation (NavigationViewComponent.cs
+ *                   - renderiza menu dinâmico com autorização/hierarçuia), CSS classes (page-sidebar,
+ *                   primary-nav), JavaScript #js-primary-nav (provavelmente em app.navigation.js)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views, ViewComponents), SmartSettings injection
+ *                   (@Settings), _Logo.cshtml, _NavInfoCard.cshtml, NavigationViewComponent,
+ *                   CSS classes page-sidebar/primary-nav, JavaScript para #js-primary-nav
+ * 📝 OBSERVAÇÕES  : 14 linhas. Renderização condicional: só mostra sidebar se Settings.Features.AppSidebar
+ *                   = true. Partials COMENTADOS (desabilitados):
+ *                   - <partial name="_NavFilter"/> (comentado - REMOVIDO)
+ *                   - <partial name="_NavFilterMsg"/> (comentado - REMOVIDO)
+ *                   - <partial name="_NavFooter"/> (comentado - REMOVIDO)
+ *                   ATIVOS: _Logo (topo), _NavInfoCard (info usuário), <vc:navigation /> (menu principal).
+ *                   ViewComponent Navigation é CORE do menu - renderiza árvore de páginas com permissões.
+ *****************************************************************************************@
 @if (Settings.Features.AppSidebar)
 {
 <aside class="page-sidebar">

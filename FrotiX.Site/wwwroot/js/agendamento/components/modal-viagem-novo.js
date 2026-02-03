@@ -837,8 +837,6 @@ window.criarAgendamentoNovo = function ()
         console.log("ðŸ“ [criarAgendamentoNovo] === INICIANDO ===");
 
         // Obter instâncias dos componentes Syncfusion
-        const txtDataInicial = document.getElementById("txtDataInicial")?.ej2_instances?.[0];
-        const txtDataFinal = document.getElementById("txtDataFinal")?.ej2_instances?.[0];
         const rteDescricao = document.getElementById("rteDescricao")?.ej2_instances?.[0];
         const lstMotorista = document.getElementById("lstMotorista")?.ej2_instances?.[0];
         const lstVeiculo = document.getElementById("lstVeiculo")?.ej2_instances?.[0];
@@ -854,16 +852,16 @@ window.criarAgendamentoNovo = function ()
         const lstEventos = document.getElementById("lstEventos")?.ej2_instances?.[0];
         const lstRecorrente = document.getElementById("lstRecorrente")?.ej2_instances?.[0];
         const lstPeriodos = document.getElementById("lstPeriodos")?.ej2_instances?.[0];
-        const txtFinalRecorrencia = document.getElementById("txtFinalRecorrencia")?.ej2_instances?.[0];
+        const txtFinalRecorrencia = window.getKendoDateValue("txtFinalRecorrencia");
         const lstDias = document.getElementById("lstDias")?.ej2_instances?.[0];
         const calDatasSelecionadas = document.getElementById("calDatasSelecionadas")?.ej2_instances?.[0];
         const lstDiasMes = document.getElementById("lstDiasMes")?.ej2_instances?.[0];
 
         // Extrair valores
-        const dataInicialValue = txtDataInicial?.value;
-        const dataFinalValue = txtDataFinal?.value;
-        const horaInicioTexto = $("#txtHoraInicial").val();
-        const horaFimTexto = $("#txtHoraFinal").val();
+        const dataInicialValue = window.getKendoDateValue("txtDataInicial");
+        const dataFinalValue = window.getKendoDateValue("txtDataFinal");
+        const horaInicioTexto = window.getKendoTimeValue("txtHoraInicial");
+        const horaFimTexto = window.getKendoTimeValue("txtHoraFinal");
 
         // DEPOIS da linha 60, adicione este debug:
         console.log("ðŸ” [DEBUG] Valores capturados:");
@@ -946,9 +944,9 @@ window.criarAgendamentoNovo = function ()
         const intervalo = window.getSfValue0(lstPeriodos) ?? "";
 
         let dataFinalRecorrencia = null;
-        if (txtFinalRecorrencia?.value)
+        if (txtFinalRecorrencia)
         {
-            const dataFinalRecDate = new Date(txtFinalRecorrencia.value);
+            const dataFinalRecDate = new Date(txtFinalRecorrencia);
             dataFinalRecorrencia = window.toDateOnlyString(dataFinalRecDate);
         }
 
@@ -1101,7 +1099,7 @@ window.criarAgendamento = function (viagemId, viagemIdRecorrente, dataInicial)
         // âœ… RECALCULAR HoraInicio quando DataInicial for alterada
         if (dataInicial)
         {
-            const horaInicioTexto = $("#txtHoraInicial").val();
+            const horaInicioTexto = window.getKendoTimeValue("txtHoraInicial");
 
             if (horaInicioTexto)
             {
@@ -1202,8 +1200,6 @@ window.criarAgendamentoEdicao = function (agendamentoOriginal)
         const ddtCombIniInst = document.getElementById("ddtCombustivelInicial")?.ej2_instances?.[0];
         const ddtCombFimInst = document.getElementById("ddtCombustivelFinal")?.ej2_instances?.[0];
         const lstEventosInst = document.getElementById("lstEventos")?.ej2_instances?.[0];
-        const txtDataInicial = document.getElementById("txtDataInicial")?.ej2_instances?.[0];
-        const txtDataFinal = document.getElementById("txtDataFinal")?.ej2_instances?.[0];
         const rteDescricaoHtmlContent = rteDescricao?.getHtml() ?? "";
 
         // Extrair valores dos componentes
@@ -1230,8 +1226,7 @@ window.criarAgendamentoEdicao = function (agendamentoOriginal)
         const kmFinal = window.parseIntSafe($("#txtKmFinal").val());
 
         // Ler campos de recorrência do formulário
-        const txtFinalRecorrenciaInst = document.getElementById("txtFinalRecorrencia")?.ej2_instances?.[0];
-        const dataFinalRecorrenciaValue = txtFinalRecorrenciaInst?.value;
+        const dataFinalRecorrenciaValue = window.getKendoDateValue("txtFinalRecorrencia");
         let dataFinalRecorrenciaStr = null;
         if (dataFinalRecorrenciaValue)
         {
@@ -1277,7 +1272,7 @@ window.criarAgendamentoEdicao = function (agendamentoOriginal)
             dataInicialStr = window.toDateOnlyString(dataOriginalDate);
 
             // Para hora, pegar do formulário (alteração aplicada a todos)
-            const horaInicioTexto = $("#txtHoraInicial").val();
+            const horaInicioTexto = window.getKendoTimeValue("txtHoraInicial");
             if (horaInicioTexto)
             {
                 horaInicioLocal = window.toLocalDateTimeString(dataOriginalDate, horaInicioTexto);
@@ -1288,8 +1283,8 @@ window.criarAgendamentoEdicao = function (agendamentoOriginal)
         // Senão, usar data do formulário (novo agendamento ou edição de apenas um)
         else
         {
-            const txtDataInicialValue = txtDataInicial?.value;
-            const horaInicioTexto = $("#txtHoraInicial").val();
+            const txtDataInicialValue = window.getKendoDateValue("txtDataInicial");
+            const horaInicioTexto = window.getKendoTimeValue("txtHoraInicial");
 
             if (txtDataInicialValue)
             {
@@ -1305,9 +1300,10 @@ window.criarAgendamentoEdicao = function (agendamentoOriginal)
             }
         }
 
-        const dataFinalDate = txtDataFinal?.value ? new Date(txtDataFinal.value) : null;
+        const dataFinalValue = window.getKendoDateValue("txtDataFinal");
+        const dataFinalDate = dataFinalValue ? new Date(dataFinalValue) : null;
         const dataFinalStr = dataFinalDate ? window.toDateOnlyString(dataFinalDate) : null;
-        const horaFimTexto = $("#txtHoraFinal").val() || null;
+        const horaFimTexto = window.getKendoTimeValue("txtHoraFinal") || null;
 
         // ============================================================
         // LÓGICA DE STATUS E FOIAGENDAMENTO
@@ -1463,28 +1459,20 @@ window.criarAgendamentoViagem = function (agendamentoUnicoAlterado)
         }
 
         // Data final (opcional)
-        let dataFinal = "";
-        if (document.getElementById("txtDataFinal").ej2_instances[0].value === null ||
-            document.getElementById("txtDataFinal").ej2_instances[0].value === undefined)
-        {
-            dataFinal = null;
-        } else
-        {
-            dataFinal = moment(document.getElementById("txtDataFinal").ej2_instances[0].value).format("YYYY-MM-DD");
-        }
+        const dataFinalValue = window.getKendoDateValue("txtDataFinal");
+        let dataFinal = dataFinalValue ? moment(dataFinalValue).format("YYYY-MM-DD") : null;
 
-        let horaInicio = $("#txtHoraInicial").val();
+        let horaInicio = window.getKendoTimeValue("txtHoraInicial");
 
         // Hora fim (opcional)
         let horaFim = "";
-        if (document.getElementById("txtHoraFinal").value === null ||
-            document.getElementById("txtHoraFinal").value === undefined ||
-            document.getElementById("txtHoraFinal").value === "")
+        const horaFimValue = window.getKendoTimeValue("txtHoraFinal");
+        if (!horaFimValue)
         {
             horaFim = null;
         } else
         {
-            horaFim = document.getElementById("txtHoraFinal").value;
+            horaFim = horaFimValue;
         }
 
         let statusAgendamento = document.getElementById("txtStatusAgendamento").value;
@@ -1493,8 +1481,7 @@ window.criarAgendamentoViagem = function (agendamentoUnicoAlterado)
         let status = "Aberta";
 
         // Ler Data Final Recorrência do formulário
-        const txtFinalRecorrenciaInst2 = document.getElementById("txtFinalRecorrencia")?.ej2_instances?.[0];
-        const dataFinalRecorrenciaValue2 = txtFinalRecorrenciaInst2?.value;
+        const dataFinalRecorrenciaValue2 = window.getKendoDateValue("txtFinalRecorrencia");
         let dataFinalRecorrenciaStr2 = null;
         if (dataFinalRecorrenciaValue2)
         {
@@ -1593,11 +1580,7 @@ window.enviarAgendamento = async function (agendamento)
             if (dataFinalDate > hoje)
             {
                 // Limpar campo Data Final no modal
-                const txtDataFinal = document.getElementById("txtDataFinal")?.ej2_instances?.[0];
-                if (txtDataFinal)
-                {
-                    txtDataFinal.value = null;
-                }
+                window.setKendoDateValue("txtDataFinal", null);
                 AppToast.show("Amarelo", "A Data Final não pode ser superior à data atual.", 4000);
                 return { success: false, message: "Data Final inválida" };
             }
@@ -1942,13 +1925,13 @@ function detectarAlteracaoDataInicial(agendamentoOriginal)
         dataOriginal.setHours(0, 0, 0, 0);
 
         // Obter data atual do formulário
-        const txtDataInicial = document.getElementById("txtDataInicial")?.ej2_instances?.[0];
-        if (!txtDataInicial || !txtDataInicial.value)
+        const dataNovaValue = window.getKendoDateValue("txtDataInicial");
+        if (!dataNovaValue)
         {
             return { alterou: false, dataOriginal: null, dataNova: null };
         }
 
-        const dataNova = new Date(txtDataInicial.value);
+        const dataNova = new Date(dataNovaValue);
         dataNova.setHours(0, 0, 0, 0);
 
         // Comparar timestamps
@@ -2933,48 +2916,69 @@ $(function ()
     {
         try
         {
-            const txtDataFinal = document.getElementById("txtDataFinal");
-            if (txtDataFinal && txtDataFinal.ej2_instances && txtDataFinal.ej2_instances[0])
+            const datePicker = window.getKendoDatePicker("txtDataFinal");
+            if (datePicker)
             {
-                const datePicker = txtDataFinal.ej2_instances[0];
-                
-                // Adiciona evento blur se ainda não existir
                 if (!datePicker._dataFinalValidacaoConfigurada)
                 {
-                    const blurOriginal = datePicker.blur;
-                    datePicker.blur = function (args)
+                    datePicker.bind("change", function ()
                     {
                         try
                         {
-                            // Chama evento original se existir
-                            if (blurOriginal && typeof blurOriginal === "function")
+                            const dataFinalValue = datePicker.value();
+                            if (dataFinalValue)
                             {
-                                blurOriginal.call(this, args);
-                            }
-
-                            // Validação de Data Final
-                            if (datePicker.value)
-                            {
-                                const dataFinal = new Date(datePicker.value);
+                                const dataFinal = new Date(dataFinalValue);
                                 dataFinal.setHours(0, 0, 0, 0);
                                 const hoje = new Date();
                                 hoje.setHours(0, 0, 0, 0);
 
                                 if (dataFinal > hoje)
                                 {
-                                    datePicker.value = null;
+                                    datePicker.value(null);
                                     AppToast.show("Amarelo", "A Data Final não pode ser superior à data atual.", 4000);
                                 }
                             }
                         }
                         catch (error)
                         {
-                            Alerta.TratamentoErroComLinha("modal-viagem.js", "txtDataFinal.blur", error);
+                            Alerta.TratamentoErroComLinha("modal-viagem.js", "txtDataFinal.change", error);
                         }
-                    };
+                    });
                     datePicker._dataFinalValidacaoConfigurada = true;
-                    console.log("✅ [ModalViagem] Validação de Data Final configurada (blur)");
+                    console.log("✅ [ModalViagem] Validação de Data Final configurada (Kendo)");
                 }
+                return;
+            }
+
+            const txtDataFinal = document.getElementById("txtDataFinal");
+            if (txtDataFinal && !txtDataFinal._dataFinalValidacaoConfigurada)
+            {
+                txtDataFinal.addEventListener("blur", function ()
+                {
+                    try
+                    {
+                        const dataFinalValue = window.getKendoDateValue("txtDataFinal");
+                        if (dataFinalValue)
+                        {
+                            const dataFinal = new Date(dataFinalValue);
+                            dataFinal.setHours(0, 0, 0, 0);
+                            const hoje = new Date();
+                            hoje.setHours(0, 0, 0, 0);
+
+                            if (dataFinal > hoje)
+                            {
+                                window.setKendoDateValue("txtDataFinal", null);
+                                AppToast.show("Amarelo", "A Data Final não pode ser superior à data atual.", 4000);
+                            }
+                        }
+                    }
+                    catch (error)
+                    {
+                        Alerta.TratamentoErroComLinha("modal-viagem.js", "txtDataFinal.blur", error);
+                    }
+                });
+                txtDataFinal._dataFinalValidacaoConfigurada = true;
             }
         }
         catch (error)
@@ -3020,8 +3024,9 @@ window.inicializarCamposModal = function ()
             }
         }
 
-        // Configura campos de hora
-        $("#txtHoraInicial, #txtHoraFinal").attr("type", "time");
+        // Configura campos de hora (Kendo TimePicker)
+        window.setKendoTimeValue("txtHoraInicial", "");
+        window.setKendoTimeValue("txtHoraFinal", "");
 
         // Oculta campos especí­ficos de viagem (só aparecem quando transformar em viagem)
         const camposViagem = [
@@ -3120,6 +3125,11 @@ window.limparCamposRecorrencia = function ()
 
         componentesRecorrencia.forEach(({ id, valor }) =>
         {
+            if (id === "txtFinalRecorrencia")
+            {
+                window.setKendoDateValue(id, null);
+                return;
+            }
             const elemento = document.getElementById(id);
             if (elemento && elemento.ej2_instances && elemento.ej2_instances[0])
             {
@@ -3323,19 +3333,13 @@ window.limparCamposModalViagens = function ()
             console.log("âœ… Veí­culo limpo completamente");
         }
 
-        // Limpar datas - VERSÃO CORRIGIDA
+        // Limpar datas (Kendo DatePicker)
         ["txtDataInicial", "txtDataFinal", "txtFinalRecorrencia"].forEach(id =>
         {
             try
             {
-                const elemento = document.getElementById(id);
-                if (elemento && elemento.ej2_instances && elemento.ej2_instances[0])
-                {
-                    const instance = elemento.ej2_instances[0];
-                    instance.value = null;
-                    instance.enabled = true;
-                    window.refreshComponenteSafe(id);
-                }
+                window.setKendoDateValue(id, null);
+                window.enableKendoDatePicker(id, true);
             } catch (error)
             {
                 console.error(`âŒ Erro ao limpar ${id}:`, error);
@@ -3503,15 +3507,9 @@ window.limparCamposModalViagens = function ()
 
         if (txtFinalRecorrencia)
         {
-            txtFinalRecorrencia.style.display = "block";
-
-            // Limpar valor do DatePicker
-            if (txtFinalRecorrencia.ej2_instances && txtFinalRecorrencia.ej2_instances[0])
-            {
-                txtFinalRecorrencia.ej2_instances[0].value = null;
-                txtFinalRecorrencia.ej2_instances[0].enabled = true;
-                window.refreshComponenteSafe("txtFinalRecorrencia");
-            }
+            window.showKendoDatePicker("txtFinalRecorrencia", true);
+            window.setKendoDateValue("txtFinalRecorrencia", null);
+            window.enableKendoDatePicker("txtFinalRecorrencia", true);
         }
 
         console.log("âœ… [ModalViagem] Todos os campos limpos");

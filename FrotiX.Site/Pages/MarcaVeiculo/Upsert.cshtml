@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/MarcaVeiculo/Upsert.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Form simples (DescricaoMarca + Status)
+ * 📥 ENTRADAS     : @page, @model UpsertModel, campos (DescricaoMarca, Status checkbox)
+ * 📤 SAÍDAS       : POST asp-page-handler="Submit|Edit", redirect /MarcaVeiculo
+ * 🔗 CHAMADA POR  : MarcaVeiculo/Index (botão "Adicionar Marca", editar)
+ * 🔄 CHAMA        : asp-page-handler="Submit" (POST create), asp-page-handler="Edit" (POST update), /MarcaVeiculo (redirect)
+ * 📦 DEPENDÊNCIAS : ASP.NET TagHelpers, Bootstrap 5, jQuery, Google Fonts Outfit
+ * 📝 OBSERVAÇÕES  : Total: ~84 linhas. Form simples (DescricaoMarca + Status). CSS inline com controles 20% maiores (~30 linhas).
+ **************************************************************************************** *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 

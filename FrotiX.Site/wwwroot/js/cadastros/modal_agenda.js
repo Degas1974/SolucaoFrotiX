@@ -1,3 +1,27 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: modal_agenda.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Modal interativo para criação, edição e gerenciamento de agendamentos
+ *                   de viagens. Integra FullCalendar v6, Syncfusion components, validações
+ *                   em tempo real, agendamentos recorrentes, cálculo de durações/distâncias.
+ * 📥 ENTRADAS     : Variáveis globais (viagemId, recorrenciaViagemId, transformandoEmViagem,
+ *                   selectedDates), eventos de formulário, FullCalendar events,
+ *                   Syncfusion componentes (DropDown, MultiSelect, DatePicker, Calendar)
+ * 📤 SAÍDAS       : Modal renderizado, FullCalendar inicializado (calendar global),
+ *                   AJAX POST/GET para /api/Agenda/*, validações de UI, AppToast notificações,
+ *                   Alerta.TratamentoErroComLinha, cálculos de duração/distância
+ * 🔗 CHAMADA POR  : Eventos de modal, FullCalendar events, handlers de submit/edit/delete,
+ *                   botões de ação (criar, editar, excluir, cancelar), Pages/Agenda/Index.cshtml
+ * 🔄 CHAMA        : FullCalendar API (new Calendar, render), Syncfusion EJ2 API,
+ *                   $.ajax, Moment.js, Alerta.Confirmar, AppToast.show,
+ *                   frotix.js (utilitários), Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery, FullCalendar v6, Syncfusion EJ2 (DropDownList, MultiSelect,
+ *                   DatePicker, Calendar), Moment.js, alerta.js (SweetAlert), frotix.js
+ * 📝 OBSERVAÇÕES  : Arquivo grande (1099 linhas). Suporta recorrência (editarTodosRecorrentes).
+ *                   Modallock evita submit duplo (isSubmitting). Try-catch implícito via
+ *                   event handlers jQuery. Versão 2.0 (02/02/2026) - documentação padronizada.
+ **************************************************************************************** */
+
 // ====================================================================
 // ARQUIVO: modal_agenda.js
 // MÓDULO: Cadastros > Agendamento de Viagens

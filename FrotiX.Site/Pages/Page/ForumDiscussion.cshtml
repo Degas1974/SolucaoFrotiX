@@ -1,4 +1,36 @@
 @page
+
+@* ========================================================================================
+ * ARQUIVO: Pages/Page/ForumDiscussion.cshtml
+ * OBJETIVO: Pagina DEMO de topico de forum do template SmartAdmin exibindo discussao estatica
+ *           (hardcoded no HTML) com post original, respostas aninhadas, avatares, timestamps,
+ *           botoes de Reply/Quote/Like simulados, editor de texto para nova resposta, usado
+ *           como referencia de layout para futuras telas de forum/comentarios reais no FrotiX.
+ * ENTRADAS: Model ForumDiscussionModel (code-behind vazio sem dados dinamicos), topico de forum
+ *           estatico hardcoded (titulo How to integrate Webpack with SmartAdmin?, autor John Doe,
+ *           data 2 days ago, conteudo Lorem ipsum), 5 respostas hardcoded (autores diversos,
+ *           datas relativas, conteudos demonstrativos), botoes Reply/Quote/Like em cada post
+ *           (handlers vazios demonstrativos)
+ * SAIDAS: Layout de forum renderizado com post original destacado (card azul claro), 5 respostas
+ *         aninhadas em thread (cards brancos indentados), avatares circulares 50x50px ao lado
+ *         de cada post, nomes de autores em negrito, timestamps relativos, botoes Reply/Quote/Like
+ *         com contadores estaticos, editor de texto no final para adicionar nova resposta
+ * CHAMADA POR: Route /Page/ForumDiscussion via diretiva page, link demonstrativo no menu de
+ *              paginas demo do template SmartAdmin, navegacao direta URL, ForumDiscussionModel.OnGet
+ *              metodo backend vazio (nao carrega dados reais, discussao e estatica hardcoded)
+ * CHAMA: forum_discussion.js (arquivo JavaScript externo hipotetico com handlers de Reply/Quote/Like,
+ *        submit nova resposta, animacoes, caso exista - se nao existe toda logica esta inline),
+ *        nenhum endpoint API (forum e estatico demonstrativo, nao ha CRUD real)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1, Bootstrap 5.3.8 (cards, badges,
+ *               grid row/col, botoes), Font Awesome 6 Duotone (icones fa-user avatar placeholder,
+ *               fa-reply, fa-quote-right, fa-thumbs-up), RichTextEditor ou textarea simples
+ * OBSERVACOES: 205 linhas de pagina DEMO template SmartAdmin NAO integrada ao sistema FrotiX
+ *              real. Considerar REMOVER esta pagina demo apos avaliar necessidade de sistema
+ *              de forum/comentarios no FrotiX, ou adaptar layout para comentarios em entidades
+ *              reais (viagens, abastecimentos, manutencoes, alertas).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model ForumDiscussionModel
 @{ 
 	ViewData["Title"] = "Item";

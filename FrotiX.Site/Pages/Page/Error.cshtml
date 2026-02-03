@@ -1,4 +1,42 @@
 @page "/Error"
+
+@* ========================================================================================
+ * ARQUIVO: Pages/Page/Error.cshtml
+ * OBJETIVO: Pagina de erro customizada fullscreen exibida quando ocorre exception nao tratada
+ *           no sistema FrotiX (HTTP 500 Internal Server Error), com design visual atraente
+ *           (gradient animado, icone gigante, mensagem amigavel), RequestId para rastreamento,
+ *           botao Voltar para Home, layout sem menu/sidebar (Layout = null para tela limpa).
+ * ENTRADAS: Model ErrorModel (code-behind com propriedade RequestId string capturada via
+ *           Activity.Current?.Id ou HttpContext.TraceIdentifier, gerada automaticamente pelo
+ *           ASP.NET Core ao ocorrer erro), route /Error definida pela diretiva page, redirecionamento
+ *           automatico do middleware UseExceptionHandler quando ocorre exception nao tratada em
+ *           qualquer pagina do sistema (configurado no Program.cs ou Startup.cs)
+ * SAIDAS: Pagina fullscreen HTML sem layout master (Layout = null), fundo com gradient animado
+ *         azul/roxo (background linear-gradient com animation CSS), icone gigante fa-exclamation-triangle
+ *         laranja centralizado (font-size 120px), titulo H1 Oops! Algo deu errado, mensagem
+ *         paragrafo Ocorreu um erro inesperado. Nossa equipe foi notificada e estamos trabalhando
+ *         para resolver, RequestId exibido se ShowRequestId true, botao Voltar para Home href /
+ *         (botao laranja com icone fa-home), meta viewport responsive, styles inline no head
+ * CHAMADA POR: Middleware UseExceptionHandler do ASP.NET Core (configurado no Program.cs com
+ *              app.UseExceptionHandler(\"/Error\") redireciona automaticamente para esta pagina
+ *              quando exception nao tratada ocorre em qualquer controlador/page), acesso direto
+ *              URL /Error para testar layout da pagina de erro, ErrorModel.OnGet metodo backend
+ *              C# executa capturando RequestId do contexto
+ * CHAMA: Nenhum JavaScript externo (pagina estatica HTML/CSS inline sem interacoes complexas),
+ *        nenhum endpoint API (pagina de erro nao faz chamadas AJAX), link href / (redirect
+ *        para Home ao clicar botao Voltar para Home), propriedade Model.ShowRequestId boolean
+ *        (computed property no ErrorModel retorna !string.IsNullOrEmpty(RequestId))
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0 (especificamente middleware UseExceptionHandler
+ *               para captura global de exceptions), Font Awesome 6 Duotone CDN carregado via
+ *               link no head (icone fa-exclamation-triangle para erro, fa-home para botao voltar),
+ *               Bootstrap 5 NAO usado (layout fullscreen customizado sem framework CSS)
+ * OBSERVACOES: 371 linhas com layout fullscreen CUSTOM sem usar layout master FrotiX (Layout = null
+ *              remove sidebar/header/footer para tela limpa de erro). RequestId importante para
+ *              rastreamento: permite buscar erro especifico nos logs do servidor. Pagina CRITICA
+ *              para UX: design amigavel reduz frustracao do usuario.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model ErrorModel
 @{
 Layout = null;

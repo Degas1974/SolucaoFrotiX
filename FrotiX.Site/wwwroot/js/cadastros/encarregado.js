@@ -1,3 +1,24 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: encarregado.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : CRUD de encarregados com DataTable, exclusão delegada,
+ *                   alteração de status (updateStatusEncarregado), e integração com
+ *                   AppToast/Alerta.
+ * 📥 ENTRADAS     : Cliques em .btn-delete (data-id), .updateStatusEncarregado (data-url),
+ *                   resposta Alerta.Confirmar
+ * 📤 SAÍDAS       : DELETE/POST via AJAX (/api/Encarregado/Delete, data-url),
+ *                   AppToast (Verde/Vermelho), dataTable.ajax.reload,
+ *                   Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready (loadList), event handlers (.btn-delete,
+ *                   .updateStatusEncarregado), Pages/Encarregado/Index.cshtml
+ * 🔄 CHAMA        : loadList(), Alerta.Confirmar, $.ajax, AppToast.show,
+ *                   dataTable.ajax.reload, console.error, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables, Alerta.js, AppToast (toast notifications)
+ * 📝 OBSERVAÇÕES  : Handlers delegados para compatibilidade com DataTable dinâmico.
+ *                   Try-catch em todos os handlers (click, confirmar, success, error).
+ *                   187 linhas total.
+ **************************************************************************************** */
+
 var dataTable;
 
 $(document).ready(function () {

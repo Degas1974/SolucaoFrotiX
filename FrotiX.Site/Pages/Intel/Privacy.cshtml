@@ -1,3 +1,31 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Intel/Privacy.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de Política de Privacidade genérica do template SmartAdmin (NÃO
+ *                   customizada para FrotiX). Texto padrão sobre cookies e proteção de dados.
+ * 📥 ENTRADAS     : @page route /Intel/Privacy, @model PrivacyModel (code-behind), ViewData
+ *                   configuration (Title, PageName, Heading, Category1, PageDescription)
+ * 📤 SAÍDAS       : HTML com 2 seções: "Privacy" (política geral, retenção de dados) e
+ *                   "Cookies and other similar technologies" (web beacons, tags, device identifiers,
+ *                   Cookie Policy reference), card branco com border-faded rounded, fs-lg fw-300
+ * 🔗 CHAMADA POR  : Link "Privacy" no footer ou sidebar (se habilitado), route /Intel/Privacy,
+ *                   PrivacyModel.OnGet() (code-behind)
+ * 🔄 CHAMA        : PrivacyModel (code-behind), ViewData properties (breadcrumb/heading rendering),
+ *                   CSS classes (fs-lg, fw-300, p-5, bg-white, border-faded, rounded, mb-g),
+ *                   @section HeadBlock {} e @section ScriptsBlock {} (vazios)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, PrivacyModel (Pages/Intel/Privacy.cshtml.cs),
+ *                   Bootstrap 5 (p-5, mb-g), CSS classes custom (fs-lg, fw-300, border-faded, mb-g),
+ *                   _Layout.cshtml (renderiza breadcrumb/heading via ViewData)
+ * 📝 OBSERVAÇÕES  : 24 linhas. Página TEMPLATE do SmartAdmin - NÃO customizada para FrotiX.
+ *                   Texto genérico: "Your privacy is important to us at SmartAdmin...", "We collect
+ *                   certain data through cookies...". Para produzir no FrotiX: substituir conteúdo
+ *                   com política real da empresa/LGPD/GDPR compliance. ViewData config:
+ *                   - PageName: "intel_privacy" (namespace routing)
+ *                   - Heading: "<i class='fa-duotone fa-info-circle'></i> Privacy" (HTML raw)
+ *                   - Category1: "Application Intel"
+ *                   - PageDescription: "SmartAdmin Privacy" (deve ser FrotiX Privacy)
+ *                   Sections HeadBlock/ScriptsBlock vazios (sem CSS/JS custom). Card com p-5 (padding).
+ **************************************************************************************** *@
 @page
 @model PrivacyModel
 @{ 

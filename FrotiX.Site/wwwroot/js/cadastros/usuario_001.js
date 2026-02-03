@@ -1,3 +1,22 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: usuario_001.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : CRUD de Usuários com DataTable e exclusão delegada via confirmação
+ *                   modal. Gerencia listagem (loadList) e delete de AspNetUsers.
+ * 📥 ENTRADAS     : Clique em .btn-delete (data-id), resposta Alerta.Confirmar (willDelete)
+ * 📤 SAÍDAS       : DELETE via AJAX para /api/Usuario/Delete,
+ *                   AppToast (Verde/Vermelho), dataTable.ajax.reload,
+ *                   Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready (loadList), event handler .btn-delete,
+ *                   Pages/Usuario/Index.cshtml
+ * 🔄 CHAMA        : loadList(), Alerta.Confirmar, $.ajax, AppToast.show,
+ *                   dataTable.ajax.reload, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables, Alerta.js, AppToast (toast notifications)
+ * 📝 OBSERVAÇÕES  : Handler delegado para compatibilidade com DataTable dinâmico.
+ *                   Try-catch aninhado em todos os níveis (ready, click, .then,
+ *                   success, error). 364 linhas total.
+ **************************************************************************************** */
+
 var dataTable;
 
 $(document).ready(function () {

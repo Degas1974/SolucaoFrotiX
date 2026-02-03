@@ -1,3 +1,30 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Combustivel/Upsert.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário de criação/edição de Tipos de Combustível com validação
+ *                   server-side. Layout simples com 2 campos (Descrição + Status checkbox).
+ * 📥 ENTRADAS     : @Model FrotiX.Pages.Combustivel.UpsertModel, POST form submission,
+ *                   CombustivelObj properties (CombustivelId, Descricao, Status - checkbox),
+ *                   route /Combustivel/Upsert?id=guid (opcional para edição)
+ * 📤 SAÍDAS       : POST para OnPostSubmit (UpsertModel code-behind), validação asp-validation-*,
+ *                   redirect para ./Index após sucesso, botões "Criar/Atualizar Combustível"
+ *                   (btn-azul btn-submit-spin) e "Cancelar Operação" (btn-ftx-fechar), AppToast
+ * 🔗 CHAMADA POR  : Pages/Combustivel/Index.cshtml (botão + Adicionar Combustível),
+ *                   DataTable edit links (.btn-editar data-id), UpsertModel.OnGet()
+ * 🔄 CHAMA        : UpsertModel.OnPostSubmit (code-behind), ./Index (cancelamento),
+ *                   ASP.NET Core validation system (asp-validation-summary, asp-validation-for),
+ *                   data-ftx-loading (loading state do botão cancelar)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, Bootstrap 5 (form-control, form-group, btn classes),
+ *                   Font Awesome 6 Duotone (fa-floppy-disk, fa-circle-xmark), Tag Helpers
+ *                   (asp-for, asp-validation-*, asp-page-handler), ftx-label CSS (custom)
+ * 📝 OBSERVAÇÕES  : 112 linhas. Formulário simples/direto. CSS inline minimalista (.form-control-xs,
+ *                   .label spacing). Header dinâmico (Criar/Atualizar baseado em CombustivelId != Empty).
+ *                   Botão submit com classe btn-submit-spin (spinner ao enviar). Validation summary
+ *                   (ModelOnly) exibe erros gerais. label-required marca campo obrigatório (Descricao).
+ *                   Status como checkbox (Ativo/Inativo). Bootstrap 5 carregado via CDN no ScriptsBlock.
+ *                   Input hidden para CombustivelId em edição. Layout col-8 (66% width). Sem JavaScript
+ *                   inline customizado. Icon-space e icon-pulse classes para animações de icon.
+ **************************************************************************************** *@
 @page
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 

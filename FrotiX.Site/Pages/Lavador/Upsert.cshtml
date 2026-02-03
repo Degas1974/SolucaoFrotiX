@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Lavador/Upsert.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário de criação/edição de lavador com campos pessoais, profissionais, upload de foto com preview, checkbox Status, validação client-side
+ * 📥 ENTRADAS     : @page, @model UpsertModel, LavadorObj (Lavador entity + ContratoList dropdown + NomeUsuarioAlteracao), form inputs (Nome, CPF, DataNascimento, Celular01/02, Ponto, DataIngresso, ContratoId, Status, FotoUpload file), route parameter id (Guid) para edição
+ * 📤 SAÍDAS       : HTML form com POST para asp-page-handler="Edit|Submit", validações ASP.NET Core, preview de foto via JavaScript, máscaras de CPF, AJAX GET /api/Lavador/PegaFoto pré-preenche foto em edição, redirect para /Lavador após salvar
+ * 🔗 CHAMADA POR  : /Lavador (botão "Adicionar Lavador"), /Lavador DataTable (botão "Editar")
+ * 🔄 CHAMA        : asp-page-handler="Submit" (POST create), asp-page-handler="Edit" (POST update), /api/Lavador/PegaFoto (GET foto base64 em edição), /Lavador (link Voltar), JavaScript inline funções mascara() (CPF), txtFile.change (preview), document.ready AJAX foto, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : Google Fonts Outfit (700/800/900), ASP.NET TagHelpers, Bootstrap 5, jQuery, ~/Images/barbudo.jpg (placeholder), Font Awesome Duotone, CSS inline extenso (~260 linhas), Alerta.TratamentoErroComLinha (global), data-ftx-loading
+ * 📝 OBSERVAÇÕES  : Total: ~370 linhas. isEdicao detecta se é Create/Update via LavadorId != Empty. CSS inline massivo com padrão FrotiX (header azul com shimmer, cards, badges, form controls altura 38px padronizada, responsividade). Foto preview funcional cliente-side (FileReader implied). AJAX carrega foto em edição. Máscara CPF JavaScript inline funcional (regex). Checkbox Status marcado automaticamente em criação (linha 353). Validação client/server via asp-validation-for. Botões Submit com spinner (classe btn-submit-spin - verificar se definida). Cards organizados em seções (Dados Pessoais, Profissionais, Foto, Configurações). InfoUsuário exibido em edição. Form usa enctype multipart. CSS bem estruturado com variáveis locais e seções. Possível mover CSS para arquivo externo (~260 linhas). JavaScript inline mínimo (~55 linhas). Tratamento de erro robusto. Responsivo com media queries.
+ **************************************************************************************** *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 

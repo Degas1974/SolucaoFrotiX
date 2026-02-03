@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Contrato/RepactuacaoContrato.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar repactuações de valores de contratos com filtros (contrato/ata), grid edição inline, histórico
+ * 📥 ENTRADAS     : @page, @model RepactuacaoContratoModel, filtros (instrumento, contrato/ata), grid edição inline valores
+ * 📤 SAÍDAS       : DataTables com repactuações, modal histórico, formulário edição, POST /api/Contrato/SalvarRepactuacao
+ * 🔗 CHAMADA POR  : Menu Contratos → Repactuação, links diretos
+ * 🔄 CHAMA        : /api/Contrato/ListaRepactuacoes, /api/Contrato/SalvarRepactuacao, /api/Contrato/HistoricoRepactuacao
+ * 📦 DEPENDÊNCIAS : DataTables, Syncfusion EJ2 (DatePicker, ComboBox), Bootstrap 5, jQuery, moeda() function inline
+ * 📝 OBSERVAÇÕES  : Total: 2530 linhas. PROBLEMAS: Arquivo MUITO EXTENSO, CSS inline grande, JavaScript inline massivo, função moeda() duplicada, edição inline sem validação robusta, histórico sem paginação, filtros sem debounce
+ **************************************************************************************** *@
 @page
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 

@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Motorista/UploadCNH.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Upload PDF CNH Syncfusion (Uploader + PdfViewer), validator .pdf only, preview inline, localização pt-BR
+ * 📥 ENTRADAS     : @page, @model UploadCNHModel, Syncfusion Uploader (arquivo .pdf CNH)
+ * 📤 SAÍDAS       : POST /api/UploadCNH/Save, DELETE /api/UploadCNH/Remove, PDFViewer #pdfviewer (exibição inline)
+ * 🔗 CHAMADA POR  : Motorista/Upsert (botão "Upload CNH"), menu navegação
+ * 🔄 CHAMA        : /api/UploadCNH/Save (POST), /api/UploadCNH/Remove (DELETE), /api/PdfViewerCNH/GetDocument (visualização)
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 (Uploader, PdfViewer), Bootstrap 5, jQuery, Microsoft.AspNetCore.Antiforgery
+ * 📝 OBSERVAÇÕES  : Total: ~216 linhas. Upload PDF CNH Syncfusion, validator .pdf only, preview inline, localização pt-BR extensa (~105 linhas strings), CSS inline mínimo (aceitável), JavaScript inline ~50 linhas (handlers upload)
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Motorista.UploadCNHModel
 

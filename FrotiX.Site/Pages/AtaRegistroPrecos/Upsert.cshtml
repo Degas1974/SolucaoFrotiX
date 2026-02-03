@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/AtaRegistroPrecos/Upsert.cshtml (626 linhas + JavaScript inline)
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário de criação e edição de Atas de Registro de Preços com grid Syncfusion para adição de itens (veículos)
+ * 📥 ENTRADAS     : @page "/AtaRegistroPrecos/Upsert?id={AtaId}", @model UpsertModel, Model properties (AtaObj, ContratoList, TipoVeiculoList, ItemsGrid), Form inputs (campos texto, dropdowns, Syncfusion Grid), Grid columns (Tipo Veículo, Qtd Total, Valor Unitário com inline editing)
+ * 📤 SAÍDAS       : AJAX POST /api/AtaRegistroPrecos/InsereAta (criação), AJAX POST /api/AtaRegistroPrecos/EditaAta (edição), AJAX POST /api/AtaRegistroPrecos/InsereItemAta (adicionar item grid), SweetAlert mensagens sucesso/erro (ainda em espanhol!), Redirecionamento /AtaRegistroPrecos
+ * 🔗 CHAMADA POR  : Menu navegação (Contratos → Atas de Registro de Preços), Botão "Adicionar Ata" na listagem, Links edição na grid principal
+ * 🔄 CHAMA        : /api/AtaRegistroPrecos/InsereAta (AJAX), /api/AtaRegistroPrecos/EditaAta (AJAX), /api/AtaRegistroPrecos/InsereItemAta (AJAX), JavaScript inline funções moeda() e validações
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 Grid (inline editing, toolbar), jQuery 3.6.0+, Bootstrap 5.3.8 CDN (⚠️ REDUNDÂNCIA - já carregado no _Layout), SweetAlert2 (alertas customizados), Google Fonts Outfit (títulos), Custom Alerta.TratamentoErroComLinha(), AppToast.show()
+ * 📝 OBSERVAÇÕES  : Total: 626 linhas. BUGS CRÍTICOS: 🐛 Mensagens em ESPANHOL ("Ata Adicionada com Sucesso!" - deveria ser português), Validação de datas fraca (não valida DataFim > DataInicio), moeda() function duplicada (mesma em múltiplos arquivos - candidata utility global), Grid without pagination (performance com muitos itens), Inline editing sem confirmação (usuário perde dados acidentalmente), Bootstrap CDN redundante linha 20 (já está no _Layout), Validação manual concatenada (usa alert() ao invés de validation framework), Sem loading state nos botões (pode causar double-submit), Data validation apenas no blur (não valida durante digitação), Grid toolbar sem disable state (ações disponíveis mesmo sem dados)
+ **************************************************************************************** *@
 @page
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 

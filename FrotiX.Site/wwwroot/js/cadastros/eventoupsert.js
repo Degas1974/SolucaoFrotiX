@@ -1,3 +1,28 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: eventoupsert.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário complexo de Criar/Editar Eventos com Syncfusion componentes,
+ *                   estatísticas de viagens (total, custo, média), validação de
+ *                   participantes, preenchimento DDTs (Requisitante/Setor), e AJAX calls.
+ * 📥 ENTRADAS     : Variáveis globais (eventoId, requisitanteId, setorsolicitanteId),
+ *                   formulário de evento, input #txtQtdParticipantes,
+ *                   GET /api/viagem/ObterTotalCustoViagensEvento
+ * 📤 SAÍDAS       : Syncfusion DropDowns preenchidos (lstRequisitanteEvento, ddtSetorRequisitanteEvento),
+ *                   data inicial setada (hoje se novo), validação de negativos,
+ *                   estatísticas renderizadas (#totalViagens, #custoTotalViagens, #custoMedioViagem,
+ *                   #viagensSemCusto), classes CSS (text-danger), formatação de moeda,
+ *                   Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready, carregarEstatisticasViagens(), event handlers
+ *                   (input #txtQtdParticipantes), Pages/Evento/Upsert.cshtml
+ * 🔄 CHAMA        : document.getElementById, ej2_instances[0] (Syncfusion API),
+ *                   $.on, $.ajax, carregarEstatisticasViagens(), formatarMoeda(),
+ *                   $.addClass, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, Syncfusion EJ2 (DropDown, TextBox), Alerta.js
+ * 📝 OBSERVAÇÕES  : Arquivo grande (845 linhas) com múltiplas funções (estatísticas,
+ *                   validações, formatação). Try-catch em todos os handlers e funções.
+ *                   Preenchimento condicional (editar vs criar) baseado em eventoId.
+ **************************************************************************************** */
+
 $(document).ready(function ()
 {
     try

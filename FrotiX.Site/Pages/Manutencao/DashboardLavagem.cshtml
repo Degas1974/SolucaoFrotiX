@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Manutencao/DashboardLavagem.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Dashboard com gráficos Syncfusion Charts (EJ2), filtros (ano/mês/período), cards KPI, heatmap, tabelas, gráfico duração
+ * 📥 ENTRADAS     : @page, @model DashboardLavagemModel, filtros (ano, mês, período personalizado)
+ * 📤 SAÍDAS       : Cards KPIs, gráficos Syncfusion (barras, pizza, heatmap), tabelas estatísticas, export PDF/Excel
+ * 🔗 CHAMADA POR  : Menu Dashboards → Lavagem
+ * 🔄 CHAMA        : /api/Manutencao/DashboardLavagem/*, APIs REST dados gráficos
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 (Charts, Heatmap), jQuery, Bootstrap 5, jsPDF, html2canvas
+ * 📝 OBSERVAÇÕES  : Total: ~808 linhas. PROBLEMA: Avisos mockup para "Hora Fim", CSS inline ~300 linhas, JavaScript inline ~200 linhas, sem lazy loading gráficos, filtros sem persist
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Manutencao.DashboardLavagemModel
 @{

@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Abastecimento/DashboardAbastecimento.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Dashboard completo de abastecimentos com 3 abas (Geral, Mensal, Por Veículo) usando Chart.js e Syncfusion Heatmap
+ * 📥 ENTRADAS     : @page, @model DashboardAbastecimentoModel, filtros por ano/mês/placa/período personalizado
+ * 📤 SAÍDAS       : Sistema de abas, cards estatísticos, gráficos Chart.js, heatmaps Syncfusion, modais de detalhes (viagens, abastecimentos, categoria, unidade), export PDF via jsPDF+html2canvas
+ * 🔗 CHAMADA POR  : Menu "Dashboards > Abastecimento"
+ * 🔄 CHAMA        : /js/dashboards/dashboard-abastecimento.js (externo), APIs REST /api/abastecimento/Dashboard/*
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 (Heatmap, Charts), Select2, jQuery, jsPDF, html2canvas, dashboard-abastecimento.js
+ * 📝 OBSERVAÇÕES  : Total: 2401 linhas (LIDO PARCIAL). ISSUES: Arquivo GIGANTE (2400+ linhas), CSS excessivo inline (400+ linhas), sistema de abas sem lazy loading, modais com dados carregados mas não limitados (performance), Select2 configurado mas tooltip sobrepõe dropdown
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Abastecimento.DashboardAbastecimentoModel
 @{

@@ -1,3 +1,76 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Relatorio/TesteRelatorio.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de TESTE Telerik Report Viewer (relatório Viagem.trdp hardcoded NoFichaVistoria: 93408),
+ *                   div #reportViewer1 width 75% height 700px, Kendo UI 2022.1.412 CDN **DUPLICADO** @section
+ *                   HeadBlock + ScriptsBlock (PROBLEMA!), telerikReportViewer PRINT_PREVIEW scale 1.0.
+ * 📥 ENTRADAS     : @page route /Relatorio/TesteRelatorio, Kendo UI CDN 2022.1.412 (jquery.min.js, jszip.min.js,
+ *                   kendo.all.min.js, kendo.aspnetmvc.min.js, kendo.default-main.min.css), pdf.js 2.2.2 (CDN),
+ *                   form onkeypress stopEnterSubmitting (DECLARADO mas NÃO implementado!), nenhum input form
+ * 📤 SAÍDAS       : Panel #divPainel, div d-flex height 700px, div #reportViewer1 width 75% "Loading...",
+ *                   @section ScriptsBlock: Kendo UI CDN **DUPLICADO** (mesmos includes @section HeadBlock!), Telerik
+ *                   Report Viewer script (/api/reports/resources/js/telerikReportViewer), jQuery ready
+ *                   $("#reportViewer1").telerik_ReportViewer (serviceUrl "/api/reports/", reportSource
+ *                   {report:'Viagem.trdp', parameters:{NoFichaVistoria:93408}}, viewMode PRINT_PREVIEW, scaleMode
+ *                   SPECIFIC scale 1.0, enableAccessibility false, sendEmail enabled true)
+ * 🔗 CHAMADA POR  : **PROVAVELMENTE NÃO USADO** - route /Relatorio/TesteRelatorio (teste developer), não deve existir
+ *                   menu link (teste/mockup Telerik Reporting)
+ * 🔄 CHAMA        : ViewData (Title "Viagens", PageName "viagem_index" ERRADO!, Heading fa-route, Category1
+ *                   "Cadastros", PageIcon fa-route), @addTagHelper*, @using Syncfusion.EJ2 (NÃO usados! Syncfusion
+ *                   registrado mas só Telerik/Kendo usado), @Html.AntiForgeryToken (NÃO usado! sem form submit),
+ *                   form asp-action="FichasAntigas" method POST (NÃO submetido! sem inputs, sem JavaScript submit),
+ *                   onkeypress stopEnterSubmitting (DECLARADO mas NÃO implementado! função NÃO existe), Kendo UI CDN
+ *                   2022.1.412 **DUPLICADO** (kendostatic.com jquery/jszip/kendo.all/kendo.aspnetmvc CSS+JS @section
+ *                   HeadBlock + ScriptsBlock AMBOS - PROBLEMA 2x carregamento!), pdf.js 2.2.2 (cdnjs.cloudflare.com
+ *                   pdf.js + pdf.worker.js + pdfjsLib.GlobalWorkerOptions.workerSrc config **DUPLICADO**),
+ *                   /api/reports/resources/js/telerikReportViewer (Telerik Report Viewer client script), /api/reports/
+ *                   (Telerik Report Server API endpoint), Viagem.trdp (Telerik report definition file - TRDP format),
+ *                   NoFichaVistoria: 93408 (hardcoded parameter value - ficha vistoria ID específico teste),
+ *                   telerikReportViewer.ViewModes.PRINT_PREVIEW, telerikReportViewer.ScaleModes.SPECIFIC,
+ *                   CSS inline (.form-control-xs, .label, input[type=checkbox], .btn-largura 100x100 NÃO usados!)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, ViewData, @addTagHelper* (NÃO usado Syncfusion!), Kendo UI 2022.1.412
+ *                   (jquery/jszip/kendo.all/kendo.aspnetmvc/kendo.default-main CSS), **Telerik Reporting** (telerik_ReportViewer
+ *                   jQuery plugin, /api/reports/ service, .trdp report definition), pdf.js 2.2.2 (PDF rendering
+ *                   worker), CSS inline (NÃO usado!), Bootstrap 5 (d-flex height), jQuery ready
+ * 📝 OBSERVAÇÕES  : 111 linhas. Página TESTE/MOCKUP Telerik Reporting (não finalizada). ViewData config:
+ *                   - Title: "Viagens" (genérico)
+ *                   - PageName: "viagem_index" (ERRADO! deve ser "relatorio_testerelatorio")
+ *                   - Heading: "<i class='fa-duotone fa-route'></i> Cadastros: <span class='fw-300'>Viagens</span>"
+ *                   - Category1: "Cadastros"
+ *                   - PageIcon: "fa-duotone fa-route"
+ *                   @addTagHelper*, @using Syncfusion.EJ2 (linha 2-3): **NÃO usados!** (Syncfusion registrado mas
+ *                   página usa Telerik/Kendo - confusão copypaste). @Html.AntiForgeryToken linha 4 (NÃO usado! form
+ *                   não submeta). CSS inline (NÃO usado): .form-control-xs, .label, checkbox, .btn-largura (sobras
+ *                   copypaste - remover). @section HeadBlock: toastr/microtip links COMENTADOS, **Kendo UI 2022.1.412
+ *                   CDN carregado COMPLETO** (CSS + 5 JS: jquery/jszip/kendo.all/kendo.aspnetmvc + pdf.js 2.2.2 +
+ *                   pdfjsLib.GlobalWorkerOptions). Form method POST asp-action="FichasAntigas" (NÃO existe! deve ser
+ *                   asp-page handler) onkeypress stopEnterSubmitting (FUNÇÃO NÃO IMPLEMENTADA! JavaScript NÃO define
+ *                   stopEnterSubmitting - erro runtime se Enter pressionado) enctype multipart/form-data (NÃO usado).
+ *                   Panel #divPainel: div d-flex height 700px (fixed), div #reportViewer1 width 75% pb-3 "Loading..."
+ *                   (placeholder texto - substituído por Telerik viewer). @section ScriptsBlock: **PROBLEMA CRÍTICO**
+ *                   Kendo UI 2022.1.412 CDN **DUPLICADO COMPLETO** (mesmos 5 JS + CSS + pdf.js já carregados @section
+ *                   HeadBlock - CARREGAMENTO 2x desnecessário! remover daqui, manter só HeadBlock). Script
+ *                   /api/reports/resources/js/telerikReportViewer (Telerik Report Viewer client). jQuery ready:
+ *                   $("#reportViewer1").telerik_ReportViewer config:
+ *                   - serviceUrl: "/api/reports/" (Telerik Report Server API - backend deve implementar)
+ *                   - reportSource: {report:'Viagem.trdp', parameters:{NoFichaVistoria:93408}} (hardcoded ID 93408 TESTE!)
+ *                   - viewMode: telerikReportViewer.ViewModes.PRINT_PREVIEW (modo impressão preview)
+ *                   - scaleMode: telerikReportViewer.ScaleModes.SPECIFIC, scale: 1.0 (zoom 100%)
+ *                   - enableAccessibility: false (desabilita features acessibilidade)
+ *                   - sendEmail: {enabled: true} (botão enviar email relatório)
+ *                   **PROBLEMAS CRÍTICOS**:
+ *                   1. **Kendo UI CDN DUPLICADO** (@section HeadBlock + ScriptsBlock - carrega 2x! remover ScriptsBlock)
+ *                   2. **stopEnterSubmitting NÃO implementado** (form onkeypress chama função inexistente - erro!)
+ *                   3. **NoFichaVistoria hardcoded 93408** (teste value - deve ser dinâmico via Model/query string)
+ *                   4. **Syncfusion NÃO usado** (@addTagHelper/@using Syncfusion mas só Telerik usado - remover)
+ *                   5. **AntiForgeryToken NÃO usado** (form não submeta)
+ *                   6. **Asp-action "FichasAntigas" NÃO existe** (deve ser asp-page-handler ou remover form)
+ *                   7. **CSS inline NÃO usado** (remover)
+ *                   8. **PageName ERRADO** ("viagem_index" deve ser "relatorio_testerelatorio")
+ *                   9. **Arquivo TESTE** (provavelmente DELETE ou finalizar implementação para produção)
+ *                   **TELERIK REPORTING**: Requer Telerik Reporting Server backend (/api/reports/ endpoints),
+ *                   .trdp report files (Telerik Report Designer format), licença comercial Telerik.
+ **************************************************************************************** *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 @using Syncfusion.EJ2
@@ -46,6 +119,28 @@
     <script src="https://cdn.kendostatic.com/2022.1.412/js/jszip.min.js"></script>
     <script src="https://cdn.kendostatic.com/2022.1.412/js/kendo.all.min.js"></script>
     <script src="https://cdn.kendostatic.com/2022.1.412/js/kendo.aspnetmvc.min.js"></script>
+    <script src="https://cdn.kendostatic.com/2022.1.412/js/cultures/kendo.culture.pt-BR.min.js"></script>
+    <script src="https://cdn.kendostatic.com/2022.1.412/js/messages/kendo.messages.pt-BR.min.js"></script>
+    <script>
+        try {
+            if (window.kendo && kendo.culture) {
+                kendo.culture("pt-BR");
+            }
+        } catch (error) {
+            console.warn("Kendo pt-BR: falha ao aplicar cultura.", error);
+        }
+    </script>
+    <script src="https://cdn.kendostatic.com/2022.1.412/js/cultures/kendo.culture.pt-BR.min.js"></script>
+    <script src="https://cdn.kendostatic.com/2022.1.412/js/messages/kendo.messages.pt-BR.min.js"></script>
+    <script>
+        try {
+            if (window.kendo && kendo.culture) {
+                kendo.culture("pt-BR");
+            }
+        } catch (error) {
+            console.warn("Kendo pt-BR: falha ao aplicar cultura.", error);
+        }
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.2/pdf.js"></script>
     <script>
         window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.2/pdf.worker.js';

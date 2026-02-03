@@ -1,3 +1,31 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ocorrencias.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gestão de Ocorrências (incidentes/eventos de veículos/motoristas)
+ *                   com DataTable, loading overlay padrão FrotiX, upload de imagens,
+ *                   abreviação de nomes de motoristas, e CRUD completo.
+ * 📥 ENTRADAS     : DataTable #tblOcorrencias, formulário de ocorrências, uploads de imagem,
+ *                   eventos de clique (criar/editar/excluir), campos de filtro,
+ *                   nomes de motoristas (abreviarNomeMotorista)
+ * 📤 SAÍDAS       : DataTable renderizado, loading overlay exibido/oculto
+ *                   (#loadingOverlayOcorrencias), nomes abreviados (conectores preservados),
+ *                   imagens carregadas (imagemOcorrenciaAlterada, novaImagemOcorrencia),
+ *                   AJAX POST/GET para APIs de Ocorrências, AppToast notificações,
+ *                   console.warn (debug), Alerta.TratamentoErroComLinha não implícito
+ * 🔗 CHAMADA POR  : $(document).ready, event handlers (cliques, filtros), funções auxiliares
+ *                   (mostrarLoadingOcorrencias, esconderLoadingOcorrencias,
+ *                   abreviarNomeMotorista), Pages/Ocorrencias/Index.cshtml
+ * 🔄 CHAMA        : DataTable API, mostrarLoadingOcorrencias(mensagem),
+ *                   esconderLoadingOcorrencias(), abreviarNomeMotorista(nome),
+ *                   $.ajax, AppToast.show, console.warn, document.getElementById
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables, AppToast (toast notifications),
+ *                   Syncfusion (possivelmente para uploads), Loading Overlay FrotiX
+ * 📝 OBSERVAÇÕES  : Arquivo grande (1034 linhas). Conectores preservados na abreviação:
+ *                   "de", "da", "do", "dos", "das", "e", "d", "d'", "del", etc.
+ *                   Variáveis globais: dataTable, imagemOcorrenciaAlterada, novaImagemOcorrencia.
+ *                   Try-catch com console.warn (não usa Alerta.TratamentoErroComLinha).
+ **************************************************************************************** */
+
 /* =========================================================================
  *  ocorrencias.js
  *  Tela: Gestão de Ocorrências

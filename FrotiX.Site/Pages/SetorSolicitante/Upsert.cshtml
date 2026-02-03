@@ -1,6 +1,57 @@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 
+@* ========================================================================================
+ * ARQUIVO: Pages/SetorSolicitante/Upsert.cshtml
+ * OBJETIVO: Formulario de criacao e edicao de Setores Solicitantes (estrutura organizacional)
+ *           com Syncfusion DropDownList hierarquico para selecao de Setor Pai (permite criar
+ *           hierarquia Diretoria > Coordenacao > Divisao > Secao), validacao de campos obrigatorios
+ *           (codigo, nome, sigla, nivel hierarquico), checkbox status Ativo, sistema para montar
+ *           estrutura organizacional completa do orgao.
+ * ENTRADAS: Model FrotiX.Pages.SetorSolicitante.UpsertModel (Id, Codigo, Nome, Sigla, NivelHierarquico
+ *           1 a 4, IdSetorPai nullable null para raiz, Status), parametro query string id (edicao
+ *           carrega dados existentes), ViewData com lista setores para dropdown Setor Pai (exibe
+ *           apenas setores de nivel inferior para evitar ciclos), formulario HTML5 com input text
+ *           (codigo, nome, sigla), select nivel hierarquico (1 Diretoria, 2 Coordenacao, 3 Divisao,
+ *           4 Secao), Syncfusion DropDownList setor pai com autocomplete (opcional para nivel 1,
+ *           obrigatorio para niveis 2-4), checkbox status Ativo checked default
+ * SAIDAS: Formulario renderizado com campos preenchidos (edicao) ou vazios (criacao), DropDownList
+ *         Setor Pai funcional com autocomplete filtrando apenas setores de nivel inferior ao selecionado
+ *         (exemplo: se nivel 3 Divisao, dropdown exibe apenas Coordenacoes nivel 2), validacao
+ *         HTML5 frontend (required nos campos obrigatorios, validacao customizada nivel hierarquico
+ *         vs setor pai), POST /SetorSolicitante/Upsert (submit salva no banco via IUnitOfWork com
+ *         validacao backend previne ciclos hierarquicos), redirect para /SetorSolicitante apos
+ *         sucesso com AppToast Verde, erro exibe AppToast Vermelho com mensagem detalhada
+ * CHAMADA POR: Link /SetorSolicitante/Upsert (criacao novo sem parametro id), link /SetorSolicitante/Upsert?id=X
+ *              (edicao carrega dados existentes), botao + Novo Setor da pagina /SetorSolicitante/Index,
+ *              botao Editar no TreeGrid hierarquico, UpsertModel.OnGet metodo backend C# executa
+ *              (se id presente carrega dados do banco via IUnitOfWork, se ausente retorna model
+ *              vazio, carrega lista setores para dropdown Setor Pai filtrando por nivel)
+ * CHAMA: setorsolicitante_upsert.js (arquivo JavaScript externo com inicializacao DropDownList
+ *        Syncfusion, handlers de validacao customizada nivel hierarquico vs setor pai, mudanca
+ *        de nivel hierarquico recarrega dropdown Setor Pai via AJAX filtrando setores validos,
+ *        submit handler valida hierarquia antes de enviar), POST /SetorSolicitante/Upsert endpoint
+ *        (backend UpsertModel.OnPost recebe FormData, valida codigo unico, valida nivel hierarquico
+ *        vs setor pai previne ciclos, salva entidade SetorSolicitante no banco via IUnitOfWork,
+ *        retorna JSON success/error), GET /api/SetorSolicitante/GetSetoresByNivel?nivel=X (retorna
+ *        JSON lista de setores filtrados por nivel hierarquico para preencher dropdown Setor Pai
+ *        dinamicamente), AppToast.show (notificacoes toast Verde sucesso/Vermelho erro)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1, Bootstrap 5.3.8 (cards, form-control,
+ *               form-label, form-check, grid row/col), Syncfusion EJ2 ASP.NET Core (DropDownList
+ *               para Setor Pai com autocomplete e filtragem dinamica por nivel hierarquico),
+ *               setorsolicitante_upsert.js (arquivo JavaScript externo), AppToast.js, IUnitOfWork
+ * OBSERVACOES: 201 linhas com formulario hierarquico complexo. Sistema permite construir estrutura
+ *              organizacional completa do orgao com 4 niveis hierarquicos: Nivel 1 Diretoria (raiz,
+ *              IdSetorPai null), Nivel 2 Coordenacao (pai = Diretoria), Nivel 3 Divisao (pai =
+ *              Coordenacao), Nivel 4 Secao (pai = Divisao). Validacao previne ciclos: nao permite
+ *              setor ser pai de si mesmo, nao permite nivel hierarquico inconsistente com pai
+ *              (exemplo: Divisao nivel 3 nao pode ter pai Secao nivel 4). Dropdown Setor Pai
+ *              dinamico: mudanca no select Nivel Hierarquico dispara AJAX GET /api/SetorSolicitante/GetSetoresByNivel
+ *              recarregando dropdown com apenas setores validos (nivel imediatamente superior).
+ *              Sistema CRITICO para organizacao administrativa usado em multiplos modulos do FrotiX.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model FrotiX.Pages.SetorSolicitante.UpsertModel
 
 @{

@@ -1,3 +1,31 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/PlacaBronze/Index.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de listagem de Placas de Bronze com DataTable e CRUD via
+ *                   JavaScript (placabronze.js). Sistema de identificação de veículos.
+ * 📥 ENTRADAS     : @Model FrotiX.Models.PlacaBronze, route /PlacaBronze, botões delegados
+ *                   no DataTable (editar/excluir/toggle status), OnGet() do IndexModel
+ * 📤 SAÍDAS       : DataTable #tblPlacaBronze renderizado (4 colunas: Descrição da Placa,
+ *                   Veículo Associado, Status, Ação), link para /PlacaBronze/Upsert,
+ *                   exportações Excel/PDF, AJAX calls /api/PlacaBronze (placabronze.js)
+ * 🔗 CHAMADA POR  : Route /PlacaBronze, navegação sidebar (Cadastros > Placas de Bronze),
+ *                   IndexModel.OnGet() (code-behind)
+ * 🔄 CHAMA        : placabronze.js (439 linhas - anti-double initialization flag
+ *                   placaBronzeInitialized, loadList, delete handlers, status toggle,
+ *                   event cleanup .off(), stopImmediatePropagation), /PlacaBronze/Upsert,
+ *                   /api/PlacaBronze/* endpoints, data-ftx-loading, DataTables API
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, jQuery, DataTables (table-bordered table-striped),
+ *                   placabronze.js (arquivo externo complexo com flag anti-reinit), Bootstrap 5,
+ *                   Font Awesome 6 Duotone (fa-file-certificate, fa-rectangle-history),
+ *                   Syncfusion tooltips (data-ejtip)
+ * 📝 OBSERVAÇÕES  : 79 linhas. Layout FrotiX moderno (ftx-card-header azul #3D5771, botão laranja
+ *                   com outline branco hover). CSS inline minimalista (fundo-cinza #2F4F4F).
+ *                   Comentário IMPORTANTE no @section ScriptsBlock: "Não incluir global-toast.js
+ *                   se já estiver no _Layout" (evitar duplicação). placabronze.js usa flag
+ *                   placaBronzeInitialized para prevenir double initialization. ViewData icon
+ *                   fa-file-certificate. <br/><br/> para espaçamento antes da tabela.
+ *                   Sistema de patrimônio/identificação veicular.
+ **************************************************************************************** *@
 @page
 @model FrotiX.Models.PlacaBronze
 

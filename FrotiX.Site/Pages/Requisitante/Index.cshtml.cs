@@ -1,16 +1,17 @@
-/*
-    ═══════════════════════════════════════════════════════════════════════════════
-    📄 DOCUMENTAÇÃO COMPLETA DISPONÍVEL
-    ═══════════════════════════════════════════════════════════════════════════════
-
-    📍 Localização: Documentacao/Pages/Requisitante - Index.md
-    📅 Última Atualização: 08/01/2026
-    📋 Versão: 2.0 (Padrão FrotiX Simplificado)
-
-    Este arquivo contém o PageModel (backend) da página de listagem de Requisitantes.
-    Para entender completamente a funcionalidade, consulte a documentação acima.
-    ═══════════════════════════════════════════════════════════════════════════════
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Requisitante/Index.cshtml.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : PageModel (code-behind) da página de listagem de Requisitantes.
+ *                   Inicializa a página Index.cshtml sem lógica específica (lógica no frontend).
+ * 📥 ENTRADAS     : GET request para rota /Requisitante, método OnGet() chamado pelo ASP.NET Core
+ * 📤 SAÍDAS       : Renderização de Index.cshtml, sem ViewData ou Model específico (PageModel vazio)
+ * 🔗 CHAMADA POR  : ASP.NET Core Razor Pages pipeline ao acessar /Requisitante, Index.cshtml
+ * 🔄 CHAMA        : Alerta.TratamentoErroComLinha (tratamento de erros global - fail-safe)
+ * 📦 DEPENDÊNCIAS : Microsoft.AspNetCore.Mvc.RazorPages (PageModel base class), Alerta.cs (helper)
+ * 📝 OBSERVAÇÕES  : PageModel minimalista - toda lógica CRUD está no JavaScript (requisitante.js)
+ *                   e Controller (/api/Requisitante). OnGet() vazio com try-catch preventivo.
+ *                   31 linhas apenas. Padrão comum em FrotiX para páginas simples de listagem.
+ **************************************************************************************** */
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;

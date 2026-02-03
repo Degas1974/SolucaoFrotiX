@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Manutencao/Glosas.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Controle glosas com 2 grids Syncfusion (Resumo/Detalhes), filtros contrato/ano/mês, export Excel, loading overlay
+ * 📥 ENTRADAS     : @page, @model GlosasModel, filtros (contrato, ano, mês)
+ * 📤 SAÍDAS       : 2 grids Syncfusion (gridResumo, gridDetalhes), export Excel, loading overlay
+ * 🔗 CHAMADA POR  : Menu Manutenção → Glosas
+ * 🔄 CHAMA        : /api/Manutencao/Glosas/Resumo, /api/Manutencao/Glosas/Detalhes
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 (Grid), Bootstrap 5, jQuery, Excel export
+ * 📝 OBSERVAÇÕES  : Total: ~461 linhas. BUG CRÍTICO: gridResumo criado via JS (linha 154) conflita com TagHelper, causa problemas rendering. CSS inline ~150 linhas, JavaScript inline ~120 linhas
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Manutencao.GlosasModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers

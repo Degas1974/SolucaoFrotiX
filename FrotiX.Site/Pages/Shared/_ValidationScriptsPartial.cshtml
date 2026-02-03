@@ -1,2 +1,26 @@
-﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+﻿@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_ValidationScriptsPartial.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view que carrega scripts de validação jQuery client-side (jQuery
+ *                   Validation + Unobtrusive Validation). Incluído em formulários que precisam
+ *                   validação real-time antes do submit.
+ * 📥 ENTRADAS     : Chamada via @await Html.PartialAsync("_ValidationScriptsPartial") geralmente
+ *                   no @section Scripts de páginas com formulários (Upsert, Create, Edit)
+ * 📤 SAÍDAS       : 2 <script> tags carregando jquery.validate.min.js (core validation) e
+ *                   jquery.validate.unobtrusive.min.js (integração ASP.NET Core Tag Helpers),
+ *                   habilita validação automática via data-val-* attributes
+ * 🔗 CHAMADA POR  : Páginas de formulário (Upsert, Create, Edit) via @section Scripts,
+ *                   geralmente condicional (@if (IsSectionDefined("Scripts")))
+ * 🔄 CHAMA        : ~/lib/jquery-validation/dist/jquery.validate.min.js (biblioteca core),
+ *                   ~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js
+ *                   (adaptor ASP.NET Core)
+ * 📦 DEPENDÊNCIAS : jQuery (prerequisite), ASP.NET Core Tag Helpers (data-val-* attributes
+ *                   gerados por asp-validation-for), arquivos em wwwroot/lib/ (libman/npm)
+ * 📝 OBSERVAÇÕES  : 2 linhas. Partial view ESSENCIAL para validação client-side. Uso típico:
+ *                   adicionar @section Scripts { @await Html.PartialAsync("_ValidationScriptsPartial") }
+ *                   em páginas com <form>. Unobtrusive Validation lê atributos data-val-required,
+ *                   data-val-regex, etc. gerados pelos Tag Helpers (asp-validation-for) e aplica
+ *                   validação automaticamente. Ref: ~/lib/ indica libman/npm packages.
+ **************************************************************************************** *@
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>

@@ -1,3 +1,36 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Unidade/Upsert.cshtml
+ * OBJETIVO: Formulario de cadastro/edicao de Unidades organizacionais (Diretoria/Coordenacao/Divisao/Secao)
+ *           com campos hierarquicos DropDownList pai, sistema CRITICO para estrutura organizacional
+ *           FrotiX usada em lotacoes motoristas e relatorios por setor.
+ * ENTRADAS: route /Unidade/Upsert ou /Unidade/Upsert?id=123 (edicao), model UpsertModel
+ *           PageModel (properties: Unidade entity, UnidadesPai List dropdown, ModoEdicao boolean),
+ *           form fields: Codigo string 20 chars obrigatorio unique, Nome string 100 chars
+ *           obrigatorio, Nivel int 1-4 radio buttons (1=Diretoria, 2=Coordenacao, 3=Divisao,
+ *           4=Secao), UnidadePaiId int nullable DropDownList cascading (filtra unidades por
+ *           nivel-1, Coordenacao nivel 2 seleciona Diretoria pai nivel 1, Divisao nivel
+ *           3 seleciona Coordenacao pai nivel 2), Descricao textarea 500 chars opcional,
+ *           Ativo checkbox default true
+ * SAIDAS: Form renderizado com validacao client-side asp-validation-for, submit POST
+ *         /Unidade/Upsert OnPost handler valida dados insere/atualiza Unidade tabela, redirect
+ *         /Unidade/Index com TempData SuccessMessage, validacoes: Codigo unique (query
+ *         Where Codigo=input.Codigo AND Id!=input.Id verifica duplicata retorna ModelState.AddModelError),
+ *         UnidadePaiId obrigatorio se Nivel > 1 (Coordenacoes/Divisoes/Secoes devem ter
+ *         pai hierarquico), UnidadePaiId.Nivel = input.Nivel - 1 (pai deve ser nivel imediatamente
+ *         superior, Divisao nivel 3 pai deve ser Coordenacao nivel 2 nao pode ser Diretoria
+ *         nivel 1 pulando nivel)
+ * CHAMADA POR: Menu Cadastros > Unidades > Novo (link /Unidade/Upsert sem id), botao
+ *              Editar grid /Unidade/Index (link /Unidade/Upsert?id=123)
+ * CHAMA: PageModel UpsertModel.cshtml.cs OnGet/OnPost handlers, EF Core DbContext Unidades
+ *        table CRUD, Syncfusion DropDownList component cascading, asp-validation-for Tag
+ *        Helpers, jQuery Validation Unobtrusive client-side
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 DropDownList, Bootstrap
+ *               5.3.8 form controls, jQuery Validation
+ * OBSERVACOES: 260 linhas form hierarquico CRITICO estrutura organizacional. Validacao
+ *              nivel pai essencial: Divisao nivel 3 DEVE ter Coordenacao nivel 2 como
+ *              pai nao pode ter Diretoria nivel 1 (pularia nivel hierarquia invalida).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 

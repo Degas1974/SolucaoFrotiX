@@ -1,4 +1,58 @@
 @page
+
+@* ========================================================================================
+ * ARQUIVO: Pages/Page/Login.cshtml
+ * OBJETIVO: Pagina DEMO de autenticacao (login) do template SmartAdmin exibindo formulario
+ *           de login estatico (hardcoded HTML) com campos usuario/senha, checkbox Remember Me,
+ *           botao Sign In, link Forgot Password, usado como referencia de layout. NAO e a
+ *           pagina de login real do FrotiX (autenticacao real esta em outro lugar).
+ * ENTRADAS: Model LoginModel (code-behind vazio ou com metodo OnPost vazio), formulario HTML5
+ *           com input text (username), input password (password), checkbox (remember me),
+ *           botao Sign In (submit form), link Forgot Password (redireciona pagina de recuperacao)
+ * SAIDAS: Formulario de login renderizado centralizado fullscreen com background gradient,
+ *         logo FrotiX ou SmartAdmin topo, campos username/password com icones Font Awesome
+ *         (fa-user, fa-lock), checkbox Remember Me, botao Sign In primary azul, link Forgot
+ *         Password cinza, validacao HTML5 frontend (required nos campos), submit form envia
+ *         POST /Page/Login (backend autentica ou exibe erro, nao implementado neste demo)
+ * CHAMADA POR: Route /Page/Login via diretiva page, link demonstrativo no menu de paginas
+ *              demo do template SmartAdmin, navegacao direta URL, LoginModel.OnGet metodo
+ *              backend vazio (nao carrega dados, apenas renderiza formulario)
+ * CHAMA: login.js (arquivo JavaScript externo hipotetico com validacao customizada campos,
+ *        submit handler via AJAX, caso exista - se nao existe logica inline ou nao existe
+ *        handler algum), POST /Page/Login endpoint (backend autentica usuario via Identity
+ *        ou custom authentication, redireciona para /Index se sucesso ou exibe erro se falha,
+ *        nao implementado neste demo), link /Page/ForgotPassword (pagina de recuperacao de senha)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Bootstrap 5.3.8 (form-control, form-check,
+ *               botoes, cards), Font Awesome 6 Duotone (icones fa-user username, fa-lock
+ *               password), CSS customizado section HeadBlock (background gradient, centralizacao
+ *               vertical/horizontal via flexbox, card login arredondado shadow)
+ * OBSERVACOES: 115 linhas de pagina DEMO template SmartAdmin NAO integrada ao sistema FrotiX
+ *              real. Autenticacao real do FrotiX usa ASP.NET Core Identity ou custom authentication
+ *              em outra pagina (provavelmente /Account/Login ou /Login). Considerar REMOVER
+ *              esta pagina demo ou SUBSTITUIR pela pagina de login real do FrotiX. Formulario
+ *              demonstrativo: username placeholder Enter your username, password placeholder
+ *              Enter your password, checkbox Remember Me checked default, botao Sign In primary
+ *              azul block full width, link Forgot Password? small text-muted alinhado direita.
+ *              Layout fullscreen: body com display flex, align-items center, justify-content center,
+ *              min-height 100vh (centraliza card login verticalmente e horizontalmente), background
+ *              linear-gradient 135deg azul para roxo (mesmo da pagina Error.cshtml). Card login:
+ *              width 400px max-width 90% (responsivo), padding 40px, border-radius 14px, box-shadow
+ *              elevado. Logo topo: imagem logo FrotiX ou SmartAdmin centralizada, margin-bottom 30px.
+ *              Icones campos: Font Awesome dentro do input via input-group (icone esquerda, campo
+ *              direita). Validacao HTML5: atributo required nos campos username/password impede
+ *              submit vazio, pattern para validacao customizada (se implementado). Submit: POST
+ *              /Page/Login envia username/password, backend valida credenciais contra banco de dados,
+ *              se sucesso cria cookie autenticacao e redireciona /Index, se falha exibe mensagem
+ *              erro via TempData ou ViewData. Forgot Password: link redireciona /Page/ForgotPassword
+ *              (pagina demo de recuperacao de senha via email). Se substituir por login real do
+ *              FrotiX: integrar com ASP.NET Core Identity (UserManager, SignInManager), adicionar
+ *              validacao backend robusta, implementar recuperacao de senha via email (token seguro),
+ *              adicionar reCAPTCHA para prevenir brute force, implementar bloqueio temporario apos
+ *              X tentativas falhadas, logging de tentativas de login (sucesso/falha), suporte a
+ *              autenticacao via OAuth (Google, Microsoft, Facebook), two-factor authentication (2FA).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model LoginModel
 @{ 
 	ViewData["Title"] = "Login";

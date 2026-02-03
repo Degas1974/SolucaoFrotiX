@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Multa/UpsertPenalidade.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário criar/editar penalidade/boleto de multa (herdado de autuação) + 4 uploads PDFs (autuação, penalidade, eDoc, comprovante) + checkboxes Paga/EnviadaSecle
+ * 📥 ENTRADAS     : @page, @model UpsertPenalidadeModel, campos herdados autuação + Vencimento, Paga (checkbox), EnviadaSecle (checkbox), ProcessoEDoc, NoFichaVistoria (com btnFicha), 4 uploaders (uploaderAutuacao, uploaderPenalidade, uploaderEDoc, uploaderComprovante), RTE observações (Syncfusion)
+ * 📤 SAÍDAS       : POST (handler=Submit ou Edit), redirect para ListaPenalidade, AppToast feedback, 4 PDFViewers inline, modal #modalFicha (ficha vistoria)
+ * 🔗 CHAMADA POR  : ListaPenalidade (botão "Adicionar Penalidade", editar linha, transformar autuação), menu navegação
+ * 🔄 CHAMA        : (assumido) /api/Multa/CreatePenalidade ou UpdatePenalidade, /api/MultaUpload/save|remove (4x), /api/MultaPdfViewer (4x), /api/Viagem/SaveImage (RTE), ~/js/cadastros/upsert_penalidade.js
+ * 📦 DEPENDÊNCIAS : Syncfusion.EJ2 (ComboBox, DropDownList, DatePicker, Uploader x4, PDFViewer x4, RichTextEditor), Bootstrap 5.3.8 (CDN redundante), Font Awesome Duotone, CSS ftx-card-styled.css
+ * 📝 OBSERVAÇÕES  : Total: 762 linhas. PROBLEMA GRAVE: 4 uploaders + 4 PDF viewers inline = MUITO PESADO, Considerar abas/accordion, Bootstrap CDN redundante, CSS inline extenso (316 linhas) - extrair, JavaScript inline grande (446 linhas) - DEVE extrair (parseCurrencyBR, moeda, formatCurrencyBR, spinners, valores), DUPLICAÇÃO: Funções moeda/parseCurrency repetidas (mesmas do UpsertAutuacao), COMPLEXIDADE: Checkboxes custom (chkPaga, chkEnviadaSecle) com hidden fields - padrão ASP.NET Core correto mas verboso, Campos valor: usa hidden fields (hdnValorAteVencimento/PosVencimento) - consistente com UpsertAutuacao, BUG POTENCIAL: 4 PDF viewers renderizados mesmo sem PDFs - considerar lazy load, Modal ficha: btnFicha desabilitado por padrão - habilitar via JS se NoFichaVistoria preenchido
+ **************************************************************************************** *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 @using Newtonsoft.Json

@@ -1,3 +1,25 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: motorista_upsert.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Validação e submit do formulário de Motoristas (Upsert) com máscaras,
+ *                   validação de CPF, upload de imagem (foto), status default como ativo,
+ *                   imagem padrão (barbudo.jpg) para novos motoristas.
+ * 📥 ENTRADAS     : Formulário #MotoristaObj_Motorista_*, campos #txtCPF, #chkStatus,
+ *                   #imgPreview, #txtSemFoto, #MotoristaObj_Motorista_MotoristaId,
+ *                   eventos (blur, submit)
+ * 📤 SAÍDAS       : Máscaras aplicadas (CPF, telefone, CEP, data), validação de CPF
+ *                   (limpa campo se inválido), imagem padrão carregada (/Images/barbudo.jpg),
+ *                   status checked (ativo), AppToast notificações, Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready, event handlers (#txtCPF.blur, aplicarMascaras()),
+ *                   Pages/Motorista/Upsert.cshtml
+ * 🔄 CHAMA        : setTimeout (garantir jQuery Mask), aplicarMascaras(), validarCPF(),
+ *                   $.prop, $.attr, $.show, $.hide, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, jQuery Mask Plugin, Alerta.js, AppToast
+ * 📝 OBSERVAÇÕES  : Aguarda 100ms para garantir que jQuery Mask está carregado.
+ *                   Limpa CPF inválido ANTES de mostrar erro (evita loop).
+ *                   Checked status por padrão para novos (UUID 00000000). 390 linhas total.
+ **************************************************************************************** */
+
 // motorista_upsert.js
 // Validação e submit do formulário de Motoristas
 

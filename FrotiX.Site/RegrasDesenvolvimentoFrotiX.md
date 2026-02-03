@@ -260,7 +260,32 @@ drawCallback: function() {
 }
 ```
 
-### 3.3 CSS
+### 3.3 Telerik/Kendo – Localização pt-BR (OBRIGATÓRIO)
+
+**REGRA INVIOLÁVEL:** Todo e qualquer controle **Telerik/Kendo** DEVE ser inicializado em **pt-BR**.
+
+**Requisitos mínimos:**
+- Carregar os scripts de cultura e mensagens **da mesma versão** do Kendo usada na página.
+- Executar `kendo.culture("pt-BR")` **antes** de inicializar qualquer widget.
+
+**Exemplo correto:**
+
+```html
+<script src="https://kendo.cdn.telerik.com/2025.2.520/js/kendo.all.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2025.2.520/js/cultures/kendo.culture.pt-BR.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2025.2.520/js/messages/kendo.messages.pt-BR.min.js"></script>
+<script>
+  if (window.kendo && kendo.culture) {
+    kendo.culture("pt-BR");
+  }
+</script>
+```
+
+**Observações:**
+- Se houver **mais de um carregamento** do Kendo na página, a cultura deve ser aplicada **após o último carregamento**.
+- Não confiar no idioma padrão do navegador.
+
+### 3.4 CSS
 
 - **Global:** `wwwroot/css/frotix.css`
 - **Local:** `<style>` no `.cshtml`

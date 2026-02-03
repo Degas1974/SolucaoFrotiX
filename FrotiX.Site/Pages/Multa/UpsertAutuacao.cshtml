@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Multa/UpsertAutuacao.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário criar/editar notificação de autuação de multa (dados infração, veículo, motorista, PDFs, observações)
+ * 📥 ENTRADAS     : @page, @model UpsertMultaModel, campos: NumInfracao, Data, Hora, Valores (AteVencimento/PosVencimento), Localizacao, lstInfracao, lstStatus, lstOrgao, lstEmpenhos, lstVeiculo, lstMotorista, uploads (uploaderAutuacao), RTE observações
+ * 📤 SAÍDAS       : POST (handler=Submit ou Edit), redirect para ListaAutuacao, AppToast feedback, modal #modalFicha (ficha vistoria PNG)
+ * 🔗 CHAMADA POR  : ListaAutuacao (botão "Adicionar Autuação", editar linha), menu navegação
+ * 🔄 CHAMA        : (assumido) /api/Multa/CreateAutuacao ou UpdateAutuacao, /api/MultaUpload/save|remove, /api/Viagem/SaveImage (RTE), ~/js/cadastros/upsert_autuacao.js, ~/js/viagens/kendo-editor-upsert.js
+ * 📦 DEPENDÊNCIAS : Syncfusion.EJ2 (ComboBox, DropDownList, DatePicker, Uploader, PDFViewer), Kendo UI 2022.1.412 (Editor RTE - Telerik), Bootstrap 5.3.8 (CDN redundante), jsPDF 2.5.1 (modal baixar PDF ficha), Font Awesome Duotone
+ * 📝 OBSERVAÇÕES  : Total: 768 linhas. PROBLEMA: Bootstrap CDN redundante, CSS inline grande (361 linhas) - extrair, JavaScript inline massivo (407 linhas) - DEVE extrair (parseCurrencyBR, moeda, formatCurrencyBR, spinners, valores), HÍBRIDO: Usa Syncfusion + Kendo Editor (inconsistência - padronizar), BUG POTENCIAL: form.addEventListener('submit') + btn.addEventListener('click') - pode causar double submit, Campos valor: usa hidden fields (hdnValorAteVencimento/PosVencimento) para enviar valores parseados - correto, Modal ficha vistoria: exibe PNG, botão baixar PDF (btnBaixarPDF usa jsPDF) - funcional mas complexo, Uploader autuação: serviceUrl="/api/MultaPdfViewer" - correto, RTE: Kendo Editor (Telerik) - requer licença? Verificar
+ **************************************************************************************** *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 @using Newtonsoft.Json
@@ -803,6 +814,17 @@
 	<link href="https://kendo.cdn.telerik.com/2022.1.412/styles/kendo.common.min.css" rel="stylesheet" />
 	<link href="https://kendo.cdn.telerik.com/2022.1.412/styles/kendo.default.min.css" rel="stylesheet" />
 	<script src="https://kendo.cdn.telerik.com/2022.1.412/js/kendo.all.min.js"></script>
+	<script src="https://kendo.cdn.telerik.com/2022.1.412/js/cultures/kendo.culture.pt-BR.min.js"></script>
+	<script src="https://kendo.cdn.telerik.com/2022.1.412/js/messages/kendo.messages.pt-BR.min.js"></script>
+	<script>
+		try {
+			if (window.kendo && kendo.culture) {
+				kendo.culture("pt-BR");
+			}
+		} catch (error) {
+			console.warn("Kendo pt-BR: falha ao aplicar cultura.", error);
+		}
+	</script>
 
 	<!-- Kendo Editor Helper - Compatibilidade -->
 	<script src="~/js/viagens/kendo-editor-upsert.js" asp-append-version="true"></script>

@@ -1,3 +1,35 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Viagens/_SecaoOcorrenciasFinalizacao.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view da seção de ocorrências do veículo para o modal de finalização
+ *                   de viagem. Card azul petróleo (#325d88) com contador, botão adicionar e container
+ *                   dinâmico para cards de ocorrências (preenchido via JavaScript).
+ * 📥 ENTRADAS     : Inclusão no modal de finalização (provavelmente Viagens/ModalFinalizacao.cshtml),
+ *                   clique no botão #btnAdicionarOcorrencia, JavaScript preenche #containerOcorrencias,
+ *                   atualiza #badgeContadorOcorrencias, toggle #msgSemOcorrencias
+ * 📤 SAÍDAS       : <div class="card" id="cardOcorrencias"> com header azul petróleo (#325d88 cor FrotiX),
+ *                   badge contador (#badgeContadorOcorrencias - inicia com 0), botão "Adicionar Ocorrência"
+ *                   (fa-plus), container dinâmico (#containerOcorrencias), mensagem placeholder
+ *                   (#msgSemOcorrencias - "Nenhuma ocorrência registrada")
+ * 🔗 CHAMADA POR  : Modal de finalização de viagem (Viagens/ModalFinalizacao.cshtml?), @await Html.PartialAsync
+ *                   ou <partial name="_SecaoOcorrenciasFinalizacao"/>, renderizado em modal dialog
+ * 🔄 CHAMA        : JavaScript handler para #btnAdicionarOcorrencia (provavelmente abre modal de
+ *                   form ocorrência), JavaScript popula #containerOcorrencias com cards dinâmicos
+ *                   (tipo de ocorrência, descrição, data, botão remover), atualiza badge contador,
+ *                   Font Awesome icons (fa-triangle-exclamation, fa-plus, fa-circle-info)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views), Bootstrap 5 (card, card-header, card-body,
+ *                   badge, btn btn-sm btn-light, d-flex justify-content-between align-items-center,
+ *                   text-muted small, p-2 mb-3), Font Awesome 6 Duotone (fa-triangle-exclamation,
+ *                   fa-plus, fa-circle-info), JavaScript para CRUD de ocorrências, CSS inline (#325d88)
+ * 📝 OBSERVAÇÕES  : 28 linhas. Card de ocorrências CUSTOMIZADO FrotiX (cabeçalho comentado confirma).
+ *                   Cor azul petróleo #325d88 inline (tema FrotiX) substitui cor original.
+ *                   #containerOcorrencias vazio - preenchido via JavaScript (AJAX add/remove).
+ *                   Badge bg-light text-dark ms-2 (contador branco com texto escuro).
+ *                   #msgSemOcorrencias mostra placeholder quando contador = 0 (escondido via JS quando > 0).
+ *                   Botão "Adicionar Ocorrência" btn-light (branco sobre fundo azul petróleo).
+ *                   Usado no fluxo de finalização: motorista reporta problemas (pneu furado, avarias,
+ *                   falta de combustível, etc.) antes de devolver veículo. p-2 no card-body (padding reduzido).
+ **************************************************************************************** *@
 @* =====================================================
    _SecaoOcorrenciasFinalizacao.cshtml
    Seção de ocorrências para o modal de finalização

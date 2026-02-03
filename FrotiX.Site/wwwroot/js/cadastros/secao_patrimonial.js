@@ -1,3 +1,25 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: secao_patrimonial.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciamento de Seções Patrimoniais com DataTable, exclusão delegada,
+ *                   verificação de pathname para garantir execução apenas na página correta.
+ * 📥 ENTRADAS     : window.location.pathname (verificação de rota),
+ *                   clique em .btn-delete (data-id), resposta Alerta.Confirmar (willDelete)
+ * 📤 SAÍDAS       : DELETE via AJAX para /api/Secao/Delete,
+ *                   AppToast (Verde/Vermelho), dataTable.ajax.reload,
+ *                   console.log (debug), Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : Verificação de pathname (/secaopatrimonial/index ou /secaopatrimonial),
+ *                   $(document).ready (loadGrid), event handler .btn-delete,
+ *                   Pages/SecaoPatrimonial/Index.cshtml
+ * 🔄 CHAMA        : window.location.pathname.toLowerCase(), loadGrid(),
+ *                   Alerta.Confirmar, $.ajax, AppToast.show, dataTable.ajax.reload,
+ *                   console.log, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables, Alerta.js, AppToast (toast notifications)
+ * 📝 OBSERVAÇÕES  : Verifica path ANTES de executar (evita conflitos em outras páginas).
+ *                   Try-catch aninhado em todos os níveis (ready, click, .then,
+ *                   success, error). 448 linhas total.
+ **************************************************************************************** */
+
 var path = window.location.pathname.toLowerCase();
 console.log(path);
 

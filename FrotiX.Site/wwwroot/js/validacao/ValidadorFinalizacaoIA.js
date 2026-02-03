@@ -1,3 +1,26 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ValidadorFinalizacaoIA.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Validador inteligente para finalização de viagens com IA evolutiva
+ *                   baseada no histórico do veículo. Calibra alertas usando estatísticas
+ *                   (média, desvio padrão, Z-Scores) para detectar anomalias em KM e duração.
+ * 📥 ENTRADAS     : Dados de finalização (dataInicial/Final, horaInicial/Final, kmInicial/Final,
+ *                   veiculoId), GET /api/Viagem/EstatisticasVeiculo (cache 5min)
+ * 📤 SAÍDAS       : Validações bloqueantes (data futura, KM impossível), alertas inteligentes
+ *                   (severidade: leve/moderado/severo baseada em Z-Score), SweetAlert modals,
+ *                   funções globais (validarFinalizacaoComIA, validarFinalizacaoConsolidadaIA)
+ * 🔗 CHAMADA POR  : Formulários de finalização de viagem, validarFinalizacaoComIA(),
+ *                   validarFinalizacaoConsolidadaIA(), Pages/Viagens/*.cshtml
+ * 🔄 CHAMA        : fetch /api/Viagem/EstatisticasVeiculo, Alerta.Erro, Alerta.Confirmar,
+ *                   Alerta.ValidacaoIAConfirmar, window.ValidadorFinalizacaoIA (singleton)
+ * 📦 DEPENDÊNCIAS : Alerta.js (SweetAlert wrapper), fetch API, Date/Math nativo
+ * 📝 OBSERVAÇÕES  : IA evolutiva com Z-Scores (1.5 leve, 2.5 moderado, 3.5 severo).
+ *                   Cache de estatísticas 5min por veículo. Fail-safe em caso de erro
+ *                   (deixa prosseguir). Flags _kmConfirmado/_duracaoConfirmada evitam
+ *                   alertas repetidos. ValidadorFinalizacaoIA é classe singleton global.
+ *                   788 linhas de lógica complexa de validação inteligente.
+ **************************************************************************************** */
+
 // ====================================================================
 // ValidadorFinalizacaoIA.js
 // Validador Inteligente para Finalização de Viagem

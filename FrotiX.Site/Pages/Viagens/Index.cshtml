@@ -1,25 +1,50 @@
 @page
 
-@* ╔══════════════════════════════════════════════════════════════════════════╗
-   ║                                                                          ║
-   ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
-   ║                                                                          ║
-   ║  Este arquivo está completamente documentado em:                         ║
-   ║  📄 Documentacao/Pages/Viagens - Index.md                                 ║
-   ║                                                                          ║
-   ║  A documentação inclui:                                                   ║
-   ║  • Visão geral completa da funcionalidade                                ║
-   ║  • Explicação detalhada do sistema de filtros                            ║
-   ║  • Documentação completa do DataTable                                    ║
-   ║  • Modal de finalização explicado em detalhes                            ║
-   ║  • Sistema de lazy loading de fotos                                      ║
-   ║  • Gestão de ocorrências documentada                                     ║
-   ║  • Documentação completa de todos os endpoints API                       ║
-   ║  • Validações e troubleshooting                                         ║
-   ║                                                                          ║
-   ║  Última atualização: 08/01/2026                                          ║
-   ║                                                                          ║
-   ╚══════════════════════════════════════════════════════════════════════════╝ *@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Viagens/Index.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página COMPLEXA de listagem e gestão de viagens com DataTable avançado,
+ *                   sistema de lazy loading de fotos de motoristas (cache + fila + concorrência),
+ *                   filtros múltiplos (período, veículo, motorista, setor, status), modais de
+ *                   finalização, ocorrências, anexos, e overlay de loading customizado FrotiX.
+ * 📥 ENTRADAS     : @Model FrotiX.Models.ViewViagens, ViewData com 7+ listas (dataCombustivel,
+ *                   lstMotorista, lstVeiculos, lstSetor, lstStatus, lstEventos), filtros via
+ *                   Syncfusion DropDowns e DatePicker, modal #modalFinalizarViagem, modal
+ *                   #modalOcorrencias, modal #modalAnexos, botões CRUD delegados
+ * 📤 SAÍDAS       : DataTable #tblViagem com 15+ colunas (Data, Hora Inicial, Motorista com FOTO,
+ *                   Veículo, Origem, Destino, KM, Setor, Status, Ações), fotos lazy loaded via
+ *                   IntersectionObserver (cachea por 5min), overlay #loadingOverlayViagens,
+ *                   modais Bootstrap 5, POST /api/Viagem/* endpoints (Finalizar, Ocorrencias,
+ *                   Anexos), exportações Excel/PDF, Stimulsoft Reports para relatórios avançados
+ * 🔗 CHAMADA POR  : Route /Viagens, navegação sidebar (Cadastros > Viagens), @functions OnGet()
+ *                   inicializa ViewData com listas via IUnitOfWork, OnPost() processa ações do formulário
+ * 🔄 CHAMA        : FrotiX.Pages.Viagens.IndexModel.Initialize (backend C#), ListaNivelCombustivel,
+ *                   ListaMotorista, ListaVeiculos, ListaSetores, ListaStatus, ListaEvento (helpers),
+ *                   ViagemIndex.js (3604 LINHAS - arquivo GIGANTE com lazy loading, cache, modais),
+ *                   /api/Viagem/* endpoints (GetList, FotoMotorista, EstatisticasVeiculo, Finalizar,
+ *                   Ocorrencias, Anexos), Stimulsoft MVC Viewer, ValidadorFinalizacaoIA.js (788 linhas
+ *                   - validação inteligente com Z-Scores), viagemindex.css (estilos externos)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, jQuery, DataTables (Excel/PDF export), Bootstrap 5,
+ *                   Syncfusion EJ2 (DropDown, DatePicker, Grid, tooltips), ViagemIndex.js (arquivo
+ *                   JavaScript externo complexo), ValidadorFinalizacaoIA.js (IA validação),
+ *                   Alerta.js, AppToast.js, Stimulsoft Reports, IUnitOfWork (EF Core), FrotiX helpers,
+ *                   IntersectionObserver API (nativa), fetch API (nativa), Map (cache ES6)
+ * 📝 OBSERVAÇÕES  : 1306 LINHAS - página MUITO COMPLEXA, sistema crítico do FrotiX. LAZY LOADING:
+ *                   fotos de motoristas carregadas apenas quando visíveis (IntersectionObserver
+ *                   threshold: 0.1), cache em memória (FtxFotoCache Map), fila com limite de 4
+ *                   requisições simultâneas (FTX_MAX_CONCURRENT), promises em voo (FtxFotoInflight).
+ *                   OVERLAY LOADING: módulo FtxViagens IIFE com mostrarLoading(mensagem)/esconderLoading(),
+ *                   mensagens dinâmicas, esconde spinners globais (FTXSpinner, FtxSpin) antes de exibir.
+ *                   FILTROS: Período (data inicial/final), Veículo, Motorista, Setor, Status - todos
+ *                   via Syncfusion DropDowns com placeholder, aplicam dataTable.ajax.reload() ao mudar.
+ *                   MODAIS: Finalização (validação IA com Z-Scores), Ocorrências (descrição + fotos),
+ *                   Anexos (upload múltiplo). DataTable com 15+ colunas, configuração avançada
+ *                   (columnDefs, lengthMenu, buttons). @section HeadBlock externo (viagemindex.css),
+ *                   @section ScriptBlock inline (500+ linhas) + ViagemIndex.js referenciado.
+ *                   Stimulsoft Reports integrado para relatórios avançados (parâmetros dinâmicos).
+ *                   Sistema de performance otimizado: cache 5min, lazy loading, fila de requisições.
+ *                   ViewData inicializado via @functions OnGet() com injeção IUnitOfWork.
+ * **************************************************************************************** *@
 
 @using FrotiX.Repository.IRepository
 @using Syncfusion.EJ2
@@ -1283,6 +1308,17 @@
 	<link href="https://kendo.cdn.telerik.com/2022.1.412/styles/kendo.common.min.css" rel="stylesheet" />
 	<link href="https://kendo.cdn.telerik.com/2022.1.412/styles/kendo.default.min.css" rel="stylesheet" />
 	<script src="https://kendo.cdn.telerik.com/2022.1.412/js/kendo.all.min.js"></script>
+	<script src="https://kendo.cdn.telerik.com/2022.1.412/js/cultures/kendo.culture.pt-BR.min.js"></script>
+	<script src="https://kendo.cdn.telerik.com/2022.1.412/js/messages/kendo.messages.pt-BR.min.js"></script>
+	<script>
+		try {
+			if (window.kendo && kendo.culture) {
+				kendo.culture("pt-BR");
+			}
+		} catch (error) {
+			console.warn("Kendo pt-BR: falha ao aplicar cultura.", error);
+		}
+	</script>
 
 	<!-- PDF.js -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>

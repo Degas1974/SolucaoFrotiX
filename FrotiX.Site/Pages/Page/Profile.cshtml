@@ -1,4 +1,72 @@
 @page
+
+@* ========================================================================================
+ * ARQUIVO: Pages/Page/Profile.cshtml
+ * OBJETIVO: Pagina DEMO de perfil de usuario do template SmartAdmin exibindo informacoes
+ *           estaticas (hardcoded HTML) com foto de perfil, nome, cargo, biografia, tabs
+ *           (Timeline/About/Photos/Videos/Settings), posts de timeline com likes/comments,
+ *           usado como referencia de layout para futuras telas de perfil reais no FrotiX.
+ * ENTRADAS: Model ProfileModel (code-behind vazio sem dados dinamicos), perfil de usuario
+ *           estatico hardcoded (nome John Doe, cargo Senior Developer, bio Lorem ipsum,
+ *           foto profile.jpg), 10 posts de timeline estaticos (texto, foto, data, likes,
+ *           comments), tabs About/Photos/Videos com conteudo demonstrativo, Settings tab
+ *           com formulario de edicao (nome, email, telefone, bio, senha)
+ * SAIDAS: Perfil renderizado com cover photo topo (banner 1200x300px), foto de perfil circular
+ *         150x150px sobreposta ao cover, nome H2 em negrito, cargo paragrafo cinza, tabs
+ *         Bootstrap 5 (Timeline/About/Photos/Videos/Settings), timeline com 10 posts (avatar,
+ *         nome, data, texto, foto opcional, botoes Like/Comment/Share, contador de likes/comments),
+ *         tab About com informacoes pessoais (telefone, email, endereco, website, social media),
+ *         tab Photos com grid de 12 fotos demonstrativas, tab Videos com grid de 4 videos
+ *         demonstrativos, tab Settings com formulario de edicao (campos editaveis, botao Save Changes)
+ * CHAMADA POR: Route /Page/Profile via diretiva page, link demonstrativo no menu de paginas
+ *              demo do template SmartAdmin, navegacao direta URL, ProfileModel.OnGet metodo
+ *              backend vazio (nao carrega dados reais, perfil e estatico hardcoded no HTML)
+ * CHAMA: profile.js (arquivo JavaScript externo hipotetico com handlers de Like/Comment/Share,
+ *        upload de foto, edicao de perfil, caso exista - se nao existe toda logica esta inline
+ *        no section Scripts ou nao existe handler algum), nenhum endpoint API (perfil e estatico
+ *        demonstrativo, nao ha CRUD real de posts/likes/comments), POST /Page/Profile/UpdateProfile
+ *        (handler vazio ou nao implementado para salvar edicoes do formulario Settings)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1 (se usado para handlers), Bootstrap 5.3.8
+ *               (tabs, cards, badges, grid row/col, botoes), Font Awesome 6 Duotone (icones
+ *               fa-thumbs-up like, fa-comment comment, fa-share share, fa-camera foto), CSS
+ *               customizado section HeadBlock (cover photo, foto de perfil sobreposta, tabs
+ *               horizontais, posts de timeline com avatar e conteudo, grid de fotos/videos)
+ * OBSERVACOES: 646 linhas de pagina DEMO template SmartAdmin NAO integrada ao sistema FrotiX
+ *              real. Utilizada como referencia visual de layout para implementar tela de perfil
+ *              de usuario real futuramente (perfil de motoristas, operadores, gestores com
+ *              informacoes, historico de viagens, abastecimentos, manutencoes). Perfil demonstrativo:
+ *              cover photo banner azul gradient, foto de perfil circular 150x150px avatar John Doe,
+ *              nome H2 John Doe, cargo Senior Developer at SmartAdmin, bio Lorem ipsum dolor sit
+ *              amet consectetur adipiscing elit. Timeline tab: 10 posts estaticos (Post 1: Just
+ *              finished a great project! - 2 hours ago - 15 likes 3 comments, Post 2: Check out
+ *              this amazing view! com foto paisagem - 1 day ago - 24 likes 7 comments), cada post
+ *              tem avatar circular 50x50px, nome autor em negrito, data relativa, texto conteudo,
+ *              foto opcional width 100% arredondada, botoes Like/Comment/Share cinzas com hover azul,
+ *              contador de likes/comments badge pill. About tab: informacoes pessoais (Phone: +1 234
+ *              567 8900, Email: john.doe exemplo com, Address: 123 Main St City State, Website:
+ *              johndoe exemplo com, LinkedIn/Twitter/Facebook links), exibidas como lista descritiva
+ *              dl/dt/dd. Photos tab: grid de 12 fotos demonstrativas (col-md-3 = 4 colunas) com
+ *              thumbnails clicaveis (abre modal lightbox com foto ampliada). Videos tab: grid de
+ *              4 videos demonstrativos (col-md-6 = 2 colunas) com thumbnails e play button overlay
+ *              (abre modal com video embed YouTube/Vimeo). Settings tab: formulario de edicao com
+ *              campos input text (First Name, Last Name, Email, Phone, Website), textarea (Bio),
+ *              input password (Current Password, New Password, Confirm New Password), checkbox
+ *              (Email Notifications, SMS Alerts), botao Save Changes primary azul (submit form
+ *              POST /Page/Profile/UpdateProfile handler vazio). Considerar ADAPTAR este layout para
+ *              perfil de usuario real do FrotiX: (1) Perfil de motoristas/operadores (foto, CPF,
+ *              CNH, validade, historico de viagens/abastecimentos/manutencoes em timeline), (2) Perfil
+ *              de gestores (foto, cargo, historico de aprovacoes/decisoes em timeline), (3) Perfil
+ *              de veiculos (foto do veiculo, placa, modelo, historico de viagens/abastecimentos/manutencoes
+ *              em timeline). Se implementar perfil real: criar entidade UsuarioPerfil no banco de dados,
+ *              controller/page model carrega dados reais via IUnitOfWork, implementar upload de foto
+ *              de perfil (crop circular, salva em wwwroot/uploads/profiles/), implementar edicao de
+ *              perfil (formulario Settings submete POST com validacao backend), implementar timeline
+ *              dinamica (carrega posts do banco de dados ordenados por data DESC, paginacao infinita
+ *              scroll), implementar sistema de likes/comments (tabelas PostLike, PostComment no banco,
+ *              endpoints API REST POST /api/Profile/Like POST /api/Profile/Comment).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model ProfileModel
 @{ 
 	ViewData["Title"] = "Profile";

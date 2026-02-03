@@ -1,4 +1,29 @@
 @page
+
+@* ========================================================================================
+ * ARQUIVO: Pages/Page/Projects.cshtml
+ * OBJETIVO: Pagina DEMO de listagem de projetos do template SmartAdmin exibindo projetos
+ *           estaticos (hardcoded HTML) em DataTable jQuery com filtros de status (All/Active/Completed/On Hold),
+ *           progresso visual com progress bars, usado como referencia de layout.
+ * ENTRADAS: Model ProjectsModel (code-behind vazio sem dados dinamicos), 15 projetos estaticos
+ *           hardcoded, botoes de filtro por status (All/Active/Completed/On Hold filtra via
+ *           JavaScript), DataTable hash tblProjects vazio populado via JavaScript inline
+ * SAIDAS: DataTable hash tblProjects renderizado com 7 colunas (Project Name, Client, Start Date,
+ *         Due Date, Progress com progress bar colorida, Status badge Verde Active/Azul Completed/Laranja On Hold,
+ *         Actions com botoes View/Edit/Delete), exportacoes Excel/PDF, filtros de status funcionais
+ *         via JavaScript (exibe/oculta rows baseado em data-status), paginacao DataTables
+ * CHAMADA POR: Route /Page/Projects via diretiva page, link demonstrativo no menu de paginas
+ *              demo do template SmartAdmin, ProjectsModel.OnGet metodo backend vazio
+ * CHAMA: projects.js (arquivo JavaScript externo hipotetico com handlers de filtro, caso exista),
+ *        nenhum endpoint API (projetos sao estaticos demonstrativos, nao ha CRUD real)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1, DataTables 1.13.x (buttons extension
+ *               Excel/PDF export), Bootstrap 5.3.8 (progress bars, badges, cards), Font Awesome 6
+ *               Duotone (icones fa-eye, fa-edit, fa-trash)
+ * OBSERVACOES: 567 linhas de pagina DEMO template SmartAdmin NAO integrada ao FrotiX real.
+ *              Considerar REMOVER se gestao de projetos nao for necessaria no FrotiX.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model ProjectsModel
 @{ 
 	ViewData["Title"] = "Projects";

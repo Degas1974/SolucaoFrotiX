@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Multa/UpsertOrgaoAutuante.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário simples criar/editar órgão autuante (Sigla, Nome)
+ * 📥 ENTRADAS     : @page, @model UpsertOrgaoAutuanteModel, campos: Sigla, Nome
+ * 📤 SAÍDAS       : POST (handler=Submit), redirect para ListaOrgaosAutuantes (assumido)
+ * 🔗 CHAMADA POR  : ListaOrgaosAutuantes (botão "Adicionar Órgão", editar linha)
+ * 🔄 CHAMA        : (assumido via form post) /Multa/UpsertOrgaoAutuante handlers, ./ListaOrgaosAutuantes
+ * 📦 DEPENDÊNCIAS : Bootstrap 5.3.8 (CDN redundante), Font Awesome Duotone, CSS ftx-card-styled.css
+ * 📝 OBSERVAÇÕES  : Total: 186 linhas. Bootstrap CDN redundante, CSS inline moderado (117 linhas) - pode extrair mas formulário é simples, JavaScript inline: ZERO - excelente (formulário usa post puro), SIMPLICIDADE: Apenas 2 campos (Sigla, Nome) - correto para a entidade, Validação: não há JavaScript, validações devem estar no ModelState server-side - verificar, Botão submit: usa classes btn-submit-spin (spinner) - padrão FrotiX correto, Layout: ftx-card-styled, ftx-form-content, ftx-form-section - componentes consistentes - ótimo, data-ejtip nos campos (tooltips) - boa prática UX
+ **************************************************************************************** *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 

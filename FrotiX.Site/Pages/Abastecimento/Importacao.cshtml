@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Abastecimento/Importacao.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Importar abastecimentos via dual upload (XLSX+CSV) com validação, sugestões de correção IA e SignalR para progresso
+ * 📥 ENTRADAS     : @page, @model ImportarModel, arquivoXlsx (Data/Hora), arquivoCsv (Dados: Placa, KM, Litros...)
+ * 📤 SAÍDAS       : Dual dropzone, progress bar animada, resumo da planilha (card), listas de erros com sugestões corrigíveis inline, botões aplicar correção
+ * 🔗 CHAMADA POR  : Menu "Abastecimentos > Importação"
+ * 🔄 CHAMA        : /api/Abastecimento/ImportarDual (POST multipart), /api/Abastecimento/AplicarCorrecao (POST), /hubs/importacao (SignalR)
+ * 📦 DEPENDÊNCIAS : SignalR (LongPolling forced), FormData para upload, jQuery, Bootstrap 5, toastr
+ * 📝 OBSERVAÇÕES  : Total: ~1800 linhas. ISSUES: SignalR forçado em LongPolling (performance), sem validação de tamanho máximo de arquivo client-side, animações de progresso sem cancelamento possível, botões de correção sem indicação de loading (flickering)
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Abastecimentos.ImportarModel
 

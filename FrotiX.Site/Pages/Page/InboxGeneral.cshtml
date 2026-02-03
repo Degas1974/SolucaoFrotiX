@@ -1,4 +1,31 @@
 @page
+
+@* ========================================================================================
+ * ARQUIVO: Pages/Page/InboxGeneral.cshtml
+ * OBJETIVO: Pagina DEMO de inbox de emails do template SmartAdmin exibindo lista de emails
+ *           estaticos (hardcoded HTML) com sidebar de pastas (Inbox/Sent/Drafts/Trash),
+ *           acoes de Select All/Delete/Mark as Read, usado como referencia de layout.
+ * ENTRADAS: Model InboxGeneralModel (code-behind vazio sem dados dinamicos), 20 emails estaticos
+ *           hardcoded, checkbox para selecionar multiplos emails, botoes Delete/Mark as Read,
+ *           sidebar com contadores de emails por pasta (Inbox 12, Sent 45, Drafts 3, Trash 8)
+ * SAIDAS: Lista de 20 emails renderizada como rows com checkbox, avatar remetente 40x40px,
+ *         nome do remetente, assunto clicavel redireciona /Page/InboxRead, preview do conteudo
+ *         truncado, data relativa (2 hours ago), badge Unread em emails nao lidos, sidebar
+ *         de pastas com contadores estaticos, botoes de acao Select All/Delete/Mark as Read
+ *         funcionais via JavaScript (manipulam DOM sem backend real)
+ * CHAMADA POR: Route /Page/InboxGeneral via diretiva page, link demonstrativo no menu de
+ *              paginas demo do template SmartAdmin, InboxGeneralModel.OnGet metodo backend vazio
+ * CHAMA: inbox_general.js (arquivo JavaScript externo hipotetico com handlers de selecao,
+ *        delete, mark as read, caso exista), link /Page/InboxRead?emailId=X (abre email
+ *        especifico X), nenhum endpoint API (emails sao estaticos demonstrativos)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1, Bootstrap 5.3.8 (list-group,
+ *               badges, cards, grid row/col), Font Awesome 6 Duotone (icones fa-inbox,
+ *               fa-paper-plane sent, fa-file-alt drafts, fa-trash), CSS customizado
+ * OBSERVACOES: 443 linhas de pagina DEMO template SmartAdmin NAO integrada ao FrotiX real.
+ *              Considerar REMOVER se sistema de mensagens internas nao for necessario.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model InboxGeneralModel
 @{ 
 	ViewData["Title"] = "Inbox";

@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Multa/UpsertEmpenhosMulta.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário criar/editar empenho de órgão autuante (nota empenho, vigência, saldo, status) + edição inline aportes/anulações + visualização multas
+ * 📥 ENTRADAS     : @page, @model UpsertEmpenhosMultaModel, campos: OrgaoAutuanteId, NotaEmpenho, AnoVigencia, SaldoInicial, Status (checkbox), formulários modais: txtDataAporte, txtDescricaoAporte, txtValorAporte (modal aporte), txtDataanulacao, txtDescricaoanulacao, txtValoranulacao (modal anulação)
+ * 📤 SAÍDAS       : POST (handler=Submit), modais aportes/anulações/multas, POST /api/Multa/EditarAporte, /api/Multa/EditarAnulacao, AppToast feedback, reload page em edição
+ * 🔗 CHAMADA POR  : ListaEmpenhosMulta (botão "Adicionar Empenho", editar linha), menu navegação
+ * 🔄 CHAMA        : /api/Multa/SaldoMultas, /api/multa/listaaporte, /api/multa/listaanulacao, /api/Multa/EditarAporte, /api/Multa/EditarAnulacao, /api/multa/multaempenhopagas, ~/js/formplugins/select2/select2.bundle.js, ~/js/cadastros/aporte_001.js, ~/js/cadastros/anulacao_001.js, ./UpsertPenalidade
+ * 📦 DEPENDÊNCIAS : Bootstrap 5.3.8 (CDN redundante), DataTables, Font Awesome Duotone, Select2, aporte_001.js, anulacao_001.js, moeda() function inline
+ * 📝 OBSERVAÇÕES  : Total: 664 linhas. PROBLEMA: Bootstrap CDN redundante, CSS inline extenso (358 linhas) - extrair, JavaScript inline grande (306 linhas) - mover para JS externo, DUPLICAÇÃO: função moeda() inline novamente (repetida em múltiplos arquivos), DESIGN: Se novo empenho, marca Status=ativo por padrão (linha 652) - bom UX, Em modo edição: carrega 2 DataTables (#tblAporte, #tblanulacao) com footer callbacks calculando totais - excelente, Handlers "btn-editar-aporte/anulacao": leem dados da TR e preenchem modal - correto, BUG POTENCIAL: Formatação moeda BR sem verificar cultura do servidor - pode dar erro em servidores US locale, Modal multas: DataTable #tblMultas carrega multas pagas com este empenho - útil
+ **************************************************************************************** *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 

@@ -1,4 +1,25 @@
-//Escolheu um �rg�o
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: autuacao.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar preenchimento dinâmico de lista de empenhos (Syncfusion DropDown)
+ *                   baseado na seleção de órgão autuante. Carrega empenhos via AJAX e
+ *                   atualiza componente lstEmpenhos (ej2_instances).
+ * 📥 ENTRADAS     : lstOrgaoChange() - Seleção de órgão (lstOrgao.value),
+ *                   GET /Multa/UpsertPenalidade?handler=AJAXPreencheListaEmpenhos&id,
+ *                   res.data (array de {empenhoMultaId, notaEmpenho})
+ * 📤 SAÍDAS       : Syncfusion DropDown lstEmpenhos atualizado (dataSource, dataBind),
+ *                   campo hidden #txtEmpenhoMultaId limpo, console.log (debug),
+ *                   Alerta.TratamentoErroComLinha em caso de erro
+ * 🔗 CHAMADA POR  : Event handler lstOrgaoChange (Syncfusion change event), formulário de autuação
+ * 🔄 CHAMA        : $.ajax, document.getElementById, ej2_instances[0] (Syncfusion API),
+ *                   dataSource, dataBind, Alerta.TratamentoErroComLinha, console.log
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, Syncfusion EJ2 (DropDown), Alerta.js
+ * 📝 OBSERVAÇÕES  : Limpa lstEmpenhos antes de carregar novos dados. Constrói array
+ *                   EmpenhoList dinamicamente. Usa ej2_instances[0] para acessar
+ *                   instância Syncfusion. Try-catch em success handler (301 linhas total).
+ **************************************************************************************** */
+
+//Escolheu um órgão
 //=================
 function lstOrgaoChange() {
     try

@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Encarregado/Upsert.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário completo criar/editar encarregado com dados pessoais, profissionais, foto, validações
+ * 📥 ENTRADAS     : @page, @model UpsertModel, EncarregadoObj (entity + ContratoList + NomeUsuarioAlteracao), campos (Nome, CPF, DataNascimento, Celular, Ponto, DataIngresso, ContratoId, Status, FotoUpload file), route parameter id (Guid) para edição
+ * 📤 SAÍDAS       : HTML form POST asp-page-handler="Edit|Submit", validações ASP.NET Core, preview foto via JavaScript, máscaras CPF, AJAX GET /api/Encarregado/PegaFoto pré-preenche foto em edição, redirect /Encarregado
+ * 🔗 CHAMADA POR  : /Encarregado (botão "Adicionar Encarregado"), DataTable (botão "Editar")
+ * 🔄 CHAMA        : asp-page-handler="Submit" (POST create), asp-page-handler="Edit" (POST update), /api/Encarregado/PegaFoto (GET foto base64 em edição), /Encarregado (link Voltar), JavaScript inline mascara() (CPF), txtFile.change (preview), document.ready AJAX foto, Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : Google Fonts Outfit (700/800/900), ASP.NET TagHelpers, Bootstrap 5, jQuery, ~/Images/barbudo.jpg (placeholder), Font Awesome Duotone, CSS inline ~300 linhas, Alerta.TratamentoErroComLinha (global), data-ftx-loading
+ * 📝 OBSERVAÇÕES  : Total: 790 linhas. isEdicao detecta Create/Update via EncarregadoId != Empty. CSS inline massivo ~300 linhas (header azul shimmer, cards, badges, form controls altura 38px, responsividade). Foto preview funcional client-side (FileReader). AJAX carrega foto em edição. Máscara CPF JavaScript inline funcional (regex). Checkbox Status marcado automaticamente em criação. Validação client/server via asp-validation-for. Botões Submit com spinner (classe btn-submit-spin). Cards seções (Dados Pessoais, Profissionais, Foto, Configurações). InfoUsuário exibido em edição. Form usa enctype multipart. Possível mover CSS para arquivo externo. JavaScript inline ~60 linhas. Responsivo com media queries.
+ **************************************************************************************** *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 

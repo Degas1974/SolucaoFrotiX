@@ -1,3 +1,44 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Shared/Components/Navigation/Default.cshtml
+ * OBJETIVO: View Component de menu de navegacao padrao (sidebar) do template SmartAdmin exibindo
+ *           menu estatico hierarquico (hardcoded HTML) com itens de menu, subitens, icones Font
+ *           Awesome, badges de notificacoes, usado como referencia de layout. NAO e o menu real
+ *           do FrotiX (menu real e TreeView.cshtml com recursos dinamicos do banco).
+ * ENTRADAS: Model SmartNavigation (classe do template SmartAdmin com estrutura de menu estatica),
+ *           ViewData PageName (identifica pagina ativa para highlight do item de menu correspondente),
+ *           funcao recursiva RenderMenuItem para renderizar itens de menu aninhados em hierarquia
+ * SAIDAS: Menu sidebar renderizado como lista UL LI aninhada com itens de menu (texto, icone,
+ *         badge contador opcional, seta expand/collapse para subitens), item ativo highlighted
+ *         com classe .active baseado em PageName, subitens colapsados por padrao expandem ao
+ *         clicar no item pai, icones Font Awesome Duotone coloridos, badges de notificacoes
+ *         (exemplo: 3 new messages, 12 alerts) estaticos demonstrativos
+ * CHAMADA POR: Layout master _Layout.cshtml via Component.InvokeAsync("Navigation") ou tag helper
+ *              vc:navigation (se configurado ViewComponent), carregado automaticamente em todas
+ *              as paginas que usam layout padrao do template SmartAdmin
+ * CHAMA: Funcao recursiva RenderMenuItem definida na section functions do proprio arquivo (percorre
+ *        arvore de menu recursivamente renderizando cada item e seus filhos aninhados), nenhum
+ *        JavaScript externo (logica de expand/collapse esta no template SmartAdmin base),
+ *        nenhum endpoint API (menu e estatico hardcoded sem dados dinamicos do banco)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0 View Components, SmartNavigation model do template
+ *               SmartAdmin, CSS padrao do template para sidebar menu (cores, hover effects,
+ *               expand/collapse animation), Font Awesome 6 Duotone (icones de menu coloridos)
+ * OBSERVACOES: 226 linhas de View Component DEMO template SmartAdmin NAO usado no FrotiX real.
+ *              Menu real do FrotiX esta em TreeView.cshtml que carrega recursos dinamicamente
+ *              do banco de dados via RecursoTreeDTO. Considerar REMOVER este arquivo Default.cshtml
+ *              se nao for necessario manter referencia do template original. Menu demonstrativo
+ *              possui estrutura hierarquica estatica: Dashboard (item raiz), Application Views
+ *              (item pai com subitens: Inbox, Email, Calendar, Contacts), UI Components (item pai
+ *              com subitens: Buttons, Cards, Modals, Tables), cada item possui: icone Font Awesome,
+ *              texto label, badge contador opcional (New, 3, 12), seta expand/collapse se tiver
+ *              subitens. Funcao RenderMenuItem recursiva: recebe MenuItem object com propriedades
+ *              Title, Icon, Url, Badge, Children List, renderiza LI com link A href se Url existe,
+ *              se Children existe renderiza UL aninhado chamando RenderMenuItem recursivamente para
+ *              cada filho. Highlight item ativo: compara ViewData PageName com propriedade PageName
+ *              do MenuItem, se match adiciona classe .active ao LI destacando visualmente item
+ *              correspondente a pagina atual (background azul, texto branco, icone destacado).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model SmartNavigation
 @{
     var pageName = ViewData["PageName"]?.ToString().ToLower();

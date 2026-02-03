@@ -1,3 +1,114 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Veiculo/DashboardVeiculos.cshtml
+ * OBJETIVO: Dashboard COMPLEXO gerencial de veiculos exibindo 20+ charts Syncfusion (pie/bar/line/gauge)
+ *           com KPIs frota em 3 tabs categorias (Frota Geral/Custos/Manutencoes), filtros
+ *           periodo DatePicker range + ComboBox veiculos/tipos/centros custo, sistema
+ *           CRITICO visualizacao metricas frota tempo real.
+ * ENTRADAS: route /Veiculo/DashboardVeiculos, ViewData (Title, PageName, Heading), filtros
+ *           toolbar: DatePicker DataInicio/DataFim range periodo (default mes atual),
+ *           ComboBox Veiculos multi-select (filtra charts por veiculos especificos ou
+ *           todos), ComboBox TipoVeiculo (Carro/Caminhonete/Onibus/Moto), ComboBox CentroCusto
+ *           (filtra por departamento), botao Atualizar Dashboard trigger reload AJAX
+ *           GET /api/Dashboard/GetVeiculosData retorna JSON metricas calculadas backend
+ * SAIDAS: Pagina renderizada com 3 Tabs Bootstrap: 1. Tab Frota Geral (grid 3x3 cards
+ *         KPIs: Total Veiculos badge, Veiculos Ativos Verde, Inativos Cinza, Em Manutencao
+ *         Amarelo, Disponiveis Azul, Idade Media Anos decimal, Km Media por Veiculo,
+ *         Viagens Mes contador, Km Rodados Mes totalizado), 6 charts Syncfusion: Pie
+ *         Veiculos por Tipo (Carro 45pc, Caminhonete 30pc, Onibus 15pc, Moto 10pc),
+ *         Pie Veiculos por Status (Ativo/Inativo/Manutencao), Bar horizontal Top 10
+ *         Veiculos Mais Rodados Mes (Placa + Km barras ordenadas desc), Line Evolucao
+ *         Km Rodados Ultimos 12 Meses (linha temporal x=mes y=km), Gauge Disponibilidade
+ *         Frota percentual (100pc=todos disponiveis), Bar Veiculos por Centro Custo
+ *         (agrupa departamentos)), 2. Tab Custos (grid 2x4 cards KPIs: Custo Total Mes
+ *         moeda R$, Custo Medio por Veiculo, Custo Km Rodado R$/km, Combustivel Mes
+ *         totalizado litros + R$, Manutencao Mes R$, Multas Mes R$, Seguro Mes R$,
+ *         Depreciacao Mes R$), 8 charts: Pie Distribuicao Custos por Categoria (Combustivel
+ *         60pc, Manutencao 25pc, Multas 10pc, Seguro 5pc), Bar Custos Mensais Ultimos
+ *         12 Meses (barras empilhadas categorias cores), Line Custo por Km Evolucao
+ *         (linha R$/km temporal), Bar Top 10 Veiculos Mais Caros Mes (Placa + Custo
+ *         barras), Pie Custos por Centro Custo (departamentos), Bar Combustivel por
+ *         Tipo Veiculo (Gasolina/Diesel/GNV litros), Line Evolucao Abastecimentos Mes
+ *         (quantidade abastecimentos temporal), Gauge Meta Custo Mes percentual (100pc=dentro
+ *         orcamento)), 3. Tab Manutencoes (grid 2x3 cards KPIs: Manutencoes Mes contador,
+ *         Preventivas contador, Corretivas contador, Custo Medio Manutencao R$, Tempo
+ *         Medio Parada dias decimal, Veiculos com Manutencao Vencida badge vermelho),
+ *         6 charts: Pie Manutencoes por Tipo (Preventiva 70pc, Corretiva 30pc), Bar
+ *         Manutencoes por Mes Ultimos 12 (barras agrupadas Preventiva/Corretiva), Bar
+ *         Top 10 Veiculos Mais Manutencoes (Placa + contador barras), Line Evolucao
+ *         Custo Manutencoes Mes (linha R$ temporal), Bar Manutencoes por Centro Custo,
+ *         Gauge Disponibilidade Pos-Manutencao percentual), todos charts interativos
+ *         Syncfusion com tooltips hover exibindo valores detalhados, legends posicao
+ *         bottom, paleta cores customizada FrotiX azul/verde/amarelo/vermelho/cinza,
+ *         export toolbar permite salvar charts como PNG/PDF, loading spinner overlay
+ *         durante AJAX reload dados
+ * CHAMADA POR: Menu Dashboard > Veiculos (link interno sidebar default), usuarios com
+ *              permissao Dashboard.Veiculos (role Admin ou Coordenador Frota), pagina
+ *              inicial apos login redirecionada aqui se usuario perfil Gestor Frota
+ * CHAMA: API DashboardController GET /api/Dashboard/GetVeiculosData (recebe query params
+ *        DataInicio/DataFim/VeiculosIds/TipoVeiculoId/CentroCustoId, query EF Core complexa
+ *        multiplas tabelas: Veiculos Join Abastecimentos Join Manutencoes Join Viagens
+ *        Join Multas Where periodo filters, calcula metricas agregadas: COUNT Veiculos
+ *        group by Status/Tipo/CentroCusto, SUM Km Rodados Viagens, SUM Custo Abastecimentos+Manutencoes+Multas,
+ *        AVG Idade Veiculos DATEDIFF year AnoFabricacao hoje, AVG Km por Veiculo, COUNT
+ *        Manutencoes group by Tipo Preventiva/Corretiva, calcula Disponibilidade (Veiculos
+ *        Ativos - Em Manutencao) / Veiculos Ativos * 100pc, mapeia DTO JSON {kpis:{totalVeiculos,
+ *        ativos, inativos, ...}, chartFrotaPorTipo:[{tipo, count, percentage}], chartKmRodados:[{mes,
+ *        km}], chartCustos:[{categoria, valor, percentage}], ...}, retorna JSON), Syncfusion
+ *        Charts components (Pie/Bar/Line/Gauge configure dataSource/xName/yName/palettes/tooltips/legends),
+ *        Bootstrap 5 Tabs component (3 tabs navigation pills), jQuery AJAX (reload dados
+ *        ao clicar Atualizar Dashboard ou change filtros), Moment.js (formatacao datas
+ *        labels charts), numeral.js (formatacao valores moeda R$ 1.234,56 e numeros
+ *        grandes 1.5M)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 Charts 2023.4.2 (Pie,
+ *               Bar, Line, Gauge), Syncfusion EJ2 DatePicker/ComboBox, Bootstrap 5.3.8
+ *               Tabs, Font Awesome 6 Duotone, jQuery 3.7.1, Moment.js 2.29.4, numeral.js,
+ *               EF Core 8.0 queries agregadas complexas
+ * OBSERVACOES: 1169 linhas dashboard COMPLEXO CRITICO metricas frota tempo real. Query
+ *              backend /api/Dashboard/GetVeiculosData e PESADA: Join 5 tabelas (Veiculos
+ *              + Abastecimentos + Manutencoes + Viagens + Multas) filtra periodo calcula
+ *              agregacoes multiplas (COUNT/SUM/AVG group by), pode levar 5-10s executar
+ *              se base dados grande (10k+ veiculos, 100k+ abastecimentos, 50k+ viagens),
+ *              otimizacoes ESSENCIAIS: indexes em DataAbastecimento/DataManutencao/DataViagem
+ *              colunas WHERE filter, indexes em VeiculoId FK Join, considerar cache
+ *              server-side Cache.Set expiracao 5min (metricas dashboard nao precisam
+ *              ser tempo real absoluto refresh 5min aceitavel, evita query pesada toda
+ *              request), considerar pre-calculo noturno Job agendado calcula metricas
+ *              diarias salva tabela DashboardMetricas (Data, TotalVeiculos, KmRodados,
+ *              CustoTotal, ...) query dashboard le tabela pre-calculada rapido. Charts
+ *              Syncfusion: 20+ charts renderizados simultaneamente pode ser lento navegador
+ *              baixo desempenho, considerar lazy loading (renderiza apenas Tab ativa,
+ *              ao clicar Tab Custos renderiza charts desta tab sob demanda, evita renderizar
+ *              20 charts de uma vez). Filtros: DatePicker range permite drill-down temporal
+ *              (seleciona apenas Janeiro 2026 exibe metricas mes especifico, seleciona
+ *              Q1 2026 exibe trimestre), ComboBox Veiculos multi-select permite comparar
+ *              veiculos especificos (seleciona 3 veiculos charts exibem apenas dados
+ *              destes 3 permite comparacao visual), ComboBox TipoVeiculo/CentroCusto
+ *              filtra por categoria (seleciona Caminhonetes exibe metricas apenas Caminhonetes
+ *              identifica custos por tipo veiculo). KPIs cards topo: valores grandes
+ *              (Total Veiculos 1234, Km Rodados Mes 987.654) exibidos com formatacao
+ *              abreviada (1.2K veiculos, 988K km) usando numeral.js format '0.0a', hover
+ *              tooltip exibe valor exato completo. Export charts: toolbar permite exportar
+ *              cada chart individualmente como PNG/PDF para incluir em relatorios gerenciais
+ *              externos PowerPoint/Word. Gauge Disponibilidade Frota: calcula (Veiculos
+ *              Ativos - Em Manutencao) / Veiculos Ativos * 100pc, exibe ponteiro rotativo
+ *              0-100pc com ranges coloridos (0-50pc Vermelho critico, 50-80pc Amarelo
+ *              atencao, 80-100pc Verde otimo), meta 90pc disponibilidade (indicador
+ *              vermelho se abaixo meta alerta gestor). Custos por Categoria: Pie chart
+ *              principal mostra Combustivel normalmente maior fatia 60pc custo total
+ *              frota (se Manutencao > 40pc indica problemas frota antiga necessitando
+ *              substituicao, se Multas > 15pc indica motoristas imprudentes necessitando
+ *              treinamento). Top 10 Veiculos Mais Rodados: identifica veiculos utilizacao
+ *              intensa (se 1 veiculo 10k km/mes enquanto outros 2k km indica distribuicao
+ *              desbalanceada uso frota, considerar redistribuir viagens balancear desgaste).
+ *              Evolucao temporal charts Line: mostra tendencias mes a mes (Km Rodados
+ *              crescendo indica aumento demanda viagens, Custos crescendo mais rapido
+ *              que Km indica ineficiencia precisa investigar). Tab Manutencoes: ratio
+ *              Preventiva/Corretiva ideal 70/30 (se Corretiva > 40pc indica falta manutencao
+ *              preventiva adequada veiculos quebrando mais frequente aumenta custos
+ *              downtime), Veiculos com Manutencao Vencida badge vermelho CRITICO alerta
+ *              gestor agendar manutencoes urgentes evitar quebras estrada.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
 @page
 @model FrotiX.Pages.Veiculo.DashboardVeiculosModel
 @{

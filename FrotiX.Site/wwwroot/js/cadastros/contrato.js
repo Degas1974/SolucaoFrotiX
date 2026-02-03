@@ -1,22 +1,29 @@
-/*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║                                                                          ║
- * ║  📚 DOCUMENTAÇÃO DISPONÍVEL                                              ║
- * ║                                                                          ║
- * ║  Este arquivo está completamente documentado em:                         ║
- * ║  📄 Documentacao/Pages/Contrato - Index.md                                ║
- * ║                                                                          ║
- * ║  A documentação inclui:                                                   ║
- * ║  • Explicação detalhada de todas as funções principais                   ║
- * ║  • Sistema de validação de dependências                                  ║
- * ║  • Gestão de status com bloqueio de ações                                ║
- * ║  • Handlers de eventos                                                   ║
- * ║  • Interconexões com outros módulos                                      ║
- * ║                                                                          ║
- * ║  Última atualização: 08/01/2026                                          ║
- * ║                                                                          ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
- */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: contrato.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : CRUD de contratos com validação inteligente de dependências antes da
+ *                   exclusão e gestão dinâmica de status (Ativo/Inativo) com bloqueio de
+ *                   ações (botões Documentos/Itens/Repactuação) quando contrato inativo.
+ * 📥 ENTRADAS     : DataTable #tblContrato com botões (.btn-delete, .updateStatusContrato),
+ *                   GET /api/Contrato/VerificarDependencias?id (veículos, encarregados,
+ *                   operadores, lavadores, motoristas, empenhos, notas fiscais vinculadas)
+ * 📤 SAÍDAS       : Alerta.Warning detalhando dependências encontradas (bloqueia exclusão),
+ *                   Alerta.Confirmar para exclusão segura, POST /api/Contrato/Delete,
+ *                   atualização dinâmica de status com bloqueio/desbloqueio de botões
+ * 🔗 CHAMADA POR  : Pages/Contrato/Index.cshtml, loadList() na inicialização
+ * 🔄 CHAMA        : loadList() (inicialização DataTable), $.get() status, $.ajax() DELETE,
+ *                   Alerta.Warning/Confirmar/TratamentoErroComLinha, AppToast.show,
+ *                   window.ejTooltip.refresh() (atualização tooltips Syncfusion)
+ * 📦 DEPENDÊNCIAS : jQuery, DataTables, Alerta.js (SweetAlert wrapper), AppToast.js,
+ *                   Syncfusion EJ2 tooltips (ejTooltip)
+ * 📝 OBSERVAÇÕES  : Sistema avançado de verificação de dependências (7 entidades verificadas:
+ *                   veiculosContrato, encarregados, operadores, lavadores, motoristas,
+ *                   empenhos, notasFiscais). Fallback se API falhar (confirmação sem validação).
+ *                   Bloqueio dinâmico de botões quando inativo: adiciona classe .disabled,
+ *                   remove hrefs, atualiza tooltips para "Bloqueado por Contrato Inativo".
+ *                   Try-catch aninhado em todos os níveis (ready, click, ajax, success, error).
+ *                   462 linhas de lógica de validação e gestão de status complexa.
+ **************************************************************************************** */
 
 var dataTable;
 

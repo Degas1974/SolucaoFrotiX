@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Abastecimento/Pendencias.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar pendências de importação de abastecimentos com filtros, edição e correção automática
+ * 📥 ENTRADAS     : @page, @model PendenciasModel, filtros por tipo de pendência (veículo, motorista, km, corrigível)
+ * 📤 SAÍDAS       : Cards de estatísticas clicáveis (filtros), DataTable com pendências, modal de edição com Syncfusion ComboBox, modal de sugestão de correção, badges de tipo de pendência
+ * 🔗 CHAMADA POR  : Menu "Cadastros > Abastecimentos Pendentes", link da página Importacao após importação parcial/erro
+ * 🔄 CHAMA        : /api/Abastecimento/ListarPendencias (GET), /api/Abastecimento/ObterPendencia (GET), /api/Abastecimento/SalvarPendencia (POST), /api/Abastecimento/ResolverPendencia (POST), /api/Abastecimento/AplicarSugestao (POST), /api/Abastecimento/ExcluirPendencia (POST), /api/Abastecimento/ExcluirTodasPendencias (POST)
+ * 📦 DEPENDÊNCIAS : DataTables, Syncfusion EJ2 (ComboBox), jQuery, Bootstrap 5, toastr
+ * 📝 OBSERVAÇÕES  : Total: ~1100 linhas. ISSUES: Filtro customizado no DataTable sem cleanup ao trocar de aba (memory leak), botão "Excluir Todas" sem segundo nível de confirmação (UX), loading overlay padrão FrotiX não reusável (@functions com Initialize estático - anti-pattern Razor), stats cards sem animação de transição ao atualizar valores
+ **************************************************************************************** *@
 @page
 
 @using FrotiX.Repository.IRepository

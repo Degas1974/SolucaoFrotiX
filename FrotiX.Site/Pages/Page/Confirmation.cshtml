@@ -1,3 +1,42 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Page/Confirmation.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de confirmação pós-registro solicitando verificação de email com
+ *                   mensagem "Thank you registering! Please check your email" (template SmartAdmin).
+ * 📥 ENTRADAS     : @page route /Page/Confirmation, @model ConfirmationModel (code-behind),
+ *                   Settings.App/AppName, Settings.Theme.Email (email do usuário registrado),
+ *                   ViewBag.CopyrightInverse (footer text)
+ * 📤 SAÍDAS       : Página full-height com header brand-gradient (logo + "Already a member?" + Secure Login),
+ *                   hero h2 "Thank you registering" + email Settings.Theme.Email, card alert
+ *                   "Heads Up! server maintenance" + link "Didn't get an email?", footer copyright,
+ *                   background pattern-1.svg repeat, FA Brands CSS
+ * 🔗 CHAMADA POR  : Redirect após registro bem-sucedido (Pages/Page/Register.cshtml OnPost → RedirectToPage("./Confirmation")),
+ *                   ConfirmationModel.OnGet() (code-behind)
+ * 🔄 CHAMA        : ConfirmationModel (code-behind), Settings (SmartSettings - App, AppName, Theme.Email),
+ *                   /page/login (link "Secure Login" header), ~/img/logo.png, ~/img/svg/pattern-1.svg
+ *                   (background), ViewBag.CopyrightInverse (@Html.Raw), ~/css/fa-brands.css (override duotone?),
+ *                   CSS classes (auth, bg-brand-gradient, bg-transparent, height-10 height-9, shadow-lg,
+ *                   flex-1, fs-xxl fw-500 fw-300, rounded-plus, alert-primary, text-dark)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, ConfirmationModel (code-behind), SmartSettings injection (@Settings),
+ *                   Bootstrap 5 (container, row, col-xl-12 col-xl-6, card p-4, alert alert-primary),
+ *                   Font Awesome Brands (fa-brands.css - social icons?), CSS classes custom (auth,
+ *                   bg-brand-gradient, page-logo width-mobile-auto press-scale-down, rounded-plus,
+ *                   bg-faded, position-absolute pos-bottom pos-left pos-right)
+ * 📝 OBSERVAÇÕES  : 59 linhas. Página TEMPLATE SmartAdmin - não customizada FrotiX. ViewData config:
+ *                   - Title: "Login" (ERRADO! deve ser "Confirmation" ou "Email Verification")
+ *                   - PageName: "page_login" (ERRADO! deve ser "page_confirmation")
+ *                   Layout auth (page-wrapper auth, page-inner bg-brand-gradient, page-content-wrapper bg-transparent).
+ *                   Header height-10 com logo + text "Already a member?" + link /page/login "Secure Login".
+ *                   Hero h2 fs-xxl "Thank you registering! Please check your email" + small h3
+ *                   "We've sent a message to <strong>@Settings.Theme.Email</strong>...". Card com alert
+ *                   primary "Heads Up! server maintenance 9:30GTA to 12GTA" (texto genérico template).
+ *                   Link h4 fa-chevron-right "Didn't get an email?" (sem ação - javascript:void(0);).
+ *                   Background pattern-1.svg no-repeat center bottom fixed background-size: cover.
+ *                   Footer position-absolute pos-bottom com ViewBag.CopyrightInverse (Html.Raw).
+ *                   @section HeadBlock carrega fa-brands.css (override? já incluído no _Layout?).
+ *                   @section ScriptsBlock vazio. Para produção: corrigir Title/PageName, customizar
+ *                   texto maintenance para FrotiX, adicionar link real "resend email".
+ **************************************************************************************** *@
 @page
 @model ConfirmationModel
 @{ 

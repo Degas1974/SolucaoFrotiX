@@ -1,4 +1,33 @@
 @page
+
+@* ========================================================================================
+ * ARQUIVO: Pages/Page/ForumThreads.cshtml
+ * OBJETIVO: Pagina DEMO de listagem de threads (topicos) de uma categoria especifica de forum
+ *           do template SmartAdmin exibindo topicos estaticos (hardcoded HTML) com autor,
+ *           data, visualizacoes, respostas, ultimo post, usado como referencia de layout.
+ * ENTRADAS: Model ForumThreadsModel (code-behind vazio sem dados dinamicos), parametro query
+ *           string categoryId (identifica categoria mas nao e usado para filtrar dados reais),
+ *           15 topicos estaticos hardcoded, botoes de ordenacao (Most Recent/Most Viewed/Most Answered),
+ *           botao New Thread (handler vazio demonstrativo)
+ * SAIDAS: Lista de 15 topicos renderizada como rows de tabela ou cards, cada topico exibe:
+ *         avatar circular autor 40x40px, titulo H5 clicavel redireciona /Page/ForumDiscussion,
+ *         nome do autor, data relativa (2 hours ago, 1 day ago), badges com contadores (X views,
+ *         Y replies), ultimo post (titulo, autor, data), botoes de ordenacao funcionais via
+ *         JavaScript (reordena DOM sem recarregar pagina), paginacao visual (1 2 3 Next)
+ * CHAMADA POR: Route /Page/ForumThreads via diretiva page, links de categorias da pagina
+ *              /Page/ForumList (passa categoryId via query string), ForumThreadsModel.OnGet vazio
+ * CHAMA: forum_threads.js (arquivo JavaScript externo hipotetico com handlers de ordenacao,
+ *        filtro, paginacao, caso exista), links para /Page/ForumDiscussion?topicId=X (abre
+ *        topico especifico X), nenhum endpoint API (topicos sao estaticos demonstrativos)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1, Bootstrap 5.3.8 (table-striped,
+ *               badges, cards, grid row/col), Font Awesome 6 Duotone (icones fa-user avatar
+ *               placeholder, fa-eye views, fa-comment replies), CSS customizado section HeadBlock
+ * OBSERVACOES: 399 linhas de pagina DEMO template SmartAdmin NAO integrada ao FrotiX real.
+ *              Considerar REMOVER se forum nao for necessario. Topicos demonstrativos hardcoded:
+ *              How to setup Webpack?, Best practices for Razor Pages, Database optimization tips.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model ForumThreadsModel
 @{ 
 	ViewData["Title"] = "Item";

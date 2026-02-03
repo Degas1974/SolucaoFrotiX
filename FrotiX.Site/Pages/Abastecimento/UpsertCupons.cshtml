@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Abastecimento/UpsertCupons.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Criar/editar registros de cupons de abastecimento com upload de PDF
+ * 📥 ENTRADAS     : @page, @model UpsertCuponsModel, id do registro (query string para edição)
+ * 📤 SAÍDAS       : Form com upload Kendo, preview PDF, Syncfusion RichTextEditor para observações
+ * 🔗 CHAMADA POR  : Menu "Cadastros > Cupons", botão "Novo" da lista RegistraCupons
+ * 🔄 CHAMA        : /api/Abastecimento/SavePDF (POST), /api/Abastecimento/RemovePDF (DELETE)
+ * 📦 DEPENDÊNCIAS : Kendo Upload, Syncfusion EJ2 (RichTextEditor), tiraacento_001.js, jQuery
+ * 📝 OBSERVAÇÕES  : Total: 398 linhas. ISSUES: Validação de campos obrigatórios apenas client-side, sem tratamento de erro no SavePDF, RTE sem configuração de tamanho máximo
+ **************************************************************************************** *@
 @page
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using Syncfusion.EJ2
@@ -212,6 +223,17 @@
 	<script src="https://cdn.kendostatic.com/2022.1.412/js/jszip.min.js"></script>
 	<script src="https://cdn.kendostatic.com/2022.1.412/js/kendo.all.min.js"></script>
 	<script src="https://cdn.kendostatic.com/2022.1.412/js/kendo.aspnetmvc.min.js"></script>
+	<script src="https://cdn.kendostatic.com/2022.1.412/js/cultures/kendo.culture.pt-BR.min.js"></script>
+	<script src="https://cdn.kendostatic.com/2022.1.412/js/messages/kendo.messages.pt-BR.min.js"></script>
+	<script>
+		try {
+			if (window.kendo && kendo.culture) {
+				kendo.culture("pt-BR");
+			}
+		} catch (error) {
+			console.warn("Kendo pt-BR: falha ao aplicar cultura.", error);
+		}
+	</script>
 
 	<!-- PDF.js -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.2/pdf.js"></script>

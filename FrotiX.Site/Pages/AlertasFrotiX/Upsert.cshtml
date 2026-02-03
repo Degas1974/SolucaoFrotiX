@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/AlertasFrotiX/Upsert.cshtml (900 linhas + JavaScript inline complexo)
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário completo de criação e edição de alertas com sistema avançado de recorrência V2
+ * 📥 ENTRADAS     : @page "/AlertasFrotiX/Upsert?id={AlertaId}" (opcional), @model UpsertModel, Model properties (Alerta, TiposList, FrequenciaList, UsuariosList, isEdicao), Form inputs (Syncfusion EJ2 TextBox, DropDownList, MultiSelect, DatePicker, TimePicker), Calendar modal (seleção múltipla datas)
+ * 📤 SAÍDAS       : HTML Form <form method="post" asp-page-handler="Submit/Edit">, POST tradicional, JavaScript preview mensagem, redirecionamento /AlertasFrotiX/AlertasFrotiX
+ * 🔗 CHAMADA POR  : Botão "Adicionar Alerta" em AlertasFrotiX.cshtml, Links de edição nas DataTables, Menu navegação (Cadastros → Alertas)
+ * 🔄 CHAMA        : ~/js/cadastros/alertas_upsert.js, ~/js/cadastros/alertas_recorrencia.js, ~/css/alertaupsert.css, PageHandlers (OnPostSubmit, OnPostEdit)
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 ASP.NET Core (commercial license): ejs-textbox, ejs-dropdownlist, ejs-multiselect, ejs-datepicker, ejs-timepicker, jQuery, Bootstrap 5.3.8 (modal calendário), Google Fonts Outfit, Custom CSS alertaupsert.css, Custom JS Alerta.TratamentoErroComLinha()
+ * 📝 OBSERVAÇÕES  : Total: 900 linhas. BUGS: TimePicker race condition (múltiplos event handlers created/open/rendered), Recorrência V2 sem validação cruzada (Semanal sem dias, Mensal sem datas), Calendar modal sem limite datas (seleção retroativa infinita), MultiSelect usuários sem lazy loading (performance +1000 usuários), Form validation client-side fraca, CSS inline ~100 linhas conflita com alertaupsert.css, JavaScript inline ~100 linhas (lógica calendário deveria estar em alertas_upsert.js), Sem debounce no preview mensagem, DatePicker ranges não respeitam fuso horário
+ **************************************************************************************** *@
 @page
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, Syncfusion.EJ2

@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/MovimentacaoPatrimonio/Upsert.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário criar/editar movimentação de patrimônio (origem readonly, destino editável)
+ * 📥 ENTRADAS     : @page, @model UpsertModel, campos: cmbPatrimonio, dataMov, StatusCheckbox, SetorOrigem (readonly), cmbSetorDestino, cmbSecoesDestino
+ * 📤 SAÍDAS       : POST /api/Patrimonio/CreateMovimentacao ou UpdateMovimentacao, redirect para Index, AppToast feedback
+ * 🔗 CHAMADA POR  : Index.cshtml (botão "Inserir Movimentação", edição via API), menu navegação
+ * 🔄 CHAMA        : /api/Patrimonio/GetMovimentacao (edição), /api/Patrimonio/CreateMovimentacao, /api/Patrimonio/UpdateMovimentacao, ~/js/cadastros/movimentacaopatrimonio.js
+ * 📦 DEPENDÊNCIAS : Syncfusion.EJ2 (ComboBox, DatePicker, Checkbox), Bootstrap 5.3.8 (CDN redundante), Font Awesome Duotone
+ * 📝 OBSERVAÇÕES  : Total: 532 linhas. PROBLEMA: Bootstrap CDN redundante (já no layout), CSS inline grande (142 linhas) - pode ser extraído, JavaScript inline extenso (300+ linhas) - deveria estar no movimentacaopatrimonio.js, DUPLICAÇÃO: Funções carregarDadosMovimentacao e salvarMovimentacao inline quando deveriam estar no JS externo, BUG POTENCIAL: Validação "seção destino == seção origem" não considera setor (linha 456), Hidden fields: MovimentacaoPatrimonioId, SetorOrigemId, SecaoOrigemId, PatrimonioId - correto
+ **************************************************************************************** *@
 @page
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, Syncfusion.EJ2

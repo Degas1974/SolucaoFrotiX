@@ -1,3 +1,68 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Page/Register.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de registro/cadastro self-service SmartAdmin template ("Register now, its free!"),
+ *                   form fname/lname/email/password/terms checkbox, NÃO customizado FrotiX, NÃO funcional.
+ * 📥 ENTRADAS     : @page route /Page/Register, @model RegisterModel (code-behind), form inputs (fname, lname,
+ *                   emailverify required, userpassword required 8-20 chars, terms checkbox required, newsletter
+ *                   checkbox optional), submit #js-login-btn
+ * 📤 SAÍDAS       : Página full-height auth layout com header brand-gradient (logo + link "Already a member?
+ *                   Secure Login" /page/login), hero h2 "Register now, its free!" text-white, alert-primary
+ *                   "Heads Up! server maintenance" (hardcoded demo), form card bg-faded (fname/lname row col-6,
+ *                   emailverify, userpassword, custom-checkbox terms required + newsletter optional), btn-vinho
+ *                   btn-block btn-lg "Send verification", footer copyright, background pattern-1.svg, jQuery validation
+ * 🔗 CHAMADA POR  : Link "Register" em login pages, route /Page/Register, RegisterModel.OnGet() (code-behind),
+ *                   menu "Create Account" header auth pages
+ * 🔄 CHAMA        : RegisterModel (code-behind Page/Register.cshtml.cs), Settings (App, AppName, IconPrefix),
+ *                   /page/login (link "Secure Login" header), ~/img/logo.png, ~/img/svg/pattern-1.svg background,
+ *                   ~/css/fa-brands.css (@section HeadBlock - override duotone?), ViewBag.CopyrightInverse (Html.Raw),
+ *                   jQuery #js-login validation, form.checkValidity(), form action condicional **SYNTAX ERROR**
+ *                   {{#if app-flavor-subscript}} Handlebars em Razor linha 46!, Font Awesome Duotone (implícito),
+ *                   Bootstrap 5 (form-control, custom-control-input/label, invalid-feedback, help-block, btn btn-vinho)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, RegisterModel (code-behind), SmartSettings injection (@Settings),
+ *                   Bootstrap 5 (auth layout, form validation, custom-control checkbox), Font Awesome Brands
+ *                   (fa-brands.css), jQuery (validation #js-login-btn click), HTML5 form validation (checkValidity(),
+ *                   was-validated, required attributes), CSS classes custom (auth, bg-brand-gradient, page-logo
+ *                   width-mobile-auto, rounded-plus, fs-xxl fw-500, hidden-sm-down, opacity-50/60, btn-vinho btn-block
+ *                   btn-lg, position-absolute pos-bottom/left/right)
+ * 📝 OBSERVAÇÕES  : 111 linhas. Página REGISTER template SmartAdmin - NÃO customizado FrotiX (manteve original demo).
+ *                   ViewData config:
+ *                   - Title: "Login" (E RRADO! deve ser "Register" ou "Create Account")
+ *                   - PageName: "page_login" (ERRADO! deve ser "page_register")
+ *                   @section HeadBlock: fa-brands.css (Font Awesome Brands - override duotone? social media icons?).
+ *                   Layout auth (page-wrapper auth, page-inner bg-brand-gradient, bg-transparent). Header height-10
+ *                   shadow-lg bg-brand-gradient: logo + link "Already a member? Secure Login" (/page/login). Hero
+ *                   flex-1 pattern-1.svg background: h2 fs-xxl fw-500 mt-4 text-white "Register now, its free!" +
+ *                   small h3 fw-300 opacity-60 "Your registration is free for a limited time... ready to go wherever
+ *                   you go!". Alert-primary text-dark "Heads Up! Due to server maintenance from 9:30GTA to 12GTA,
+ *                   the verification emails could be delayed by up to 10 minutes." (HARDCODED demo text - remover).
+ *                   Form #js-login col-xl-6 centered, card p-4 rounded-plus bg-faded:
+ *                   - **SYNTAX ERROR linha 46**: form {{#if app-flavor-subscript}} action="intel_introduction.html"
+ *                     } else { } action="intel_analytics_dashboard.html" (Handlebars syntax em Razor - NÃO funciona!)
+ *                   - Row col-6 pr-1/pl-1: input #fname placeholder "First Name" required + input #lname "Last Name"
+ *                     required, invalid-feedback "No, you missed this one."
+ *                   - Input #emailverify email required, placeholder "Email for verification", invalid-feedback,
+ *                     help-block "Your email will also be your username"
+ *                   - Input #userpassword password required, placeholder "minimm 8 characters" (TYPO: "minimm"),
+ *                     invalid-feedback "Sorry, you missed this one.", help-block "Your password must be 8-20 characters
+ *                     long, contain letters and numbers, and must not contain spaces, special characters, or emoji."
+ *                   - Custom-control custom-checkbox: input #terms required, label "I agree to terms & conditions",
+ *                     invalid-feedback "You must agree before proceeding" + input #newsletter optional, label
+ *                     "Sign up for newsletters (dont worry, we won't send so many)" (TYPO: "dont")
+ *                   - Button #js-login-btn btn-block btn-vinho btn-lg mt-3 col-md-4 ml-auto text-right "Send verification"
+ *                   Footer position-absolute pos-bottom pos-left pos-right p-3 text-center Html.Raw(ViewBag.CopyrightInverse).
+ *                   @section ScriptsBlock: jQuery validation #js-login-btn click same as Forget.cshtml (prevent default
+ *                   se checkValidity false, adiciona was-validated, comentário "Perform ajax submit here...").
+ *                   Para produção FrotiX:
+ *                   1. Corrigir Handlebars syntax (usar asp-action ou JavaScript condicional)
+ *                   2. Implementar OnPost real com Identity UserManager.CreateAsync
+ *                   3. Enviar email verificação real (SmtpClient/SendGrid)
+ *                   4. Remover alert "server maintenance" demo
+ *                   5. Corrigir TYPOs ("minimm" → "minimum", "dont" → "don't")
+ *                   6. Adicionar reCAPTCHA (prevenir spam bots)
+ *                   7. Corrigir Title/PageName ViewData
+ *                   8. Customizar texto para contexto FrotiX ("Câmara dos Deputados" etc)
+ **************************************************************************************** *@
 @page
 @model RegisterModel
 @{ 

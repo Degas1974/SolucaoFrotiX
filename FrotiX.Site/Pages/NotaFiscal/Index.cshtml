@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/NotaFiscal/Index.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Listagem de notas fiscais filtradas por instrumento (Contrato/Ata) e empenho, com ação glosar valores (modal)
+ * 📥 ENTRADAS     : @page, @model IndexModel, filtros: lstInstrumento (Contrato=0, Ata=1), lstStatusContrato/Ata (Ativo=1), ListaContratos, ListaAtas, ListaEmpenhosContrato/Ata, modal glosa: txtMotivoGlosaModal, txtValorGlosaModal, rdModoGlosa (somar/substituir)
+ * 📤 SAÍDAS       : DataTable #tblNotaFiscal (JSON /api/notafiscal/nfcontratos ou nfempenhos), modal #modalglosa (glosar NF), POST /api/NotaFiscal/Glosa, AppToast feedback
+ * 🔗 CHAMADA POR  : Menu Notas Fiscais, navegação, botão "Adicionar Nota Fiscal"
+ * 🔄 CHAMA        : /api/Contrato/ListaContratosPorStatus, /api/AtaRegistroPrecos/ListaAtasPorStatus, /api/NotaFiscal/EmpenhoList|EmpenhoListAta, /api/notafiscal/nfcontratos, /api/notafiscal/nfempenhos, /api/NotaFiscal/GetGlosa, /api/NotaFiscal/Glosa, ~/js/cadastros/notafiscal.js, ./Upsert
+ * 📦 DEPENDÊNCIAS : Bootstrap 5.3.8 (modal), DataTables, Font Awesome Duotone, CSS ftx-card-styled.css, moeda() function inline
+ * 📝 OBSERVAÇÕES  : Total: 840 linhas. CSS inline grande (428 linhas) - extrair (badges status, modais, filtros), JavaScript inline extenso (412 linhas) - DEVE extrair (handlers, ajax, modal logic), DUPLICAÇÃO: função moeda() inline novamente, FEATURE AVANÇADA: Modal glosa com modo "somar" ou "substituir" glosa existente + preview valor final - excelente UX, Validação glosa: busca glosa existente via GET antes de abrir modal - correto, BUG POTENCIAL: Listener rdModoGlosa change chama atualizarPreviewGlosa() mas se glosaAtualValor=0 não mostra preview, DataTable: 9 colunas (oculta ContratoId/EmpenhoId) - correto, Filtros em cascata: Instrumento → Status → Contrato/Ata → Empenhos - lógica complexa mas funcional, CSS: Modal header com gradiente animado (ftxHeaderGradientShift) - bonito mas pode ser componentizado
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.NotaFiscal.IndexModel
 

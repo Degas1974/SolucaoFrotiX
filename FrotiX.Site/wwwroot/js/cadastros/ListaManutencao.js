@@ -1,3 +1,26 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ListaManutencao.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Sistema complexo de listagem de manutenções com overlay de loading
+ *                   padrão FrotiX, remoção de tooltips Bootstrap (conflito visual),
+ *                   DOMContentLoaded inicialização, e gestão de variáveis globais
+ *                   (URLapi, IDapi).
+ * 📥 ENTRADAS     : DOMContentLoaded event, elementos DOM (#loadingOverlayManutencao,
+ *                   [data-bs-toggle="tooltip"]), variáveis globais (URLapi, IDapi)
+ * 📤 SAÍDAS       : Overlay de loading exibido/oculto (flex/none), tooltips Bootstrap
+ *                   removidos, variáveis globais inicializadas, lista de manutenções
+ *                   carregada, Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : DOMContentLoaded, funções auxiliares (mostrarLoadingManutencao,
+ *                   esconderLoadingManutencao), Pages/Manutencao/Lista.cshtml
+ * 🔄 CHAMA        : mostrarLoadingManutencao(), esconderLoadingManutencao(),
+ *                   document.getElementById, document.querySelectorAll,
+ *                   Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : Alerta.js (sem jQuery neste bloco inicial)
+ * 📝 OBSERVAÇÕES  : Arquivo muito grande (1151 linhas). Remove tooltips Bootstrap
+ *                   para evitar conflito visual. Try-catch em funções auxiliares e
+ *                   DOMContentLoaded. Ajuste Visual FrotiX aplicado.
+ **************************************************************************************** */
+
 /* ============================================================================
    ListaManutencao.js — Ajuste Visual FrotiX
    ============================================================================ */

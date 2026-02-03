@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Administracao/LogErrosDashboard.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Dashboard analítico de erros com gráficos Chart.js, filtros multi-select e análise Claude AI
+ * 📥 ENTRADAS     : @page, @model LogErrosDashboardModel, filtros (data, tipo, origem, usuário)
+ * 📤 SAÍDAS       : Cards estatísticos clicáveis, Chart.js (timeline, pie, bars), modal tabulado com detalhes+IA, export Excel/CSV/PDF
+ * 🔗 CHAMADA POR  : Menu "Dashboards > Erros e Logs"
+ * 🔄 CHAMA        : /api/LogErros/Dashboard/* (vários endpoints), /api/LogErros/Dashboard/AnalyzeError (IA)
+ * 📦 DEPENDÊNCIAS : Chart.js, Marked.js, Highlight.js, jQuery, Claude AI, export libs (XLSX, jsPDF)
+ * 📝 OBSERVAÇÕES  : Total: 2477 linhas (LIDO PARCIAL até linha 2477). ISSUES: Arquivo EXTENSO com 1000+ linhas de JavaScript inline, filtros ativos sem persist em sessionStorage, gráficos sem debounce ao redimensionar janela, sistema de abas sem lazy loading
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Administracao.LogErrosDashboardModel
 

@@ -1,3 +1,20 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: motoristasitenscontrato_001.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : DataTable de motoristas em contrato com configuração de colunas
+ *                   (Nome, Ponto, CNH, Categoria, Celular, Unidade, etc.), loadList
+ *                   inicial via loadMotoristaList().
+ * 📥 ENTRADAS     : $(document).ready, chamada loadMotoristaList()
+ * 📤 SAÍDAS       : DataTable renderizado (#tblMotorista) com columnDefs,
+ *                   console logs, Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready, Pages/ItensContrato/Motoristas.cshtml
+ * 🔄 CHAMA        : loadMotoristaList(), $("#tblMotorista").DataTable(),
+ *                   Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables, Alerta.js
+ * 📝 OBSERVAÇÕES  : DataTable com 6+ colunas (Nome text-left, Ponto/CNH/Cat text-center,
+ *                   Celular, Unidade). Try-catch em ready e loadMotoristaList. 152 linhas total.
+ **************************************************************************************** */
+
 var dataTableMotorista;
 
 $(document).ready(function () {

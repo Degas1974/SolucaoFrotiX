@@ -1,3 +1,34 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_Compose.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view do modal fixo de composição de nova mensagem/e-mail (panel-compose)
+ *                   no canto inferior direito, expandível em fullscreen, com layout _ComposeLayout.
+ * 📥 ENTRADAS     : Botão trigger de abrir (provavelmente no _Layout ou _LeftPanel com data-action="toggle"
+ *                   data-bs-target="#panel-compose"), Settings.Theme.IconPrefix, _ComposeLayout partial
+ * 📤 SAÍDAS       : <div id="panel-compose"> position-fixed bottom-right (max-width 40rem, height 35rem),
+ *                   display: none (escondido por padrão), header "New Message" (bg-fusion-600),
+ *                   2 botões toolbar (fullscreen fa-expand-alt, close fa-times), responsive
+ *                   header mobile (d-lg-none), _ComposeLayout partial (formulário de e-mail)
+ * 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml (provavelmente antes </body>), botão compose no menu
+ *                   ou sidebar (data-action="toggle" data-class="d-flex" data-bs-target="#panel-compose")
+ * 🔄 CHAMA        : Shared/_ComposeLayout.cshtml (formulário de e-mail com To, Subject, editor wysiwyg),
+ *                   JavaScript data-action="panel-fullscreen" (fullscreen toggle), data-action="toggle"
+ *                   (show/hide panel), @Settings.Theme.IconPrefix (fa-solid, fa-duotone),
+ *                   Bootstrap tooltips (data-bs-toggle, data-offset, data-placement)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views), SmartSettings injection (@Settings),
+ *                   Bootstrap 5 (tooltips, d-none d-sm-none d-lg-flex, btn btn-icon), Shared/_ComposeLayout.cshtml
+ *                   (conteúdo do formulário), JavaScript data-action handlers (fullscreen, toggle),
+ *                   CSS classes custom (panel, pos-bottom pos-right, z-index-cloud, shadow-3,
+ *                   expand-full-height-on-mobile, expand-full-width-on-mobile, bg-fusion-600, height-4)
+ * 📝 OBSERVAÇÕES  : 28 linhas. Modal FIXED no canto inferior direito (WhatsApp/chat style). display: none
+ *                   por padrão - aberto via JavaScript toggle class "d-flex". Responsive:
+ *                   - Desktop (d-lg-flex): header compacto (height-4) com toolbar 2 botões
+ *                   - Mobile: header maior (d-flex d-lg-none) com título + botão Cancel
+ *                   max-width 40rem (640px), height 35rem (560px), expand-full em mobile.
+ *                   bg-fusion-600 (azul escuro do tema). Botão fullscreen (panel-fullscreen action).
+ *                   data-offset="0,10" nos tooltips (offset vertical). rounded-0 no panel-container
+ *                   (sem border-radius). _ComposeLayout partial contém formulário real de e-mail.
+ **************************************************************************************** *@
 <div id="panel-compose" class="panel w-100 position-fixed pos-bottom pos-right mb-0 z-index-cloud mr-lg-4 shadow-3 border-bottom-left-radius-0 border-bottom-right-radius-0 expand-full-height-on-mobile expand-full-width-on-mobile shadow" style="max-width:40rem; height:35rem; display: none;">
 	<div class="position-relative h-100 w-100 d-flex flex-column">
 		<div class="panel-hdr bg-fusion-600 height-4 d-none d-sm-none d-lg-flex">

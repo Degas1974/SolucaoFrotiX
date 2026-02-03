@@ -1,3 +1,26 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: Glosa_001.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Sistema complexo de Glosas com gestão de contratos, veículos associados,
+ *                   tabs dinâmicos, cálculos de valores glosados, DataTables múltiplos,
+ *                   listagem de empenhos/aportes/anulações, e integração com API.
+ * 📥 ENTRADAS     : Eventos #status.change, cliques em tabs, seleção de contratos/veículos,
+ *                   formulários de glosa, DataTables, modais
+ * 📤 SAÍDAS       : Listas de contratos carregadas (#ListaContratos), tabs veículos
+ *                   exibidos/ocultos, DataTables renderizados (veículos/empenhos/glosas),
+ *                   AJAX POST/GET para APIs de Glosa, AppToast notificações,
+ *                   Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready, event handlers (#status.change, tabs, cliques),
+ *                   loadListaContratos(), Pages/Glosa/Index.cshtml
+ * 🔄 CHAMA        : loadListaContratos(tipoContrato), $.ajax, $.empty, $.attr,
+ *                   AppToast.show, Alerta.Confirmar, Alerta.TratamentoErroComLinha,
+ *                   DataTable API, console.log
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables, Alerta.js, AppToast (toast notifications)
+ * 📝 OBSERVAÇÕES  : Arquivo muito grande (1015 linhas) com múltiplas funções:
+ *                   loadListaContratos, loadVeiculosContrato, renderizarGlosas,
+ *                   cálculos de totais, gestão de tabs. Try-catch em todos os handlers.
+ **************************************************************************************** */
+
 $(document).ready(function () {
     try
     {

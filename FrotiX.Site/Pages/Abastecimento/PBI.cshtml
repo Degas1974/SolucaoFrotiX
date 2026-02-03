@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Abastecimento/PBI.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Exibir iframe embarcado do Power BI com relatório "Frotix Atualizado - Relatório por Veículo"
+ * 📥 ENTRADAS     : @page, @model TaxiLegModel (nomenclatura incorreta), nenhum parâmetro adicional
+ * 📤 SAÍDAS       : Iframe do Power BI (900px altura), formulário com modal legados não utilizados
+ * 🔗 CHAMADA POR  : Menu "Gráficos > Abastecimento"
+ * 🔄 CHAMA        : https://app.powerbi.com/view?r=eyJrIjoiNmVhZjNhYTktZGYwNy00NDdkLTk5NGEtNTc2NzU1OTUzMjEwIiwidCI6IjU2MjFkNjRmLTRjZjgtNDdmNS1iMzc5LTJiMmFiNzljMWM1ZiJ9
+ * 📦 DEPENDÊNCIAS : Power BI embedded, Syncfusion EJ2 (legado não usado), toastr (legado não usado)
+ * 📝 OBSERVAÇÕES  : Total: ~600 linhas. ISSUES: Código LEGADO MASSIVO (95% não usado) - modais, forms, JavaScript de Viagens copiados incorretamente. Model incorreto (@model TaxiLegModel). CSS e scripts desnecessários. Funcional mas precisa limpeza total
+ **************************************************************************************** *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 @using Syncfusion.EJ2

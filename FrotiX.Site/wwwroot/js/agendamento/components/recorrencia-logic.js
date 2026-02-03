@@ -1890,16 +1890,7 @@ function limparCamposRecorrenciaAoMudar()
         }
 
         // Limpar txtFinalRecorrencia
-        const txtFinalRecorrenciaElement = document.getElementById("txtFinalRecorrencia");
-        if (txtFinalRecorrenciaElement && txtFinalRecorrenciaElement.ej2_instances)
-        {
-            const txtFinalRecorrencia = txtFinalRecorrenciaElement.ej2_instances[0];
-            if (txtFinalRecorrencia)
-            {
-                txtFinalRecorrencia.value = null;
-                txtFinalRecorrencia.dataBind();
-            }
-        }
+        window.setKendoDateValue("txtFinalRecorrencia", null);
 
         // Limpar calendário
         const calDatasSelecionadasElement = document.getElementById("calDatasSelecionadas");

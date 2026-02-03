@@ -512,52 +512,10 @@ function exibirNovaViagem(dataClicada, horaClicada)
                     console.log("ðŸ“… Usando data de hoje:", dataParaUsar.toLocaleDateString('pt-BR'));
                 }
 
-                // Garantir que o componente está inicializado
-                if (!txtDataInicial.ej2_instances || !txtDataInicial.ej2_instances[0])
-                {
-                    console.warn("âš ï¸ DatePicker não inicializado, tentando inicializar...");
-
-                    // Inicializar DatePicker manualmente
-                    new ej.calendars.DatePicker({
-                        value: dataParaUsar,
-                        format: 'dd/MM/yyyy',
-                        placeholder: 'Selecione a data',
-                        enabled: true,
-                        change: function (args)
-                        {
-                            try
-                            {
-                                if (typeof window.calcularDuracaoViagem === 'function')
-                                {
-                                    window.calcularDuracaoViagem();
-                                }
-                            } catch (e)
-                            {
-                                console.error("Erro no change do DatePicker:", e);
-                            }
-                        }
-                    }).appendTo(txtDataInicial);
-
-                    console.log("âœ… DatePicker criado e data definida");
-                } else
-                {
-                    // Usar instância existente
-                    const datePickerInstance = txtDataInicial.ej2_instances[0];
-                    datePickerInstance.value = dataParaUsar;
-                    datePickerInstance.enabled = true;
-
-                    // Forçar renderização
-                    if (typeof datePickerInstance.refresh === 'function')
-                    {
-                        datePickerInstance.refresh();
-                    }
-                    if (typeof datePickerInstance.dataBind === 'function')
-                    {
-                        datePickerInstance.dataBind();
-                    }
-
-                    console.log("âœ… Data definida na instância existente");
-                }
+                // Kendo DatePicker: setar valor e habilitar
+                window.setKendoDateValue("txtDataInicial", dataParaUsar, true);
+                window.enableKendoDatePicker("txtDataInicial", true);
+                console.log("✅ Data definida no Kendo DatePicker");
 
                 // Garantir que está visível
                 txtDataInicial.style.display = '';
@@ -573,11 +531,11 @@ function exibirNovaViagem(dataClicada, horaClicada)
             // ============================================
             if (horaClicada)
             {
-                $("#txtHoraInicial").val(horaClicada);
-                console.log("ðŸ• Hora inicial definida:", horaClicada);
+                window.setKendoTimeValue("txtHoraInicial", horaClicada);
+                console.log("🕐 Hora inicial definida:", horaClicada);
             } else
             {
-                $("#txtHoraInicial").val("");
+                window.setKendoTimeValue("txtHoraInicial", "");
             }
 
             // ============================================
@@ -753,31 +711,23 @@ function exibirViagemExistente(objViagem)
 
         if (objViagem.dataInicial)
         {
-            const txtDataInicial = document.getElementById("txtDataInicial");
-            if (txtDataInicial && txtDataInicial.ej2_instances && txtDataInicial.ej2_instances[0])
+            try
             {
-                try
+                const dataObj = new Date(objViagem.dataInicial);
+                if (!isNaN(dataObj.getTime()))
                 {
-                    const dataObj = new Date(objViagem.dataInicial);
-                    // Validar se a data é válida
-                    if (!isNaN(dataObj.getTime()))
-                    {
-                        txtDataInicial.ej2_instances[0].value = dataObj;
-                        txtDataInicial.ej2_instances[0].dataBind();
-                        console.log("   ✅ Data inicial preenchida:", dataObj.toLocaleDateString('pt-BR'));
-                    }
-                    else
-                    {
-                        console.warn("   ⚠️ Data inicial inválida, usando data atual");
-                        txtDataInicial.ej2_instances[0].value = new Date();
-                        txtDataInicial.ej2_instances[0].dataBind();
-                    }
-                } catch (error)
-                {
-                    console.error("   ❌ Erro ao preencher data inicial:", error);
-                    txtDataInicial.ej2_instances[0].value = new Date();
-                    txtDataInicial.ej2_instances[0].dataBind();
+                    window.setKendoDateValue("txtDataInicial", dataObj, true);
+                    console.log("   ✅ Data inicial preenchida:", dataObj.toLocaleDateString('pt-BR'));
                 }
+                else
+                {
+                    console.warn("   ⚠️ Data inicial inválida, usando data atual");
+                    window.setKendoDateValue("txtDataInicial", new Date(), true);
+                }
+            } catch (error)
+            {
+                console.error("   ❌ Erro ao preencher data inicial:", error);
+                window.setKendoDateValue("txtDataInicial", new Date(), true);
             }
         }
         else
@@ -787,31 +737,23 @@ function exibirViagemExistente(objViagem)
 
         if (objViagem.dataFinal)
         {
-            const txtDataFinal = document.getElementById("txtDataFinal");
-            if (txtDataFinal && txtDataFinal.ej2_instances && txtDataFinal.ej2_instances[0])
+            try
             {
-                try
+                const dataObj = new Date(objViagem.dataFinal);
+                if (!isNaN(dataObj.getTime()))
                 {
-                    const dataObj = new Date(objViagem.dataFinal);
-                    // Validar se a data é válida
-                    if (!isNaN(dataObj.getTime()))
-                    {
-                        txtDataFinal.ej2_instances[0].value = dataObj;
-                        txtDataFinal.ej2_instances[0].dataBind();
-                        console.log("   ✅ Data final preenchida:", dataObj.toLocaleDateString('pt-BR'));
-                    }
-                    else
-                    {
-                        console.warn("   ⚠️ Data final inválida, limpando campo");
-                        txtDataFinal.ej2_instances[0].value = null;
-                        txtDataFinal.ej2_instances[0].dataBind();
-                    }
-                } catch (error)
-                {
-                    console.error("   ❌ Erro ao preencher data final:", error);
-                    txtDataFinal.ej2_instances[0].value = null;
-                    txtDataFinal.ej2_instances[0].dataBind();
+                    window.setKendoDateValue("txtDataFinal", dataObj, true);
+                    console.log("   ✅ Data final preenchida:", dataObj.toLocaleDateString('pt-BR'));
                 }
+                else
+                {
+                    console.warn("   ⚠️ Data final inválida, limpando campo");
+                    window.setKendoDateValue("txtDataFinal", null, true);
+                }
+            } catch (error)
+            {
+                console.error("   ❌ Erro ao preencher data final:", error);
+                window.setKendoDateValue("txtDataFinal", null, true);
             }
         }
         else
@@ -899,12 +841,12 @@ function exibirViagemExistente(objViagem)
         // Aplicar a hora no campo
         if (horaParaExibir)
         {
-            $("#txtHoraInicial").val(horaParaExibir);
-            console.log("âœ… Hora inicial definida:", horaParaExibir);
+            window.setKendoTimeValue("txtHoraInicial", horaParaExibir);
+            console.log("✅ Hora inicial definida:", horaParaExibir);
         } else
         {
             console.warn("âš ï¸ Hora inicial não encontrada ou em formato inválido");
-            $("#txtHoraInicial").val("");
+            window.setKendoTimeValue("txtHoraInicial", "");
         }
 
         // 4.6 - PREENCHER HORA FINAL (mesma lógica)
@@ -956,11 +898,11 @@ function exibirViagemExistente(objViagem)
 
         if (horaFinalParaExibir)
         {
-            $("#txtHoraFinal").val(horaFinalParaExibir);
-            console.log("âœ… Hora final definida:", horaFinalParaExibir);
+            window.setKendoTimeValue("txtHoraFinal", horaFinalParaExibir);
+            console.log("✅ Hora final definida:", horaFinalParaExibir);
         } else
         {
-            $("#txtHoraFinal").val("");
+            window.setKendoTimeValue("txtHoraFinal", "");
         }
 
         // 5. Motorista
@@ -1647,33 +1589,24 @@ function configurarRecorrenciaDiaria(objViagem)
         {
             const txtFinalRecorrencia = document.getElementById("txtFinalRecorrencia");
             console.log("   DEBUG - txtFinalRecorrencia encontrado?", !!txtFinalRecorrencia);
-            console.log("   DEBUG - ej2_instances?", txtFinalRecorrencia?.ej2_instances);
+            console.log("   DEBUG - Kendo instance?", !!window.getKendoDatePicker("txtFinalRecorrencia"));
 
-            if (txtFinalRecorrencia && txtFinalRecorrencia.ej2_instances && txtFinalRecorrencia.ej2_instances[0])
+            if (txtFinalRecorrencia)
             {
-                console.log("   ✅ Componente EJ2 OK! Setando valor COM DELAY...");
+                console.log("   ✅ Kendo OK! Setando valor COM DELAY...");
                 const dataObj = new Date(objViagem.dataFinalRecorrencia);
                 console.log("   DEBUG - Data:", dataObj);
 
-                // FIX: Delay de 500ms para garantir que valor persiste
-                // Mesmo padrão usado em Requisitante e Setor
+                // Delay para garantir que o widget já foi renderizado
                 setTimeout(() => {
-                    txtFinalRecorrencia.ej2_instances[0].value = dataObj;
-                    txtFinalRecorrencia.ej2_instances[0].enabled = false;
-                    txtFinalRecorrencia.ej2_instances[0].dataBind();
-
-                    // Forçar refresh para garantir exibição visual
-                    if (typeof txtFinalRecorrencia.ej2_instances[0].refresh === 'function') {
-                        txtFinalRecorrencia.ej2_instances[0].refresh();
-                    }
-
-                    console.log("   ✅ SETADO (com delay 500ms) - value:", txtFinalRecorrencia.ej2_instances[0].value);
-                    console.log("   ✅ SETADO (com delay 500ms) - enabled:", txtFinalRecorrencia.ej2_instances[0].enabled);
+                    window.setKendoDateValue("txtFinalRecorrencia", dataObj, true);
+                    window.enableKendoDatePicker("txtFinalRecorrencia", false);
+                    console.log("   ✅ SETADO (com delay 500ms) - value:", dataObj);
                 }, 500);
             }
             else
             {
-                console.warn("   ⚠️ Componente EJ2 NÃO encontrado!");
+                console.warn("   ⚠️ Componente Kendo NÃO encontrado!");
             }
         }
         else
@@ -1764,18 +1697,11 @@ function configurarRecorrenciaSemanal(objViagem)
                     txtFinalRecorrenciaTexto.style.display = "block";
                     console.log("  - Campo de texto definido como:", dataFormatada);
 
-                    // Ocultar DatePicker Syncfusion (ocultar o WRAPPER também)
+                    // Ocultar DatePicker Kendo (ocultar o WRAPPER também)
                     if (txtFinalRecorrencia)
                     {
-                        // Ocultar o input
-                        txtFinalRecorrencia.style.display = "none";
-
-                        // Ocultar o wrapper do Syncfusion (classe .e-input-group)
-                        const wrapper = txtFinalRecorrencia.closest('.e-input-group');
-                        if (wrapper) {
-                            wrapper.style.display = "none";
-                            console.log("  - Wrapper do DatePicker também ocultado");
-                        }
+                        window.showKendoDatePicker("txtFinalRecorrencia", false);
+                        console.log("  - Wrapper do DatePicker também ocultado");
                     }
 
                     console.log(`✅ Data Final Recorrência exibida em campo de texto: ${dataFormatada}`);
@@ -1862,18 +1788,11 @@ function configurarRecorrenciaMensal(objViagem)
                     txtFinalRecorrenciaTexto.style.display = "block";
                     console.log("  - Campo de texto definido como:", dataFormatada);
 
-                    // Ocultar DatePicker Syncfusion (ocultar o WRAPPER também)
+                    // Ocultar DatePicker Kendo (ocultar o WRAPPER também)
                     if (txtFinalRecorrencia)
                     {
-                        // Ocultar o input
-                        txtFinalRecorrencia.style.display = "none";
-
-                        // Ocultar o wrapper do Syncfusion (classe .e-input-group)
-                        const wrapper = txtFinalRecorrencia.closest('.e-input-group');
-                        if (wrapper) {
-                            wrapper.style.display = "none";
-                            console.log("  - Wrapper do DatePicker também ocultado");
-                        }
+                        window.showKendoDatePicker("txtFinalRecorrencia", false);
+                        console.log("  - Wrapper do DatePicker também ocultado");
                     }
 
                     console.log(`✅ Data Final Recorrência exibida em campo de texto: ${dataFormatada}`);
@@ -2945,19 +2864,12 @@ function mostrarCamposRecorrenciaDiaria(objViagem)
         // Preencher data final de recorrência
         if (objViagem.dataFinalRecorrencia)
         {
-            const txtFinalRecorrencia = document.getElementById("txtFinalRecorrencia");
-            if (txtFinalRecorrencia && txtFinalRecorrencia.ej2_instances && txtFinalRecorrencia.ej2_instances[0])
-            {
-                // FIX: Delay de 500ms para garantir que valor persiste
-                setTimeout(() => {
-                    txtFinalRecorrencia.ej2_instances[0].value = new Date(objViagem.dataFinalRecorrencia);
-                    txtFinalRecorrencia.ej2_instances[0].enabled = false;
-                    txtFinalRecorrencia.ej2_instances[0].dataBind();
-                    if (typeof txtFinalRecorrencia.ej2_instances[0].refresh === 'function') {
-                        txtFinalRecorrencia.ej2_instances[0].refresh();
-                    }
-                }, 500);
-            }
+            // FIX: Delay de 500ms para garantir que valor persiste
+            setTimeout(() => {
+                const dataObj = new Date(objViagem.dataFinalRecorrencia);
+                window.setKendoDateValue("txtFinalRecorrencia", dataObj, true);
+                window.enableKendoDatePicker("txtFinalRecorrencia", false);
+            }, 500);
         }
     } catch (error)
     {
@@ -3013,19 +2925,12 @@ function mostrarCamposRecorrenciaSemanal(objViagem)
         // Preencher data final de recorrência
         if (objViagem.dataFinalRecorrencia)
         {
-            const txtFinalRecorrencia = document.getElementById("txtFinalRecorrencia");
-            if (txtFinalRecorrencia && txtFinalRecorrencia.ej2_instances && txtFinalRecorrencia.ej2_instances[0])
-            {
-                // FIX: Delay de 500ms para garantir que valor persiste
-                setTimeout(() => {
-                    txtFinalRecorrencia.ej2_instances[0].value = new Date(objViagem.dataFinalRecorrencia);
-                    txtFinalRecorrencia.ej2_instances[0].enabled = false;
-                    txtFinalRecorrencia.ej2_instances[0].dataBind();
-                    if (typeof txtFinalRecorrencia.ej2_instances[0].refresh === 'function') {
-                        txtFinalRecorrencia.ej2_instances[0].refresh();
-                    }
-                }, 500);
-            }
+            // FIX: Delay de 500ms para garantir que valor persiste
+            setTimeout(() => {
+                const dataObj = new Date(objViagem.dataFinalRecorrencia);
+                window.setKendoDateValue("txtFinalRecorrencia", dataObj, true);
+                window.enableKendoDatePicker("txtFinalRecorrencia", false);
+            }, 500);
         }
     } catch (error)
     {
@@ -3073,19 +2978,12 @@ function mostrarCamposRecorrenciaMensal(objViagem)
         // Preencher data final de recorrência
         if (objViagem.dataFinalRecorrencia)
         {
-            const txtFinalRecorrencia = document.getElementById("txtFinalRecorrencia");
-            if (txtFinalRecorrencia && txtFinalRecorrencia.ej2_instances && txtFinalRecorrencia.ej2_instances[0])
-            {
-                // FIX: Delay de 500ms para garantir que valor persiste
-                setTimeout(() => {
-                    txtFinalRecorrencia.ej2_instances[0].value = new Date(objViagem.dataFinalRecorrencia);
-                    txtFinalRecorrencia.ej2_instances[0].enabled = false;
-                    txtFinalRecorrencia.ej2_instances[0].dataBind();
-                    if (typeof txtFinalRecorrencia.ej2_instances[0].refresh === 'function') {
-                        txtFinalRecorrencia.ej2_instances[0].refresh();
-                    }
-                }, 500);
-            }
+            // FIX: Delay de 500ms para garantir que valor persiste
+            setTimeout(() => {
+                const dataObj = new Date(objViagem.dataFinalRecorrencia);
+                window.setKendoDateValue("txtFinalRecorrencia", dataObj, true);
+                window.enableKendoDatePicker("txtFinalRecorrencia", false);
+            }, 500);
         }
     } catch (error)
     {
@@ -3460,14 +3358,10 @@ function restaurarDadosRecorrencia(objViagem)
                             // ========================================
                             if (objViagem.dataFinalRecorrencia)
                             {
-                                const txtFinalRecorrencia = document.getElementById("txtFinalRecorrencia");
-                                if (txtFinalRecorrencia && txtFinalRecorrencia.ej2_instances && txtFinalRecorrencia.ej2_instances[0])
-                                {
-                                    txtFinalRecorrencia.ej2_instances[0].value = new Date(objViagem.dataFinalRecorrencia);
-                                    txtFinalRecorrencia.ej2_instances[0].enabled = false;
-                                    txtFinalRecorrencia.ej2_instances[0].dataBind();
-                                    console.log("âœ… [RENDER] Data final preenchida e desabilitada");
-                                }
+                                const dataObj = new Date(objViagem.dataFinalRecorrencia);
+                                window.setKendoDateValue("txtFinalRecorrencia", dataObj, true);
+                                window.enableKendoDatePicker("txtFinalRecorrencia", false);
+                                console.log("✅ [RENDER] Data final preenchida e desabilitada");
                             }
                         }, 1000); // Aguardar 1 segundo adicional (total: 2 segundos desde o início)
                     }, 1000); // Aguardar 1 segundo
@@ -3495,14 +3389,10 @@ function restaurarDadosRecorrencia(objViagem)
                     // Preencher data final
                     if (objViagem.dataFinalRecorrencia)
                     {
-                        const txtFinalRecorrencia = document.getElementById("txtFinalRecorrencia");
-                        if (txtFinalRecorrencia && txtFinalRecorrencia.ej2_instances && txtFinalRecorrencia.ej2_instances[0])
-                        {
-                            txtFinalRecorrencia.ej2_instances[0].value = new Date(objViagem.dataFinalRecorrencia);
-                            txtFinalRecorrencia.ej2_instances[0].enabled = false;
-                            txtFinalRecorrencia.ej2_instances[0].dataBind();
-                            console.log("âœ… Data final de recorrência preenchida");
-                        }
+                        const dataObj = new Date(objViagem.dataFinalRecorrencia);
+                        window.setKendoDateValue("txtFinalRecorrencia", dataObj, true);
+                        window.enableKendoDatePicker("txtFinalRecorrencia", false);
+                        console.log("✅ Data final de recorrência preenchida");
                     }
                 }
             }
@@ -3527,19 +3417,12 @@ function restaurarRecorrenciaDiaria(objViagem)
 
         if (objViagem.dataFinalRecorrencia)
         {
-            const txtFinalRecorrencia = document.getElementById("txtFinalRecorrencia");
-            if (txtFinalRecorrencia && txtFinalRecorrencia.ej2_instances && txtFinalRecorrencia.ej2_instances[0])
-            {
-                // FIX: Delay de 500ms para garantir que valor persiste
-                setTimeout(() => {
-                    txtFinalRecorrencia.ej2_instances[0].value = new Date(objViagem.dataFinalRecorrencia);
-                    txtFinalRecorrencia.ej2_instances[0].enabled = false;
-                    txtFinalRecorrencia.ej2_instances[0].dataBind();
-                    if (typeof txtFinalRecorrencia.ej2_instances[0].refresh === 'function') {
-                        txtFinalRecorrencia.ej2_instances[0].refresh();
-                    }
-                }, 500);
-            }
+            // FIX: Delay de 500ms para garantir que valor persiste
+            setTimeout(() => {
+                const dataObj = new Date(objViagem.dataFinalRecorrencia);
+                window.setKendoDateValue("txtFinalRecorrencia", dataObj, true);
+                window.enableKendoDatePicker("txtFinalRecorrencia", false);
+            }, 500);
         }
     }
     catch (error)
@@ -3620,18 +3503,11 @@ function restaurarRecorrenciaSemanal(objViagem)
                     txtFinalRecorrenciaTexto.style.display = "block";
                     console.log("  - Campo de texto definido como:", dataFormatada);
 
-                    // Ocultar DatePicker Syncfusion (ocultar o WRAPPER também)
+                    // Ocultar DatePicker Kendo (ocultar o WRAPPER também)
                     if (txtFinalRecorrencia)
                     {
-                        // Ocultar o input
-                        txtFinalRecorrencia.style.display = "none";
-
-                        // Ocultar o wrapper do Syncfusion (classe .e-input-group)
-                        const wrapper = txtFinalRecorrencia.closest('.e-input-group');
-                        if (wrapper) {
-                            wrapper.style.display = "none";
-                            console.log("  - Wrapper do DatePicker também ocultado");
-                        }
+                        window.showKendoDatePicker("txtFinalRecorrencia", false);
+                        console.log("  - Wrapper do DatePicker também ocultado");
                     }
 
                     console.log(`✅ Data Final Recorrência exibida em campo de texto: ${dataFormatada}`);
@@ -3715,18 +3591,11 @@ function restaurarRecorrenciaMensal(objViagem)
                     txtFinalRecorrenciaTexto.style.display = "block";
                     console.log("  - Campo de texto definido como:", dataFormatada);
 
-                    // Ocultar DatePicker Syncfusion (ocultar o WRAPPER também)
+                    // Ocultar DatePicker Kendo (ocultar o WRAPPER também)
                     if (txtFinalRecorrencia)
                     {
-                        // Ocultar o input
-                        txtFinalRecorrencia.style.display = "none";
-
-                        // Ocultar o wrapper do Syncfusion (classe .e-input-group)
-                        const wrapper = txtFinalRecorrencia.closest('.e-input-group');
-                        if (wrapper) {
-                            wrapper.style.display = "none";
-                            console.log("  - Wrapper do DatePicker também ocultado");
-                        }
+                        window.showKendoDatePicker("txtFinalRecorrencia", false);
+                        console.log("  - Wrapper do DatePicker também ocultado");
                     }
 
                     console.log(`✅ Data Final Recorrência exibida em campo de texto: ${dataFormatada}`);

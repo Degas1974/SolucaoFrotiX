@@ -1,3 +1,34 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/PlacaBronze/Upsert.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário de criação/edição de Placas de Bronze com JavaScript inline
+ *                   para carregar lista de veículos via AJAX (opcional) e pré-selecionar valor.
+ * 📥 ENTRADAS     : @Model FrotiX.Pages.PlacaBronze.UpsertModel, POST form submission,
+ *                   PlacaBronzeObj properties (PlacaBronzeId, DescricaoPlaca, VeiculoId - dropdown,
+ *                   Status), GET /PlacaBronze/Upsert?handler=VeiculoData (AJAX JSON response)
+ * 📤 SAÍDAS       : POST para OnPostSubmit (UpsertModel code-behind), #VeiculoLista populado
+ *                   dinamicamente via JavaScript (option elements com value/text), redirect
+ *                   para ./Index após sucesso, validação asp-validation-*, AppToast/toastr
+ * 🔗 CHAMADA POR  : Pages/PlacaBronze/Index.cshtml (botão + Adicionar Placa de Bronze),
+ *                   DataTable edit links, UpsertModel.OnGet()
+ * 🔄 CHAMA        : UpsertModel.OnPostSubmit (code-behind), UpsertModel.OnGetVeiculoData
+ *                   (PageHandler AJAX), $.ajax() GET VeiculoData, ./Index (cancelamento),
+ *                   ASP.NET validation system, toastr (notificações)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, jQuery, Bootstrap 5, Font Awesome 6 Duotone,
+ *                   toastr.js (CDN), Tag Helpers (asp-for, asp-validation-*, asp-page-handler),
+ *                   JavaScript nativo ($.ajax, for loops, string concatenation)
+ * 📝 OBSERVAÇÕES  : 151 linhas. **JAVASCRIPT INLINE IMPORTANTE** (~line 138-151): $.ajax() carrega
+ *                   veículos via GET /PlacaBronze/Upsert?handler=VeiculoData, constrói <option>
+ *                   tags dinamicamente (for loop data[i]["value"]/data[i]["text"]), insere no
+ *                   #VeiculoLista. Verifica @veiculo_id (Razor): se Guid.Empty seleciona placeholder
+ *                   "-- Selecione um Veículo (opcional) --", senão pré-seleciona veículo existente.
+ *                   Error handler fallback (mostra só placeholder se AJAX falhar). Form com 3 campos:
+ *                   DescricaoPlaca (texto), VeiculoId (dropdown dinâmico), Status (checkbox mt-4).
+ *                   Header dinâmico (Criar/Atualizar baseado PlacaBronzeId != Empty). Input hidden
+ *                   para PlacaBronzeId em edição. Layout col-8 (66%). Icon fa-rectangle-history-circle-plus
+ *                   no header. Botão azul com spinner (btn-submit-spin). CSS inline minimalista.
+ *                   Toastr CDN no @section ScriptsBlock. Veículo associado é OPCIONAL.
+ **************************************************************************************** *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 

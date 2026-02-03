@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Multa/UploadPDF.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página simples para upload de PDF (genérico - possivelmente obsoleta ou teste)
+ * 📥 ENTRADAS     : @page, @model UploadPDFModel, Syncfusion Uploader #uploaderPDF (arquivo .pdf), eventos: success, failure, removing
+ * 📤 SAÍDAS       : POST /Multa/UploadPDF?handler=Save, DELETE /Multa/UploadPDF?handler=Remove, campo #txtArquivo (nome arquivo), PDFViewer #pdfviewer (exibição)
+ * 🔗 CHAMADA POR  : Possivelmente obsoleta - não encontrado link em outros arquivos analisados
+ * 🔄 CHAMA        : /Multa/UploadPDF handlers (Save/Remove), /api/MultaPdfViewer (service), /Upload/{filename} (path PDFs)
+ * 📦 DEPENDÊNCIAS : Syncfusion.EJ2 (Uploader, PDFViewer), Bootstrap 5.3.8 (CDN redundante), Microsoft.AspNetCore.Antiforgery, Font Awesome Duotone
+ * 📝 OBSERVAÇÕES  : Total: 118 linhas. SUSPEITA: Página genérica de upload - pode ser removida se não usada (verificar rotas/menu), Bootstrap CDN redundante, CSS inline mínimo (9 linhas) - aceitável, JavaScript inline pequeno (54 linhas) mas poderia ser extraído - 3 handlers (onUploadSuccess, onUploadFailure, onFileRemoving), Antiforgery token: adiciona via DOMContentLoaded - correto, PDFViewer inicialmente oculto (display:none) - mostra após upload bem-sucedido, MELHORIAS: Falta validação de tamanho arquivo, falta feedback visual durante upload (spinner)
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Multa.UploadPDFModel
 @using Syncfusion.EJ2

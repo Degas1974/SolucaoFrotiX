@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Administracao/DocGenerator.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerar documentação automatizada de código com IA (Claude) via SignalR
+ * 📥 ENTRADAS     : @page, @model DocGeneratorModel, seleção de arquivos via TreeView Syncfusion
+ * 📤 SAÍDAS       : TreeView com checkboxes de arquivos, modal de progresso em tempo real, documentação IA gerada
+ * 🔗 CHAMADA POR  : Menu "Administração > Gerador de Documentação"
+ * 🔄 CHAMA        : /api/docgenerator/discover (GET), /api/docgenerator/generate (POST), /hubs/docgeneration (SignalR Hub)
+ * 📦 DEPENDÊNCIAS : SignalR, Syncfusion EJ2 TreeView, jQuery, Claude AI API
+ * 📝 OBSERVAÇÕES  : Total: 1023 linhas. ISSUES: Fallback polling se SignalR falhar implementado mas não testado, sem indicação visual de erro por arquivo específico, sem cache de arquivos já processados
+ **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Administracao.DocGeneratorModel
 @{

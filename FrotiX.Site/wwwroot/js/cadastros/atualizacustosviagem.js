@@ -1,3 +1,26 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: atualizacustosviagem.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Tela de ajuste de custos de viagens com modais Bootstrap 5, DataTable
+ *                   para listagem, carregamento de ficha de vistoria, cálculo de custos, e
+ *                   salvamento via AJAX. Gerencia 2 modais (Ajusta Custos e Ficha Vistoria).
+ * 📥 ENTRADAS     : Cliques em botões (data-id, data-viagemid), eventos de modal (show.bs.modal),
+ *                   filtros de DataTable, formulário de ajuste de custos
+ * 📤 SAÍDAS       : Modais Bootstrap renderizados (#modalAjustaCustos, #modalFicha),
+ *                   DataTable inicializado, campos de formulário preenchidos, AJAX POST
+ *                   para salvar custos, AppToast notificações, Alerta.TratamentoErroComLinha
+ * 🔗 CHAMADA POR  : $(document).ready (inicializarModais, initDataTable), event handlers
+ *                   (show.bs.modal, click), botões de ação
+ * 🔄 CHAMA        : inicializarModais(), initDataTable(), carregarDadosViagem(viagemId),
+ *                   carregarFichaVistoria(viagemId), salvarCustos(), $.ajax, AppToast.show,
+ *                   Alerta.TratamentoErroComLinha, bootstrap.Modal API, DataTable API
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, Bootstrap 5 (Modal), DataTables, Alerta.js, AppToast
+ * 📝 OBSERVAÇÕES  : Padrão Bootstrap 5 (substituiu Bootstrap 4). Modais com keyboard=true,
+ *                   backdrop="static". Try-catch em todos os event handlers e funções
+ *                   principais. Inclui funções inicializarModais, carregarDadosViagem,
+ *                   carregarFichaVistoria, salvarCustos (587 linhas total).
+ **************************************************************************************** */
+
 // ============================================================
 // atualizacustosviagem.js - Tela de Ajuste de Custos de Viagens
 // Padrão FrotiX - Bootstrap 5

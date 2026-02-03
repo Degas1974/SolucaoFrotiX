@@ -1,3 +1,14 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Intel/AnalyticsDashboard.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Dashboard principal do sistema exibindo cards de acesso rápido às funcionalidades (Agenda, Viagens, Veículos, Abastecimento, Manutenção, Multas, Inserir Fichas MOB)
+ * 📥 ENTRADAS     : @page, @model AnalyticsDashboardModel, ViewData (Title, PageName, Category1), cliques nos cards de acesso
+ * 📤 SAÍDAS       : HTML com 8 cards interativos, JavaScript inline para preview de imagem PNG (trim transparência), feedback visual (cursor wait), SweetAlert tests, redirects para páginas do sistema via links <a href>
+ * 🔗 CHAMADA POR  : Menu principal (Intel > Página Principal), rota direta /Intel/AnalyticsDashboard
+ * 🔄 CHAMA        : /agenda/index, /viagens/upsert, /viagens/index, /veiculo/index, /abastecimento/index, /manutencao/listamanutencao, /multa/listapenalidade, /viagens/fluxopassageiros, JavaScript inline Alerta.TratamentoErroComLinha, SweetAlertInterop (ShowError, ShowWarning, ShowInfo, ShowSuccess, ShowConfirm, ShowTratamentoErroComLinha, ShowPreventionAlert)
+ * 📦 DEPENDÊNCIAS : Bootstrap 5.3.8 (CSS/JS), Font Awesome Duotone icons, ~/css/miscellaneous/reactions/reactions.css, ~/css/miscellaneous/fullcalendar/fullcalendar.bundle.css, ~/css/miscellaneous/jqvmap/jqvmap.bundle.css, ~/css/profilecards.css, ~/css/profilecommon.css, ~/js/custom.js, ~/css/demo-01.css, ~/Images/ (imagens cards e logo), Canvas API (browser trimTransparentPNG), jQuery, SweetAlert2 via SweetAlertInterop, Alerta.TratamentoErroComLinha, data-ftx-loading
+ * 📝 OBSERVAÇÕES  : Total: ~673 linhas. Código comentado extenso de testes SweetAlert (linhas 104-238) - REMOVER. Possui 3 funções JavaScript de teste de alertas comentadas. JavaScript inline complexo para recorte de imagem PNG (~280 linhas) - considerar mover para arquivo externo. Feedback visual de loading nos cards funcional. Bootstrap 5.3.8 carregado via CDN (verificar se já carregado no layout). Logo FrotiX (#logoOriginal) tem trim automático aplicado. Código bem estruturado mas com muito lixo comentado. CSS inline excessivo (~110 linhas) - mover para arquivo externo. Imagens hardcoded em ~/Images/ - verificar se existem.
+ **************************************************************************************** *@
 @page
 @model AnalyticsDashboardModel
 

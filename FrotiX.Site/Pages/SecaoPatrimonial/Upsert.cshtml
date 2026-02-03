@@ -1,6 +1,25 @@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 
+@* ========================================================================================
+ * ARQUIVO: Pages/SecaoPatrimonial/Upsert.cshtml
+ * OBJETIVO: Formulario simples de criacao e edicao de Secoes Patrimoniais (classificacao
+ *           contabil de primeiro nivel para patrimonios), com campos codigo, descricao,
+ *           link para Setor Patrimonial pai opcional, checkbox status Ativo, validacao basica.
+ * ENTRADAS: Model FrotiX.Pages.Secao.UpsertModel (Id, Codigo, Descricao, SetorPatrimonialId nullable,
+ *           Status), parametro query string id (edicao carrega dados existentes), formulario
+ *           HTML5 com input text codigo/descricao, select setor patrimonial opcional, checkbox status
+ * SAIDAS: Formulario renderizado, validacao HTML5 required, POST /SecaoPatrimonial/Upsert
+ *         (salva no banco via IUnitOfWork), redirect /Patrimonio com AppToast Verde sucesso/Vermelho erro
+ * CHAMADA POR: Links de criacao/edicao de secoes patrimoniais, UpsertModel.OnGet carrega dados
+ * CHAMA: POST /SecaoPatrimonial/Upsert endpoint backend, AppToast.show notificacoes
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Bootstrap 5.3.8, AppToast.js, IUnitOfWork
+ * OBSERVACOES: 161 linhas formulario simples. Secoes Patrimoniais sao classificacao contabil
+ *              de primeiro nivel seguindo normas da contabilidade publica (exemplo: Bens Moveis,
+ *              Bens Imoveis, Veiculos). Sistema integrado com gestao patrimonial do orgao.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
 @model FrotiX.Pages.Secao.UpsertModel
 
 @{

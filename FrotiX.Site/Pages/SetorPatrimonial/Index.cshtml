@@ -1,3 +1,48 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/SetorPatrimonial/Index.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de listagem de Setores Patrimoniais (hierarquia superior às Seções)
+ *                   com DataTable #tblSecao (4 colunas: Seção/Setor/Status/Ação), VARIANTE de
+ *                   SecaoPatrimonial/Index.cshtml com diferenças visuais (btn-fundo-laranja vs btn-azul).
+ * 📥 ENTRADAS     : @page route /SetorPatrimonial/Index, @model SecaoPatrimonial (MODEL DIRETO n/ão PageModel!
+ *                   INCONSISTENTE!), JavaScript secao_patrimonial.js (AJAX loadList), clique botão adicionar
+ * 📤 SAÍDAS       : Panel width 90% centered com header flexbox (título fa-warehouse + botão btn-fundo-laranja
+ *                   data-ftx-loading "Adicionar Seção Patrimonial" link ./SecaoPatrimonial/Upsert), border-bottom
+ *                   #325d88, DataTable #tblSecao (4 colunas tbody vazio), Bootstrap 5 CDN, secao_patrimonial.js
+ * 🔗 CHAMADA POR  : Link menu "Cadastros > Setores Patrimoniais", route /SetorPatrimonial/Index,
+ *                   sidebar navigation (se cadastrado no menu system)
+ * 🔄 CHAMA        : @model SecaoPatrimonial (MODEL DIRETO - ERRADO! falta PageModel SetorPatrimonialIndexModel),
+ *                   ./SecaoPatrimonial/Upsert (link adicionar - cross-link Setor→Seção intencional?),
+ *                   ~/js/cadastros/secao_patrimonial.js (AJAX GET /api/SetorPatrimonial? loadList DataTable),
+ *                   Bootstrap 5 CDN (jsdelivr.net v5.3.8), ViewData (breadcrumb/heading fa-shop), Font Awesome
+ *                   Duotone (fa-shop, fa-warehouse, fa-clone-plus icon-pulse), CSS inline
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, SecaoPatrimonial model (N/ÃO PageModel! SetorPatrimonialIndexModel
+ *                   provavelmente n/ão existe), Bootstrap 5 CDN (REDUNDANTE - já no _Layout), secao_patrimonial.js
+ *                   (cadastros folder - AJAX list/delete/toggle), DataTables (table-bordered table-striped),
+ *                   Font Awesome 6 Duotone, CSS btn-fundo-laranja (FrotiX), data-ftx-loading (loading handler)
+ * 📝 OBSERVAÇÕES  : 73 linhas. VARIANTE de SecaoPatrimonial/Index.cshtml (estrutura idêntica, diferenças visuais).
+ *                   **DIFERENÇAS vs SecaoPatrimonial/Index**:
+ *                   1. Botão: btn-fundo-laranja (laranja cobre #c67750) vs btn-azul (azul petróleo #325d88)
+ *                   2. Ícone: fa-clone-plus (clone/duplicate) vs fa-file-plus (new file)
+ *                   3. Link: ./SecaoPatrimonial/Upsert (cross-reference Setor→Seção) vs ./SetorPatrimonial/Upsert
+ *                   4. Atributo: data-ftx-loading (loading state) vs sem atributo
+ *                   **BUGS**:
+ *                   1. **PageName ERRADO**: ViewData["PageName"] = "secaopatrimonial_index" (deve ser "setorpatrimonial_index"!)
+ *                   2. **Texto inconsistente**: "Adicionar Seção Patrimonial" (deve ser "Adicionar Setor"!)
+ *                   3. **MODEL inconsistente**: @model SecaoPatrimonial (DIRETO, n/ão PageModel)
+ *                   ViewData config:
+ *                   - Title: "Seções Patrimoniais" (ERRADO! deve ser "Setores Patrimoniais")
+ *                   - PageName: "secaopatrimonial_index" (ERRADO! cópia/paste bug)
+ *                   - Heading: "<i class='fa-duotone fa-shop'></i> Cadastros: <span class='fw-300'>Seções Patrimoniais</span>"
+ *                   - PageIcon: "fa-duotone fa-shop"
+ *                   Estrutura idêntica SecaoPatrimonial: panel width 90%, header d-flex justify-content-between,
+ *                   h2 titulo-pagina fa-warehouse, border-bottom #325d88, table #tblSecao (4 cols), Bootstrap CDN
+ *                   redundante, secao_patrimonial.js cache busting. **RELACIONAMENTO**: Setor (hierarquia superior)
+ *                   contém múltiplas Seções. Cross-link ./SecaoPatrimonial/Upsert pode ser intencional (criar
+ *                   Seção dentro do Setor). Cores diferentes (laranja vs azul) distinguem visualmente hierarquia.
+ *                   **AÇÃO RECOMENDADA**: Corrigir PageName, Title, texto botão ("Setor" n/ão "Seção"), verificar
+ *                   cross-link intencional, criar PageModel SetorPatrimonialIndexModel.
+ **************************************************************************************** *@
 @page
 @model FrotiX.Models.Cadastros.SetorPatrimonial
 @{

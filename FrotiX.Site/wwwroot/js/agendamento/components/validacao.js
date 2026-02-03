@@ -393,13 +393,11 @@ class ValidadorAgendamento
     {
         try
         {
-            const valDataInicial = document.getElementById("txtDataInicial").ej2_instances[0].value;
-            const lstDdataInicial = document.getElementById("txtDataInicial").ej2_instances[0];
+            const valDataInicial = window.getKendoDateValue("txtDataInicial");
 
-            if (!valDataInicial || !moment(valDataInicial).isValid() || valDataInicial === null)
+            if (!valDataInicial || !moment(valDataInicial).isValid())
             {
-                lstDdataInicial.value = moment().toDate();
-                lstDdataInicial.dataBind();
+                window.setKendoDateValue("txtDataInicial", moment().toDate(), true);
             }
 
             return true;
@@ -538,8 +536,8 @@ class ValidadorAgendamento
                         "Data Inválida", 
                         "A Data Final não pode ser superior à data atual."
                     );
-                    $("#txtDataFinal").val("");
-                    $("#txtDataFinal").focus();
+                    window.setKendoDateValue("txtDataFinal", null);
+                    document.getElementById("txtDataFinal")?.focus();
                     return false;
                 }
             }
@@ -825,7 +823,7 @@ class ValidadorAgendamento
 
             if ((periodo === "D" || periodo === "S" || periodo === "Q" || periodo === "M"))
             {
-                const dataFinal = document.getElementById("txtFinalRecorrencia").ej2_instances[0].value;
+                const dataFinal = window.getKendoDateValue("txtFinalRecorrencia");
 
                 if (dataFinal === "" || dataFinal === null)
                 {
@@ -1059,8 +1057,8 @@ window.validarDatas = async function ()
 
             if (!confirmacao)
             {
-                $("#txtDataFinal").val("");
-                $("#txtDataFinal").focus();
+                window.setKendoDateValue("txtDataFinal", null);
+                document.getElementById("txtDataFinal")?.focus();
                 return false;
             }
         }
@@ -1095,9 +1093,8 @@ window.validarDatasInicialFinal = async function (DataInicial, DataFinal)
 
             if (!confirmacao)
             {
-                const txtDataFinalElement = document.getElementById("txtDataFinal");
-                txtDataFinalElement.value = null;
-                txtDataFinalElement.focus();
+                window.setKendoDateValue("txtDataFinal", null);
+                document.getElementById("txtDataFinal")?.focus();
                 return false;
             }
         }

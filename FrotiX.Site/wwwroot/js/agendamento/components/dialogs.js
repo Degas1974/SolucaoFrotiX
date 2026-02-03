@@ -211,16 +211,8 @@ window.showDialogDiasSemana = function ()
                 {
                     click: function ()
                     {
-                        const txtDataInicial = document.getElementById('txtDataInicial');
-                        if (txtDataInicial && txtDataInicial.ej2_instances && txtDataInicial.ej2_instances[0])
-                        {
-                            txtDataInicial.ej2_instances[0].value = null;
-                            txtDataInicial.ej2_instances[0].dataBind();
-                        } else
-                        {
-                            $('#txtDataInicial').val('');
-                        }
-                        $('#txtDataInicial').focus();
+                        window.setKendoDateValue("txtDataInicial", null);
+                        document.getElementById('txtDataInicial')?.focus();
                         dialog.hide();
                     },
                     buttonModel: {

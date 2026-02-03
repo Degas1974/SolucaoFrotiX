@@ -1,3 +1,29 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_Signature.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view para assinatura de e-mail corporativa com logo, informações do
+ *                   usuário, ícones de redes sociais e disclaimer confidencial. Template genérico.
+ * 📥 ENTRADAS     : @Settings.Theme.User (nome do usuário), @Settings.AppName (nome da aplicação),
+ *                   ~/img/logo.png (imagem do logo), configuração SmartSettings
+ * 📤 SAÍDAS       : HTML de assinatura com logo, nome do usuário (fw-500 fs-lg), título
+ *                   "Orthopedic Surgeon" (hardcoded), 4 ícones de redes sociais (Facebook #3b5998,
+ *                   Twitter #38A1F3, LinkedIn #0077B5, YouTube #ff0000), disclaimer CONFIDENTIAL
+ * 🔗 CHAMADA POR  : Páginas de e-mail/compose (provavelmente Shared/_Compose.cshtml ou email modal),
+ *                   @await Html.PartialAsync("_Signature"), editor de mensagens
+ * 🔄 CHAMA        : @Settings.Theme.User, @Settings.AppName (SmartSettings), ~/img/logo.png (wwwroot/img/),
+ *                   Font Awesome brands (fab fa-facebook-square, fa-twitter-square, fa-linkedin,
+ *                   fa-youtube-square), CSS classes (d-flex, border-left, fw-500, fs-lg, l-h-n)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views), SmartSettings injection (@Settings),
+ *                   Font Awesome 6 (brands icons), Bootstrap 5 (d-flex, pl-3, mr-1, mb-3),
+ *                   arquivo ~/img/logo.png, CSS classes custom (fw-400, fs-lg, fs-nano, l-h-n)
+ * 📝 OBSERVAÇÕES  : 13 linhas. Template GENERIC do SmartAdmin - NÃO customizado para FrotiX.
+ *                   "Orthopedic Surgeon" hardcoded (linha 5) - não usa dados reais do usuário.
+ *                   Links de redes sociais todos apontam para "#" (sem URLs reais). Disclaimer
+ *                   genérico de confidencialidade (linha 12-14) com texto padrão corporativo.
+ *                   Usa ~/img/logo.png (SmartAdmin) não ~/Images/frotix.png. Provavelmente NÃO
+ *                   usado no FrotiX - mantido do template. Para customizar: trocar título por
+ *                   cargo real, adicionar URLs de redes sociais, usar logo FrotiX.
+ **************************************************************************************** *@
 <div class="d-flex d-column align-items-start mb-3">
 	<img src="~/img/logo.png" alt="@Settings.AppName" class="mr-3 mt-1">
 	<div class="border-left pl-3">

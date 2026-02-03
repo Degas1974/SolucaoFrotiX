@@ -1,3 +1,31 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_PageBreadcrumb.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view que renderiza breadcrumb de navegação hierárquica (FrotiX >
+ *                   Categoria1 > Categoria2 > Título) com data no canto superior direito.
+ * 📥 ENTRADAS     : ViewBag.Category1 (string - categoria nível 1, ex: "Cadastros"),
+ *                   ViewBag.Category2 (string opcional - subcategoria), ViewBag.Title (string
+ *                   - título da página atual), configuração em PageModel
+ * 📤 SAÍDAS       : <ol class="breadcrumb page-breadcrumb"> com 4+ <li>: FrotiX (home link),
+ *                   Category1, Category2 (condicional), Title (active), data no canto direito
+ *                   (classe .js-get-date - JavaScript insere data dinamicamente)
+ * 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml (provavelmente após .page-header ou .subheader),
+ *                   @await Html.PartialAsync("_PageBreadcrumb"), component invoke
+ * 🔄 CHAMA        : ViewBag propriedades (Category1, Category2, Title), JavaScript .js-get-date
+ *                   (insere data atual no <span>, provavelmente em app.bundle.js ou app.navigation.js),
+ *                   CSS classes (breadcrumb, page-breadcrumb, breadcrumb-item, active)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views, ViewBag), Bootstrap 5 (breadcrumb,
+ *                   breadcrumb-item, active), JavaScript para .js-get-date (listener DOM),
+ *                   CSS classes position-absolute, pos-top, pos-right, d-none, d-sm-block
+ * 📝 OBSERVAÇÕES  : 12 linhas. Renderização condicional: só mostra breadcrumb se ViewBag.Category1?.Length > 0.
+ *                   Estrutura hierárquica: FrotiX (link void) > Category1 > Category2 (se existir) >
+ *                   Title (active). Data posicionada absolutamente no canto superior direito
+ *                   (position-absolute pos-top pos-right), visível apenas em screen > sm (d-none d-sm-block).
+ *                   JavaScript .js-get-date insere data formatada (provavelmente formato pt-BR).
+ *                   Uso em PageModels:
+ *                   ViewBag.Category1 = "Cadastros"; ViewBag.Category2 = "Veículos"; ViewBag.Title = "Marcas";
+ *                   Link FrotiX usa javascript:void(0); (não navega - só visual).
+ **************************************************************************************** *@
 @if (ViewBag.Category1?.Length > 0)
 {
 <ol class="breadcrumb page-breadcrumb">
