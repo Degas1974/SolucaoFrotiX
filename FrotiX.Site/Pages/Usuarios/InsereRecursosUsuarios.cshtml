@@ -1,3 +1,4 @@
+@page
 @*
  ****************************************************************************************
  * ⚡ ARQUIVO: Pages/Usuarios/InsereRecursosUsuarios.cshtml
@@ -45,7 +46,6 @@
  *                   "Inserir Recursos em Lote" (corrigir). Sem validação se usuários/recursos
  *                   existem (permissive, causa erro se ids inválidos).
  ****************************************************************************************
- *@
  *              key constraint error (unique index em UsuarioId,RecursoId colunas), se duplicata
  *              skipa insert incrementa contador duplicatas informar usuario. Performance:
  *              loop nested pode gerar muitas queries (10 usuarios * 5 recursos = 50 queries
@@ -60,9 +60,8 @@
  *              atribuiu permissoes quando.
  * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
  ======================================================================================== *@
-@page
 @model FrotiX.Models.Abastecimento
-@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
 	ViewData["Title"] = "Importa Abastecimentos";

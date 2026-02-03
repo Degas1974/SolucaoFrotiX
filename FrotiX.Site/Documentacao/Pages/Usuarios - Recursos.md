@@ -1,7 +1,7 @@
 # Documentação: Usuarios - Recursos
 
-> **Última Atualização**: 08/01/2026
-> **Versão Atual**: 0.1
+> **Última Atualização**: 03/02/2026
+> **Versão Atual**: 0.2
 
 ---
 
@@ -85,6 +85,17 @@ FrotiX.Site/
 > **FORMATO**: Entradas em ordem **decrescente** (mais recente primeiro)
 
 ---
+
+## [03/02/2026 10:12] - Correção de diretivas Razor
+
+**Descrição**:
+- `@page` movido para o topo do arquivo, conforme regra do Razor.
+- Bloco de comentário inicial consolidado para evitar tokens soltos com `@`.
+
+**Arquivos impactados**:
+- Pages/Usuarios/Recursos.cshtml
+
+**Status**: ✅ **Aplicado**
 
 ## [08/01/2026 18:24] - Criação automática da documentação (stub)
 

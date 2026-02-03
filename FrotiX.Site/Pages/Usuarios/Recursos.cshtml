@@ -1,3 +1,4 @@
+@page
 @*
  ****************************************************************************************
  * ⚡ ARQUIVO: Pages/Usuarios/Recursos.cshtml
@@ -45,7 +46,6 @@
  *                   mas cria confusão código). Refatorar. Sem validação se usuario existe antes
  *                   editar (permissive, causa erro se id inválido).
  ****************************************************************************************
- *@
  *              consistencia). Performance: query GET /api/Usuarios/GetRecursosUsuario
  *              pode ser lento se muitos recursos (100+ recursos * LEFT Join UsuarioRecursos),
  *              otimizar: carrega Recursos Where Ativo=true em 1 query, carrega UsuarioRecursos
@@ -69,7 +69,6 @@
  *              baseline OR UsuarioRecursos contains Veiculos.Edit.
  * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
  ======================================================================================== *@
-@page
 @model FrotiX.Models.Unidade
 
 @{
