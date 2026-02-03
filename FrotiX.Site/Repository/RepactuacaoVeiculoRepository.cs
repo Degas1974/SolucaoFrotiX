@@ -73,72 +73,103 @@ namespace FrotiX.Repository
             }
         }
 
-        
+
         // ╭───────────────────────────────────────────────────────────────────────────────────────╮
         // │ ⚡ MÉTODO: GetRepactuacaoVeiculoListForDropDown                                           │
         // │ 🔗 RASTREABILIDADE:                                                                      │
-        // │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
-        // │    ➡️ CHAMA       : DbContext.RepactuacaoVeiculo, OrderBy, Select                         │
+        // │    ⬅️ CHAMADO POR : Controllers (dropdown) [linha ~100]                                 │
+        // │    ➡️ CHAMA       : _db.RepactuacaoVeiculo.OrderBy() [linha 98]                          │
+        // │ 📦 DEPENDÊNCIAS  : _db (DbContext)                                                      │
         // ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        
-        
+
+
         // 🎯 OBJETIVO:
         // Obter lista de repactuações de veículos para composição de dropdowns.
         // Ordena pela chave da repactuação e apresenta o valor.
-        
-        
-        
+
+
+
+        // 📥 PARÂMETROS: Nenhum
+
         // 📤 RETORNO:
-        // IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
-        
-        
+        // IEnumerable<SelectListItem> - Itens prontos para seleção em UI.
+
+        // 📝 OBSERVAÇÕES: Ordenação por ID de repactuação
+
         // Returns: Lista de itens de seleção para repactuações de veículos.
         public IEnumerable<SelectListItem> GetRepactuacaoVeiculoListForDropDown()
         {
-            return _db.RepactuacaoVeiculo
-                .OrderBy(o => o.RepactuacaoVeiculoId)
-                .Select(i => new SelectListItem()
-                {
-                    Text = i.Valor.ToString(),
-                    Value = i.RepactuacaoVeiculoId.ToString()
-                });
+            try
+            {
+                // [DB] Projeta repactuações ordenadas por ID
+                return _db.RepactuacaoVeiculo
+                    .OrderBy(o => o.RepactuacaoVeiculoId)
+                    .Select(i => new SelectListItem()
+                    {
+                        Text = i.Valor.ToString(),
+                        Value = i.RepactuacaoVeiculoId.ToString()
+                    });
+            }
+            catch (Exception erro)
+            {
+                throw;
+            }
         }
 
-        
+
         // ╭───────────────────────────────────────────────────────────────────────────────────────╮
         // │ ⚡ MÉTODO: Update                                                                        │
         // │ 🔗 RASTREABILIDADE:                                                                      │
-        // │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
-        // │    ➡️ CHAMA       : DbContext.RepactuacaoVeiculo.FirstOrDefault, _db.SaveChanges          │
+        // │    ⬅️ CHAMADO POR : Controllers [linha ~100]                                             │
+        // │    ➡️ CHAMA       : _db.FirstOrDefault() [linha 137]                                     │
+        // │                     _db.SaveChanges() [linha 146]                                        │
+        // │ 📦 DEPENDÊNCIAS  : _db (DbContext)                                                      │
         // ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        
-        
+
+
         // 🎯 OBJETIVO:
         // Atualizar os dados de uma repactuação de veículo no banco de dados.
         // Sincroniza valor, observação e vínculos com contrato e veículo.
-        
-        
-        
+
+
+
         // 📥 PARÂMETROS:
-        // repactuacaoVeiculo - Entidade contendo os dados atualizados.
-        
-        
+        // repactuacaoVeiculo [RepactuacaoVeiculo] - Entidade contendo os dados atualizados.
+
+        // 📤 SAÍDAS: void
+
+        // 📝 OBSERVAÇÕES: Atualiza 4 campos: Valor, Observacao, VeiculoId, RepactuacaoContratoId
+
         // Param repactuacaoVeiculo: Entidade <see cref="RepactuacaoVeiculo"/> com dados atualizados.
         public new void Update(RepactuacaoVeiculo repactuacaoVeiculo)
         {
-            var objFromDb = _db.RepactuacaoVeiculo.FirstOrDefault(s =>
-                s.RepactuacaoVeiculoId == repactuacaoVeiculo.RepactuacaoVeiculoId
-            );
-
-            if (objFromDb != null)
+            try
             {
-                objFromDb.Valor = repactuacaoVeiculo.Valor;
-                objFromDb.Observacao = repactuacaoVeiculo.Observacao;
-                objFromDb.VeiculoId = repactuacaoVeiculo.VeiculoId;
-                objFromDb.RepactuacaoContratoId = repactuacaoVeiculo.RepactuacaoContratoId;
-            }
+                // [VALIDACAO] Verificar se entidade não é nula
+                if (repactuacaoVeiculo == null)
+                    throw new ArgumentNullException(nameof(repactuacaoVeiculo));
 
-            _db.SaveChanges();
+                // [DB] Buscar registro existente
+                var objFromDb = _db.RepactuacaoVeiculo.FirstOrDefault(s =>
+                    s.RepactuacaoVeiculoId == repactuacaoVeiculo.RepactuacaoVeiculoId
+                );
+
+                // [DB] Atualizar campos se registro encontrado
+                if (objFromDb != null)
+                {
+                    objFromDb.Valor = repactuacaoVeiculo.Valor;
+                    objFromDb.Observacao = repactuacaoVeiculo.Observacao;
+                    objFromDb.VeiculoId = repactuacaoVeiculo.VeiculoId;
+                    objFromDb.RepactuacaoContratoId = repactuacaoVeiculo.RepactuacaoContratoId;
+                }
+
+                // [DB] Persistir mudanças
+                _db.SaveChanges();
+            }
+            catch (Exception erro)
+            {
+                throw;
+            }
         }
     }
 }
