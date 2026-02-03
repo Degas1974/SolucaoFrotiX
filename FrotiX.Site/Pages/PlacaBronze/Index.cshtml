@@ -101,7 +101,24 @@
 </div>
 
 @section ScriptsBlock {
-	@* IMPORTANTE: Não incluir global-toast.js aqui se já estiver no _Layout *@
-	@* Carregar o script específico da página apenas uma vez *@
+	<script>
+		/***
+		 * ⚡ ARQUIVO: placabronze.js (Externo - Arquivo dedicado)
+		 * ============================================================================
+		 * 📥 RESPONSABILIDADES:
+		 *    • Flag anti-reinit: placaBronzeInitialized (evita double binding)
+		 *    • loadList() - Busca placas via AJAX para DataTable
+		 *    • Delete handlers - Validação de dependências antes de excluir
+		 *    • Status toggle - Ativar/inativar placa via AJAX
+		 *    • Event cleanup - $.off() + stopImmediatePropagation
+		 *    • Event delegation - Botões .btn-editar, .btn-delete
+		 *
+		 * 📤 SAÍDAS: DataTable #tblPlacaBronze inicializado com dados dinâmicos
+		 *
+		 * ⚠️ IMPORTANTE: Não incluir global-toast.js se já estiver no _Layout
+		 * 🔄 DOCUMENTAÇÃO: Ver arquivo completo /wwwroot/js/cadastros/placabronze.js (439 linhas)
+		 ***/
+	</script>
+
 	<script src="~/js/cadastros/placabronze.js" asp-append-version="true"></script>
 }

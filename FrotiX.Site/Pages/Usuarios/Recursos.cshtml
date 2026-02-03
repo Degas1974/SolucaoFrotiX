@@ -1,83 +1,51 @@
-@* ========================================================================================
- * ARQUIVO: Pages/Usuarios/Recursos.cshtml
- * OBJETIVO: Pagina de gerenciamento individual de recursos/permissoes por usuario exibindo
- *           Syncfusion TreeGrid hierarquico 2 niveis (Categorias > Recursos) com Checkbox
- *           inline toggle permissoes, permite admin visualizar e editar quais telas/funcionalidades
- *           usuario especifico pode acessar, sistema CRITICO controle de acesso granular
- *           FrotiX.
- * ENTRADAS: route /Usuarios/Recursos?id=123 (id do usuario), model (reutiliza Unidade
- *           incorretamente deveria ser UsuarioRecursoModel), ViewData (Title, PageName),
- *           query parameter id obrigatorio (se ausente redirect /Usuarios/Index), Syncfusion
- *           TreeGrid dataSource URL GET /api/Usuarios/GetRecursosUsuario?usuarioId=123
- *           retorna JSON hierarquia 2 niveis (Categorias nivel 1: Cadastros/Relatorios/Frota/Admin,
- *           Recursos nivel 2 filhos de cada Categoria: Veiculos/Motoristas/Abastecimentos/...,
- *           cada Recurso tem propriedade Permitido boolean se usuario tem permissao UsuarioRecursos
- *           table), TreeGrid inline editing Checkbox coluna Permitido toggle on/off permissoes,
- *           batch mode acumula alteracoes, botao Salvar Permissoes POST batch /api/Usuarios/SaveRecursosUsuario
- * SAIDAS: Pagina renderizada com card header (titulo Gerenciar Recursos do Usuario: [Nome
- *         Usuario], icone fa-key, breadcrumb Admin > Usuarios > Recursos, link Voltar
- *         /Usuarios/Index), card body com: 1. Alert Info topo (Usuario: [Nome] - Email:
- *         [email] - Perfil: [badge Perfil], instrucoes: Marque checkboxes dos recursos
- *         que usuario podera acessar), 2. Syncfusion TreeGrid component (dataSource URL
- *         /api/Usuarios/GetRecursosUsuario?usuarioId=123 carrega hierarquia 2 niveis,
- *         treeColumnIndex 1 coluna Nome exibe tree expand/collapse, idMapping IdMap,
- *         parentIdMapping ParentIdMap null para Categorias nivel 1, columns 5: IdMap
- *         hidden, ParentIdMap hidden, Nivel int readonly 1=Categoria 2=Recurso, Nome
- *         string readonly width 300px tree column (Categorias bold font-weight 700 icone
- *         folder, Recursos normal icone page), Permitido Checkbox editor inline click
- *         toggle on/off (disabled para Categorias nivel 1 apenas Recursos nivel 2 editaveis),
- *         Descricao string tooltip hover exibe descricao detalhada recurso, allowEditing
- *         true inline click Checkbox, editSettings mode Batch acumula alteracoes memoria,
- *         toolbar [ExpandAll, CollapseAll, Search] navegacao hierarquia, height 600px
- *         scroll vertical se muitos recursos), 3. Botao Salvar Permissoes rodape primary
- *         (disabled se TreeGrid sem alteracoes batch, click coleta Grid.getBatchChanges
- *         retorna changedRecords array apenas Recursos nivel 2 alterados, POST /api/Usuarios/SaveRecursosUsuario
- *         JSON {usuarioId:123, recursos:[{idRecurso:5,permitido:true},{idRecurso:8,permitido:false}]},
- *         backend processa batch: loop recursos se permitido=true verifica duplicata
- *         UsuarioRecursos Where UsuarioId=123 AND RecursoId=5 se nao existe INSERT senao
- *         skip, se permitido=false DELETE UsuarioRecursos Where UsuarioId=123 AND RecursoId=5,
- *         SaveChanges, retorna JSON success, success exibe AppToast Verde Permissoes
- *         salvas reload TreeGrid atualiza checkboxes, error Alerta.Erro), 4. Botao Cancelar
- *         Alteracoes secondary (limpa batch changes TreeGrid volta estado original carregado)
- * CHAMADA POR: Grid /Usuarios/Index coluna Acoes botao Recursos key verde (link /Usuarios/Recursos?id=123),
- *              usuarios com permissao Usuarios.GerenciarRecursos (role Admin apenas),
- *              usada para gerenciar permissoes granulares individual por usuario (exemplo:
- *              usuario Coordenador precisa acesso Relatorios Gerenciais mas nao Admin
- *              Usuarios, admin marca checkbox Relatorios.Gerenciais desmarca Admin.Usuarios)
- * CHAMA: API UsuariosController: GET /api/Usuarios/GetRecursosUsuario?usuarioId=123
- *        (query EF Core carrega Recursos table todos recursos sistema ordenados por
- *        Categoria/Ordem, LEFT Join UsuarioRecursos Where UsuarioId=123 para verificar
- *        quais usuario tem permissao, mapeia DTO TreeGrid format {IdMap:recurso.Id,
- *        ParentIdMap:recurso.CategoriaId, Nivel:2, Nome:recurso.Nome, Permitido:usuarioRecurso!=null,
- *        Descricao:recurso.Descricao}, adiciona Categorias nivel 1 agrupadores {IdMap:categoria.Id,
- *        ParentIdMap:null, Nivel:1, Nome:categoria.Nome, Permitido:false disabled, Descricao:null},
- *        retorna JSON array flat hierarquia TreeGrid reconstroi client-side), POST /api/Usuarios/SaveRecursosUsuario
- *        (recebe JSON {usuarioId, recursos:[{idRecurso,permitido}]}, inicia transacao
- *        BeginTransaction, loop recursos: se permitido=true verifica duplicata query
- *        EXISTS Where UsuarioId AND RecursoId se nao existe INSERT new UsuarioRecurso,
- *        se permitido=false DELETE Where UsuarioId AND RecursoId, SaveChanges commit,
- *        CommitTransaction, retorna JSON success), Syncfusion TreeGrid component (dataSource
- *        URL hierarchical binding, treeColumnIndex, idMapping/parentIdMapping, allowEditing
- *        inline Checkbox batch mode, toolbar ExpandAll/CollapseAll/Search, events actionComplete
- *        valida alteracoes), AppToast.show Verde (feedback success)
- * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 TreeGrid 2023.4.2, Bootstrap
- *               5.3.8, Font Awesome 6 Duotone, jQuery 3.7.1, EF Core 8.0
- * OBSERVACOES: 567 linhas pagina CRITICA controle acesso granular por usuario. Model
- *              binding incorreto: usa model Unidade mas deveria ter UsuarioRecursoModel
- *              custom (corrigir refactoring). TreeGrid hierarquico 2 niveis: Categorias
- *              nivel 1 agrupam Recursos relacionados (Categoria Cadastros agrupa Veiculos/Motoristas/Fornecedores,
- *              Categoria Relatorios agrupa diversos relatorios), Recursos nivel 2 sao
- *              telas/funcionalidades individuais (Veiculos.Index, Veiculos.Create, Veiculos.Edit,
- *              Veiculos.Delete podem ser recursos separados para controle CRUD granular).
- *              Checkbox Permitido inline toggle: usuario admin pode expandir Categoria
- *              Cadastros mark checkboxes Veiculos/Motoristas permitir acesso, desmarca
- *              Fornecedores negar acesso, mudancas acumuladas batch ate clicar Salvar
- *              Permissoes otimiza UX (evita salvar cada click individual seria lento e
- *              chato). Validacao duplicatas backend: INSERT verifica EXISTS evita duplicate
- *              key constraint error (unique index UsuarioId,RecursoId), DELETE WHERE
- *              garante registro existe antes de deletar (se nao existe noop sem erro).
- *              Transacao: BeginTransaction garante atomicidade batch alteracoes (se erro
- *              em algum INSERT/DELETE RollbackTransaction desfaz todos parciais, all-or-nothing
+@*
+ ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Usuarios/Recursos.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciamento de permissões granulares por usuário com Syncfusion
+ *                   TreeGrid hierárquico (2 níveis: Categorias > Recursos), inline checkbox
+ *                   toggle, batch mode, sistema CRÍTICO controle de acesso granular FrotiX
+ *
+ * 📥 ENTRADAS     : @page, @model IndexModel (reutiliza Unidade - BUG modelo incorreto),
+ *                   route /Usuarios/Recursos?id=123 (id obrigatório), query parameter id
+ *                   se ausente redireciona /Usuarios/Index
+ *
+ * 📤 SAÍDAS       : Page renderizada com: Card header (Gerenciar Recursos do Usuário: [Nome],
+ *                   ícone fa-key), Alert info topo (Usuário: [Nome] - Email - Perfil badge),
+ *                   Syncfusion TreeGrid 2 níveis (Categorias nível 1: Cadastros/Relatórios/
+ *                   Frota/Admin; Recursos nível 2 filhos), inline Checkbox Permitido toggle,
+ *                   toolbar [ExpandAll, CollapseAll, Search], altura 600px scrollable,
+ *                   botão Salvar Permissões (disabled se sem alterações batch)
+ *
+ * 🔗 CHAMADA POR  : /Usuarios/Index coluna Ações botão Recursos key verde (link
+ *                   /Usuarios/Recursos?id=123), usuários role Admin, página CRÍTICA
+ *
+ * 🔄 CHAMA        : GET /api/Usuarios/GetRecursosUsuario?usuarioId=123 (carrega hierarquia),
+ *                   POST /api/Usuarios/SaveRecursosUsuario (salva batch alterações),
+ *                   TreeGrid.getBatchChanges() (coleta changedRecords), AppToast.show()
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, Syncfusion EJ2 TreeGrid 2023.4.2, Bootstrap
+ *                   5.3.8, Font Awesome 6 Duotone, jQuery 3.7.1, AppToast.js, Alerta.js,
+ *                   EF Core 8.0, SQL transações (BeginTransaction, CommitTransaction)
+ *
+ * 📝 OBSERVAÇÕES  : Total ~567 linhas. **PÁGINA CRÍTICA** - controle acesso granular.
+ *                   **TreeGrid hierárquico 2 níveis:** Categorias nível 1 agrupam recursos
+ *                   (Cadastros agrupa Veículos/Motoristas/Fornecedores, Relatórios agrupa
+ *                   vários), Recursos nível 2 são telas/funcionalidades (Veículos.Index,
+ *                   Veículos.Create, etc). **Checkbox Permitido inline:** admin expande
+ *                   Categoria, marca checkboxes para conceder acesso, desmarca nega acesso.
+ *                   **Batch mode:** acumula alterações até clicar Salvar (otimiza UX, evita
+ *                   salvar cada click individual). **Backend validate duplicatas:** INSERT
+ *                   verifica EXISTS (evita duplicate key constraint), DELETE WHERE garante
+ *                   existe. **Transação:** BeginTransaction garante atomicidade batch (erro
+ *                   em algum INSERT/DELETE → RollbackTransaction desfaz tudo, all-or-nothing).
+ *
+ * ⚠️  ISSUES      : **BUG CRÍTICO** - @model usa Unidade quando deveria ser UsuarioRecursoModel
+ *                   custom (não afeta funcionalidade pois model não é usado renderização HTML,
+ *                   mas cria confusão código). Refatorar. Sem validação se usuario existe antes
+ *                   editar (permissive, causa erro se id inválido).
+ ****************************************************************************************
+ *@
  *              consistencia). Performance: query GET /api/Usuarios/GetRecursosUsuario
  *              pode ser lento se muitos recursos (100+ recursos * LEFT Join UsuarioRecursos),
  *              otimizar: carrega Recursos Where Ativo=true em 1 query, carrega UsuarioRecursos

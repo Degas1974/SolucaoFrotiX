@@ -69,6 +69,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar todos os fornecedores cadastrados no sistema
+         *                   Retorna dados completos para popular grids e dropdowns
+         * 📥 ENTRADAS     : Nenhuma
+         * 📤 SAÍDAS       : [IActionResult] JSON { data: List<Fornecedor> }
+         * ⬅️ CHAMADO POR  : JavaScript (DataTables) de Fornecedores/Index, Contratos
+         * ➡️ CHAMA        : Fornecedor.GetAll()
+         * 📝 OBSERVAÇÕES  : Retorna fornecedores ativos e inativos
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
@@ -146,6 +157,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateStatusFornecedor
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Alternar status do fornecedor entre ativo e inativo
+         *                   Retorna mensagem descritiva com o novo status
+         * 📥 ENTRADAS     : [Guid] Id - FornecedorId
+         * 📤 SAÍDAS       : [JsonResult] { success: bool, message: string, type: int }
+         * ⬅️ CHAMADO POR  : JavaScript (AJAX) ao clicar botão de ativar/desativar
+         * ➡️ CHAMA        : Fornecedor.GetFirstOrDefault(), Update(), Save()
+         * 📝 OBSERVAÇÕES  : type=0 (ativo), type=1 (inativo) para feedback visual
+         ****************************************************************************************/
         [Route("UpdateStatusFornecedor")]
         public JsonResult UpdateStatusFornecedor(Guid Id)
         {

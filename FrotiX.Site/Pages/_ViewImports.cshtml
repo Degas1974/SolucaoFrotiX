@@ -48,12 +48,12 @@
  *
  * 📝 OBSERVAÇÕES  : 12 linhas. Arquivo FUNDAMENTAL - configura imports de TODAS as páginas.
  *                   ISSUE: Duplicate @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
- *                   (linhas 8 e 11 - replicado, pode ser limpado em refator). Tag Helpers
- *                   registrados: MVC (form helpers, asp-* attributes), Syncfusion EJ2
- *                   (ejs-* components), Kendo.Mvc (kendo-* components), FrotiX custom
- *                   (ftx-* components?). Convenção ASP.NET Core: _ViewImports.cshtml
- *                   aplica-se hierarquicamente (combina com _ViewImports em pastas superiores).
- *                   Sobrescrito em Areas/ com seus próprios _ViewImports específicos
+ *                   (linhas replicadas - retirado em limpeza). Tag Helpers registrados:
+ *                   MVC (form helpers, asp-* attributes), Syncfusion EJ2 (ejs-* components),
+ *                   Kendo.Mvc (kendo-* components), FrotiX custom (@addTagHelper *, FrotiX).
+ *                   Convenção ASP.NET Core: _ViewImports.cshtml aplica-se hierarquicamente
+ *                   (combina com _ViewImports em pastas superiores). Sobrescrito em Areas/
+ *                   com seus próprios _ViewImports específicos.
  * *@
 @using Microsoft.AspNetCore.Identity
 @using FrotiX

@@ -16,46 +16,12 @@
  * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, jQuery, DataTables (table-bordered table-striped),
  *                   fornecedor.js (arquivo JavaScript externo), Bootstrap 5 (CDN),
  *                   Font Awesome 6 Duotone (fa-buildings, fa-clone-plus)
- * 📝 OBSERVAÇÕES  : 65 linhas. Página muito simples sem header ftx-card-header (apenas float-right
+ * 📝 OBSERVAÇÕES  : 92 linhas. Página simples sem header ftx-card-header (apenas float-right
  *                   panel-content com botão). CSS inline minimalista (fundo-cinza #2F4F4F, label
  *                   branca). Botão laranja flutuante à direita (btn-fundo-laranja). ViewData define
  *                   icon fa-buildings. DataTable sem configurações visuais avançadas. Bootstrap 5
- *                   carregado via CDN no @section ScriptsBlock. Toda lógica CRUD em fornecedor.js.
- *                   Layout mais antigo (sem estrutura ftx-card-header moderna). <br/><br/> antes
- *                   da tabela para espaçamento vertical simples.
+ *                   carregado via CDN no @section ScriptsBlock. Toda lógica CRUD delegada a fornecedor.js.
  **************************************************************************************** *@
-@*
-* ⚡ ARQUIVO: Pages/Fornecedor/Index.cshtml
-* --------------------------------------------------------------------------------------
-* 🎯 OBJETIVO     : Página de listagem de Fornecedores com DataTable e CRUD via JavaScript
-*                   (fornecedor.js). Layout minimalista com botão flutuante à direita.
-*
-* 📥 ENTRADAS     : @Model FrotiX.Models.Fornecedor, route /Fornecedor, botões CRUD delegados
-*                   no DataTable (editar/excluir/toggle status), OnGet() do IndexModel
-*
-* 📤 SAÍDAS       : DataTable #tblFornecedor renderizado (6 colunas: Descrição, CNPJ, Contato,
-*                   Telefone, Status, Ação), link para /Fornecedor/Upsert (novo fornecedor),
-*                   exportações Excel/PDF, AJAX calls /api/Fornecedor (fornecedor.js)
-*
-* 🔗 CHAMADA POR  : Route /Fornecedor, navegação sidebar (Cadastros > Fornecedores),
-*                   IndexModel.OnGet() (code-behind vazio)
-*
-* 🔄 CHAMA        : fornecedor.js (152 linhas - loadList, delete handlers, status toggle),
-*                   /Fornecedor/Upsert (criação/edição), /api/Fornecedor/* endpoints,
-*                   data-ftx-loading (loading state), DataTables API
-*
-* 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, jQuery, DataTables (table-bordered table-striped),
-*                   fornecedor.js (arquivo JavaScript externo), Bootstrap 5 (CDN),
-*                   Font Awesome 6 Duotone (fa-buildings, fa-clone-plus)
-*
-* 📝 OBSERVAÇÕES  : 92 linhas (após enriquecimento). Página simples sem header ftx-card-header
-*                   (apenas float-right panel-content com botão). CSS inline minimalista
-*                   (fundo-cinza #2F4F4F, label branca). Botão laranja flutuante à direita
-*                   (btn-fundo-laranja). ViewData define icon fa-buildings. DataTable sem
-*                   configurações visuais avançadas. Bootstrap 5 carregado via CDN no
-*                   @section ScriptsBlock. Toda lógica CRUD delegada a fornecedor.js.
-*
-* ================================================================================================ *@
 @page
 @model FrotiX.Models.Fornecedor
 

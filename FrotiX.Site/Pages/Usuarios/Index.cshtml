@@ -1,64 +1,51 @@
-@* ========================================================================================
- * ARQUIVO: Pages/Usuarios/Index.cshtml
- * OBJETIVO: Pagina principal de gestao de usuarios do sistema FrotiX exibindo DataTable
- *           jQuery paginado server-side com filtros, modais para CRUD completo (Novo/Editar/Visualizar/Excluir),
- *           busca AJAX, sistema CRITICO para administracao de acessos e permissoes.
- * ENTRADAS: route /Usuarios/Index, ViewData (Title, PageName, Heading), DataTable ajax
- *           GET /api/Usuarios/GetAll retorna JSON usuarios paginado server-side (parameters:
- *           draw, start, length, search[value], order[0][column]/order[0][dir]), filtros
- *           toolbar: TextBox busca nome/email/CPF, CheckBox ApenasMotoristasAtivos, ComboBox
- *           Perfil (Admin/Coordenador/Operador/Motorista/Consulta), botao Filtrar trigger
- *           reload DataTable
- * SAIDAS: Pagina renderizada com card header (titulo Gestao de Usuarios, icone fa-users,
- *         breadcrumb Admin > Usuarios), card body com: 1. Toolbar filtros (search box
- *         global, CheckBox ApenasMotoristasAtivos toggle, ComboBox Perfil multi-select,
- *         botao Filtrar primary, botao Limpar Filtros secondary, botao Novo Usuario success
- *         abre modal), 2. DataTable jQuery plugin (colunas: Id hidden, Foto avatar circular
- *         40x40px, Nome, Email, CPF masked, Perfil badge colorido, Status badge Ativo
- *         Verde/Inativo Cinza, UltimoAcesso datetime relativo, Acoes 4 botoes icones:
- *         Visualizar eye azul abre modal readonly, Editar pencil amarelo abre modal form,
- *         Recursos key verde link /Usuarios/Recursos?id=123 gerencia permissoes, Excluir
- *         trash vermelho Alerta.Confirmar soft delete), server-side processing pageLength
- *         25 sortable filterable, language PT-BR, responsive collapse mobile), 3. Modal
- *         Novo/Editar Usuario (form com Foto Upload Dropzone, Nome/Email/CPF/Telefone
- *         inputs masked, Senha/ConfirmaSenha password strength meter, Perfil dropdown,
- *         Motorista toggle se true exibe campos adicionais CNH/Categoria/ValidadeCNH,
- *         Ativo checkbox, submit POST /api/Usuarios/Save AJAX valida insere/atualiza,
- *         success fecha modal exibe AppToast Verde reload DataTable), 4. Modal Visualizar
- *         Usuario (readonly exibe dados completos usuario incluindo DataCriacao/UltimoAcesso/CriadoPor,
- *         lista Recursos com permissoes badge pills, botao Fechar)
- * CHAMADA POR: Menu Admin > Usuarios (link interno sidebar), usuarios com permissao Usuarios.Gerenciar
- *              (role Admin apenas), pagina CRITICA controle de acesso sistema
- * CHAMA: API UsuariosController: GET /api/Usuarios/GetAll (query EF Core Where filters
- *        Ativo/Perfil/SearchTerm LIKE Nome OR Email OR CPF, Include Perfil/Recursos,
- *        paginacao server-side Skip/Take, retorna JSON DataTables format), POST /api/Usuarios/Save
- *        (recebe JSON usuario valida Email unique CPF valido, hash Senha BCrypt, upload
- *        Foto Dropzone salva wwwroot/uploads/usuarios/, insere/atualiza Usuarios table,
- *        retorna JSON success), DELETE /api/Usuarios/Delete (soft delete seta Excluido=true
- *        DataExclusao=now UsuarioExclusaoId=User.Id, retorna JSON success), GET /api/Usuarios/GetById
- *        (carrega usuario completo Include Recursos para modal Visualizar, retorna JSON),
- *        DataTable jQuery plugin (ajax server-side processing, language PT-BR), Alerta.Confirmar
- *        (confirmacao exclusao), AppToast.show Verde (feedback success), Dropzone (upload
- *        foto drag-drop), jQuery Mask Plugin (mascaras CPF/Telefone), password strength
- *        meter zxcvbn library
- * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, DataTables 1.13.4 jQuery plugin, Bootstrap
- *               5.3.8 modals, Font Awesome 6 Duotone, jQuery 3.7.1, jQuery Mask Plugin,
- *               Dropzone.js upload foto, zxcvbn password strength, EF Core 8.0, BCrypt.Net
- *               hash senha
- * OBSERVACOES: 220 linhas pagina CRITICA admin usuarios. DataTable server-side essencial
- *              tabela Usuarios pode ter milhares registros client-side seria lento. Hash
- *              senha BCrypt obrigatorio NUNCA salvar senha plain text banco (BCrypt.HashPassword
- *              gera salt automatico protege rainbow table attacks). Soft delete recomendado:
- *              seta Excluido=true mantem historico auditoria, queries filtram Where Excluido=false.
- *              Email unique constraint banco evita duplicatas. CPF validacao digitos verificadores
- *              client-side e backend. Perfil define permissoes globais: Admin acesso total,
- *              Coordenador gerencia setores/viagens, Operador CRUD basico, Motorista readonly
- *              suas viagens, Consulta readonly geral. Recursos permissoes granulares por
- *              tela/funcionalidade gerenciadas em /Usuarios/Recursos?id=123 (tabela UsuarioRecursos
- *              M:N Usuarios-Recursos define quais menus/acoes usuario pode acessar, Navigation
- *              TreeView filtra menus por UsuarioRecursos).
- * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
- ======================================================================================== *@
+@*
+ ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Usuarios/Index.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página principal de gestão de usuários com DataTable jQuery server-side,
+ *                   filtros avançados, modais para CRUD completo, sistema CRÍTICO de
+ *                   controle de acesso e permissões do FrotiX
+ *
+ * 📥 ENTRADAS     : @page, @model IndexModel, route /Usuarios/Index, filtros via query:
+ *                   textBusca (nome/email/CPF), apenasMotoristasAtivos (checkbox),
+ *                   perfilFiltro (dropdown), botão Filtrar dispara DataTable.ajax.reload()
+ *
+ * 📤 SAÍDAS       : Page renderizada com: Header card (Gestão de Usuários, ícone fa-users),
+ *                   Toolbar filtros (TextBox busca, CheckBox Motoristas, ComboBox Perfil),
+ *                   DataTable renderizado (6 cols: Foto avatar 40x40, Nome, Email, CPF,
+ *                   Perfil badge, Status badge, UltimoAcesso, Ações 4 botões:
+ *                   Visualizar/Editar/Recursos/Excluir), 2 Modais (Novo/Editar Usuario
+ *                   com form + Visualizar readonly)
+ *
+ * 🔗 CHAMADA POR  : Menu Admin > Usuários (sidebar), usuarios com role Admin, página
+ *                   CRÍTICA controle de acesso sistema
+ *
+ * 🔄 CHAMA        : GET /api/Usuarios/GetAll (DataTable server-side filtering),
+ *                   POST /api/Usuarios/Save (criar/editar AJAX), DELETE /api/Usuarios/Delete
+ *                   (soft delete), GET /api/Usuarios/GetById (carregar para visualizar),
+ *                   /Usuarios/Recursos?id=123 (gerenciar permissões), upload foto
+ *                   wwwroot/uploads/usuarios/
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, DataTables 1.13.4 jQuery, Bootstrap 5.3.8,
+ *                   Font Awesome 6 Duotone, jQuery 3.7.1, jQuery Mask Plugin (CPF/tel),
+ *                   Dropzone.js (foto drag-drop), zxcvbn (password strength), Alerta.js,
+ *                   AppToast.js, EF Core 8.0, BCrypt.Net (hash senha)
+ *
+ * 📝 OBSERVAÇÕES  : Total ~220 linhas. **PÁGINA CRÍTICA** - DataTable server-side necessário
+ *                   (tabela Usuários pode ter milhares registros). Hash senha **obrigatório**
+ *                   BCrypt (BCrypt.HashPassword gera salt, protege rainbow table attacks -
+ *                   NUNCA salvar plain text). Soft delete recomendado (seta Excluido=true,
+ *                   mantém auditoria). Email unique constraint (evita duplicatas). CPF
+ *                   validação dígitos verificadores frontend + backend. **Perfis globais:**
+ *                   Admin=acesso total, Coordenador=setores/viagens, Operador=CRUD básico,
+ *                   Motorista=readonly suas viagens, Consulta=readonly geral. **Recursos:**
+ *                   permissões granulares por tela (tabela UsuarioRecursos M:N, gerenciadas
+ *                   em /Usuarios/Recursos?id=123, filtra menu por UsuarioRecursos).
+ *
+ * ⚠️  ISSUES      : Comentário anterior refencia rule "nunca use arroba" - problema antigo
+ *                   em @razor, agora resolvido. Soft delete sem audit trail de quem excluiu.
+ ****************************************************************************************
+ *@
 @page
 @model FrotiX.Pages.Usuarios.IndexModel
 

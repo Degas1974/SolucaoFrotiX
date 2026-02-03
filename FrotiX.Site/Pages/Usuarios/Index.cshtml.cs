@@ -1,14 +1,25 @@
-// ╔══════════════════════════════════════════════════════════════════════════════╗
-// ║ 📚 DOCUMENTAÇÃO INTRA-CÓDIGO — FrotiX                                        ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ ARQUIVO    : Index.cshtml.cs                                                 ║
-// ║ LOCALIZAÇÃO: Pages/Usuarios/                                                 ║
-// ║ FINALIDADE : PageModel para listagem de usuários do sistema.                 ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ DESCRIÇÃO: Grid de usuários ASP.NET Identity. Dados via API/DataTables.      ║
-// ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║ LOTE: 23 — Pages/Usuarios | DATA: 29/01/2026                                 ║
-// ╚══════════════════════════════════════════════════════════════════════════════╝
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Usuarios/Index.cshtml.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : PageModel para gestão completa de usuários (CRUD) com DataTable
+ *                   server-side, sistema crítico de controle de acesso do FrotiX
+ *
+ * 📥 ENTRADAS     : Query parameters filtros (textBusca, apenasMotoristasAtivos,
+ *                   perfilFiltro), requisições AJAX DataTable via GET
+ *
+ * 📤 SAÍDAS       : Page renderizada com DataTable populado via API, modais
+ *                   para novo/editar usuário, toast notificações
+ *
+ * 🔗 CHAMADA POR  : GET /Usuarios/Index (navegação menu Admin > Usuários)
+ *
+ * 🔄 CHAMA        : Nenhuma operação crítica neste PageModel (dados via API)
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core PageModel, System.Net.Http
+ *
+ * 📝 OBSERVAÇÕES  : PageModel minimalista - operações CRUD delegadas para
+ *                   Controllers API (API/UsuariosController.cs).
+ *                   Carregamento de dados: GET /api/Usuarios/GetAll (server-side)
+ **************************************************************************************** */
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
@@ -17,11 +28,29 @@ namespace FrotiX.Pages.Usuarios
 {
     public class IndexModel : PageModel
     {
+        /************************************************************************************
+         * ⚡ FUNÇÃO: OnGet
+         * ------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Processar requisição GET inicial da página de usuários
+         *
+         * 📥 ENTRADAS     : Nenhuma (parâmetros vem via rota /Usuarios/Index)
+         *
+         * 📤 SAÍDAS       : void (renderiza Index.cshtml com PageModel vazio)
+         *
+         * ⬅️ CHAMADO POR  : ASP.NET Core runtime ao acessar rota /Usuarios/Index
+         *
+         * ➡️ CHAMA        : Nenhuma operação (UI carrega dados via JavaScript/AJAX)
+         *
+         * 📝 OBSERVAÇÕES  : Função minimalista - lógica pura delegada para JavaScript.
+         *                   Dados carregados assincronamente via carregarGrid() em
+         *                   usuarios-index.js após DOM ready
+         ************************************************************************************/
         public void OnGet()
         {
             try
             {
-                // Página carrega dados via API/DataTables
+                // [UI] Página carrega dados via API/DataTables após renderização
+                // Nenhuma lógica necessária no servidor (padrão SPA-lite do FrotiX)
             }
             catch (Exception error)
             {

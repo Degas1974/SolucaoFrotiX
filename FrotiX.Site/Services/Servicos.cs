@@ -498,11 +498,35 @@ namespace FrotiX.Services
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalculaCustoLavador
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcula custo de lavadores (terceirizados) diluído por viagem
+         *                   Similar a CalculaCustoOperador, usa custo mensal / média viagens
+         *
+         * 📥 ENTRADAS     : viagemObj [Viagem] - Viagem com DataInicial para cálculo de média
+         *                   _unitOfWork [IUnitOfWork] - Acesso repositórios
+         *
+         * 📤 SAÍDAS       : double - Custo em reais (R$), 0 se sem contrato/lavadores
+         *
+         * ⬅️ CHAMADO POR  : ViagemController.CalculoCusto() [linha 156]
+         *                   CustosViagemController.ObterCustos() [Dashboard]
+         *
+         * ➡️ CHAMA        : _unitOfWork.Contrato.GetAll() [Busca contrato terceirização]
+         *                   _unitOfWork.RepactuacaoContrato.GetAll() [Última repactuação]
+         *                   _unitOfWork.RepactuacaoTerceirizacao.GetFirstOrDefault()
+         *                   CalcularMediaDiariaViagens() [linha 410]
+         *
+         * 📝 OBSERVAÇÕES  : [LOGICA] Fórmula: (QtdLavadores * ValorUnitário) / MédiaViagens
+         *                   [VALIDACAO] Retorna 0 se faltar dados (contrato, qtd, valor)
+         *                   [PERFORMANCE] Usa última repactuação (mais recente)
+         *                   [PATTERN] Segue mesmo padrão que CalculaCustoOperador
+         ****************************************************************************************/
         public static double CalculaCustoLavador(Viagem viagemObj , IUnitOfWork _unitOfWork)
         {
             try
             {
-                // Busca o contrato de lavadores terceirizados mais recente
+                // [DB] Busca o contrato de lavadores terceirizados mais recente
                 var contratoLavadores = _unitOfWork.Contrato
                     .GetAll(c => c.TipoContrato == "Terceirização" && c.ContratoLavadores == true)
                     .OrderByDescending(c => c.DataInicio)
@@ -511,7 +535,7 @@ namespace FrotiX.Services
                 if (contratoLavadores == null)
                     return 0;
 
-                // Busca última repactuação do contrato de lavadores
+                // [DB] Busca última repactuação do contrato de lavadores
                 var topRepactuacao = _unitOfWork.RepactuacaoContrato
                     .GetAll(r => r.ContratoId == contratoLavadores.ContratoId)
                     .OrderByDescending(r => r.DataRepactuacao)
@@ -520,22 +544,23 @@ namespace FrotiX.Services
                 if (topRepactuacao == null)
                     return 0;
 
+                // [DB] Obtém valores de terceirização (QtdLavadores, ValorLavador)
                 var topTerceirizacao = _unitOfWork.RepactuacaoTerceirizacao
                     .GetFirstOrDefault(rt => rt.RepactuacaoContratoId == topRepactuacao.RepactuacaoContratoId);
 
                 if (topTerceirizacao == null || topTerceirizacao.QtdLavadores == null || topTerceirizacao.ValorLavador == null)
                     return 0;
 
-                // Custo mensal total dos lavadores
+                // [LOGICA] Custo mensal total de lavadores = Quantidade × ValorUnitário
                 double custoMensalLavadores = (double)(topTerceirizacao.QtdLavadores.Value * topTerceirizacao.ValorLavador.Value);
 
-                // Calcula média diária de viagens até a data desta viagem
+                // [LOGICA] Calcula média diária de viagens até a data desta viagem
                 double mediaViagens = CalcularMediaDiariaViagens(viagemObj.DataInicial.Value , _unitOfWork);
 
                 if (mediaViagens == 0)
                     return 0;
 
-                // Custo por viagem = Custo Mensal Total / Média de Viagens Mensais
+                // [LOGICA] Dilui custo mensal pela média de viagens: CustoMês / MédiaViagensMês
                 double custoPorViagem = custoMensalLavadores / mediaViagens;
 
                 return custoPorViagem;
@@ -547,18 +572,33 @@ namespace FrotiX.Services
             }
         }
 
-        /// <summary>
-        /// Calcula a média DIÁRIA de viagens realizadas ANTES da data especificada
-        /// Lógica: totalViagensAnteriores / totalDiasDesdeInicio × 30
-        /// </summary>
-        /// <param name="dataViagem">Data da viagem sendo calculada</param>
-        /// <param name="_unitOfWork">Unit of work para acesso ao banco</param>
-        /// <returns>Média mensal de viagens baseada no histórico diário</returns>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalcularMediaDiariaViagens
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcula a média MENSAL de viagens baseada no histórico até a data
+         *                   Fórmula: (totalViagensAnteriores / diasDesdeInicio) × 30
+         *
+         * 📥 ENTRADAS     : dataViagem [DateTime] - Data da viagem sendo calculada
+         *                   _unitOfWork [IUnitOfWork] - Acesso ao repositório de Viagens
+         *
+         * 📤 SAÍDAS       : double - Média de viagens/mês (mínimo 0.1, máximo sem limite)
+         *
+         * ⬅️ CHAMADO POR  : CalculaCustoOperador() [linha 340]
+         *                   CalculaCustoLavador() [linha 377]
+         *
+         * ➡️ CHAMA        : _unitOfWork.Viagem.GetAll() [Filtra viagens "Realizada"]
+         *
+         * 📝 OBSERVAÇÕES  : [LOGICA] Conta viagens com Status = "Realizada"
+         *                   [LOGICA] Considera apenas viagens com DataInicial < dataViagem
+         *                   [VALIDACAO] Se sem histórico, retorna 1.0 (mínimo seguro)
+         *                   [VALIDACAO] Garante mínimo 0.1 para evitar divisão por zero
+         *                   ⚠️ TODO: Usar GetQuery() para query otimizada (veja async)
+         ****************************************************************************************/
         public static double CalcularMediaDiariaViagens(DateTime dataViagem , IUnitOfWork _unitOfWork)
         {
             try
             {
-                // Busca TODAS as viagens realizadas ANTES desta data
+                // [DB] Busca TODAS as viagens realizadas ANTES desta data
                 var viagensAnteriores = _unitOfWork.Viagem
                     .GetAll(v => v.DataInicial < dataViagem && v.Status == "Realizada")
                     .Select(v => v.DataInicial.Value)
@@ -567,27 +607,27 @@ namespace FrotiX.Services
 
                 int totalViagens = viagensAnteriores.Count;
 
-                // Se não há viagens anteriores, retorna 1 (mínimo)
+                // [VALIDACAO] Se não há viagens anteriores, retorna 1 (mínimo seguro)
                 if (totalViagens == 0)
                     return 1.0;
 
-                // Pega a data da PRIMEIRA viagem do histórico
+                // [LOGICA] Pega a data da PRIMEIRA viagem do histórico
                 DateTime primeiraViagem = viagensAnteriores.First();
 
-                // Calcula total de DIAS desde a primeira viagem até esta data
+                // [LOGICA] Calcula total de DIAS desde a primeira viagem até esta data
                 int totalDias = (dataViagem.Date - primeiraViagem.Date).Days;
 
-                // Se for no mesmo dia ou 0 dias, usa 1 como divisor
+                // [VALIDACAO] Se for no mesmo dia ou 0 dias, usa 1 como divisor (evita /0)
                 if (totalDias <= 0)
                     totalDias = 1;
 
-                // Média DIÁRIA = Total de viagens / Total de dias
+                // [LOGICA] Média DIÁRIA = Total de viagens / Total de dias
                 double mediaDiaria = (double)totalViagens / (double)totalDias;
 
-                // Converte para média MENSAL (multiplica por 30)
+                // [LOGICA] Converte para média MENSAL (multiplica por 30)
                 double mediaMensal = mediaDiaria * 30.0;
 
-                // Garante que a média nunca seja zero (mínimo 0.1)
+                // [VALIDACAO] Garante que a média nunca seja zero (mínimo 0.1)
                 return Math.Max(mediaMensal , 0.1);
             }
             catch (Exception error)
@@ -597,17 +637,41 @@ namespace FrotiX.Services
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalcularMediaDiariaViagensAsync
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Versão OTIMIZADA e ASSÍNCRONICADA de CalcularMediaDiariaViagens
+         *                   Usa GetQuery() para executar COUNT e MIN no SQL (performance)
+         *
+         * 📥 ENTRADAS     : dataViagem [DateTime] - Data da viagem sendo calculada
+         *                   _unitOfWork [IUnitOfWork] - Acesso ao repositório (com GetQuery)
+         *
+         * 📤 SAÍDAS       : Task<double> - Média de viagens/mês (mínimo 0.1)
+         *
+         * ⬅️ CHAMADO POR  : CustosViagemController.ObterCustosAsync() [Dashboard]
+         *                   ViagemController.CalculoCustoAsync() [Batch processing]
+         *
+         * ➡️ CHAMA        : _unitOfWork.Viagem.GetQuery() [Query sem materializar]
+         *                   query.Count() [SQL: SELECT COUNT(*)]
+         *                   query.Min() [SQL: SELECT MIN(DataInicial)]
+         *
+         * 📝 OBSERVAÇÕES  : [PERFORMANCE] GetQuery() retorna IQueryable (não materializa)
+         *                   [PERFORMANCE] COUNT e MIN executam no SQL Server (milissegundos)
+         *                   [PERFORMANCE] Debug.WriteLine para log de operações
+         *                   [LOGICA] Mesma fórmula que versão síncrona
+         *                   [DEBUG] Registra cada etapa com [MEDIA QUERY] prefix
+         ****************************************************************************************/
         public static async Task<double> CalcularMediaDiariaViagensAsync(
             DateTime dataViagem ,
             IUnitOfWork _unitOfWork)
         {
             try
             {
+                // [DEBUG] Log de início
                 System.Diagnostics.Debug.WriteLine($"[MEDIA QUERY] Iniciando cálculo para {dataViagem:dd/MM/yyyy}");
 
-                // ✅ USA GetQuery() em vez de GetAll()
-                // GetQuery() retorna IQueryable (não materializa)
-                // Count() e Min() executam no SQL (rápido!)
+                // [PERFORMANCE] GetQuery() retorna IQueryable (não materializa)
+                // Isso permite COUNT() e Min() executarem no SQL Server
                 System.Diagnostics.Debug.WriteLine($"[MEDIA QUERY] Obtendo query (sem materializar)...");
 
                 var query = _unitOfWork.Viagem.GetQuery(v =>
@@ -616,28 +680,26 @@ namespace FrotiX.Services
                     v.Status == "Realizada"
                 );
 
+                // [PERFORMANCE] COUNT executa SELECT COUNT(*) no SQL (milissegundos)
                 System.Diagnostics.Debug.WriteLine($"[MEDIA QUERY] Executando COUNT no SQL...");
-
-                // ✅ Count() executa SELECT COUNT(*) no SQL (milissegundos)
                 int totalViagens = await Task.Run(() => query.Count());
 
                 System.Diagnostics.Debug.WriteLine($"[MEDIA QUERY] Total: {totalViagens}");
 
-                // Se não há viagens anteriores, retorna 1 (mínimo)
+                // [VALIDACAO] Se não há viagens anteriores, retorna 1 (mínimo)
                 if (totalViagens == 0)
                 {
                     System.Diagnostics.Debug.WriteLine($"[MEDIA QUERY] Nenhuma viagem, retornando 1.0");
                     return 1.0;
                 }
 
+                // [PERFORMANCE] MIN executa SELECT MIN(DataInicial) no SQL (milissegundos)
                 System.Diagnostics.Debug.WriteLine($"[MEDIA QUERY] Executando MIN no SQL...");
-
-                // ✅ Min() executa SELECT MIN(DataInicial) no SQL (milissegundos)
                 DateTime primeiraViagem = await Task.Run(() => query.Min(v => v.DataInicial.Value));
 
                 System.Diagnostics.Debug.WriteLine($"[MEDIA QUERY] Primeira viagem: {primeiraViagem:dd/MM/yyyy}");
 
-                // Calcula total de DIAS desde a primeira viagem até esta data
+                // [LOGICA] Calcula total de DIAS desde a primeira viagem até esta data
                 int totalDias = (dataViagem.Date - primeiraViagem.Date).Days;
 
                 if (totalDias <= 0)
@@ -645,13 +707,13 @@ namespace FrotiX.Services
                     totalDias = 1;
                 }
 
-                // Média DIÁRIA = Total de viagens / Total de dias
+                // [LOGICA] Média DIÁRIA = Total de viagens / Total de dias
                 double mediaDiaria = (double)totalViagens / (double)totalDias;
 
-                // Converte para média MENSAL (multiplica por 30)
+                // [LOGICA] Converte para média MENSAL (multiplica por 30)
                 double mediaMensal = mediaDiaria * 30.0;
 
-                // Garante que a média nunca seja zero (mínimo 0.1)
+                // [VALIDACAO] Garante que a média nunca seja zero (mínimo 0.1)
                 double resultadoFinal = Math.Max(mediaMensal , 0.1);
 
                 System.Diagnostics.Debug.WriteLine($"[MEDIA QUERY] ✅ Resultado: {resultadoFinal:F2} viagens/mês ({mediaDiaria:F4}/dia)");
@@ -671,20 +733,44 @@ namespace FrotiX.Services
         // CONVERSÃO DE HTML PARA TEXTO SIMPLES
         // ========================================
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ConvertHtml
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Converte HTML para texto simples, removendo tags e entidades
+         *                   Usa HtmlAgilityPack para parsing robusto
+         *
+         * 📥 ENTRADAS     : html [string] - HTML a ser convertido (pode ser null)
+         *
+         * 📤 SAÍDAS       : string - Texto simples, com \r\n preservado
+         *
+         * ⬅️ CHAMADO POR  : ReportsController.ExportarPdf() [Conversão de conteúdo]
+         *                   GlosaService.ListarDetalhes() [Descrições de items]
+         *
+         * ➡️ CHAMA        : HtmlDocument.LoadHtml() [HtmlAgilityPack]
+         *                   ConvertTo() [Recursivo - linha 569]
+         *                   ConvertContentTo() [Recursivo - linha 626]
+         *
+         * 📝 OBSERVAÇÕES  : [VALIDACAO] Se null, retorna string.Empty
+         *                   [LOGICA] Remove 2 primeiros chars se começarem com "\r\n"
+         *                   [HELPER] Função ConvertTo faz parsing recursivo de nós DOM
+         ****************************************************************************************/
         public static string ConvertHtml(string html)
         {
             try
             {
                 if (html != null)
                 {
+                    // [UI] Parse HTML usando HtmlAgilityPack (robusto com HTML malformado)
                     HtmlDocument doc = new HtmlDocument();
                     doc.LoadHtml(html);
 
+                    // [LOGICA] Usa StringWriter + ConvertTo para extrair texto recursivamente
                     StringWriter sw = new StringWriter();
                     ConvertTo(doc.DocumentNode , sw);
                     sw.Flush();
                     var resultado = sw.ToString();
 
+                    // [VALIDACAO] Remove \r\n inicial se presente (artefato do parsing)
                     if (resultado.Length >= 4)
                     {
                         if (resultado != "" && resultado.Substring(0 , 4) == "\r\n")
