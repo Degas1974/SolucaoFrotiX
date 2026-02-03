@@ -269,6 +269,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: EditarAporte
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Editar movimentação de aporte (reforço orçamentário) existente
+         *                   Recalcula saldo do empenho com diferença de valores
+         * 📥 ENTRADAS     : [MovimentacaoEmpenho] movimentacao - MovimentacaoId, Valor, EmpenhoId
+         * 📤 SAÍDAS       : [IActionResult] JSON success/message
+         * ⬅️ CHAMADO POR  : JavaScript das páginas de Contratos/Atas via AJAX POST
+         * ➡️ CHAMA        : MovimentacaoEmpenho.GetFirstOrDefault(), Update(), Empenho.Update(), Save()
+         * 📝 OBSERVAÇÕES  : Calcula diferença entre valor anterior e novo, atualiza SaldoFinal
+         ****************************************************************************************/
         [Route("EditarAporte")]
         [HttpPost]
         [Consumes("application/json")]
@@ -309,6 +320,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: EditarAnulacao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Editar movimentação de anulação (glosa/redução) existente
+         *                   Recalcula saldo do empenho com diferença de valores
+         * 📥 ENTRADAS     : [MovimentacaoEmpenho] movimentacao - MovimentacaoId, Valor, EmpenhoId
+         * 📤 SAÍDAS       : [IActionResult] JSON success/message
+         * ⬅️ CHAMADO POR  : JavaScript das páginas de Contratos/Atas via AJAX POST
+         * ➡️ CHAMA        : MovimentacaoEmpenho.GetFirstOrDefault(), Update(), Empenho.Update(), Save()
+         * 📝 OBSERVAÇÕES  : Calcula diferença entre valor anterior e novo, operação inversa de aporte
+         ****************************************************************************************/
         [Route("EditarAnulacao")]
         [HttpPost]
         [Consumes("application/json")]
@@ -349,6 +371,18 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DeleteMovimentacao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Excluir movimentação de empenho (aporte/anulação) ou empenho de multa
+         *                   Reverte cálculo de saldo conforme tipo de movimentação
+         * 📥 ENTRADAS     : [DeleteMovimentacaoWrapperViewModel] model - mEmpenho ou mEmpenhoMulta
+         * 📤 SAÍDAS       : [IActionResult] JSON success/message
+         * ⬅️ CHAMADO POR  : JavaScript das páginas de Contratos/Atas via AJAX POST
+         * ➡️ CHAMA        : MovimentacaoEmpenho.GetFirstOrDefault(), Remove(), Empenho.Update(),
+         *                   MovimentacaoEmpenhoMulta.GetFirstOrDefault(), EmpenhoMulta.Update(), Save()
+         * 📝 OBSERVAÇÕES  : Inverte cálculo: se era aporte (A) diminui, se era anulação (G) aumenta
+         ****************************************************************************************/
         [Route("DeleteMovimentacao")]
         [HttpPost]
         public IActionResult DeleteMovimentacao([FromBody] DeleteMovimentacaoWrapperViewModel model)
@@ -480,6 +514,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaAporte
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar todas as movimentações de aporte de um empenho específico
+         *                   Formata valores monetários e datas para exibição em grid
+         * 📥 ENTRADAS     : [Guid] Id - ID do Empenho
+         * 📤 SAÍDAS       : [IActionResult] JSON com lista de aportes formatados
+         * ⬅️ CHAMADO POR  : JavaScript das páginas de Contratos/Atas via AJAX GET
+         * ➡️ CHAMA        : MovimentacaoEmpenho.GetAll() - Filtra por TipoMovimentacao="A"
+         * 📝 OBSERVAÇÕES  : Ordena por data descendente (mais recentes primeiro)
+         ****************************************************************************************/
         [Route("ListaAporte")]
         [HttpGet]
         public IActionResult ListaAporte(Guid Id)
@@ -513,6 +558,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaAnulacao
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar todas as movimentações de anulação de um empenho específico
+         *                   Formata valores monetários e datas para exibição em grid
+         * 📥 ENTRADAS     : [Guid] Id - ID do Empenho
+         * 📤 SAÍDAS       : [IActionResult] JSON com lista de anulações formatadas
+         * ⬅️ CHAMADO POR  : JavaScript das páginas de Contratos/Atas via AJAX GET
+         * ➡️ CHAMA        : MovimentacaoEmpenho.GetAll() - Filtra por TipoMovimentacao="G"
+         * 📝 OBSERVAÇÕES  : Ordena por data descendente (mais recentes primeiro)
+         ****************************************************************************************/
         [Route("ListaAnulacao")]
         [HttpGet]
         public IActionResult ListaAnulacao(Guid Id)
@@ -546,16 +602,30 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: SaldoNotas
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcular saldo total de notas fiscais de um empenho
+         *                   Subtrai glosas do valor total das notas para obter saldo disponível
+         * 📥 ENTRADAS     : [Guid] Id - ID do Empenho
+         * 📤 SAÍDAS       : [IActionResult] JSON { saldonotas: double }
+         * ⬅️ CHAMADO POR  : JavaScript das páginas de Contratos/Atas via AJAX GET
+         * ➡️ CHAMA        : NotaFiscal.GetAll() - Filtra por EmpenhoId
+         * 📝 OBSERVAÇÕES  : Saldo = SUM(ValorNF - ValorGlosa) para todas as notas do empenho
+         ****************************************************************************************/
         [Route("SaldoNotas")]
         [HttpGet]
         public IActionResult SaldoNotas(Guid Id)
         {
             try
             {
+                // [DB] Buscar todas as notas fiscais vinculadas a este empenho
                 var notas = _unitOfWork.NotaFiscal.GetAll(u => u.EmpenhoId == Id);
 
                 double totalnotas = 0;
 
+                // [LOGICA] Calcular saldo: somar (ValorNF - ValorGlosa) para cada nota
+                // Isso representa o valor ainda disponível que não foi glosado
                 foreach (var nota in notas)
                 {
                     totalnotas = (double)(totalnotas + (nota.ValorNF - nota.ValorGlosa));
@@ -660,6 +730,21 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: EditaEmpenho
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Editar dados de um empenho existente no banco de dados
+         *                   Valida duplicidade de número e limpa GUIDs vazios
+         * 📥 ENTRADAS     : [Empenho] empenho - Objeto com dados atualizados
+         * 📤 SAÍDAS       : [JsonResult] success, message
+         * ⬅️ CHAMADO POR  : JavaScript das páginas de Contratos/Atas via AJAX POST
+         * ➡️ CHAMA        : Empenho.GetFirstOrDefault(), Update(), Save()
+         *
+         * ⚠️  VALIDAÇÕES:
+         *    - Verifica se empenho e EmpenhoId são válidos
+         *    - Verifica duplicidade (excluindo o próprio registro)
+         *    - Converte Guid.Empty para null em AtaId e ContratoId
+         ****************************************************************************************/
         [Route("EditaEmpenho")]
         [HttpPost]
         [Consumes("application/json")]

@@ -1204,20 +1204,51 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
     // ==========================================
     // FUNÇÕES DE LOADING - PADRÃO FROTIX (Overlay)
     // ==========================================
+    /***
+     * ⚡ FUNÇÃO: mostrarLoading
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Exibir overlay de loading com mensagem customizável
+     *
+     * 📥 ENTRADAS     : mensagem [string] - Texto a exibir (padrão: 'Carregando...')
+     *
+     * 📤 SAÍDAS       : void - Modifica visibilidade do #loadingOverlayEvento
+     *
+     * ⬅️ CHAMADO POR  : Formulário submit [linha 1319]
+     *                   Carregamento de viagens [linha 1331]
+     *
+     * ➡️ CHAMA        : jQuery $('#loadingMessage', '#loadingOverlayEvento')
+     ***/
     function mostrarLoading(mensagem = 'Carregando...') {
         try {
+            // [UI] Atualiza texto da mensagem de loading
             $('#loadingMessage').text(mensagem);
+            // [UI] Exibe overlay com display flex para centralização
             $('#loadingOverlayEvento').css('display', 'flex');
         } catch (error) {
-            console.error('Erro ao mostrar loading:', error);
+            Alerta.TratamentoErroComLinha("UpsertEvento.cshtml", "mostrarLoading", error);
         }
     }
 
+    /***
+     * ⚡ FUNÇÃO: esconderLoading
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Ocultar overlay de loading após operação completa
+     *
+     * 📥 ENTRADAS     : Nenhuma
+     *
+     * 📤 SAÍDAS       : void - Modifica visibilidade do #loadingOverlayEvento
+     *
+     * ⬅️ CHAMADO POR  : DataTable init check [linha 1342]
+     *                   Timeout de segurança [linha 1355]
+     *
+     * ➡️ CHAMA        : jQuery('#loadingOverlayEvento')
+     ***/
     function esconderLoading() {
         try {
+            // [UI] Esconde overlay de loading (display none)
             $('#loadingOverlayEvento').css('display', 'none');
         } catch (error) {
-            console.error('Erro ao esconder loading:', error);
+            Alerta.TratamentoErroComLinha("UpsertEvento.cshtml", "esconderLoading", error);
         }
     }
 </script>
@@ -1230,15 +1261,34 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
             // ==========================================
             // VALIDAÇÃO: Data Final >= Data Inicial
             // ==========================================
+            /***
+             * ⚡ FUNÇÃO: validarDatas
+             * --------------------------------------------------------------------------------------
+             * 🎯 OBJETIVO     : Validar que data final não é menor que data inicial
+             *
+             * 📥 ENTRADAS     : Nenhuma (lê valores dos inputs #txtDataInicialEvento,
+             *                   #txtDataFinalEvento)
+             *
+             * 📤 SAÍDAS       : boolean - true se datas válidas, false se data final < inicial
+             *
+             * ⬅️ CHAMADO POR  : form.on('submit') [linha 1295]
+             *
+             * ➡️ CHAMA        : jQuery('#txtDataInicialEvento', '#txtDataFinalEvento')
+             *
+             * 📝 OBSERVAÇÕES  : [VALIDACAO] Regra de negócio: Data final não pode ser anterior
+             *                   à data inicial do evento. Retorna true para dados vazios (assume
+             *                   como válido - validação HTML5 fará o resto).
+             ***/
             function validarDatas() {
                 try {
                     const dataInicial = $('#txtDataInicialEvento').val();
                     const dataFinal = $('#txtDataFinalEvento').val();
-                    
+
                     if (dataInicial && dataFinal) {
+                        // [LOGICA] Comparar datas para validação de intervalo
                         const dtInicial = new Date(dataInicial);
                         const dtFinal = new Date(dataFinal);
-                        
+
                         if (dtFinal < dtInicial) {
                             return false;
                         }
@@ -1385,7 +1435,28 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
     window.eventoId = eventoId;
 
 
-    // FUNÇÃO PARA PREENCHER SETOR AO SELECIONAR REQUISITANTE
+    /***
+     * ⚡ FUNÇÃO: RequisitanteEventoValueChange
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Preencher automaticamente o setor quando requisitante é selecionado
+     *                   no DropDownTree (lstRequisitanteEvento)
+     *
+     * 📥 ENTRADAS     : args [Syncfusion DropDownTree EventArgs] - Contém nodeData/itemData
+     *                   com ID do requisitante selecionado
+     *
+     * 📤 SAÍDAS       : void - Atualiza #txtSetorRequisitante com setor e #ddlSetorRequisitanteEvento
+     *                   com ID do setor (oculto)
+     *
+     * ⬅️ CHAMADO POR  : DropDownTree select/change event [linha 834-835]
+     *                   Event bind manual [linha 1490-1491]
+     *
+     * ➡️ CHAMA        : GET /Viagens/UpsertEvento?handler=PegaSetor [AJAX]
+     *                   jQuery('#txtSetorRequisitante', '#ddlSetorRequisitanteEvento')
+     *
+     * 📝 OBSERVAÇÕES  : [AJAX] Chamada ao servidor para buscar setor via requisitanteId.
+     *                   Múltiplas estratégias de extração de ID (nodeData, itemData, value,
+     *                   dataset.uid). Fallback para leitura direta do componente Syncfusion.
+     ***/
     window.RequisitanteEventoValueChange = function (args) {
         try {
             console.log('Event Triggered: RequisitanteEventoValueChange', args);
@@ -1431,7 +1502,14 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
                 txtSetor.classList.add('pulse-input'); // Feedback visual opcional
             }
 
-            // Busca o setor do requisitante
+            /***
+             * [AJAX] Endpoint: GET /Viagens/UpsertEvento?handler=PegaSetor
+             * ============================================================================
+             * 📥 ENVIA        : id [Guid] - ID do requisitante selecionado
+             * 📤 RECEBE       : { success: bool, data: setorId, setorNome: string }
+             * 🎯 MOTIVO       : Buscar setor vinculado ao requisitante para popular campo
+             *                   readonly txtSetorRequisitante e dropdown oculto
+             ***/
             $.ajax({
                 url: "/Viagens/UpsertEvento?handler=PegaSetor",
                 method: "GET",

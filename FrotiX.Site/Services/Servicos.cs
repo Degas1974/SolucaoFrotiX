@@ -47,36 +47,68 @@ namespace FrotiX.Services
         // CÁLCULOS DE CUSTOS
         // ========================================
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalculaCustoCombustivel
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcula custo de combustível de uma viagem usando consumo e preço
+         *                   Busca último preço de abastecimento; se não houver, usa média
+         *
+         * 📥 ENTRADAS     : viagemObj [Viagem] - Viagem com KmInicial, KmFinal, VeiculoId
+         *                   _unitOfWork [IUnitOfWork] - Acesso aos repositórios
+         *
+         * 📤 SAÍDAS       : double - Custo em reais (R$), mínimo 0
+         *
+         * ⬅️ CHAMADO POR  : ViagemController.CalculoCusto() [Controller]
+         *                   CustosViagemController.ObterCustos() [Dashboard]
+         *
+         * ➡️ CHAMA        : _unitOfWork.ViewVeiculos.GetFirstOrDefault() [Repository]
+         *                   _unitOfWork.Abastecimento.GetAll() [Repository]
+         *                   _unitOfWork.MediaCombustivel.GetAll() [Fallback]
+         *
+         * 📝 OBSERVAÇÕES  : [REGRA] Se consumo zerado (sem histórico), assume 10 km/L
+         *                   [LOGICA] KM consumida / consumo(km/L) * preço/litro
+         ****************************************************************************************/
         public static double CalculaCustoCombustivel(Viagem viagemObj , IUnitOfWork _unitOfWork)
         {
             try
             {
+                // [DB] Buscar veículo para obter tipo de combustível
                 var veiculoObj = _unitOfWork.ViewVeiculos.GetFirstOrDefault(v => v.VeiculoId == viagemObj.VeiculoId);
 
-                var combustivelObj = _unitOfWork.Abastecimento.GetAll(a => a.VeiculoId == viagemObj.VeiculoId).OrderByDescending(o => o.DataHora);
+                // [LOGICA] Buscar últimos abastecimentos do veículo, ordenado por data DESC
+                var combustivelObj = _unitOfWork.Abastecimento
+                    .GetAll(a => a.VeiculoId == viagemObj.VeiculoId)
+                    .OrderByDescending(o => o.DataHora);
 
-                // Verifica se tem abastecimento
+                // [VALIDACAO] Obter preço unitário: usa último abastecimento OU média histórica
                 double ValorCombustivel = 0;
                 if (combustivelObj.FirstOrDefault() == null)
                 {
-                    var abastecimentoObj = _unitOfWork.MediaCombustivel.GetAll(a => a.CombustivelId == veiculoObj.CombustivelId).OrderByDescending(o => o.Ano).ThenByDescending(o => o.Mes);
+                    // [PERFORMANCE] Fallback: usa média de preços históricos do combustível
+                    var abastecimentoObj = _unitOfWork.MediaCombustivel
+                        .GetAll(a => a.CombustivelId == veiculoObj.CombustivelId)
+                        .OrderByDescending(o => o.Ano)
+                        .ThenByDescending(o => o.Mes);
                     ValorCombustivel = (double)abastecimentoObj.FirstOrDefault().PrecoMedio;
                 }
                 else
                 {
+                    // [DB] Usa valor unitário do último abastecimento registrado
                     ValorCombustivel = (double)combustivelObj.FirstOrDefault().ValorUnitario;
                 }
 
+                // [LOGICA] Calcula quilometragem percorrida
                 var Quilometragem = viagemObj.KmFinal - viagemObj.KmInicial;
 
                 var ConsumoVeiculo = Convert.ToDouble(veiculoObj.Consumo);
 
-                // Ainda não teve Abastecimento
+                // [REGRA] Se consumo é zero (veículo novo sem histórico), usa 10 km/L como padrão
                 if (ConsumoVeiculo == 0)
                 {
                     ConsumoVeiculo = 10;
                 }
 
+                // [LOGICA] Fórmula: (KM / Consumo) * ValorLitro
                 var CustoViagem = (Quilometragem / ConsumoVeiculo) * ValorCombustivel;
 
                 return (double)CustoViagem;
@@ -88,25 +120,49 @@ namespace FrotiX.Services
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalculaCustoVeiculo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcula custo de operação do veículo proporcional ao tempo de uso
+         *                   Considera dias úteis (seg-sex) e horário operacional (6h-22h)
+         *
+         * 📥 ENTRADAS     : viagemObj [Viagem] - Viagem com DataInicial, DataFinal, HoraInicio, HoraFim
+         *                   _unitOfWork [IUnitOfWork] - Acesso para buscar valor do veículo
+         *
+         * 📤 SAÍDAS       : double - Custo em reais (R$), máximo = valor mensal do contrato
+         *
+         * ⬅️ CHAMADO POR  : ViagemController.CalculoCusto() [linha 156]
+         *                   CustosViagemController.ObterCustos() [Dashboard]
+         *
+         * ➡️ CHAMA        : ObterValorUnitarioVeiculo() [linha 267]
+         *                   CalcularMinutosUteisViagem() [linha 197]
+         *
+         * 📝 OBSERVAÇÕES  : [REGRA] Horário operacional = 6h às 22h (16h/dia)
+         *                   [REGRA] Dias úteis = 22 dias/mês (segunda a sexta)
+         *                   [VALIDACAO] Nunca retorna > valor mensal (cap em contrato)
+         ****************************************************************************************/
         public static double CalculaCustoVeiculo(Viagem viagemObj , IUnitOfWork _unitOfWork)
         {
             try
             {
+                // [DB] Buscar veículo e seu valor unitário (contrato/ata/padrão)
                 var veiculoObj = _unitOfWork.Veiculo.GetFirstOrDefault(v => v.VeiculoId == viagemObj.VeiculoId);
                 double valorUnitario = ObterValorUnitarioVeiculo(veiculoObj , _unitOfWork);
 
-                const int HORAS_UTEIS_DIA = 16; // 6h às 22h
-                const int DIAS_UTEIS_MES = 22; // Apenas dias úteis
+                const int HORAS_UTEIS_DIA = 16; // [REGRA] 6h às 22h
+                const int DIAS_UTEIS_MES = 22; // [REGRA] Apenas dias úteis (seg-sex)
 
+                // [LOGICA] Calcula minutos úteis disponíveis em um mês
                 double minutosMesUteis = DIAS_UTEIS_MES * HORAS_UTEIS_DIA * 60; // 21.120 minutos
                 double custoMinutoVeiculo = valorUnitario / minutosMesUteis;
 
+                // [DADOS] Converte datas + horas para DateTime completo
                 DateTime dataHoraInicio = viagemObj.DataInicial.Value.Date.Add(viagemObj.HoraInicio.Value.TimeOfDay);
                 DateTime dataHoraFim = viagemObj.DataFinal.Value.Date.Add(viagemObj.HoraFim.Value.TimeOfDay);
 
                 TimeSpan duracaoTotal = dataHoraFim - dataHoraInicio;
 
-                // Calcula minutos considerando dias úteis e horário operacional
+                // [LOGICA] Calcula minutos considerando dias úteis e horário operacional
                 double minutosViagemUteis = CalcularMinutosUteisViagem(
                     dataHoraInicio ,
                     dataHoraFim ,
@@ -116,7 +172,7 @@ namespace FrotiX.Services
 
                 double custoCalculado = minutosViagemUteis * custoMinutoVeiculo;
 
-                // Garante que nunca ultrapasse o valor mensal
+                // [VALIDACAO] Garante que nunca ultrapasse o valor mensal do contrato
                 return Math.Min(custoCalculado , valorUnitario);
             }
             catch (Exception error)

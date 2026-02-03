@@ -62,13 +62,13 @@ Este arquivo documenta **problemas técnicos identificados** durante a análise 
 
 **Data de Análise:** 03/02/2026
 **Total de Arquivos Analisados:** 105 CSHTML (arquivos 11-115)
-**Arquivos Críticos Identificados:** 9 arquivos
-**CSS Inline Total Detectado:** ~6500 linhas
+**Arquivos Críticos Identificados:** 10 arquivos
+**CSS Inline Total Detectado:** ~6880 linhas
 **JavaScript Inline Total Detectado:** ~8300 linhas
 
 ### Distribuição por Gravidade:
 - 🔴 **CRÍTICA:** 4 arquivos (Agenda, DashboardAbastecimento, Multa, ControleLavagem)
-- 🟡 **ALTA:** 5 arquivos (DashboardMotoristas, DashboardViagens, Viagens/Index, AnalyticsDashboard, Abastecimento/Index)
+- 🟡 **ALTA:** 6 arquivos (DashboardMotoristas, DashboardViagens, DashboardLavagem, Viagens/Index, AnalyticsDashboard, Abastecimento/Index)
 - 🟠 **MÉDIA:** 34 arquivos (dashboards menores, CRUDs, formulários)
 - 🟢 **BAIXA:** 52 arquivos (CRUDs simples, páginas pequenas)
 
@@ -633,6 +633,76 @@ function salvarLavagem() {
 
 ---
 
+### 10. **Manutencao/DashboardLavagem.cshtml** - GRAVIDADE: 🟡 ALTA
+
+**Localização:** `FrotiX.Site/Pages/Manutencao/DashboardLavagem.cshtml`
+**Linhas:** 728
+**Data Análise:** 03/02/2026
+
+#### Problemas Identificados:
+
+**a) CSS Inline Excessivo (383 linhas)**
+```cshtml
+@section HeadBlock {
+    <style>
+        /* ~383 linhas de CSS inline */
+        /* Paleta, cards, charts, heatmap, tabelas */
+    </style>
+}
+```
+- **Impacto:** CSS sem cache, difícil manutenção, cresce acoplamento com a view
+- **Solução:** Extrair para `/wwwroot/css/manutencao/dashboard-lavagem.css`
+
+**b) JavaScript Externo Monolítico (787 linhas)**
+```javascript
+// wwwroot/js/dashboards/dashboard-lavagem.js
+// Init + filtros + renderização de gráficos + tabelas no mesmo arquivo
+```
+- **Impacto:** Arquivo grande e com múltiplas responsabilidades
+- **Solução:** Modularizar em arquivos menores (init, charts, tables, utils)
+
+**c) Carregamento de Gráficos sem Lazy Loading**
+```javascript
+await Promise.allSettled([
+  carregarEstatisticasGerais(),
+  carregarGraficosDiaSemana(),
+  carregarGraficosHorario(),
+  carregarGraficosEvolucao(),
+  carregarTopLavadores(),
+  carregarTopVeiculos(),
+  carregarHeatmap(),
+  carregarCategoria(),
+  carregarTabelaLavadores(),
+  carregarTabelaVeiculos()
+]);
+```
+- **Impacto:** Carga inicial pesada em períodos longos
+- **Solução:** Renderizar gráficos sob demanda (IntersectionObserver ou carregamento por seção)
+
+#### Plano de Refatoração:
+```markdown
+1. Extrair CSS (383 linhas)
+   - Criar: /wwwroot/css/manutencao/dashboard-lavagem.css
+
+2. Modularizar JavaScript (787 linhas)
+   - /wwwroot/js/dashboards/dashboard-lavagem-init.js
+   - /wwwroot/js/dashboards/dashboard-lavagem-charts.js
+   - /wwwroot/js/dashboards/dashboard-lavagem-tables.js
+   - /wwwroot/js/dashboards/dashboard-lavagem-utils.js
+
+3. Implementar Lazy Loading de gráficos
+   - Renderizar gráficos quando seção ficar visível
+   - Evitar carga inicial de todos os charts
+
+4. Resultado Esperado
+   - De: 728 linhas → Para: ~345 linhas
+   - CSS: 0 linhas inline
+```
+
+**Estimativa de Redução:** 728 → ~345 linhas (53% redução)
+
+---
+
 ## 📊 Resumo Comparativo - Expandido
 
 | Arquivo | Linhas Atual | Linhas Após Refatoração | Redução | CSS Inline Atual | JS Inline Atual | Gravidade |
@@ -643,10 +713,11 @@ function salvarLavagem() {
 | **ControleLavagem.cshtml** | 629 | ~165 | **-74%** | 480 linhas | 150 linhas | 🟡 ALTA |
 | **DashboardMotoristas.cshtml** | 1523 | ~550 | **-64%** | 250 linhas | 400 linhas | 🟡 ALTA |
 | **DashboardViagens.cshtml** | 1634 | ~650 | **-60%** | 300 linhas | 500 linhas | 🟡 ALTA |
+| **DashboardLavagem.cshtml** | 728 | ~345 | **-53%** | 383 linhas | 0 linhas (JS externo 787) | 🟡 ALTA |
 | **Abastecimento/Index.cshtml** | 1340 | ~400 | **-70%** | 150 linhas | 800+ linhas | 🟡 ALTA |
 | **Viagens/Index.cshtml** | 1289 | ~450 | **-65%** | 180 linhas | 200 linhas | 🟡 ALTA |
 | **Intel/AnalyticsDashboard.cshtml** | 1856 | ~650 | **-65%** | 300 linhas | 500 linhas | 🟡 ALTA |
-| **TOTAL 9 ARQUIVOS** | **15787** | **~5265** | **-67%** | **3279** | **4888+** | - |
+| **TOTAL 10 ARQUIVOS** | **16515** | **~5610** | **-66%** | **3662** | **4888+** | - |
 
 ---
 

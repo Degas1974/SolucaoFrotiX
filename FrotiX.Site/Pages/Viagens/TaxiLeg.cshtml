@@ -1,3 +1,39 @@
+@*
+ * ⚡ ARQUIVO: Pages/Viagens/TaxiLeg.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de edição/criação de viagens (Legacy "TaxiLeg") com suporte a:
+ *                   ficha vistoria upload, requisitante/setor dropdowns, motorista/veículo,
+ *                   horários, quilometragem, combustível inicial/final, descrição Word Editor
+ *
+ * 📥 ENTRADAS     : Model FrotiX.Pages.Viagens.TaxiLegModel, @page /Viagens/TaxiLeg,
+ *                   Form inputs (txtNoFichaVistoria, txtDataInicial, txtHoraInicial,
+ *                   lstFinalidade, txtOrigem, lstMotorista, lstVeiculo, txtKmInicial,
+ *                   ddtCombustivelInicial, ddtRequisitante, txtRamalRequisitante,
+ *                   ddtSetor, txtFile upload ficha, Kendo RichTextEditor descrição)
+ *
+ * 📤 SAÍDAS       : Renderização página profile-card-1 (legacy design), modal requisitante,
+ *                   modal setor, form POST /Viagens/Upsert com validações JavaScript,
+ *                   preview ficha vistoria img #imgViewer
+ *
+ * 🔗 CHAMADA POR  : Link menu Viagens > Adicionar/Editar, rota /Viagens/Upsert?id={viagem_id}
+ *                   ou /Viagens/Upsert (novo)
+ *
+ * 🔄 CHAMA        : TaxiLegModel (code-behind), API endpoints (FichaExistente, PegaSetor,
+ *                   PegaRamal, VerificaMotoristaViagem, VerificaVeiculoViagem,
+ *                   PegaKmAtualVeiculo, AdicionarRequisitante, AdicionarSetor, PegaFicha),
+ *                   Kendo RichTextEditor, Syncfusion DropdownTree
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, TaxiLegModel, Syncfusion EJ2 DropdownTree/RTE,
+ *                   Kendo UI RichTextEditor, jQuery, Bootstrap 5 (legacy profile-card),
+ *                   Font Awesome 6 Duotone, fetch/AJAX $.ajax, moment.js (date validation)
+ *
+ * 📝 OBSERVAÇÕES  : 1217 linhas. Página COMPLEXA com validações lado-cliente extensas
+ *                   (12+ focusout handlers para validação data/hora/km), 2 modais (requisitante,
+ *                   setor), AJAX handlers múltiplos, ficha vistoria upload com preview
+ *                   base64, descrição Word Editor (SFDT format). Legacy design profile-card
+ *                   (não FrotiX-aligned). Validações duplicadas (data final < data inicial
+ *                   2 vezes). SweetAlert confirmations antiquadas (swal em vez de Alerta).
+ * *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 @using Syncfusion.EJ2

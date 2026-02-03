@@ -1,3 +1,31 @@
+@*
+ * ⚡ ARQUIVO: Pages/Viagens/Upsert.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário completo criar/editar viagem com campos viagem (data/hora, motorista, veículo,
+ *                   origem, destino, KM), ficha vistoria (imagem preview), descrição viagem (Kendo Editor),
+ *                   múltiplos modais (ocorrências, anexos), validações Syncfusion, integração com DocumentEditor
+ * 📥 ENTRADAS     : @page /Viagens/Upsert, @model UpsertModel, route parameter id para edição (opcional),
+ *                   campos viagem (DateTime DataViagem, MotoristaId, VeiculoId, Origem, Destino, KmPercorrido, etc),
+ *                   upload ficha vistoria (imagem jpeg base64), input Kendo Editor descrição viagem (sfdt format)
+ * 📤 SAÍDAS       : POST /api/Viagem/Insere ou Edita (JSON), redirect /Viagens/Index, AppToast feedback,
+ *                   modal confirmação finalização com IA validação Z-Score, preview ficha vistoria, campo descrição
+ *                   texto rico (Kendo DocumentEditor), ações CRUD (salvar, cancelar, deletar)
+ * 🔗 CHAMADA POR  : Viagens/Index (botão "Nova Viagem", editar linha viagem), menu principal "Cadastros > Viagens > Upsert"
+ * 🔄 CHAMA        : /api/Viagem/Insere, /api/Viagem/Edita, /api/Viagem/Detalhes, ~/js/cadastros/viagem_upsert.js
+ *                   (JavaScript ~500 linhas - validações, upload ficha, descrição SFDT), Kendo Editor (online),
+ *                   Syncfusion DropDowns (MotoristaId, VeiculoId, etc), FileUpload (fichaVistoria),
+ *                   AppToast feedback (sucesso/erro), FrotiX helpers
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, UpsertModel (code-behind), Syncfusion EJ2 (DropDowns, DatePicker),
+ *                   Kendo Mvc (Editor DocumentEditor SFDT editor), Bootstrap 5, jQuery, viagem_upsert.js,
+ *                   AppToast.js (notificações), Alerta.js (tratamento erros), FtxSpin (loading),
+ *                   Font Awesome Duotone (fa-route, fa-upload-cloud), CSS inline (card padrão FrotiX, ~400 linhas)
+ * 📝 OBSERVAÇÕES  : Total: ~1100 linhas. ISSUES: CSS inline ~400 linhas (extrair em futuro), JavaScript inline ~100 linhas
+ *                   (mover para viagem_upsert.js), Kendo Editor SFDT formato Word Document (complexo, UTF8 encoding),
+ *                   preview ficha vistoria dinamicamente (base64 ou default image cache-busting), validações múltiplas,
+ *                   IA inteligente Z-Score finalização (integração AI), sem lazy loading descrição SFDT editor.
+ *                   ViewData: Title "Viagens", PageName "viagens_upsert", Category1 "Cadastros", PageIcon "fa-route"
+ *@
+
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 @using Syncfusion.EJ2.DropDowns;

@@ -34,6 +34,36 @@
  *                   adicionar ViewData breadcrumb, panel wrapper FrotiX, botão "Finalizar Devolução",
  *                   ordenação/filtros DataTable, destaque visual itens críticos (tempo > X dias).
  *****************************************************************************************@
+@*
+ * ⚡ ARQUIVO: Pages/Viagens/ItensPendentes.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Listagem de viagens com itens pendentes de devolução (Documento,
+ *                   Cartão Abastecimento, Cinta, Tablet, Arla, Cabo) via tabela Bootstrap
+ *
+ * 📥 ENTRADAS     : Model.ViagensComItensPendentes (IList<Viagem> filtrada - Status="Realizada"
+ *                   com 6 verificações: Entregue=true AND Devolvido=false)
+ *
+ * 📤 SAÍDAS       : <table class="table table-striped table-bordered"> 4 colunas
+ *                   (Motorista, Veículo, Data Viagem, Itens Pendentes), renderização
+ *                   foreach @foreach (var item in Model.ViagensComItensPendentes)
+ *
+ * 🔗 CHAMADA POR  : Link menu "Viagens > Itens Pendentes", route /Viagens/ItensPendentes,
+ *                   Modelo ItensPendentesModel (Pages/Viagens/ItensPendentes.cshtml.cs)
+ *
+ * 🔄 CHAMA        : Model.ViagensComItensPendentes (LINQ query Status="Realizada" com 6 ORs),
+ *                   item.Motorista.Nome, item.Veiculo.Placa, item.DataInicial.ToString()
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, ItensPendentesModel (code-behind),
+ *                   Bootstrap 5 (table, table-striped, table-bordered, container, my-4),
+ *                   Viagem model (12 propriedades item: Documento, CartaoAbastecimento,
+ *                   Cinta, Tablet, Arla, Cabo com suffix Entregue/Devolvido)
+ *
+ * 📝 OBSERVAÇÕES  : 58 linhas. Página SIMPLES de controle pendências. SEM breadcrumb/
+ *                   heading config completo. Potencial NullReferenceException se
+ *                   DataInicial null - usar ?? operator. Para melhorar: adicionar
+ *                   ViewData breadcrumb, panel wrapper FrotiX, botão "Finalizar Devolução",
+ *                   DataTable com ordenação/filtros, destaque visual itens críticos
+ * *@
 @page
 @model FrotiX.Pages.Viagens.ItensPendentesModel
 @{

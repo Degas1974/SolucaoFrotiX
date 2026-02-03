@@ -134,6 +134,18 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Excluir um encarregado do banco de dados
+         *                   Valida se não possui vínculos com contratos antes de deletar
+         * 📥 ENTRADAS     : [EncarregadoViewModel] model - contém EncarregadoId
+         * 📤 SAÍDAS       : [IActionResult] JSON success/message
+         * ⬅️ CHAMADO POR  : JavaScript (AJAX) da página Encarregados via DELETE
+         * ➡️ CHAMA        : Encarregado.GetFirstOrDefault(), EncarregadoContrato.GetFirstOrDefault(),
+         *                   Remove(), Save()
+         * ⚠️  VALIDAÇÃO   : Bloqueia exclusão se houver EncarregadoContrato associado
+         ****************************************************************************************/
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(EncarregadoViewModel model)
@@ -189,6 +201,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UpdateStatusEncarregado
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Alternar status do encarregado entre ativo e inativo
+         *                   Retorna mensagem descritiva com o novo status
+         * 📥 ENTRADAS     : [Guid] Id - EncarregadoId
+         * 📤 SAÍDAS       : [JsonResult] { success: bool, message: string, type: int }
+         * ⬅️ CHAMADO POR  : JavaScript (AJAX) ao clicar botão de ativar/desativar
+         * ➡️ CHAMA        : Encarregado.GetFirstOrDefault(), Update(), Save()
+         * 📝 OBSERVAÇÕES  : type=0 (ativo), type=1 (inativo) para feedback visual no frontend
+         ****************************************************************************************/
         [Route("UpdateStatusEncarregado")]
         public JsonResult UpdateStatusEncarregado(Guid Id)
         {
@@ -290,6 +313,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaFotoModal
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Buscar foto do encarregado para exibição em modal
+         *                   Converte byte[] para Base64 para envio ao frontend
+         * 📥 ENTRADAS     : [Guid] id - EncarregadoId
+         * 📤 SAÍDAS       : [JsonResult] Base64String da imagem ou false
+         * ⬅️ CHAMADO POR  : JavaScript (AJAX) ao abrir modal de visualização de foto
+         * ➡️ CHAMA        : Encarregado.GetFirstOrDefault(), GetImage()
+         * 📝 OBSERVAÇÕES  : Similar a PegaFoto mas retorna apenas a imagem sem objeto completo
+         ****************************************************************************************/
         [HttpGet]
         [Route("PegaFotoModal")]
         public JsonResult PegaFotoModal(Guid id)
@@ -314,6 +348,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetImage
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Converter string Base64 em array de bytes
+         *                   Função utilitária para desserialização de imagens
+         * 📥 ENTRADAS     : [string] sBase64String - String Base64 codificada
+         * 📤 SAÍDAS       : [byte[]] Array de bytes da imagem ou null se vazio
+         * ⬅️ CHAMADO POR  : PegaFoto(), PegaFotoModal()
+         * ➡️ CHAMA        : Convert.FromBase64String()
+         * 📝 OBSERVAÇÕES  : Retorna null se string for nula ou vazia
+         ****************************************************************************************/
         public byte[] GetImage(string sBase64String)
         {
             try
@@ -332,6 +377,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: EncarregadoContratos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Listar todos os encarregados vinculados a um contrato específico
+         *                   Utiliza INNER JOIN com EncarregadoContrato
+         * 📥 ENTRADAS     : [Guid] Id - ContratoId
+         * 📤 SAÍDAS       : [IActionResult] JSON com lista de encarregados formatados
+         * ⬅️ CHAMADO POR  : JavaScript (DataTables) da página de Contratos/Detalhes
+         * ➡️ CHAMA        : Encarregado.GetAll(), EncarregadoContrato.GetAll()
+         * 📝 OBSERVAÇÕES  : Retorna lista vazia se contrato não tiver encarregados
+         ****************************************************************************************/
         [HttpGet]
         [Route("EncarregadoContratos")]
         public IActionResult EncarregadoContratos(Guid Id)
@@ -371,6 +427,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DeleteContrato
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Desvincular um encarregado de um contrato específico
+         *                   Remove registro de EncarregadoContrato (não deleta encarregado)
+         * 📥 ENTRADAS     : [EncarregadoViewModel] model - contém EncarregadoId e ContratoId
+         * 📤 SAÍDAS       : [IActionResult] JSON success/message
+         * ⬅️ CHAMADO POR  : JavaScript (AJAX) da página de Contratos/Detalhes
+         * ➡️ CHAMA        : EncarregadoContrato.GetFirstOrDefault(), Remove(), Save()
+         * 📝 OBSERVAÇÕES  : Operação em cascata - não deleta encarregado, apenas desvincula
+         ****************************************************************************************/
         [Route("DeleteContrato")]
         [HttpPost]
         public IActionResult DeleteContrato(EncarregadoViewModel model)

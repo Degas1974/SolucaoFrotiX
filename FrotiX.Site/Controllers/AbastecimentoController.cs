@@ -96,6 +96,21 @@ namespace FrotiX.Controllers
             get; set;
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Index
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Endpoint raiz da API de abastecimento
+         *
+         * 📥 ENTRADAS     : Nenhuma
+         *
+         * 📤 SAÍDAS       : StatusCode 200 (OK)
+         *
+         * ⬅️ CHAMADO POR  : Rotas da API REST
+         *
+         * ➡️ CHAMA        : Nenhuma dependência
+         *
+         * 📝 OBSERVAÇÕES  : Endpoint básico para verificar status do controller
+         ****************************************************************************************/
         public IActionResult Index()
         {
             try
@@ -109,11 +124,27 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Get
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar lista completa de abastecimentos ordenados por data/hora
+         *
+         * 📥 ENTRADAS     : Nenhuma
+         *
+         * 📤 SAÍDAS       : JsonResult { data: List<ViewAbastecimento> }
+         *
+         * ⬅️ CHAMADO POR  : Frontend via GET /api/Abastecimento [linha 112]
+         *
+         * ➡️ CHAMA        : _unitOfWork.ViewAbastecimentos.GetAll() [Repository]
+         *
+         * 📝 OBSERVAÇÕES  : Ordena por DataHora decrescente (mais recentes primeiro)
+         ****************************************************************************************/
         [HttpGet]
         public IActionResult Get()
         {
             try
             {
+                // [DB] Buscar todos os abastecimentos com ordenação por data/hora decrescente
                 var dados = _unitOfWork
                     .ViewAbastecimentos.GetAll()
                     .OrderByDescending(va => va.DataHora)
@@ -131,12 +162,28 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AbastecimentoVeiculos
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar abastecimentos filtrados por veículo específico
+         *
+         * 📥 ENTRADAS     : Id [Guid] - ID do veículo
+         *
+         * 📤 SAÍDAS       : JsonResult { data: List<ViewAbastecimento> }
+         *
+         * ⬅️ CHAMADO POR  : Frontend via GET /api/Abastecimento/AbastecimentoVeiculos?Id=xxx [linha 134]
+         *
+         * ➡️ CHAMA        : _unitOfWork.ViewAbastecimentos.GetAll() [Repository]
+         *
+         * 📝 OBSERVAÇÕES  : Filtra por VeiculoId e ordena por data/hora
+         ****************************************************************************************/
         [Route("AbastecimentoVeiculos")]
         [HttpGet]
         public IActionResult AbastecimentoVeiculos(Guid Id)
         {
             try
             {
+                // [DB] Filtrar abastecimentos do veículo específico e ordenar por data/hora decrescente
                 var dados = _unitOfWork
                     .ViewAbastecimentos.GetAll()
                     .Where(va => va.VeiculoId == Id)
@@ -159,12 +206,28 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AbastecimentoCombustivel
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar abastecimentos filtrados por tipo de combustível
+         *
+         * 📥 ENTRADAS     : Id [Guid] - ID do combustível
+         *
+         * 📤 SAÍDAS       : JsonResult { data: List<ViewAbastecimento> }
+         *
+         * ⬅️ CHAMADO POR  : Frontend via GET /api/Abastecimento/AbastecimentoCombustivel?Id=xxx [linha 162]
+         *
+         * ➡️ CHAMA        : _unitOfWork.ViewAbastecimentos.GetAll() [Repository]
+         *
+         * 📝 OBSERVAÇÕES  : Filtra por CombustivelId e ordena por data/hora
+         ****************************************************************************************/
         [Route("AbastecimentoCombustivel")]
         [HttpGet]
         public IActionResult AbastecimentoCombustivel(Guid Id)
         {
             try
             {
+                // [DB] Filtrar abastecimentos por tipo de combustível e ordenar por data/hora decrescente
                 var dados = _unitOfWork
                     .ViewAbastecimentos.GetAll()
                     .Where(va => va.CombustivelId == Id)
@@ -187,12 +250,28 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AbastecimentoUnidade
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar abastecimentos filtrados por unidade de negócio
+         *
+         * 📥 ENTRADAS     : Id [Guid] - ID da unidade
+         *
+         * 📤 SAÍDAS       : JsonResult { data: List<ViewAbastecimento> }
+         *
+         * ⬅️ CHAMADO POR  : Frontend via GET /api/Abastecimento/AbastecimentoUnidade?Id=xxx [linha 190]
+         *
+         * ➡️ CHAMA        : _unitOfWork.ViewAbastecimentos.GetAll() [Repository]
+         *
+         * 📝 OBSERVAÇÕES  : Filtra por UnidadeId e ordena por data/hora
+         ****************************************************************************************/
         [Route("AbastecimentoUnidade")]
         [HttpGet]
         public IActionResult AbastecimentoUnidade(Guid Id)
         {
             try
             {
+                // [DB] Filtrar abastecimentos da unidade e ordenar por data/hora decrescente
                 var dados = _unitOfWork
                     .ViewAbastecimentos.GetAll()
                     .Where(va => va.UnidadeId == Id)
@@ -215,12 +294,28 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AbastecimentoMotorista
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar abastecimentos filtrados por motorista
+         *
+         * 📥 ENTRADAS     : Id [Guid] - ID do motorista
+         *
+         * 📤 SAÍDAS       : JsonResult { data: List<ViewAbastecimento> }
+         *
+         * ⬅️ CHAMADO POR  : Frontend via GET /api/Abastecimento/AbastecimentoMotorista?Id=xxx [linha 218]
+         *
+         * ➡️ CHAMA        : _unitOfWork.ViewAbastecimentos.GetAll() [Repository]
+         *
+         * 📝 OBSERVAÇÕES  : Filtra por MotoristaId e ordena por data/hora
+         ****************************************************************************************/
         [Route("AbastecimentoMotorista")]
         [HttpGet]
         public IActionResult AbastecimentoMotorista(Guid Id)
         {
             try
             {
+                // [DB] Filtrar abastecimentos do motorista e ordenar por data/hora decrescente
                 var dados = _unitOfWork
                     .ViewAbastecimentos.GetAll()
                     .Where(va => va.MotoristaId == Id)
@@ -243,12 +338,28 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AbastecimentoData
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar abastecimentos filtrados por data específica
+         *
+         * 📥 ENTRADAS     : dataAbastecimento [string] - Data no formato esperado pelo sistema
+         *
+         * 📤 SAÍDAS       : JsonResult { data: List<ViewAbastecimento> }
+         *
+         * ⬅️ CHAMADO POR  : Frontend via GET /api/Abastecimento/AbastecimentoData?dataAbastecimento=xxx [linha 246]
+         *
+         * ➡️ CHAMA        : _unitOfWork.ViewAbastecimentos.GetAll() [Repository]
+         *
+         * 📝 OBSERVAÇÕES  : Filtra por campo Data (string) e ordena por data/hora decrescente
+         ****************************************************************************************/
         [Route("AbastecimentoData")]
         [HttpGet]
         public IActionResult AbastecimentoData(string dataAbastecimento)
         {
             try
             {
+                // [DB] Filtrar abastecimentos pela data e ordenar por data/hora decrescente
                 var dados = _unitOfWork
                     .ViewAbastecimentos.GetAll()
                     .Where(va => va.Data == dataAbastecimento)
@@ -271,6 +382,31 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Import
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Importar dados de abastecimento de arquivo Excel/XLS
+         *
+         * 📥 ENTRADAS     : Arquivo Excel (multipart form-data) via Request.Form.Files[0]
+         *                   Esperado formato com colunas: Data, Veículo, Motorista, Km Hodômetro,
+         *                   Km Rodado, Combustível, Valor Unitário, Litros
+         *
+         * 📤 SAÍDAS       : JsonResult { success: bool, message: string, response: HTML }
+         *                   response: Tabela HTML com preview dos dados importados
+         *
+         * ⬅️ CHAMADO POR  : Frontend via POST /api/Abastecimento/Import com arquivo [linha 274]
+         *
+         * ➡️ CHAMA        : _unitOfWork.Abastecimento.GetFirstOrDefault() [Repository]
+         *                   _unitOfWork.Veiculo.GetFirstOrDefault() [Repository]
+         *                   _unitOfWork.Motorista.GetFirstOrDefault() [Repository]
+         *                   _unitOfWork.ViewMediaConsumo.GetFirstOrDefault() [Repository]
+         *                   _unitOfWork.Abastecimento.Add() [Repository]
+         *                   _unitOfWork.Save() [UnitOfWork]
+         *
+         * 📝 OBSERVAÇÕES  : Operação com TransactionScope de 30 segundos
+         *                   Valida existência de veículo e motorista antes de importar
+         *                   Calcula consumo (km/litros) automaticamente
+         ****************************************************************************************/
         [Route("Import")]
         [HttpPost]
         public ActionResult Import()
@@ -283,6 +419,7 @@ namespace FrotiX.Controllers
                 string newPath = Path.Combine(webRootPath , folderName);
                 StringBuilder sb = new StringBuilder();
 
+                // [UI] Criar diretório se não existir
                 if (!Directory.Exists(newPath))
                 {
                     Directory.CreateDirectory(newPath);
@@ -611,12 +748,28 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: MotoristaList
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar lista de motoristas ordenada por nome
+         *
+         * 📥 ENTRADAS     : Nenhuma
+         *
+         * 📤 SAÍDAS       : JsonResult { data: List<ViewMotorista> }
+         *
+         * ⬅️ CHAMADO POR  : Frontend via GET /api/Abastecimento/MotoristaList [linha 614]
+         *
+         * ➡️ CHAMA        : _unitOfWork.ViewMotoristas.GetAll() [Repository]
+         *
+         * 📝 OBSERVAÇÕES  : Usado para popular dropdowns e comboboxes no formulário
+         ****************************************************************************************/
         [Route("MotoristaList")]
         [HttpGet]
         public IActionResult MotoristaList()
         {
             try
             {
+                // [DB] Buscar todos os motoristas e ordenar alfabeticamente por nome
                 var result = _unitOfWork.ViewMotoristas.GetAll().OrderBy(vm => vm.Nome).ToList();
 
                 return Ok(new
@@ -631,12 +784,28 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: UnidadeList
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar lista de unidades ordenada por descrição
+         *
+         * 📥 ENTRADAS     : Nenhuma
+         *
+         * 📤 SAÍDAS       : JsonResult { data: List<Unidade> }
+         *
+         * ⬅️ CHAMADO POR  : Frontend via GET /api/Abastecimento/UnidadeList [linha 634]
+         *
+         * ➡️ CHAMA        : _unitOfWork.Unidade.GetAll() [Repository]
+         *
+         * 📝 OBSERVAÇÕES  : Usado para popular dropdowns de unidades de negócio
+         ****************************************************************************************/
         [Route("UnidadeList")]
         [HttpGet]
         public IActionResult UnidadeList()
         {
             try
             {
+                // [DB] Buscar todas as unidades e ordenar por descrição
                 var result = _unitOfWork.Unidade.GetAll().OrderBy(u => u.Descricao).ToList();
 
                 return Ok(new
@@ -651,12 +820,28 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CombustivelList
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar lista de combustíveis ordenada por descrição
+         *
+         * 📥 ENTRADAS     : Nenhuma
+         *
+         * 📤 SAÍDAS       : JsonResult { data: List<Combustivel> }
+         *
+         * ⬅️ CHAMADO POR  : Frontend via GET /api/Abastecimento/CombustivelList [linha 654]
+         *
+         * ➡️ CHAMA        : _unitOfWork.Combustivel.GetAll() [Repository]
+         *
+         * 📝 OBSERVAÇÕES  : Usado para popular dropdowns de tipos de combustível
+         ****************************************************************************************/
         [Route("CombustivelList")]
         [HttpGet]
         public IActionResult CombustivelList()
         {
             try
             {
+                // [DB] Buscar todos os combustíveis e ordenar por descrição
                 var result = _unitOfWork.Combustivel.GetAll().OrderBy(u => u.Descricao).ToList();
 
                 return Ok(new
@@ -675,12 +860,31 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: VeiculoList
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar lista de veículos com marca e modelo concatenados
+         *
+         * 📥 ENTRADAS     : Nenhuma
+         *
+         * 📤 SAÍDAS       : JsonResult { data: List<{ VeiculoId, PlacaMarcaModelo }> }
+         *
+         * ⬅️ CHAMADO POR  : Frontend via GET /api/Abastecimento/VeiculoList [linha 678]
+         *
+         * ➡️ CHAMA        : _unitOfWork.Veiculo.GetAll() [Repository]
+         *                   _unitOfWork.ModeloVeiculo.GetAll() [Repository]
+         *                   _unitOfWork.MarcaVeiculo.GetAll() [Repository]
+         *
+         * 📝 OBSERVAÇÕES  : Faz LINQ com 3 joins (Veiculo, Marca, Modelo) para exibir formato legível
+         ****************************************************************************************/
         [Route("VeiculoList")]
         [HttpGet]
         public IActionResult VeiculoList()
         {
             try
             {
+                // [LOGICA] Join entre Veículo, Modelo e Marca para retornar lista formatada
+                // Exemplo: "ABC-1234 - Volkswagen/Gol"
                 var result = (
                     from v in _unitOfWork.Veiculo.GetAll()
                     join m in _unitOfWork.ModeloVeiculo.GetAll() on v.ModeloId equals m.ModeloId
@@ -711,6 +915,26 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AtualizaQuilometragem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Atualizar apenas a quilometragem de um abastecimento existente
+         *
+         * 📥 ENTRADAS     : payload [Dictionary<string, object>]
+         *                   ├─ AbastecimentoId [GUID] - ID do abastecimento (obrigatório)
+         *                   └─ KmRodado [int] - Nova quilometragem
+         *
+         * 📤 SAÍDAS       : JsonResult { success: bool, message: string }
+         *
+         * ⬅️ CHAMADO POR  : Frontend via POST /api/Abastecimento/AtualizaQuilometragem [linha 718]
+         *
+         * ➡️ CHAMA        : _unitOfWork.Abastecimento.GetFirstOrDefault() [Repository]
+         *                   _unitOfWork.Abastecimento.Update() [Repository]
+         *                   _unitOfWork.Save() [UnitOfWork]
+         *
+         * 📝 OBSERVAÇÕES  : Endpoint flexível que não valida modelo completo, permitindo edição
+         *                   isolada da quilometragem sem necessidade de reenviar todos os campos
+         ****************************************************************************************/
         /// <summary>
         /// Atualiza apenas a quilometragem de um abastecimento
         /// Endpoint novo que não valida o modelo completo
@@ -721,7 +945,7 @@ namespace FrotiX.Controllers
         {
             try
             {
-                // Extrai os valores do payload dinâmico
+                // [VALIDACAO] Extrair e validar AbastecimentoId obrigatório
                 if (!payload.TryGetValue("AbastecimentoId", out var abastecimentoIdObj))
                 {
                     return BadRequest(new { success = false, message = "AbastecimentoId é obrigatório" });
@@ -729,6 +953,7 @@ namespace FrotiX.Controllers
 
                 var abastecimentoId = Guid.Parse(abastecimentoIdObj.ToString());
 
+                // [DB] Buscar abastecimento pelo ID
                 var objAbastecimento = _unitOfWork.Abastecimento.GetFirstOrDefault(a =>
                     a.AbastecimentoId == abastecimentoId
                 );
@@ -738,7 +963,7 @@ namespace FrotiX.Controllers
                     return NotFound(new { success = false, message = "Abastecimento não encontrado" });
                 }
 
-                // Extrai KmRodado
+                // [DADOS] Extrair e atualizar KmRodado se presente no payload
                 if (payload.TryGetValue("KmRodado", out var kmRodadoObj) && kmRodadoObj != null)
                 {
                     if (int.TryParse(kmRodadoObj.ToString(), out var kmRodado))
@@ -747,6 +972,7 @@ namespace FrotiX.Controllers
                     }
                 }
 
+                // [DB] Persistir atualização
                 _unitOfWork.Abastecimento.Update(objAbastecimento);
                 _unitOfWork.Save();
 
@@ -759,6 +985,22 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: EditaKm
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Endpoint legado para atualizar quilometragem (compatibilidade)
+         *
+         * 📥 ENTRADAS     : payload [Dictionary<string, object>] - Mesmo formato de AtualizaQuilometragem
+         *
+         * 📤 SAÍDAS       : JsonResult { success: bool, message: string }
+         *
+         * ⬅️ CHAMADO POR  : Código legado via POST /api/Abastecimento/EditaKm [linha 765]
+         *
+         * ➡️ CHAMA        : AtualizaQuilometragem() [linha 720]
+         *
+         * 📝 OBSERVAÇÕES  : Mantido apenas para compatibilidade com código antigo
+         *                   Recomenda-se migrar para AtualizaQuilometragem()
+         ****************************************************************************************/
         /// <summary>
         /// Endpoint antigo - mantido para compatibilidade
         /// </summary>
@@ -766,16 +1008,33 @@ namespace FrotiX.Controllers
         [HttpPost]
         public IActionResult EditaKm([FromBody] Dictionary<string, object> payload)
         {
-            // Redireciona para o novo endpoint
+            // [HELPER] Redireciona para o novo endpoint (wrapper para compatibilidade)
             return AtualizaQuilometragem(payload);
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListaRegistroCupons
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar lista de registros de cupons de abastecimento
+         *
+         * 📥 ENTRADAS     : IDapi [string] - Parâmetro não utilizado (legado)
+         *
+         * 📤 SAÍDAS       : JsonResult { data: List<{ DataRegistro, RegistroCupomId }> }
+         *
+         * ⬅️ CHAMADO POR  : Frontend via GET /api/Abastecimento/ListaRegistroCupons?IDapi=xxx [linha 773]
+         *
+         * ➡️ CHAMA        : _unitOfWork.RegistroCupomAbastecimento.GetAll() [Repository]
+         *
+         * 📝 OBSERVAÇÕES  : Ordena por data de registro descrescente (mais recentes primeiro)
+         *                   Parâmetro IDapi mantido por compatibilidade mas não é utilizado
+         ****************************************************************************************/
         [Route("ListaRegistroCupons")]
         [HttpGet]
         public IActionResult ListaRegistroCupons(string IDapi)
         {
             try
             {
+                // [DB] Buscar todos os registros de cupom e ordenar por data descrescente
                 var result = (
                     from rc in _unitOfWork.RegistroCupomAbastecimento.GetAll()
                     orderby rc.DataRegistro descending
@@ -802,12 +1061,28 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaRegistroCupons
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar conteúdo PDF de um cupom de abastecimento específico
+         *
+         * 📥 ENTRADAS     : IDapi [string] - GUID do registro de cupom (formato string)
+         *
+         * 📤 SAÍDAS       : JsonResult { RegistroPDF: binary }
+         *
+         * ⬅️ CHAMADO POR  : Frontend via GET /api/Abastecimento/PegaRegistroCupons?IDapi=xxx [linha 805]
+         *
+         * ➡️ CHAMA        : _unitOfWork.RegistroCupomAbastecimento.GetFirstOrDefault() [Repository]
+         *
+         * 📝 OBSERVAÇÕES  : Retorna dados binários do PDF para exibição/download no cliente
+         ****************************************************************************************/
         [Route("PegaRegistroCupons")]
         [HttpGet]
         public IActionResult PegaRegistroCupons(string IDapi)
         {
             try
             {
+                // [DB] Buscar registro de cupom pelo ID
                 var objRegistro = _unitOfWork.RegistroCupomAbastecimento.GetFirstOrDefault(rc =>
                     rc.RegistroCupomId == Guid.Parse(IDapi)
                 );
@@ -828,12 +1103,28 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PegaRegistroCuponsData
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar registros de cupons filtrados por data específica
+         *
+         * 📥 ENTRADAS     : id [string] - Data no formato "YYYY-MM-DD" ou compatível com DateTime.Parse
+         *
+         * 📤 SAÍDAS       : JsonResult { data: List<{ DataRegistro, RegistroCupomId }> }
+         *
+         * ⬅️ CHAMADO POR  : Frontend via GET /api/Abastecimento/PegaRegistroCuponsData?id=xxx [linha 831]
+         *
+         * ➡️ CHAMA        : _unitOfWork.RegistroCupomAbastecimento.GetAll() [Repository]
+         *
+         * 📝 OBSERVAÇÕES  : Filtra por data exata e ordena por data descrescente
+         ****************************************************************************************/
         [Route("PegaRegistroCuponsData")]
         [HttpGet]
         public IActionResult PegaRegistroCuponsData(string id)
         {
             try
             {
+                // [DB] Filtrar cupons pela data e ordenar por data descrescente
                 var result = (
                     from rc in _unitOfWork.RegistroCupomAbastecimento.GetAll()
                     where rc.DataRegistro == DateTime.Parse(id)
@@ -861,16 +1152,36 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DeleteRegistro
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Excluir um registro de cupom de abastecimento
+         *
+         * 📥 ENTRADAS     : IDapi [string] - GUID do registro de cupom (formato string)
+         *
+         * 📤 SAÍDAS       : JsonResult { success: bool, message: string }
+         *
+         * ⬅️ CHAMADO POR  : Frontend via GET /api/Abastecimento/DeleteRegistro?IDapi=xxx [linha 864]
+         *
+         * ➡️ CHAMA        : _unitOfWork.RegistroCupomAbastecimento.GetFirstOrDefault() [Repository]
+         *                   _unitOfWork.RegistroCupomAbastecimento.Remove() [Repository]
+         *                   _unitOfWork.Save() [UnitOfWork]
+         *
+         * 📝 OBSERVAÇÕES  : Operação de exclusão permanente - sem soft delete
+         *                   ⚠️ NOTA: Usar GET para DELETE não é prática RESTful (deveria ser DELETE)
+         ****************************************************************************************/
         [Route("DeleteRegistro")]
         [HttpGet]
         public IActionResult DeleteRegistro(string IDapi)
         {
             try
             {
+                // [DB] Buscar registro de cupom
                 var objRegistro = _unitOfWork.RegistroCupomAbastecimento.GetFirstOrDefault(rc =>
                     rc.RegistroCupomId == Guid.Parse(IDapi)
                 );
 
+                // [DB] Remover do repositório e persistir
                 _unitOfWork.RegistroCupomAbastecimento.Remove(objRegistro);
                 _unitOfWork.Save();
 

@@ -24,6 +24,38 @@
  *                   Layout mais antigo (sem estrutura ftx-card-header moderna). <br/><br/> antes
  *                   da tabela para espaçamento vertical simples.
  **************************************************************************************** *@
+@*
+* ⚡ ARQUIVO: Pages/Fornecedor/Index.cshtml
+* --------------------------------------------------------------------------------------
+* 🎯 OBJETIVO     : Página de listagem de Fornecedores com DataTable e CRUD via JavaScript
+*                   (fornecedor.js). Layout minimalista com botão flutuante à direita.
+*
+* 📥 ENTRADAS     : @Model FrotiX.Models.Fornecedor, route /Fornecedor, botões CRUD delegados
+*                   no DataTable (editar/excluir/toggle status), OnGet() do IndexModel
+*
+* 📤 SAÍDAS       : DataTable #tblFornecedor renderizado (6 colunas: Descrição, CNPJ, Contato,
+*                   Telefone, Status, Ação), link para /Fornecedor/Upsert (novo fornecedor),
+*                   exportações Excel/PDF, AJAX calls /api/Fornecedor (fornecedor.js)
+*
+* 🔗 CHAMADA POR  : Route /Fornecedor, navegação sidebar (Cadastros > Fornecedores),
+*                   IndexModel.OnGet() (code-behind vazio)
+*
+* 🔄 CHAMA        : fornecedor.js (152 linhas - loadList, delete handlers, status toggle),
+*                   /Fornecedor/Upsert (criação/edição), /api/Fornecedor/* endpoints,
+*                   data-ftx-loading (loading state), DataTables API
+*
+* 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, jQuery, DataTables (table-bordered table-striped),
+*                   fornecedor.js (arquivo JavaScript externo), Bootstrap 5 (CDN),
+*                   Font Awesome 6 Duotone (fa-buildings, fa-clone-plus)
+*
+* 📝 OBSERVAÇÕES  : 92 linhas (após enriquecimento). Página simples sem header ftx-card-header
+*                   (apenas float-right panel-content com botão). CSS inline minimalista
+*                   (fundo-cinza #2F4F4F, label branca). Botão laranja flutuante à direita
+*                   (btn-fundo-laranja). ViewData define icon fa-buildings. DataTable sem
+*                   configurações visuais avançadas. Bootstrap 5 carregado via CDN no
+*                   @section ScriptsBlock. Toda lógica CRUD delegada a fornecedor.js.
+*
+* ================================================================================================ *@
 @page
 @model FrotiX.Models.Fornecedor
 
@@ -86,6 +118,23 @@
 @section ScriptsBlock {
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+	<script>
+		/***
+		 * ⚡ ARQUIVO: fornecedor.js (Externo - Arquivo dedicado)
+		 * ============================================================================
+		 * 📥 RESPONSABILIDADES:
+		 *    • loadList() - Carrega fornecedores via AJAX para DataTable
+		 *    • Delete handlers - Validação de dependências antes de excluir
+		 *    • Status toggle - Ativar/inativar fornecedor via AJAX
+		 *    • Event delegation - Botões .btn-editar, .btn-delete
+		 *
+		 * 📤 EVENTOS DISPARADOS:
+		 *    • DataTable #tblFornecedor inicializado com dados dinâmicos
+		 *
+		 * 🔗 DOCUMENTAÇÃO COMPLETA: Ver arquivo /wwwroot/js/cadastros/fornecedor.js (152 linhas)
+		 ***/
+	</script>
 
 	<script src="~/js/cadastros/fornecedor.js" asp-append-version="true"></script>
 }
