@@ -1,17 +1,25 @@
-/*
-    ═══════════════════════════════════════════════════════════════════════════════
-    📄 DOCUMENTAÇÃO COMPLETA DISPONÍVEL
-    ═══════════════════════════════════════════════════════════════════════════════
-    
-    📍 Localização: Documentacao/Pages/Combustivel - Index.md
-    📅 Última Atualização: 08/01/2026
-    📋 Versão: 2.0 (Padrão FrotiX Simplificado)
-    
-    Este arquivo contém a lógica JavaScript do DataTable e ações da página de
-    listagem de Tipos de Combustível. Para entender completamente a funcionalidade,
-    consulte a documentação acima.
-    ═══════════════════════════════════════════════════════════════════════════════
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: combustivel.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar listagem e ações de combustíveis (DELETE, UPDATE status)
+ *                   via DataTable com AJAX. Responsável por excluir e ativar/desativar
+ *                   tipos de combustível.
+ *
+ * 📥 ENTRADAS     : Cliques em botões (delete, updateStatus), carregamento da página
+ *
+ * 📤 SAÍDAS       : DataTable populada, requisições AJAX DELETE e GET
+ *
+ * 🔗 CHAMADA POR  : Página /Combustivel/Index (listagem)
+ *
+ * 🔄 CHAMA        : GET /api/combustivel [AJAX] - população inicial
+ *                   POST /api/Combustivel/Delete [AJAX] - exclusão
+ *                   GET /api/Combustivel/UpdateStatusCombustivel [AJAX] - toggle status
+ *
+ * 📦 DEPENDÊNCIAS : jQuery, DataTable, Alerta.js, AppToast
+ *
+ * 📝 OBSERVAÇÕES  : DataTable carrega dados via AJAX. Cada combustível possui botões
+ *                   de editar e deletar. Status é alternado com um clique.
+ **************************************************************************************** */
 
 var dataTable;
 
@@ -25,6 +33,7 @@ $(document).ready(function () {
             {
                 var id = $(this).data("id");
 
+                // [VALIDACAO] Confirmação obrigatória para ação irreversível
                 Alerta.Confirmar(
                     "Você tem certeza que deseja apagar este tipo de combustível?",
                     "Não será possível recuperar os dados eliminados!",
@@ -37,6 +46,14 @@ $(document).ready(function () {
                         if (willDelete) {
                             var dataToPost = JSON.stringify({ CombustivelId: id });
                             var url = "/api/Combustivel/Delete";
+
+                            /********************************************************************************
+                             * [AJAX] Endpoint: POST /api/Combustivel/Delete
+                             * ------------------------------------------------------------------------------
+                             * 📥 ENVIA        : { CombustivelId: number }
+                             * 📤 RECEBE       : { success: bool, message: string }
+                             * 🎯 MOTIVO       : Deletar tipo de combustível após confirmação do usuário
+                             ********************************************************************************/
                             $.ajax({
                                 url: url,
                                 type: "POST",
@@ -102,6 +119,13 @@ $(document).ready(function () {
                 var url = $(this).data("url");
                 var currentElement = $(this);
 
+                /********************************************************************************
+                 * [AJAX] Endpoint: GET /api/Combustivel/UpdateStatusCombustivel
+                 * ------------------------------------------------------------------------------
+                 * 📥 ENVIA        : Id (query param)
+                 * 📤 RECEBE       : { success: bool, message: string, type: number }
+                 * 🎯 MOTIVO       : Alternar status (ativo/inativo) de um combustível
+                 ********************************************************************************/
                 $.get(url, function (data) {
                     try
                     {
@@ -140,9 +164,24 @@ $(document).ready(function () {
     }
 });
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: loadList
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Inicializar DataTable com listagem de combustíveis via AJAX
+ *
+ * 📥 ENTRADAS     : Nenhuma
+ *
+ * 📤 SAÍDAS       : DataTable global (var dataTable) populada
+ *
+ * ⬅️ CHAMADO POR  : $(document).ready() [linha 21]
+ *
+ * ➡️ CHAMA        : GET /api/combustivel [AJAX]
+ *                   DataTable API (columns, rendering, language)
+ ****************************************************************************************/
 function loadList() {
     try
     {
+        // [UI] Inicializa DataTable com configuração responsiva
         dataTable = $("#tblCombustivel").DataTable({
             columnDefs: [
                 {
@@ -158,6 +197,7 @@ function loadList() {
             ],
 
             responsive: true,
+            // [AJAX] Carrega dados iniciais de combustíveis
             ajax: {
                 url: "/api/combustivel",
                 type: "GET",

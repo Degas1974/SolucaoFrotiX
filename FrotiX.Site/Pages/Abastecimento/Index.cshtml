@@ -1,17 +1,5 @@
 @page
 
-@* ========================================================================================
- * ARQUIVO: Pages/Abastecimento/Index.cshtml
- * OBJETIVO: Pagina de listagem e gestao de abastecimentos com DataTable configuravel filtros avancados por veiculo combustivel unidade motorista e periodo modal de edicao de KM e exportacao de relatorios
- * ENTRADAS: Model FrotiX.Models.Abastecimento ViewData com listas de veiculos combustivel unidade motorista filtros via Syncfusion DropDowns modal modalEditarKm botoes CRUD btn-edit btn-delete
- * SAIDAS: DataTable tblAbastecimento renderizado com dados via AJAX modais Bootstrap 5 exportacoes Excel PDF POST APIs editar KM excluir Stimulsoft Report Viewer para relatorios avancados AppToast notificacoes
- * CHAMADA POR: Route Abastecimento navegacao sidebar Cadastros Abastecimentos elemento functions OnGet inicializa ViewData com listas via IUnitOfWork
- * CHAMA: FrotiX.Pages.Abastecimento.IndexModel.Initialize backend C# ListaVeiculos ListaCombustivel ListaUnidade ListaMotorista helpers JavaScript inline DataTable modal handlers filtros Syncfusion endpoints API Abastecimento CRUD Stimulsoft MVC Viewer
- * DEPENDENCIAS: ASP.NET Core Razor Pages Syncfusion EJ2 DropDown Grid DataTables Bootstrap 5 jQuery Stimulsoft Reports AppToast.js Alerta.js IUnitOfWork Entity Framework FrotiX helpers Listas
- * OBSERVACOES: 1340 linhas com layout completo header azul 3D5771 card personalizado botoes com outline branco. Modal de edicao de KM valida valores e recarrega DataTable apos sucesso. Filtros aplicam dataTable.ajax.reload. Sistema de relatorios Stimulsoft integrado com parametros dinamicos. Uso extensivo de elemento section HeadBlock CSS customizado 150 linhas elemento section ScriptBlock JavaScript inline 800 linhas. Botao laranja com icone fa-gas-pump no header. ViewData inicializado via elemento functions OnGet com injecao IUnitOfWork
- * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
- ======================================================================================== *@
-
 @* ****************************************************************************************
  * ⚡ ARQUIVO: Pages/Abastecimento/Index.cshtml
  * --------------------------------------------------------------------------------------

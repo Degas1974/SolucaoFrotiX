@@ -171,6 +171,10 @@ namespace FrotiX.Repository
         // ====================================
         var swEventos = System.Diagnostics.Stopwatch.StartNew();
 
+        // [LOGICA] Query complexa com JOINs LEFT OUTER (DefaultIfEmpty):
+        // 1. Join Evento + Requisitante (left outer: alguns eventos podem não ter requisitante)
+        // 2. Join Evento + SetorSolicitante (left outer: alguns eventos podem não ter setor)
+        // 3. Select: Projeção com coalescing de nomes (usa string vazia se null)
         var query = from e in _db.Evento
                     join r in _db.Requisitante on e.RequisitanteId equals r.RequisitanteId into reqJoin
                     from req in reqJoin.DefaultIfEmpty()
@@ -185,11 +189,13 @@ namespace FrotiX.Repository
                         e.DataFinal ,
                         e.QtdParticipantes ,
                         e.Status ,
+                        // [LOGICA] Coalescing: usa Nome se requisitante existir, senão string vazia
                         NomeRequisitante = req != null ? req.Nome : "" ,
+                        // [LOGICA] Coalescing: usa Nome se setor existir, senão string vazia
                         NomeSetor = setor != null ? setor.Nome : ""
                     };
 
-        // Aplicar filtro de status se fornecido
+        // [LOGICA] Aplicar filtro de status se fornecido (filtra por coluna string)
         if (!string.IsNullOrEmpty(filtroStatus))
         {
         query = query.Where(x => x.Status == filtroStatus);
@@ -220,14 +226,22 @@ namespace FrotiX.Repository
         // ====================================
         var swCustos = System.Diagnostics.Stopwatch.StartNew();
 
+        // [PERFORMANCE] Extrair IDs dos eventos paginados para filtro IN
         var eventoIds = eventos.Select(x => x.EventoId).ToList();
 
+        // [LOGICA] Agregação complexa: GroupBy evento + Sum 5 tipos de custo
+        // 1. Where: Filtrar viagens dos eventos paginados (evitar N+1 queries)
+        // 2. GroupBy: Agrupar por EventoId
+        // 3. Select: Calcular soma de 5 componentes de custo por evento (com casts double/decimal)
+        // [PERFORMANCE] Conversão para double+decimal necessária para agregação SQL
         var custosPorEvento = await _db.Viagem
             .Where(v => eventoIds.Contains(v.EventoId.Value))
             .GroupBy(v => v.EventoId.Value)
             .Select(g => new
             {
                 EventoId = g.Key ,
+                // [LOGICA] Soma de 5 componentes: combustível, motorista, veículo, operador, lavador
+                // Cada componente pode ser null, então usa ?? 0 (coalescing com zero)
                 CustoTotal = (decimal)(
                     g.Sum(v => (double)(v.CustoCombustivel ?? 0)) +
                     g.Sum(v => (double)(v.CustoMotorista ?? 0)) +

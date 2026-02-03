@@ -23,32 +23,58 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
+    /****************************************************************************************
+     * ⚡ MODEL: ViewOcorrencia
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar view SQL de ocorrências de viagem
+     *
+     * 📥 ENTRADAS     : Viagem, veículo, motorista, ocorrência, item manutenção
+     *
+     * 📤 SAÍDAS       : Registro somente leitura para dashboards de problemas
+     *
+     * 🔗 CHAMADA POR  : Telas de ocorrências e relatórios
+     *
+     * 🔄 CHAMA        : Não se aplica
+     ****************************************************************************************/
     public class ViewOcorrencia
     {
+        // [DADOS] Identificador do veículo
         public Guid VeiculoId { get; set; }
 
+        // [DADOS] Identificador da viagem
         public Guid ViagemId { get; set; }
 
+        // [DADOS] Número da ficha de vistoria
         public int? NoFichaVistoria { get; set; }
 
+        // [DADOS] Data inicial da viagem (formatada)
         public string? DataInicial { get; set; }
 
+        // [DADOS] Nome do motorista
         public string? NomeMotorista { get; set; }
 
+        // [DADOS] Descrição completa do veículo
         public string? DescricaoVeiculo { get; set; }
 
+        // [DADOS] Resumo da ocorrência
         public string? ResumoOcorrencia { get; set; }
 
+        // [DADOS] Status da ocorrência (aberta/resolvida/etc)
         public string? StatusOcorrencia { get; set; }
 
+        // [DADOS] Identificador do motorista (FK)
         public Guid? MotoristaId { get; set; }
 
+        // [DADOS] URL/blob de imagem da ocorrência
         public string? ImagemOcorrencia { get; set; }
 
+        // [DADOS] Identificador do item de manutenção (FK)
         public Guid? ItemManutencaoId { get; set; }
 
+        // [DADOS] Descrição detalhada da ocorrência
         public string? DescricaoOcorrencia { get; set; }
 
+        // [DADOS] Descrição da solução implementada
         public string? DescricaoSolucaoOcorrencia { get; set; }
     }
 }

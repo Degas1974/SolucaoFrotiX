@@ -1,33 +1,28 @@
-@* ========================================================================================
- * ARQUIVO: Pages/Viagens/FluxoPassageiros.cshtml
- * OBJETIVO: Pagina de analise fluxo passageiros por rotas/periodos exibindo Syncfusion
- *           Grid paginado + Stimulsoft Report visualizador, permite identificar rotas
- *           mais demandadas planejamento otimizado viagens, sistema usado para gestao
- *           demanda transporte interno corporativo.
- * ENTRADAS: route /Viagens/FluxoPassageiros, filtros toolbar: DatePicker DataInicio/DataFim
- *           range periodo, ComboBox Origem/Destino cidades filtro rotas, ComboBox SetorSolicitante
- *           filtra departamento, Checkbox ApenasViagensRecorrentes toggle, botao Analisar
- *           Fluxo trigger reload Grid, Grid dataSource URL GET /api/Viagens/GetFluxoPassageiros
- *           retorna JSON fluxo agregado rotas Origem>Destino count passageiros periodo
- *           paginado server-side
- * SAIDAS: Pagina renderizada com card header (titulo Analise Fluxo de Passageiros,
- *         icone fa-route, breadcrumb Viagens > Fluxo Passageiros), card body com:
- *         1. Toolbar filtros (DatePicker range periodo, 2 ComboBox cascading Origem/Destino
- *         cidades, ComboBox SetorSolicitante departamentos, Checkbox ApenasViagensRecorrentes,
- *         botao Analisar Fluxo primary, botao Limpar Filtros secondary), 2. Syncfusion
- *         Grid (colunas: Origem cidade, Destino cidade, QuantidadeViagens contador,
- *         TotalPassageiros sum, PassageirosPorViagem media decimal, DiasAtivos contador
- *         dias com viagens periodo, FrequenciaMedia viagens/dia decimal, PrincipaisSetores
- *         lista top 3 setores badge pills, CustoTotal moeda R$ sum, CustoMedioPassageiro
- *         R$/passageiro calcula, Status badge Recorrente/Esporadica baseado frequencia,
- *         Acoes link Detalhes abre modal lista viagens especificas rota), server-side
- *         paging pageSize 50, allowSorting true, allowExcelExport/allowPdfExport toolbar,
- *         groupBy Origem collapse expand rotas mesma origem), 3. Botao Gerar Relatorio
- *         Fluxo rodape (abre modal Stimulsoft Report Viewer carrega MRT template relatorio-fluxo-passageiros.mrt
- *         passa dados filtrados parameters, renderiza report formatado tabela fluxos
- *         + grafico barras rotas mais demandadas, permite visualizar/imprimir/exportar
- *         PDF/Excel)
- * CHAMADA POR: Menu Viagens > Analises > Fluxo Passageiros (link interno sidebar),
+@*
+ ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Viagens/FluxoPassageiros.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de análise de fluxo passageiros por rotas/períodos com
+ *                   Syncfusion Grid paginado + Stimulsoft Report visualizador, identifica
+ *                   rotas mais demandadas para planejamento otimizado viagens, gestão
+ *                   demanda transporte corporativo
+ *
+ * 📥 ENTRADAS     : @page, route /Viagens/FluxoPassageiros, filtros toolbar: DatePicker
+ *                   DataInicio/DataFim (período), ComboBox Origem/Destino cascading
+ *                   (cidades), ComboBox SetorSolicitante (departamento), Checkbox
+ *                   ApenasViagensRecorrentes, botão Analisar Fluxo trigger GET
+ *                   /api/Viagens/GetFluxoPassageiros
+ *
+ * 📤 SAÍDAS       : Page com card header (Análise Fluxo de Passageiros, ícone fa-route),
+ *                   Toolbar filtros (DatePicker range, 2 ComboBox Origem/Destino,
+ *                   ComboBox SetorSolicitante, Checkbox ApenasRecorrentes, botão
+ *                   Analisar), Syncfusion Grid (colunas: Origem, Destino, QuantidadeViagens,
+ *                   TotalPassageiros, PassageirosPorViagem, DiasAtivos, FrequênciaMedia,
+ *                   PrincipaisSetores badges, CustoTotal, CustoMédioPorPassageiro,
+ *                   Status Recorrente/Esporádica, Ações), groupBy Origem, server-side
+ *                   paging 50/página, botão Gerar Relatório (Stimulsoft MRT report)
+ *
+ * 🔗 CHAMADA POR  : Menu Viagens > Análises > Fluxo Passageiros (sidebar),
  *              usuarios com permissao Viagens.AnalisarFluxo (role Admin ou Coordenador),
  *              usado para planejamento viagens identificar rotas demanda alta programar
  *              viagens regulares fixas otimizar recursos

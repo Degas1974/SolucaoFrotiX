@@ -44,54 +44,76 @@ namespace FrotiX.Repository
         // ╭───────────────────────────────────────────────────────────────────────────────────────╮
         // │ ⚡ MÉTODO: RepactuacaoServicosRepository                                                  │
         // │ 🔗 RASTREABILIDADE:                                                                      │
-        // │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
-        // │    ➡️ CHAMA       : base(db)                                                             │
+        // │    ⬅️ CHAMADO POR : UnitOfWork [UnitOfWork.cs:139]                                        │
+        // │    ➡️ CHAMA       : base(db) [linha ~62]                                                 │
+        // │ 📦 DEPENDÊNCIAS  : FrotiXDbContext                                                      │
         // ╰───────────────────────────────────────────────────────────────────────────────────────╯
         
-        
+
         // 🎯 OBJETIVO:
         // Inicializar o repositório com o contexto do banco de dados.
-        
-        
-        
+
+
+
         // 📥 PARÂMETROS:
-        // db - Contexto do banco de dados da aplicação.
-        
-        
+        // db [FrotiXDbContext] - Contexto do banco de dados da aplicação.
+
+
+        // 📤 SAÍDAS: Instância inicializada do repositório
+
         // Param db: Instância de <see cref="FrotiXDbContext"/>.
         public RepactuacaoServicosRepository(FrotiXDbContext db) : base(db)
             {
-            _db = db;
+            try
+            {
+                _db = db ?? throw new ArgumentNullException(nameof(db));
+            }
+            catch (Exception erro)
+            {
+                throw;
+            }
             }
 
-        
+
         // ╭───────────────────────────────────────────────────────────────────────────────────────╮
         // │ ⚡ MÉTODO: GetRepactuacaoServicosListForDropDown                                          │
         // │ 🔗 RASTREABILIDADE:                                                                      │
-        // │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
-        // │    ➡️ CHAMA       : DbContext.RepactuacaoServicos, Select                                │
+        // │    ⬅️ CHAMADO POR : Controllers (dropdown) [linha ~100]                                 │
+        // │    ➡️ CHAMA       : _db.RepactuacaoServicos.Select() [linha 102]                         │
+        // │ 📦 DEPENDÊNCIAS  : _db (DbContext)                                                      │
         // ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        
-        
+
+
         // 🎯 OBJETIVO:
         // Obter lista de repactuações de serviços para composição de dropdowns.
         // Exibe o valor da repactuação e usa o vínculo do contrato como chave.
-        
-        
-        
+
+
+
+        // 📥 PARÂMETROS: Nenhum
+
         // 📤 RETORNO:
-        // IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
-        
-        
+        // IEnumerable<SelectListItem> - Itens prontos para seleção em UI.
+
+        // 📝 OBSERVAÇÕES: Exibe valor numérico como texto
+
         // Returns: Lista de itens de seleção para repactuações de serviços.
         public IEnumerable<SelectListItem> GetRepactuacaoServicosListForDropDown()
             {
-            return _db.RepactuacaoServicos
-                .Select(i => new SelectListItem()
-                    {
-                    Text = i.Valor.ToString(),
-                    Value = i.RepactuacaoContratoId.ToString()
-                    });
+            try
+            {
+                // [DB] Projeta repactuações de serviços para dropdown com valor e contrato
+                return _db.RepactuacaoServicos
+                    .Select(i => new SelectListItem()
+                        {
+                        Text = i.Valor.ToString(),
+                        Value = i.RepactuacaoContratoId.ToString()
+                        });
+            }
+            catch (Exception erro)
+            {
+                throw;
+            }
             }
 
         

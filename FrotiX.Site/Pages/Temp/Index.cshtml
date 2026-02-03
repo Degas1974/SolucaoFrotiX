@@ -1,29 +1,36 @@
-@* ========================================================================================
- * ARQUIVO: Pages/Temp/Index.cshtml
- * OBJETIVO: PAGINA TEMPORARIA/TESTE - Demo Kendo UI Grid ComboBox inline editing (HTML standalone invalido)
- * ENTRADAS: route /Temp/Index (BLOQUEADO producao ou sem menu), ViewData minimal errado (Title/PageName/Heading)
- * SAIDAS: NAO FUNCIONAL - Mistura Razor header (section HeadBlock, ViewData, CSS inline) COM HTML standalone
- *         completo (DOCTYPE html head body). Kendo UI Grid hardcoded dataSource 2 products, ComboBox 3 categories,
- *         Kendo CDN 2023.1.117, jQuery 3.6.4, section ScriptsBlock VAZIO
- * CHAMADA POR: PROVAVELMENTE NAO USADO - route teste developer, sem menu link
- * CHAMA: ViewData ERRADO (Usuarios/usuarios_index/fa-users deve ser Temp/temp_index), CSS inline NAO usado
- *        (fundo-cinza/label/btn-fundo-laranja), Kendo UI CDN 2023.1.117, jQuery 3.6.4, DataSource hardcoded,
- *        kendoGrid editable inline, section ScriptsBlock vazio
- * DEPENDENCIAS: ASP.NET Core Razor (MISTURADO incorretamente), Kendo UI 2023.1.117, jQuery 3.6.4, CSS inline NAO usado
- * OBSERVACOES: 98 linhas. ARQUIVO PROBLEMATICO - PAGINA TESTE/DESENVOLVIMENTO. ESTRUTURA INVALIDA: mistura
- *              header Razor (page/ViewData/section) COM DOCTYPE html completo standalone. ViewData ERRADO
- *              (Usuarios deve ser Temp). CSS inline NAO usado (fundo-cinza/label/btn-fundo-laranja copypaste).
- *              section ScriptsBlock VAZIO (JavaScript Kendo inline body standalone Razor nao processara).
- *              section HeadBlock VAZIO (sem sentido). Kendo UI 2023.1.117 ANTIGO (atual 2024.x). jQuery 3.6.4
- *              ANTIGO (Head.cshtml usa 3.7.1). DataSource hardcoded 2 products. ComboBox 3 categories hardcoded.
- *              Renderizacao QUEBRADA: Razor processa page/ViewData/CSS inline (dentro Layout head), DOCTYPE html
- *              DUPLICADO ou dentro Layout body, html/head standalone IGNORADO (ja existe Layout head),
- *              body standalone dentro Layout body (HTML invalido aninhado), section ScriptsBlock vazio nao faz nada.
- *              ACAO RECOMENDADA: DELETE arquivo (teste nao finalizado) OU corrigir (remover DOCTYPE/html/head,
- *              mover CSS/JS para section HeadBlock/ScriptsBlock correto, corrigir ViewData, usar Layout Razor padrao)
- *              OU marcar Authorize Roles Developer no code-behind para bloquear producao.
- * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
- ======================================================================================== *@
+@* ************************************************************************************
+ * ⚡ ARQUIVO: Pages/Temp/Index.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página TEMPORÁRIA/TESTE para desenvolvimento - Demo Kendo UI Grid
+ *                   com ComboBox inline editing. NÃO FUNCIONAL - estrutura Razor inválida.
+ *
+ * 📥 ENTRADAS     : Route /Temp/Index (bloqueado produção), ViewData incorreto (Title/PageName),
+ *                   rota teste developer (sem menu)
+ *
+ * 📤 SAÍDAS       : [NÃO FUNCIONAL] Mistura Razor header (ViewData, sections) com HTML
+ *                   standalone (DOCTYPE html body). Kendo UI Grid hardcoded 2 products,
+ *                   ComboBox 3 categories, Kendo CDN 2023.1.117
+ *
+ * 🔗 CHAMADA POR  : PROVAVELMENTE NÃO USADO - teste desenvolvedor, sem menu link
+ *
+ * 🔄 CHAMA        : ViewData [ERRADO], CSS inline [NÃO USADO], Kendo UI CDN 2023.1.117,
+ *                   jQuery 3.6.4, kendoGrid editable inline
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (MISTURADO incorretamente), Kendo UI 2023.1.117
+ *                   [DESATUALIZADO], jQuery 3.6.4 [DESATUALIZADO]
+ *
+ * 📝 OBSERVAÇÕES  : 98 linhas. ARQUIVO PROBLEMÁTICO. ESTRUTURA INVÁLIDA: mistura header Razor
+ *                   com DOCTYPE html standalone, ViewData ERRADO (Usuarios em vez de Temp),
+ *                   CSS inline não utilizado, section ScriptsBlock VAZIO, Kendo UI
+ *                   2023.1.117 desatualizado (atual 2024.x), jQuery 3.6.4 desatualizado.
+ *                   RECOMENDAÇÃO: DELETAR arquivo (teste não finalizado) OU:
+ *                   1. Remover DOCTYPE/html/head/body standalone
+ *                   2. Mover CSS/JS para sections HeadBlock/ScriptsBlock
+ *                   3. Corrigir ViewData para Temp/temp_index
+ *                   4. Atualizar Kendo UI + jQuery para versões atuais
+ *                   5. Adicionar [Authorize(Roles = "Developer")] no code-behind
+ * ************************************************************************************
+ *@
 @page
 
 @{

@@ -22,13 +22,25 @@ using FrotiX.Validations;
 using Microsoft.AspNetCore.Http;
 
 namespace FrotiX.Models
-    {
+{
+    /****************************************************************************************
+     * ⚡ MODEL: ViewNoFichaVistoria
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar view SQL de números de ficha de vistoria
+     *
+     * 📥 ENTRADAS     : Números sequenciais de fichas
+     *
+     * 📤 SAÍDAS       : Registro somente leitura para listagens
+     *
+     * 🔗 CHAMADA POR  : Dropdowns e filtros de busca
+     *
+     * 🔄 CHAMA        : Não se aplica
+     ****************************************************************************************/
     public class ViewNoFichaVistoria
-        {
-
+    {
+        // [DADOS] Número da ficha de vistoria
         public int? NoFichaVistoria { get; set; }
-
-        }
     }
+}
 
 

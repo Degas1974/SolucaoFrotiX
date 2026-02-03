@@ -27,32 +27,61 @@ namespace FrotiX.Services
         {
         private readonly IUnitOfWork _uow;
 
-        // classe de trabalho para agregação
+        // [HELPER] Classe de trabalho para agregação intermediária
+        // Usada apenas em ListarResumo para fazer GroupBy eficientemente
         private class ResumoWork
             {
             public int? NumItem { get; set; }
             public string Descricao { get; set; }
-            public int Quantidade { get; set; }
-            public decimal ValorUnitario { get; set; }
-            public decimal ValorGlosa { get; set; }
+            public int Quantidade { get; set; }           // Qtd do item do contrato
+            public decimal ValorUnitario { get; set; }    // Vlr unit do item
+            public decimal ValorGlosa { get; set; }       // Vlr glosa por O.S.
             }
 
+        /****************************
+         * ⚡ CONSTRUTOR: GlosaService
+         * ✅ Injeta IUnitOfWork
+         ****************************/
         public GlosaService(IUnitOfWork uow)
             {
             _uow = uow;
             }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListarResumo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retorna glosas CONSOLIDADAS por Item do Contrato (não por O.S.)
+         *                   Agrupa múltiplas O.S. do mesmo item, somando glosas
+         *
+         * 📥 ENTRADAS     : contratoId [Guid] - ID do contrato
+         *                   mes [int] - Mês (1-12)
+         *                   ano [int] - Ano (2024+)
+         *
+         * 📤 SAÍDAS       : IEnumerable<GlosaResumoItemDto> - Lista consolidada por item
+         *
+         * ⬅️ CHAMADO POR  : GlosaController.ObterResumo() [Dashboard]
+         *                   ReportController.GerarRelatorioGlosa() [Relatório]
+         *
+         * ➡️ CHAMA        : _uow.ViewGlosa.GetAllReducedIQueryable() [Query otimizada]
+         *
+         * 📝 OBSERVAÇÕES  : [LOGICA] GroupBy(NumItem, Descricao) - 1 item = 1 linha
+         *                   [REGRA] PrecoTotalMensal = Qtd × ValorUnitário (FIXO do contrato)
+         *                   [REGRA] Glosa = SUM de TODAS as O.S. do item
+         *                   [REGRA] ValorParaAteste = PrecoTotal - Glosa (valor cobrado)
+         *                   [PERFORMANCE] AsNoTracking + GetAllReducedIQueryable (SQL puro)
+         ****************************************************************************************/
         public IEnumerable<GlosaResumoItemDto> ListarResumo(Guid contratoId, int mes, int ano)
             {
-            // Base: uma linha por O.S. -> vamos consolidar por item mantendo Qtd/VlrUnit do contrato e SOMANDO apenas a Glosa
+            // [LOGICA] Etapa 1: Busca base = uma linha por O.S., com dados do contrato
+            // GetAllReducedIQueryable = executa SELECT projetado no SQL (não traz tudo)
             var baseQuery = _uow.ViewGlosa.GetAllReducedIQueryable(
                 selector: x => new ResumoWork
                     {
                     NumItem = x.NumItem,
                     Descricao = x.Descricao,
-                    Quantidade = x.Quantidade ?? 0, // do item do contrato
-                    ValorUnitario = (decimal)(x.ValorUnitario ?? 0d), // do item do contrato
-                    ValorGlosa = x.ValorGlosa, // por O.S.
+                    Quantidade = x.Quantidade ?? 0, // [DB] do item do contrato
+                    ValorUnitario = (decimal)(x.ValorUnitario ?? 0d), // [DB] do item do contrato
+                    ValorGlosa = x.ValorGlosa, // [DB] por O.S. (pode haver múltiplas)
                     },
                 filter: x =>
                     x.ContratoId == contratoId
@@ -61,6 +90,7 @@ namespace FrotiX.Services
                 asNoTracking: true
             );
 
+            // [LOGICA] Etapa 2: Consolidação = GroupBy NumItem, SUM glosas, MAX qtd/valor
             var query = baseQuery
                 .GroupBy(g => new { g.NumItem, g.Descricao })
                 .Select(s => new GlosaResumoItemDto
@@ -69,10 +99,13 @@ namespace FrotiX.Services
                     Descricao = s.Key.Descricao,
                     Quantidade = s.Max(i => (int?)i.Quantidade),
                     ValorUnitario = s.Max(i => i.ValorUnitario),
-                    // Preço Total do contrato = Qtd * VlrUnit (não depende da qtde de O.S.)
+                    // [REGRA] PrecoTotalMensal = Qtd × VlrUnit (FIXO, não multiplica O.S.)
                     PrecoTotalMensal = (s.Max(i => i.Quantidade) * s.Max(i => i.ValorUnitario)),
+                    // [REGRA] Preço diário = Valor mensal / 30 dias (para análise)
                     PrecoDiario = (s.Max(i => i.ValorUnitario) / 30m),
+                    // [LOGICA] Glosa = SUM de TODAS as O.S. do item (pode ser > 0)
                     Glosa = s.Sum(i => i.ValorGlosa),
+                    // [REGRA] ValorParaAteste = PreçoTotal - Glosa (o que será cobrado)
                     ValorParaAteste =
                         (s.Max(i => i.Quantidade) * s.Max(i => i.ValorUnitario))
                         - s.Sum(i => i.ValorGlosa),
@@ -82,18 +115,43 @@ namespace FrotiX.Services
             return query.ToList();
             }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ListarDetalhes
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retorna glosas DETALHADAS por Ordem de Serviço (O.S.)
+         *                   Uma linha por O.S., mostrando datas, placa e dias de glosa
+         *
+         * 📥 ENTRADAS     : contratoId [Guid] - ID do contrato
+         *                   mes [int] - Mês (1-12)
+         *                   ano [int] - Ano (2024+)
+         *
+         * 📤 SAÍDAS       : IEnumerable<GlosaDetalheItemDto> - Lista detalha por O.S.
+         *
+         * ⬅️ CHAMADO POR  : GlosaController.ObterDetalhes() [Drill-down de resumo]
+         *                   ReportController.GerarDetalhamentoGlosa() [Relatório detalh.]
+         *
+         * ➡️ CHAMA        : _uow.ViewGlosa.GetAllReducedIQueryable() [Query otimizada]
+         *
+         * 📝 OBSERVAÇÕES  : [LOGICA] Sem GroupBy - cada linha é 1 O.S.
+         *                   [LOGICA] Mostra timeline completo: Solicitação → Disponib → Devol
+         *                   [REGRA] DiasGlosa = dias entre DataDisponibilidade e DataDevolução
+         *                   [PERFORMANCE] AsNoTracking + GetAllReducedIQueryable
+         ****************************************************************************************/
         public IEnumerable<GlosaDetalheItemDto> ListarDetalhes(Guid contratoId, int mes, int ano)
             {
+            // [LOGICA] Query SEM GroupBy = detalhe por O.S. (linhas individuais)
             var query = _uow.ViewGlosa.GetAllReducedIQueryable(
                 selector: x => new GlosaDetalheItemDto
                     {
                     NumItem = x.NumItem,
                     Descricao = x.Descricao,
                     Placa = x.Placa,
-                    DataSolicitacao = x.DataSolicitacao,
-                    DataDisponibilidade = x.DataDisponibilidade,
-                    DataRecolhimento = x.DataRecolhimento,
-                    DataDevolucao = x.DataDevolucao,
+                    // [DB] Timeline da O.S.
+                    DataSolicitacao = x.DataSolicitacao,       // Solicitado em
+                    DataDisponibilidade = x.DataDisponibilidade, // Veículo disponível em
+                    DataRecolhimento = x.DataRecolhimento,     // Recolhido em
+                    DataDevolucao = x.DataDevolucao,           // Devolvido em ("Retorno")
+                    // [LOGICA] Dias de glosa = período sem uso/cobrado indevidamente
                     DiasGlosa = x.DiasGlosa,
                     },
                 filter: x =>
