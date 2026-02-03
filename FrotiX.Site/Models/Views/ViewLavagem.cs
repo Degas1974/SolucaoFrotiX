@@ -4,7 +4,7 @@
     ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
     ║ 🎯 OBJETIVO: View SQL de lavagens de veículos (horários, duração, lavadores).                      ║
     ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 📋 PROPS: LavagemId, MotoristaId, VeiculoId, Data, Horario, DuracaoMinutos                         ║
+    ║ 📋 PROPS: LavagemId, MotoristaId, VeiculoId, Data, Horario                                         ║
     ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
     ║ 🔗 DEPS: FrotiX.Services, FrotiX.Validations                                                        ║
     ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
@@ -38,8 +38,6 @@ namespace FrotiX.Models
 
         public string? Horario { get; set; }
 
-        public int? DuracaoMinutos { get; set; }
-
         public string? Lavadores { get; set; }
 
         public string? DescricaoVeiculo { get; set; }
@@ -48,4 +46,3 @@ namespace FrotiX.Models
 
         }
     }
-
