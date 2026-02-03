@@ -1,7 +1,7 @@
 # Documentação: Manutencao - DashboardLavagem
 
-> **Última Atualização**: 08/01/2026
-> **Versão Atual**: 0.1
+> **Última Atualização**: 03/02/2026
+> **Versão Atual**: 0.2
 
 ---
 
@@ -97,3 +97,18 @@ FrotiX.Site/
 - **TODO**: Completar PARTE 1 com detalhes e trechos de código reais.
 
 **Status**: ✅ **Gerado (pendente detalhamento)**
+
+---
+
+## [03/02/2026 10:30] - Ajustes de Horário Único
+
+**Descrição**:
+- Atualização do dashboard para usar `HorarioLavagem`
+- Remoção da seção de duração de lavagens
+
+**Arquivos Afetados**:
+- `Pages/Manutencao/DashboardLavagem.cshtml`
+- `wwwroot/js/dashboards/dashboard-lavagem.js`
+- `Controllers/DashboardLavagemController.cs`
+
+**Status**: ✅ **Concluído**

@@ -469,39 +469,6 @@ namespace FrotiX.Controllers
         }
 
         [HttpGet]
-        [Route("api/DashboardLavagem/DuracaoLavagens")]
-        public async Task<IActionResult> DuracaoLavagens(DateTime? dataInicio, DateTime? dataFim)
-        {
-            try
-            {
-                if (!dataInicio.HasValue || !dataFim.HasValue)
-                {
-                    dataFim = DateTime.Now.Date.AddDays(1).AddSeconds(-1);
-                    dataInicio = dataFim.Value.AddDays(-30);
-                }
-
-                return Json(new
-                {
-                    success = true,
-                    estatisticas = new
-                    {
-                        totalComDuracao = 0,
-                        duracaoMedia = 0,
-                        duracaoMinima = 0,
-                        duracaoMaxima = 0
-                    },
-                    distribuicao = Array.Empty<object>(),
-                    duracaoPorCategoria = Array.Empty<object>(),
-                    observacao = "Duração não registrada (sem hora de fim)."
-                });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
-
-        [HttpGet]
         [Route("api/DashboardLavagem/LavagensPorCategoria")]
         public async Task<IActionResult> LavagensPorCategoria(DateTime? dataInicio, DateTime? dataFim)
         {

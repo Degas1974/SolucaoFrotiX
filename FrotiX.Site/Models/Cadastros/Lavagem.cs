@@ -50,7 +50,6 @@ namespace FrotiX.Models
         public DateTime? Data { get; set; }
 
         // Horário da lavagem.
-        [Column("HorarioInicio")]
         [Display(Name = "Horário da Lavagem")]
         public DateTime? HorarioLavagem { get; set; }
 

@@ -250,7 +250,6 @@ O sistema possui **90+ arquivos de controllers**, muitos utilizando o padrão **
 | TopMotoristas | GET | `TopMotoristas` | FrotiXDbContext |
 | HeatmapDiaHora | GET | `HeatmapDiaHora` | FrotiXDbContext |
 | LavagensPorContrato | GET | `LavagensPorContrato` | FrotiXDbContext |
-| DuracaoLavagens | GET | `DuracaoLavagens` | FrotiXDbContext |
 | LavagensPorCategoria | GET | `LavagensPorCategoria` | FrotiXDbContext |
 | EstatisticasPorLavador | GET | `EstatisticasPorLavador` | FrotiXDbContext |
 | EstatisticasPorVeiculo | GET | `EstatisticasPorVeiculo` | FrotiXDbContext |

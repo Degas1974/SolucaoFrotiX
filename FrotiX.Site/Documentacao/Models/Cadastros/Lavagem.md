@@ -1,7 +1,7 @@
 # Documentação: Lavagem.cs
 
 > **Última Atualização**: 03/02/2026  
-> **Versão Atual**: 2.1
+> **Versão Atual**: 2.2
 
 ---
 
@@ -22,7 +22,6 @@ public class Lavagem
     [Display(Name = "Data")]
     public DateTime? Data { get; set; }
 
-    [Column("HorarioInicio")]
     [Display(Name = "Horário da Lavagem")]
     public DateTime? HorarioLavagem { get; set; }
 
@@ -51,11 +50,11 @@ public class Lavagem
 
 **Descrição**:
 - Removidos HorarioInicio/HorarioFim do model
-- Adicionado `HorarioLavagem` mapeado para a coluna `HorarioInicio`
+- Adicionado `HorarioLavagem` (coluna `HorarioLavagem`)
 
 **Status**: ✅ **Concluído**
 
-**Versão**: 2.1
+**Versão**: 2.2
 
 ---
 
@@ -69,4 +68,4 @@ public class Lavagem
 
 **Última atualização**: 03/02/2026  
 **Autor**: Sistema FrotiX  
-**Versão**: 2.1
+**Versão**: 2.2

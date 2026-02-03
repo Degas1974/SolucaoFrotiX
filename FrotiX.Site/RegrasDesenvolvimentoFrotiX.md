@@ -4,8 +4,8 @@
 > **Tipo:** Aplicação Web ASP.NET Core MVC – Gestão de Frotas
 > **Stack:** .NET 10, C#, Entity Framework Core, SQL Server, Bootstrap 5.3, jQuery, Syncfusion EJ2, Telerik UI
 > **Status:** ✅ Arquivo ÚNICO e OFICIAL de regras do projeto
-> **Versão:** 1.3
-> **Última Atualização:** 01/02/2026
+> **Versão:** 1.5
+> **Última Atualização:** 03/02/2026
 
 ---
 
@@ -628,6 +628,7 @@ git push origin main
 
 | Versão | Data       | Descrição                                                                        |
 | ------ | ---------- | -------------------------------------------------------------------------------- |
+| 1.5    | 03/02/2026 | Adiciona seção 5.13 (Guia de Enriquecimento - Segunda Passada) com checklist detalhado por tipo de arquivo, exemplos de antes/depois, e workflow para agentes Haiku de enriquecimento de documentação |
 | 1.4    | 03/02/2026 | Adiciona seções 5.11 (Mapeamento de Dependências) e 5.12 (Análise de Arquivos Críticos). Atualiza 5.6 (🎯 MOTIVO em AJAX) e 5.9 (símbolos ⬅️ ➡️). Estabelece regra de limpeza do ArquivosCriticos.md |
 | 1.3    | 01/02/2026 | Adiciona seção 4.5 - Tratamento de Erros e APIs (ApiResponse, CORS, FrotiXApi)   |
 | 1.2    | 29/01/2026 | Atualização completa dos padrões visuais de Cards (Arquivo e Função) com ícones  |
@@ -1380,6 +1381,647 @@ Não é inconsistência, mas **estratégia pontual** de substituição gradual d
 ✅ **FIM DO DOCUMENTO**
 
 📌 **Lembrete:** Este arquivo deve ser consultado no início de cada sessão de desenvolvimento ou interação com agentes de IA.
+
+---
+
+## 📝 5.13 GUIA DE ENRIQUECIMENTO - SEGUNDA PASSADA
+
+> 📁 **Propósito:** Garantir que **TODOS** os arquivos tenham documentação completa com cards em todas as funções e comentários inline relevantes.
+
+### 5.13.1 Objetivo da Segunda Passada
+
+A segunda passada é um processo sistemático de **enriquecimento de documentação intra-código** que visa:
+
+1. ✅ **Completude:** Garantir que TODAS as funções tenham cards ⚡ completos
+2. ✅ **Rastreabilidade:** Documentar todas as dependências (⬅️ CHAMADO POR, ➡️ CHAMA)
+3. ✅ **Clareza:** Adicionar comentários inline em lógica complexa
+4. ✅ **Manutenibilidade:** Facilitar compreensão do código sem executá-lo
+5. ✅ **Consolidação:** Incorporar informações levantadas pelos agentes de análise
+
+**Quando realizar:** Após a primeira documentação de todos os arquivos, ou quando agentes de análise identificarem gaps na documentação existente.
+
+---
+
+### 5.13.2 Checklist por Tipo de Arquivo
+
+#### ✅ C# (.cs, .cshtml.cs)
+
+**Obrigatório:**
+- [ ] **Card de Arquivo** no topo com ⚡ 🎯 📥 📤 🔗 🔄 📦 📝
+- [ ] **Toda função pública** tem card ⚡ FUNÇÃO
+- [ ] **Toda função privada complexa** (>20 linhas ou lógica não-trivial) tem card ⚡ FUNÇÃO
+- [ ] Card tem **🎯 OBJETIVO, 📥 ENTRADAS, 📤 SAÍDAS**
+- [ ] Card tem **⬅️ CHAMADO POR, ➡️ CHAMA** (rastreabilidade)
+- [ ] **Dependências identificadas** pelos agentes estão documentadas em 📦 DEPENDÊNCIAS
+- [ ] **Comentários inline** em:
+  - LINQ complexo (3+ operações encadeadas)
+  - Loops aninhados
+  - Validações de negócio não-óbvias
+  - Cálculos matemáticos
+  - Operações de banco (queries customizadas, stored procedures)
+
+**Exemplo de função documentada:**
+```csharp
+/****************************************************************************************
+ * ⚡ FUNÇÃO: CalcularCustoTotal
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Calcular custo total de viagem incluindo combustível, motorista,
+ *                   veículo e custos operacionais
+ *
+ * 📥 ENTRADAS     : viagemId [int] - ID da viagem
+ *                   incluirExtras [bool] - Se deve incluir custos extras
+ *
+ * 📤 SAÍDAS       : decimal - Valor total calculado em R$
+ *
+ * ⬅️ CHAMADO POR  : ViagemController.OnPostFinalizarAsync() [linha 245]
+ *                   RelatorioService.GerarRelatorioMensal() [linha 89]
+ *
+ * ➡️ CHAMA        : _unitOfWork.Viagem.GetFirstOrDefaultAsync() [linha 12]
+ *                   ServicosAsync.CalculaCustoCombustivelAsync() [linha 18]
+ *                   ServicosAsync.CalculaCustoMotoristaAsync() [linha 23]
+ *
+ * 📝 OBSERVAÇÕES  : Usa preços de repactuação se disponíveis, caso contrário usa
+ *                   valores do contrato vigente. Custos extras incluem pedágios,
+ *                   estacionamento e alimentação.
+ ****************************************************************************************/
+public async Task<decimal> CalcularCustoTotal(int viagemId, bool incluirExtras = false)
+{
+    try
+    {
+        // [DB] Buscar viagem com includes otimizados
+        var viagem = await _unitOfWork.Viagem.GetFirstOrDefaultAsync(
+            filter: v => v.Id == viagemId,
+            includeProperties: "Veiculo,Motorista,Contrato,Repactuacao"
+        );
+
+        if (viagem == null)
+            throw new ArgumentException($"Viagem {viagemId} não encontrada");
+
+        // [LOGICA] Calcular custos base (combustível + motorista + veículo)
+        decimal custoCombustivel = await ServicosAsync.CalculaCustoCombustivelAsync(viagem);
+        decimal custoMotorista = await ServicosAsync.CalculaCustoMotoristaAsync(viagem);
+        decimal custoVeiculo = await ServicosAsync.CalculaCustoVeiculoAsync(viagem);
+
+        decimal custoTotal = custoCombustivel + custoMotorista + custoVeiculo;
+
+        // [REGRA] Incluir custos extras apenas se solicitado e disponíveis
+        if (incluirExtras && viagem.CustosExtras != null)
+        {
+            custoTotal += viagem.CustosExtras.Sum(e => e.Valor);
+        }
+
+        return Math.Round(custoTotal, 2);
+    }
+    catch (Exception error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemService.cs", "CalcularCustoTotal", error);
+        throw;
+    }
+}
+```
+
+---
+
+#### ✅ JavaScript (.js)
+
+**Obrigatório:**
+- [ ] **Card de Arquivo** no topo
+- [ ] **Toda função** tem card ⚡ FUNÇÃO
+- [ ] **Todo AJAX** tem comentário `[AJAX]` com 📥 ENVIA, 📤 RECEBE, 🎯 MOTIVO
+- [ ] **Funções globais** documentadas (ex: `window.abrirModal = function() {...}`)
+- [ ] **Event handlers** documentados (onclick, change, submit, etc.)
+- [ ] **Comentários inline** em:
+  - Callbacks complexos
+  - Promises/async-await chains
+  - Manipulação DOM não-trivial
+  - Validações customizadas
+  - Transformações de dados (map, filter, reduce)
+
+**Exemplo de função documentada com AJAX:**
+```javascript
+/****************************************************************************************
+ * ⚡ FUNÇÃO: carregarDadosVeiculo
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Buscar dados completos do veículo e popular formulário de edição
+ *
+ * 📥 ENTRADAS     : veiculoId [number] - ID do veículo a ser carregado
+ *
+ * 📤 SAÍDAS       : Promise<void> - Resolve após popular formulário
+ *
+ * ⬅️ CHAMADO POR  : Evento onclick do botão .btn-editar [linha 45]
+ *                   inicializarPagina() [linha 12]
+ *
+ * ➡️ CHAMA        : GET /api/Veiculo/GetById [AJAX]
+ *                   popularFormulario() [linha 156]
+ *                   FtxSpin.show(), FtxSpin.hide() [frotix.js]
+ *
+ * 📝 OBSERVAÇÕES  : Requer permissão "Veiculos.Visualizar" no backend
+ ****************************************************************************************/
+async function carregarDadosVeiculo(veiculoId) {
+    try {
+        // [UI] Exibir loading
+        FtxSpin.show("Carregando dados do veículo...");
+
+        /********************************************************************************
+         * [AJAX] Endpoint: GET /api/Veiculo/GetById
+         * ------------------------------------------------------------------------------
+         * 📥 ENVIA        : veiculoId (query param)
+         * 📤 RECEBE       : {
+         *                     success: bool,
+         *                     data: {
+         *                       Id, Placa, Modelo, Marca, Ano, Km, Status,
+         *                       ContratoId, Contrato: { ... }
+         *                     },
+         *                     message: string
+         *                   }
+         * 🎯 MOTIVO       : Buscar dados completos incluindo relacionamentos para
+         *                   popular formulário de edição com todas as informações
+         ********************************************************************************/
+        const response = await fetch(`/api/Veiculo/GetById?id=${veiculoId}`);
+        const result = await response.json();
+
+        // [VALIDACAO] Verificar sucesso da requisição
+        if (!result.success) {
+            Alerta.Erro("Erro", result.message);
+            return;
+        }
+
+        // [DADOS] Popular formulário com dados recebidos
+        popularFormulario(result.data);
+
+        // [UI] Exibir mensagem de sucesso
+        Alerta.Sucesso("Sucesso", "Dados carregados com sucesso");
+
+    } catch (erro) {
+        // [DEBUG] Log detalhado do erro
+        console.error("Erro ao carregar veículo:", erro);
+        Alerta.TratamentoErroComLinha("veiculo-upsert.js", "carregarDadosVeiculo", erro);
+    } finally {
+        // [UI] Esconder loading (sempre executado)
+        FtxSpin.hide();
+    }
+}
+```
+
+---
+
+#### ✅ CSHTML (Razor Pages)
+
+**Obrigatório:**
+- [ ] **Card de Arquivo** no topo
+- [ ] **JavaScript inline > 50 linhas** tem cards (preferencialmente extrair para arquivo .js separado)
+- [ ] **Formulários** documentam POST/GET handler
+- [ ] **Seção @section Scripts** documentada
+- [ ] **Partials** documentados (`@await Html.PartialAsync(...)`)
+
+**Exemplo de documentação em CSHTML:**
+```cshtml
+@*
+****************************************************************************************
+⚡ ARQUIVO: VeiculoUpsert.cshtml
+--------------------------------------------------------------------------------------
+🎯 OBJETIVO     : Página de criação e edição de veículos com validação em tempo real
+
+📥 ENTRADAS     : Model: VeiculoViewModel (nullable para criar, populado para editar)
+                  TempData["VeiculoId"] (quando vem de outra página)
+
+📤 SAÍDAS       : POST /Veiculo/Upsert?handler=Salvar (formulário)
+                  Redirect /Veiculo/Index (após sucesso)
+
+🔗 CHAMADA POR  : Menu lateral → Cadastros → Veículos → Adicionar/Editar
+                  VeiculoController.OnGetEdit(id)
+
+🔄 CHAMA        : VeiculoController.OnPostSalvarAsync() (submit formulário)
+                  /api/Veiculo/ValidarPlaca (AJAX validação)
+                  veiculo-upsert.js (lógica de formulário)
+
+📦 DEPENDÊNCIAS : Bootstrap 5.3, Syncfusion EJ2, jQuery 3.7
+                  veiculo-upsert.js, alerta.js, frotix.js
+
+📝 OBSERVAÇÕES  : Formulário usa validação dupla (cliente + servidor).
+                  Placa é validada em tempo real via AJAX ao perder foco.
+****************************************************************************************
+*@
+
+@page
+@model VeiculoViewModel
+
+<div class="container-fluid">
+    <!-- [UI] Header da página com breadcrumb -->
+    <div class="ftx-card-header">
+        <h2 class="titulo-paginas mb-0">
+            <i class="fa-duotone fa-car" style="--fa-primary-color:#ff6b35;"></i>
+            @(Model.Id > 0 ? "Editar Veículo" : "Novo Veículo")
+        </h2>
+        <a href="/Veiculo" class="btn btn-header-orange">
+            <i class="fa-duotone fa-rotate-left"></i> Voltar
+        </a>
+    </div>
+
+    <!-- [UI] Formulário principal com validação Syncfusion -->
+    <form method="post" asp-page-handler="Salvar" id="formVeiculo">
+        @* [DADOS] Campo oculto para ID (apenas em edição) *@
+        <input type="hidden" asp-for="Id" />
+
+        <!-- ... campos do formulário ... -->
+    </form>
+</div>
+
+@section Scripts {
+<script>
+    /************************************************************************************
+     * [UI] Script: Validação e submissão do formulário de veículo
+     * ----------------------------------------------------------------------------------
+     * Inicializa componentes Syncfusion, configura validação de placa em tempo real,
+     * e gerencia o fluxo de submissão com feedback visual ao usuário.
+     ************************************************************************************/
+
+    $(document).ready(function() {
+        try {
+            // [HELPER] Inicializar componentes Syncfusion
+            inicializarComponentes();
+
+            // [VALIDACAO] Configurar validação de placa
+            configurarValidacaoPlaca();
+        } catch (erro) {
+            Alerta.TratamentoErroComLinha("VeiculoUpsert.cshtml", "document.ready", erro);
+        }
+    });
+</script>
+}
+```
+
+---
+
+### 5.13.3 Quando Adicionar Comentários Inline
+
+**✅ ADICIONAR comentários inline quando:**
+
+1. **LINQ Complexo** (3+ operações encadeadas)
+   ```csharp
+   // [LOGICA] Filtrar veículos ativos, agrupar por contrato, ordenar por custo total
+   var resultado = veiculos
+       .Where(v => v.Status && v.ContratoId != null)
+       .GroupBy(v => v.ContratoId)
+       .Select(g => new { ContratoId = g.Key, Total = g.Sum(v => v.CustoMensal) })
+       .OrderByDescending(x => x.Total)
+       .ToList();
+   ```
+
+2. **Validações de Negócio Não-Óbvias**
+   ```csharp
+   // [REGRA] Data de fim deve ser no mínimo 5 dias úteis após data de início
+   // (considerando feriados e fins de semana)
+   if (CalcularDiasUteis(viagem.DataInicio, viagem.DataFim) < 5)
+       throw new BusinessException("Viagem deve ter no mínimo 5 dias úteis");
+   ```
+
+3. **Cálculos Matemáticos ou Fórmulas**
+   ```javascript
+   // [LOGICA] Fórmula: Consumo = (Litros / KmPercorrido) * 100 (L/100km)
+   const consumo = (abastecimento.Litros / viagem.KmPercorrido) * 100;
+   ```
+
+4. **Callbacks ou Promises Complexos**
+   ```javascript
+   // [AJAX] Chain de promises: Primeiro salva viagem, depois vincula motorista,
+   // e finalmente atualiza status do veículo
+   salvarViagem(dados)
+       .then(viagemId => vincularMotorista(viagemId, motoristaId))
+       .then(() => atualizarStatusVeiculo(veiculoId, "EM_VIAGEM"))
+       .then(() => Alerta.Sucesso("Sucesso", "Viagem criada com sucesso"));
+   ```
+
+5. **Manipulação DOM Não-Trivial**
+   ```javascript
+   // [UI] Clonar linha da tabela, limpar campos, e inserir após última linha
+   // mantendo event handlers com event delegation
+   const novaLinha = $linhaTemplate.clone()
+       .find('input').val('').end()
+       .insertAfter($tabelaItens.find('tr:last'));
+   ```
+
+6. **Workarounds ou Soluções Temporárias**
+   ```csharp
+   // [PERFORMANCE] TODO: Otimizar com cache - query executada múltiplas vezes
+   // Issue #234: Implementar cache de motoristas disponíveis
+   var motoristas = await _unitOfWork.Motorista.GetAllAsync();
+   ```
+
+---
+
+### 5.13.4 Quando NÃO Adicionar Comentários Inline
+
+**❌ NÃO adicionar comentários óbvios ou redundantes:**
+
+1. **Código auto-explicativo**
+   ```csharp
+   // ❌ MAU: Comentário óbvio
+   // Incrementar contador
+   contador++;
+
+   // ✅ BOM: Sem comentário (código é claro)
+   contador++;
+   ```
+
+2. **Nomes descritivos**
+   ```javascript
+   // ❌ MAU: Comentário desnecessário
+   // Calcular total de itens
+   const totalItens = calcularTotalItens();
+
+   // ✅ BOM: Nome da função já explica
+   const totalItens = calcularTotalItens();
+   ```
+
+3. **Operações simples**
+   ```csharp
+   // ❌ MAU: Comentário desnecessário
+   // Verificar se veículo é nulo
+   if (veiculo == null)
+       return NotFound();
+
+   // ✅ BOM: Guard clause clara sem comentário
+   if (veiculo == null)
+       return NotFound();
+   ```
+
+4. **Getters/Setters simples**
+   ```csharp
+   // ❌ MAU: Comentário desnecessário
+   // Retornar placa
+   public string Placa { get; set; }
+
+   // ✅ BOM: Property auto-documentada
+   public string Placa { get; set; }
+   ```
+
+---
+
+### 5.13.5 Workflow para Agentes de Segunda Passada
+
+**Processo sistemático para agentes Haiku:**
+
+1. **Ler arquivo completo**
+   - Entender propósito e contexto
+   - Identificar funções sem documentação
+   - Mapear dependências
+
+2. **Identificar gaps de documentação**
+   - Funções sem card ⚡
+   - AJAX sem 📥📤🎯
+   - Lógica complexa sem comentários
+   - Falta de rastreabilidade (⬅️ ➡️)
+
+3. **Consultar informações dos agentes de análise**
+   - Dependências identificadas no `MapeamentoDependencias.md`
+   - Problemas conhecidos no `ArquivosCriticos.md`
+   - Padrões documentados em análises anteriores
+
+4. **Adicionar documentação faltante**
+   - Cards completos em funções
+   - Comentários inline em lógica complexa
+   - Rastreabilidade de chamadas
+   - Informações de dependências
+
+5. **Validar sintaxe e formatação**
+   - Não quebrar código existente
+   - Manter indentação consistente
+   - Seguir padrões do projeto
+
+6. **Usar Edit tool para atualizar**
+   - Edições precisas (não reescrever arquivo inteiro)
+   - Preservar código funcional
+   - Manter formatação original
+
+7. **Gerar relatório de enriquecimento**
+   - Quantidade de funções documentadas
+   - Quantidade de comentários adicionados
+   - Problemas encontrados (se houver)
+
+---
+
+### 5.13.6 Exemplo de Antes/Depois
+
+#### ANTES (Documentação Incompleta):
+```javascript
+// arquivo: veiculo-list.js
+
+function carregarVeiculos() {
+    $.ajax({
+        url: '/api/Veiculo/GetAll',
+        method: 'GET',
+        success: function(response) {
+            $('#gridVeiculos').DataTable({
+                data: response.data
+            });
+        }
+    });
+}
+
+function excluir(id) {
+    if (confirm("Tem certeza?")) {
+        $.post('/api/Veiculo/Delete', { id: id }, function() {
+            location.reload();
+        });
+    }
+}
+```
+
+#### DEPOIS (Documentação Completa):
+```javascript
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: veiculo-list.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar listagem e operações CRUD de veículos
+ *
+ * 📥 ENTRADAS     : Nenhuma (carregamento via AJAX)
+ *
+ * 📤 SAÍDAS       : Grid DataTable populado, confirmações de operações
+ *
+ * 🔗 CHAMADA POR  : VeiculoIndex.cshtml (document.ready)
+ *
+ * 🔄 CHAMA        : GET /api/Veiculo/GetAll
+ *                   POST /api/Veiculo/Delete
+ *                   Alerta.Confirmar() [alerta.js]
+ *
+ * 📦 DEPENDÊNCIAS : jQuery 3.7, DataTables 1.13, Alerta.js
+ **************************************************************************************** */
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: carregarVeiculos
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Buscar todos os veículos e popular grid DataTable
+ *
+ * 📥 ENTRADAS     : Nenhuma
+ *
+ * 📤 SAÍDAS       : Promise<void> - Grid populado ou mensagem de erro
+ *
+ * ⬅️ CHAMADO POR  : document.ready [linha 5]
+ *                   excluir() - após exclusão bem-sucedida [linha 89]
+ *
+ * ➡️ CHAMA        : GET /api/Veiculo/GetAll [AJAX]
+ *                   DataTable() [jQuery plugin]
+ ****************************************************************************************/
+function carregarVeiculos() {
+    try {
+        /********************************************************************************
+         * [AJAX] Endpoint: GET /api/Veiculo/GetAll
+         * ------------------------------------------------------------------------------
+         * 📥 ENVIA        : Nenhum parâmetro
+         * 📤 RECEBE       : {
+         *                     success: bool,
+         *                     data: Veiculo[],
+         *                     message: string
+         *                   }
+         * 🎯 MOTIVO       : Carregar lista completa de veículos para exibir no grid
+         *                   com paginação e filtros do lado cliente
+         ********************************************************************************/
+        $.ajax({
+            url: '/api/Veiculo/GetAll',
+            method: 'GET',
+            success: function(response) {
+                // [VALIDACAO] Verificar resposta da API
+                if (!response.success) {
+                    Alerta.Erro("Erro", response.message);
+                    return;
+                }
+
+                // [UI] Inicializar DataTable com dados recebidos
+                $('#gridVeiculos').DataTable({
+                    data: response.data,
+                    columns: [
+                        { data: 'Placa' },
+                        { data: 'Modelo' },
+                        { data: 'Status' }
+                    ]
+                });
+            },
+            error: function(xhr, status, error) {
+                // [DEBUG] Log detalhado do erro
+                console.error("Erro ao carregar veículos:", error);
+                Alerta.TratamentoErroComLinha("veiculo-list.js", "carregarVeiculos", error);
+            }
+        });
+    } catch (erro) {
+        Alerta.TratamentoErroComLinha("veiculo-list.js", "carregarVeiculos", erro);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: excluir
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Confirmar e executar exclusão de veículo do sistema
+ *
+ * 📥 ENTRADAS     : id [number] - ID do veículo a ser excluído
+ *
+ * 📤 SAÍDAS       : Promise<void> - Veículo excluído ou mensagem de erro
+ *
+ * ⬅️ CHAMADO POR  : Evento onclick do botão .btn-excluir [grid DataTable]
+ *
+ * ➡️ CHAMA        : Alerta.Confirmar() [alerta.js]
+ *                   POST /api/Veiculo/Delete [AJAX]
+ *                   carregarVeiculos() [linha 25] - após sucesso
+ *
+ * 📝 OBSERVAÇÕES  : Valida se veículo tem viagens ativas antes de excluir no backend
+ ****************************************************************************************/
+async function excluir(id) {
+    try {
+        // [UI] Exibir confirmação padronizada FrotiX
+        const confirmado = await Alerta.Confirmar(
+            "Confirmar Exclusão",
+            "Tem certeza que deseja excluir este veículo?",
+            "Sim, excluir",
+            "Cancelar"
+        );
+
+        if (!confirmado) return;
+
+        /********************************************************************************
+         * [AJAX] Endpoint: POST /api/Veiculo/Delete
+         * ------------------------------------------------------------------------------
+         * 📥 ENVIA        : { id: number }
+         * 📤 RECEBE       : { success: bool, message: string }
+         * 🎯 MOTIVO       : Excluir veículo do banco de dados após validações de negócio
+         *                   (verifica viagens ativas, contratos vinculados)
+         ********************************************************************************/
+        $.post('/api/Veiculo/Delete', { id: id }, function(response) {
+            // [VALIDACAO] Verificar se exclusão foi bem-sucedida
+            if (response.success) {
+                Alerta.Sucesso("Sucesso", response.message);
+                // [UI] Recarregar grid para refletir exclusão
+                carregarVeiculos();
+            } else {
+                Alerta.Erro("Erro", response.message);
+            }
+        }).fail(function(xhr, status, error) {
+            // [DEBUG] Log detalhado do erro
+            console.error("Erro ao excluir veículo:", error);
+            Alerta.TratamentoErroComLinha("veiculo-list.js", "excluir", error);
+        });
+
+    } catch (erro) {
+        Alerta.TratamentoErroComLinha("veiculo-list.js", "excluir", erro);
+    }
+}
+```
+
+---
+
+### 5.13.7 Incorporação de Informações dos Agentes
+
+**REGRA:** Ao realizar a segunda passada, **incorporar** informações levantadas pelos agentes de análise anteriores:
+
+1. **De MapeamentoDependencias.md:**
+   - Adicionar dependências identificadas em `📦 DEPENDÊNCIAS`
+   - Documentar chamadas em `➡️ CHAMA`
+   - Documentar quem chama em `⬅️ CHAMADO POR`
+
+2. **De ArquivosCriticos.md:**
+   - Adicionar `📝 OBSERVAÇÕES` sobre problemas conhecidos
+   - Documentar workarounds temporários
+   - Referenciar issues pendentes
+
+3. **De análises de padrões:**
+   - Documentar padrões arquiteturais identificados
+   - Explicar decisões de design
+   - Justificar uso de bibliotecas específicas
+
+**Exemplo:**
+```csharp
+/****************************************************************************************
+ * 📝 OBSERVAÇÕES  : Este arquivo usa mix intencional Syncfusion + Kendo devido a
+ *                   problemas conhecidos do DatePicker Syncfusion com timezones.
+ *                   Ver ArquivosCriticos.md #45 para detalhes.
+ *
+ *                   Dependências identificadas por análise automática:
+ *                   - IUnitOfWork.Viagem (10 chamadas)
+ *                   - ILogger<ViagemController> (logging em todas as actions)
+ *                   - ServicosAsync (cálculos de custo)
+ ****************************************************************************************/
+```
+
+---
+
+### 5.13.8 Validação de Completude
+
+**Antes de considerar um arquivo concluído na segunda passada, validar:**
+
+✅ **Checklist Final:**
+- [ ] Card de arquivo presente e completo
+- [ ] TODAS as funções têm card ⚡ (públicas obrigatório, privadas complexas recomendado)
+- [ ] TODAS as chamadas AJAX têm 📥📤🎯
+- [ ] Rastreabilidade completa (⬅️ ➡️) em todas as funções
+- [ ] Comentários inline em lógica complexa (não-óbvia)
+- [ ] SEM comentários óbvios ou redundantes
+- [ ] Try-catch em TODAS as funções (regra inviolável)
+- [ ] Informações dos agentes incorporadas
+- [ ] Sintaxe validada (código não quebrado)
+- [ ] Formatação consistente mantida
+
+**Ao completar lote de arquivos:**
+- Atualizar `DocumentacaoIntracodigo.md` com percentual de conclusão
+- Commit: `docs: Segunda passada Lote [N] - [pasta] ([quantidade] arquivos enriquecidos)`
 
 ---
 

@@ -1,7 +1,7 @@
 # Documentação: ViewLavagem.cs
 
 > **Última Atualização**: 03/02/2026  
-> **Versão Atual**: 2.2
+> **Versão Atual**: 2.3
 
 ---
 
@@ -65,7 +65,7 @@ public class ViewLavagem
 - `LavadoresLavagem` (JOIN para múltiplos lavadores)
 
 **Cálculos na View**:
-- `Horario`: `CONVERT(VARCHAR, Lavagem.HorarioInicio, 8)`
+- `Horario`: `CONVERT(VARCHAR, Lavagem.HorarioLavagem, 8)`
 - `Lavadores`: STRING_AGG ou CONCAT de nomes dos lavadores
 
 ---
@@ -79,15 +79,14 @@ public class ViewLavagem
 
 # PARTE 2: LOG DE MODIFICAÇÕES/CORREÇÕES
 
-## [03/02/2026] - Unificação do Horário na View
+## [03/02/2026] - Ajuste para HorarioLavagem
 
 **Descrição**:
-- Removidos HorarioInicio/HorarioFim do model
-- Adicionado `Horario` como horário único da lavagem
+- Atualizada a view para usar a coluna `HorarioLavagem` como origem do campo `Horario`
 
 **Status**: ✅ **Concluído**
 
-**Versão**: 2.1
+**Versão**: 2.3
 
 ---
 
@@ -102,6 +101,18 @@ public class ViewLavagem
 
 ---
 
+## [03/02/2026] - Unificação do Horário na View
+
+**Descrição**:
+- Removidos HorarioInicio/HorarioFim do model
+- Adicionado `Horario` como horário único da lavagem
+
+**Status**: ✅ **Concluído**
+
+**Versão**: 2.1
+
+---
+
 ## [08/01/2026] - Documentação Inicial Completa
 
 **Status**: ✅ **Concluído**
@@ -112,4 +123,4 @@ public class ViewLavagem
 
 **Última atualização**: 03/02/2026  
 **Autor**: Sistema FrotiX  
-**Versão**: 2.2
+**Versão**: 2.3

@@ -5367,8 +5367,7 @@ CREATE TABLE dbo.Lavagem (
   LavagemId uniqueidentifier NOT NULL DEFAULT (newid()),
   VeiculoId uniqueidentifier NULL,
   MotoristaId uniqueidentifier NULL,
-  HorarioInicio datetime NULL,
-  HorarioFim datetime NULL,
+  HorarioLavagem datetime NULL,
   Data datetime NULL,
   CONSTRAINT PK_Lavagem_LavagemId PRIMARY KEY CLUSTERED (LavagemId)
 )
@@ -5382,7 +5381,7 @@ PRINT (N'Create index [IX_Lavagem_Data] on table [dbo].[Lavagem]')
 GO
 CREATE INDEX IX_Lavagem_Data
   ON dbo.Lavagem (Data)
-  INCLUDE (VeiculoId, MotoristaId, HorarioInicio)
+  INCLUDE (VeiculoId, MotoristaId, HorarioLavagem)
   ON [PRIMARY]
 GO
 
@@ -5477,10 +5476,7 @@ AS SELECT
   ,Lavagem.VeiculoId
   ,Lavagem.MotoristaId
  ,CONVERT(VARCHAR, Lavagem.Data, 103) AS Data
- ,CONVERT(VARCHAR, Lavagem.HorarioInicio, 8) AS Horario
- ,CONVERT(VARCHAR, Lavagem.HorarioInicio, 8) AS HorarioInicio
- ,CONVERT(VARCHAR, Lavagem.HorarioFim, 8) AS HorarioFim
- ,DATEDIFF(MINUTE, Lavagem.HorarioInicio, Lavagem.HorarioFim) AS DuracaoMinutos
+ ,CONVERT(VARCHAR, Lavagem.HorarioLavagem, 8) AS Horario
  ,STRING_AGG(Lavador.Nome, ',') AS Lavadores
  ,STRING_AGG(convert(nvarchar(50),Lavador.LavadorId), ',') AS LavadoresId
  ,'(' + Veiculo.Placa + ') - ' + MarcaVeiculo.DescricaoMarca + '/' + ModeloVeiculo.DescricaoModelo AS DescricaoVeiculo
@@ -5502,8 +5498,7 @@ GROUP BY Lavagem.LavagemId
         ,Lavagem.VeiculoId
         ,Lavagem.MotoristaId
         ,Lavagem.Data
-        ,Lavagem.HorarioInicio
-        ,HorarioFim
+        ,Lavagem.HorarioLavagem
         ,Veiculo.Placa
         ,MarcaVeiculo.DescricaoMarca
         ,ModeloVeiculo.DescricaoModelo

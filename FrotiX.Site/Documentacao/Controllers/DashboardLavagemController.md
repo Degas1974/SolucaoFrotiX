@@ -41,7 +41,7 @@ O sistema mantém a lógica de **Comparação de Período**, informando se o vol
 ### Atualização 03/02/2026 – Horário Único da Lavagem
 
 - O dashboard passou a usar `HorarioLavagem` como referência de horário.
-- O endpoint `DuracaoLavagens` retorna distribuição vazia quando não há hora fim registrada.
+- O endpoint `DuracaoLavagens` foi removido (não há mais cálculo de duração).
 
 ---
 *Documentação atualizada em 2026.02.03 conforme novo padrão de Prosa Leve.*
