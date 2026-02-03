@@ -1,7 +1,7 @@
 # Documentação: Manutencao - ControleLavagem
 
-> **Última Atualização**: 14/01/2026
-> **Versão Atual**: 0.2
+> **Última Atualização**: 03/02/2026
+> **Versão Atual**: 0.3
 
 ---
 
@@ -19,10 +19,11 @@
 
 ## Visão Geral
 
-> **TODO**: Descrever o objetivo da página e as principais ações do usuário.
+Tela responsável por registrar lavagens de veículos e filtrar lavagens por veículo, motorista, lavador e data.
 
 ### Características Principais
-- ✅ **TODO**
+- ✅ Registro de lavagem com data + hora única (sem hora fim)
+- ✅ Filtros por veículo, motorista, lavador e data
 
 ---
 
@@ -68,13 +69,35 @@ FrotiX.Site/
 
 ## Endpoints API
 
-> **TODO**: Listar endpoints consumidos pela página e incluir trechos reais de código do Controller/Handler quando aplicável.
+**Principais endpoints consumidos:**
+- `GET /api/Manutencao/ListaLavagens`
+- `GET /api/Manutencao/ListaLavagemVeiculos`
+- `GET /api/Manutencao/ListaLavagemMotoristas`
+- `GET /api/Manutencao/ListaLavagemLavadores`
+- `POST /api/Manutencao/InsereLavagem`
+- `POST /api/Manutencao/InsereLavadoresLavagem`
+- `POST /api/Manutencao/ApagaLavagem`
+
+**Payload de inserção (InsereLavagem):**
+```json
+{
+  "Data": "2026-02-03",
+  "HorarioLavagem": "08:30",
+  "VeiculoId": "GUID",
+  "MotoristaId": "GUID"
+}
+```
 
 ---
 
 ## Validações
 
-> **TODO**: Listar validações do frontend e backend (com trechos reais do código).
+**Frontend (JS):**
+- Data obrigatória (`#txtDataLavagem`)
+- Hora da lavagem obrigatória (`#txtHoraLavagem`)
+- Veículo obrigatório (`#lstVeiculoLavagem`)
+- Motorista obrigatório (`#lstMotoristaLavagem`)
+- Ao menos 1 lavador obrigatório (`#lstLavadores`)
 
 ---
 
@@ -119,6 +142,27 @@ FrotiX.Site/
 **Status**: ✅ **Concluído**
 
 ---
+
+## [03/02/2026 10:00] - Hora Única da Lavagem
+
+**Descrição**:
+- Removido campo de Hora Fim (UI e validações)
+- Unificado horário da lavagem em `HorarioLavagem`
+- DataTable passa a consumir campo `Horario`
+
+**Arquivos Afetados**:
+
+- `Pages/Manutencao/ControleLavagem.cshtml`
+- `Controllers/ManutencaoController.cs`
+- `Models/Cadastros/Lavagem.cs`
+- `Models/Views/ViewLavagem.cs`
+
+**Impacto**:
+
+- Registro simplificado de lavagens
+- Correção de erro no DataTable (campo `Horario`)
+
+**Status**: ✅ **Concluído**
 
 ## [08/01/2026 18:24] - Criação automática da documentação (stub)
 

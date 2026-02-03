@@ -128,8 +128,8 @@ namespace FrotiX.Controllers
 
                 // Horário de pico
                 var horarioPico = lavagens
-                    .Where(l => l.HorarioInicio.HasValue)
-                    .GroupBy(l => l.HorarioInicio.Value.Hour)
+                    .Where(l => l.HorarioLavagem.HasValue)
+                    .GroupBy(l => l.HorarioLavagem.Value.Hour)
                     .Select(g => new { Hora = $"{g.Key:D2}:00", Quantidade = g.Count() })
                     .OrderByDescending(x => x.Quantidade)
                     .FirstOrDefault();
@@ -216,14 +216,14 @@ namespace FrotiX.Controllers
                 }
 
                 var lavagens = await _context.Lavagem
-                    .Where(l => l.Data >= dataInicio && l.Data <= dataFim && l.HorarioInicio.HasValue)
+                    .Where(l => l.Data >= dataInicio && l.Data <= dataFim && l.HorarioLavagem.HasValue)
                     .ToListAsync();
 
                 var resultado = Enumerable.Range(0, 24)
                     .Select(h => new
                     {
                         hora = $"{h:D2}:00",
-                        quantidade = lavagens.Count(l => l.HorarioInicio.Value.Hour == h)
+                        quantidade = lavagens.Count(l => l.HorarioLavagem.Value.Hour == h)
                     })
                     .ToList();
 
@@ -405,11 +405,11 @@ namespace FrotiX.Controllers
                 }
 
                 var lavagens = await _context.Lavagem
-                    .Where(l => l.Data >= dataInicio && l.Data <= dataFim && l.Data.HasValue && l.HorarioInicio.HasValue)
+                    .Where(l => l.Data >= dataInicio && l.Data <= dataFim && l.Data.HasValue && l.HorarioLavagem.HasValue)
                     .ToListAsync();
 
                 var resultado = lavagens
-                    .GroupBy(l => new { Dia = (int)l.Data.Value.DayOfWeek, Hora = l.HorarioInicio.Value.Hour })
+                    .GroupBy(l => new { Dia = (int)l.Data.Value.DayOfWeek, Hora = l.HorarioLavagem.Value.Hour })
                     .Select(g => new
                     {
                         dia = g.Key.Dia,
@@ -480,74 +480,19 @@ namespace FrotiX.Controllers
                     dataInicio = dataFim.Value.AddDays(-30);
                 }
 
-                var lavagens = await _context.Lavagem
-                    .Include(l => l.Veiculo)
-                    .Where(l => l.Data >= dataInicio && l.Data <= dataFim
-                        && l.HorarioInicio.HasValue && l.HorarioFim.HasValue)
-                    .ToListAsync();
-
-                // Calcular duração de cada lavagem
-                var lavagensDuracao = lavagens
-                    .Select(l => new
-                    {
-                        l.LavagemId,
-                        Categoria = l.Veiculo?.PlacaBronzeId != null ? "PM" : (l.Veiculo?.Categoria ?? "Outros"),
-                        DuracaoMinutos = (l.HorarioFim.Value - l.HorarioInicio.Value).TotalMinutes
-                    })
-                    .Where(l => l.DuracaoMinutos > 0 && l.DuracaoMinutos < 480) // Filtrar valores válidos (até 8h)
-                    .ToList();
-
-                // Distribuição por faixas de duração
-                var distribuicao = new[]
-                {
-                    new { faixa = "0-15 min", min = 0, max = 15 },
-                    new { faixa = "15-30 min", min = 15, max = 30 },
-                    new { faixa = "30-45 min", min = 30, max = 45 },
-                    new { faixa = "45-60 min", min = 45, max = 60 },
-                    new { faixa = "60+ min", min = 60, max = 999 }
-                }
-                .Select(f => new
-                {
-                    faixa = f.faixa,
-                    quantidade = lavagensDuracao.Count(l => l.DuracaoMinutos >= f.min && l.DuracaoMinutos < f.max)
-                })
-                .ToList();
-
-                // Duração média por categoria
-                var duracaoPorCategoria = lavagensDuracao
-                    .GroupBy(l => l.Categoria)
-                    .Select(g => new
-                    {
-                        categoria = g.Key,
-                        mediaMinutos = Math.Round(g.Average(l => l.DuracaoMinutos), 1),
-                        quantidade = g.Count()
-                    })
-                    .OrderByDescending(x => x.quantidade)
-                    .ToList();
-
-                // Estatísticas gerais
-                var duracaoMedia = lavagensDuracao.Any()
-                    ? Math.Round(lavagensDuracao.Average(l => l.DuracaoMinutos), 1)
-                    : 0;
-                var duracaoMinima = lavagensDuracao.Any()
-                    ? Math.Round(lavagensDuracao.Min(l => l.DuracaoMinutos), 1)
-                    : 0;
-                var duracaoMaxima = lavagensDuracao.Any()
-                    ? Math.Round(lavagensDuracao.Max(l => l.DuracaoMinutos), 1)
-                    : 0;
-
                 return Json(new
                 {
                     success = true,
                     estatisticas = new
                     {
-                        totalComDuracao = lavagensDuracao.Count,
-                        duracaoMedia,
-                        duracaoMinima,
-                        duracaoMaxima
+                        totalComDuracao = 0,
+                        duracaoMedia = 0,
+                        duracaoMinima = 0,
+                        duracaoMaxima = 0
                     },
-                    distribuicao,
-                    duracaoPorCategoria
+                    distribuicao = Array.Empty<object>(),
+                    duracaoPorCategoria = Array.Empty<object>(),
+                    observacao = "Duração não registrada (sem hora de fim)."
                 });
             }
             catch (Exception ex)

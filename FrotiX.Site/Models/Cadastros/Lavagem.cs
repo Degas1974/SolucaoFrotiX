@@ -1,7 +1,7 @@
 /* ****************************************************************************************
  * ⚡ ARQUIVO: Lavagem.cs
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Registrar lavagens de veículos com horários e vínculos.
+ * 🎯 OBJETIVO     : Registrar lavagens de veículos com horário e vínculos.
  *
  * 📥 ENTRADAS     : Datas/horários e identificadores de veículo/motorista.
  *
@@ -28,9 +28,9 @@ namespace FrotiX.Models
     /****************************************************************************************
      * ⚡ MODEL: Lavagem
      * --------------------------------------------------------------------------------------
-     * 🎯 OBJETIVO     : Representar a lavagem de um veículo em data e horários específicos.
+     * 🎯 OBJETIVO     : Representar a lavagem de um veículo em data e horário específico.
      *
-     * 📥 ENTRADAS     : Data, horário inicial/final e vínculos.
+     * 📥 ENTRADAS     : Data, horário da lavagem e vínculos.
      *
      * 📤 SAÍDAS       : Registro persistido de lavagem.
      *
@@ -49,13 +49,10 @@ namespace FrotiX.Models
         [Display(Name = "Data")]
         public DateTime? Data { get; set; }
 
-        // Horário de início.
-        [Display(Name = "Horário Início")]
-        public DateTime? HorarioInicio { get; set; }
-
-        // Horário de término.
-        [Display(Name = "Horário Fim")]
-        public DateTime? HorarioFim { get; set; }
+        // Horário da lavagem.
+        [Column("HorarioInicio")]
+        [Display(Name = "Horário da Lavagem")]
+        public DateTime? HorarioLavagem { get; set; }
 
         // Veículo lavado.
         [Display(Name = "Veículo Lavado")]

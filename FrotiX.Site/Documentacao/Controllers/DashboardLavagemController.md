@@ -38,4 +38,10 @@ O sistema mantém a lógica de **Comparação de Período**, informando se o vol
 *   **Encarregamento de Gráficos:** Os dados são entregues em formatos otimizados para o ApexCharts, com arrays de dias da semana (\Dom\, \Seg\, etc.) e janelas de 24 horas pré-calculadas.
 
 ---
-*Documentação atualizada em 2026.01.14 conforme novo padrão de Prosa Leve.*
+### Atualização 03/02/2026 – Horário Único da Lavagem
+
+- O dashboard passou a usar `HorarioLavagem` como referência de horário.
+- O endpoint `DuracaoLavagens` retorna distribuição vazia quando não há hora fim registrada.
+
+---
+*Documentação atualizada em 2026.02.03 conforme novo padrão de Prosa Leve.*

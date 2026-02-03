@@ -1,7 +1,7 @@
 # Documentação: ViewLavagem.cs
 
-> **Última Atualização**: 08/01/2026  
-> **Versão Atual**: 2.0
+> **Última Atualização**: 03/02/2026  
+> **Versão Atual**: 2.1
 
 ---
 
@@ -37,9 +37,8 @@ public class ViewLavagem
     public Guid VeiculoId { get; set; }
     public string? LavadoresId { get; set; }      // IDs concatenados
     public string? Data { get; set; }             // Formatada
-    public string? HorarioInicio { get; set; }    // Formatado
-    public string? HorarioFim { get; set; }       // Formatado
-    public int? DuracaoMinutos { get; set; }      // Calculado
+    public string? Horario { get; set; }          // Hora da lavagem (formatada)
+    public int? DuracaoMinutos { get; set; }      // Calculado (quando aplicável)
     public string? Lavadores { get; set; }        // Nomes concatenados
     public string? DescricaoVeiculo { get; set; }
     public string? Nome { get; set; }             // Nome do motorista
@@ -48,7 +47,7 @@ public class ViewLavagem
 
 **Propriedades Principais:**
 
-- **Lavagem**: LavagemId, Data, HorarioInicio, HorarioFim, DuracaoMinutos
+- **Lavagem**: LavagemId, Data, Horario, DuracaoMinutos
 - **Lavadores**: LavadoresId (IDs), Lavadores (nomes)
 - **Veículo**: VeiculoId, DescricaoVeiculo
 - **Motorista**: MotoristaId, Nome
@@ -68,6 +67,7 @@ public class ViewLavagem
 - `LavadoresLavagem` (JOIN para múltiplos lavadores)
 
 **Cálculos na View**:
+- `Horario`: `CONVERT(VARCHAR, Lavagem.HorarioInicio, 8)`
 - `DuracaoMinutos`: DATEDIFF(MINUTE, HorarioInicio, HorarioFim)
 - `Lavadores`: STRING_AGG ou CONCAT de nomes dos lavadores
 
@@ -76,12 +76,24 @@ public class ViewLavagem
 ## Notas Importantes
 
 1. **Lavadores Múltiplos**: Uma lavagem pode ter múltiplos lavadores
-2. **Duração Calculada**: Campo DuracaoMinutos é calculado na view
-3. **Datas Formatadas**: Data e horários vêm formatados como string
+2. **Duração Calculada**: Campo DuracaoMinutos é calculado na view quando HorarioFim existe
+3. **Datas Formatadas**: Data e horário vêm formatados como string
 
 ---
 
 # PARTE 2: LOG DE MODIFICAÇÕES/CORREÇÕES
+
+## [03/02/2026] - Unificação do Horário na View
+
+**Descrição**:
+- Removidos HorarioInicio/HorarioFim do model
+- Adicionado `Horario` como horário único da lavagem
+
+**Status**: ✅ **Concluído**
+
+**Versão**: 2.1
+
+---
 
 ## [08/01/2026] - Documentação Inicial Completa
 
@@ -91,6 +103,6 @@ public class ViewLavagem
 
 ---
 
-**Última atualização**: 08/01/2026  
+**Última atualização**: 03/02/2026  
 **Autor**: Sistema FrotiX  
-**Versão**: 2.0
+**Versão**: 2.1

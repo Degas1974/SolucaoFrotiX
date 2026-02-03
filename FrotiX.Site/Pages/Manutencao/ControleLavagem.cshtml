@@ -3,9 +3,9 @@
  * --------------------------------------------------------------------------------------
  * 🎯 OBJETIVO     : Controle de lavagens com filtros, inserção via modal Kendo MultiSelect, DataTable, 3 seções (Inserir, Filtros, Tabela)
  * 📥 ENTRADAS     : @page, @model ControleLavagemModel, filtros (período, status, veículo), modal inserção (Kendo MultiSelect veículos, data, hora), cliques ações
- * 📤 SAÍDAS       : DataTable #tblLavagem (JSON /api/Manutencao/ListaLavagens), modal inserção, POST /api/Manutencao/InserirLavagem, AppToast feedback
+ * 📤 SAÍDAS       : DataTable #tblLavagem (JSON /api/Manutencao/ListaLavagens), modal inserção, POST /api/Manutencao/InsereLavagem, AppToast feedback
  * 🔗 CHAMADA POR  : Menu Manutenção → Controle de Lavagem
- * 🔄 CHAMA        : /api/Manutencao/ListaLavagens, /api/Manutencao/InserirLavagem, /api/Manutencao/ExcluirLavagem, ~/js/cadastros/controlelavagem.js
+ * 🔄 CHAMA        : /api/Manutencao/ListaLavagens, /api/Manutencao/InsereLavagem, /api/Manutencao/ExcluirLavagem, ~/js/cadastros/controlelavagem.js
  * 📦 DEPENDÊNCIAS : Syncfusion ComboBox + Kendo UI (MultiSelect, DatePicker, TimePicker), DataTables, Bootstrap 5, jQuery
  * 📝 OBSERVAÇÕES  : Total: ~629 linhas. PROBLEMA: Mix de frameworks (Syncfusion + Kendo), CSS inline massivo (~480 linhas) extrair urgente, JavaScript inline ~150 linhas, modal inserção sem validações robustas, DataTable sem paginação server-side, filtros sem debounce
  **************************************************************************************** *@
@@ -475,14 +475,10 @@
                                             <input id="txtDataLavagem" class="form-control" type="date" />
                                         </div>
                                         <div class="col-md-2">
-                                            <label class="ftx-label">Hora Início</label>
+                                            <label class="ftx-label">Hora da Lavagem</label>
                                             <input id="txtHoraLavagem" class="form-control" type="time" />
                                         </div>
-                                        <div class="col-md-2">
-                                            <label class="ftx-label">Hora Fim</label>
-                                            <input id="txtHoraFimLavagem" class="form-control" type="time" />
-                                        </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <label class="ftx-label">Veículo Lavado</label>
                                             <ejs-combobox id="lstVeiculoLavagem"
                                                           placeholder="Selecione um Veículo"
@@ -495,7 +491,7 @@
                                                 <e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
                                             </ejs-combobox>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <label class="ftx-label">Condutor do Veículo</label>
                                             <ejs-combobox id="lstMotoristaLavagem"
                                                           placeholder="Selecione um Motorista"
@@ -846,14 +842,7 @@
 
                 var HoraLavagem = $("#txtHoraLavagem").val();
                 if (!HoraLavagem) {
-                    Alerta.Erro("Erro na Hora", "A hora de início da lavagem é obrigatória!");
-                    return;
-                }
-
-                var HoraFimLavagem = $("#txtHoraFimLavagem").val();
-                // HorarioFim é opcional, mas se preenchido deve ser posterior ao início
-                if (HoraFimLavagem && HoraFimLavagem <= HoraLavagem) {
-                    Alerta.Erro("Erro na Hora", "A hora de fim deve ser posterior à hora de início!");
+                    Alerta.Erro("Erro na Hora", "A hora da lavagem é obrigatória!");
                     return;
                 }
 
@@ -877,8 +866,7 @@
 
                 var objLavagem = JSON.stringify({
                     "Data": DataLavagem,
-                    "HorarioInicio": HoraLavagem,
-                    "HorarioFim": HoraFimLavagem || null,
+                    "HorarioLavagem": HoraLavagem,
                     "VeiculoId": veiculo.value,
                     "MotoristaId": motorista.value
                 });
@@ -939,7 +927,6 @@
             try {
                 $("#txtDataLavagem").val("");
                 $("#txtHoraLavagem").val("");
-                $("#txtHoraFimLavagem").val("");
 
                 var veiculo = document.getElementById('lstVeiculoLavagem').ej2_instances[0]; veiculo.value = null;
                 var motorista = document.getElementById('lstMotoristaLavagem').ej2_instances[0]; motorista.value = null;
