@@ -1,3 +1,32 @@
+@*
+ * ⚡ ARQUIVO: Pages/Viagens/UpsertEvento.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário criar/editar eventos (corporativos, reuniões, atividades
+ *                   que geram viagens). Campos: nome, período (data inicial/final),
+ *                   requisitante, setor, quantidade participantes, descrição
+ *
+ * 📥 ENTRADAS     : @page /Viagens/UpsertEvento, route parameter ?id={eventoId} (edição),
+ *                   Form inputs (txtNomeEvento, dtDataInicial, dtDataFinal,
+ *                   ddtRequisitante, ddtSetor, txtQtdParticipantes, rteDescricao)
+ *
+ * 📤 SAÍDAS       : POST /api/ViagemEvento/Insere ou Edita, redirect /Viagens/ListaEventos,
+ *                   AppToast feedback, validações Syncfusion
+ *
+ * 🔗 CHAMADA POR  : Viagens/ListaEventos (botão "Adicionar Evento", editar linha evento),
+ *                   menu "Cadastros > Viagens > Eventos"
+ *
+ * 🔄 CHAMA        : UpsertEventoModel (code-behind), API endpoints (Insere, Edita, GetById),
+ *                   Syncfusion DropdownTree (requisitante, setor), RichTextEditor
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, UpsertEventoModel, Syncfusion EJ2
+ *                   (DropdownTree, DatePicker, RichTextEditor), Bootstrap 5, jQuery,
+ *                   Font Awesome 6, AppToast.js, Alerta.js, FtxSpin
+ *
+ * 📝 OBSERVAÇÕES  : ~200 linhas. Página SIMPLES de CRUD eventos. CSS inline para
+ *                   estilos header, controles Syncfusion unificados. Validações
+ *                   básicas (nome obrigatório, data inicial <= final). ViewData
+ *                   padrão FrotiX (Title, PageName, Heading, Category, PageIcon)
+ * *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 @using Syncfusion.EJ2

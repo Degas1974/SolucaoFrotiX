@@ -1,21 +1,44 @@
 @*
- * ╔══════════════════════════════════════════════════════════════════════════╗
- * ║                                                                          ║
- * ║  DOCUMENTACAO DISPONIVEL                                                 ║
- * ║                                                                          ║
- * ║  Este arquivo esta completamente documentado em:                         ║
- * ║  Documentacao/Pages/Usuarios - Upsert.md                                 ║
- * ║                                                                          ║
- * ║  A documentacao inclui:                                                  ║
- * ║  - Visao geral da funcionalidade                                         ║
- * ║  - Explicacao detalhada de cada metodo                                   ║
- * ║  - Interconexoes com outros arquivos                                     ║
- * ║  - Exemplos de uso                                                       ║
- * ║  - Troubleshooting                                                       ║
- * ║                                                                          ║
- * ║  Ultima atualizacao: 11/01/2026 (correcao celular/status/foto)           ║
- * ║                                                                          ║
- * ╚══════════════════════════════════════════════════════════════════════════╝
+ ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Usuarios/Upsert.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário de criação/edição de Usuários com validação completa,
+ *                   upload de foto, campos senha com strength meter, suporte role Motorista
+ *                   com CNH/validadeCNH/categoria automático.
+ *
+ * 📥 ENTRADAS     : @page, @model UpsertModel, route /Usuarios/Upsert?id=guid (opcional),
+ *                   POST submission com UsuarioObj (AspNetUsers+props customizadas),
+ *                   FormFile foto upload, passwords com validação server/client
+ *
+ * 📤 SAÍDAS       : Renderização modal/page form com: Dropzone foto 40x40px avatar,
+ *                   campos Nome/Email/CPF/Telefone (inputs masked), Senha/ConfirmaSenha
+ *                   password strength meter zxcvbn, Perfil dropdown, checkbox Motorista
+ *                   (toggle CNH/Categoria/ValidadeCNH), Status checkbox, POST form para
+ *                   UpsertModel.OnPostSubmit, redirect ./Index após sucesso
+ *
+ * 🔗 CHAMADA POR  : /Usuarios/Index (botão + Novo Usuario, DataTable edit links),
+ *                   UpsertModel.OnGet() (carrega usuário para edição)
+ *
+ * 🔄 CHAMA        : UpsertModel.OnPostSubmit (code-behind save), ./Index (cancelamento),
+ *                   wwwroot/uploads/usuarios/ (salva foto base64/binária), ASP.NET
+ *                   validation system (asp-validation-summary, asp-validation-for)
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages 8.0, Bootstrap 5 (form-control, modal,
+ *                   checkbox, form-group), Font Awesome 6 Duotone (fa-floppy-disk,
+ *                   fa-circle-xmark), jQuery 3.7.1, jQuery Mask Plugin (mascaras CPF),
+ *                   Dropzone.js (upload foto drag-drop), zxcvbn library (password strength),
+ *                   Tag Helpers (asp-for, asp-validation-*, asp-page-handler)
+ *
+ * 📝 OBSERVAÇÕES  : Total ~450 linhas. Formulário crítico gestão usuários. Foto salva como
+ *                   base64 no banco (ou arquivo wwwroot). Password strength meter inline
+ *                   (zxcvbn mostra força senha em tempo real). CNH/Validadade condicional
+ *                   (visível só se Motorista=checked). Todos campos obrigatórios validados
+ *                   server-side (Email unique, CPF válido). Soft-switch estilo para checkbox
+ *                   Status/Motorista/DetenorCargaPatrimonial (CSS ftx-switch). Header dinâmico
+ *                   (Criar vs Atualizar baseado em UsuarioObj.AspNetUsers.Id != null).
+ *
+ * ⚠️  ISSUES      : Documentação referencia arquivo .md externo desatualizado (11/01/2026)
+ ****************************************************************************************
  *@
 
 @page

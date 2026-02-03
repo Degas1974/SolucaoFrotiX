@@ -1,50 +1,34 @@
 @page
 
-@* ========================================================================================
- * ARQUIVO: Pages/Operador/Index.cshtml
- * OBJETIVO: Pagina de listagem e gestao completa de operadores de veiculos com DataTable
- *           jQuery configuravel, modal Bootstrap 5 para visualizacao de foto ampliada (zoom),
- *           exclusao com confirmacao SweetAlert2, gestao de status Ativo/Inativo com
- *           atualizacao visual dinamica (badge Verde/Cinza, icone check/xmark), sistema
- *           identico ao Motorista/Index.cshtml com terminologia adaptada para operadores.
- * ENTRADAS: Model FrotiX.Pages.Operador.IndexModel (code-behind C#), DataTable hash tblOperador
- *           vazio populado via AJAX, botoes CRUD delegados via jQuery (classe .btn-editar
- *           para edicao redireciona /Operador/Upsert?id=X, classe .btn-delete para exclusao
- *           com confirmacao, classe .updateStatusOperador para toggle Ativo/Inativo, classe
- *           .btn-foto para abrir modal visualizacao foto ampliada), modal hash modalFotoOperador
- *           com imagem responsiva para visualizar foto do operador em tamanho maior
- * SAIDAS: DataTable hash tblOperador renderizado com 8 colunas principais (Nome completo texto,
- *         CPF mascara XXX.XXX.XXX-XX, CNH numero, Validade CNH formatada DD/MM/YYYY, Telefone
- *         mascara (XX) XXXXX-XXXX, Foto miniatura clicavel 40x40px border-radius 50% com shadow,
- *         Status badge Verde Ativo fa-circle-check/Cinza Inativo fa-circle-xmark, Acoes com
- *         3 botoes Editar/Excluir/Toggle Status), modal Bootstrap 5 para foto ampliada com
- *         fechar X, links para /Operador/Upsert (criacao novo/edicao existente parametro id),
- *         exportacoes Excel/PDF via DataTables buttons extension, POST /api/Operador/Delete
- *         (exclusao com confirmacao), GET /api/Operador/UpdateStatus (toggle status retorna
- *         JSON com novo status), notificacoes AppToast Verde sucesso/Vermelho erro
- * CHAMADA POR: Route /Operador via diretiva page, navegacao sidebar menu principal (Cadastros >
- *              Operadores), link direto URL, IndexModel.OnGet metodo backend C# executa no
- *              carregamento da pagina (code-behind ASP.NET Core Razor Pages)
- * CHAMA: operador.js (arquivo JavaScript externo 316+ linhas identico a motorista.js com funcao
- *        loadList para carregar DataTable via AJAX GET /api/Operador/GetAll, delete handler com
- *        confirmacao SweetAlert2, status toggle handler GET /api/Operador/UpdateStatus?id=X,
- *        foto handler abrindo modal hash modalFotoOperador), endpoints API REST /api/Operador/GetAll
- *        GET (lista JSON), /api/Operador/Delete POST, /api/Operador/UpdateStatus GET (toggle
- *        status), Alerta.Confirmar (SweetAlert2 wrapper), Alerta.TratamentoErroComLinha,
- *        AppToast.show (notificacoes toast), DataTables API, Bootstrap 5 modals API
- * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1, DataTables 1.13.x (buttons extension
- *               pageLength/excel/pdfHtml5, responsive, column defs), Bootstrap 5.3.8 (cards,
- *               modals, badges), Syncfusion EJ2 (tooltips data-ejtip), operador.js (arquivo
- *               JavaScript externo), Alerta.js (SweetAlert2 wrapper), AppToast.js, Font Awesome 6
- *               Duotone (fa-user-gear operador, fa-circle-check/xmark status)
- * OBSERVACOES: 434 linhas com layout padrao FrotiX (header azul hash 3D5771 gradient, card
- *              border-radius 14px, botoes outline branco hover). DataTable com lengthMenu
- *              customizado [10, 25, 50, -1] opcoes 10/25/50/Todas as Linhas. Exportacao PDF
- *              landscape pageSize LEGAL. Foto miniatura clicavel 40x40px border-radius 50%
- *              shadow, clique abre modal hash modalFotoOperador com imagem ampliada. Sistema
- *              identico ao Motorista/Index.cshtml com terminologia adaptada para operadores.
- * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
- ======================================================================================== *@
+@*
+*****
+⚡ ARQUIVO: Pages/Operador/Index.cshtml
+-----
+🎯 OBJETIVO     : Listagem DataTable de operadores com CRUD (criar/editar/excluir), toggle status,
+                   visualizar foto em modal, exportar Excel/PDF, gestão completa via AJAX
+
+📥 ENTRADAS     : @page, @model IndexModel, DataTable vazio (popula via AJAX GET /api/Operador/GetAll),
+                   delegated jQuery handlers (.btn-editar, .btn-delete, .updateStatusOperador, .btn-foto)
+
+📤 SAÍDAS       : DataTable #tblOperador com 8 colunas (Nome, CPF, Celular01, Status, Foto,
+                   Acoes), modal #modalFotoOperador (foto ampliada), badges status Verde/Cinza,
+                   botões Editar/Excluir/Toggle, export Excel/PDF
+
+🔗 CHAMADA POR  : Route /Operador, menu sidebar "Cadastros > Operadores", IndexModel.OnGet()
+                   executa carregamento página
+
+🔄 CHAMA        : operador.js (loadList AJAX, delete handler, status toggle, foto modal),
+                   GET /api/Operador/GetAll (lista JSON), POST /api/Operador/Delete,
+                   GET /api/Operador/UpdateStatus, Alerta.Confirmar(), AppToast.show()
+
+📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, jQuery 3.7.1, DataTables 1.13.x, Bootstrap 5.3.8,
+                   Syncfusion EJ2, Font Awesome Duotone, operador.js, Alerta.js, AppToast.js
+
+📝 OBSERVAÇÕES  : Total: 434 linhas. CARD REFORMATADO para novo padrão. DataTable: lengthMenu
+                   customizado [10, 25, 50, -1], exportação PDF landscape pageSize LEGAL, foto
+                   40x40px border-radius 50% clicável abre modal. Sistema idêntico Motorista/Index.
+*****
+*@
 
 @model FrotiX.Pages.Operador.IndexModel
 

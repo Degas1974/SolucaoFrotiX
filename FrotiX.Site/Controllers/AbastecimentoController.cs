@@ -427,6 +427,7 @@ namespace FrotiX.Controllers
 
                 if (file.Length > 0)
                 {
+                    // [LOGICA] Determinar tipo de arquivo (XLS ou XLSX) e carregar workbook
                     string sFileExtension = Path.GetExtension(file.FileName).ToLower();
                     ISheet sheet;
                     string fullPath = Path.Combine(newPath , file.FileName);
@@ -436,6 +437,7 @@ namespace FrotiX.Controllers
                         file.CopyTo(stream);
                         stream.Position = 0;
 
+                        // [DADOS] Suporta tanto XLS (HSSFWorkbook) quanto XLSX (XSSFWorkbook)
                         if (sFileExtension == ".xls")
                         {
                             HSSFWorkbook hssfwb = new HSSFWorkbook(stream);
@@ -447,12 +449,14 @@ namespace FrotiX.Controllers
                             sheet = hssfwb.GetSheetAt(0);
                         }
 
+                        // [UI] Construir header da tabela HTML com colunas filtradas
                         IRow headerRow = sheet.GetRow(0);
                         int cellCount = headerRow.LastCellNum;
                         sb.Append(
                             "<table id='tblImportacao' class='display' style='width: 100%'><thead><tr>"
                         );
 
+                        // [LOGICA] Selecionar apenas colunas relevantes (índices 5,7,10,11,12,13,14,15)
                         for (int j = 0; j < cellCount; j++)
                         {
                             NPOI.SS.UserModel.ICell cell = headerRow.GetCell(j);
@@ -477,6 +481,7 @@ namespace FrotiX.Controllers
 
                         try
                         {
+                            // [PERFORMANCE] TransactionScope de 30 segundos para garantir atomicidade
                             using (
                                 TransactionScope scope = new TransactionScope(
                                     TransactionScopeOption.RequiresNew ,
@@ -486,11 +491,13 @@ namespace FrotiX.Controllers
                             {
                                 sb.AppendLine("<tbody><tr>");
 
+                                // [LOGICA] Iterar pelas linhas da planilha (pulando header)
                                 for (int i = (sheet.FirstRowNum + 1); i <= sheet.LastRowNum; i++)
                                 {
                                     IRow row = sheet.GetRow(i);
                                     if (row == null)
                                         continue;
+                                    // [VALIDACAO] Pular linhas em branco
                                     if (row.Cells.All(d => d.CellType == CellType.Blank))
                                         continue;
 
@@ -500,6 +507,7 @@ namespace FrotiX.Controllers
                                     {
                                         if (row.GetCell(j) != null)
                                         {
+                                            // [REGRA] Validar duplicação de data na primeira linha
                                             if (i == 1)
                                             {
                                                 if (j == 0)
@@ -529,6 +537,7 @@ namespace FrotiX.Controllers
                                                 }
                                             }
 
+                                            // [DADOS] Coluna 7: Data e Hora do abastecimento
                                             if (j == 7)
                                             {
                                                 AbastecimentoObj.DataHora = Convert.ToDateTime(
@@ -539,6 +548,7 @@ namespace FrotiX.Controllers
                                                 );
                                             }
 
+                                            // [DADOS] Coluna 5: Placa do veículo (validar se existe)
                                             if (j == 5)
                                             {
                                                 string placaVeiculo = row.GetCell(j).ToString();
@@ -569,6 +579,7 @@ namespace FrotiX.Controllers
                                                 }
                                             }
 
+                                            // [DADOS] Coluna 10: Nome do motorista (validar e remover pontos)
                                             if (j == 10)
                                             {
                                                 string motorista = row.GetCell(j).ToString();
@@ -600,6 +611,7 @@ namespace FrotiX.Controllers
                                                 }
                                             }
 
+                                            // [DADOS] Coluna 12: Hodômetro final
                                             if (j == 12)
                                             {
                                                 AbastecimentoObj.Hodometro = Convert.ToInt32(
@@ -610,6 +622,7 @@ namespace FrotiX.Controllers
                                                 );
                                             }
 
+                                            // [DADOS] Coluna 11: Calcular km rodado (Col12 - Col11)
                                             if (j == 11)
                                             {
                                                 AbastecimentoObj.KmRodado =
@@ -620,6 +633,7 @@ namespace FrotiX.Controllers
                                                 );
                                             }
 
+                                            // [DADOS] Coluna 13: Tipo de combustível (GASOLINA ou DIESEL)
                                             if (j == 13)
                                             {
                                                 if (row.GetCell(j).ToString() == "GASOLINA")
@@ -639,6 +653,7 @@ namespace FrotiX.Controllers
                                                 );
                                             }
 
+                                            // [DADOS] Coluna 14: Valor unitário (formato decimal)
                                             if (j == 14)
                                             {
                                                 AbastecimentoObj.ValorUnitario = Convert.ToDouble(
@@ -656,6 +671,7 @@ namespace FrotiX.Controllers
                                                 );
                                             }
 
+                                            // [DADOS] Coluna 15: Litros abastecidos
                                             if (j == 15)
                                             {
                                                 AbastecimentoObj.Litros = Convert.ToDouble(
@@ -674,6 +690,7 @@ namespace FrotiX.Controllers
                                         }
                                     }
 
+                                    // [LOGICA] Calcular consumo (km rodado / litros)
                                     sb.Append(
                                         "<td>"
                                             + Math.Round(
@@ -687,6 +704,7 @@ namespace FrotiX.Controllers
                                             + "</td>"
                                     );
 
+                                    // [DB] Buscar média de consumo do veículo
                                     var mediaveiculo =
                                         _unitOfWork.ViewMediaConsumo.GetFirstOrDefault(v =>
                                             v.VeiculoId == AbastecimentoObj.VeiculoId
@@ -712,6 +730,7 @@ namespace FrotiX.Controllers
                                     }
 
                                     sb.AppendLine("</tr>");
+                                    // [DB] Persitir novo abastecimento
                                     _unitOfWork.Abastecimento.Add(AbastecimentoObj);
                                     _unitOfWork.Save();
                                 }

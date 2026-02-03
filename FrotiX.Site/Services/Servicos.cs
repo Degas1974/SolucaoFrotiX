@@ -182,13 +182,39 @@ namespace FrotiX.Services
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalculaCustoMotorista
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcula custo de motorista (apenas terceirizado) proporcional a tempo
+         *                   Busca valor em RepactuacaoTerceirizacao com data mais recente
+         *
+         * 📥 ENTRADAS     : viagemObj [Viagem] - Viagem com datas, horas, MotoristaId
+         *                   _unitOfWork [IUnitOfWork] - Acesso repositórios
+         *                   minutos [ref int] - Retorna minutos efetivos da viagem (se -1, calcula)
+         *
+         * 📤 SAÍDAS       : double - Custo em reais (R$), 0 se motorista não é terceirizado
+         *
+         * ⬅️ CHAMADO POR  : ViagemController.CalculoCusto() [linha 156]
+         *                   CustosViagemController.ObterCustos() [Dashboard]
+         *
+         * ➡️ CHAMA        : _unitOfWork.Motorista.GetFirstOrDefault() [Repository]
+         *                   _unitOfWork.RepactuacaoContrato.GetAll() [Busca última]
+         *                   _unitOfWork.RepactuacaoTerceirizacao.GetFirstOrDefault() [Valores]
+         *                   CalcularMinutosUteisViagem() [linha 197]
+         *
+         * 📝 OBSERVAÇÕES  : [REGRA] Se ContratoId == null → motorista é interno, retorna 0
+         *                   [REGRA] Jornada máxima = 12h/dia (laborais seg-sex)
+         *                   [VALIDACAO] Nunca retorna > valor mensal (cap em contrato)
+         *                   [HELPER] minutos ref é para evitar recalcular horas em outras funções
+         ****************************************************************************************/
         public static double CalculaCustoMotorista(Viagem viagemObj , IUnitOfWork _unitOfWork , ref int minutos)
         {
             try
             {
+                // [DB] Buscar motorista
                 var motoristaObj = _unitOfWork.Motorista.GetFirstOrDefault(m => m.MotoristaId == viagemObj.MotoristaId);
 
-                // Motorista não é terceirizado
+                // [VALIDACAO] Se motorista não tem ContratoId, é interno (não terceirizado) = sem custo
                 if (motoristaObj.ContratoId == null)
                 {
                     if (minutos == -1)
@@ -196,30 +222,33 @@ namespace FrotiX.Services
                     return 0;
                 }
 
-                // Busca valor do motorista na última repactuação
+                // [DB] Busca valor do motorista na última repactuação do contrato
                 Guid contratoId = (Guid)motoristaObj.ContratoId;
                 var topRepactuacao = _unitOfWork.RepactuacaoContrato
                     .GetAll(r => r.ContratoId == contratoId)
                     .OrderByDescending(r => r.DataRepactuacao)
                     .FirstOrDefault();
 
+                // [DB] Obtém valores de terceirização (valorMotorista, qtdOperadores, etc)
                 var topMotorista = _unitOfWork.RepactuacaoTerceirizacao
                     .GetFirstOrDefault(rt => rt.RepactuacaoContratoId == topRepactuacao.RepactuacaoContratoId);
 
                 double valorMotorista = (double)topMotorista.ValorMotorista;
 
-                const int HORAS_TRABALHO_DIA = 12; // Máximo 12h/dia
-                const int DIAS_UTEIS_MES = 22; // Apenas dias úteis
+                const int HORAS_TRABALHO_DIA = 12; // [REGRA] Máximo 12h/dia laboral
+                const int DIAS_UTEIS_MES = 22; // [REGRA] Apenas dias úteis
 
-                double minutosMesUteis = DIAS_UTEIS_MES * HORAS_TRABALHO_DIA * 60; // 15.840 minutos
+                // [LOGICA] Minutos úteis em um mês = 22 dias * 12h * 60 min = 15.840 minutos
+                double minutosMesUteis = DIAS_UTEIS_MES * HORAS_TRABALHO_DIA * 60;
                 double custoMinutoMotorista = valorMotorista / minutosMesUteis;
 
+                // [DADOS] Converte datas + horas para DateTime completo
                 DateTime dataHoraInicio = viagemObj.DataInicial.Value.Date.Add(viagemObj.HoraInicio.Value.TimeOfDay);
                 DateTime dataHoraFim = viagemObj.DataFinal.Value.Date.Add(viagemObj.HoraFim.Value.TimeOfDay);
 
                 TimeSpan duracaoTotal = dataHoraFim - dataHoraInicio;
 
-                // Calcula minutos considerando dias úteis e jornada de trabalho
+                // [LOGICA] Calcula minutos considerando dias úteis e jornada de trabalho
                 double minutosViagemUteis = CalcularMinutosUteisViagem(
                     dataHoraInicio ,
                     dataHoraFim ,
@@ -229,13 +258,13 @@ namespace FrotiX.Services
 
                 double custoCalculado = minutosViagemUteis * custoMinutoMotorista;
 
-                // Registra minutos totais se solicitado
+                // [HELPER] Registra minutos totais via ref param se solicitado (minutos == -1)
                 if (minutos == -1)
                 {
                     minutos = (int)minutosViagemUteis;
                 }
 
-                // Garante que nunca ultrapasse o valor mensal
+                // [VALIDACAO] Nunca retorna > valor mensal (capping)
                 return Math.Min(custoCalculado , valorMotorista);
             }
             catch (Exception error)
@@ -245,11 +274,29 @@ namespace FrotiX.Services
             }
         }
 
-        /// <summary>
-        /// Calcula minutos úteis considerando:
-        /// - Apenas dias úteis (seg-sex), EXCETO se início/fim cair em fim de semana
-        /// - Limite de horas por dia (12h motorista, 16h veículo)
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalcularMinutosUteisViagem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcula minutos efetivos da viagem considerando dias úteis e limites
+         *                   REGRA: Se viagem for curta (< 12h), retorna duração real
+         *                   REGRA: Se viagem for longa, apena minutos úteis do período
+         *
+         * 📥 ENTRADAS     : inicio [DateTime] - Data/hora inicial da viagem
+         *                   fim [DateTime] - Data/hora final da viagem
+         *                   duracao [TimeSpan] - Duração total (fim - inicio)
+         *                   horasMaximasDia [int] - Limite diário (12 motorista, 16 veículo)
+         *
+         * 📤 SAÍDAS       : double - Minutos úteis para cobrança, mínimo = duração real
+         *
+         * ⬅️ CHAMADO POR  : CalculaCustoVeiculo() [linha 91]
+         *                   CalculaCustoMotorista() [linha 129]
+         *
+         * ➡️ CHAMA        : ContarDiasUteisComExcecoes() [linha 232]
+         *
+         * 📝 OBSERVAÇÕES  : [LOGICA] Viagem curta = não pula dias, usa duração real
+         *                   [LOGICA] Viagem longa = multiplica dias úteis × horaMax/dia
+         *                   [VALIDACAO] Ajusta com mínimo(minutosUteis, minutosReais)
+         ****************************************************************************************/
         public static double CalcularMinutosUteisViagem(DateTime inicio , DateTime fim , TimeSpan duracao , int horasMaximasDia)
         {
             try
@@ -257,19 +304,20 @@ namespace FrotiX.Services
                 const int MINUTOS_DIA_COMPLETO = 24 * 60;
                 int minutosMaximosDia = horasMaximasDia * 60;
 
-                // Viagem curta (mesmo dia ou poucas horas)
+                // [LOGICA] Viagem curta (mesmo dia ou poucas horas) = usa duração real
                 if (duracao.TotalHours <= horasMaximasDia)
                 {
                     return duracao.TotalMinutes;
                 }
 
-                // Viagem longa - conta dias úteis com regra especial de fim de semana
+                // [LOGICA] Viagem longa - conta dias úteis com regra especial de fim de semana
                 int diasUteis = ContarDiasUteisComExcecoes(inicio.Date , fim.Date);
 
-                // Calcula minutos úteis
+                // [LOGICA] Calcula total de minutos úteis = dias * horasMax/dia * 60
                 double minutosUteis = diasUteis * minutosMaximosDia;
 
-                // Ajusta se a duração real é menor que o calculado
+                // [VALIDACAO] Se duração real for menor, ajusta proporcionalmente
+                // Previne overcharging quando viagem não usa horas máximas
                 double minutosReaisAjustados = duracao.TotalMinutes * ((double)minutosMaximosDia / MINUTOS_DIA_COMPLETO);
 
                 return Math.Min(minutosUteis , minutosReaisAjustados);
@@ -281,10 +329,28 @@ namespace FrotiX.Services
             }
         }
 
-        /// <summary>
-        /// Conta dias úteis (seg-sex) INCLUINDO início e fim se forem fim de semana
-        /// Regra: Se DataInicial ou DataFinal for sábado/domingo, conta esse dia
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ContarDiasUteisComExcecoes
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Conta dias úteis (seg-sex) com EXCEÇÃO especial para fins de semana
+         *                   REGRA: Se viagem COMEÇA ou TERMINA no fim de semana, conta esse dia
+         *
+         * 📥 ENTRADAS     : dataInicio [DateTime] - Primeira data do período (date only)
+         *                   dataFim [DateTime] - Última data do período (date only)
+         *
+         * 📤 SAÍDAS       : int - Total de dias úteis contabilizados (1+)
+         *
+         * ⬅️ CHAMADO POR  : CalcularMinutosUteisViagem() [linha 197]
+         *
+         * ➡️ CHAMA        : Nenhuma função (apenas lógica de datas)
+         *
+         * 📝 OBSERVAÇÕES  : [REGRA] Loop itera de dataInicio até dataFim (inclusive)
+         *                   [REGRA] Contabiliza:
+         *                           • Seg-Sex sempre
+         *                           • Sab/Dom APENAS se for dia inicial OU final
+         *                   [EXEMPLO] Qui-Dom (2 dias) = conta Qui(útil) + Sab(final) = 2
+         *                            Seg-Ter (2 dias) = conta Seg(útil) + Ter(útil) = 2
+         ****************************************************************************************/
         public static int ContarDiasUteisComExcecoes(DateTime dataInicio , DateTime dataFim)
         {
             try
@@ -292,6 +358,7 @@ namespace FrotiX.Services
                 int diasUteis = 0;
                 DateTime dataAtual = dataInicio;
 
+                // [LOGICA] Itera dia por dia no período (inclusive)
                 while (dataAtual <= dataFim)
                 {
                     DayOfWeek diaSemana = dataAtual.DayOfWeek;
@@ -299,7 +366,7 @@ namespace FrotiX.Services
                     bool ehDiaInicial = (dataAtual == dataInicio);
                     bool ehDiaFinal = (dataAtual == dataFim);
 
-                    // Conta se: É dia útil OU (é fim de semana MAS é o dia inicial ou final)
+                    // [REGRA] Conta se: É dia útil OU (é fim de semana MAS é o dia inicial ou final)
                     if (!ehFimDeSemana || ehDiaInicial || ehDiaFinal)
                     {
                         diasUteis++;
@@ -358,11 +425,34 @@ namespace FrotiX.Services
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalculaCustoOperador
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcula custo de operadores (terceirizados) diluído por viagem
+         *                   Usa custo mensal total / média de viagens mensais
+         *
+         * 📥 ENTRADAS     : viagemObj [Viagem] - Viagem com DataInicial para cálculo de média
+         *                   _unitOfWork [IUnitOfWork] - Acesso repositórios
+         *
+         * 📤 SAÍDAS       : double - Custo em reais (R$), 0 se sem contrato/operadores
+         *
+         * ⬅️ CHAMADO POR  : ViagemController.CalculoCusto() [linha 156]
+         *                   CustosViagemController.ObterCustos() [Dashboard]
+         *
+         * ➡️ CHAMA        : _unitOfWork.Contrato.GetAll() [Busca contrato terceirização]
+         *                   _unitOfWork.RepactuacaoContrato.GetAll() [Última repactuação]
+         *                   _unitOfWork.RepactuacaoTerceirizacao.GetFirstOrDefault()
+         *                   CalcularMediaDiariaViagens() [linha 410]
+         *
+         * 📝 OBSERVAÇÕES  : [LOGICA] Fórmula: (QtdOperadores * ValorUnitário) / MédiaViagens
+         *                   [VALIDACAO] Retorna 0 se faltar dados (contrato, qtd, valor)
+         *                   [PERFORMANCE] Usa última repactuação (mais recente)
+         ****************************************************************************************/
         public static double CalculaCustoOperador(Viagem viagemObj , IUnitOfWork _unitOfWork)
         {
             try
             {
-                // Busca o contrato de operadores terceirizados mais recente
+                // [DB] Busca o contrato de operadores terceirizados mais recente
                 var contratoOperadores = _unitOfWork.Contrato
                     .GetAll(c => c.TipoContrato == "Terceirização" && c.ContratoOperadores == true)
                     .OrderByDescending(c => c.DataInicio)
@@ -371,7 +461,7 @@ namespace FrotiX.Services
                 if (contratoOperadores == null)
                     return 0;
 
-                // Busca última repactuação do contrato de operadores
+                // [DB] Busca última repactuação do contrato de operadores
                 var topRepactuacao = _unitOfWork.RepactuacaoContrato
                     .GetAll(r => r.ContratoId == contratoOperadores.ContratoId)
                     .OrderByDescending(r => r.DataRepactuacao)
@@ -380,22 +470,23 @@ namespace FrotiX.Services
                 if (topRepactuacao == null)
                     return 0;
 
+                // [DB] Obtém valores de terceirização (QtdOperadores, ValorOperador)
                 var topTerceirizacao = _unitOfWork.RepactuacaoTerceirizacao
                     .GetFirstOrDefault(rt => rt.RepactuacaoContratoId == topRepactuacao.RepactuacaoContratoId);
 
                 if (topTerceirizacao == null || topTerceirizacao.QtdOperadores == null || topTerceirizacao.ValorOperador == null)
                     return 0;
 
-                // Custo mensal total dos operadores
+                // [LOGICA] Custo mensal total de operadores = Quantidade × ValorUnitário
                 double custoMensalOperadores = (double)(topTerceirizacao.QtdOperadores.Value * topTerceirizacao.ValorOperador.Value);
 
-                // Calcula média diária de viagens até a data desta viagem
+                // [LOGICA] Calcula média diária de viagens até a data desta viagem
                 double mediaViagens = CalcularMediaDiariaViagens(viagemObj.DataInicial.Value , _unitOfWork);
 
                 if (mediaViagens == 0)
                     return 0;
 
-                // Custo por viagem = Custo Mensal Total / Média de Viagens Mensais
+                // [LOGICA] Dilui custo mensal pela média de viagens: CustoMês / MédiaViagensMês
                 double custoPorViagem = custoMensalOperadores / mediaViagens;
 
                 return custoPorViagem;

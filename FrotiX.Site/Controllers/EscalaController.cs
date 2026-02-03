@@ -104,6 +104,19 @@ namespace FrotiX.Controllers
             return View(model);
         }*/
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Create (GET)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Exibir formulário para criar nova escala diária
+         *                   Popula dropdowns com motoristas, veículos, serviços, turnos
+         * 📥 ENTRADAS     : Nenhuma
+         * 📤 SAÍDAS       : [IActionResult] View com EscalaDiariaViewModel preenchida
+         * ⬅️ CHAMADO POR  : Navegação da página /Escala/Create (GET)
+         * ➡️ CHAMA        : GetMotoristaListForDropDown(), GetVeiculoListForDropDown(),
+         *                   GetTipoServicoListForDropDown(), GetTurnoListForDropDown(),
+         *                   GetRequisitanteListForDropDown(), GetLotacaoList(), GetStatusList()
+         * 📝 OBSERVAÇÕES  : Inicializa DataEscala com hoje
+         ****************************************************************************************/
         // GET: Escala/Create
         public IActionResult Create()
         {
@@ -246,6 +259,18 @@ namespace FrotiX.Controllers
             return View(model);
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Edit (GET)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Exibir formulário para editar uma escala diária existente
+         *                   Carrega dados completos da escala com motorista, veículo, serviço
+         * 📥 ENTRADAS     : [Guid] id - EscalaDiaId
+         * 📤 SAÍDAS       : [IActionResult] View com EscalaDiariaViewModel ou RedirectToAction
+         * ⬅️ CHAMADO POR  : Navegação da página /Escala/Edit/[id] (GET)
+         * ➡️ CHAMA        : EscalaDiaria.GetFirstOrDefaultAsync(), GetNumeroViagensRealizadas(),
+         *                   GetMotoristaListForDropDown(), GetVeiculoListForDropDown()
+         * ⚠️  VALIDAÇÃO   : Redireciona se escala não encontrada
+         ****************************************************************************************/
         // GET: Escala/Edit/5
         public async Task<IActionResult> Edit(Guid id)
         {
@@ -286,6 +311,18 @@ namespace FrotiX.Controllers
             return View(model);
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Edit (POST)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Atualizar dados de uma escala diária existente
+         *                   Valida conflitos de horário se data/hora foi alterado
+         * 📥 ENTRADAS     : [Guid] id - EscalaDiaId, [EscalaDiariaViewModel] model - Dados atualizados
+         * 📤 SAÍDAS       : [IActionResult] RedirectToAction ou View com erros
+         * ⬅️ CHAMADO POR  : Formulário POST da view Edit
+         * ➡️ CHAMA        : ExisteEscalaConflitanteAsync(), EscalaDiaria.Update(), SaveAsync(),
+         *                   NotificarAtualizacaoEscalas()
+         * ⚠️  VALIDAÇÃO   : Verifica conflitos de horário se motorista/data/hora mudou
+         ****************************************************************************************/
         // POST: Escala/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -371,6 +408,16 @@ namespace FrotiX.Controllers
             return View(model);
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: Delete (GET)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Exibir confirmação antes de deletar uma escala
+         * 📥 ENTRADAS     : [Guid] id - EscalaDiaId
+         * 📤 SAÍDAS       : [IActionResult] View com EscalaDiaria ou RedirectToAction
+         * ⬅️ CHAMADO POR  : Navegação da página /Escala/Delete/[id] (GET)
+         * ➡️ CHAMA        : EscalaDiaria.GetEscalaCompletaByIdAsync()
+         * ⚠️  VALIDAÇÃO   : Redireciona se escala não encontrada
+         ****************************************************************************************/
         // GET: Escala/Delete/5
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -385,6 +432,18 @@ namespace FrotiX.Controllers
             return View(escala);
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DeleteConfirmed (POST)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Deletar (soft delete) uma escala diária
+         *                   Marca como inativo em vez de deletar fisicamente
+         * 📥 ENTRADAS     : [Guid] id - EscalaDiaId
+         * 📤 SAÍDAS       : [IActionResult] RedirectToAction
+         * ⬅️ CHAMADO POR  : Formulário POST da view Delete
+         * ➡️ CHAMA        : EscalaDiaria.GetFirstOrDefaultAsync(), Update(), SaveAsync(),
+         *                   NotificarAtualizacaoEscalas()
+         * 📝 OBSERVAÇÕES  : Soft delete - apenas marca Ativo=false
+         ****************************************************************************************/
         // POST: Escala/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -421,6 +480,17 @@ namespace FrotiX.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: FichaEscala
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Exibir ficha/relatório de escalas de um dia específico
+         *                   Mostra todas as escalas ativas para visualização consolidada
+         * 📥 ENTRADAS     : [DateTime?] data - Data da escala (padrão: hoje)
+         * 📤 SAÍDAS       : [IActionResult] View com List<EscalaDiaria> completa
+         * ⬅️ CHAMADO POR  : Navegação da página /Escala/FichaEscala
+         * ➡️ CHAMA        : EscalaDiaria.GetEscalasCompletasAsync()
+         * 📝 OBSERVAÇÕES  : ViewBag.DataEscala armazena data selecionada para exibição
+         ****************************************************************************************/
         // GET: Escala/FichaEscala
         public async Task<IActionResult> FichaEscala(DateTime? data)
         {

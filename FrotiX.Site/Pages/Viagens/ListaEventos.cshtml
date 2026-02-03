@@ -1,3 +1,35 @@
+@*
+ * ⚡ ARQUIVO: Pages/Viagens/ListaEventos.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página listagem e gestão de eventos de viagens (ocorrências registradas durante
+ *                   viagens) com DataTable avançado, filtros múltiplos (data, viagem, tipo evento, gravidade),
+ *                   modals detalhes evento, ações editar/visualizar, integração Stimulsoft Reports
+ * 📥 ENTRADAS     : @page /Viagens/ListaEventos, @model ListaEventosModel, ViewData com listas (filtros),
+ *                   DataTable #tblEventos (AJAX GET /api/Viagem/ListaEventos), filtros Syncfusion DropDowns
+ *                   (DataInicio/DataFim DatePicker, TipoEvento ComboBox, GravidadeEvento ComboBox),
+ *                   botão "Novo Evento"
+ * 📤 SAÍDAS       : Panel ftx-card-header com heading (fa-calendar-users "Eventos"), DataTable #tblEventos
+ *                   com colunas (Data, Viagem ID, Tipo Evento, Gravidade, Descrição, Motorista, Ações),
+ *                   modal detalhes evento (descrição, fotos, anexos), redirects /Viagens/Upsert ou
+ *                   /Viagens/UpsertEvento, AppToast feedback, CSS inline ~200 linhas (header gradient animate)
+ * 🔗 CHAMADA POR  : Menu "Viagens > Eventos", navegação sidebar, link em Viagens/Index modal ocorrências,
+ *                   botão "Novo Evento" criação rápida
+ * 🔄 CHAMA        : /api/Viagem/ListaEventos (AJAX GET DataTable), /api/Viagem/DeleteEvento (DELETE confirm),
+ *                   ./UpsertEvento (link editar), Stimulsoft MVC Viewer (relatórios eventos),
+ *                   CSS .ftx-card-header animate gradient, ViewData (Title, PageName, Heading, Category1, PageIcon)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, ListaEventosModel (code-behind), DataTables jQuery plugin,
+ *                   Syncfusion EJ2 (DropDowns, DatePicker, Grid - importados mas nem todos usados),
+ *                   Bootstrap 5, jQuery, AppToast.js, Alerta.js, Font Awesome Duotone, CSS custom
+ *                   (ftx-card-header with gradient animation), Stimulsoft Reports viewer
+ * 📝 OBSERVAÇÕES  : Total: ~400 linhas. Page intermediária eventos viagens. CSS inline ~150 linhas
+ *                   (header gradient animation 8s infinite, titulo-paginas font-family Outfit weight 900).
+ *                   ViewData config: Title "Eventos", PageName "viagens_listaeventos", Heading
+ *                   "fa-calendar-users Cadastros: Eventos", Category1 "Cadastros", PageIcon "fa-calendar-users".
+ *                   @section HeadBlock: CSS externo ftx-card-styled.css (via link), keyframes headerGradientShift
+ *                   (0%/50%/100% background-position), @keyframes corrija (@@keyframes CSS Razor),
+ *                   IIFE jQuery ready no final (@section ScriptsBlock) carrega lista eventos via AJAX.
+ *@
+
 @page
 
 @using FrotiX.Repository.IRepository
