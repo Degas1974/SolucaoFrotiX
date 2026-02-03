@@ -1,27 +1,36 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Shared/_GoogleAnalytics.cshtml
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Partial view que injeta o script do Google Analytics (Universal Analytics)
- *                   condicionalmente se Settings.Features.GoogleAnalytics = true. Tracking pageviews.
- * 📥 ENTRADAS     : Settings.Features.GoogleAnalytics (flag booleano), ViewBag.GoogleAnalytics
- *                   (tracking ID - formato UA-XXXXXXXX-X ou G-XXXXXXXXXX), window context
- * 📤 SAÍDAS       : <script> tag com Google Analytics code (analytics.js), ga('create', trackingID),
- *                   ga('send', 'pageview'), GoogleAnalyticsObject window property, tracking ativo
- * 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml (provavelmente no <head> ou antes </body>),
- *                   @await Html.PartialAsync("_GoogleAnalytics") ou @Html.Partial
- * 🔄 CHAMA        : https://www.google-analytics.com/analytics.js (Google CDN - Universal Analytics),
- *                   ga() function (Google Analytics API), window.GoogleAnalyticsObject
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views), SmartSettings injection (@Settings),
- *                   ViewBag.GoogleAnalytics (tracking ID configurado), Google Analytics script externo,
- *                   JavaScript nativo (IIFE, createElement, insertBefore)
- * 📝 OBSERVAÇÕES  : 10 linhas. Script condicional: só renderiza se Settings.Features.GoogleAnalytics = true.
- *                   Código oficial Google Analytics (Universal Analytics - analytics.js, NÃO GA4).
- *                   IIFE (Immediately Invoked Function Expression) para encapsular ga object.
- *                   @ViewBag.GoogleAnalytics contém tracking ID (provavelmente configurado no _Layout
- *                   ou via config). a.async=1 carrega script assincronamente. ga('create', ID, 'auto')
- *                   inicializa tracking, ga('send', 'pageview') envia pageview automático.
- *                   NOTA: Universal Analytics foi descontinuado (substituído por GA4 - gtag.js).
- **************************************************************************************** *@
+@*
+* ⚡ ARQUIVO: Pages/Shared/_GoogleAnalytics.cshtml
+* ================================================================================================
+* 🎯 OBJETIVO     : Partial view condicional para injetar Google Analytics (Universal Analytics)
+*                   no <head> se feature GoogleAnalytics habilitado. Rastreia pageviews.
+*
+* 📥 ENTRADAS     : Settings.Features.GoogleAnalytics [bool] - feature toggle
+*                   ViewBag.GoogleAnalytics [string] - tracking ID (UA-XXXXXXXX-X)
+*
+* 📤 SAÍDAS       : <script> tag contendo código Analytics:
+*                   • IIFE para encapsular ga object
+*                   • ga('create', trackingID, 'auto')
+*                   • ga('send', 'pageview') automático
+*                   • window.GoogleAnalyticsObject = 'ga'
+*
+* 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml (seção <head>), invocação partial
+*
+* 🔄 CHAMA        : https://www.google-analytics.com/analytics.js [Google CDN]
+*                   ga() function [Google Analytics API]
+*
+* 📦 DEPENDÊNCIAS : ASP.NET Core SmartSettings (@Settings injection)
+*                   ViewBag.GoogleAnalytics (ID configurado)
+*                   Google Analytics script externo (CDN)
+*                   JavaScript nativo (IIFE pattern)
+*
+* 📝 OBSERVAÇÕES  : Renderização condicional (@if) - só renderiza se feature ativa.
+*                   Código Universal Analytics (analytics.js - GA clássico).
+*                   a.async=1 → carregamento assincronamente (non-blocking).
+*                   [PERFORMANCE] ga('send', 'pageview') dispara automático.
+*                   ⚠️ DESCONTINUADO: Universal Analytics será desativado.
+*                       Considerar migração para GA4 (gtag.js) em breve.
+*
+* ================================================================================================ *@
 @if (Settings.Features.GoogleAnalytics)
 {
 	<script>

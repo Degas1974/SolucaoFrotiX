@@ -1,28 +1,39 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Shared/_NavFilter.cshtml
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Partial view do campo de filtro do menu lateral (sidebar) com input de busca
- *                   e botão de fechar/minimizar. Filtra itens do menu por texto digitado.
- * 📥 ENTRADAS     : Input do usuário no campo #nav_filter_input, clique no botão fechar,
- *                   Settings.Theme.IconPrefix (Razor injection), data-bs-target=".page-sidebar"
- * 📤 SAÍDAS       : Input text #nav_filter_input (placeeholder "Filter menu"), botão azul com ícone
- *                   fa-chevron-up, toggle CSS class "list-filter-active" no .page-sidebar,
- *                   evento tabindex="0" para acessibilidade
- * 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml ou _LeftPanel.cshtml (sidebar rendering),
- *                   @await Html.PartialAsync("_NavFilter") ou component invoke
- * 🔄 CHAMA        : JavaScript para filtro (provavelmente em app.navigation.js ou similar),
- *                   evento input no #nav_filter_input, data-action="toggle" handler (Bootstrap?
- *                   ou custom JS), Settings.Theme.IconPrefix (fa-solid, fa-duotone, etc.)
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views), SmartSettings injection (@Settings),
- *                   Bootstrap 5 (form-control, btn-azul, position-relative), Font Awesome
- *                   (fa-chevron-up), JavaScript para filtro (listener no input), data-action
- *                   handler (custom ou Bootstrap), js-waves-off class (Material ripple effect?)
- * 📝 OBSERVAÇÕES  : 8 linhas. Partial view para sidebar filter. Botão com data-action="toggle"
- *                   data-class="list-filter-active" data-bs-target=".page-sidebar" - toggle CSS class
- *                   para mostrar/esconder filtro. Ícone dinâmico via @Settings.Theme.IconPrefix.
- *                   onclick="return false;" evita navegação, js-waves-off desabilita ripple effect.
- *                   Acessibilidade: tabindex="0" no input. CSS: .nav-filter, .position-relative.
- **************************************************************************************** *@
+@*
+* ⚡ ARQUIVO: Pages/Shared/_NavFilter.cshtml
+* ================================================================================================
+* 🎯 OBJETIVO     : Partial view para renderizar campo de filtro do menu lateral (sidebar) com
+*                   input de busca e botão toggle de recolhimento.
+*
+* 📥 ENTRADAS     : Digitação do usuário em #nav_filter_input (busca por texto)
+*                   Clique no botão de toggle (show/hide filtro)
+*                   Settings.Theme.IconPrefix [string] (ícone Awesome prefix)
+*
+* 📤 SAÍDAS       : <input> text #nav_filter_input (placeholder "Filter menu")
+*                   <a> botão toggle com ícone (fa-chevron-up)
+*                   toggle CSS class "list-filter-active" em .page-sidebar
+*
+* 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml (sidebar section)
+*                   Invocação partial @await Html.PartialAsync("_NavFilter")
+*
+* 🔄 CHAMA        : JavaScript filter listener (app.navigation.js)
+*                   data-action="toggle" handler (custom JS ou Bootstrap)
+*                   Settings.Theme.IconPrefix resolver
+*
+* 📦 DEPENDÊNCIAS : ASP.NET Core SmartSettings (@Settings injection)
+*                   Bootstrap 5 (form-control, btn-azul, position-relative)
+*                   Font Awesome (fa-chevron-up icon)
+*                   JavaScript para listener input + toggle handler
+*
+* 📝 OBSERVAÇÕES  : 8 linhas (3 elementos). Layout:
+*                   1. .nav-filter container
+*                   2. .position-relative wrapper
+*                   3. Input #nav_filter_input (tabindex="0" accessibility)
+*                   4. Toggle button (data-action="toggle" data-class="list-filter-active")
+*                   [UI] onclick="return false;" previne navegação
+*                   [UI] js-waves-off desabilita ripple effect Material Design
+*                   [DADOS] data-bs-target=".page-sidebar" target do toggle
+*
+* ================================================================================================ *@
 <div class="nav-filter">
 	<div class="position-relative">
 		<input type="text" id="nav_filter_input" placeholder="Filter menu" class="form-control" tabindex="0">

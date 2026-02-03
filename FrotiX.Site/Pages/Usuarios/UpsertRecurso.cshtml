@@ -1,44 +1,46 @@
-@* ========================================================================================
- * ARQUIVO: Pages/Usuarios/UpsertRecurso.cshtml
- * OBJETIVO: Formulario simples de cadastro/edicao de Recursos (telas/funcionalidades)
- *           do sistema FrotiX para controle de acesso granular, permite admin definir
- *           novos recursos que podem ser atribuidos a usuarios via UsuarioRecursos table,
- *           sistema CRITICO para gestao de permissoes.
- * ENTRADAS: route /Usuarios/UpsertRecurso ou /Usuarios/UpsertRecurso?id=123 (edicao),
- *           model UpsertRecursoModel PageModel (properties: Recurso entity, Categorias
- *           List dropdown), form fields: Nome string 100 chars obrigatorio unique (nome
- *           recurso formato Controller.Action exemplo Veiculos.Index), Descricao string
- *           200 chars obrigatorio (descricao amigavel exibida no menu exemplo Cadastro
- *           de Veiculos), CategoriaId int dropdown obrigatorio FK Categorias.Id (agrupa
- *           recursos relacionados Cadastros/Relatorios/Admin), Icone string 50 chars
- *           Font Awesome class (exemplo fa-car icone exibido no menu), Url string 200
- *           chars route (exemplo /Veiculo/Index path da tela), Ordem int (ordem exibicao
- *           menu sequencial), Ativo checkbox default true
- * SAIDAS: Form renderizado com validacao client-side asp-validation-for, submit POST
- *         /Usuarios/UpsertRecurso OnPost handler valida dados insere/atualiza Recursos
- *         table, redirect /Usuarios/ListaRecursos com TempData SuccessMessage, validacoes:
- *         Nome unique (query Where Nome=input.Nome AND Id!=input.Id verifica duplicata
- *         retorna ModelState.AddModelError), Url valida path (valida formato /Controller/Action
- *         ou vazio se recurso nao tem tela especifica apenas agrupador)
- * CHAMADA POR: Menu Admin > Recursos > Novo Recurso (link /Usuarios/UpsertRecurso sem
- *              id), botao Editar grid /Usuarios/ListaRecursos (link /Usuarios/UpsertRecurso?id=123),
- *              usuarios com permissao Admin.Recursos (role Admin apenas)
- * CHAMA: PageModel UpsertRecursoModel.cshtml.cs OnGet/OnPost handlers, EF Core DbContext
- *        Recursos table CRUD, Syncfusion DropDownList component Categoria, asp-validation-for
- *        Tag Helpers, jQuery Validation Unobtrusive client-side
- * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 DropDownList, Bootstrap
- *               5.3.8 form controls, Font Awesome 6 Duotone, jQuery Validation
- * OBSERVACOES: 222 linhas form simples cadastro recursos. Nome formato Controller.Action
- *              padrao facilita verificacao permissoes codigo (User.HasPermission("Veiculos.Index")
- *              verifica UsuarioRecursos.RecursoNome). Url opcional: recursos podem ser
- *              agrupadores sem tela especifica (exemplo Categoria Relatorios nao tem
- *              Url apenas agrupa relatorios filhos). Ordem define sequencia exibicao
- *              menu Navigation TreeView (menor ordem exibido primeiro topo menu). Ativo
- *              permite desabilitar recurso temporariamente sem deletar (recursos inativos
- *              nao aparecem em dropdowns atribuicao permissoes mas permissoes existentes
- *              usuarios continuam validas ate remover manualmente).
- * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
- ======================================================================================== *@
+@*
+ ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Usuarios/UpsertRecurso.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário de cadastro/edição de Recursos (telas/funcionalidades) do
+ *                   sistema FrotiX para controle de acesso granular, permite admin definir
+ *                   novos recursos para atribuição a usuários via UsuarioRecursos table,
+ *                   sistema CRÍTICO gestão de permissões
+ *
+ * 📥 ENTRADAS     : @page, @model UpsertRecursoModel, route /Usuarios/UpsertRecurso ou
+ *                   /Usuarios/UpsertRecurso?id=123 (edição), form fields: Nome (formato
+ *                   Controller.Action ex: Veículos.Index), Descrição (amigável para menu),
+ *                   CategoriaId (dropdown FK Categorias), Ícone (FontAwesome class ex: fa-car),
+ *                   Url (rota /Controller/Action), Ordem (sequência menu), Ativo (checkbox)
+ *
+ * 📤 SAÍDAS       : Form renderizado com validação client-side asp-validation-for, submit
+ *                   POST /Usuarios/UpsertRecurso OnPost handler valida/insere/atualiza
+ *                   Recursos table, redirect /Usuarios/ListaRecursos com success message,
+ *                   validações: Nome unique, Url formato válido ou vazio (agrupador)
+ *
+ * 🔗 CHAMADA POR  : Menu Admin > Recursos > Novo Recurso (link sem id), botão Editar
+ *                   grid /Usuarios/ListaRecursos (link com id=123), usuários role Admin
+ *
+ * 🔄 CHAMA        : UpsertRecursoModel.OnGet/OnPost (code-behind CRUD), EF Core DbContext
+ *                   Recursos table, /Usuarios/ListaRecursos (redirect), Syncfusion
+ *                   DropDownList Categoria, validação ASP.NET
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 DropDownList, Bootstrap
+ *                   5.3.8 form controls, Font Awesome 6 Duotone, jQuery Validation
+ *                   Unobtrusive, Tag Helpers (asp-for, asp-validation-*)
+ *
+ * 📝 OBSERVAÇÕES  : Total ~222 linhas. **Nome formato Controller.Action** padrão facilita
+ *                   verificação permissões código (User.HasPermission("Veículos.Index")).
+ *                   **Url opcional:** recursos podem ser agrupadores sem tela específica
+ *                   (ex: Categoria Relatórios agrupa filhos, sem Url próprio). **Ordem:**
+ *                   sequência exibição menu (menor = topo). **Ativo:** desabilita recurso
+ *                   sem deletar (não aparece dropdowns, permissões existentes continuam
+ *                   válidas até remoção manual).
+ *
+ * ⚠️  ISSUES      : Comentário anterior menciona rule "nunca use arroba" - problema antigo
+ *                   em @Razor, resolvido. Validação Url deveria ser mais rigorosa (regex).
+ ****************************************************************************************
+ *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 

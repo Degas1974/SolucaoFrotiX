@@ -1,17 +1,34 @@
-@* ========================================================================================
- * ARQUIVO: Pages/Shared/_LeftPanel.cshtml
- * OBJETIVO: Partial view da sidebar esquerda com logo, navegacao hierarquica e card usuario
- * ENTRADAS: Settings.Features.AppSidebar (flag), partials _Logo/_NavInfoCard, ViewComponent navigation
- * SAIDAS: elemento aside.page-sidebar com logo, nav#js-primary-nav, card info usuario, menu dinamico
- * CHAMADA POR: Pages/Shared/_Layout.cshtml (apos header), condicional Settings.Features.AppSidebar
- * CHAMA: Shared/_Logo.cshtml, Shared/_NavInfoCard.cshtml, ViewComponent Navigation, app.navigation.js
- * DEPENDENCIAS: ASP.NET Core Razor (Partial Views, ViewComponents), SmartSettings, NavigationViewComponent
- * OBSERVACOES: 14 linhas. Renderizacao condicional AppSidebar. Partials comentados (desabilitados):
- *              _NavFilter (filtro menu), _NavFilterMsg (mensagem filtro), _NavFooter (footer sidebar).
- *              ATIVOS: _Logo (topo), _NavInfoCard (info usuario), navigation (menu principal hierarquico).
- *              ViewComponent Navigation renderiza arvore de paginas com permissoes/autorizacao.
- * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
- ======================================================================================== *@
+@* ************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_LeftPanel.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view da sidebar esquerda com logo, navegação hierárquica
+ *                   (menu principal com permissões), card info usuário logado, renderizado
+ *                   condicionalmente baseado em Settings.Features.AppSidebar toggle.
+ *
+ * 📥 ENTRADAS     : Settings.Features.AppSidebar (boolean flag habilita/desabilita sidebar),
+ *                   SmartSettings injetado, User claims (usuário logado para exibição)
+ *
+ * 📤 SAÍDAS       : <aside class="page-sidebar"> renderizado (se AppSidebar true) com:
+ *                   logo FrotiX 40x40px (_Logo partial), nav#js-primary-nav com menu
+ *                   hierárquico via ViewComponent Navigation (exibe apenas pages com
+ *                   permissão), _NavInfoCard partial (avatar + nome/email usuário)
+ *
+ * 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml (master layout, line ~42) via
+ *                   <partial name="_LeftPanel" /> renderizado condicionalmente
+ *
+ * 🔄 CHAMA        : Partial _Logo.cshtml (logo + link dashboard), Partial _NavInfoCard.cshtml
+ *                   (card usuário com foto/nome/email), ViewComponent Navigation (menu
+ *                   hierárquico com permissões), app.navigation.js (JavaScript interatividade)
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, SmartSettings (configuration), IUser claims,
+ *                   ViewComponent Navigation, Bootstrap 5 (aside, nav classes), Font Awesome
+ *
+ * 📝 OBSERVAÇÕES  : 29 linhas. Partial simples (apenas renderiza outras partials e ViewComponent).
+ *                   Renderização condicional @if (Settings.Features.AppSidebar). Partials
+ *                   desativados (comentados): _NavFilter, _NavFilterMsg, _NavFooter (legacy).
+ *                   ViewComponent Navigation maneja lógica de permissões/autorização.
+ * ************************************************************************************
+ *@
 @if (Settings.Features.AppSidebar)
 {
 <aside class="page-sidebar">

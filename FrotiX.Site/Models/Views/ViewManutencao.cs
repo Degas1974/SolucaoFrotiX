@@ -14,9 +14,22 @@ using System;
 
 namespace FrotiX.Models
 {
+    /****************************************************************************************
+     * ⚡ MODEL: ViewManutencao
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar view SQL de manutenções com dados consolidados
+     *
+     * 📥 ENTRADAS     : Veículo, contrato, datas, valores, status
+     *
+     * 📤 SAÍDAS       : Registro somente leitura para relatórios de manutenção
+     *
+     * 🔗 CHAMADA POR  : Dashboards de manutenção e glosa
+     *
+     * 🔄 CHAMA        : Não se aplica (view somente leitura)
+     ****************************************************************************************/
     public class ViewManutencao
     {
-        // Chaves
+        // [DADOS] Identificador único da manutenção
         public Guid ManutencaoId
         {
             get; set;

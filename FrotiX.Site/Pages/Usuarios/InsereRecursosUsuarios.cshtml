@@ -1,53 +1,51 @@
-@* ========================================================================================
- * ARQUIVO: Pages/Usuarios/InsereRecursosUsuarios.cshtml
- * OBJETIVO: Pagina ADMIN de insercao batch de recursos/permissoes para multiplos usuarios
- *           simultaneamente via Syncfusion MultiSelect ComboBox, permite administrador
- *           atribuir mesmas permissoes a grupo de usuarios de uma vez (exemplo: liberar
- *           acesso Relatorios Gerenciais para todos Coordenadores), otimiza gestao permissoes
- *           em lote.
- * ENTRADAS: route /Usuarios/InsereRecursosUsuarios, model (reutiliza Abastecimento incorretamente
- *           deveria ser UsuarioRecursoModel custom), form fields: UsuariosIds Syncfusion
- *           MultiSelect ComboBox dataSource /api/Usuarios/GetAtivos permite selecionar
- *           multiplos usuarios checkbox list filterable search, RecursosIds Syncfusion
- *           MultiSelect ComboBox dataSource /api/Recursos/GetAll permite selecionar multiplos
- *           recursos checkbox list hierarquico por categoria (Cadastros/Relatorios/Admin),
- *           botao Atribuir Recursos submit POST /Usuarios/InsereRecursosUsuarios OnPost
- *           handler processa batch insert UsuarioRecursos table
- * SAIDAS: Form renderizado com 2 MultiSelect ComboBox lado a lado width 45pc: esquerda
- *         Usuarios (exibe Nome + Email, checkbox multi-select, search filtra por Nome/Email,
- *         placeholder Selecione usuarios, showSelectAll true permite marcar todos), direita
- *         Recursos (exibe Nome recurso hierarquico Categoria > Recurso, checkbox multi-select,
- *         groupBy Categoria agrupa recursos, search filtra, placeholder Selecione recursos),
- *         botao Atribuir Recursos primary disabled se nenhum usuario/recurso selecionado
- *         (valida client-side UsuariosIds.length>0 AND RecursosIds.length>0), submit POST
- *         valida backend verifica duplicatas UsuarioRecursos existentes (query Where UsuarioId
- *         IN UsuariosIds AND RecursoId IN RecursosIds), insere apenas novas combinacoes
- *         evita duplicate key error, retorna JSON {totalInseridos, totalDuplicatas},
- *         success exibe AppToast Verde X permissoes atribuidas a Y usuarios Z duplicatas
- *         ignoradas, error Alerta.Erro
- * CHAMADA POR: Menu Admin > Usuarios > Inserir Recursos em Lote (link interno sidebar
- *              dropdown Usuarios), usuarios com permissao Usuarios.GerenciarRecursos (role
- *              Admin apenas), usada quando precisa liberar mesmas permissoes para grupo
- *              usuarios (exemplo: novos Coordenadores contratados precisam acesso Relatorios
- *              Gerenciais + Aprovacao Viagens + Gestao Motoristas, admin seleciona 5 Coordenadores
- *              + 3 Recursos clica Atribuir insere 15 registros UsuarioRecursos de uma
- *              vez ao inves de gerenciar individualmente)
- * CHAMA: PageModel InsereRecursosUsuarios.cshtml.cs OnPost handler (recebe List UsuariosIds
- *        e List RecursosIds do form, loop nested UsuariosIds foreach RecursosIds verifica
- *        duplicata query Where UsuarioId AND RecursoId EXISTS, se nao existe insere new
- *        UsuarioRecurso entity DbContext.Add, SaveChanges batch commit, retorna contadores),
- *        API endpoints: GET /api/Usuarios/GetAtivos (retorna dropdown usuarios), GET
- *        /api/Recursos/GetAll (retorna dropdown recursos hierarquico), Syncfusion MultiSelect
- *        ComboBox components (allowFiltering search, mode CheckBox multi-select, showSelectAll,
- *        groupBy Categoria), AppToast.show Verde (feedback success)
- * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 MultiSelect ComboBox 2023.4.2,
- *               Bootstrap 5.3.8, jQuery 3.7.1, EF Core 8.0 batch insert
- * OBSERVACOES: 141 linhas pagina ADMIN batch insert permissoes. Model binding incorreto:
- *              usa model Abastecimento mas deveria ter UsuarioRecursoModel custom com properties
- *              List UsuariosIds e List RecursosIds (corrigir refactoring criar model correto).
- *              Title ViewData incorreto: exibe Importa Abastecimentos mas deveria ser
- *              Inserir Recursos em Lote (corrigir). Validacao duplicatas essencial: verifica
- *              combinacao UsuarioId+RecursoId ja existe tabela UsuarioRecursos evita duplicate
+@*
+ ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Usuarios/InsereRecursosUsuarios.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página ADMIN de inserção batch de recursos/permissões para múltiplos
+ *                   usuários simultaneamente via Syncfusion MultiSelect, permite atribuir
+ *                   mesmas permissões a grupo de usuários de uma vez (ex: liberar Relatórios
+ *                   Gerenciais para todos Coordenadores), otimiza gestão permissões em lote
+ *
+ * 📥 ENTRADAS     : @page, @model InsereRecursosUsuariosModel (BUG: reutiliza Abastecimento
+ *                   incorretamente), route /Usuarios/InsereRecursosUsuarios, form fields:
+ *                   UsuariosIds MultiSelect ComboBox dataSource /api/Usuarios/GetAtivos,
+ *                   RecursosIds MultiSelect ComboBox dataSource /api/Recursos/GetAll
+ *
+ * 📤 SAÍDAS       : Form com 2 MultiSelect lado a lado (45% width cada): esquerda Usuários
+ *                   (Nome+Email, checkbox multi-select, search, showSelectAll), direita
+ *                   Recursos (hierárquico Categoria>Recurso, groupBy Categoria), botão
+ *                   Atribuir Recursos primary (disabled se nenhuma seleção), resposta JSON
+ *                   {totalInseridos, totalDuplicatas}, AppToast Verde feedback
+ *
+ * 🔗 CHAMADA POR  : Menu Admin > Usuários > Inserir Recursos em Lote (sidebar),
+ *                   usuários role Admin, quando liberar mesmas permissões para grupo
+ *                   usuários (ex: 5 Coordenadores + 3 Recursos = 15 inserts de uma vez)
+ *
+ * 🔄 CHAMA        : InsereRecursosUsuarios.cshtml.cs OnPost (batch insert UsuarioRecursos),
+ *                   GET /api/Usuarios/GetAtivos (dropdown usuários), GET /api/Recursos/GetAll
+ *                   (dropdown recursos), AppToast.show() (feedback), verificação duplicatas
+ *                   query Where UsuarioId AND RecursoId EXISTS
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 MultiSelect ComboBox
+ *                   2023.4.2, Bootstrap 5.3.8, jQuery 3.7.1, AppToast.js, Alerta.js,
+ *                   EF Core 8.0 batch insert, SQL transações
+ *
+ * 📝 OBSERVAÇÕES  : Total ~141 linhas. **Loop nested:** UsuariosIds foreach RecursosIds
+ *                   verifica duplicata query EXISTS, insere apenas novas combinações (evita
+ *                   duplicate key error). **Validação duplicatas essencial:** combinação
+ *                   UsuarioId+RecursoId não deve existir em UsuarioRecursos. **Response:**
+ *                   retorna {totalInseridos, totalDuplicatas} para feedback (ex: "3 permissões
+ *                   atribuidas a 5 usuários, 2 duplicatas ignoradas").
+ *
+ * ⚠️  ISSUES      : **BUG CRÍTICO** - @model usa Abastecimento quando deveria ser
+ *                   InsereRecursosUsuariosModel custom (não afeta funcionalidade pois model
+ *                   não usado, mas cria confusão). Refatorar criar model correto. **ViewData
+ *                   Title incorreto:** exibe "Importa Abastecimentos" quando deveria ser
+ *                   "Inserir Recursos em Lote" (corrigir). Sem validação se usuários/recursos
+ *                   existem (permissive, causa erro se ids inválidos).
+ ****************************************************************************************
+ *@
  *              key constraint error (unique index em UsuarioId,RecursoId colunas), se duplicata
  *              skipa insert incrementa contador duplicatas informar usuario. Performance:
  *              loop nested pode gerar muitas queries (10 usuarios * 5 recursos = 50 queries

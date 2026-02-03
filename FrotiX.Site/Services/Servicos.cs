@@ -799,6 +799,32 @@ namespace FrotiX.Services
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ConvertTo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Processa recursivamente cada nó DOM do HTML para extrair texto
+         *                   Ignora comentários, scripts, styles; preserva quebras (<p>)
+         *
+         * 📥 ENTRADAS     : node [HtmlNode] - Nó atual do DOM (HtmlAgilityPack)
+         *                   outText [TextWriter] - Output para acumular texto
+         *
+         * 📤 SAÍDAS       : void (escreve diretamente em outText via ref)
+         *
+         * ⬅️ CHAMADO POR  : ConvertHtml() [linha 527]
+         *                   ConvertTo() [Recursivo em child nodes]
+         *                   ConvertContentTo() [linha 626]
+         *
+         * ➡️ CHAMA        : ConvertContentTo() [Recursivo para filhos]
+         *                   HtmlEntity.DeEntitize() [Converte &nbsp; → espaço, etc]
+         *
+         * 📝 OBSERVAÇÕES  : [LOGICA] Trata 4 tipos de nó:
+         *                           • Comment: ignora
+         *                           • Document: processa filhos
+         *                           • Text: extrai se pai não é script/style
+         *                           • Element: processa com regras (p → \r\n)
+         *                   [VALIDACAO] Ignora whitespace puro
+         *                   [HELPER] DeEntitize converte entidades HTML
+         ****************************************************************************************/
         public static void ConvertTo(HtmlNode node , TextWriter outText)
         {
             try
@@ -807,42 +833,46 @@ namespace FrotiX.Services
                 switch (node.NodeType)
                 {
                     case HtmlNodeType.Comment:
-                        // don't output comments
+                        // [UI] Ignora comentários HTML
                         break;
 
                     case HtmlNodeType.Document:
+                        // [LOGICA] Document root: processa children recursivamente
                         ConvertContentTo(node , outText);
                         break;
 
                     case HtmlNodeType.Text:
-                        // script and style must not be output
+                        // [VALIDACAO] Script e style não devem ser outputados como texto
                         string parentName = node.ParentNode.Name;
                         if ((parentName == "script") || (parentName == "style"))
                             break;
 
-                        // get text
+                        // [UI] Extrai texto do nó
                         html = ((HtmlTextNode)node).Text;
 
-                        // is it in fact a special closing node output as text?
+                        // [VALIDACAO] Ignora closing elements fake (marcados como texto)
                         if (HtmlNode.IsOverlappedClosingElement(html))
                             break;
 
-                        // check the text is meaningful and not a bunch of whitespaces
+                        // [VALIDACAO] Apenas output se houver conteúdo não-whitespace
                         if (html.Trim().Length > 0)
                         {
+                            // [DADOS] DeEntitize: &nbsp; → espaço, &lt; → <, etc
                             outText.Write(HtmlEntity.DeEntitize(html));
                         }
                         break;
 
                     case HtmlNodeType.Element:
+                        // [LOGICA] Trata elementos específicos
                         switch (node.Name)
                         {
                             case "p":
-                                // treat paragraphs as crlf
+                                // [UI] Trata <p> como quebra de linha
                                 outText.Write("\r\n");
                                 break;
                         }
 
+                        // [LOGICA] Se tem children, processa recursivamente
                         if (node.HasChildNodes)
                         {
                             ConvertContentTo(node , outText);
@@ -856,12 +886,33 @@ namespace FrotiX.Services
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ConvertContentTo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Itera children de um nó e processa cada um recursivamente via ConvertTo
+         *                   Simples wrapper para loop limpo
+         *
+         * 📥 ENTRADAS     : node [HtmlNode] - Nó pai cujos children serão processados
+         *                   outText [TextWriter] - Output para acumular texto
+         *
+         * 📤 SAÍDAS       : void (escreve em outText via ref)
+         *
+         * ⬅️ CHAMADO POR  : ConvertTo() [linha 569] - recursivo em Element nodes
+         *                   ConvertTo() [línea 569] - recursivo em Document root
+         *
+         * ➡️ CHAMA        : ConvertTo() [Recursivo para cada child]
+         *
+         * 📝 OBSERVAÇÕES  : [LOGICA] Padrão visitor recursivo para DOM tree
+         *                   [HELPER] Separa loop de processamento para clareza
+         ****************************************************************************************/
         public static void ConvertContentTo(HtmlNode node , TextWriter outText)
         {
             try
             {
+                // [LOGICA] Itera cada child node
                 foreach (HtmlNode subnode in node.ChildNodes)
                 {
+                    // [LOGICA] Processa cada child recursivamente via ConvertTo
                     ConvertTo(subnode , outText);
                 }
             }

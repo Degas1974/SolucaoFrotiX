@@ -1,37 +1,50 @@
-@page
-
 @*
-*****
-⚡ ARQUIVO: Pages/Ocorrencia/Ocorrencias.cshtml
------
-🎯 OBJETIVO     : Gestão de ocorrências de viagem com DataTable, filtros avançados (data, período,
-                   veículo, motorista, status), modais edição/baixa rápida, RichTextEditor para
-                   descrição/solução, upload imagens/vídeos
+ ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Ocorrencia/Ocorrencias.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página crítica de gestão de ocorrências de viagem com DataTable
+ *                   server-side, filtros avançados (data/período/veículo/motorista/status),
+ *                   modais edição/baixa rápida, RichTextEditor WYSIWYG, upload
+ *                   imagens/vídeos, validações pré-baixa
+ *
+ * 📥 ENTRADAS     : @page, @model OcorrenciasModel, ViewData com listas
+ *                   lstMotoristas/lstVeiculos/lstStatus (carregadas no OnGet),
+ *                   filtros Syncfusion ComboBox + EJ2 DatePickers,
+ *                   modais #modalOcorrencia/#modalBaixaRapida/#modalVisualizarImagem
+ *
+ * 📤 SAÍDAS       : DataTable #tblOcorrencia populada via AJAX GET
+ *                   /api/OcorrenciaViagem/List?filters, modais Bootstrap 5
+ *                   (edição/baixa/visualização), RichTextEditor com formatação,
+ *                   badges status coloridos (Aberta=vermelho/Baixada=verde/
+ *                   Pendente=amarelo/Manutenção=azul), AppToast notificações
+ *
+ * 🔗 CHAMADA POR  : Route /Ocorrencia (navegação sidebar "Vistoria > Ocorrências"),
+ *                   redirecionamentos de páginas de viagem/veículo
+ *
+ * 🔄 CHAMA        : ocorrencias.js (439 linhas - CRUD handlers, filtros,
+ *                   validação status, gestão imagens), API endpoints
+ *                   GET/POST/PUT/DELETE /api/OcorrenciaViagem/*,
+ *                   Syncfusion EJ2 RichTextEditor (formatação texto/upload),
+ *                   jQuery DataTables (server-side paginação/filtro),
+ *                   AppToast.show(), Alerta.Confirmar()
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, Syncfusion EJ2 (RichTextEditor,
+ *                   ComboBox, DatePicker), jQuery 3.7.1, DataTables 1.13.4,
+ *                   Bootstrap 5.3, Font Awesome 6 Duotone, ocorrencias.js,
+ *                   Alerta.js, AppToast.js, FrotiX CSS custom (ftx-card-styled.css),
+ *                   IUnitOfWork (EF Core 8.0)
+ *
+ * 📝 OBSERVAÇÕES  : Página complexa (~800+ linhas total): filtros múltiplos
+ *                   (cascata motorista→veículos), RichTextEditor WYSIWYG com
+ *                   upload imagens inline, badges status coloridos com ícones,
+ *                   validação pré-baixa (verificar status atual), overlay loading
+ *                   FrotiX customizado, CSS extensivo para cards/filtros/tabela.
+ *                   **CRÍTICO:** Sistema auditoria ocorrências (rastreia todas
+ *                   operações para compliance).
+ ****************************************************************************************
+ *@
 
-📥 ENTRADAS     : @page, @model OcorrenciasModel, ViewData com listas lstMotoristas/lstVeiculos/
-                   lstStatus, filtros Syncfusion ComboBox + DatePickers, modais #modalOcorrencia/
-                   #modalBaixaRapida/#modalVisualizarImagem
-
-📤 SAÍDAS       : DataTable #tblOcorrencia com AJAX, modais Bootstrap 5 edição/baixa/visualização,
-                   RichTextEditor descrição/solução, POST/PUT/DELETE API OcorrenciaViagem,
-                   AppToast notificações, badges status coloridos (Aberta/Baixada/Pendente/Manutenção)
-
-🔗 CHAMADA POR  : Route /Ocorrencia, menu sidebar "Vistoria > Ocorrências", OcorrenciasModel.OnGet()
-
-🔄 CHAMA        : ocorrencias.js (CRUD handlers, validação status, gestão filtros), API endpoints
-                   GET /api/OcorrenciaViagem/*, POST/PUT/DELETE /api/OcorrenciaViagem/*,
-                   Syncfusion EJ2 components, AppToast.show(), Alerta.Confirmar()
-
-📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, Syncfusion EJ2 RichTextEditor/ComboBox/DatePicker,
-                   jQuery, DataTables, Bootstrap 5, Font Awesome Duotone, ocorrencias.js,
-                   Alerta.js, AppToast.js, IUnitOfWork, Entity Framework Core
-
-📝 OBSERVAÇÕES  : CARD REFORMATADO para novo padrão. Página complexa: filtros múltiplos,
-                   RichTextEditor (formatação+upload), badges status coloridos, validação
-                   pré-baixa, overlay loading customizado FrotiX, CSS extensivo (cards/filtros/
-                   tabela/badges). Sistema crítico gestão ocorrências.
-*****
-*@
+@page
 
 @model FrotiX.Pages.Ocorrencia.OcorrenciasModel
 

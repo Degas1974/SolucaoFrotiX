@@ -22,27 +22,47 @@ using FrotiX.Validations;
 using Microsoft.AspNetCore.Http;
 
 namespace FrotiX.Models
-    {
+{
+    /****************************************************************************************
+     * ⚡ MODEL: ViewLavagem
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar view SQL de lavagens de veículos
+     *
+     * 📥 ENTRADAS     : Veículo, motorista, lavadores, data e horário
+     *
+     * 📤 SAÍDAS       : Registro somente leitura para controle de lavagens
+     *
+     * 🔗 CHAMADA POR  : Telas de manutenção e limpeza de frota
+     *
+     * 🔄 CHAMA        : Não se aplica
+     ****************************************************************************************/
     public class ViewLavagem
-        {
-
+    {
+        // [DADOS] Identificador único da lavagem
         public Guid LavagemId { get; set; }
 
+        // [DADOS] Identificador do motorista responsável
         public Guid MotoristaId { get; set; }
 
+        // [DADOS] Identificador do veículo lavado
         public Guid VeiculoId { get; set; }
 
+        // [DADOS] IDs dos lavadores (concatenados/separados)
         public string? LavadoresId { get; set; }
 
+        // [DADOS] Data da lavagem (formatada)
         public string? Data { get; set; }
 
+        // [DADOS] Horário da lavagem
         public string? Horario { get; set; }
 
+        // [DADOS] Nomes dos lavadores
         public string? Lavadores { get; set; }
 
+        // [DADOS] Descrição completa do veículo
         public string? DescricaoVeiculo { get; set; }
 
+        // [DADOS] Nome do motorista/responsável
         public string? Nome { get; set; }
-
-        }
     }
+}

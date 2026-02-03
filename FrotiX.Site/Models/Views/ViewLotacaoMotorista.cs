@@ -22,28 +22,49 @@ using FrotiX.Validations;
 using Microsoft.AspNetCore.Http;
 
 namespace FrotiX.Models
-    {
+{
+    /****************************************************************************************
+     * ⚡ MODEL: ViewLotacaoMotorista
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar view SQL de lotações de motoristas por unidade
+     *
+     * 📥 ENTRADAS     : Motorista, unidade, datas, motivo de lotação
+     *
+     * 📤 SAÍDAS       : Registro somente leitura para controle de lotação
+     *
+     * 🔗 CHAMADA POR  : Telas de escala e gestão de motoristas
+     *
+     * 🔄 CHAMA        : Não se aplica
+     ****************************************************************************************/
     public class ViewLotacaoMotorista
-        {
-
+    {
+        // [DADOS] Identificador da unidade
         public Guid UnidadeId { get; set; }
 
+        // [DADOS] Identificador único da lotação
         public Guid LotacaoMotoristaId { get; set; }
 
+        // [DADOS] Identificador do motorista
         public Guid MotoristaId { get; set; }
 
+        // [DADOS] Flag indicando se motorista está lotado
         public bool Lotado { get; set; }
 
+        // [DADOS] Motivo da lotação (férias/licença/etc)
         public string? Motivo { get; set; }
 
+        // [DADOS] Nome da unidade
         public string? Unidade { get; set; }
 
+        // [DADOS] Data inicial da lotação (formatada)
         public string? DataInicial { get; set; }
 
+        // [DADOS] Data final da lotação (formatada)
         public string? DataFim { get; set; }
 
+        // [DADOS] Motorista que cobre a lotação
         public string? MotoristaCobertura { get; set; }
-        }
     }
+}
 
 
