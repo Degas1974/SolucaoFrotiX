@@ -1,20 +1,34 @@
-@* ========================================================================================
- * ARQUIVO: Pages/Shared/_NavFooter.cshtml
- * OBJETIVO: Partial footer sidebar com botao minimizar menu e 3 botoes acao rapida com tooltips
- * ENTRADAS: Clique minimize (data-action toggle nav-function-minify), cliques botoes acao, Settings.Theme.IconPrefix
- * SAIDAS: div.nav-footer.shadow-top com botao chevron duplo, 3 botoes Font Awesome (comments/life-ring/phone),
- *         tooltips Bootstrap, toggle class nav-function-minify no body (minimiza sidebar)
- * CHAMADA POR: Pages/Shared/_LeftPanel.cshtml (partial comentado - DESABILITADO FrotiX), rodape sidebar
- * CHAMA: JavaScript data-action toggle handler, CSS nav-function-minify, Bootstrap tooltip, Settings.Theme.IconPrefix
- * DEPENDENCIAS: ASP.NET Core Razor (Partial Views), SmartSettings, Bootstrap 5 (tooltips), Font Awesome 6,
- *               NI icons (ni-chevron-right custom SmartAdmin), JavaScript data-action, CSS custom sidebar
- * OBSERVACOES: 23 linhas. Partial COMENTADO _LeftPanel - NAO usado FrotiX. Botao minimize hidden-md-down
- *              (telas grandes). Toggle nav-function-minify encolhe sidebar (width reduzida, texto escondido).
- *              3 botoes acao apontam javascript:void(0) (placeholders SmartAdmin sem acoes reais).
- *              Para reativar: descomentar _LeftPanel e implementar handlers (chat/suporte/chamada).
- *              NI icons ni-chevron-right sao custom SmartAdmin (nao Font Awesome).
- * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
- ======================================================================================== *@
+@* ************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_NavFooter.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial renderizando footer da sidebar com botão minimizar (toggle)
+ *                   e 3 botões de ação rápida (chat, suporte, chamada) com tooltips.
+ *
+ * 📥 ENTRADAS     : Clique minimize (data-action toggle nav-function-minify), cliques
+ *                   botões ação (javascript:void(0)), Settings.Theme.IconPrefix
+ *
+ * 📤 SAÍDAS       : <div class="nav-footer shadow-top"> com botão chevron duplo (NI icons),
+ *                   3 botões com ícones Font Awesome, tooltips Bootstrap, toggle class
+ *                   nav-function-minify no body (minimiza sidebar width)
+ *
+ * 🔗 CHAMADA POR  : Pages/Shared/_LeftPanel.cshtml (partial COMENTADO/DESABILITADO em FrotiX),
+ *                   seria renderizado no rodapé da sidebar
+ *
+ * 🔄 CHAMA        : JavaScript data-action toggle handler (minimiza sidebar), CSS
+ *                   nav-function-minify, Bootstrap 5 tooltips, Settings.Theme.IconPrefix
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, SmartSettings (settings), Bootstrap 5,
+ *                   Font Awesome 6 (ícones), NI icons (ni-chevron-right customizado),
+ *                   JavaScript handlers data-action
+ *
+ * 📝 OBSERVAÇÕES  : 43 linhas (total com botões). Partial INATIVO (comentado em _LeftPanel).
+ *                   Botão minimize hidden-md-down (visível apenas mobile/tablet). Toggle
+ *                   nav-function-minify reduz largura sidebar + oculta texto labels. 3 botões
+ *                   ação são placeholders SmartAdmin (javascript:void(0) - sem lógica real).
+ *                   Para ativar: descomentar _LeftPanel, implementar handlers. NI icons
+ *                   ni-chevron-right custom SmartAdmin (não Font Awesome).
+ * ************************************************************************************
+ *@
 <div class="nav-footer shadow-top">
 	<a href="#" onclick="return false;" data-action="toggle" data-class="nav-function-minify" class="hidden-md-down">
 		<i class="ni ni-chevron-right"></i>

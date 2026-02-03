@@ -40,87 +40,127 @@ namespace FrotiX.Repository
         {
         private new readonly FrotiXDbContext _db;
 
-        
+
         // ╭───────────────────────────────────────────────────────────────────────────────────────╮
         // │ ⚡ MÉTODO: RepactuacaoAtaRepository                                                       │
         // │ 🔗 RASTREABILIDADE:                                                                      │
-        // │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
-        // │    ➡️ CHAMA       : base(db)                                                             │
+        // │    ⬅️ CHAMADO POR : UnitOfWork [UnitOfWork.cs:137]                                        │
+        // │    ➡️ CHAMA       : base(db) [linha 62]                                                  │
+        // │ 📦 DEPENDÊNCIAS  : FrotiXDbContext                                                      │
         // ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        
-        
+
+
         // 🎯 OBJETIVO:
         // Inicializar o repositório com o contexto do banco de dados.
-        
-        
-        
+
+
+
         // 📥 PARÂMETROS:
-        // db - Contexto do banco de dados da aplicação.
-        
-        
+        // db [FrotiXDbContext] - Contexto do banco de dados da aplicação.
+
+
+        // 📤 SAÍDAS: Instância inicializada do repositório
+
         // Param db: Instância de <see cref="FrotiXDbContext"/>.
         public RepactuacaoAtaRepository(FrotiXDbContext db) : base(db)
             {
-            _db = db;
+            try
+            {
+                _db = db ?? throw new ArgumentNullException(nameof(db));
+            }
+            catch (Exception erro)
+            {
+                throw;
+            }
             }
 
-        
+
         // ╭───────────────────────────────────────────────────────────────────────────────────────╮
         // │ ⚡ MÉTODO: GetRepactuacaoAtaListForDropDown                                               │
         // │ 🔗 RASTREABILIDADE:                                                                      │
-        // │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
-        // │    ➡️ CHAMA       : DbContext.RepactuacaoAta, OrderBy, Select                             │
+        // │    ⬅️ CHAMADO POR : Controllers (dropdown) [linha ~100]                                 │
+        // │    ➡️ CHAMA       : _db.RepactuacaoAta.OrderBy() [linha 106]                             │
+        // │ 📦 DEPENDÊNCIAS  : _db (DbContext)                                                      │
         // ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        
-        
+
+
         // 🎯 OBJETIVO:
         // Obter lista de repactuações de atas para composição de dropdowns.
         // Ordena os registros pela descrição.
-        
-        
-        
+
+
+
+        // 📥 PARÂMETROS: Nenhum
+
         // 📤 RETORNO:
-        // IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
-        
-        
+        // IEnumerable<SelectListItem> - Itens prontos para seleção em UI.
+
+        // 📝 OBSERVAÇÕES: Ordenação alfabética por Descricao
+
         // Returns: Lista de itens de seleção para repactuações de atas.
         public IEnumerable<SelectListItem> GetRepactuacaoAtaListForDropDown()
             {
-            return _db.RepactuacaoAta
-                .OrderBy(o => o.Descricao)
-                .Select(i => new SelectListItem()
-                    {
-                    Text = i.Descricao,
-                    Value = i.RepactuacaoAtaId.ToString()
-                    });
+            try
+            {
+                // [DB] Consulta repactuações, ordena por descrição e projeta para dropdown
+                return _db.RepactuacaoAta
+                    .OrderBy(o => o.Descricao)
+                    .Select(i => new SelectListItem()
+                        {
+                        Text = i.Descricao,
+                        Value = i.RepactuacaoAtaId.ToString()
+                        });
+            }
+            catch (Exception erro)
+            {
+                throw;
+            }
             }
 
-        
+
         // ╭───────────────────────────────────────────────────────────────────────────────────────╮
         // │ ⚡ MÉTODO: Update                                                                        │
         // │ 🔗 RASTREABILIDADE:                                                                      │
-        // │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
-        // │    ➡️ CHAMA       : DbContext.RepactuacaoAta.FirstOrDefault, _db.Update, _db.SaveChanges   │
+        // │    ⬅️ CHAMADO POR : Controllers [linha ~100]                                             │
+        // │    ➡️ CHAMA       : _db.FirstOrDefault() [linha 128]                                     │
+        // │                     _db.Update() [linha 130]                                             │
+        // │                     _db.SaveChanges() [linha 131]                                        │
+        // │ 📦 DEPENDÊNCIAS  : _db (DbContext)                                                      │
         // ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        
-        
+
+
         // 🎯 OBJETIVO:
         // Atualizar os dados de uma repactuação de ata no banco de dados.
-        
-        
-        
+
+
+
         // 📥 PARÂMETROS:
-        // repactuacaoitemveiculoata - Entidade contendo os dados atualizados.
-        
-        
+        // repactuacaoitemveiculoata [RepactuacaoAta] - Entidade contendo os dados atualizados.
+
+        // 📤 SAÍDAS: void
+
+        // 📝 OBSERVAÇÕES: Salva mudanças imediatamente no banco de dados
+
         // Param repactuacaoitemveiculoata: Entidade <see cref="RepactuacaoAta"/> com dados atualizados.
         public new void Update(RepactuacaoAta repactuacaoitemveiculoata)
             {
-            var objFromDb = _db.RepactuacaoAta.FirstOrDefault(s => s.RepactuacaoAtaId == repactuacaoitemveiculoata.RepactuacaoAtaId);
+            try
+            {
+                // [VALIDACAO] Verificar se entidade não é nula
+                if (repactuacaoitemveiculoata == null)
+                    throw new ArgumentNullException(nameof(repactuacaoitemveiculoata));
 
-            _db.Update(repactuacaoitemveiculoata);
-            _db.SaveChanges();
+                // [DB] Buscar registro existente
+                var objFromDb = _db.RepactuacaoAta.FirstOrDefault(s => s.RepactuacaoAtaId == repactuacaoitemveiculoata.RepactuacaoAtaId);
 
+                // [DB] Atualizar e persistir mudanças
+                _db.Update(repactuacaoitemveiculoata);
+                _db.SaveChanges();
+            }
+            catch (Exception erro)
+            {
+                throw;
+            }
             }
 
 

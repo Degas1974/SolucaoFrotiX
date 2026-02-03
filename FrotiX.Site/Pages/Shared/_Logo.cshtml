@@ -1,18 +1,30 @@
-@* ========================================================================================
- * ARQUIVO: Pages/Shared/_Logo.cshtml
- * OBJETIVO: Partial view logo FrotiX no cabecalho sidebar com link para dashboard
- * ENTRADAS: Settings.AppFlavor (nome aplicacao), arquivo ~/Images/frotix.png, SmartSettings
- * SAIDAS: div.page-logo com link /intel/analyticsdashboard, img frotix.png clicavel com alt/aria
- * CHAMADA POR: Pages/Shared/_LeftPanel.cshtml (partial name _Logo), topo da sidebar
- * CHAMA: rota /intel/analyticsdashboard, imagem ~/Images/frotix.png, Settings.AppFlavor
- * DEPENDENCIAS: ASP.NET Core Razor (Partial Views), SmartSettings, frotix.png, CSS class page-logo
- * OBSERVACOES: 13 linhas. Versao CUSTOMIZADA SmartAdmin - logo/link substituidos. Comentarios Razor
- *              mostram codigo original removido: logo dinamico Theme.Logo, texto page-logo-text com
- *              AppName, AppFlavorSubscript, icone fa-angle-down AppShortcutModal. Versao FrotiX
- *              simplificada: logo fixo frotix.png com link dashboard. Acessibilidade: aria-roledescription
- *              logo e alt text com AppFlavor.
- * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
- ======================================================================================== *@
+@* ************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_Logo.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view renderizando logo FrotiX clicável no topo da sidebar
+ *                   (link para dashboard), com imagem fixa e texto dinâmico do AppFlavor.
+ *
+ * 📥 ENTRADAS     : Settings.AppFlavor (nome da aplicação dinâmico), imagem ~/Images/frotix.png,
+ *                   SmartSettings injetado
+ *
+ * 📤 SAÍDAS       : <div class="page-logo"> com <a href="/intel/analyticsdashboard">
+ *                   e <img alt=""> com acessibilidade aria-roledescription="logo"
+ *
+ * 🔗 CHAMADA POR  : Pages/Shared/_LeftPanel.cshtml via <partial name="_Logo" />
+ *                   renderizado no topo da sidebar
+ *
+ * 🔄 CHAMA        : Rota /intel/analyticsdashboard (link ao clicado), imagem ~/Images/frotix.png,
+ *                   Settings.AppFlavor (alt text dinâmico)
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, SmartSettings (settings), Bootstrap CSS (classes),
+ *                   arquivo imagem ~/Images/frotix.png
+ *
+ * 📝 OBSERVAÇÕES  : 29 linhas. Customização SmartAdmin: logo/link fixos FrotiX. Código legado
+ *                   comentado mostra versão original (logo dinâmico via Theme.Logo, AppName,
+ *                   AppFlavorSubscript, AppShortcutModal - todos removidos). Acessibilidade:
+ *                   aria-roledescription, alt text, link semântico.
+ * ************************************************************************************
+ *@
 
 <div class="page-logo">
     @*<a href="#" class="page-logo-link press-scale-down d-flex align-items-center position-relative">*@

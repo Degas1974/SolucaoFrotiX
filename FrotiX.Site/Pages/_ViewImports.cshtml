@@ -1,60 +1,34 @@
 @* ****************************************************************************************
  * ⚡ ARQUIVO: Pages/_ViewImports.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Definir imports globais (using directives), namespaces e Tag Helpers para
- *                   TODAS as páginas Razor em Pages/. Evita repetição de @using em cada arquivo.
- * 📥 ENTRADAS     : Processamento automático pelo ASP.NET Core Razor Pages engine ao compilar
- *                   qualquer .cshtml em Pages/ ou subpastas
- * 📤 SAÍDAS       : Namespaces disponíveis globalmente (Microsoft.AspNetCore.Identity, FrotiX,
- *                   FrotiX.Data, FrotiX.Extensions, FrotiX.Models), Tag Helpers registrados
- *                   (ASP.NET MVC, Syncfusion EJ2, Kendo.Mvc, FrotiX custom), SmartSettings
- *                   injetado via @inject (disponível como @Settings em todas as views)
+ * 🎯 OBJETIVO     : Arquivo de configuração global Razor Pages que define imports,
+ *                   namespaces e Tag Helpers para TODAS as páginas em Pages/ e
+ *                   subpastas. Evita repetição de @using directives em cada arquivo.
+ *
+ * 📥 ENTRADAS     : Processamento automático pelo pipeline ASP.NET Core Razor Pages
+ *                   ao compilar qualquer .cshtml em Pages/ ou subpastas (hierárquico)
+ *
+ * 📤 SAÍDAS       : Namespaces disponíveis globalmente: Microsoft.AspNetCore.Identity,
+ *                   FrotiX, FrotiX.Data, FrotiX.Extensions, FrotiX.Models. Tag Helpers
+ *                   registrados: ASP.NET MVC, Syncfusion EJ2, Kendo.Mvc, FrotiX custom.
+ *                   SmartSettings injetado via @inject (acessível como @Settings em views)
+ *
  * 🔗 CHAMADA POR  : ASP.NET Core Razor Pages pipeline automaticamente ao compilar views
+ *
  * 🔄 CHAMA        : FrotiX namespace imports, SmartSettings (dependency injection),
- *                   Syncfusion.EJ2 TagHelpers, Kendo.Mvc TagHelpers
+ *                   Tag Helpers Syncfusion.EJ2, Kendo.Mvc para processamento de componentes
+ *
  * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (ViewImports convention), Microsoft.AspNetCore.Identity,
  *                   Syncfusion.EJ2 (Tag Helpers), Kendo.Mvc (Telerik UI), FrotiX assemblies
- * 📝 OBSERVAÇÕES  : 12 linhas. Arquivo FUNDAMENTAL - configura imports de TODAS as páginas.
- *                   @namespace FrotiX.Pages define namespace base para PageModels. @inject
- *                   SmartSettings Settings torna configurações acessíveis como @Settings.
- *                   TagHelpers registrados: ASP.NET MVC (@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
- *                   - duplicado line 8 e 11, pode ser limpo), Syncfusion EJ2 (@addTagHelper *, Syncfusion.EJ2),
- *                   Kendo.Mvc (@addTagHelper *, Kendo.Mvc), FrotiX custom (@addTagHelper *, FrotiX).
- *                   Convenção ASP.NET Core: _ViewImports.cshtml aplica-se hierarquicamente
- *                   (combina com _ViewImports em pastas superiores). Sobrescrito em Areas/
- *                   com seus próprios _ViewImports.cshtml específicos.
+ *
+ * 📝 OBSERVAÇÕES  : 9 linhas código + configurações. Arquivo FUNDAMENTAL configura
+ *                   imports de TODAS as páginas em Pages/. Convenção ASP.NET Core:
+ *                   _ViewImports.cshtml aplica-se hierarquicamente (combina com
+ *                   _ViewImports em pastas superiores). Sobrescrito em Areas/ com
+ *                   seus próprios _ViewImports.cshtml específicos. @namespace FrotiX.Pages
+ *                   define namespace base para PageModels compilados. @inject SmartSettings
+ *                   torna configurações acessíveis como @Settings em todas views.
  **************************************************************************************** *@
-@*
- * ⚡ ARQUIVO: Pages/_ViewImports.cshtml
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Definir imports globais (using directives), namespaces e Tag Helpers
- *                   para TODAS as páginas Razor em Pages/. Evita repetição @using em arquivo.
- *
- * 📥 ENTRADAS     : Processamento automático pelo ASP.NET Core Razor Pages engine ao
- *                   compilar qualquer .cshtml em Pages/ ou subpastas (hierárquico)
- *
- * 📤 SAÍDAS       : Namespaces disponíveis globalmente (Identity, FrotiX, FrotiX.Data,
- *                   FrotiX.Extensions, FrotiX.Models), Tag Helpers registrados (ASP.NET MVC,
- *                   Syncfusion EJ2, Kendo.Mvc, FrotiX custom), SmartSettings injetado
- *                   (@inject SmartSettings Settings - acessível como @Settings em views)
- *
- * 🔗 CHAMADA POR  : ASP.NET Core Razor Pages pipeline automaticamente ao compilar views
- *
- * 🔄 CHAMA        : FrotiX namespace imports, SmartSettings (dependency injection),
- *                   Tag Helpers Syncfusion.EJ2, Kendo.Mvc
- *
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (ViewImports convention), Microsoft.AspNetCore.Identity,
- *                   Syncfusion.EJ2 (Tag Helpers), Kendo.Mvc (Telerik UI), FrotiX assemblies
- *
- * 📝 OBSERVAÇÕES  : 12 linhas. Arquivo FUNDAMENTAL - configura imports de TODAS as páginas.
- *                   ISSUE: Duplicate @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
- *                   (linhas replicadas - retirado em limpeza). Tag Helpers registrados:
- *                   MVC (form helpers, asp-* attributes), Syncfusion EJ2 (ejs-* components),
- *                   Kendo.Mvc (kendo-* components), FrotiX custom (@addTagHelper *, FrotiX).
- *                   Convenção ASP.NET Core: _ViewImports.cshtml aplica-se hierarquicamente
- *                   (combina com _ViewImports em pastas superiores). Sobrescrito em Areas/
- *                   com seus próprios _ViewImports específicos.
- * *@
 @using Microsoft.AspNetCore.Identity
 @using FrotiX
 @using FrotiX.Data

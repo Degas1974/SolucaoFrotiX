@@ -55,16 +55,41 @@
  **************************************************************************************** */
 
 $(document).ready(function () {
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: jQueryModalGet
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Carregar conteúdo via GET AJAX e exibir em modal Bootstrap
+     *
+     * 📥 ENTRADAS     : url [string] - Endpoint para carregar HTML
+     *                   title [string] - Título do modal
+     *
+     * 📤 SAÍDAS       : false (sempre, para prevenir navegação em onclick)
+     *
+     * ⬅️ CHAMADO POR  : onclick em links/botões com jQueryModalGet(url, title)
+     *
+     * ➡️ CHAMA        : GET {url} [AJAX]
+     *                   Modal Bootstrap $('#form-modal').modal('show')
+     ****************************************************************************************/
     jQueryModalGet = (url, title) => {
         try {
+            /********************************************************************************
+             * [AJAX] Endpoint: GET {url}
+             * ------------------------------------------------------------------------------
+             * 📥 ENVIA        : Nenhum parâmetro (GET puro)
+             * 📤 RECEBE       : { html: string } - Conteúdo HTML para popular modal
+             * 🎯 MOTIVO       : Carregar formulário ou conteúdo editável em modal Bootstrap
+             ********************************************************************************/
             $.ajax({
                 type: 'GET',
                 url: url,
                 contentType: false,
                 processData: false,
                 success: function (res) {
+                    // [UI] Popula modal body com HTML recebido
                     $('#form-modal .modal-body').html(res.html);
+                    // [UI] Define título do modal
                     $('#form-modal .modal-title').html(title);
+                    // [UI] Exibe modal Bootstrap
                     $('#form-modal').modal('show');
                 },
                 error: function (err) {
@@ -79,8 +104,29 @@ $(document).ready(function () {
             return false;
         }
     }
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: jQueryModalPost
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Submeter formulário via POST AJAX com suporte a file upload
+     *
+     * 📥 ENTRADAS     : form [HTMLFormElement] - Elemento form do modal
+     *
+     * 📤 SAÍDAS       : false (sempre, para prevenir submissão tradicional)
+     *
+     * ⬅️ CHAMADO POR  : onclick em botão de salvar do modal
+     *
+     * ➡️ CHAMA        : POST {form.action} [AJAX]
+     *                   Atualiza DOM (#viewAll, #form-modal)
+     ****************************************************************************************/
     jQueryModalPost = form => {
         try {
+            /********************************************************************************
+             * [AJAX] Endpoint: POST {form.action}
+             * ------------------------------------------------------------------------------
+             * 📥 ENVIA        : FormData (suporta arquivos e campos normais)
+             * 📤 RECEBE       : { isValid: bool, html: string }
+             * 🎯 MOTIVO       : Validar e salvar dados do formulário, retornar HTML atualizado
+             ********************************************************************************/
             $.ajax({
                 type: 'POST',
                 url: form.action,
@@ -88,8 +134,11 @@ $(document).ready(function () {
                 contentType: false,
                 processData: false,
                 success: function (res) {
+                    // [VALIDACAO] Verificar se dados foram válidos no servidor
                     if (res.isValid) {
+                        // [UI] Atualiza listagem com HTML retornado
                         $('#viewAll').html(res.html)
+                        // [UI] Fecha modal após salvar com sucesso
                         $('#form-modal').hide();
                     }
                 },
@@ -105,9 +154,31 @@ $(document).ready(function () {
             return false;
         }
     }
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: jQueryModalDelete
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Deletar registro após confirmação via POST AJAX
+     *
+     * 📥 ENTRADAS     : form [HTMLFormElement] - Elemento form com dados do registro
+     *
+     * 📤 SAÍDAS       : false (sempre, para prevenir submissão tradicional)
+     *
+     * ⬅️ CHAMADO POR  : onclick em botão de deletar do modal
+     *
+     * ➡️ CHAMA        : POST {form.action} [AJAX] (com confirmação)
+     *                   Atualiza DOM (#viewAll)
+     ****************************************************************************************/
     jQueryModalDelete = form => {
         try {
+            // [VALIDACAO] Confirmação do usuário para ação irreversível
             if (confirm('Are you sure to delete this record ?')) {
+                /********************************************************************************
+                 * [AJAX] Endpoint: POST {form.action} (DELETE semântico)
+                 * ------------------------------------------------------------------------------
+                 * 📥 ENVIA        : FormData com ID do registro
+                 * 📤 RECEBE       : { html: string } - Listagem atualizada
+                 * 🎯 MOTIVO       : Deletar registro e retornar listagem sem o item removido
+                 ********************************************************************************/
                 $.ajax({
                     type: 'POST',
                     url: form.action,
@@ -115,6 +186,7 @@ $(document).ready(function () {
                     contentType: false,
                     processData: false,
                     success: function (res) {
+                        // [UI] Atualiza listagem com HTML retornado (sem o registro deletado)
                         $('#viewAll').html(res.html);
                     },
                     error: function (err) {
@@ -139,11 +211,23 @@ $(document).ready(function () {
 
 (function ($) {
 
+    /****************************************************************************************
+     * ⚡ EVENTO GLOBAL: keydown (CTRL+Q shortcut)
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Registrar handler global para atalho de teclado CTRL+Q
+     *
+     * 📥 ENTRADAS     : Evento de teclado do navegador (event.ctrlKey, event.which)
+     *
+     * 📤 SAÍDAS       : Trigger click em a[title*=Apps] (abre menu de aplicativos)
+     *
+     * ⬅️ CHAMADO POR  : Automaticamente ao pressionar CTRL+Q em qualquer página
+     ****************************************************************************************/
     /* Trigger app shortcut menu on CTRL+Q press */
     $(document).keydown(function (event) {
         try {
-            // CTRL + Q
+            // [LOGICA] Verifica se CTRL + Q foram pressionados (qual = 81 é Q)
             if (event.ctrlKey && event.which === 81)
+                // [UI] Simula clique no menu Apps via atributo title
                 $("a[title*=Apps]").trigger("click");
         } catch (erro) {
             console.error('Erro em keydown handler:', erro);
@@ -151,18 +235,36 @@ $(document).ready(function () {
         }
     });
 
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: $.fn.DataTableEdit (Plugin jQuery)
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Inicializar DataTable com suporte a edição inline (altEditor)
+     *                   e botões CRUD (Excluir, Editar, Adicionar, Sincronizar)
+     *
+     * 📥 ENTRADAS     : $options [object] - Configurações customizadas para DataTable
+     *
+     * 📤 SAÍDAS       : DataTable instance com .on('init.dt') handler
+     *
+     * ⬅️ CHAMADO POR  : $('table').DataTableEdit({...}) em páginas com listagens
+     *
+     * ➡️ CHAMA        : DataTable API (filtering, drawing, responsive)
+     *                   Event handlers (click em span[data-role=filter])
+     ****************************************************************************************/
     /* Initialize basic datatable */
     $.fn.DataTableEdit = function ($options) {
         try {
+            // [LOGICA] Mescla configurações padrão com opções customizadas
             var options = $.extend({
+                // [UI] DOM layout: filtro (esquerda) + botões (direita)
                 dom: "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'f><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'B>>" +
                     "<'row'<'col-sm-12'tr>>" +
                     "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
                 responsive: true,
                 serverSide: true,
-                altEditor: true,
+                altEditor: true,  // [UI] Habilita edição inline
                 pageLength: 10,
                 select: { style: "single" },
+                // [UI] Botões de ação: Excluir, Editar, Adicionar, Sincronizar
                 buttons: [
                     {
                         extend: 'selected',
@@ -191,8 +293,10 @@ $(document).ready(function () {
 
             return $(this).DataTable(options).on('init.dt', function () {
                 try {
+                    // [EVENT] Handler para cliques em filtros rápidos (span[data-role=filter])
                     $("span[data-role=filter]").off().on("click", function () {
                         try {
+                            // [LOGICA] Extrai termo de filtro e aplica busca na tabela
                             const search = $(this).data("filter");
                             if (table)
                                 table.search(search).draw();

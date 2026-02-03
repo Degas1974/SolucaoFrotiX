@@ -22,15 +22,28 @@ using FrotiX.Validations;
 using Microsoft.AspNetCore.Http;
 
 namespace FrotiX.Models
-    {
+{
+    /****************************************************************************************
+     * ⚡ MODEL: ViewMotoristaFluxo
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar view SQL de fluxo de motoristas Economildo
+     *
+     * 📥 ENTRADAS     : Motorista e identificação
+     *
+     * 📤 SAÍDAS       : Registro somente leitura para dashboards
+     *
+     * 🔗 CHAMADA POR  : Consultas de fluxo e distribuição de viagens
+     *
+     * 🔄 CHAMA        : Não se aplica
+     ****************************************************************************************/
     public class ViewMotoristaFluxo
-        {
-
+    {
+        // [DADOS] Identificador do motorista (GUID em string)
         public string? MotoristaId { get; set; }
 
+        // [DADOS] Nome completo do motorista
         public string? NomeMotorista { get; set; }
-
-        }
     }
+}
 
 

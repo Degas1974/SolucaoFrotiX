@@ -1,15 +1,28 @@
-@* ========================================================================================
- * ARQUIVO: Pages/Shared/_NavFilterMsg.cshtml
- * OBJETIVO: Partial minimalista mensagem filtro menu - div vazio para JavaScript preencher dinamicamente
- * ENTRADAS: JavaScript filter handler (app.navigation.js) detecta filtro nav_filter_input
- * SAIDAS: div.filter-message.js-filter-message.bg-success-600 vazio (JavaScript injeta contador resultados)
- * CHAMADA POR: Pages/Shared/_LeftPanel.cshtml (partial comentado - NAO usado FrotiX), apos navigation
- * CHAMA: JavaScript handler .js-filter-message (atualiza texto/visibilidade), CSS filter-message/bg-success-600
- * DEPENDENCIAS: JavaScript filtro menu (app.navigation.js), CSS classes filter-message js-filter-message
- * OBSERVACOES: 1 linha. Partial COMENTADO _LeftPanel - NAO usado FrotiX. Componente SmartAdmin para
- *              feedback visual filtro menu (mensagem X itens encontrados). JavaScript detecta classe
- *              js-filter-message e injeta texto dinamicamente. bg-success-600 (verde escuro) indica
- *              resultado positivo. Para reativar: descomentar em _LeftPanel e ativar filter handler JS.
- * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
- ======================================================================================== *@
+@* ************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_NavFilterMsg.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial minimalista renderizando div vazio para mensagem dinâmica
+ *                   de filtro do menu (feedback visual "X itens encontrados")
+ *
+ * 📥 ENTRADAS     : JavaScript handler app.navigation.js detecta input #nav_filter_input
+ *                   (filtro de menu), valor de busca do usuário
+ *
+ * 📤 SAÍDAS       : <div class="filter-message js-filter-message bg-success-600"></div>
+ *                   vazio (JavaScript injeta conteúdo dinâmico com contador)
+ *
+ * 🔗 CHAMADA POR  : Pages/Shared/_LeftPanel.cshtml (partial COMENTADO - não ativo em FrotiX),
+ *                   seria renderizado após ViewComponent Navigation se descomentado
+ *
+ * 🔄 CHAMA        : JavaScript app.navigation.js (handler .js-filter-message atualiza texto),
+ *                   CSS classes filter-message, js-filter-message, bg-success-600
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, JavaScript filtro menu (app.navigation.js),
+ *                   Bootstrap 5 CSS classes (bg-success-600), jQuery (se necessário)
+ *
+ * 📝 OBSERVAÇÕES  : 15 linhas. Partial INATIVO (comentado em _LeftPanel). Componente
+ *                   SmartAdmin para feedback visual de filtro. bg-success-600 verde escuro.
+ *                   JavaScript detecta .js-filter-message e injeta contador dinamicamente.
+ *                   Para ativar: descomentar em _LeftPanel e implementar handler filtro JS.
+ * ************************************************************************************
+ *@
 <div class="filter-message js-filter-message bg-success-600"></div>

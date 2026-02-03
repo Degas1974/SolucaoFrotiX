@@ -1,26 +1,43 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Shared/_PageHeading.cshtml
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Partial view que renderiza o título principal da página (<h1>) com subtítulo
- *                   opcional (<small>), usando ViewBag.Heading e ViewBag.PageDescription.
- * 📥 ENTRADAS     : ViewBag.Heading (string - título principal), ViewBag.PageDescription (string
- *                   opcional - subtítulo/descrição), configuração em PageModel ou _Layout
- * 📤 SAÍDAS       : <h1 class="subheader-title"> com @Html.Raw(ViewBag.Heading), <small> aninhado
- *                   se PageDescription existe, renderização HTML raw (permite tags como <b>, <em>)
- * 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml (provavelmente na seção .page-header ou .subheader),
- *                   @await Html.PartialAsync("_PageHeading"), component invoke
- * 🔄 CHAMA        : @Html.Raw() (renderização HTML sem escape), ViewBag propriedades (Heading,
- *                   PageDescription), CSS classes (subheader-title - provavelmente em app.bundle.css)
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views, ViewBag), @Html.Raw (allow HTML tags),
- *                   CSS class .subheader-title (estilo do tema FrotiX), ViewBag set no PageModel
- *                   (ViewBag.Heading = "Título"; ViewBag.PageDescription = "Descrição";)
- * 📝 OBSERVAÇÕES  : 11 linhas. Renderização condicional: só mostra <h1> se ViewBag.Heading?.Length > 0.
- *                   @Html.Raw permite HTML no título (ex: "Gestão de <b>Veículos</b>"). <small> aninhado
- *                   dentro do <h1> (padrão Bootstrap para subtítulos). PageDescription opcional
- *                   (verificação ?.Length > 0 antes de renderizar). Uso em PageModels:
- *                   ViewBag.Heading = "Cadastro de Motoristas";
- *                   ViewBag.PageDescription = "Gerencie os motoristas cadastrados no sistema";
- **************************************************************************************** *@
+@*
+* ⚡ ARQUIVO: Pages/Shared/_PageHeading.cshtml
+* ================================================================================================
+* 🎯 OBJETIVO     : Partial view para renderizar <h1> título principal da página com subtítulo
+*                   opcional (<small>) usando ViewBag.Heading e ViewBag.PageDescription.
+*
+* 📥 ENTRADAS     : ViewBag.Heading [string] - Título principal (renderizado como HTML raw)
+*                   ViewBag.PageDescription [string] - Subtítulo/descrição (opcional)
+*
+* 📤 SAÍDAS       : <h1 class="subheader-title"> contendo:
+*                   • Conteúdo HTML raw do ViewBag.Heading
+*                   • <small> aninhado se PageDescription existe
+*                   • Renderização permite tags HTML (<b>, <em>, <i>, etc)
+*
+* 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml (seção .page-header ou .subheader)
+*                   Invocação partial @await Html.PartialAsync("_PageHeading")
+*
+* 🔄 CHAMA        : @Html.Raw() (renderização sem escape HTML)
+*                   ViewBag properties (Heading, PageDescription)
+*                   CSS class .subheader-title (tema FrotiX)
+*
+* 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (ViewBag, @Html.Raw)
+*                   CSS class .subheader-title (app.bundle.css)
+*
+* 📝 OBSERVAÇÕES  : 12 linhas. Renderização condicional (@if Heading?.Length > 0).
+*                   @Html.Raw permite HTML no conteúdo (ex: "Gestão de <b>Veículos</b>").
+*                   <small> aninhado dentro <h1> (padrão Bootstrap para subtítulos).
+*                   PageDescription é 100% opcional - verifica ?.Length > 0 antes de renderizar.
+*
+*                   Exemplo de uso em PageModel:
+*                   ViewBag.Heading = "Cadastro de <b>Motoristas</b>";
+*                   ViewBag.PageDescription = "Gerencie os motoristas cadastrados no sistema";
+*
+*                   Renderiza como:
+*                   <h1 class="subheader-title">
+*                       Cadastro de <b>Motoristas</b>
+*                       <small>Gerencie os motoristas...</small>
+*                   </h1>
+*
+* ================================================================================================ *@
 @if (ViewBag.Heading?.Length > 0)
 {
 <h1 class="subheader-title">

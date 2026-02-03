@@ -117,33 +117,50 @@ namespace FrotiX.Repository
             }
             }
 
-        
+
         // ╭───────────────────────────────────────────────────────────────────────────────────────╮
         // │ ⚡ MÉTODO: Update                                                                        │
         // │ 🔗 RASTREABILIDADE:                                                                      │
-        // │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
-        // │    ➡️ CHAMA       : DbContext.RegistroCupomAbastecimento.FirstOrDefault, _db.Update,     │
-        // │                     _db.SaveChanges                                                     │
+        // │    ⬅️ CHAMADO POR : Controllers [linha ~100]                                             │
+        // │    ➡️ CHAMA       : _db.FirstOrDefault() [linha 130]                                     │
+        // │                     _db.Update() [linha 132]                                             │
+        // │                     _db.SaveChanges() [linha 133]                                        │
+        // │ 📦 DEPENDÊNCIAS  : _db (DbContext)                                                      │
         // ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        
-        
+
+
         // 🎯 OBJETIVO:
         // Atualizar os dados de um registro de cupom digitalizado no banco de dados.
-        
-        
-        
+
+
+
         // 📥 PARÂMETROS:
-        // registroCupomAbastecimento - Entidade contendo os dados atualizados.
-        
-        
+        // registroCupomAbastecimento [RegistroCupomAbastecimento] - Entidade contendo os dados atualizados.
+
+        // 📤 SAÍDAS: void
+
+        // 📝 OBSERVAÇÕES: Salva mudanças imediatamente no banco de dados
+
         // Param registroCupomAbastecimento: Entidade <see cref="RegistroCupomAbastecimento"/> com dados atualizados.
         public new void Update(RegistroCupomAbastecimento registroCupomAbastecimento)
             {
-            var objFromDb = _db.RegistroCupomAbastecimento.FirstOrDefault(s => s.RegistroCupomId == registroCupomAbastecimento.RegistroCupomId);
+            try
+            {
+                // [VALIDACAO] Verificar se entidade não é nula
+                if (registroCupomAbastecimento == null)
+                    throw new ArgumentNullException(nameof(registroCupomAbastecimento));
 
-            _db.Update(registroCupomAbastecimento);
-            _db.SaveChanges();
+                // [DB] Buscar registro existente
+                var objFromDb = _db.RegistroCupomAbastecimento.FirstOrDefault(s => s.RegistroCupomId == registroCupomAbastecimento.RegistroCupomId);
 
+                // [DB] Atualizar e persistir mudanças
+                _db.Update(registroCupomAbastecimento);
+                _db.SaveChanges();
+            }
+            catch (Exception erro)
+            {
+                throw;
+            }
             }
 
 

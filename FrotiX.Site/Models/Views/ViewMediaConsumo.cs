@@ -22,15 +22,28 @@ using FrotiX.Validations;
 using Microsoft.AspNetCore.Http;
 
 namespace FrotiX.Models
-    {
+{
+    /****************************************************************************************
+     * ⚡ MODEL: ViewMediaConsumo
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar view SQL de média de consumo por veículo
+     *
+     * 📥 ENTRADAS     : Veículo e valores agregados de consumo
+     *
+     * 📤 SAÍDAS       : Registro somente leitura para métricas e dashboards
+     *
+     * 🔗 CHAMADA POR  : Relatórios de consumo e análise de eficiência
+     *
+     * 🔄 CHAMA        : Não se aplica
+     ****************************************************************************************/
     public class ViewMediaConsumo
-        {
-
+    {
+        // [DADOS] Identificador do veículo
         public Guid VeiculoId { get; set; }
 
+        // [DADOS] Consumo médio geral (litros/km calculado)
         public decimal? ConsumoGeral { get; set; }
-
-        }
     }
+}
 
 

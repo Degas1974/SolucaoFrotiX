@@ -64,61 +64,64 @@ namespace FrotiX.Repository
             _db = db;
             }
 
-        
-        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        // │ ⚡ MÉTODO: GetEmpenhoListForDropDown                                                     │
-        // │ 🔗 RASTREABILIDADE:                                                                      │
-        // │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
-        // │    ➡️ CHAMA       : DbContext.Empenho, Join(Contrato), OrderBy, Select                   │
-        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        
-        
-        // 🎯 OBJETIVO:
-        // Obter lista de empenhos com referência ao contrato para dropdowns.
-        // Formato: "NotaEmpenho (Ano/NumeroContrato)".
-        
-        
-        
-        // 📤 RETORNO:
-        // IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
-        
-        
-        // Returns: Lista de itens de seleção para empenhos.
+
+        /********************************************************************************************
+         * ⚡ MÉTODO: GetEmpenhoListForDropDown
+         * ─────────────────────────────────────────────────────────────────────────────────────
+         * 🎯 OBJETIVO     : Retornar lista de notas de empenho com contrato para dropdown UI
+         *
+         * 📥 ENTRADAS     : Nenhum parâmetro
+         *
+         * 📤 SAÍDAS       : IEnumerable<SelectListItem> - Notas formatadas com ano/número contrato
+         *
+         * ⬅️ CHAMADO POR  : Controllers de Empenho, Formulários de seleção
+         *
+         * ➡️ CHAMA        : DbContext.Empenho, DbContext.Contrato, LINQ Join/OrderBy/Select
+         *
+         * 📝 OBSERVAÇÕES  : [LOGICA] Join manual: Empenho + Contrato para enriquecimento de dados
+         *                   Value é ContratoId, não EmpenhoId - para filtrar por contrato
+         *********************************************************************************************/
         public IEnumerable<SelectListItem> GetEmpenhoListForDropDown()
             {
+            // [LOGICA] Query com 3 operações encadeadas:
+            // 1. Join: Empenho com Contrato (chave: ContratoId)
+            // 2. OrderBy: Ordenação por nota de empenho
+            // 3. Select: Transformação em SelectListItem com formatação
             return _db.Empenho
-            .Join(_db.Contrato, empenho => empenho.ContratoId, contrato => contrato.ContratoId, (empenho, contrato) => new { empenho, contrato })
+            .Join(_db.Contrato,
+                empenho => empenho.ContratoId,
+                contrato => contrato.ContratoId,
+                (empenho, contrato) => new { empenho, contrato })
             .OrderBy(o => o.empenho.NotaEmpenho)
             .Select(i => new SelectListItem()
                 {
+                // [DADOS] Formatação: NotaEmpenho (AnoContrato/NumeroContrato)
                 Text = i.empenho.NotaEmpenho + "(" + i.contrato.AnoContrato + "/" + i.contrato.NumeroContrato + ")",
+                // [LOGICA] Value é ContratoId para filtrar por contrato associado
                 Value = i.contrato.ContratoId.ToString()
                 });
             }
 
-        
-        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
-        // │ ⚡ MÉTODO: Update                                                                        │
-        // │ 🔗 RASTREABILIDADE:                                                                      │
-        // │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
-        // │    ➡️ CHAMA       : DbContext.Empenho.FirstOrDefault, _db.Update, _db.SaveChanges         │
-        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        
-        
-        // 🎯 OBJETIVO:
-        // Atualizar os dados de um empenho no banco de dados.
-        
-        
-        
-        // 📥 PARÂMETROS:
-        // empenho - Entidade contendo os dados atualizados.
-        
-        
-        // Param empenho: Entidade <see cref="Empenho"/> com dados atualizados.
+
+        /********************************************************************************************
+         * ⚡ MÉTODO: Update
+         * ─────────────────────────────────────────────────────────────────────────────────────
+         * 🎯 OBJETIVO     : Atualizar registro de empenho no banco de dados
+         *
+         * 📥 ENTRADAS     : empenho [Empenho] - Entidade com dados atualizados
+         *
+         * 📤 SAÍDAS       : void - Alterações persistidas no DbContext
+         *
+         * ⬅️ CHAMADO POR  : UnitOfWork.SaveAsync(), Controllers de edição de Empenho
+         *
+         * ➡️ CHAMA        : DbContext.Update(), DbContext.SaveChanges()
+         *********************************************************************************************/
         public new void Update(Empenho empenho)
             {
+            // [DB] Localizar entidade no contexto
             var objFromDb = _db.Empenho.FirstOrDefault(s => s.EmpenhoId == empenho.EmpenhoId);
 
+            // [DB] Marcar como modificada e persistir
             _db.Update(empenho);
             _db.SaveChanges();
 

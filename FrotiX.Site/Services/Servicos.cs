@@ -1032,12 +1032,32 @@ namespace FrotiX.Services
         // FUNÇÃO TIRAACENTO - VERSÃO COMPLETA
         // ========================================
 
-        /// <summary>
-        /// Remove acentos e caracteres inválidos para nomes de arquivo
-        /// Substitui espaços por underscore
-        /// </summary>
-        /// <param name="texto">Texto a ser normalizado</param>
-        /// <returns>Texto normalizado e seguro para nome de arquivo</returns>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: TiraAcento
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Remove acentos e caracteres inválidos para nomes de arquivo
+         *                   Retorna string segura para filesystem (Windows + Linux)
+         *
+         * 📥 ENTRADAS     : texto [string] - Texto a ser normalizado (pode ser null)
+         *
+         * 📤 SAÍDAS       : string - Texto normalizado (max 255 chars), seguro para arquivo
+         *
+         * ⬅️ CHAMADO POR  : UploadCNHController.Upload() [Gerar nome arquivo CNH]
+         *                   NotaFiscalController.Upload() [Gerar nome arquivo NF]
+         *                   ReportController.ExportPdf() [Gerar nome PDF]
+         *
+         * ➡️ CHAMA        : Normalize(NormalizationForm.FormD/C) [Unicode API]
+         *                   CharUnicodeInfo.GetUnicodeCategory() [Detecta marcas diacríticas]
+         *                   Path.GetInvalidFileNameChars() [Win/Linux/Mac]
+         *                   Regex.Replace() [Múltiplas transformações]
+         *
+         * 📝 OBSERVAÇÕES  : [VALIDACAO] Se null/whitespace, retorna string.Empty
+         *                   [LOGICA] 7 etapas de transformação (veja code)
+         *                   [REGRA] Espaços → underscore, acentos → equivalente ASCII
+         *                   [VALIDACAO] Máximo 255 caracteres (filesystem limit)
+         *                   [SEGURANCA] Remove TODOS os caracteres inválidos em Windows
+         *                   [EXEMPLOS] Vê comentários ao final da função
+         ****************************************************************************************/
         public static string TiraAcento(string texto)
         {
             if (string.IsNullOrWhiteSpace(texto))
@@ -1045,10 +1065,13 @@ namespace FrotiX.Services
 
             try
             {
-                // Remove acentos usando normalização Unicode
+                // [LOGICA] Etapa 1: Normalização Unicode FormD (decompõe caracteres acentuados)
+                // Exemplo: "é" → "e" + "´" (dois caracteres)
                 string normalizado = texto.Normalize(NormalizationForm.FormD);
                 StringBuilder sb = new StringBuilder();
 
+                // [LOGICA] Etapa 2: Remove marcas diacríticas (combining marks)
+                // Categoria NonSpacingMark = acentos, til, cedilha, etc
                 foreach (char c in normalizado)
                 {
                     UnicodeCategory categoria = CharUnicodeInfo.GetUnicodeCategory(c);
@@ -1058,9 +1081,11 @@ namespace FrotiX.Services
                     }
                 }
 
+                // [LOGICA] Etapa 3: Normaliza novamente para FormC (compõe de volta se necessário)
                 string resultado = sb.ToString().Normalize(NormalizationForm.FormC);
 
-                // Substitui caracteres especiais que podem não ser cobertos pela normalização
+                // [LOGICA] Etapa 4: Substitui caracteres especiais europeus
+                // Alguns chars como ß (alemão) não são cobertos pela normalização padrão
                 var substituicoes = new Dictionary<string , string>
                 {
                     { "ß", "ss" }, { "œ", "oe" }, { "Œ", "OE" },
@@ -1073,25 +1098,28 @@ namespace FrotiX.Services
                     resultado = resultado.Replace(sub.Key , sub.Value);
                 }
 
-                // Remove caracteres inválidos para nomes de arquivo
+                // [VALIDACAO] Etapa 5: Remove caracteres inválidos para nome de arquivo
+                // Path.GetInvalidFileNameChars() = Windows illegal chars
+                // Retorna: <>:"/\|?*
                 char[] caracteresInvalidos = Path.GetInvalidFileNameChars();
                 resultado = string.Concat(resultado.Split(caracteresInvalidos));
 
-                // Remove caracteres especiais, mantendo apenas alfanuméricos, espaços, underscore, hífen e ponto
+                // [VALIDACAO] Etapa 6: Remove caracteres especiais adicionais
+                // Mantém: alfanuméricos, espaço, underscore (_), hífen (-), ponto (.)
                 resultado = Regex.Replace(resultado , @"[^\w\s.\-]" , "");
 
-                // Substitui espaços por underscore
+                // [LOGICA] Etapa 7: Substitui espaços por underscore (ponto final)
                 resultado = Regex.Replace(resultado , @"\s+" , "_");
 
-                // Remove múltiplos underscores/hífens/pontos consecutivos
-                resultado = Regex.Replace(resultado , @"_{2,}" , "_");
-                resultado = Regex.Replace(resultado , @"-{2,}" , "-");
-                resultado = Regex.Replace(resultado , @"\.{2,}" , ".");
+                // [VALIDACAO] Limpa múltiplos símbolos consecutivos
+                resultado = Regex.Replace(resultado , @"_{2,}" , "_");  // __ → _
+                resultado = Regex.Replace(resultado , @"-{2,}" , "-");  // -- → -
+                resultado = Regex.Replace(resultado , @"\.{2,}" , "."); // .. → .
 
-                // Remove underscore/hífen no início e fim
+                // [VALIDACAO] Remove underscore/hífen no início e fim
                 resultado = Regex.Replace(resultado , @"^[_\-]+|[_\-]+$" , "");
 
-                // Limita tamanho (255 caracteres)
+                // [VALIDACAO] Limita tamanho (255 = filesystem limit)
                 if (resultado.Length > 255)
                 {
                     resultado = resultado.Substring(0 , 255);
@@ -1102,13 +1130,24 @@ namespace FrotiX.Services
             catch (Exception error)
             {
                 Alerta.TratamentoErroComLinha("Servicos.cs" , "TiraAcento" , error);
-                return texto;
+                return texto; // Fallback: retorna texto original em caso de erro
             }
         }
 
-        // Exemplos de uso:
+        // [EXEMPLO] Casos de uso comuns:
         // TiraAcento("Açúcar & Café.pdf")        → "Acucar_Cafe.pdf"
+        //   • Acentos removidos: ç→c, á→a
+        //   • & removido (caractere inválido)
+        //   • Espaço → underscore
+        //   • Mantém .pdf (extensão)
+        //
         // TiraAcento("São Paulo/Rio")            → "Sao_PauloRio"
+        //   • ã→a, espaço→_, barra removida
+        //   • Resultado continua reconhecível
+        //
         // TiraAcento("Relatório 2024: análise")  → "Relatorio_2024_analise"
+        //   • : removido, análise→analise
+        //   • Números preservados
+        //   • Seguro para Windows e Linux
     }
 }

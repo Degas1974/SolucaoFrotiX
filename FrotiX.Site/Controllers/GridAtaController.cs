@@ -84,6 +84,17 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: DataSourceAta
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Retornar lista de itens de Ata de Registro de Preços para o grid
+         *                   Busca todos os itens e formata para exibição
+         * 📥 ENTRADAS     : Nenhuma
+         * 📤 SAÍDAS       : [IActionResult] JSON com lista de ItensVeiculoAta
+         * ⬅️ CHAMADO POR  : JavaScript (Syncfusion Grid) da página Atas via AJAX GET
+         * ➡️ CHAMA        : ItensVeiculoAta.GetAllRecords(), ItemVeiculoAta.GetAll()
+         * 📝 OBSERVAÇÕES  : Converte dados do banco para objetos ItensVeiculoAta
+         ****************************************************************************************/
         [Route("DataSourceAta")]
         [HttpGet]
         public IActionResult DataSourceAta()
@@ -130,14 +141,27 @@ namespace FrotiX.Controllers
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: GetAllRecords (Estática)
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Buscar todos os itens de Ata do banco e converter para lista
+         *                   Calcula valor total de cada item (quantidade * valor unitário)
+         * 📥 ENTRADAS     : [IUnitOfWork] _unitOfWork - Acesso ao repositório
+         * 📤 SAÍDAS       : [List<ItensVeiculoAta>] Lista de itens formatados
+         * ⬅️ CHAMADO POR  : DataSourceAta()
+         * ➡️ CHAMA        : ItemVeiculoAta.GetAll(), Construtor ItensVeiculoAta()
+         * 📝 OBSERVAÇÕES  : Limpa lista estática antes de popular (veiculo.Clear())
+         ****************************************************************************************/
         public static List<ItensVeiculoAta> GetAllRecords(IUnitOfWork _unitOfWork)
         {
             try
             {
+                // [DB] Buscar todos os itens da ata ordenados por número
                 var objItemVeiculos = _unitOfWork.ItemVeiculoAta.GetAll().OrderBy(o => o.NumItem);
 
                 veiculo.Clear();
 
+                // [LOGICA] Converter registros do banco em objetos ItensVeiculoAta com cálculo de total
                 foreach (var item in objItemVeiculos)
                 {
                     veiculo.Add(
