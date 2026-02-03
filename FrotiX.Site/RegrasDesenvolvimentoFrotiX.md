@@ -1361,7 +1361,389 @@ git commit -m "refactor: ListaAutuacao.cshtml - extrai CSS/JS inline, remove CDN
 Closes #45 (ArquivosCriticos.md)"
 ```
 
-### 5.12.8 Nota Importante: Estratégias Intencionais
+### 5.12.8 Seção de Problemas no Final do Arquivo (OBRIGATÓRIA)
+
+**REGRA NOVA:** Além da documentação centralizada em `ArquivosCriticos.md`, cada arquivo com problemas identificados DEVE ter uma **seção comentada no final** listando seus problemas, impactos e soluções propostas.
+
+**Vantagens:**
+- ✅ **Autocontido:** Desenvolvedor vê problemas ao abrir o arquivo
+- ✅ **Versionado:** Histórico de problemas fica no Git junto com o código
+- ✅ **Rastreável:** Fácil ver quando problema foi identificado e por quem
+- ✅ **Visível:** Não depende de consultar arquivo externo
+- ✅ **Dupla documentação:** ArquivosCriticos.md = índice, Seção no arquivo = detalhes
+
+#### Formato para C# (.cs)
+
+```csharp
+/* ****************************************************************************************
+ * 🚨 PROBLEMAS IDENTIFICADOS E MELHORIAS PROPOSTAS
+ * --------------------------------------------------------------------------------------
+ * Data de Identificação: 03/02/2026
+ * Identificado por: Claude Sonnet 4.5 (Análise Automática)
+ * Status: 🔴 PENDENTE (aguardando refatoração)
+ *
+ * ========================================================================================
+ * PROBLEMA #1: [TÍTULO DO PROBLEMA]
+ * ----------------------------------------------------------------------------------------
+ * Severidade: 🔴 CRÍTICA / 🟡 ALTA / 🟠 MÉDIA / 🟢 BAIXA
+ *
+ * Descrição:
+ * [Descrição detalhada do problema]
+ *
+ * Localização:
+ * - Linhas: [números das linhas]
+ * - Métodos afetados: [lista de métodos]
+ *
+ * Impacto:
+ * - [Impacto 1]
+ * - [Impacto 2]
+ *
+ * Solução Proposta:
+ * [Descrição da solução recomendada]
+ *
+ * Código de Exemplo (Solução):
+ * ```csharp
+ * // Código sugerido aqui
+ * ```
+ *
+ * Estimativa de Esforço: [tempo estimado]
+ *
+ * ========================================================================================
+ * PROBLEMA #2: [OUTRO PROBLEMA]
+ * [... mesma estrutura ...]
+ *
+ * ========================================================================================
+ * OBSERVAÇÕES GERAIS:
+ * [Observações adicionais sobre o arquivo, contexto histórico, etc.]
+ *
+ * REFERÊNCIAS:
+ * - ArquivosCriticos.md (entrada completa)
+ * - Issue #123 (se aplicável)
+ * - Documentação relacionada
+ **************************************************************************************** */
+```
+
+#### Formato para JavaScript (.js)
+
+```javascript
+/* ****************************************************************************************
+ * 🚨 PROBLEMAS IDENTIFICADOS E MELHORIAS PROPOSTAS
+ * --------------------------------------------------------------------------------------
+ * Data de Identificação: 03/02/2026
+ * Identificado por: Claude Sonnet 4.5 (Análise Automática)
+ * Status: 🔴 PENDENTE (aguardando refatoração)
+ *
+ * ========================================================================================
+ * PROBLEMA #1: Arquivo Muito Grande (1099 linhas)
+ * ----------------------------------------------------------------------------------------
+ * Severidade: 🔴 CRÍTICA
+ *
+ * Descrição:
+ * Arquivo contém 1099 linhas com múltiplas responsabilidades, dificultando manutenção,
+ * debugging e testabilidade. Combina lógica de UI, validações, chamadas AJAX e
+ * configuração de 20+ componentes Syncfusion.
+ *
+ * Localização:
+ * - Todo o arquivo (linhas 1-1099)
+ * - Funções principais: inicializarModal(), validarFormulario(), salvarDados()
+ *
+ * Impacto:
+ * - Manutenibilidade CRÍTICA (difícil entender fluxo completo)
+ * - Testabilidade IMPOSSÍVEL (funções muito acopladas)
+ * - Performance (arquivo grande carregado integralmente)
+ * - Conflitos frequentes de merge no Git
+ *
+ * Solução Proposta:
+ * Dividir em 4 módulos especializados:
+ * 1. modal-agenda-main.js (150 linhas) - Setup e coordenação
+ * 2. modal-agenda-controller.js (250 linhas) - Lógica de controle
+ * 3. modal-agenda-validacoes.js (200 linhas) - Validações de negócio
+ * 4. modal-agenda-syncfusion.js (250 linhas) - Componentes Syncfusion
+ * 5. modal-agenda-api.js (180 linhas) - Chamadas AJAX consolidadas
+ *
+ * Código de Exemplo (Estrutura Nova):
+ * ```javascript
+ * // modal-agenda-main.js
+ * import { ModalAgendaController } from './modal-agenda-controller.js';
+ * import { ValidadorAgenda } from './modal-agenda-validacoes.js';
+ *
+ * const controller = new ModalAgendaController();
+ * const validador = new ValidadorAgenda();
+ *
+ * export function abrirModal(agendaId) {
+ *     controller.abrir(agendaId);
+ * }
+ * ```
+ *
+ * Estimativa de Esforço: 3-4 dias
+ *
+ * ========================================================================================
+ * PROBLEMA #2: N+1 Queries AJAX
+ * ----------------------------------------------------------------------------------------
+ * Severidade: 🟡 ALTA
+ *
+ * Descrição:
+ * Ao abrir o modal, são feitas 4 requisições AJAX sequenciais para carregar dados:
+ * - GET /api/Motorista/GetAll
+ * - GET /api/Veiculo/GetAll
+ * - GET /api/Unidade/GetAll
+ * - POST /api/ViagemAgenda/ValidarDistancia
+ * Total: ~530ms + 4× overhead HTTP
+ *
+ * Localização:
+ * - Linhas: 245, 267, 289, 312
+ * - Função: abrirModal()
+ *
+ * Impacto:
+ * - Performance (530ms+ para abrir modal)
+ * - UX (usuário espera muito tempo)
+ * - Servidor (4× carga desnecessária)
+ *
+ * Solução Proposta:
+ * Criar endpoint consolidado único:
+ * POST /api/ViagemAgenda/PrepareModal
+ * Retorna: { motoristas, veiculos, unidades, validacoes }
+ * Tempo estimado: ~120ms (1× overhead)
+ *
+ * Código de Exemplo (Solução):
+ * ```javascript
+ * // ANTES: 4 chamadas
+ * const motoristas = await fetch('/api/Motorista/GetAll');
+ * const veiculos = await fetch('/api/Veiculo/GetAll');
+ * // ...
+ *
+ * // DEPOIS: 1 chamada
+ * const dados = await fetch('/api/ViagemAgenda/PrepareModal', {
+ *     method: 'POST',
+ *     body: JSON.stringify({ agendaId: id })
+ * });
+ * const { motoristas, veiculos, unidades, validacoes } = dados;
+ * ```
+ *
+ * Estimativa de Esforço: 1 dia (backend + frontend)
+ *
+ * ========================================================================================
+ * OBSERVAÇÕES GERAIS:
+ *
+ * Este arquivo cresceu organicamente desde a versão 1.0 do FrotiX (2023) e acumulou
+ * múltiplas features sem refatoração adequada. É um dos arquivos mais mantidos do
+ * sistema (média de 2-3 alterações por semana), tornando a refatoração crítica para
+ * evitar regressões e conflitos de merge.
+ *
+ * Histórico de problemas conhecidos:
+ * - Bug de timezone no DatePicker Syncfusion (resolvido em v2.1)
+ * - Conflito de validação recorrência (resolvido em v2.3)
+ * - Memory leak com FullCalendar (pendente desde v2.4)
+ *
+ * REFERÊNCIAS:
+ * - ArquivosCriticos.md (entrada completa com 6 problemas)
+ * - Issue #234: Refatorar modal_agenda.js
+ * - Documentação: Documentacao/JavaScript/modal_agenda.md
+ **************************************************************************************** */
+```
+
+#### Formato para CSHTML (Razor Pages)
+
+```cshtml
+@*
+****************************************************************************************
+🚨 PROBLEMAS IDENTIFICADOS E MELHORIAS PROPOSTAS
+--------------------------------------------------------------------------------------
+Data de Identificação: 03/02/2026
+Identificado por: Claude Sonnet 4.5 (Análise Automática)
+Status: 🔴 PENDENTE (aguardando refatoração)
+
+========================================================================================
+PROBLEMA #1: CSS Inline Excessivo (569 linhas)
+----------------------------------------------------------------------------------------
+Severidade: 🔴 CRÍTICA
+
+Descrição:
+Arquivo contém 569 linhas de CSS inline na seção HeadBlock, representando 44% do
+arquivo total. CSS não é reutilizável, não pode ser cacheado pelo browser, e
+dificulta manutenção de estilos globais.
+
+Localização:
+- Linhas: 45-614 (seção @section HeadBlock)
+- Estilos afetados: badges de status, animações, modals, tooltips, cards
+
+Impacto:
+- Performance: CSS não cacheado, carregado em cada request
+- Manutenibilidade: Mudanças de estilo requerem editar CSHTML
+- Consistência: Estilos duplicados em outros arquivos
+- Bundle size: Aumenta tamanho da página desnecessariamente
+
+Solução Proposta:
+Extrair TODO o CSS para arquivo separado:
+/wwwroot/css/multa/lista-autuacao.css
+
+Manter apenas CSS crítico inline (se houver).
+
+Código de Exemplo (Solução):
+```cshtml
+@* ANTES: 569 linhas CSS inline *@
+@section HeadBlock {
+    <style>
+        /* 569 linhas de CSS... */
+    </style>
+}
+
+@* DEPOIS: Referência externa *@
+@section HeadBlock {
+    <link rel="stylesheet" href="~/css/multa/lista-autuacao.css" asp-append-version="true" />
+}
+```
+
+Estimativa de Esforço: 2 horas (extração + testes)
+
+========================================================================================
+PROBLEMA #2: JavaScript Inline Excessivo (738+ linhas)
+----------------------------------------------------------------------------------------
+Severidade: 🔴 CRÍTICA
+
+Descrição:
+Arquivo contém 738+ linhas de JavaScript inline, incluindo código DUPLICADO do
+arquivo externo listaautuacao.js. Não pode ser minificado, testado ou reutilizado.
+
+Localização:
+- Linhas: 615-1307 (seção @section Scripts)
+- Funções duplicadas: carregarTabela(), moeda(), toolbarClick()
+
+Impacto:
+- Duplicação: Mesmo código em 2 lugares (inline + listaautuacao.js)
+- Manutenção: Mudanças devem ser sincronizadas manualmente
+- Performance: JavaScript não minificado nem cacheado
+- Debugging: Difícil debugar código inline sem source maps
+
+Solução Proposta:
+Consolidar TUDO no arquivo listaautuacao.js existente.
+Manter apenas event wiring mínimo inline (< 10 linhas).
+
+Código de Exemplo (Solução):
+```cshtml
+@* ANTES: 738+ linhas inline *@
+@section Scripts {
+<script>
+    function carregarTabela() { /* 200 linhas */ }
+    function moeda(valor) { /* 50 linhas */ }
+    // ... 488 linhas mais
+</script>
+}
+
+@* DEPOIS: Referência externa apenas *@
+@section Scripts {
+    <script src="~/js/cadastros/listaautuacao.js" asp-append-version="true"></script>
+    <script>
+        // Apenas event wiring específico desta página (se necessário)
+        $(document).ready(function() {
+            ListaAutuacao.inicializar(); // Função do arquivo externo
+        });
+    </script>
+}
+```
+
+Estimativa de Esforço: 4 horas (consolidação + testes regressão)
+
+========================================================================================
+OBSERVAÇÕES GERAIS:
+
+Página de Multas/Lista de Autuação é uma das mais complexas do sistema devido à
+integração com múltiplos componentes (DataTables, Syncfusion RTE, Syncfusion
+PDFViewer, Bootstrap Modals). Foi desenvolvida inicialmente como protótipo inline
+e nunca passou por refatoração adequada.
+
+PRIORIDADE: 🔴 URGENTE - Página é mantida semanalmente (média 1-2 alterações/semana),
+causando conflitos frequentes de merge e dificuldade para novos desenvolvedores.
+
+REFERÊNCIAS:
+- ArquivosCriticos.md (entrada completa)
+- Issue #156: Refatorar ListaAutuacao.cshtml
+- Documentação: Documentacao/Pages/Multa/ListaAutuacao.md
+****************************************************************************************
+*@
+```
+
+---
+
+#### 5.12.8.1 Workflow de Criação da Seção
+
+**Quando adicionar a seção de problemas:**
+
+1. **Durante análise completa** (Seção 5.12.1):
+   - Ao apresentar problemas ao usuário
+   - SE usuário optar por deixar para depois
+   - Adicionar seção no final do arquivo
+
+2. **Durante segunda passada** (Seção 5.13):
+   - Se novos problemas forem identificados
+   - Atualizar seção existente (não duplicar)
+
+3. **Após identificação de agentes**:
+   - Incorporar análises de agentes Haiku
+   - Consolidar múltiplos problemas na mesma seção
+
+**Processo:**
+```
+1. Identificar problemas no arquivo
+2. Apresentar ao usuário
+3. SE usuário optar por deixar para depois:
+   ├─ Adicionar entrada ao ArquivosCriticos.md (índice central)
+   └─ Adicionar seção comentada no final do arquivo (detalhes locais)
+4. Fazer commit: "docs: Documenta problemas em [NomeArquivo]"
+```
+
+---
+
+#### 5.12.8.2 Workflow de Atualização da Seção
+
+**Quando atualizar:**
+- Novos problemas identificados no mesmo arquivo
+- Mudança de severidade (problema se agravou)
+- Problema parcialmente resolvido (marcar como "EM PROGRESSO")
+- Adicionar referências (issues, documentação)
+
+**Não criar seções duplicadas!** Sempre atualizar a seção existente.
+
+---
+
+#### 5.12.8.3 Workflow de Remoção da Seção
+
+**REGRA:** Quando TODOS os problemas listados forem resolvidos:
+
+1. ✅ Corrigir todos os problemas
+2. ✅ Testar correções
+3. ✅ **REMOVER seção completa** do final do arquivo
+4. ✅ **REMOVER entrada** do ArquivosCriticos.md
+5. ✅ Fazer commit: `refactor: [NomeArquivo] - resolve todos os problemas críticos`
+
+**Marcação de Progresso Parcial:**
+
+Se apenas ALGUNS problemas foram resolvidos, **atualizar** a seção:
+
+```javascript
+/* ****************************************************************************************
+ * ========================================================================================
+ * PROBLEMA #1: Arquivo Muito Grande (1099 linhas)
+ * ----------------------------------------------------------------------------------------
+ * Severidade: 🔴 CRÍTICA
+ * Status: ✅ RESOLVIDO (03/02/2026)
+ *
+ * Resolução aplicada:
+ * Arquivo dividido em 4 módulos conforme proposto. Ver commit abc123.
+ *
+ * ========================================================================================
+ * PROBLEMA #2: N+1 Queries AJAX
+ * ----------------------------------------------------------------------------------------
+ * Severidade: 🟡 ALTA
+ * Status: 🔴 PENDENTE (aguardando desenvolvimento backend)
+ *
+ * [... descrição original mantida ...]
+ **************************************************************************************** */
+```
+
+---
+
+### 5.12.9 Nota Importante: Estratégias Intencionais
 
 **Mix Kendo/Syncfusion:**
 
