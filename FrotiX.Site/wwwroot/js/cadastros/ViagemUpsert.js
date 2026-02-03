@@ -86,68 +86,103 @@ function esconderModalSalvando()
     }
 }
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: enviarFormularioViaAjax
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Submeter formulário de viagem via AJAX com suporte a uploads
+ *
+ * 📥 ENTRADAS     : handler [string] - "Create" ou "Edit"
+ *                   id [GUID] - ID da viagem (opcional para Create)
+ *
+ * 📤 SAÍDAS       : POST /Viagens/Upsert com FormData (suporta arquivo)
+ *                   Redirecionamento para /Viagens após sucesso
+ *
+ * ⬅️ CHAMADO POR  : Botões de salvar do formulário
+ *
+ * ➡️ CHAMA        : POST /Viagens/Upsert [AJAX]
+ *                   AppToast.show() para notificações
+ ****************************************************************************************/
 function enviarFormularioViaAjax(handler, id)
 {
-    // Mostrar loading
-    AppToast.show("Amarelo", "Salvando dados...", 2000);
-
-    // Criar FormData com todos os campos do formulário
-    const form = document.querySelector('form');
-    const formData = new FormData(form);
-
-    // Adicionar o Base64 da imagem se existir
-    const base64 = $("#hiddenFoto").val();
-    if (base64 && base64.length > 0)
+    try
     {
-        console.log("Incluindo imagem:", base64.length, "caracteres");
-        formData.append("FotoBase64", base64);
+        // [UI] Mostrar notificação de salvamento em progresso
+        AppToast.show("Amarelo", "Salvando dados...", 2000);
 
-        // Remover do campo hidden para não duplicar
-        $("#hiddenFoto").val("");
-    }
+        // [DADOS] Criar FormData com todos os campos do formulário
+        const form = document.querySelector('form');
+        const formData = new FormData(form);
 
-    // Adicionar imagem existente se houver
-    const fichaExistente = $("#hiddenFichaExistente").val();
-    if (fichaExistente)
-    {
-        formData.append("FichaVistoriaExistente", fichaExistente);
-    }
-
-    // Construir URL
-    let url = `/Viagens/Upsert?handler=${handler}`;
-    if (id)
-    {
-        url += `&id=${id}`;
-    }
-
-    // Token anti-forgery
-    const token = $('input[name="__RequestVerificationToken"]').val();
-
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        headers: {
-            'RequestVerificationToken': token
-        },
-        success: function (response)
+        // [DADOS] Adicionar o Base64 da imagem se existir
+        const base64 = $("#hiddenFoto").val();
+        if (base64 && base64.length > 0)
         {
-            if (response.success)
-            {
-                AppToast.show("Verde", handler === "Edit" ? "Viagem atualizada com sucesso!" : "Viagem criada com sucesso!", 2000);
+            console.log("Incluindo imagem:", base64.length, "caracteres");
+            formData.append("FotoBase64", base64);
 
-                // Redirecionar após 2 segundos
-                setTimeout(function ()
-                {
-                    window.location.href = '/Viagens';
-                }, 2000);
-            } else
+            // [DADOS] Remover do campo hidden para não duplicar
+            $("#hiddenFoto").val("");
+        }
+
+        // [DADOS] Adicionar imagem existente se houver
+        const fichaExistente = $("#hiddenFichaExistente").val();
+        if (fichaExistente)
+        {
+            formData.append("FichaVistoriaExistente", fichaExistente);
+        }
+
+        // [LOGICA] Construir URL com handler e ID (se edit)
+        let url = `/Viagens/Upsert?handler=${handler}`;
+        if (id)
+        {
+            url += `&id=${id}`;
+        }
+
+        // [SEGURANCA] Obter token anti-CSRF do formulário
+        const token = $('input[name="__RequestVerificationToken"]').val();
+
+        /********************************************************************************
+         * [AJAX] Endpoint: POST /Viagens/Upsert
+         * ------------------------------------------------------------------------------
+         * 📥 ENVIA        : FormData com todos os campos + FotoBase64 + FichaVistaExistente
+         * 📤 RECEBE       : { success: bool, message: string }
+         * 🎯 MOTIVO       : Salvar ou atualizar viagem completa com suporte a imagens
+         ********************************************************************************/
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'RequestVerificationToken': token
+            },
+            success: function (response)
             {
-                AppToast.show("Vermelho", response.message || "Erro ao salvar", 3000);
-            }
-        },
+                try
+                {
+                    // [VALIDACAO] Verificar sucesso da operação
+                    if (response.success)
+                    {
+                        // [UI] Exibir mensagem de sucesso diferenciada (Create vs Edit)
+                        AppToast.show("Verde", handler === "Edit" ? "Viagem atualizada com sucesso!" : "Viagem criada com sucesso!", 2000);
+
+                        // [UI] Redirecionar após 2 segundos
+                        setTimeout(function ()
+                        {
+                            window.location.href = '/Viagens';
+                        }, 2000);
+                    } else
+                    {
+                        // [UI] Exibir mensagem de erro do servidor
+                        AppToast.show("Vermelho", response.message || "Erro ao salvar", 3000);
+                    }
+                }
+                catch (error)
+                {
+                    Alerta.TratamentoErroComLinha("ViagemUpsert.js", "enviarFormularioViaAjax.ajax.success", error);
+                }
+            },
         error: function (xhr, status, error)
         {
             console.error('Erro AJAX:', status, error);

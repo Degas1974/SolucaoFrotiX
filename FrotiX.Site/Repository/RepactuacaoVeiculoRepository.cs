@@ -43,24 +43,34 @@ namespace FrotiX.Repository
         // ╭───────────────────────────────────────────────────────────────────────────────────────╮
         // │ ⚡ MÉTODO: RepactuacaoVeiculoRepository                                                   │
         // │ 🔗 RASTREABILIDADE:                                                                      │
-        // │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
-        // │    ➡️ CHAMA       : base(db)                                                             │
+        // │    ⬅️ CHAMADO POR : UnitOfWork [UnitOfWork.cs:165]                                        │
+        // │    ➡️ CHAMA       : base(db) [linha ~62]                                                 │
+        // │ 📦 DEPENDÊNCIAS  : FrotiXDbContext                                                      │
         // ╰───────────────────────────────────────────────────────────────────────────────────────╯
         
-        
+
         // 🎯 OBJETIVO:
         // Inicializar o repositório com o contexto do banco de dados.
-        
-        
-        
+
+
+
         // 📥 PARÂMETROS:
-        // db - Contexto do banco de dados da aplicação.
-        
-        
+        // db [FrotiXDbContext] - Contexto do banco de dados da aplicação.
+
+
+        // 📤 SAÍDAS: Instância inicializada do repositório
+
         // Param db: Instância de <see cref="FrotiXDbContext"/>.
         public RepactuacaoVeiculoRepository(FrotiXDbContext db) : base(db)
         {
-            _db = db;
+            try
+            {
+                _db = db ?? throw new ArgumentNullException(nameof(db));
+            }
+            catch (Exception erro)
+            {
+                throw;
+            }
         }
 
         

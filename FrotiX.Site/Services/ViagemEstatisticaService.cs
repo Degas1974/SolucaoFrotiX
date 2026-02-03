@@ -37,32 +37,54 @@ namespace FrotiX.Services
             _unitOfWork = unitOfWork;
         }
 
-        /// <summary>
-        /// Obtém ou calcula estatísticas para a data especificada
-        /// SEMPRE recalcula e atualiza se o registro já existe
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ObterEstatisticasAsync
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Obtém ou calcula estatísticas diárias de viagens, com cache em DB
+         *                   SEMPRE recalcula (não confia apenas no cache) e atualiza
+         *
+         * 📥 ENTRADAS     : data [DateTime] - Data das estatísticas (qualquer hora, usa .Date)
+         *
+         * 📤 SAÍDAS       : Task<ViagemEstatistica> - Objeto com todas estatísticas do dia
+         *
+         * ⬅️ CHAMADO POR  : DashboardViagensController.ObterEstatisticas() [Dashboard]
+         *                   ViagemController.AoFinalizarViagem() [Trigger após alteração]
+         *
+         * ➡️ CHAMA        : _repository.ObterPorDataAsync() [Busca cache]
+         *                   CalcularEstatisticasAsync() [Recalcula sempre]
+         *                   AtualizarEstatistica() [UPDATE se existe]
+         *                   _repository.AddAsync() [INSERT se novo]
+         *                   _context.SaveChangesAsync() [DB commit]
+         *
+         * 📝 OBSERVAÇÕES  : [REGRA] SEMPRE recalcula (não trusted cache-only)
+         *                   [LOGICA] INSERT or UPDATE pattern (upsert)
+         *                   [PERFORMANCE] Cálculo é assíncrono (não bloqueia thread)
+         *                   [DEBUG] Se erro, lança com mensagem original
+         ****************************************************************************************/
         public async Task<ViagemEstatistica> ObterEstatisticasAsync(DateTime data)
         {
             try
             {
                 var dataReferencia = data.Date;
 
-                // Tenta buscar estatísticas já calculadas
+                // [DB] Tenta buscar estatísticas já calculadas
                 var estatisticaExistente = await _repository.ObterPorDataAsync(dataReferencia);
 
-                // Calcula novas estatísticas
+                // [LOGICA] SEMPRE recalcula (mesmo se existe cache)
+                // Previne dados stale após criação/edição/exclusão de viagens
                 var novaEstatistica = await CalcularEstatisticasAsync(dataReferencia);
 
-                // Se existe, SEMPRE faz UPDATE
+                // [LOGICA] INSERT or UPDATE
                 if (estatisticaExistente != null)
                 {
+                    // [DB] UPDATE: merge nova estatística na existente
                     AtualizarEstatistica(estatisticaExistente , novaEstatistica);
                     await _context.SaveChangesAsync();
                     return estatisticaExistente;
                 }
                 else
                 {
-                    // Se não existe, insere novo registro
+                    // [DB] INSERT: novo registro
                     novaEstatistica.DataCriacao = DateTime.Now;
                     await _repository.AddAsync(novaEstatistica);
                     await _context.SaveChangesAsync();
@@ -75,15 +97,35 @@ namespace FrotiX.Services
             }
         }
 
-        /// <summary>
-        /// ✅ CORREÇÃO CRÍTICA: Obtém estatísticas de um período APENAS LENDO DO CACHE
-        /// Não recalcula, apenas lê da tabela ViagemEstatistica
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: ObterEstatisticasPeriodoAsync
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Obtém estatísticas de um período APENAS DO CACHE (read-only)
+         *                   Não recalcula, apenas lê tabela ViagemEstatistica pré-calculada
+         *
+         * 📥 ENTRADAS     : dataInicio [DateTime] - Data inicial do período (inclusive)
+         *                   dataFim [DateTime] - Data final do período (inclusive)
+         *
+         * 📤 SAÍDAS       : Task<List<ViagemEstatistica>> - Estatísticas do período
+         *
+         * ⬅️ CHAMADO POR  : DashboardViagensController.ObterGráficos() [Período selecionado]
+         *                   ReportController.GerarRelatorioMensal() [Relatório]
+         *
+         * ➡️ CHAMA        : _context.ViagemEstatistica.ToListAsync() [EF Core query]
+         *
+         * 📝 OBSERVAÇÕES  : [PERFORMANCE] LEITURA PURA - sem cálculos (muito rápido)
+         *                   [REGRA] AsNoTracking() = sem tracking, menor memória
+         *                   [REGRA] Retorna vazio se dados não calculados ainda
+         *                   [VALIDACAO] dataFim é inclusiva (<=)
+         *                   ⚠️ ATENÇÃO: Se tabela vazia, retorna [], precisar chamar
+         *                              ObterEstatisticasAsync para calcular primeira vez
+         ****************************************************************************************/
         public async Task<List<ViagemEstatistica>> ObterEstatisticasPeriodoAsync(DateTime dataInicio , DateTime dataFim)
         {
             try
             {
-                // ✅ LEITURA DIRETA DO CACHE - NÃO RECALCULA
+                // [PERFORMANCE] LEITURA DIRETA DO CACHE - NÃO RECALCULA
+                // AsNoTracking = sem tracking (mais rápido, sem warmup)
                 var estatisticas = await _context.ViagemEstatistica
                     .Where(e => e.DataReferencia >= dataInicio.Date && e.DataReferencia <= dataFim.Date)
                     .OrderBy(e => e.DataReferencia)
@@ -98,9 +140,29 @@ namespace FrotiX.Services
             }
         }
 
-        /// <summary>
-        /// Calcula estatísticas em tempo real
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: CalcularEstatisticasAsync
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Calcula TODAS estatísticas de um dia (11 dimensões diferentes)
+         *                   Inclui: contagens, custos, rankings TOP 10, séries históricas JSON
+         *
+         * 📥 ENTRADAS     : dataReferencia [DateTime] - Data para cálculo (date only, sem hora)
+         *
+         * 📤 SAÍDAS       : Task<ViagemEstatistica> - Objeto com 30+ propriedades preenchidas
+         *
+         * ⬅️ CHAMADO POR  : ObterEstatisticasAsync() [linha 44]
+         *                   RecalcularEstatisticasAsync() [linha 337]
+         *
+         * ➡️ CHAMA        : _context.Viagem.Include(...).ToListAsync() [EF materializa viagens]
+         *                   JsonSerializer.Serialize() [Serializa rankings]
+         *
+         * 📝 OBSERVAÇÕES  : [PERFORMANCE] Materializa TODAS viagens do dia na memória
+         *                   [LOGICA] 11 seções: gerais, custos, KM, status, motorista, etc
+         *                   [REGRA] TOP 10 para motoristas, veículos, requisitantes, setores
+         *                   [DADOS] Transforma listas em JSON para armazenar rankings
+         *                   [VALIDACAO] Filtros (HasValue, > 0) previnem cálculos em nulos
+         *                   ⚠️ PERFORMANCE: Se muitas viagens/dia, pode ser lento
+         ****************************************************************************************/
         private async Task<ViagemEstatistica> CalcularEstatisticasAsync(DateTime dataReferencia)
         {
             var estatistica = new ViagemEstatistica
@@ -299,9 +361,11 @@ namespace FrotiX.Services
             return estatistica;
         }
 
-        /// <summary>
-        /// Atualiza estatística existente com novos dados
-        /// </summary>
+        /****************************
+         * ⚡ FUNÇÃO: AtualizarEstatistica
+         * ✅ Faz MERGE de objeto novo em objeto existente (UPDATE pattern)
+         * 📝 OBSERVAÇÕES: Copia TODAS as 30+ propriedades
+         ****************************/
         private void AtualizarEstatistica(ViagemEstatistica existente , ViagemEstatistica nova)
         {
             existente.TotalViagens = nova.TotalViagens;
@@ -331,29 +395,50 @@ namespace FrotiX.Services
             existente.DataAtualizacao = DateTime.Now;
         }
 
-        /// <summary>
-        /// Força recálculo das estatísticas (ignora cache)
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: RecalcularEstatisticasAsync
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Força recalcular estatísticas (ignora cache)
+         *                   Similar a ObterEstatisticasAsync, mas com semântica de "forçar"
+         *
+         * 📥 ENTRADAS     : data [DateTime] - Data das estatísticas
+         *
+         * 📤 SAÍDAS       : Task<ViagemEstatistica> - Objeto atualizado
+         *
+         * ⬅️ CHAMADO POR  : ViagemController.AoEditarViagem() [Trigger após edição]
+         *                   ViagemController.AoDeletarViagem() [Trigger após deleção]
+         *                   AtualizarEstatisticasDiaAsync() [Wrapper]
+         *
+         * ➡️ CHAMA        : CalcularEstatisticasAsync() [Recalcula SEMPRE]
+         *                   _repository.ObterPorDataAsync() [Busca para UPDATE]
+         *                   AtualizarEstatistica() [Merge dados]
+         *
+         * 📝 OBSERVAÇÕES  : [REGRA] SEMPRE recalcula (não usa cache)
+         *                   [PATTERN] INSERT or UPDATE, mesmo que ObterEstatisticasAsync
+         *                   [DEBUG] Se erro, lança com mensagem contextual
+         ****************************************************************************************/
         public async Task<ViagemEstatistica> RecalcularEstatisticasAsync(DateTime data)
         {
             try
             {
                 var dataReferencia = data.Date;
 
-                // Calcula novas estatísticas
+                // [LOGICA] Recalcula SEMPRE (ignora cache)
                 var novaEstatistica = await CalcularEstatisticasAsync(dataReferencia);
 
-                // Busca estatística existente
+                // [DB] Busca estatística existente para UPDATE
                 var estatisticaExistente = await _repository.ObterPorDataAsync(dataReferencia);
 
                 if (estatisticaExistente != null)
                 {
+                    // [DB] UPDATE: merge nova estatística
                     AtualizarEstatistica(estatisticaExistente , novaEstatistica);
                     await _context.SaveChangesAsync();
                     return estatisticaExistente;
                 }
                 else
                 {
+                    // [DB] INSERT: novo registro
                     novaEstatistica.DataCriacao = DateTime.Now;
                     await _repository.AddAsync(novaEstatistica);
                     await _context.SaveChangesAsync();
@@ -366,13 +451,31 @@ namespace FrotiX.Services
             }
         }
 
-        /// <summary>
-        /// Atualiza estatísticas de um dia específico (usado após criar/editar/deletar viagem)
-        /// </summary>
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: AtualizarEstatisticasDiaAsync
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Wrapper para atualizar estatísticas do dia (trigger após alteração)
+         *                   Mantém cache fresco após CRUD de viagens
+         *
+         * 📥 ENTRADAS     : data [DateTime] - Data do dia afetado
+         *
+         * 📤 SAÍDAS       : Task (void) - Sem retorno
+         *
+         * ⬅️ CHAMADO POR  : ViagemController.OnCreate() [Trigger após criar viagem]
+         *                   ViagemController.OnEdit() [Trigger após editar viagem]
+         *                   ViagemController.OnDelete() [Trigger após deletar viagem]
+         *
+         * ➡️ CHAMA        : RecalcularEstatisticasAsync() [Força recalcular]
+         *
+         * 📝 OBSERVAÇÕES  : [PATTERN] Simple wrapper, sem lógica extra
+         *                   [REGRA] Sempre recalcula (garante consistência)
+         *                   [DEBUG] Se erro, relança com contexto
+         ****************************************************************************************/
         public async Task AtualizarEstatisticasDiaAsync(DateTime data)
         {
             try
             {
+                // [LOGICA] Chama recalcular (garante dados sempre frescos)
                 await RecalcularEstatisticasAsync(data);
             }
             catch (Exception ex)

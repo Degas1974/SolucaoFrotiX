@@ -13,11 +13,26 @@
 using System;
 
 namespace FrotiX.Models
-    {
+{
+    /****************************************************************************************
+     * ⚡ MODEL: ViewVeiculosManutencaoReserva
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar veículos reserva em manutenção
+     *
+     * 📥 ENTRADAS     : Descrição do veículo reserva, identificação
+     *
+     * 📤 SAÍDAS       : Registro somente leitura para dropdowns
+     *
+     * 🔗 CHAMADA POR  : Formulários de seleção de veículos reserva em manutenção
+     *
+     * 🔄 CHAMA        : Não se aplica
+     ****************************************************************************************/
     public class ViewVeiculosManutencaoReserva
-        {
+    {
+        // [DADOS] Descrição consolidada do veículo reserva
         public String? Descricao { get; set; }
+        // [DADOS] Identificador do veículo
         public Guid VeiculoId { get; set; }
-        }
     }
+}
 

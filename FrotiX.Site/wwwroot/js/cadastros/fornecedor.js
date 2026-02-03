@@ -45,6 +45,14 @@ $(document).ready(function ()
                         {
                             var dataToPost = JSON.stringify({ FornecedorId: id });
                             var url = "/api/Fornecedor/Delete";
+
+                            /********************************************************************************
+                             * [AJAX] Endpoint: POST /api/Fornecedor/Delete
+                             * ------------------------------------------------------------------------------
+                             * 📥 ENVIA        : { FornecedorId: number }
+                             * 📤 RECEBE       : { success: bool, message: string }
+                             * 🎯 MOTIVO       : Deletar fornecedor após confirmação do usuário
+                             ********************************************************************************/
                             $.ajax({
                                 url: url,
                                 type: "POST",

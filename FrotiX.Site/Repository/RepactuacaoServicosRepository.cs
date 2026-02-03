@@ -116,33 +116,50 @@ namespace FrotiX.Repository
             }
             }
 
-        
+
         // ╭───────────────────────────────────────────────────────────────────────────────────────╮
         // │ ⚡ MÉTODO: Update                                                                        │
         // │ 🔗 RASTREABILIDADE:                                                                      │
-        // │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
-        // │    ➡️ CHAMA       : DbContext.RepactuacaoServicos.FirstOrDefault, _db.Update,             │
-        // │                     _db.SaveChanges                                                     │
+        // │    ⬅️ CHAMADO POR : Controllers [linha ~100]                                             │
+        // │    ➡️ CHAMA       : _db.FirstOrDefault() [linha 138]                                     │
+        // │                     _db.Update() [linha 140]                                             │
+        // │                     _db.SaveChanges() [linha 141]                                        │
+        // │ 📦 DEPENDÊNCIAS  : _db (DbContext)                                                      │
         // ╰───────────────────────────────────────────────────────────────────────────────────────╯
-        
-        
+
+
         // 🎯 OBJETIVO:
         // Atualizar os dados de uma repactuação de serviços no banco de dados.
-        
-        
-        
+
+
+
         // 📥 PARÂMETROS:
-        // repactuacaoServicos - Entidade contendo os dados atualizados.
-        
-        
+        // repactuacaoServicos [RepactuacaoServicos] - Entidade contendo os dados atualizados.
+
+        // 📤 SAÍDAS: void
+
+        // 📝 OBSERVAÇÕES: Salva mudanças imediatamente no banco de dados
+
         // Param repactuacaoServicos: Entidade <see cref="RepactuacaoServicos"/> com dados atualizados.
         public new void Update(RepactuacaoServicos repactuacaoServicos)
             {
-            var objFromDb = _db.RepactuacaoServicos.FirstOrDefault(s => s.RepactuacaoServicoId == repactuacaoServicos.RepactuacaoServicoId);
+            try
+            {
+                // [VALIDACAO] Verificar se entidade não é nula
+                if (repactuacaoServicos == null)
+                    throw new ArgumentNullException(nameof(repactuacaoServicos));
 
-            _db.Update(repactuacaoServicos);
-            _db.SaveChanges();
+                // [DB] Buscar registro existente
+                var objFromDb = _db.RepactuacaoServicos.FirstOrDefault(s => s.RepactuacaoServicoId == repactuacaoServicos.RepactuacaoServicoId);
 
+                // [DB] Atualizar e persistir mudanças
+                _db.Update(repactuacaoServicos);
+                _db.SaveChanges();
+            }
+            catch (Exception erro)
+            {
+                throw;
+            }
             }
 
 

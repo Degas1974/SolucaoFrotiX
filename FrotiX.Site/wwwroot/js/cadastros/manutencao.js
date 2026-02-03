@@ -124,30 +124,52 @@ var linhaSelecionadaFoto = -1;
 // Variável global para controlar modo visualização do modal de foto (OS Fechada/Cancelada)
 window.modoVisualizacaoFoto = false;
 
+/****************************************************************************************
+ * ⚡ EVENTO: txtFileItem.change (FILE UPLOAD)
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Fazer upload de foto de manutenção para servidor
+ *
+ * 📥 ENTRADAS     : File input change event (arquivo selecionado)
+ *
+ * 📤 SAÍDAS       : POST /Uploads/UploadPDF?handler=SaveIMGManutencao [AJAX]
+ *
+ * ⬅️ CHAMADO POR  : Evento change em #txtFileItem
+ ****************************************************************************************/
 document.getElementById("txtFileItem").addEventListener("change", async (e) =>
 {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    try
+    {
+        const file = e.target.files?.[0];
+        if (!file) return;
 
-    imgViewerItem.src = URL.createObjectURL(file);
+        // [UI] Preview da imagem selecionada
+        imgViewerItem.src = URL.createObjectURL(file);
 
-    // pega token (meta OU hidden)
-    const token =
-        document.querySelector('meta[name="request-verification-token"]')?.content ||
-        document.querySelector('#uploadForm input[name="__RequestVerificationToken"]')?.value;
+        // [SEGURANCA] Obter token anti-CSRF (meta ou input hidden)
+        const token =
+            document.querySelector('meta[name="request-verification-token"]')?.content ||
+            document.querySelector('#uploadForm input[name="__RequestVerificationToken"]')?.value;
 
-    console.log("Anti-forgery token:", token?.slice(0, 12) + "..."); // debug
-    if (!token) { alert("Token antiforgery não encontrado na página."); return; }
+        console.log("Anti-forgery token:", token?.slice(0, 12) + "..."); // [DEBUG]
+        if (!token) { alert("Token antiforgery não encontrado na página."); return; }
 
-    const fd = new FormData();
-    fd.append("files", file, file.name);                  // casa com IEnumerable<IFormFile> files
-    fd.append("__RequestVerificationToken", token);       // fallback via corpo
+        // [DADOS] Preparar FormData com arquivo
+        const fd = new FormData();
+        fd.append("files", file, file.name);                  // IEnumerable<IFormFile> files
+        fd.append("__RequestVerificationToken", token);       // fallback via corpo
 
-    const resp = await fetch("/Uploads/UploadPDF?handler=SaveIMGManutencao", {
-        method: "POST",
-        body: fd,
-        headers: { "X-CSRF-TOKEN": token },                 // usa o HeaderName definido
-        credentials: "same-origin"                          // envia cookie do antiforgery
+        /********************************************************************************
+         * [AJAX] Endpoint: POST /Uploads/UploadPDF?handler=SaveIMGManutencao
+         * ------------------------------------------------------------------------------
+         * 📥 ENVIA        : IEnumerable<IFormFile> files (foto de manutenção)
+         * 📤 RECEBE       : { success: bool, fileName: string, ... }
+         * 🎯 MOTIVO       : Fazer upload de foto de ordem de serviço para armazenamento
+         ********************************************************************************/
+        const resp = await fetch("/Uploads/UploadPDF?handler=SaveIMGManutencao", {
+            method: "POST",
+            body: fd,
+            headers: { "X-CSRF-TOKEN": token },                 // usa o HeaderName definido
+            credentials: "same-origin"                          // envia cookie do antiforgery
     });
 
     if (!resp.ok)

@@ -23,12 +23,28 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FrotiX.Models
 {
+    /****************************************************************************************
+     * ⚡ MODEL: ViewSetores
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar setores solicitantes com hierarquia
+     *
+     * 📥 ENTRADAS     : Setor, nome, setor pai
+     *
+     * 📤 SAÍDAS       : Registro somente leitura para árvores e dropdowns
+     *
+     * 🔗 CHAMADA POR  : Formulários de viagem e filtros
+     *
+     * 🔄 CHAMA        : Não se aplica
+     ****************************************************************************************/
     public class ViewSetores
     {
+        // [DADOS] Identificador único do setor
         public Guid SetorSolicitanteId { get; set; }
 
+        // [DADOS] Nome do setor
         public string? Nome { get; set; }
 
+        // [DADOS] Identificador do setor pai (FK nullable - para hierarquia)
         public Guid? SetorPaiId { get; set; }
     }
 }
