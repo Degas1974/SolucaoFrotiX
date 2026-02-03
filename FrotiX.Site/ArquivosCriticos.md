@@ -58,6 +58,22 @@ Este arquivo documenta **problemas técnicos identificados** durante a análise 
 
 ---
 
+## 📊 Estatísticas Lote 11-115
+
+**Data de Análise:** 03/02/2026
+**Total de Arquivos Analisados:** 105 CSHTML (arquivos 11-115)
+**Arquivos Críticos Identificados:** 9 arquivos
+**CSS Inline Total Detectado:** ~6500 linhas
+**JavaScript Inline Total Detectado:** ~8300 linhas
+
+### Distribuição por Gravidade:
+- 🔴 **CRÍTICA:** 4 arquivos (Agenda, DashboardAbastecimento, Multa, ControleLavagem)
+- 🟡 **ALTA:** 5 arquivos (DashboardMotoristas, DashboardViagens, Viagens/Index, AnalyticsDashboard, Abastecimento/Index)
+- 🟠 **MÉDIA:** 34 arquivos (dashboards menores, CRUDs, formulários)
+- 🟢 **BAIXA:** 52 arquivos (CRUDs simples, páginas pequenas)
+
+---
+
 ## 📂 Arquivos Analisados
 
 ### 1. **Multa/ListaAutuacao.cshtml** - GRAVIDADE: 🔴 CRÍTICA
@@ -449,14 +465,188 @@ function salvarLavagem() {
 
 ---
 
-## 📊 Resumo Comparativo
+### 4. **Abastecimento/DashboardAbastecimento.cshtml** - GRAVIDADE: 🔴 CRÍTICA
+
+**Localização:** `FrotiX.Site/Pages/Abastecimento/DashboardAbastecimento.cshtml`
+**Linhas:** 2401+ (MAIOR DO LOTE)
+**Data Análise:** 03/02/2026
+
+#### Problemas Identificados:
+
+**a) JavaScript Inline MASSIVO (500+ linhas)**
+- Inicializações Chart.js inline
+- Handlers de abas customizado
+- Handlers de filtros (ano, mês, placa)
+- Funções utilitárias (moeda, datas)
+
+**b) CSS Inline Gigante (400 linhas)**
+- Paleta de cores (--abast-primary, etc)
+- Estilos header dashboard
+- Estilos tabs customizados
+- Estilos cards e modais
+
+**c) Sistema de Abas sem Lazy Loading**
+- 3 abas (Geral, Mensal, PorVeiculo)
+- Dados carregados completamente
+- Performance ruim com muitos dados
+
+**d) Select2 + Syncfusion Conflict**
+- Tooltip de Select2 sobrepõe dropdown
+- Problemas de UX
+
+#### Plano de Refatoração:
+```markdown
+1. Extrair CSS (400 linhas)
+   - Criar: /wwwroot/css/abastecimento/dashboard-abastecimento.css
+
+2. Modularizar JavaScript (500+ linhas)
+   - /wwwroot/js/dashboards/dashboard-abastecimento-init.js
+   - /wwwroot/js/dashboards/dashboard-abastecimento-filters.js
+   - /wwwroot/js/dashboards/dashboard-abastecimento-charts.js
+
+3. Implementar Lazy Loading de Abas
+   - Carregar dados apenas ao clicar na aba
+   - Reduz requisições AJAX iniciais
+
+4. Resultado Esperado
+   - De: 2401 linhas → Para: ~800 linhas
+   - CSS: 0 linhas inline
+   - JavaScript: ~50 linhas inline
+```
+
+**Estimativa de Redução:** 2401 → ~800 linhas (67% redução)
+
+---
+
+### 5. **DashboardMotoristas.cshtml** - GRAVIDADE: 🟡 ALTA
+
+**Localização:** `FrotiX.Site/Pages/Motorista/DashboardMotoristas.cshtml`
+**Linhas:** 1523
+**Data Análise:** 03/02/2026
+
+#### Problemas Identificados:
+- CSS inline ~250 linhas
+- JavaScript inline ~400 linhas
+- Sistema de abas sem lazy loading
+- Múltiplos gráficos Chart.js carregados simultaneamente
+- Modal de detalhes carrega dados completos
+
+#### Plano de Refatoração:
+- Extrair CSS: 250 linhas
+- Modularizar JavaScript: 400 linhas
+- Implementar lazy loading abas
+- Paginação em tabelas grandes
+
+**Estimativa de Redução:** 1523 → ~550 linhas (64% redução)
+
+---
+
+### 6. **DashboardViagens.cshtml** - GRAVIDADE: 🟡 ALTA
+
+**Localização:** `FrotiX.Site/Pages/Viagens/DashboardViagens.cshtml`
+**Linhas:** 1634
+**Data Análise:** 03/02/2026
+
+#### Problemas Identificados:
+- CSS inline ~300 linhas
+- JavaScript inline ~500 linhas
+- Heatmap Syncfusion carrega dados completos
+- Sem paginação em dados grandes
+
+#### Plano de Refatoração:
+- Extrair CSS e JS
+- Implementar lazy loading
+- Server-side paginação Heatmap
+
+**Estimativa de Redução:** 1634 → ~650 linhas (60% redução)
+
+---
+
+### 7. **Abastecimento/Index.cshtml** - GRAVIDADE: 🟡 ALTA
+
+**Localização:** `FrotiX.Site/Pages/Abastecimento/Index.cshtml`
+**Linhas:** 1340
+**Data Análise:** 03/02/2026
+
+#### Problemas Identificados:
+- JavaScript inline MASSIVO (800+ linhas)
+- CSS inline ~150 linhas
+- DataTable inicializado inline
+- Modal edição KM sem validações robustas
+- Filtros sem debounce
+
+#### Plano de Refatoração:
+- Extrair JavaScript: 800+ linhas
+- Extrair CSS: 150 linhas
+- Implementar debounce nos filtros
+- Adicionar validações robustas modal
+
+**Estimativa de Redução:** 1340 → ~400 linhas (70% redução)
+
+---
+
+### 8. **Viagens/Index.cshtml** - GRAVIDADE: 🟡 ALTA
+
+**Localização:** `FrotiX.Site/Pages/Viagens/Index.cshtml`
+**Linhas:** 1289
+**Data Análise:** 03/02/2026
+
+#### Problemas Identificados:
+- CSS inline ~180 linhas
+- JavaScript inline para lazy loading e filtros
+- DataTable sem server-side processing
+- Filtros sem debounce
+
+#### Positivos:
+- ✅ Lazy loading fotos via IntersectionObserver (bom padrão!)
+- ✅ Cache de fotos implementado
+
+#### Plano de Refatoração:
+- Extrair CSS: 180 linhas
+- Consolidar JS em ViagemIndex.js
+- Implementar server-side DataTable
+- Debounce nos filtros
+
+**Estimativa de Redução:** 1289 → ~450 linhas (65% redução)
+
+---
+
+### 9. **Intel/AnalyticsDashboard.cshtml** - GRAVIDADE: 🟡 ALTA
+
+**Localização:** `FrotiX.Site/Pages/Intel/AnalyticsDashboard.cshtml`
+**Linhas:** 1856
+**Data Análise:** 03/02/2026
+
+#### Problemas Identificados:
+- CSS inline ~300 linhas
+- JavaScript inline ~500 linhas
+- Sistema de abas sem lazy loading
+- Múltiplos gráficos Chart.js carregados
+
+#### Plano de Refatoração:
+- Extrair CSS: 300 linhas
+- Modularizar JavaScript: 500 linhas
+- Lazy loading abas
+- Carregamento sob demanda gráficos
+
+**Estimativa de Redução:** 1856 → ~650 linhas (65% redução)
+
+---
+
+## 📊 Resumo Comparativo - Expandido
 
 | Arquivo | Linhas Atual | Linhas Após Refatoração | Redução | CSS Inline Atual | JS Inline Atual | Gravidade |
 |---------|--------------|-------------------------|---------|------------------|-----------------|-----------|
 | **ListaAutuacao.cshtml** | 1307 | ~500 | **-62%** | 569 linhas | 738+ linhas | 🔴 CRÍTICA |
 | **Agenda/Index.cshtml** | 2008 | ~650 | **-68%** | 250 linhas | 1000+ linhas | 🔴 CRÍTICA |
+| **DashboardAbastecimento.cshtml** | 2401 | ~800 | **-67%** | 400 linhas | 500+ linhas | 🔴 CRÍTICA |
 | **ControleLavagem.cshtml** | 629 | ~165 | **-74%** | 480 linhas | 150 linhas | 🟡 ALTA |
-| **TOTAL** | **3944** | **~1315** | **-67%** | **1299** | **1888+** | - |
+| **DashboardMotoristas.cshtml** | 1523 | ~550 | **-64%** | 250 linhas | 400 linhas | 🟡 ALTA |
+| **DashboardViagens.cshtml** | 1634 | ~650 | **-60%** | 300 linhas | 500 linhas | 🟡 ALTA |
+| **Abastecimento/Index.cshtml** | 1340 | ~400 | **-70%** | 150 linhas | 800+ linhas | 🟡 ALTA |
+| **Viagens/Index.cshtml** | 1289 | ~450 | **-65%** | 180 linhas | 200 linhas | 🟡 ALTA |
+| **Intel/AnalyticsDashboard.cshtml** | 1856 | ~650 | **-65%** | 300 linhas | 500 linhas | 🟡 ALTA |
+| **TOTAL 9 ARQUIVOS** | **15787** | **~5265** | **-67%** | **3279** | **4888+** | - |
 
 ---
 

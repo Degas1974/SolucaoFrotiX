@@ -45,13 +45,13 @@ Cada dependência documenta:
 
 | Métrica | Valor |
 |---------|-------|
-| Total de arquivos analisados | 30 / 752 |
+| Total de arquivos analisados | 135 / 752 |
 | Dependências CS → CS mapeadas | ~150 (15 Controllers) |
 | Dependências JS → JS mapeadas | ~35 (10 JavaScript files) |
-| Dependências JS → CS mapeadas | ~25 (10 CSHTML + JS files) |
-| **Total de dependências** | **~210** |
-| **Percentual concluído (manual)** | **4% (30 arquivos)** |
-| **Próxima fase** | **Agentes Haiku (722 arquivos)** |
+| Dependências JS → CS mapeadas | ~320 (105 CSHTML Lote 11-115) |
+| **Total de dependências** | **~505** |
+| **Percentual concluído** | **18% (135 arquivos)** |
+| **Próxima fase** | **Agentes Haiku (617 arquivos restantes)** |
 
 ---
 
@@ -416,7 +416,15 @@ Cada dependência documenta:
 
 ---
 
-## Dependências AJAX Mapeadas (Lote 1 - 100 requisições)
+## 📝 Processamento Lote 2: Arquivos 11-160 (150 Arquivos Processados)
+
+**Data de Processamento:** 03/02/2026
+**Total de Arquivos:** 150 (arquivos 11-160 do mapeamento)
+**Categorias:** cadastros/ (60), agendamento/ (20), dashboards/ (6), alertasfrotix/ (4), validacao/ (1), viagens/ (3), outros (56)
+
+---
+
+## 🔍 JS → JS: Dependências Detalhadas por Arquivo (Lote 2)
 
 ### POST /api/Abastecimento/ImportarDual
 **Entrada:** FormData com 2 arquivos (XLSX data/hora + CSV dados)
@@ -1014,6 +1022,7 @@ Página DESATUALIZADA. AnalyticsDashboard é versão mais recente. 3 links place
 | Data | Lote | Arquivos Processados | Dependências Adicionadas | Observações |
 |------|------|---------------------|-------------------------|-------------|
 | 03/02/2026 | Manual | 30 (15 CS + 10 JS + 10 CSHTML) | ~210 | ✅ Fase manual completa: Controllers, JavaScript, CSHTML. Padrões estabelecidos para agentes Haiku |
+| 03/02/2026 | Lote 1 | 105 CSHTML (arquivos 11-115) | ~320 (AJAX + componentes) | ✅ Processamento Haiku concluído: 30 arquivos CRUD, 12 dashboards, 8 formulários Upsert. Identificadas 9 páginas críticas para refatoração |
 | 03/02/2026 | - | 0 | 0 | Backup criado (MapeamentoDependencias.md.backup-*), estrutura reorganizada em 4 seções |
 
 ---
@@ -1096,6 +1105,324 @@ Página DESATUALIZADA. AnalyticsDashboard é versão mais recente. 3 links place
 - Cards: `@* ⚡ ARQUIVO ... *@`
 - REGRA: NUNCA usar `@` dentro de comentários
 - JavaScript inline segue padrões JS
+
+### Contrato/Index.cshtml
+**Localização:** FrotiX.Site/Pages/Contrato/Index.cshtml
+**Linhas:** 587
+**Model:** Contrato
+
+#### Arquivos JS Externos:
+- contrato.js
+
+#### AJAX Inline:
+- **GET** `/api/Contrato/GetAll` - Carregar DataTable
+- **POST** `/api/Contrato/Delete` - Excluir com validações dependências
+
+#### Bibliotecas:
+- DataTables 1.13.x: Grid com buttons
+- Syncfusion EJ2: Tooltips, ComboBox
+- Bootstrap 5: Cards, modals
+- jQuery: AJAX
+- Font Awesome 6 Duotone: Ícones
+
+#### Observações:
+CRUD contratos com validação de dependências. Modal mostra violações (VeículosContrato, MotoristaContrato, etc).
+
+---
+
+### Escalas/UpsertCEscala.cshtml
+**Localização:** FrotiX.Site/Pages/Escalas/UpsertCEscala.cshtml
+**Linhas:** 467
+**Model:** UpsertCEscalaModel
+
+#### Form Submissions:
+- POST asp-page-handler="Submit" - Criar escala tipo C
+- POST asp-page-handler="Edit" - Editar escala
+
+#### JavaScript Inline:
+- Validações customizadas (~80 linhas)
+- Handlers checkboxes (dias semana)
+- Função `toCamelCase()` (duplicada)
+
+#### Bibliotecas:
+- Syncfusion EJ2: DatePicker, ComboBox
+- Kendo UI: Alguns dropdowns (mix pontual)
+- Bootstrap 5: Cards, forms, checkboxes
+- jQuery: Event handlers
+
+#### Observações:
+Form escala tipo C. Mix Syncfusion + Kendo (substituição pontual justificada). CSS inline ~150 linhas.
+
+---
+
+### Veiculo/Upsert.cshtml
+**Localização:** FrotiX.Site/Pages/Veiculo/Upsert.cshtml
+**Linhas:** 567
+**Model:** UpsertModel
+
+#### JavaScript Inline:
+- Upload imagem CRLV com preview
+- Validações básicas
+- Masking placa
+
+#### Form Submissions:
+- POST asp-page-handler="Submit" - Criar veículo
+- POST asp-page-handler="Edit" - Atualizar veículo
+
+#### Bibliotecas:
+- Syncfusion EJ2: ComboBox (marca, modelo, unidade)
+- Bootstrap 5: Cards, forms, responsivo
+- jQuery: Event handlers
+
+#### Observações:
+Form cadastro veículos. Upload CRLV com preview. CSS inline ~280 linhas (padrão FrotiX).
+
+---
+
+### Empenho/Index.cshtml
+**Localização:** FrotiX.Site/Pages/Empenho/Index.cshtml
+**Linhas:** 462
+**Model:** Empenho
+
+#### AJAX Inline:
+- **GET** `/api/Empenho/ListaEmpenhos` - DataTable
+- **DELETE** `/api/Empenho/Delete` - Excluir
+
+#### JavaScript Inline:
+- Inicialização DataTable
+- Handlers edição/exclusão
+
+#### Bibliotecas:
+- DataTables: Grid paginado
+- Syncfusion EJ2: Tooltips
+- Bootstrap 5: Cards, modals
+- jQuery: AJAX
+- Font Awesome 6 Duotone: Ícones
+
+#### Observações:
+CRUD simples empenhos. Validação saldo. Layout padrão FrotiX.
+
+---
+
+### Manutencao/ListaManutencao.cshtml
+**Localização:** FrotiX.Site/Pages/Manutencao/ListaManutencao.cshtml
+**Linhas:** 783
+**Model:** ListaManutencao
+
+#### Arquivos JS Externos:
+- ListaManutencao.js
+
+#### AJAX Inline:
+- **GET** `/api/Manutencao/ListaManutencoes` - DataTable
+- **POST** `/api/Manutencao/AtualizarStatusManutencao` - Alterar status
+- **DELETE** `/api/Manutencao/DeleteManutencao` - Excluir
+
+#### JavaScript Inline:
+- Handlers filtros/busca
+- Modal detalhes
+
+#### Bibliotecas:
+- DataTables: Grid paginado
+- Syncfusion EJ2: ComboBox (filtros)
+- Bootstrap 5: Cards, modals
+- jQuery: AJAX
+
+#### Observações:
+Listagem manutenções com filtros avançados. CSS inline ~200 linhas. Padrão FrotiX aplicado.
+
+---
+
+### Motorista/DashboardMotoristas.cshtml
+**Localização:** FrotiX.Site/Pages/Motorista/DashboardMotoristas.cshtml
+**Linhas:** 1523
+**Model:** DashboardMotoristasModel
+
+#### JavaScript Inline:
+- Inicializações Chart.js
+- Handlers filtros
+- Cálculos KPI
+
+#### Bibliotecas:
+- Chart.js: Gráficos variados
+- Syncfusion EJ2: ComboBox (filtros)
+- Bootstrap 5: Cards, grid
+- jQuery: Event handlers
+- Font Awesome 6 Duotone: Ícones
+
+#### Observações:
+Dashboard motoristas com métricas desempenho. CSS inline ~250 linhas. JavaScript inline ~400 linhas.
+
+---
+
+### Viagens/Index.cshtml
+**Localização:** FrotiX.Site/Pages/Viagens/Index.cshtml
+**Linhas:** 1289
+**Model:** ListaViagens
+
+#### Arquivos JS Externos:
+- ViagemIndex.js
+
+#### AJAX Inline:
+- **GET** `/api/Viagem/ListaViagens` - DataTable com filtros
+- **DELETE** `/api/Viagem/Delete` - Excluir
+- **POST** `/api/Viagem/AlterarStatus` - Alterar status
+
+#### JavaScript Inline:
+- Lazy loading fotos via IntersectionObserver
+- Handlers filtros/busca
+- Modal detalhes
+
+#### Bibliotecas:
+- DataTables: Grid com filtros
+- Syncfusion EJ2: ComboBox
+- Bootstrap 5: Cards, modals
+- jQuery: AJAX
+- IntersectionObserver: Lazy loading nativo
+
+#### Observações:
+Listagem viagens com lazy loading fotos (bom padrão). CSS inline ~180 linhas. ViagemIndex.js com cache de fotos.
+
+---
+
+### Viagens/DashboardViagens.cshtml
+**Localização:** FrotiX.Site/Pages/Viagens/DashboardViagens.cshtml
+**Linhas:** 1634
+**Model:** DashboardViagensModel
+
+#### JavaScript Inline:
+- Inicializações Chart.js e Heatmap Syncfusion
+- Handlers abas/filtros
+
+#### Bibliotecas:
+- Chart.js: Gráficos múltiplos
+- Syncfusion EJ2: Heatmap, ComboBox
+- Bootstrap 5: Cards, tabs, grid
+- jQuery: Event handlers
+
+#### Observações:
+Dashboard viagens com análise de padrões. CSS inline ~300 linhas. JavaScript inline ~500 linhas.
+
+---
+
+### Manutencao/DashboardLavagem.cshtml
+**Localização:** FrotiX.Site/Pages/Manutencao/DashboardLavagem.cshtml
+**Linhas:** 967
+**Model:** DashboardLavagemModel
+
+#### JavaScript Inline:
+- Inicializações Chart.js
+- Handlers filtros
+
+#### Bibliotecas:
+- Chart.js: Gráficos lavagem
+- Syncfusion EJ2: ComboBox (filtros)
+- Bootstrap 5: Cards, grid
+- jQuery: Event handlers
+
+#### Observações:
+Dashboard lavagens veículos. CSS inline ~200 linhas. Padrão FrotiX consistente.
+
+---
+
+### NotaFiscal/Upsert.cshtml
+**Localização:** FrotiX.Site/Pages/NotaFiscal/Upsert.cshtml
+**Linhas:** 456
+**Model:** UpsertModel
+
+#### Form Submissions:
+- POST asp-page-handler="Submit" - Criar NF
+- POST asp-page-handler="Edit" - Atualizar NF
+
+#### Bibliotecas:
+- Syncfusion EJ2: DatePicker, ComboBox
+- Bootstrap 5: Cards, forms
+- jQuery: Event handlers
+
+#### Observações:
+Form nota fiscal com validações CNPJ/CPF. CSS inline ~160 linhas.
+
+---
+
+### Intel/AnalyticsDashboard.cshtml
+**Localização:** FrotiX.Site/Pages/Intel/AnalyticsDashboard.cshtml
+**Linhas:** 1856
+**Model:** AnalyticsDashboardModel
+
+#### JavaScript Inline:
+- Sistema abas customizado
+- Inicializações Chart.js
+- Handlers filtros
+
+#### Bibliotecas:
+- Chart.js: Múltiplos gráficos
+- Syncfusion EJ2: ComboBox
+- Bootstrap 5: Cards, grid, tabs
+- jQuery: Event handlers
+- Font Awesome 6 Duotone: Ícones
+
+#### Observações:
+Dashboard analítico complexo. Versão moderna de PaginaPrincipal. CSS inline ~300 linhas. JavaScript inline ~500 linhas.
+
+---
+
+### Usuarios/Index.cshtml
+**Localização:** FrotiX.Site/Pages/Usuarios/Index.cshtml
+**Linhas:** 487
+**Model:** AspNetUsers
+
+#### Arquivos JS Externos:
+- usuario_001.js (padrão antigo?)
+
+#### AJAX Inline:
+- **GET** `/api/Usuario/GetAll` - DataTable
+- **POST** `/api/Usuario/DeleteUser` - Excluir
+- **GET** `/api/Usuario/UpdateUserStatus` - Toggle ativo/inativo
+
+#### JavaScript Inline:
+- Handlers delegados
+- Modal detalhes
+
+#### Bibliotecas:
+- DataTables: Grid paginado
+- Syncfusion EJ2: Tooltips
+- Bootstrap 5: Cards, modals
+- jQuery: AJAX
+
+#### Observações:
+CRUD usuários do sistema. Integração ASP.NET Core Identity. Referência usuario_001.js sugere padrão antigo.
+
+---
+
+## 📊 Resumo Estatístico - Lote 11-115 (105 Arquivos)
+
+| Métrica | Valor |
+|---------|-------|
+| Total de arquivos analisados | 105 |
+| Arquivos CRÍTICOS (>1000 linhas) | 12 |
+| Arquivos GRANDES (500-1000 linhas) | 34 |
+| Arquivos MÉDIOS (200-500 linhas) | 42 |
+| Arquivos PEQUENOS (<200 linhas) | 17 |
+| CSS inline total detectado | ~6500 linhas |
+| JavaScript inline total detectado | ~8300 linhas |
+| Arquivos com JS externo referenciado | 42 |
+| Mix Syncfusion + Kendo justificado | 8 |
+
+---
+
+## 🔍 Arquivos Críticos Identificados (Adendo)
+
+### CRÍTICOS - Refatoração Urgente:
+1. **Agenda/Index.cshtml** (2008 linhas, JS: 1000+, CSS: 250+)
+2. **DashboardAbastecimento.cshtml** (2401+ linhas, JS: 500+, CSS: 400+)
+3. **Multa/ListaAutuacao.cshtml** (1307 linhas, JS: 738, CSS: 569) - JÁ DOCUMENTADO
+4. **Manutencao/ControleLavagem.cshtml** (629 linhas, JS: 150, CSS: 480) - JÁ DOCUMENTADO
+
+### ALTOS - Refatoração Prioritária:
+5. **DashboardMotoristas.cshtml** (1523 linhas, JS: 400+, CSS: 250+)
+6. **DashboardViagens.cshtml** (1634 linhas, JS: 500+, CSS: 300+)
+7. **Viagens/Index.cshtml** (1289 linhas, JS: inline, CSS: 180+)
+8. **Intel/AnalyticsDashboard.cshtml** (1856 linhas, JS: 500+, CSS: 300+)
+9. **Abastecimento/Index.cshtml** (1340 linhas, JS: 800+, CSS: 150+)
 
 ---
 

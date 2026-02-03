@@ -628,6 +628,7 @@ git push origin main
 
 | Versão | Data       | Descrição                                                                        |
 | ------ | ---------- | -------------------------------------------------------------------------------- |
+| 1.4    | 03/02/2026 | Adiciona seções 5.11 (Mapeamento de Dependências) e 5.12 (Análise de Arquivos Críticos). Atualiza 5.6 (🎯 MOTIVO em AJAX) e 5.9 (símbolos ⬅️ ➡️). Estabelece regra de limpeza do ArquivosCriticos.md |
 | 1.3    | 01/02/2026 | Adiciona seção 4.5 - Tratamento de Erros e APIs (ApiResponse, CORS, FrotiXApi)   |
 | 1.2    | 29/01/2026 | Atualização completa dos padrões visuais de Cards (Arquivo e Função) com ícones  |
 | 1.1    | 18/01/2026 | Adiciona regras de commit/push automáticos e push obrigatório para main         |
@@ -900,6 +901,7 @@ function nomeDaFuncao(param1) {
  * --------------------------------------------------------------------------------------
  * 📥 ENVIA        : { Placa, ModeloId, Status }
  * 📤 RECEBE       : { success: bool, message: string, data: { VeiculoId } }
+ * 🎯 MOTIVO       : Criar novo veículo no sistema após validação do formulário
  ****************************************************************************************/
 fetch('/api/Veiculo/Create', {
     method: 'POST',
@@ -985,7 +987,7 @@ drawCallback: function() {
 
 ### 5.9 Rastreabilidade de Funções Internas
 
-**REGRA:** Documentar chamadas entre funções do MESMO arquivo.
+**REGRA:** Documentar chamadas entre funções do MESMO arquivo usando símbolos direcionais.
 
 #### ✅ Exemplo
 
@@ -993,7 +995,12 @@ drawCallback: function() {
 /****************************************************************************************
  * ⚡ FUNÇÃO: salvarDados
  * --------------------------------------------------------------------------------------
- * 🔄 CHAMA        : validarFormulario() [linha 45], enviarParaAPI() [linha 89]
+ * 🎯 OBJETIVO     : Validar e enviar dados do formulário para a API
+ *
+ * ⬅️ CHAMADO POR  : Evento onclick do botão #btnSalvar
+ *
+ * ➡️ CHAMA        : validarFormulario() [linha 45]
+ *                   enviarParaAPI() [linha 89]
  ****************************************************************************************/
 function salvarDados() {
     if (!validarFormulario()) return;  // [HELPER] Função deste arquivo linha 45
@@ -1003,12 +1010,21 @@ function salvarDados() {
 /****************************************************************************************
  * ⚡ FUNÇÃO: validarFormulario
  * --------------------------------------------------------------------------------------
- * 🔗 CHAMADA POR  : salvarDados() [linha 12]
+ * 🎯 OBJETIVO     : Validar campos obrigatórios do formulário
+ *
+ * ⬅️ CHAMADO POR  : salvarDados() [linha 12]
+ *
+ * ➡️ CHAMA        : Nenhuma (função folha)
  ****************************************************************************************/
 function validarFormulario() {
     // validação
 }
 ```
+
+**Nota sobre símbolos:**
+- **⬅️ CHAMADO POR**: Indica origem da chamada (quem invoca esta função)
+- **➡️ CHAMA**: Indica destino (o que esta função invoca)
+- Alternativas aceitas: `🔗 CHAMADA POR` e `🔄 CHAMA` (mantidos por compatibilidade)
 
 ---
 
@@ -1032,6 +1048,332 @@ function validarFormulario() {
 **Feedback Visual:**
 - Atualizar barra de progresso em `DocumentacaoIntracodigo.md`
 - Mostrar percentual concluído após cada lote
+
+---
+
+## 📊 5.11 MAPEAMENTO DE DEPENDÊNCIAS (MapeamentoDependencias.md)
+
+> 📁 **Arquivo de Referência:** `MapeamentoDependencias.md` - Mapa completo de todas as dependências entre arquivos do projeto
+
+### 5.11.1 Visão Geral
+
+O arquivo `MapeamentoDependencias.md` centraliza **TODAS** as relações de dependência entre arquivos do FrotiX, facilitando:
+- Rastreamento de impacto de mudanças
+- Identificação de acoplamento excessivo
+- Planejamento de refatorações
+- Onboarding de novos desenvolvedores
+
+### 5.11.2 Estrutura do Arquivo
+
+O mapeamento está dividido em **4 seções principais**:
+
+#### 🔷 CS → CS: Backend calling Backend
+Dependências entre arquivos C# (Controllers → Services → Repository → DbContext)
+
+#### 🟦 JS → JS: Frontend calling Frontend
+Dependências entre arquivos JavaScript (funções globais, helpers, plugins)
+
+#### 🟨 JS → CS: AJAX calling Endpoints
+Chamadas AJAX do frontend para endpoints da API
+
+#### 🟩 CSHTML: Pages e Views
+Arquivos Razor com suas dependências (scripts, partials, controllers)
+
+### 5.11.3 Formato de Documentação
+
+Cada dependência é documentada com **5 elementos obrigatórios**:
+
+| Campo | Descrição | Exemplo |
+|-------|-----------|---------|
+| **Método/Função** | Nome exato do método/função chamado | `GetAllAsync()` |
+| **Entrada** | Parâmetros esperados com tipos | `AbastecimentoFilter filters` |
+| **Saída** | Tipo de retorno | `Task<List<AbastecimentoDTO>>` |
+| **Motivo** | Razão de negócio/técnica da chamada | "Buscar abastecimentos com filtros aplicados" |
+| **Linha** | Localização exata no arquivo origem | `AbastecimentoController.cs:156` |
+
+#### ✅ Exemplo CS → CS
+
+```markdown
+### AbastecimentoController.cs
+**Localização:** FrotiX.Site/Controllers/AbastecimentoController.cs
+**Tipo:** API Controller (Partial Class)
+
+#### Depende de:
+1. **IUnitOfWork.Abastecimento** (Repository)
+   - Método: `GetAllAsync()`
+   - Entrada: `AbastecimentoFilter filters`
+   - Saída: `Task<List<AbastecimentoDTO>>`
+   - Motivo: Buscar abastecimentos com filtros aplicados no banco de dados
+   - Linha: AbastecimentoController.cs:156
+
+2. **ILogger<AbastecimentoController>** (Framework)
+   - Método: `LogInformation()`, `LogError()`
+   - Entrada: `string message, params object[] args`
+   - Saída: `void`
+   - Motivo: Registrar logs de operações e erros para auditoria
+   - Linhas: AbastecimentoController.cs:178, 245, 389
+```
+
+#### ✅ Exemplo JS → JS
+
+```markdown
+### ViagemIndex.js
+**Localização:** FrotiX.Site/wwwroot/js/cadastros/ViagemIndex.js
+
+#### Depende de:
+1. **alerta.js → Alerta.Confirmar()**
+   - Entrada: `string message, function callback`
+   - Saída: `Promise<boolean>`
+   - Motivo: Exibir confirmação padronizada antes de cancelar viagem
+   - Linha: ViagemIndex.js:425
+
+2. **frotix.js → FtxSpin.show()**
+   - Entrada: `Nenhum parâmetro`
+   - Saída: `void`
+   - Motivo: Exibir indicador de carregamento durante operações AJAX
+   - Linha: ViagemIndex.js:512
+```
+
+#### ✅ Exemplo JS → CS
+
+```markdown
+### motorista_upsert.js
+**Localização:** FrotiX.Site/wwwroot/js/cadastros/motorista_upsert.js
+
+#### Chama endpoints:
+1. **POST /Motorista/Upsert?handler=ValidaCPF**
+   - Controller: MotoristaController.cs
+   - Método: `OnPostValidaCPFAsync()`
+   - Entrada: `{ cpf: string }`
+   - Saída: `{ success: bool, message: string, motorista: { Id, Nome } }`
+   - Motivo: Validar CPF em tempo real durante preenchimento do formulário
+   - Linha: motorista_upsert.js:187
+
+2. **POST /Motorista/Upsert?handler=UploadFoto**
+   - Controller: MotoristaController.cs
+   - Método: `OnPostUploadFotoAsync()`
+   - Entrada: `FormData { file: File, motoristaId: int }`
+   - Saída: `{ success: bool, message: string, fotoUrl: string }`
+   - Motivo: Upload de foto do motorista para servidor e armazenamento no banco
+   - Linha: motorista_upsert.js:543
+```
+
+### 5.11.4 Processo de Atualização
+
+**REGRA:** O `MapeamentoDependencias.md` é atualizado **automaticamente** durante o processo de documentação intra-código.
+
+**Workflow:**
+1. Ao documentar um arquivo com Cards (Seção 5.2/5.3), extrair informações de dependências
+2. Para cada entrada em `➡️ CHAMA` ou `📦 DEPENDÊNCIAS`, adicionar ao mapeamento
+3. Para cada chamada AJAX com `📥📤🎯`, adicionar à seção JS→CS
+4. Validar consistência bidirecional (se A chama B, então B é chamado por A)
+5. Commit junto com a documentação intra-código
+
+### 5.11.5 Validação de Consistência
+
+**Regras de validação**:
+- ✅ Toda dependência CS→CS deve ter entrada correspondente em ambos os arquivos
+- ✅ Todo endpoint documentado em JS→CS deve existir em algum Controller
+- ✅ Tipos de entrada/saída devem corresponder à assinatura real do método
+- ✅ Números de linha devem ser atualizados ao modificar arquivos
+
+---
+
+## 🔍 5.12 ANÁLISE DE ARQUIVOS CRÍTICOS (ArquivosCriticos.md)
+
+> 📁 **Arquivo de Referência:** `ArquivosCriticos.md` - Backlog de dívidas técnicas não resolvidas
+
+### 5.12.1 Filosofia de Análise Completa
+
+**REGRA FUNDAMENTAL:** Quando um arquivo é aberto durante uma sessão de chat/editor/agente, ele deve ser **analisado por completo**, não apenas em relação à questão específica levantada pelo usuário.
+
+**Workflow Obrigatório:**
+
+1. **Resolver a questão imediata** do usuário (bug, feature, dúvida)
+
+2. **Analisar o arquivo completamente** buscando:
+   - CSS inline excessivo (>200 linhas)
+   - JavaScript inline excessivo (>200 linhas)
+   - Código duplicado
+   - Falta de validações
+   - Performance issues (queries N+1, falta de cache, loops desnecessários)
+   - Problemas de segurança (SQL injection, XSS, falta de sanitização)
+   - Violações das regras FrotiX (falta de try-catch, tooltips Bootstrap, etc.)
+
+3. **Apresentar resumo de otimizações** ao usuário com:
+   - Lista completa de problemas encontrados
+   - Estimativa de redução de linhas
+   - Prioridade de cada problema (🔴 CRÍTICA, 🟡 ALTA, 🟠 MÉDIA, 🟢 BAIXA)
+
+4. **PERGUNTAR ao usuário:**
+   > "Encontrei [N] problemas neste arquivo. Quer que eu corrija agora ou prefere deixar documentado no ArquivosCriticos.md para análise posterior?"
+
+5. **SE usuário aceitar corrigir AGORA:**
+   - ✅ Implementar todas as correções aceitas
+   - ✅ Fazer commit com mensagem descritiva
+   - ❌ **NÃO adicionar** ao ArquivosCriticos.md
+   - ✅ Problema resolvido, não há dívida técnica
+
+6. **SE usuário optar por deixar PARA DEPOIS:**
+   - ✅ **VERIFICAR** se arquivo já consta no ArquivosCriticos.md
+   - ✅ SE NÃO existe: Adicionar entrada completa com todos os problemas
+   - ✅ SE JÁ existe: Atualizar entrada existente (novos problemas ou mudança de prioridade)
+   - ✅ Informar ao usuário: "Documentado em ArquivosCriticos.md para refatoração futura"
+
+### 5.12.2 Regra de Limpeza (CRÍTICA)
+
+**IMPORTANTE:** O ArquivosCriticos.md **NÃO É** um log histórico de todos os problemas encontrados.
+
+**É um BACKLOG VIVO de dívidas técnicas pendentes:**
+- ✅ Arquivo tem problema + usuário quer deixar para depois = **ADICIONAR**
+- ✅ Arquivo tem problema + usuário aceita corrigir agora = **NÃO ADICIONAR**
+- ✅ Arquivo estava no backlog + problema foi corrigido = **REMOVER do ArquivosCriticos.md**
+
+**Exemplo de Limpeza:**
+```markdown
+<!-- SE o arquivo Multa/ListaAutuacao.cshtml for refatorado e os problemas corrigidos -->
+<!-- REMOVER a entrada completa do ArquivosCriticos.md -->
+<!-- Fazer commit: "refactor: ListaAutuacao.cshtml - corrige CSS/JS inline (closes #123)" -->
+```
+
+### 5.12.3 Verificação de Duplicação
+
+**ANTES de adicionar um arquivo ao ArquivosCriticos.md:**
+
+1. **Ler o arquivo completo** ArquivosCriticos.md
+2. **Buscar** pelo nome do arquivo (ex: `grep -i "ListaAutuacao.cshtml"`)
+3. **SE encontrado:**
+   - Comparar problemas existentes vs. novos problemas encontrados
+   - SE houver novos problemas: **Atualizar** a entrada (não duplicar)
+   - SE problemas forem os mesmos: **Não fazer nada**
+4. **SE NÃO encontrado:**
+   - Adicionar entrada completa no final da seção correspondente
+
+### 5.12.4 Critérios de Criticidade
+
+| Nível | Descrição | Exemplos |
+|-------|-----------|----------|
+| 🔴 **CRÍTICA** | Impacto alto, refatoração urgente | CSS/JS inline >500 linhas, SQL injection, falta de validação em operações financeiras |
+| 🟡 **ALTA** | Impacto médio, refatoração recomendada | CSS/JS inline 200-500 linhas, código duplicado em 3+ arquivos, queries N+1 |
+| 🟠 **MÉDIA** | Impacto baixo, refatoração opcional | CSS/JS inline 100-200 linhas, falta de comentários, nomes de variáveis pouco descritivos |
+| 🟢 **BAIXA** | Melhorias cosméticas | Formatação inconsistente, ordenação de imports, espaçamento |
+
+### 5.12.5 Formato de Documentação
+
+#### ✅ Template para ArquivosCriticos.md
+
+```markdown
+## 🔴 CRÍTICA: Multa/ListaAutuacao.cshtml (1307 linhas)
+
+**Localização:** `FrotiX.Site/Pages/Multa/ListaAutuacao.cshtml`
+**Data de Identificação:** 03/02/2026
+**Status:** 🔴 PENDENTE (aguardando refatoração)
+
+### Problemas Identificados
+
+1. **CSS Inline Excessivo** (569 linhas - 44% do arquivo)
+   - **Localização:** Linhas 45-614
+   - **Impacto:** Dificulta manutenção, não reutilizável, aumenta tempo de carregamento
+   - **Solução:** Extrair para `wwwroot/css/multa/lista-autuacao.css`
+
+2. **JavaScript Inline Excessivo** (738+ linhas - 56% do arquivo)
+   - **Localização:** Linhas 615-1307
+   - **Impacto:** Duplicação com `listaautuacao.js`, não reutilizável
+   - **Solução:** Consolidar com `wwwroot/js/cadastros/listaautuacao.js`
+
+3. **Bootstrap CDN Redundante**
+   - **Localização:** Linha 12
+   - **Impacto:** Já carregado no _Layout.cshtml
+   - **Solução:** Remover `<link>` duplicado
+
+### Métricas
+
+| Métrica | Atual | Após Refatoração | Redução |
+|---------|-------|------------------|---------|
+| Linhas totais | 1307 | ~500 | -62% |
+| CSS inline | 569 | 0 | -100% |
+| JS inline | 738 | ~50 (event handlers) | -93% |
+
+### Prioridade
+
+**Urgência:** 🔴 ALTA - Arquivo é mantido com frequência, mudanças geram conflitos de merge
+
+### Plano de Refatoração
+
+1. ✅ Extrair CSS para arquivo separado
+2. ✅ Consolidar JavaScript com arquivo existente
+3. ✅ Remover dependências duplicadas
+4. ✅ Adicionar documentação intra-código completa
+5. ✅ Atualizar MapeamentoDependencias.md
+```
+
+### 5.12.6 Quando Adicionar ao ArquivosCriticos.md
+
+**Adicionar APENAS quando o usuário optar por deixar para depois:**
+
+**Fluxo de Decisão:**
+```
+Arquivo aberto → Problema encontrado → Apresentar ao usuário
+   ↓
+   ├─ Usuário aceita corrigir AGORA
+   │  └─ Corrigir → Commit → ❌ NÃO adicionar ao ArquivosCriticos.md
+   │
+   └─ Usuário quer deixar PARA DEPOIS
+      └─ Verificar duplicação → Adicionar/Atualizar ArquivosCriticos.md
+```
+
+**Critérios técnicos para considerar um problema:**
+- ✅ CSS inline > 200 linhas
+- ✅ JavaScript inline > 200 linhas
+- ✅ Código duplicado em 2+ arquivos
+- ✅ Violações de segurança (SQL injection, XSS, CSRF)
+- ✅ Falta de validação em operações críticas
+- ✅ Performance issues evidentes (N+1, sem paginação, sem cache)
+
+**NÃO adicionar quando:**
+- ❌ Usuário corrigiu imediatamente
+- ❌ Problemas cosméticos menores (formatação, nomes)
+- ❌ Arquivos já em processo de refatoração
+- ❌ Issues triviais que podem ser corrigidos em <5 minutos
+
+### 5.12.7 Remoção do ArquivosCriticos.md
+
+**REGRA:** Quando um arquivo for refatorado e os problemas corrigidos, **REMOVER** a entrada do ArquivosCriticos.md.
+
+**Workflow de Remoção:**
+1. ✅ Corrigir todos os problemas listados no ArquivosCriticos.md para aquele arquivo
+2. ✅ Testar correções
+3. ✅ Fazer commit: `refactor: [NomeArquivo] - resolve issues críticos`
+4. ✅ **REMOVER** entrada completa do ArquivosCriticos.md
+5. ✅ Atualizar estatísticas no topo do ArquivosCriticos.md
+6. ✅ Fazer commit: `docs: ArquivosCriticos.md - remove [NomeArquivo] (resolvido)`
+
+**Exemplo de Mensagem de Commit:**
+```bash
+git commit -m "refactor: ListaAutuacao.cshtml - extrai CSS/JS inline, remove CDN duplicado
+
+- Extrai 569 linhas CSS para lista-autuacao.css
+- Consolida 738 linhas JS em listaautuacao.js
+- Remove Bootstrap CDN redundante
+- Reduz arquivo de 1307 → 498 linhas (62%)
+
+Closes #45 (ArquivosCriticos.md)"
+```
+
+### 5.12.8 Nota Importante: Estratégias Intencionais
+
+**Mix Kendo/Syncfusion:**
+
+Não é inconsistência, mas **estratégia pontual** de substituição gradual de componentes Syncfusion problemáticos por equivalentes Kendo.
+
+**Motivo:** Evitar regressões em sistemas estáveis, substituindo apenas onde há problemas técnicos comprovados.
+
+**Exemplos válidos:**
+- ✅ Substituir Syncfusion DatePicker por Kendo em página com bugs de timezone
+- ✅ Manter Syncfusion Grid se está funcionando perfeitamente
+- ❌ NÃO substituir "para padronizar" sem motivo técnico
+
+**Regra:** Mix Kendo/Syncfusion **NÃO É problema crítico** quando for substituição pontual justificada. **NÃO adicionar** ao ArquivosCriticos.md apenas por mix de bibliotecas.
 
 ---
 
