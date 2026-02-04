@@ -163,6 +163,8 @@ public sealed class CacheWarmupService : IHostedService, IDisposable
         // =======================
         // MOTORISTAS
         // =======================
+        // [DB] Buscar motoristas com apenas ID e Nome (sem tracking EF)
+        // LOGICA: Reduzir dados trazidos (apenas campos necessários)
         var motoristas = await uow
             .ViewMotoristas.GetAllReducedIQueryable(
                 v => new { v.MotoristaId, Nome = v.MotoristaCondutor },
@@ -177,6 +179,8 @@ public sealed class CacheWarmupService : IHostedService, IDisposable
         // =======================
         // VEÍCULOS
         // =======================
+        // [DB] Buscar veículos com apenas ID e Descrição (sem tracking)
+        // LOGICA: Minimizar footprint para evitar pressão de memória
         var veiculos = await uow
             .ViewVeiculosManutencao.GetAllReducedIQueryable(
                 v => new
@@ -195,6 +199,7 @@ public sealed class CacheWarmupService : IHostedService, IDisposable
         // =======================
         // VEÍCULOS RESERVA (se usar)
         // =======================
+        // [DB] Buscar veículos reserva para fallback em caso de indisponibilidade normal
         // Se você removeu essa lista, apague este bloco e a chave.
         var veiculosReserva = await uow
             .ViewVeiculosManutencaoReserva.GetAllReducedIQueryable(
@@ -212,7 +217,7 @@ public sealed class CacheWarmupService : IHostedService, IDisposable
             ))
             .ToListAsync(ct);
 
-        // comente esta linha se não usar reserva
+        // [REGRA] Comente esta linha se não usar reserva
         Set(CacheKeys.VeiculosReserva, veiculosReserva);
 
         _log.LogInformation(
@@ -222,6 +227,25 @@ public sealed class CacheWarmupService : IHostedService, IDisposable
         );
     }
 
+    /***********************************************************************************
+     * ⚡ FUNÇÃO: Set<T>
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Genérica para persistir lista em cache com configuração padrão
+     *                   (TTL 30min, Prioridade HIGH)
+     *
+     * 📥 ENTRADAS     : key [string] - Chave de cache (ex: CacheKeys.Motoristas)
+     *                   value [List<T>] - Lista a armazenar em cache
+     *
+     * 📤 SAÍDAS       : void - Cache atualizado
+     *
+     * ⬅️ CHAMADO POR  : WarmAsync() [linhas 177, 197, 221]
+     *
+     * ➡️ CHAMA        : _cache.Set() [IMemoryCache]
+     *
+     * 📝 OBSERVAÇÕES  : Genérica para facilitar reuso. TTL e Prioridade são constantes
+     *                   (_ttl e CacheItemPriority.High). HIGH prioridade evita eviction
+     *                   quando memória fica pressão.
+     ***********************************************************************************/
     private void Set<T>(string key, List<T> value)
     {
         _cache.Set(

@@ -1,14 +1,29 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-    ║ 🚀 ARQUIVO: ViewMotoristaVez.cs                                                                    ║
-    ║ 📂 CAMINHO: /Models/Views                                                                           ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 🎯 OBJETIVO: View SQL de motorista da vez (fila de atendimento).                                   ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 📋 PROPS: MotoristaId, NomeMotorista, DataEscala, NumeroSaidas, StatusMotorista, VeiculoDescricao   ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 🔗 DEPS: FrotiX.Validations                                                                         ║
-    ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViewMotoristaVez.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Vista SQL somente leitura para representar motorista atual da fila
+ *                   de atendimento (escala do dia). Utilizada em telas de despacho
+ *                   e gestão de motoristas para identificar quem está de turno.
+ *
+ * 📥 ENTRADAS     : Dados da view SQL vMotoristaVez:
+ *                   - MotoristaId, NomeMotorista, Ponto, Foto
+ *                   - DataEscala, NumeroSaidas, StatusMotorista, Lotacao
+ *                   - VeiculoDescricao, Placa, HoraInicio, HoraFim
+ *
+ * 📤 SAÍDAS       : Registro de leitura (somente get; set) para exibição em grid/modal
+ *
+ * 🔗 CHAMADA POR  : EscalaController.GetMotoristaDaVez()
+ *                   Views de escala, telas de despacho, dashboards operacionais
+ *
+ * 🔄 CHAMA        : GetStatusClass() - método helper para mapear status em CSS
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations
+ *                   FrotiX.Validations (validações customizadas)
+ *
+ * 📝 OBSERVAÇÕES  : View SQL mapeada via DbSet<ViewMotoristasVez>
+ *                   Somente leitura (sem [Key], sem navigation properties)
+ *                   Utilizada para otimizar queries de escala/turno
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -37,49 +52,80 @@ namespace FrotiX.Models
      ****************************************************************************************/
     public class ViewMotoristasVez
     {
-        // [DADOS] Identificador único do motorista
+        // [DADOS] MotoristaId - GUID único do motorista (FK para Motorista).
+        // Nunca é nulo em registros válidos da view.
         public Guid MotoristaId { get; set; }
-        // [DADOS] Nome completo do motorista
+
+        // [DADOS] NomeMotorista - Nome completo do motorista (string 1..200).
+        // Obrigatório, vem preenchido da view SQL.
         public string NomeMotorista { get; set; }
-        // [DADOS] Ponto/matrícula do motorista
+
+        // [DADOS] Ponto/Matrícula - Código de matrícula funcional (string 1..20).
+        // Opcional; pode ser null se não configurado no cadastro.
         public string? Ponto { get; set; }
-        // [DADOS] Foto do motorista (blob)
+
+        // [DADOS] Foto - Foto do motorista armazenada como blob (byte[]).
+        // Opcional; pode ser null se matricula sem foto registrada.
         public byte[]? Foto { get; set; }
-        // [DADOS] Data da escala atual
+
+        // [DADOS] DataEscala - Ano/mês/dia da escala atual (DateTime).
+        // Indica qual turno o motorista está escalado.
         public DateTime DataEscala { get; set; }
-        // [DADOS] Número de saídas/expedições
+
+        // [DADOS] NumeroSaidas - Quantidade de expedições/saídas (int >= 0).
+        // Quantas vezes motorista saiu para atendimento neste turno.
+        // [VALIDACAO] Nunca deve ser negativo (restritivo).
         public int NumeroSaidas { get; set; }
-        // [DADOS] Status atual (disponível/em serviço/etc)
+
+        // [DADOS] StatusMotorista - Status operacional (string: "Disponível", "Em Serviço", "Off-duty").
+        // Utilizado pela UI para renderizar CSS e ícones de status.
+        // [VALIDACAO] Valores esperados: "disponável", "em serviço", "folga", "férias", "licença".
         public string StatusMotorista { get; set; }
-        // [DADOS] Lotação/local de trabalho
+
+        // [DADOS] Lotacao - Unidade/setor de trabalho (string 1..100).
+        // Opcional; identifica origem ou destino de lotação.
         public string? Lotacao { get; set; }
-        // [DADOS] Descrição do veículo designado
+
+        // [DADOS] VeiculoDescricao - Descrição/modelo do veículo (string 1..150).
+        // Ex: "Fiat Ducato Branco 2020" - opcional se motorista sem veículo designado.
         public string? VeiculoDescricao { get; set; }
-        // [DADOS] Placa do veículo
+
+        // [DADOS] Placa - Placa do veículo (string ABC-1234).
+        // Opcional; pode ser null se sem veículo designado.
         public string? Placa { get; set; }
-        // [DADOS] Horário de início do turno
+
+        // [DADOS] HoraInicio - Hora de início do turno (string HH:mm).
+        // Ex: "08:00" - Obrigatório em turnos definidos.
         public string HoraInicio { get; set; }
-        // [DADOS] Horário de fim do turno
+
+        // [DADOS] HoraFim - Hora de término do turno (string HH:mm).
+        // Ex: "18:00" - Obrigatório em turnos definidos.
         public string HoraFim { get; set; }
 
         /****************************************************************************************
          * ⚡ MÉTODO: GetStatusClass
          * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Retornar classe CSS baseada no status do motorista
+         * 🎯 OBJETIVO     : Mapear status do motorista em classe CSS para renderização visual
+         *                   (color, icon, background). Utilizado em grids e cards da UI.
          *
-         * 📥 ENTRADAS     : StatusMotorista (propriedade interna)
+         * 📥 ENTRADAS     : Utiliza propriedade StatusMotorista (interna)
          *
-         * 📤 SAÍDAS       : String com classe CSS (text-success, text-warning, text-secondary)
+         * 📤 SAÍDAS       : String com classe CSS Bootstrap/customizada
+         *                   - "text-success" para Disponível
+         *                   - "text-warning" para Em Serviço
+         *                   - "text-secondary" para outros
          *
-         * ⬅️ CHAMADO POR  : Views de escala e fila
+         * ⬅️ CHAMADO POR  : Views de escala, renders de grid, componentes de status
          *
-         * 🔄 CHAMA        : Não se aplica
+         * 🔄 CHAMA        : string.ToLower() (normalizador de case)
          *
-         * 📝 OBSERVAÇÕES  : Usa switch expression para mapear status em cores
+         * 📝 OBSERVAÇÕES  : Trata variações de acentuação (é/e)
+         *                   Switch expression eficiente para 3+ possibilidades
          ****************************************************************************************/
         public string GetStatusClass()
         {
-            // [LOGICA] Map status para classe CSS com acento normalizado
+            // [LOGICA] Normalizar status removendo acentos e mapear para classe CSS
+            // Considera "disponível" = "disponivel" via expressão switch
             return StatusMotorista?.ToLower() switch
             {
                 "disponível" or "disponivel" => "text-success",
