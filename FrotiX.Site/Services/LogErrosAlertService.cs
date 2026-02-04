@@ -269,6 +269,26 @@ public class LogErrosAlertService : BackgroundService
         }
     }
 
+    /***********************************************************************************
+     * ⚡ FUNÇÃO: GetTituloAlerta
+     * ⚡ FUNÇÃO: GetIconeAlerta
+     * ⚡ FUNÇÃO: GetCorAlerta
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Retornar título, ícone e cor do alerta baseado no tipo de
+     *                   anomalia/threshold detectada. Usados na construção do payload
+     *
+     * 📥 ENTRADAS     : alerta [LogThresholdAlert] - tipo do alerta (enum)
+     *
+     * 📤 SAÍDAS       : string - Título legível, classe CSS FontAwesome, ou código HEX
+     *
+     * ⬅️ CHAMADO POR  : EnviarAlertaSeNecessario() [linhas 237-239]
+     *
+     * ➡️ CHAMA        : Switch expression (nenhuma dependência)
+     *
+     * 📝 OBSERVAÇÕES  : Simples mapeia tipo → apresentação visual. Usam switch expression.
+     *                   GetTituloAlerta inclui emoji descritivos. GetCorAlerta baseado
+     *                   em severidade (high=vermelho, medium=laranja, low=amarelo).
+     ***********************************************************************************/
     private string GetTituloAlerta(LogThresholdAlert alerta)
     {
         return alerta.Tipo switch
@@ -308,6 +328,23 @@ public class LogErrosAlertService : BackgroundService
         };
     }
 
+    /***********************************************************************************
+     * ⚡ FUNÇÃO: LimparCacheAntigo
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Remover entradas do cache de cooldown com idade > 10 minutos
+     *                   para evitar crescimento infinito do dicionário
+     *
+     * 📥 ENTRADAS     : Nenhuma (opera sobre _alertasSent)
+     *
+     * 📤 SAÍDAS       : void - Cache atualizado
+     *
+     * ⬅️ CHAMADO POR  : EnviarAlertaSeNecessario() [linha 257]
+     *
+     * ➡️ CHAMA        : _alertasSent.Where/Select/ToList(), TryRemove()
+     *
+     * 📝 OBSERVAÇÕES  : Executa a cada alerta enviado. Remove chaves com
+     *                   lastSent > ALERT_COOLDOWN_MINUTES * 2 (10 min).
+     ***********************************************************************************/
     private void LimparCacheAntigo()
     {
         var agora = DateTime.Now;
@@ -322,6 +359,23 @@ public class LogErrosAlertService : BackgroundService
         }
     }
 
+    /***********************************************************************************
+     * ⚡ FUNÇÃO: StopAsync
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Finalizar o BackgroundService de forma segura. Parar Timer
+     *                   e chamar base.StopAsync
+     *
+     * 📥 ENTRADAS     : cancellationToken [CancellationToken] - Token de cancelamento
+     *
+     * 📤 SAÍDAS       : Task - Operação assíncrona de parada
+     *
+     * ⬅️ CHAMADO POR  : ASP.NET Core Host (durante shutdown)
+     *
+     * ➡️ CHAMA        : _checkTimer.Change(), _checkTimer.Dispose()
+     *                   base.StopAsync()
+     *
+     * 📝 OBSERVAÇÕES  : Parar Timer evita verificações pendentes após shutdown.
+     ***********************************************************************************/
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("🔔 LogErrosAlertService parando...");
