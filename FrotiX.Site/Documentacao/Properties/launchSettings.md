@@ -18,6 +18,7 @@ Este arquivo define os profiles de execucao do FrotiX.Site no Visual Studio, inc
 - commandName: Project
 - launchBrowser: true
 - launchUrl: ""
+- dotnetRunMessages: true
 - applicationUrl: http://localhost:5000
 
 ## Observacoes
@@ -32,3 +33,4 @@ Este arquivo define os profiles de execucao do FrotiX.Site no Visual Studio, inc
 | Versao | Data       | Autor          | Descricao |
 |--------|------------|----------------|-----------|
 | 1.0    | 04/02/2026 | GitHub Copilot | Ajusta FrotiX.Web para abrir http://localhost:5000 e launchBrowser ativo. |
+| 1.1    | 04/02/2026 | GitHub Copilot | Habilita dotnetRunMessages para exibir URL no output. |
