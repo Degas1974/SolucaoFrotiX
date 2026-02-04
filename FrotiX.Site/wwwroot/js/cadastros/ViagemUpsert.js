@@ -202,6 +202,11 @@ function enviarFormularioViaAjax(handler, id)
             AppToast.show("Vermelho", mensagemErro, 3000);
         }
     });
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "enviarFormularioViaAjax", error);
+    }
 }
 
 $(document).ready(function ()

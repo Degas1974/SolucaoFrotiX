@@ -285,6 +285,56 @@ drawCallback: function() {
 - Se houver **mais de um carregamento** do Kendo na página, a cultura deve ser aplicada **após o último carregamento**.
 - Não confiar no idioma padrão do navegador.
 
+### 3.3.1 Telerik/Kendo – Timing de Inicialização (OBRIGATÓRIO)
+
+**REGRA INVIOLÁVEL:** Toda inicialização de widgets Kendo via JavaScript DEVE ocorrer dentro de `$(document).ready()` ou evento equivalente, **após** o carregamento completo da biblioteca.
+
+**Motivo:** O erro `kendo is not defined` ocorre quando código JavaScript tenta usar objetos Kendo **antes** da biblioteca ter sido carregada. Isso acontece frequentemente quando:
+- Scripts são colocados no `<head>` ou início da página
+- Código Kendo está fora de `$(document).ready()`
+- Múltiplos carregamentos de Kendo criam race conditions
+
+**✅ CORRETO – Inicialização dentro de $(document).ready() com verificação:**
+
+```javascript
+$(document).ready(function() {
+    // Verificar se Kendo está disponível antes de usar
+    if (typeof kendo !== 'undefined' && kendo.ui) {
+        $("#meuUpload").kendoUpload({
+            async: { saveUrl: "/api/upload", removeUrl: "/api/remove" }
+        });
+    }
+});
+```
+
+**✅ CORRETO – Override de método com verificação:**
+
+```javascript
+$(document).ready(function() {
+    if (typeof kendo !== 'undefined' && kendo.ui && kendo.ui.Upload) {
+        // Desabilitar drag-drop em mobile
+        kendo.ui.Upload.fn._supportsDrop = function() { 
+            return false; 
+        };
+    }
+});
+```
+
+**❌ ERRADO – Fora de $(document).ready():**
+
+```javascript
+// NUNCA fazer isso! Causa "kendo is not defined"
+kendo.ui.Upload.fn._supportsDrop = function() { return false; };
+
+$("#elemento").kendoDatePicker({ format: "dd/MM/yyyy" });
+```
+
+**Checklist de Auditoria Kendo:**
+1. Todo código `.kendo*()` está dentro de `$(document).ready()`?
+2. Todo acesso a `kendo.ui.*` tem verificação `if (typeof kendo !== 'undefined')`?
+3. Scripts de cultura (`kendo.culture.pt-BR.js`) carregam **após** `kendo.all.min.js`?
+4. Não há duplicação de carregamento do Kendo na mesma página?
+
 ### 3.4 CSS
 
 - **Global:** `wwwroot/css/frotix.css`

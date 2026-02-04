@@ -1342,6 +1342,7 @@ ViewData["valueTemplate"] = @"
                                                 .BindTo((System.Collections.IEnumerable)ViewData["dataFinalidade"])
                                                 .Value(Model.ViagemObj.Viagem.Finalidade)
                                                 .Events(e => e.Change("lstFinalidade_Change"))
+                                                .Deferred()
                                             )
                                             <input type="hidden" asp-for="ViagemObj.Viagem.Finalidade" id="hiddenFinalidade" />
                                         </div>
@@ -1510,6 +1511,7 @@ ViewData["valueTemplate"] = @"
                                                                "<img src='#: Imagem #' style='width: 20px; height: 20px; margin-right: 8px;' />" +
                                                                "<span>#: Descricao #</span>" +
                                                                "</div>")
+                                                .Deferred()
                                             )
                                             <input type="hidden" asp-for="ViagemObj.Viagem.CombustivelInicial" id="hiddenCombustivelInicial" />
                                         </div>
@@ -1532,6 +1534,7 @@ ViewData["valueTemplate"] = @"
                                                                "<img src='#: Imagem #' style='width: 20px; height: 20px; margin-right: 8px;' />" +
                                                                "<span>#: Descricao #</span>" +
                                                                "</div>")
+                                                .Deferred()
                                             )
                                             <input type="hidden" asp-for="ViagemObj.Viagem.CombustivelFinal" id="hiddenCombustivelFinal" />
                                         </div>
@@ -1600,6 +1603,34 @@ ViewData["valueTemplate"] = @"
                                                 <label class="form-check-label fw-semibold" for="chkTabletEntregue">
                                                     <i class="fa-duotone fa-tablet me-1 text-info"></i>
                                                     Tablet Entregue
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <div class="form-check form-switch">
+                                                <input type="hidden" id="hidArlaEntregue" name="ViagemObj.Viagem.ArlaEntregue" 
+                                                       value="@(Model.ViagemObj?.Viagem?.ArlaEntregue == true ? "true" : "false")" />
+                                                <input class="form-check-input" type="checkbox" id="chkArlaEntregue" 
+                                                       @(Model.ViagemObj?.Viagem?.ArlaEntregue == true ? "checked" : "")
+                                                       @(viagemFinalizada ? "disabled" : "")
+                                                       onchange="document.getElementById('hidArlaEntregue').value = this.checked ? 'true' : 'false';">
+                                                <label class="form-check-label fw-semibold" for="chkArlaEntregue">
+                                                    <i class="fa-duotone fa-tint me-1 text-info"></i>
+                                                    Arla Entregue
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <div class="form-check form-switch">
+                                                <input type="hidden" id="hidCaboEntregue" name="ViagemObj.Viagem.CaboEntregue" 
+                                                       value="@(Model.ViagemObj?.Viagem?.CaboEntregue == true ? "true" : "false")" />
+                                                <input class="form-check-input" type="checkbox" id="chkCaboEntregue" 
+                                                       @(Model.ViagemObj?.Viagem?.CaboEntregue == true ? "checked" : "")
+                                                       @(viagemFinalizada ? "disabled" : "")
+                                                       onchange="document.getElementById('hidCaboEntregue').value = this.checked ? 'true' : 'false';">
+                                                <label class="form-check-label fw-semibold" for="chkCaboEntregue">
+                                                    <i class="fa-duotone fa-charging-station me-1 text-info"></i>
+                                                    Cabo Entregue
                                                 </label>
                                             </div>
                                         </div>
@@ -1835,20 +1866,6 @@ ViewData["valueTemplate"] = @"
                                                 <label class="form-check-label fw-semibold" for="chkArlaDevolvido">
                                                     <i class="fa-duotone fa-tint me-1 text-primary"></i>
                                                     Arla Devolvido
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-6 col-md-3">
-                                            <div class="form-check form-switch">
-                                                <input type="hidden" id="hidCaboDevolvido" name="ViagemObj.Viagem.CaboDevolvido" 
-                                                       value="@(Model.ViagemObj?.Viagem?.CaboDevolvido == true ? "true" : "false")" />
-                                                <input class="form-check-input" type="checkbox" id="chkCaboDevolvido" 
-                                                       @(Model.ViagemObj?.Viagem?.CaboDevolvido == true ? "checked" : "")
-                                                       @(viagemFinalizada ? "disabled" : "")
-                                                       onchange="document.getElementById('hidCaboDevolvido').value = this.checked ? 'true' : 'false';">
-                                                <label class="form-check-label fw-semibold" for="chkCaboDevolvido">
-                                                    <i class="fa-duotone fa-charging-station me-1 text-primary"></i>
-                                                    Cabo Devolvido
                                                 </label>
                                             </div>
                                         </div>
@@ -2914,77 +2931,82 @@ ViewData["valueTemplate"] = @"
 		window.viagemFinalizada = @Json.Serialize(Model.ViagemObj?.Viagem?.Status == "Realizada" || Model.ViagemObj?.Viagem?.Status == "Cancelada");
 
 		// Configuração dos eventos change para atualizar campos hidden dos controles Kendo
-		$(document).ready(function() {
-			// Combustível Inicial
-			var combInicialWidget = $("#ddtCombustivelInicial").data("kendoDropDownList");
-			if (combInicialWidget) {
-				combInicialWidget.bind("change", function() {
-					$("#hiddenCombustivelInicial").val(this.value() || "");
-				});
-			}
+		// Aguarda Kendo estar disponível antes de inicializar widgets
+		function initKendoWidgets() {
+			try {
+				// Combustível Inicial
+				var combInicialWidget = $("#ddtCombustivelInicial").data("kendoDropDownList");
+				if (combInicialWidget) {
+					combInicialWidget.bind("change", function() {
+						$("#hiddenCombustivelInicial").val(this.value() || "");
+					});
+				}
 
-			// Combustível Final
-			var combFinalWidget = $("#ddtCombustivelFinal").data("kendoDropDownList");
-			if (combFinalWidget) {
-				combFinalWidget.bind("change", function() {
-					$("#hiddenCombustivelFinal").val(this.value() || "");
-				});
-			}
+				// Combustível Final
+				var combFinalWidget = $("#ddtCombustivelFinal").data("kendoDropDownList");
+				if (combFinalWidget) {
+					combFinalWidget.bind("change", function() {
+						$("#hiddenCombustivelFinal").val(this.value() || "");
+					});
+				}
 
-			// Inicializar Kendo DropDownTree para Setor (hierárquico)
-			if (typeof setorData !== 'undefined') {
-				// Construir estrutura hierárquica
-				var hierarchicalData = buildHierarchy(setorData);
+				// Inicializar Kendo DropDownTree para Setor (hierárquico)
+				if (typeof setorData !== 'undefined' && typeof kendo !== 'undefined') {
+					// Construir estrutura hierárquica
+					var hierarchicalData = buildHierarchy(setorData);
 
-				$("#ddtSetor").kendoDropDownTree({
-					placeholder: "Selecione um Setor",
-					dataTextField: "Nome",
-					dataValueField: "SetorSolicitanteId",
-					enabled: false,
-					dataSource: {
-						data: hierarchicalData,
-						schema: {
-							model: {
-								id: "SetorSolicitanteId",
-								hasChildren: "HasChild",
-								children: "items"
+					$("#ddtSetor").kendoDropDownTree({
+						placeholder: "Selecione um Setor",
+						dataTextField: "Nome",
+						dataValueField: "SetorSolicitanteId",
+						enabled: false,
+						dataSource: {
+							data: hierarchicalData,
+							schema: {
+								model: {
+									id: "SetorSolicitanteId",
+									hasChildren: "HasChild",
+									children: "items"
+								}
 							}
+						},
+						value: setorValue,
+						change: function(e) {
+							$("#hiddenSetor").val(this.value() || "");
 						}
-					},
-					value: setorValue,
-					change: function(e) {
-						$("#hiddenSetor").val(this.value() || "");
-					}
-				});
+					});
+				}
+			} catch (error) {
+				console.error('[Viagem Upsert] Erro ao inicializar widgets Kendo:', error);
 			}
+		}
 
-			// Função auxiliar para construir hierarquia
-			function buildHierarchy(flatData) {
-				var roots = [];
-				var lookup = {};
+		// Função auxiliar para construir hierarquia
+		function buildHierarchy(flatData) {
+			var roots = [];
+			var lookup = {};
 
-				// Criar lookup por ID
-				flatData.forEach(function(item) {
-					lookup[item.SetorSolicitanteId] = { ...item, items: [] };
-				});
+			// Criar lookup por ID
+			flatData.forEach(function(item) {
+				lookup[item.SetorSolicitanteId] = { ...item, items: [] };
+			});
 
-				// Construir árvore
-				flatData.forEach(function(item) {
-					if (item.SetorPaiId && item.SetorPaiId !== "00000000-0000-0000-0000-000000000000") {
-						var parent = lookup[item.SetorPaiId];
-						if (parent) {
-							parent.items.push(lookup[item.SetorSolicitanteId]);
-						} else {
-							roots.push(lookup[item.SetorSolicitanteId]);
-						}
+			// Construir árvore
+			flatData.forEach(function(item) {
+				if (item.SetorPaiId && item.SetorPaiId !== "00000000-0000-0000-0000-000000000000") {
+					var parent = lookup[item.SetorPaiId];
+					if (parent) {
+						parent.items.push(lookup[item.SetorSolicitanteId]);
 					} else {
 						roots.push(lookup[item.SetorSolicitanteId]);
 					}
-				});
+				} else {
+					roots.push(lookup[item.SetorSolicitanteId]);
+				}
+			});
 
-				return roots;
-			}
-		});
+			return roots;
+		}
 
 	</script>
 
@@ -2993,6 +3015,18 @@ ViewData["valueTemplate"] = @"
 
 	<!-- Kendo UI - Scripts e estilos servidos localmente via NuGet (Kendo.Mvc) -->
 	@(Html.Kendo().DeferredScripts())
+
+	<!-- Inicialização dos widgets Kendo APÓS o DeferredScripts -->
+	<script>
+		$(document).ready(function() {
+			// Aguarda um tick para garantir que os widgets Kendo estejam inicializados
+			setTimeout(function() {
+				if (typeof initKendoWidgets === 'function') {
+					initKendoWidgets();
+				}
+			}, 100);
+		});
+	</script>
 
 	<!-- Kendo Editor Helper - Inicialização do editor -->
 	<script src="~/js/viagens/kendo-editor-upsert.js" asp-append-version="true"></script>

@@ -50,6 +50,7 @@ public sealed class CacheWarmupService : IHostedService, IDisposable
         IConfiguration config
     )
     {
+        Console.WriteLine("[DIAG-CTOR] CacheWarmupService INICIO...");
         try
         {
             _sp = sp;
@@ -67,6 +68,7 @@ public sealed class CacheWarmupService : IHostedService, IDisposable
             _warmupTimeout = TimeSpan.FromSeconds(Math.Max(1, warmupTimeoutSeconds));
             _refreshInterval = TimeSpan.FromMinutes(Math.Max(1, refreshIntervalMinutes));
             _ttl = TimeSpan.FromMinutes(Math.Max(1, cacheTtlMinutes));
+            Console.WriteLine("[DIAG-CTOR] CacheWarmupService FIM");
         }
         catch (Exception error)
         {

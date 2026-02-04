@@ -53,9 +53,11 @@ public class LogErrosCleanupService : BackgroundService
         IWebHostEnvironment environment,
         ILogger<LogErrosCleanupService> logger)
     {
+        Console.WriteLine("[DIAG-CTOR] LogErrosCleanupService INICIO...");
         _serviceProvider = serviceProvider;
         _environment = environment;
         _logger = logger;
+        Console.WriteLine("[DIAG-CTOR] LogErrosCleanupService FIM");
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

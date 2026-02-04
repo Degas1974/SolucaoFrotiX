@@ -61,6 +61,7 @@ public class LogErrosAlertService : BackgroundService
         IHubContext<AlertasHub> hubContext,
         ILogger<LogErrosAlertService> logger)
     {
+        Console.WriteLine("[DIAG-CTOR] LogErrosAlertService INICIO...");
         _serviceProvider = serviceProvider;
         _hubContext = hubContext;
         _logger = logger;
@@ -75,6 +76,7 @@ public class LogErrosAlertService : BackgroundService
             AlertarNovosErros = true,
             AlertarPicos = true
         };
+        Console.WriteLine("[DIAG-CTOR] LogErrosAlertService FIM");
     }
 
     /***********************************************************************************

@@ -264,21 +264,55 @@
 
 <!-- ⚠️ ADICIONE O KENDO UI AQUI, ANTES DO VENDORS.BUNDLE.JS -->
 <!-- Kendo UI - CDN Oficial Telerik -->
-@* <link href="https://kendo.cdn.telerik.com/2023.1.117/styles/kendo.default-main.min.css" rel="stylesheet" />*@
-<script src="https://kendo.cdn.telerik.com/2023.1.117/js/jszip.min.js" crossorigin="anonymous"></script>
-<!-- Usar distribuição clássica (non-module) para evitar SyntaxError em browsers -->
-<script src="https://kendo.cdn.telerik.com/2025.2.520/js/kendo.all.min.js" crossorigin="anonymous"></script>
-<script src="https://kendo.cdn.telerik.com/2025.2.520/js/kendo.aspnetmvc.min.js" crossorigin="anonymous"></script>
-<script src="https://kendo.cdn.telerik.com/2025.2.520/js/cultures/kendo.culture.pt-BR.min.js" crossorigin="anonymous"></script>
-<script src="https://kendo.cdn.telerik.com/2025.2.520/js/messages/kendo.messages.pt-BR.min.js" crossorigin="anonymous"></script>
 <script>
-    try {
-        if (window.kendo && kendo.culture) {
-            kendo.culture("pt-BR");
-        }
-    } catch (error) {
-        console.warn("Kendo pt-BR: falha ao aplicar cultura.", error);
-    }
+	(function carregarKendoPtBr() {
+		try {
+			if (window.__kendoPtBrLoaded) {
+				return;
+			}
+
+			if (!window.kendo || !window.kendo.culture) {
+				setTimeout(carregarKendoPtBr, 50);
+				return;
+			}
+
+			function carregarScript(src, onload) {
+				try {
+					var script = document.createElement("script");
+					script.src = src;
+					script.crossOrigin = "anonymous";
+					script.onload = onload;
+					script.onerror = function (error) {
+						if (window.Alerta && typeof Alerta.TratamentoErroComLinha === "function") {
+							Alerta.TratamentoErroComLinha("_ScriptsBasePlugins.cshtml", "carregarKendoPtBr.script", error);
+						}
+					};
+					document.head.appendChild(script);
+				} catch (error) {
+					if (window.Alerta && typeof Alerta.TratamentoErroComLinha === "function") {
+						Alerta.TratamentoErroComLinha("_ScriptsBasePlugins.cshtml", "carregarKendoPtBr.carregarScript", error);
+					}
+				}
+			}
+
+			carregarScript("https://kendo.cdn.telerik.com/2025.2.520/js/cultures/kendo.culture.pt-BR.min.js", function () {
+				carregarScript("https://kendo.cdn.telerik.com/2025.2.520/js/messages/kendo.messages.pt-BR.min.js", function () {
+					try {
+						window.__kendoPtBrLoaded = true;
+						kendo.culture("pt-BR");
+					} catch (error) {
+						if (window.Alerta && typeof Alerta.TratamentoErroComLinha === "function") {
+							Alerta.TratamentoErroComLinha("_ScriptsBasePlugins.cshtml", "carregarKendoPtBr.culture", error);
+						}
+					}
+				});
+			});
+		} catch (error) {
+			if (window.Alerta && typeof Alerta.TratamentoErroComLinha === "function") {
+				Alerta.TratamentoErroComLinha("_ScriptsBasePlugins.cshtml", "carregarKendoPtBr", error);
+			}
+		}
+	})();
 </script>
 
 <!-- PDF.js para o Kendo PDFViewer -->

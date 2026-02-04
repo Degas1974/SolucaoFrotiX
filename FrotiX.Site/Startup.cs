@@ -158,7 +158,7 @@ namespace FrotiX
                 // Cache em memória e hosted service de warmup
                 services.AddMemoryCache();
                 Console.WriteLine("[DIAG] Antes AddHostedService CacheWarmupService...");
-                services.AddHostedService<CacheWarmupService>();
+                // [TEMP-DISABLED] services.AddHostedService<CacheWarmupService>();
                 Console.WriteLine("[DIAG] Apos CacheWarmupService...");
 
                 // ========================================================
@@ -174,12 +174,13 @@ namespace FrotiX
                 services.AddSingleton<ILogService, LogService>();
 
                 // Configura LoggerProvider customizado para capturar logs do ILogger (Debug Output)
-                services.AddSingleton<ILoggerProvider>(sp =>
-                    new FrotiXLoggerProvider(
-                        sp.GetRequiredService<ILogService>(),
-                        Microsoft.Extensions.Logging.LogLevel.Warning
-                    )
-                );
+                // [TEMP-DISABLED - causa travamento no Build()] 
+                // services.AddSingleton<ILoggerProvider>(sp =>
+                //     new FrotiXLoggerProvider(
+                //         sp.GetRequiredService<ILogService>(),
+                //         Microsoft.Extensions.Logging.LogLevel.Warning
+                //     )
+                // );
                 services.AddLogging();
 
                 // Filtros de exceção (devem ser Scoped para injeção de dependência)
@@ -190,10 +191,10 @@ namespace FrotiX
 
                 // Serviço de exportação de logs (PDF/Excel) - registrado após DbContext
                 // Serviço de alertas de logs em tempo real (SignalR)
-                services.AddHostedService<LogErrosAlertService>();
+                // [TEMP-DISABLED] services.AddHostedService<LogErrosAlertService>();
 
                 // Serviço de limpeza automática de logs antigos (> 90 dias)
-                services.AddHostedService<LogErrosCleanupService>();
+                // [TEMP-DISABLED] services.AddHostedService<LogErrosCleanupService>();
                 // ========================================================
 
                 // ⭐ Controllers com Newtonsoft configurado corretamente

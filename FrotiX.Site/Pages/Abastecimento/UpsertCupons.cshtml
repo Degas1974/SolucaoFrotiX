@@ -53,10 +53,7 @@
 	}
 </style>
 
-@section HeadBlock {
-	<link href="https://cdn.kendostatic.com/2022.1.412/styles/kendo.default-main.min.css" rel="stylesheet"
-		type="text/css" />
-}
+@* CSS Kendo UI já carregado via _ScriptsBasePlugins.cshtml (versão 2025.2.520) *@
 
 <form method="post" onkeypress="stopEnterSubmitting(event)" enctype="multipart/form-data">
 	@Html.AntiForgeryToken()
@@ -217,24 +214,6 @@
 @section ScriptsBlock {
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
-	<!-- Dependências Kendo -->
-	<!-- Caso seu layout já inclua jQuery, mantenha o include abaixo comentado -->
-	@* <script src="https://cdn.kendostatic.com/2022.1.412/js/jquery.min.js"></script> *@
-	<script src="https://cdn.kendostatic.com/2022.1.412/js/jszip.min.js"></script>
-	<script src="https://cdn.kendostatic.com/2022.1.412/js/kendo.all.min.js"></script>
-	<script src="https://cdn.kendostatic.com/2022.1.412/js/kendo.aspnetmvc.min.js"></script>
-	<script src="https://cdn.kendostatic.com/2022.1.412/js/cultures/kendo.culture.pt-BR.min.js"></script>
-	<script src="https://cdn.kendostatic.com/2022.1.412/js/messages/kendo.messages.pt-BR.min.js"></script>
-	<script>
-		try {
-			if (window.kendo && kendo.culture) {
-				kendo.culture("pt-BR");
-			}
-		} catch (error) {
-			console.warn("Kendo pt-BR: falha ao aplicar cultura.", error);
-		}
-	</script>
-
 	<!-- PDF.js -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.2/pdf.js"></script>
 	<script>
@@ -331,52 +310,75 @@
 	</script>
 
 	<script>
-		// Desabilita o Drop Zone
-		kendo.ui.Upload.fn._supportsDrop = function () {
+		/****************************************************************************************
+		 * ⚡ INICIALIZAÇÃO: Kendo Upload para PDF de Cupons
+		 * --------------------------------------------------------------------------------------
+		 * 🎯 OBJETIVO     : Configurar upload de PDF desabilitando drag-drop e inicializando
+		 *                   o widget kendoUpload com validação de extensão .pdf
+		 * 📥 ENTRADAS     : Elemento #pdf
+		 * 📤 SAÍDAS       : Widget Kendo Upload configurado
+		 * 🔗 CHAMADA POR  : $(document).ready()
+		 * 📝 OBSERVAÇÕES  : Código movido para $(document).ready() para garantir que
+		 *                   kendo.ui.Upload está disponível antes de modificar o protótipo
+		 ****************************************************************************************/
+		$(document).ready(function() {
 			try {
-				return false;
-			} catch (error) {
-				Alerta.TratamentoErroComLinha("UpsertCupons.cshtml", "_supportsDrop", error);
-			}
-		};
+				// [KENDO] Desabilita o Drop Zone (modifica protótipo do Kendo Upload)
+				if (typeof kendo !== 'undefined' && kendo.ui && kendo.ui.Upload) {
+					kendo.ui.Upload.fn._supportsDrop = function () {
+						return false;
+					};
+				}
 
-		// Upload do PDF
-		// ==============
-		$("#pdf").kendoUpload({
-			async: {
-				saveUrl: "/Abastecimento/UpsertCupons?handler=SavePDF",
-				removeUrl: "/Abastecimento/UpsertCupons?handler=RemovePDF"
-			},
-			localization: {
-				select: "Selecione o Registro de Cupons de Abastecimento...",
-				headerStatusUploaded: "Arquivo Carregado",
-				uploadSuccess: "Arquivo Carregado com Sucesso"
-			},
-			validation: {
-				allowedExtensions: [".pdf"]
-			},
-			success: onSuccess
+				// [KENDO] Inicializa o Upload do PDF
+				$("#pdf").kendoUpload({
+					async: {
+						saveUrl: "/Abastecimento/UpsertCupons?handler=SavePDF",
+						removeUrl: "/Abastecimento/UpsertCupons?handler=RemovePDF"
+					},
+					localization: {
+						select: "Selecione o Registro de Cupons de Abastecimento...",
+						headerStatusUploaded: "Arquivo Carregado",
+						uploadSuccess: "Arquivo Carregado com Sucesso"
+					},
+					validation: {
+						allowedExtensions: [".pdf"]
+					},
+					success: onSuccess
+				});
+			} catch (error) {
+				Alerta.TratamentoErroComLinha("UpsertCupons.cshtml", "kendoUpload.init", error);
+			}
 		});
 
+		/****************************************************************************************
+		 * ⚡ FUNÇÃO: onSuccess
+		 * --------------------------------------------------------------------------------------
+		 * 🎯 OBJETIVO     : Callback executado após upload bem-sucedido do PDF
+		 * 📥 ENTRADAS     : e [object] - Evento do Kendo Upload com dados dos arquivos
+		 * 📤 SAÍDAS       : Renderiza PDF no viewer
+		 * 🔗 CHAMADA POR  : kendoUpload success event
+		 ****************************************************************************************/
 		function onSuccess(e) {
 			try {
-				// Remove a DIV para excluir o PDF escolhido anteriormente
+				// [UI] Remove a DIV para excluir o PDF escolhido anteriormente
 				$("#pdfViewer").remove();
 
-				// Cria DIV do PDF
+				// [UI] Cria DIV do PDF
 				$("#PDFContainer").append("<div id='pdfViewer'></div>");
 
-				// Informações sobre os arquivos enviados
+				// [DADOS] Informações sobre os arquivos enviados
 				var files = e.files;
 
 				$.each(files, function () {
 					console.log(this.name);
 
-					// document.getElementById("txtRegistroPDF").setAttribute('value', this.name.replaceAll(" ", "_"));
+					// [DADOS] Remove acentos e caracteres especiais do nome do arquivo
 					document.getElementById("txtRegistroPDF").setAttribute('value', TiraAcento(this.name));
 
 					console.log(document.getElementById("txtRegistroPDF").value);
 
+					// [KENDO] Inicializa o PDFViewer com o arquivo carregado
 					$("#pdfViewer").kendoPDFViewer({
 						pdfjsProcessing: {
 							file: "/DadosEditaveis/Cupons/" + document.getElementById("txtRegistroPDF").value
