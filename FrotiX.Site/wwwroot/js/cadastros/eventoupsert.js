@@ -60,6 +60,16 @@ $(document).ready(function ()
         {
             try
             {
+                /********************************************************************************
+                 * [AJAX] Endpoint: GET /api/viagem/ObterTotalCustoViagensEvento
+                 * ======================================================================
+                 * 📥 ENVIA        : Id (ID do evento)
+                 * 📤 RECEBE       : { success: bool, totalViagens, totalCusto,
+                 *                     totalCustoFormatado, custoMedioFormatado,
+                 *                     viagensSemCusto }
+                 * 🎯 MOTIVO       : Buscar estatísticas de viagens vinculadas ao evento
+                 *                   (total, custo total, custo médio, viagens sem custo)
+                 ********************************************************************************/
                 $.ajax({
                     url: "/api/viagem/ObterTotalCustoViagensEvento",
                     type: "GET",
