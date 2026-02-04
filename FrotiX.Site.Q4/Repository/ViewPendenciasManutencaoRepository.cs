@@ -1,0 +1,130 @@
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ViewPendenciasManutencaoRepository.cs                                                  ║
+   ║ 📂 CAMINHO: Repository/                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Repositório para a SQL View ViewPendenciasManutencao.                                           ║
+   ║    Disponibiliza dados consolidados de pendências de manutenção.                                   ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • ViewPendenciasManutencaoRepository(FrotiXDbContext db)                                         ║
+   ║    • GetViewPendenciasManutencaoListForDropDown()                                                  ║
+   ║    • Update(ViewPendenciasManutencao viewPendenciasManutencao)                                     ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ ⚠️ OBSERVAÇÕES:                                                                                     ║
+   ║    Views são somente leitura; Update é mantido por compatibilidade.                                ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using FrotiX.Data;
+using FrotiX.Models;
+using FrotiX.Repository.IRepository;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace FrotiX.Repository
+    {
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ViewPendenciasManutencaoRepository                                                 │
+    // │ 📦 HERDA DE: Repository                                             │
+    // │ 🔌 IMPLEMENTA: IViewPendenciasManutencaoRepository                                            │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório responsável pela view de pendências de manutenção.
+    // Fornece listagens para UI com dados consolidados.
+    
+    public class ViewPendenciasManutencaoRepository : Repository<ViewPendenciasManutencao>, IViewPendenciasManutencaoRepository
+        {
+        private new readonly FrotiXDbContext _db;
+
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ViewPendenciasManutencaoRepository                                           │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
+        // │    ➡️ CHAMA       : base(db)                                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Inicializar o repositório com o contexto do banco de dados.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // db - Contexto do banco de dados da aplicação.
+        
+        
+        // Param db: Instância de <see cref="FrotiXDbContext"/>.
+        public ViewPendenciasManutencaoRepository(FrotiXDbContext db) : base(db)
+            {
+            _db = db;
+            }
+
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetViewPendenciasManutencaoListForDropDown                                   │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
+        // │    ➡️ CHAMA       : DbContext.ViewPendenciasManutencao, OrderBy, Select                 │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Obter lista da view de pendências de manutenção para dropdowns.
+        // Ordena pela data do item.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
+        
+        
+        // Returns: Lista de itens de seleção para pendências de manutenção.
+        public IEnumerable<SelectListItem> GetViewPendenciasManutencaoListForDropDown()
+            {
+            return _db.ViewPendenciasManutencao
+            .OrderBy(o => o.DataItem)
+            .Select(i => new SelectListItem()
+                {
+                Text = i.DataItem.ToString(),
+                Value = i.Nome.ToString()
+                }); ; ;
+            }
+
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                        │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
+        // │    ➡️ CHAMA       : DbContext.ViewPendenciasManutencao.FirstOrDefault, _db.Update,       │
+        // │                     _db.SaveChanges                                                     │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Manter compatibilidade com o padrão de repositórios.
+        // Views são somente leitura; operação não é recomendada.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // viewPendenciasManutencao - Entidade com dados da view.
+        
+        
+        // Param viewPendenciasManutencao: Entidade <see cref="ViewPendenciasManutencao"/>.
+        public new void Update(ViewPendenciasManutencao viewPendenciasManutencao)
+            {
+            var objFromDb = _db.ViewPendenciasManutencao.FirstOrDefault(s => s.ItemManutencaoId == viewPendenciasManutencao.ItemManutencaoId);
+
+            _db.Update(viewPendenciasManutencao);
+            _db.SaveChanges();
+
+            }
+
+
+        }
+    }

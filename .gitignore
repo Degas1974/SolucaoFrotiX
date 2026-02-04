@@ -1,0 +1,9 @@
+# ===================================================
+# FrotiX - Repositório Principal
+# ===================================================
+
+# Exemplos e bibliotecas de terceiros
+Kendo.Mvc.Examples/
+
+# Worktrees do Git
+FrotiX.Site.worktrees/

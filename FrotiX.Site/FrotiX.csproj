@@ -1819,6 +1819,7 @@
     <Folder Include="wwwroot\DadosEditaveis\ImagensOcorrencias\" />
     <Folder Include="wwwroot\Images\icons\" />
     <Folder Include="wwwroot\js\vendors-bundle-bs5\dist\" />
+    <Folder Include="wwwroot\lib\kendo\2025.2.520\js\" />
     <Folder Include="wwwroot\scripts\PdfViewer\" />
   </ItemGroup>
   <ItemGroup>

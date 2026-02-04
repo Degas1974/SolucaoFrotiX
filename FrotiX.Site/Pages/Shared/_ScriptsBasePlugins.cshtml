@@ -262,59 +262,6 @@
 <!-- GRUPO 3: FRAMEWORKS UI -->
 <!-- ============================================ -->
 
-<!-- ⚠️ ADICIONE O KENDO UI AQUI, ANTES DO VENDORS.BUNDLE.JS -->
-<!-- Kendo UI - CDN Oficial Telerik -->
-<script>
-	(function carregarKendoPtBr() {
-		try {
-			if (window.__kendoPtBrLoaded) {
-				return;
-			}
-
-			if (!window.kendo || !window.kendo.culture) {
-				setTimeout(carregarKendoPtBr, 50);
-				return;
-			}
-
-			function carregarScript(src, onload) {
-				try {
-					var script = document.createElement("script");
-					script.src = src;
-					script.crossOrigin = "anonymous";
-					script.onload = onload;
-					script.onerror = function (error) {
-						if (window.Alerta && typeof Alerta.TratamentoErroComLinha === "function") {
-							Alerta.TratamentoErroComLinha("_ScriptsBasePlugins.cshtml", "carregarKendoPtBr.script", error);
-						}
-					};
-					document.head.appendChild(script);
-				} catch (error) {
-					if (window.Alerta && typeof Alerta.TratamentoErroComLinha === "function") {
-						Alerta.TratamentoErroComLinha("_ScriptsBasePlugins.cshtml", "carregarKendoPtBr.carregarScript", error);
-					}
-				}
-			}
-
-			carregarScript("https://kendo.cdn.telerik.com/2025.2.520/js/cultures/kendo.culture.pt-BR.min.js", function () {
-				carregarScript("https://kendo.cdn.telerik.com/2025.2.520/js/messages/kendo.messages.pt-BR.min.js", function () {
-					try {
-						window.__kendoPtBrLoaded = true;
-						kendo.culture("pt-BR");
-					} catch (error) {
-						if (window.Alerta && typeof Alerta.TratamentoErroComLinha === "function") {
-							Alerta.TratamentoErroComLinha("_ScriptsBasePlugins.cshtml", "carregarKendoPtBr.culture", error);
-						}
-					}
-				});
-			});
-		} catch (error) {
-			if (window.Alerta && typeof Alerta.TratamentoErroComLinha === "function") {
-				Alerta.TratamentoErroComLinha("_ScriptsBasePlugins.cshtml", "carregarKendoPtBr", error);
-			}
-		}
-	})();
-</script>
-
 <!-- PDF.js para o Kendo PDFViewer -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js" crossorigin="anonymous"></script>
 <script>
@@ -797,6 +744,52 @@
 <!-- ============================================ -->
 
 <script src="~/js/vendors.bundle.js"></script>
+<!-- Kendo UI - Arquivos locais (wwwroot/lib/kendo/2025.2.520) -->
+<script>
+	(function () {
+		try {
+			window.__ftxAmdDefine = window.define;
+			window.__ftxAmdDefineAmd = window.define && window.define.amd;
+			if (window.define && window.define.amd) {
+				window.define = undefined;
+			}
+		} catch (error) {
+			if (window.Alerta && typeof Alerta.TratamentoErroComLinha === "function") {
+				Alerta.TratamentoErroComLinha("_ScriptsBasePlugins.cshtml", "kendo.amd.disable", error);
+			}
+		}
+	})();
+</script>
+<script src="~/Neon/js/datatables/JSZip-2.5.0/jszip.min.js" asp-append-version="true"></script>
+<script src="~/lib/kendo/2025.2.520/js/kendo.all.min.js" asp-append-version="true"></script>
+<script src="~/lib/kendo/2025.2.520/js/kendo.aspnetmvc.min.js" asp-append-version="true"></script>
+<script src="~/lib/kendo/2025.2.520/js/cultures/kendo.culture.pt-BR.min.js" asp-append-version="true"></script>
+<script src="~/lib/kendo/2025.2.520/js/messages/kendo.messages.pt-BR.min.js" asp-append-version="true"></script>
+<script>
+	(function () {
+		try {
+			if (window.__ftxAmdDefine) {
+				window.define = window.__ftxAmdDefine;
+				window.define.amd = window.__ftxAmdDefineAmd;
+			}
+		} catch (error) {
+			if (window.Alerta && typeof Alerta.TratamentoErroComLinha === "function") {
+				Alerta.TratamentoErroComLinha("_ScriptsBasePlugins.cshtml", "kendo.amd.restore", error);
+			}
+		}
+	})();
+</script>
+<script>
+	try {
+		if (window.kendo && kendo.culture) {
+			kendo.culture("pt-BR");
+		}
+	} catch (error) {
+		if (window.Alerta && typeof Alerta.TratamentoErroComLinha === "function") {
+			Alerta.TratamentoErroComLinha("_ScriptsBasePlugins.cshtml", "kendo.culture", error);
+		}
+	}
+</script>
 <script src="/js/shims/jquery.throttle-debounce.js"></script>
 <script>
 (function () {

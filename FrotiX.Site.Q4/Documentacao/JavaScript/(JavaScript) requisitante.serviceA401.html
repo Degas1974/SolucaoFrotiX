@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentação: requisitante.service.js - Sistema FrotiX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #e8e8e8;
+            color: #2c3e50;
+            line-height: 1.6;
+            padding: 20mm;
+        }
+
+        .page {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 15mm;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        header.hero {
+            background: linear-gradient(135deg, #b66a3d 0%, #8b5130 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 25px;
+            box-shadow:
+                0 0 0 2px #000,
+                0 0 0 4px #fff,
+                0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        header.hero img {
+            width: 70px;
+            height: 70px;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+
+        header.hero h1 {
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header.hero .subtitle {
+            font-size: 1em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .metadata {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #325d88;
+        }
+
+        .metadata-item {
+            font-size: 0.9em;
+        }
+
+        .metadata-item strong {
+            color: #325d88;
+            font-weight: 600;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #b66a3d;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title img.icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        h3 {
+            color: #722F37;
+            font-size: 1.15em;
+            margin-top: 18px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        p, li {
+            margin-bottom: 10px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        ul li {
+            list-style-type: none;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        ul li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #b66a3d;
+            font-weight: bold;
+        }
+
+        .highlight-box {
+            background: #fff3e6;
+            border-left: 5px solid #ff6b35;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+
+        .highlight-box strong {
+            color: #ff6b35;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-left: 5px solid #557570;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+
+        .alert-success strong {
+            color: #557570;
+        }
+
+        code {
+            background: #33465c;
+            color: #e8e8e8;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #33465c;
+            color: #e8e8e8;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 1px solid #1a2332;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+            font-size: 0.85em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9em;
+        }
+
+        table thead {
+            background: #325d88;
+            color: white;
+        }
+
+        table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .badge-success {
+            background: #557570;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #ff6b35;
+            color: white;
+        }
+
+        .badge-info {
+            background: #325d88;
+            color: white;
+        }
+
+        footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #dee2e6;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.85em;
+        }
+
+        .watermark {
+            position: absolute;
+            bottom: 15mm;
+            right: 15mm;
+            opacity: 0.1;
+            font-size: 4em;
+            color: #b66a3d;
+            transform: rotate(-45deg);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="watermark">FROTIX</div>
+
+        <header class="hero">
+            <img src="../../Fontawesome/duotone/gears.svg" alt="Ícone" />
+            <div>
+                <h1>requisitante.service.js</h1>
+                <p class="subtitle">Serviço de Cadastro Inline de Requisitantes na Agenda</p>
+            </div>
+        </header>
+
+        <div class="metadata">
+            <div class="metadata-item">
+                <strong>Versão:</strong> 1.2
+            </div>
+            <div class="metadata-item">
+                <strong>Última Atualização:</strong> 12/01/2026
+            </div>
+            <div class="metadata-item">
+                <strong>Localização:</strong> wwwroot/js/agendamento/services/
+            </div>
+        </div>
+
+        <!-- Visão Geral -->
+        <section class="card">
+            <div class="section-title">
+                <img class="icon" src="../../Fontawesome/duotone/eye.svg" alt="Visão Geral" />
+                Visão Geral
+            </div>
+            <p>
+                O arquivo <code>requisitante.service.js</code> é um **serviço JavaScript** fundamental que permite aos usuários
+                criar novos requisitantes **durante** o processo de agendamento de viagens, sem precisar sair do modal
+                principal e navegar para outra tela.
+            </p>
+            <p>
+                Este sistema de "cadastro inline" melhora drasticamente a experiência do usuário ao eliminar a necessidade
+                de interromper o fluxo de trabalho. Quando o usuário está preenchendo um agendamento e percebe que o
+                requisitante necessário não existe, ele pode criá-lo imediatamente através de um accordion que se abre
+                no próprio modal, preenchê-lo rapidamente e continuar o agendamento sem perder contexto.
+            </p>
+            <div class="highlight-box">
+                <strong>Importância Crítica:</strong> Este arquivo foi recentemente corrigido (12/01/2026) para resolver
+                um bug grave onde o accordion fechava automaticamente ao selecionar o Setor no DropDownTree, limpando
+                todos os campos preenchidos e impedindo o salvamento.
+            </div>
+        </section>
+
+        <!-- Características Principais -->
+        <section class="card">
+            <div class="section-title">
+                <img class="icon" src="../../Fontawesome/duotone/stars.svg" alt="Características" />
+                Características Principais
+            </div>
+            <ul>
+                <li><span class="badge badge-success">✓</span> Cadastro Inline - Criar requisitante sem sair do modal de agendamento</li>
+                <li><span class="badge badge-success">✓</span> Accordion Controlado - Sistema de abertura/fechamento manual via botão toggle</li>
+                <li><span class="badge badge-success">✓</span> Proteção Robusta - MutationObserver + desabilitação Bootstrap Collapse</li>
+                <li><span class="badge badge-success">✓</span> API Integration - Comunicação com backend via AJAX POST</li>
+                <li><span class="badge badge-success">✓</span> Validações Client-Side - Campos obrigatórios com feedback visual</li>
+                <li><span class="badge badge-success">✓</span> Auto-Atualização - Após salvar, atualiza dropdowns automaticamente</li>
+                <li><span class="badge badge-success">✓</span> Captura de Setores - Reutiliza dados já carregados na página</li>
+                <li><span class="badge badge-success">✓</span> Sincronização Syncfusion - Integra com DropDownTree, ComboBox, NumericTextBox</li>
+            </ul>
+        </section>
+
+        <!-- Tecnologias -->
+        <section class="card">
+            <div class="section-title">
+                <img class="icon" src="../../Fontawesome/duotone/layer-group.svg" alt="Tecnologias" />
+                Tecnologias Utilizadas
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tecnologia</th>
+                        <th>Versão</th>
+                        <th>Uso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>JavaScript ES6</td>
+                        <td>-</td>
+                        <td>Linguagem base (IIFE, arrow functions, async/await)</td>
+                    </tr>
+                    <tr>
+                        <td>jQuery</td>
+                        <td>3.x</td>
+                        <td>AJAX calls, manipulação DOM</td>
+                    </tr>
+                    <tr>
+                        <td>Syncfusion EJ2</td>
+                        <td>-</td>
+                        <td>DropDownTree, ComboBox, NumericTextBox</td>
+                    </tr>
+                    <tr>
+                        <td>Bootstrap 5</td>
+                        <td>-</td>
+                        <td>Accordion UI (com desabilitação programática)</td>
+                    </tr>
+                    <tr>
+                        <td>MutationObserver API</td>
+                        <td>-</td>
+                        <td>Monitoramento de alterações DOM</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <footer>
+            <p><strong>Sistema FrotiX</strong> - Câmara dos Deputados</p>
+            <p>Documentação gerada por Claude Code | Versão 1.2 | 12/01/2026</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Página 1 de 3 - Continua em (JavaScript) requisitante.serviceA402.html</p>
+        </footer>
+    </div>
+</body>
+</html>

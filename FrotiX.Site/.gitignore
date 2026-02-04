@@ -380,3 +380,22 @@ appsettings.*.json
 
 # User Secrets (já protegido pelo sistema, mas explicitamente ignorado)
 secrets.json
+
+# ===================================================
+# Bibliotecas de Terceiros (Kendo UI / Telerik)
+# ===================================================
+
+# Bibliotecas Kendo UI e dependências
+wwwroot/lib/
+Scripts/wwwroot/
+
+# Exemplos e documentação do Kendo
+Kendo.Mvc.Examples/
+
+# Scripts de restauração de assets
+Scripts/restore-kendo-assets.ps1
+restore-kendo-assets.ps1
+
+# Licenças Telerik (não versionar)
+Telerik.Licensing.licx
+telerik-license.txt

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Pendências de Abastecimento | FrotiX</title>
+  <style>
+    :root { --vinho:#722F37; --vinho-light:#8B3A44; --azul:#325d88; --azul-light:#3d6f9e; --terracota:#A97B6E; --terracota-light:#C08B7E; --verde:#557570; --verde-light:#6A8A85; --cinza:#f5f7fb; --card:#fff; --texto:#1f1f1f; --shadow:0 20px 45px -18px rgba(0,0,0,.35); --radius:14px; --header-bg:#b66a3d; --code-bg:#33465c; }
+    @page { size: A4; margin: 16mm; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:"Segoe UI","Inter",system-ui,-apple-system,sans-serif; background: radial-gradient(circle at 12% 20%, rgba(50,93,136,.08), transparent 26%), radial-gradient(circle at 90% 10%, rgba(114,47,55,.10), transparent 30%), var(--cinza); color:var(--texto); padding:22px; display:flex; justify-content:center; }
+    .page { width:210mm; max-width:100%; }
+    .hero { background:var(--header-bg); color:#fff; padding:22px 24px; border-radius:var(--radius); box-shadow:0 0 0 1px #000, 0 0 0 4px #fff, var(--shadow); display:flex; align-items:center; gap:16px; }
+    .hero img { width:50px; height:50px; filter:drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+    h1 { margin:0; font-size:26px; letter-spacing:0.2px; }
+    .subtitle { margin:6px 0 0; font-size:13px; opacity:0.92; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; margin-top:18px; }
+    .card { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px 18px; border:1px solid rgba(0,0,0,0.05); }
+    .section-title { display:flex; align-items:center; gap:10px; margin:0 0 10px; font-size:15px; font-weight:800; color:var(--vinho); }
+    .icon { width:18px; height:18px; vertical-align:middle; filter:drop-shadow(0 2px 4px rgba(0,0,0,.15)); }
+    ul { margin:6px 0 0 18px; padding:0; } li { margin-bottom:6px; }
+    code { background:var(--code-bg); color:#e9edf5; padding:10px 12px; border-radius:10px; display:block; white-space:pre-wrap; font-size:12px; line-height:1.45; box-shadow: inset 0 1px 0 rgba(255,255,255,0.03); }
+    .tag { display:inline-block; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:600; background:#eee; color:#555; margin-right:4px; }
+    .tag.purple { background:#e0cffc; color:#4a0099; }
+    .tag.red { background:#f8d7da; color:#842029; }
+    .tag.yellow { background:#fff3cd; color:#664d03; }
+    .tag.green { background:#d1e7dd; color:#0f5132; }
+    table { width:100%; border-collapse:collapse; font-size:13px; margin-top:10px; }
+    th, td { text-align:left; padding:8px; border-bottom:1px solid #eee; }
+    th { color:var(--vinho); font-weight:600; }
+    .flow-step { border-left:2px solid #ddd; padding-left:15px; margin-left:5px; padding-bottom:15px; position:relative; }
+    .flow-step::before { content:''; position:absolute; left:-6px; top:0; width:10px; height:10px; background:var(--terracota); border-radius:50%; }
+    .flow-step:last-child { border-left:none; }
+  </style>
+</head>
+
+<svg style="display:none" aria-hidden="true" focusable="false">
+  <symbol id="fa-list-check" viewBox="0 0 512 512"><path opacity=".4" fill="currentColor" d="M152.1 38.2c9.9 8.9 10.7 24 1.8 33.9l-72 80c-4.4 4.9-10.6 7.8-17.2 7.9s-12.9-2.4-17.6-7L7 113C-2.3 103.6-2.3 88.4 7 79s24.6-9.4 33.9 0l22.1 22.1 55.1-61.1c8.9-9.9 24-10.7 33.9-1.8zm0 160c9.9 8.9 10.7 24 1.8 33.9l-72 80c-4.4 4.9-10.6 7.8-17.2 7.9s-12.9-2.4-17.6-7L7 273c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l22.1 22.1 55.1-61.1c8.9-9.9 24-10.7 33.9-1.8zM224 96c0-17.7 14.3-32 32-32H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H256c-17.7 0-32-14.3-32-32zm0 160c0-17.7 14.3-32 32-32H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H256c-17.7 0-32-14.3-32-32zM160 416c0-17.7 14.3-32 32-32H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H192c-17.7 0-32-14.3-32-32zM48 368a48 48 0 1 1 96 0 48 48 0 1 1 -96 0z"/><path fill="currentColor" d="M64.9 113l39.1 39.1c4.7 4.7 10.9 7.1 17.6 7c6.6-.1 12.8-3 17.2-7.9l72-80c8.9-9.9 8.1-25.1-1.8-33.9s-25.1-8.1-33.9 1.8L119.9 100.2 97.9 78.1c-9.4-9.4-24.6-8.6-33.9 .7s-8.6 24.6 .7 33.9l.2 .2zM224 96c0-17.7 14.3-32 32-32H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H256c-17.7 0-32-14.3-32-32zm0 160c0-17.7 14.3-32 32-32H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H256c-17.7 0-32-14.3-32-32zM192 384c0 17.7 14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H224c-17.7 0-32 14.3-32 32zM96 320a48 48 0 1 0 0 96 48 48 0 1 0 0-96z"/></symbol>
+  <symbol id="fa-arrows-rotate" viewBox="0 0 512 512"><path opacity=".4" fill="currentColor" d="M142.9 142.9c62.2-62.2 162.7-62.5 225.3-1L327 183c-6.9 6.9-8.9 17.2-5.2 26.2s12.5 14.8 22.2 14.8H463.5c13.3 0 24-10.7 24-24V19.5c0-9.7-5.8-18.5-14.8-22.2s-19.3-1.7-26.2 5.2L403.4 45.6c-87-87.5-228.6-87.5-315.8 0c-24.4 24.4-69.6 96.7-23.7 142.9c45.2 45.6 116.6 17 79-25.6z"/><path fill="currentColor" d="M369.1 369.1c-62.2 62.2-162.7 62.5-225.3 1L185 329c6.9-6.9 8.9-17.2 5.2-26.2s-12.5-14.8-22.2-14.8H48.4c-13.3 0-24 10.7-24 24V492.5c0 9.7 5.8 18.5 14.8 22.2s19.3 1.7 26.2-5.2l43.1-43.1c87 87.5 228.6 87.5 315.8 0c24.4-24.4 69.6-96.7 23.7-142.9c-45.2-45.6-116.6-17-79 25.6z"/></symbol>
+  <symbol id="fa-wand-magic-sparkles" viewBox="0 0 512 512"><path opacity=".4" fill="currentColor" d="M96 192c0-53 43-96 96-96h70.1c15.8 0 30.6-7.8 39.7-20.9l16.4-22.7C330.6 35.1 349.9 24 370.7 24H416c17.7 0 32 14.3 32 32s-14.3 32-32 32h-45.3c-7.1 0-13.7 3.7-17.2 9.8l-8.5 14.9c-16.7 28.2-46.6 45.3-79.1 45.3H192c-17.7 0-32 14.3-32 32s14.3 32 32 32h74.1c15.8 0 30.6 7.8 39.7 20.9l16.4 22.7c12.4 17.2 31.6 28.4 52.5 28.4H416c17.7 0 32 14.3 32 32s-14.3 32-32 32h-45.3c-7.1 0-13.7 3.7-17.2 9.8l-8.5 14.9c-16.7 28.2-46.6 45.3-79.1 45.3H192c-53 0-96-43-96-96zm-24 16c-13.3 0-24 10.7-24 24s10.7 24 24 24s24-10.7 24-24s-10.7-24-24-24zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24s24-10.7 24-24s-10.7-24-24-24z"/><path fill="currentColor" d="M370.7 24c-20.8 0-40.1 11.1-52.5 28.4l-16.4 22.7c-9.1 13-23.9 20.9-39.7 20.9H192c-53 0-96 43-96 96c0 17.7 4.7 34.3 12.9 48.8L33.7 316.1c-15.1 15.1-17.6 38.3-6 56.2l60.1 92.5c10.1 15.5 29.6 21.9 46.8 15l105.7-41.5C254 430.7 269 426.3 283.7 425.4l5.6 9.8c3.5 6.1 10.1 9.8 17.2 9.8H352c17.7 0 32-14.3 32-32s-14.3-32-32-32h-45.3c-7.1 0-13.7-3.7-17.2-9.8l-8.5-14.9c-16.7-28.2-46.6-45.3-79.1-45.3H192c-17.7 0-32-14.3-32-32s14.3-32 32-32h74.1c15.8 0 30.6-7.8 39.7-20.9l16.4-22.7c12.4-17.2 31.6-28.4 52.5-28.4H416c17.7 0 32-14.3 32-32s-14.3-32-32-32h-45.3zM72 208a24 24 0 1 0 0 48 24 24 0 1 0 0-48z"/></symbol>
+  <symbol id="fa-server" viewBox="0 0 512 512"><path opacity=".4" fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96v64c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM64 288c-35.3 0-64 28.7-64 64v64c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V352c0-35.3-28.7-64-64-64H64z"/><path fill="currentColor" d="M0 256c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V192c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v64zM416 432a32 32 0 1 0 0-64 32 32 0 1 0 0 64zM128 400c17.7 0 32 14.3 32 32s-14.3 32-32 32s-32-14.3-32-32s14.3-32 32-32zm288-256a32 32 0 1 0 0-64 32 32 0 1 0 0 64zM128 144c17.7 0 32 14.3 32 32s-14.3 32-32 32s-32-14.3-32-32s14.3-32 32-32zM416 304a32 32 0 1 0 0-64 32 32 0 1 0 0 64zM96 272a32 32 0 1 0 64 0 32 32 0 1 0 -64 0z"/></symbol>
+  <symbol id="fa-triangle-exclamation" viewBox="0 0 512 512"><path opacity=".4" fill="currentColor" d="M256 0C256 0 256 0 256 0c31.3 0 60.7 16.7 76.3 43.8l216 376c15.6 27.1 15.6 60.5 0 87.6S493.3 551.3 462 551.3H50c-31.3 0-60.7-16.7-76.3-43.8s-15.6-60.5 0-87.6l216-376C205.3 16.7 234.7 0 256 0z"/><path fill="currentColor" d="M256 128c13.3 0 24 10.7 24 24V296c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zm32 280a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"/></symbol>
+</svg>
+
+<div class="page">
+  <header class="hero">
+    <svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-list-check"></use></svg>
+    <div>
+      <h1>Pendências de Abastecimento</h1>
+      <p class="subtitle">Gestão de erros de importação com correções inteligentes · Versão 2.0</p>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="card">
+      <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-triangle-exclamation"></use></svg>Visão Geral</div>
+      <p>Área dedicada ao tratamento de registros que falharam na validação automática durante a importação. Oferece ferramentas poderosas para corrigir dados sem necessidade de reimportar a planilha.</p>
+      <ul>
+        <li><span class="tag purple">Correção KM</span> Sugere automaticamente KM Anterior/Atual</li>
+        <li><span class="tag yellow">Validação</span> Checa Motorista, Veículo e Combustível</li>
+        <li><span class="tag green">Workflow</span> Edição -> Revalidação -> Importação</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-arrows-rotate"></use></svg>Fluxo de Resolução</div>
+      <div style="font-size:12px;color:#555;">
+        <div class="flow-step"><strong>1. Identificação:</strong> Sistema categoriza erro (KM, Veículo, etc) e gera badge visual.</div>
+        <div class="flow-step"><strong>2. Análise:</strong> Usuário visualiza o erro. Se for KM, sistema oferece sugestão.</div>
+        <div class="flow-step"><strong>3. Ação:</strong> Usuário edita manualmente ou aplica sugestão automática.</div>
+        <div class="flow-step"><strong>4. Importação:</strong> Registro corrigido é movido para tabela de Abastecimentos (Status 1).</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-wand-magic-sparkles"></use></svg>Sugestões Inteligentes</div>
+      <p>O algoritmo analisa a média de consumo do veículo para propor correções:</p>
+      <code>
+// Exemplo de Lógica
+if (KmRodado < 0) {
+   sugestao = KmAtual - (Litros * MediaConsumo);
+   // "Baseado na média de 11 km/l..."
+}
+      </code>
+    </section>
+
+    <section class="card">
+      <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-server"></use></svg>API Endpoints</div>
+      <ul>
+        <li><code>GET /ListarPendencias</code> - Retorna erros ativos (Status=0)</li>
+        <li><code>POST /AplicarSugestao</code> - Corrige automaticamente</li>
+        <li><code>POST /ResolverPendencia</code> - Valida final e importa</li>
+      </ul>
+    </section>
+
+    <section class="card" style="grid-column: 1 / -1;">
+      <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-list-check"></use></svg>Log de Modificações Recentes</div>
+      <table>
+        <thead><tr><th>Data</th><th>Alteração</th></tr></thead>
+        <tbody>
+          <tr><td>06/01/2026</td><td>Implementação de ordenação por data, correção de dropdowns editáveis (Combobox) e padronização visual de botões.</td></tr>
+          <tr><td>06/01/2025</td><td>Criação inicial da documentação e do sistema de sugestões automáticas.</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+</body>
+</html>
