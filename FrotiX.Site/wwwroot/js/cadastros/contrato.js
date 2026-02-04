@@ -42,6 +42,16 @@ $(document).ready(function () {
                 console.log("Verificando dependências do contrato:", id);
 
                 // Primeiro verifica se há dependências
+                /********************************************************************************
+                 * [AJAX] Endpoint: GET /api/Contrato/VerificarDependencias
+                 * ======================================================================
+                 * 📥 ENVIA        : id (ID do contrato)
+                 * 📤 RECEBE       : { success: bool, possuiDependencias: bool,
+                 *                     veiculosContrato, encarregados, operadores, lavadores,
+                 *                     motoristas, empenhos, notasFiscais }
+                 * 🎯 MOTIVO       : Verificar 7 tipos de dependências antes de permitir
+                 *                   exclusão. Regra: não deletar contrato com dependências
+                 ********************************************************************************/
                 $.ajax({
                     url: "/api/Contrato/VerificarDependencias?id=" + id,
                     type: "GET",

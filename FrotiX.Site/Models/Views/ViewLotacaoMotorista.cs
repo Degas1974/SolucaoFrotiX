@@ -1,14 +1,30 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-    ║ 🚀 ARQUIVO: ViewLotacaoMotorista.cs                                                                ║
-    ║ 📂 CAMINHO: /Models/Views                                                                           ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 🎯 OBJETIVO: View SQL de lotações de motoristas (unidade, período, motivo).                        ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 📋 PROPS: UnidadeId, LotacaoMotoristaId, MotoristaId, Lotado, Motivo, DataInicial/Fim               ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 🔗 DEPS: FrotiX.Services, FrotiX.Validations                                                        ║
-    ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViewLotacaoMotorista.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Vista SQL somente leitura para lotações de motoristas por unidade.
+ *                   Consolida dados de atribuição de motorista a unidade/setor por
+ *                   período (férias, licença, transferência). Utilizada em telas de
+ *                   gestão de alocação, escalas e cobertura de postos.
+ *
+ * 📥 ENTRADAS     : Dados da view SQL vLotacaoMotorista:
+ *                   - LotacaoMotoristaId, MotoristaId, UnidadeId
+ *                   - Lotado (bool), Motivo, DataInicial, DataFim
+ *                   - MotoristaCobertura
+ *
+ * 📤 SAÍDAS       : Registros de leitura (somente get; set) para grids de escala
+ *
+ * 🔗 CHAMADA POR  : EscalaController, GestaoPessoalController
+ *                   Telas de alocação, cobertura de turnos
+ *
+ * 🔄 CHAMA        : Não se aplica (modelo puro)
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations
+ *                   FrotiX.Validations (para validações customizadas)
+ *
+ * 📝 OBSERVAÇÕES  : View SQL mapeada via DbSet<ViewLotacaoMotorista>
+ *                   Suporta filtros por período/unidade/motivo
+ *                   Utilizada para planejamento de recurso humano (RH)
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -38,31 +54,48 @@ namespace FrotiX.Models
      ****************************************************************************************/
     public class ViewLotacaoMotorista
     {
-        // [DADOS] Identificador da unidade
+        // [DADOS] UnidadeId - GUID da unidade (FK para Unidade).
+        // Qual unidade/setor o motorista está lotado.
         public Guid UnidadeId { get; set; }
 
-        // [DADOS] Identificador único da lotação
+        // [DADOS] LotacaoMotoristaId - GUID único da lotação.
+        // Chave primária da view; referencia LotacaoMotorista.LotacaoMotoristaId
         public Guid LotacaoMotoristaId { get; set; }
 
-        // [DADOS] Identificador do motorista
+        // [DADOS] MotoristaId - GUID do motorista (FK para Motorista).
+        // Qual motorista está alocado.
         public Guid MotoristaId { get; set; }
 
-        // [DADOS] Flag indicando se motorista está lotado
+        // [DADOS] Lotado - Flag indicando status de lotação (bool).
+        // true = motorista está efetivamente lotado na unidade
+        // false = lotação encerrada ou suspensa
+        // [VALIDACAO] Obrigatório (nunca null).
         public bool Lotado { get; set; }
 
-        // [DADOS] Motivo da lotação (férias/licença/etc)
+        // [DADOS] Motivo - Razão da lotação (string: "Férias", "Licença", "Transferência").
+        // Classifica tipo de afastamento/movimentação.
+        // [VALIDACAO] Valores esperados: "férias", "licença", "transferência", "afastamento"
+        // Opcional; pode ser nulo para lotação padrão.
         public string? Motivo { get; set; }
 
-        // [DADOS] Nome da unidade
+        // [DADOS] Unidade - Nome da unidade (string 1..100).
+        // Preenchido na view SQL (JOIN com Unidade.Nome).
         public string? Unidade { get; set; }
 
-        // [DADOS] Data inicial da lotação (formatada)
+        // [DADOS] DataInicial - Data de início da lotação (string formatada).
+        // Exemplo: "2026-02-01" ou "01/02/2026".
+        // Opcional; pode ser nulo em históricos antigos.
         public string? DataInicial { get; set; }
 
-        // [DADOS] Data final da lotação (formatada)
+        // [DADOS] DataFim - Data de término da lotação (string formatada).
+        // Exemplo: "2026-02-28" - quando motorista deixa a unidade.
+        // Opcional; pode ser nulo se lotação ativa (sem previsão de fim).
         public string? DataFim { get; set; }
 
-        // [DADOS] Motorista que cobre a lotação
+        // [DADOS] MotoristaCobertura - Nome do motorista substituto (string).
+        // Quem cobre a posição durante lotação do titular.
+        // Exemplo: "Carlos Souza" - preenchido no SQL via JOIN com cobertura.
+        // Opcional; pode ser nulo se sem substituição definida.
         public string? MotoristaCobertura { get; set; }
     }
 }

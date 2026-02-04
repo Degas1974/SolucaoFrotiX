@@ -229,8 +229,11 @@ public class ClaudeAnalysisService : IClaudeAnalysisService
     {
         var sb = new StringBuilder();
 
+        // [DADOS] Início do documento em Markdown
         sb.AppendLine("# Erro para Análise");
         sb.AppendLine();
+
+        // [UI] Seção informações básicas: tipo, origem, nível, data-hora
         sb.AppendLine("## Informações Básicas");
         sb.AppendLine($"- **Tipo:** {logErro.Tipo}");
         sb.AppendLine($"- **Origem:** {logErro.Origem}");
@@ -238,6 +241,7 @@ public class ClaudeAnalysisService : IClaudeAnalysisService
         sb.AppendLine($"- **Data/Hora:** {logErro.DataHora:dd/MM/yyyy HH:mm:ss}");
         sb.AppendLine();
 
+        // [DADOS] Localização do erro (arquivo, método, linha, coluna, URL)
         sb.AppendLine("## Localização");
         if (!string.IsNullOrEmpty(logErro.Arquivo))
             sb.AppendLine($"- **Arquivo:** {logErro.Arquivo}");
@@ -251,12 +255,14 @@ public class ClaudeAnalysisService : IClaudeAnalysisService
             sb.AppendLine($"- **URL:** {logErro.Url}");
         sb.AppendLine();
 
+        // [DEBUG] Mensagem de erro principal
         sb.AppendLine("## Mensagem de Erro");
         sb.AppendLine("```");
         sb.AppendLine(logErro.Mensagem);
         sb.AppendLine("```");
         sb.AppendLine();
 
+        // [DEBUG] Tipo e mensagem da exceção C#
         if (!string.IsNullOrEmpty(logErro.ExceptionType))
         {
             sb.AppendLine("## Exceção");
@@ -268,6 +274,7 @@ public class ClaudeAnalysisService : IClaudeAnalysisService
             sb.AppendLine();
         }
 
+        // [DEBUG] Stack trace truncado para evitar limite de tokens
         if (!string.IsNullOrEmpty(logErro.StackTrace))
         {
             sb.AppendLine("## Stack Trace");
@@ -277,6 +284,7 @@ public class ClaudeAnalysisService : IClaudeAnalysisService
             sb.AppendLine();
         }
 
+        // [DEBUG] Inner exception também truncada
         if (!string.IsNullOrEmpty(logErro.InnerException))
         {
             sb.AppendLine("## Inner Exception");
@@ -286,6 +294,7 @@ public class ClaudeAnalysisService : IClaudeAnalysisService
             sb.AppendLine();
         }
 
+        // [DATA] Dados adicionais em JSON, truncado para evitar limite
         if (!string.IsNullOrEmpty(logErro.DadosAdicionais))
         {
             sb.AppendLine("## Dados Adicionais (JSON)");
@@ -295,6 +304,7 @@ public class ClaudeAnalysisService : IClaudeAnalysisService
             sb.AppendLine();
         }
 
+        // [DADOS] Contexto HTTP e informações do usuário
         sb.AppendLine("## Contexto");
         sb.AppendLine($"- **Usuário:** {logErro.Usuario ?? "Anônimo"}");
         if (!string.IsNullOrEmpty(logErro.UserAgent))
@@ -318,6 +328,24 @@ public class ClaudeAnalysisService : IClaudeAnalysisService
     /// <summary>
     /// Trunca texto se exceder o limite
     /// </summary>
+    /***********************************************************************************
+     * ⚡ FUNÇÃO: TruncateIfNeeded
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Limitar tamanho de strings para evitar exceder token limit
+     *                   da API Claude (stack traces, inner exceptions grandes)
+     *
+     * 📥 ENTRADAS     : text [string] - Texto a desempenhar truncagem
+     *                   maxLength [int] - Limite máximo de caracteres permitido
+     *
+     * 📤 SAÍDAS       : string - Texto original ou truncado + nota "[truncado]"
+     *
+     * ⬅️ CHAMADO POR  : BuildErrorContext() [linhas 282, 292, 302]
+     *
+     * ➡️ CHAMA        : string.IsNullOrEmpty(), string.Substring()
+     *
+     * 📝 OBSERVAÇÕES  : Simples e direto. String null/vazia retorna como-é.
+     *                   Truncado recebe aviso "[truncado]" em nova linha.
+     ***********************************************************************************/
     private string TruncateIfNeeded(string text, int maxLength)
     {
         if (string.IsNullOrEmpty(text) || text.Length <= maxLength)
@@ -329,6 +357,23 @@ public class ClaudeAnalysisService : IClaudeAnalysisService
     /// <summary>
     /// Extrai mensagem de erro da resposta da API
     /// </summary>
+    /***********************************************************************************
+     * ⚡ FUNÇÃO: ParseErrorMessage
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Extrair mensagem de erro da resposta JSON da API Anthropic
+     *                   para exibição legível ao usuário
+     *
+     * 📥 ENTRADAS     : responseBody [string] - JSON da resposta (possivelmente com erro)
+     *
+     * 📤 SAÍDAS       : string - Mensagem legível ou fallback para todo responseBody
+     *
+     * ⬅️ CHAMADO POR  : AnalyzeErrorAsync() [linha 122]
+     *
+     * ➡️ CHAMA        : JsonDocument.Parse() [standard .NET JSON]
+     *
+     * 📝 OBSERVAÇÕES  : Try-catch interno ignora erros de parsing JSON.
+     *                   Fallback é retornar todo responseBody se não conseguir extrair.
+     ***********************************************************************************/
     private string ParseErrorMessage(string responseBody)
     {
         try
