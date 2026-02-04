@@ -15,10 +15,16 @@ namespace FrotiX
             try
             {
                 // EnableTracing();
-                var host = CreateHostBuilder(args).Build();
+                Console.WriteLine("[DIAG-PROG] Antes CreateHostBuilder...");
+                var hostBuilder = CreateHostBuilder(args);
+                Console.WriteLine("[DIAG-PROG] Antes Build...");
+                var host = hostBuilder.Build();
+                Console.WriteLine("[DIAG-PROG] Apos Build...");
 
                 // Configura handlers de exceção global após build
+                Console.WriteLine("[DIAG-PROG] Antes ConfigureGlobalExceptionHandlers...");
                 ConfigureGlobalExceptionHandlers(host.Services);
+                Console.WriteLine("[DIAG-PROG] Antes Run...");
 
                 host.Run();
             }
@@ -122,9 +128,19 @@ namespace FrotiX
         {
             try
             {
+                // Detect se estamos rodando no WSL (Linux com paths montados do Windows)
+                var isWsl = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(
+                    System.Runtime.InteropServices.OSPlatform.Linux) && 
+                    Environment.CurrentDirectory.StartsWith("/mnt/");
+                
                 return Host.CreateDefaultBuilder(args)
                     .ConfigureWebHostDefaults(webBuilder =>
                     {
+                        // No WSL, desabilitar StaticWebAssets que não funciona com paths Windows
+                        if (isWsl)
+                        {
+                            webBuilder.UseSetting(WebHostDefaults.StaticWebAssetsKey, "false");
+                        }
                         webBuilder.UseStartup<Startup>();
                     });
             }

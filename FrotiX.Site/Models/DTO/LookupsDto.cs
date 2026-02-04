@@ -21,7 +21,7 @@ namespace FrotiX.Models.DTO // <-- ajuste para o namespace do seu projeto
     /****************************************************************************************
      * ⚡ RECORD: MotoristaData
      * --------------------------------------------------------------------------------------
-     * 🎯 OBJETIVO     : Representar motorista em lookups simples.
+     * 🎯 OBJETIVO     : Representar motorista em lookups simples (sem foto).
      *
      * 📥 ENTRADAS     : MotoristaId e Nome.
      *
@@ -32,6 +32,21 @@ namespace FrotiX.Models.DTO // <-- ajuste para o namespace do seu projeto
      * 🔄 CHAMA        : Não se aplica.
      ****************************************************************************************/
     public sealed record MotoristaData(Guid MotoristaId, string Nome);
+
+    /****************************************************************************************
+     * ⚡ RECORD: MotoristaDataComFoto
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Representar motorista em lookups COM FOTO Base64.
+     *
+     * 📥 ENTRADAS     : MotoristaId, Nome e FotoBase64.
+     *
+     * 📤 SAÍDAS       : Record imutável para UI com avatar.
+     *
+     * 🔗 CHAMADA POR  : ListaCacheService, Pages de Viagem.
+     *
+     * 🔄 CHAMA        : Não se aplica.
+     ****************************************************************************************/
+    public sealed record MotoristaDataComFoto(Guid MotoristaId, string Nome, string? FotoBase64);
 
     /****************************************************************************************
      * ⚡ RECORD: VeiculoData

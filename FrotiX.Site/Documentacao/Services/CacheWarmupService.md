@@ -1,7 +1,7 @@
 # CacheWarmupService.cs
 
 ## Visão Geral
-Serviço de **background** (`IHostedService`) que pré-carrega dados frequentes em cache de memória. Executa warm-up bloqueante na inicialização e depois atualiza o cache periodicamente em background.
+Serviço de **background** (`IHostedService`) que pré-carrega dados frequentes em cache de memória. Executa warm-up **não bloqueante** com timeout e depois atualiza o cache periodicamente em background.
 
 ## Localização
 `Services/CacheWarmupService.cs`
@@ -32,12 +32,12 @@ Serviço de **background** (`IHostedService`) que pré-carrega dados frequentes 
 ## Métodos Principais
 
 ### `StartAsync(CancellationToken)`
-**Propósito**: Inicia o serviço de warm-up.
+**Propósito**: Inicia o serviço de warm-up sem bloquear o startup.
 
 **Fluxo**:
 1. Cria `CancellationTokenSource` vinculado ao token de cancelamento
-2. **Warm-up bloqueante**: Executa `WarmAsync()` e aguarda conclusão
-   - Garante que cache está pronto antes de atender requisições
+2. **Warm-up não bloqueante**: Executa `WarmupWithTimeoutAsync()` em background
+   - Evita travar o startup se o banco estiver lento
 3. **Loop de refresh**: Inicia `RefreshLoopAsync()` em background
    - Atualiza cache a cada 10 minutos
 
@@ -52,6 +52,18 @@ Serviço de **background** (`IHostedService`) que pré-carrega dados frequentes 
 1. Cancela `CancellationTokenSource`
 2. Aguarda conclusão do loop de refresh
 3. Ignora exceções durante parada
+
+**Complexidade**: Baixa
+
+---
+
+### `WarmupWithTimeoutAsync(CancellationToken)` (privado)
+**Propósito**: Executa o warm-up com timeout para evitar travamento do startup.
+
+**Fluxo**:
+1. Cria `CancellationTokenSource` com timeout configurado
+2. Chama `WarmAsync()` com token vinculado
+3. Registra log de timeout sem interromper o host
 
 **Complexidade**: Baixa
 
@@ -159,13 +171,13 @@ public record VeiculoData(Guid VeiculoId, string Descricao);
 
 ## Observações Importantes
 
-1. **Warm-up Bloqueante**: O warm-up inicial é bloqueante (`await WarmAsync()`). Se a consulta demorar muito, pode atrasar o startup da aplicação. Considere timeout ou warm-up não bloqueante.
+1. **Warm-up Não Bloqueante**: O warm-up inicial roda em background com timeout. O app inicia mesmo se o banco estiver lento.
 
 2. **Escopo de Serviços**: Usa `IServiceProvider.CreateScope()` para criar escopo isolado e obter `IUnitOfWork`. Isso é necessário porque `IUnitOfWork` é scoped.
 
 3. **Veículos Reserva**: O código carrega veículos reserva, mas há comentário indicando que pode ser removido se não usar. Verifique se é necessário.
 
-4. **Error Handling**: Não há tratamento de exceções explícito. Se `WarmAsync()` falhar, o serviço pode não iniciar corretamente.
+4. **Error Handling**: Há tratamento de exceções e logs com `Alerta.TratamentoErroComLinha`, evitando queda do host em falhas de warmup.
 
 5. **Logging**: Registra informações úteis sobre quantidade de dados carregados. Use logs para monitorar performance.
 
@@ -176,6 +188,17 @@ public record VeiculoData(Guid VeiculoId, string Descricao);
 ```csharp
 // Startup.cs ou Program.cs
 services.AddHostedService<CacheWarmupService>();
+
+## Configuração
+
+```json
+"CacheWarmup": {
+   "Enabled": true,
+   "WarmupTimeoutSeconds": 15,
+   "RefreshIntervalMinutes": 10,
+   "CacheTtlMinutes": 30
+}
+```
 ```
 
 ## Arquivos Relacionados

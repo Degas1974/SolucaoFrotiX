@@ -10,7 +10,7 @@
 // ║ • [Consumes("application/json")], [IgnoreAntiforgeryToken]                  ║
 // ║ • Injeção: IUnitOfWork, ILogger, IWebHostEnvironment, INotyfService, Cache  ║
 // ║ • [BindProperty] ManutencaoObj - ManutencaoViewModel                        ║
-// ║ • Usa DTOs: MotoristaData, VeiculoData, VeiculoReservaData                  ║
+// ║ • Usa DTOs: MotoristaDataComFoto, VeiculoData, VeiculoReservaData           ║
 // ║                                                                              ║
 // ║ MÉTODOS AUXILIARES:                                                           ║
 // ║ • PreencheListaMotoristasFromCache - Lista de motoristas do cache           ║
@@ -21,7 +21,7 @@
 // ║ HANDLERS:                                                                     ║
 // ║ • OnGetAsync(id) - Carrega OS existente ou nova + listas do cache           ║
 // ║                                                                              ║
-// ║ DOCUMENTADO EM: 2026-01-28 | LOTE: 19                                       ║
+// ║ DOCUMENTADO EM: 2026-02-04 | LOTE: 19 | v2.0 - Cache Unificado              ║
 // ╚══════════════════════════════════════════════════════════════════════════════╝
 using AspNetCoreHero.ToastNotification.Abstractions;
 using FrotiX.Infrastructure;
@@ -36,7 +36,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MotoristaData = FrotiX.Models.DTO.MotoristaData;
+using MotoristaDataComFoto = FrotiX.Models.DTO.MotoristaDataComFoto;
 using VeiculoData = FrotiX.Models.DTO.VeiculoData;
 using VeiculoReservaData = FrotiX.Models.DTO.VeiculoReservaData;
 
@@ -86,7 +86,8 @@ namespace FrotiX.Pages.Manutencao
         {
             try
             {
-                var ds = _cache.Get<List<MotoristaData>>(CacheKeys.Motoristas) ?? new List<MotoristaData>();
+                // [CACHE] Motoristas com foto (MotoristaDataComFoto)
+                var ds = _cache.Get<List<MotoristaDataComFoto>>(CacheKeys.Motoristas) ?? new List<MotoristaDataComFoto>();
                 ViewData["dataMotorista"] = ds;
             }
             catch (Exception error)
@@ -100,7 +101,8 @@ namespace FrotiX.Pages.Manutencao
         {
             try
             {
-                var ds = _cache.Get<List<VeiculoData>>(CacheKeys.Veiculos) ?? new List<VeiculoData>();
+                // [CACHE] Veículos Manutenção (ViewVeiculosManutencao)
+                var ds = _cache.Get<List<VeiculoData>>(CacheKeys.VeiculosManutencao) ?? new List<VeiculoData>();
                 ViewData["dataVeiculo"] = ds;
             }
             catch (Exception error)
@@ -114,25 +116,8 @@ namespace FrotiX.Pages.Manutencao
         {
             try
             {
-                var cachedData = _cache.Get(CacheKeys.VeiculosReserva);
-                List<VeiculoReservaData> ds;
-                if (cachedData is List<VeiculoReservaData> reservaData)
-                {
-                    ds = reservaData;
-                }
-                else if (cachedData is List<VeiculoData> veiculoData)
-                {
-                    ds = veiculoData
-                        .Select(v => new VeiculoReservaData(
-                            v.VeiculoId ,
-                            v.Descricao
-                        ))
-                        .ToList();
-                }
-                else
-                {
-                    ds = new List<VeiculoReservaData>();
-                }
+                // [CACHE] Veículos Reserva (VeiculoReservaData)
+                var ds = _cache.Get<List<VeiculoReservaData>>(CacheKeys.VeiculosReserva) ?? new List<VeiculoReservaData>();
                 ViewData["dataVeiculoReserva"] = ds;
             }
             catch (Exception error)

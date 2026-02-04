@@ -143,6 +143,7 @@ namespace FrotiX
                 // Adicione temporariamente no Startup.cs para testar:
                 var testConn = Configuration.GetConnectionString("DefaultConnection");
                 Console.WriteLine($"Connection String: {testConn}");
+                Console.WriteLine("[DIAG] Apos Connection String...");
 
                 // Define cultura ANTES do Syncfusion
                 services.Configure<RequestLocalizationOptions>(options =>
@@ -153,9 +154,12 @@ namespace FrotiX
                     options.SupportedUICultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
                 });
 
+                Console.WriteLine("[DIAG] Antes AddMemoryCache...");
                 // Cache em memória e hosted service de warmup
                 services.AddMemoryCache();
+                Console.WriteLine("[DIAG] Antes AddHostedService CacheWarmupService...");
                 services.AddHostedService<CacheWarmupService>();
+                Console.WriteLine("[DIAG] Apos CacheWarmupService...");
 
                 // ========================================================
                 // ⭐ SISTEMA DE LOG DE ERROS - SERVIÇOS (v3.0 - Banco de Dados)
@@ -235,6 +239,7 @@ namespace FrotiX
                     options.MinimumSameSitePolicy = SameSiteMode.None;
                 });
 
+                Console.WriteLine("[DIAG] Antes DbContext...");
                 // ========================================================
                 // CONFIGURAÇÕES DE BANCO DE DADOS E IDENTITY
                 // ========================================================
@@ -264,15 +269,18 @@ namespace FrotiX
                 services.AddHttpClient("ClaudeAI");
                 services.AddScoped<IClaudeAnalysisService, ClaudeAnalysisService>();
 
+                Console.WriteLine("[DIAG] Antes AddIdentity...");
                 services
                     .AddIdentity<IdentityUser, IdentityRole>(options =>
                         options.SignIn.RequireConfirmedAccount = false
                     )
                     .AddRoleManager<RoleManager<IdentityRole>>()
                     .AddEntityFrameworkStores<ApplicationDbContext>();
+                Console.WriteLine("[DIAG] Apos AddIdentity...");
 
                 services.AddScoped<IUnitOfWork, UnitOfWork>();
                 services.AddScoped<ICorridasTaxiLegRepository, CorridasTaxiLegRepository>();
+                Console.WriteLine("[DIAG] Apos UnitOfWork...");
 
                 services.AddScoped<IViagemEstatisticaRepository, ViagemEstatisticaRepository>();
                 services.AddScoped<ViagemEstatisticaService>();
@@ -291,8 +299,7 @@ namespace FrotiX
                 });
 
                 services.AddTransient<IEmailSender, EmailSender>();
-
-                // 🔒 Filtro global: exige usuário autenticado + Filtros de Log de Erros
+                Console.WriteLine("[DIAG] Antes AddControllersWithViews...");
                 services.AddControllersWithViews(options =>
                 {
                     var policy = new AuthorizationPolicyBuilder()
@@ -304,6 +311,7 @@ namespace FrotiX
                     options.Filters.Add<GlobalExceptionFilter>();
                     options.Filters.Add<AsyncExceptionFilter>();
                 });
+                Console.WriteLine("[DIAG] Apos AddControllersWithViews...");
 
                 services
                     .AddRazorPages()
@@ -325,6 +333,7 @@ namespace FrotiX
                     });
 
                 services.AddRazorPages().AddRazorRuntimeCompilation();
+                Console.WriteLine("[DIAG] Apos RazorPages...");
 
                 services.ConfigureApplicationCookie(options =>
                 {
@@ -357,22 +366,29 @@ namespace FrotiX
                 // AddHttpContextAccessor já registrado anteriormente (seção de logs)
                 services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
                 services.AddScoped<IRazorRenderService, RazorRenderService>();
+                Console.WriteLine("[DIAG] Antes AddKendo 1...");
                 services.AddKendo();
+                Console.WriteLine("[DIAG] Apos AddKendo 1...");
                 services.AddScoped<INavigationModel, NavigationModel>();
                 services.AddScoped<IViagemRepository, ViagemRepository>();
 
                 services.AddMemoryCache();
                 services.AddScoped<MotoristaFotoService>();
                 services.AddScoped<MotoristaCache>();
+                services.AddScoped<FrotiX.Services.ListaCacheService>(); // Cache centralizado de Motoristas/Veículos
                 services.AddScoped<IGlosaService, GlosaService>();
 
                 services.AddScoped<IToastService, ToastService>();
 
                 // >>> Normalizador de texto habilitado (JSON cache + Azure NER auto via env + fallback)
+                Console.WriteLine("[DIAG] Antes AddTextNormalization...");
                 services.AddTextNormalization();
+                Console.WriteLine("[DIAG] Apos AddTextNormalization...");
 
                 // >>> DOCGENERATOR - Registrar serviços do sistema de documentação automática
+                Console.WriteLine("[DIAG] Antes AddDocGenerator...");
                 services.AddDocGenerator(Configuration);
+                Console.WriteLine("[DIAG] Apos AddDocGenerator...");
 
                 services.AddRouting(options =>
                 {
@@ -392,6 +408,7 @@ namespace FrotiX
                     options.MultipartHeadersLengthLimit = int.MaxValue;
                 });
 
+                Console.WriteLine("[DIAG] Antes AddSignalR...");
                 // *** SignalR para o sistema de Alertas ***
                 services.AddSignalR(options =>
                 {
@@ -399,8 +416,7 @@ namespace FrotiX
                     options.KeepAliveInterval = TimeSpan.FromSeconds(15);
                     options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
                 });
-
-                services.AddKendo();
+                Console.WriteLine("[DIAG] Apos AddSignalR...");
 
                 services.Configure<EvolutionApiOptions>(Configuration.GetSection("WhatsApp"));
 
@@ -422,6 +438,7 @@ namespace FrotiX
                 })
                 // timeouts robustos para WhatsApp
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5));
+                Console.WriteLine("[DIAG] FIM ConfigureServices");
             }
             catch (Exception ex)
             {
@@ -437,6 +454,7 @@ namespace FrotiX
         {
             try
             {
+                Console.WriteLine("[DIAG] INICIO Configure...");
                 // ========================================================
                 // ⭐ SISTEMA DE LOG DE ERROS - MIDDLEWARE (PRIMEIRO!)
                 // IMPORTANTE: Deve ser o PRIMEIRO middleware para capturar

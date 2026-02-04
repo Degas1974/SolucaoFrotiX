@@ -5,9 +5,9 @@ Este arquivo é atualizado automaticamente pelo Claude Code para rastrear todas 
 ---
 
 ## 📊 Resumo Geral
-- **Total de Conversas:** 6
+- **Total de Conversas:** 7
 - **Em Andamento:** 1
-- **Concluídas:** 5
+- **Concluídas:** 6
 
 ---
 
@@ -15,6 +15,7 @@ Este arquivo é atualizado automaticamente pelo Claude Code para rastrear todas 
 
 | Data | Tema | Tags | Status | Duração | Arquivos | Link |
 |------|------|------|--------|---------|----------|------|
+| 2026-02-04 15:45 | Warmup nao bloqueante | `[Cache]` `[Startup]` `[Config]` | ✅ Concluída | 00:02 | 3 | [Ver](2026.02.04-15.45%20-%20Warmup%20nao%20bloqueante.md) |
 | 2026-02-04 14:03 | Ajuste Output Launch | `[VS]` `[Launch]` `[Debug]` | ✅ Concluída | 00:01 | 2 | [Ver](2026.02.04-14.03%20-%20Ajuste%20Output%20Launch.md) |
 | 2026-02-04 13:38 | Ajuste Launch FrotiX.Web | `[Config]` `[VS]` `[Launch]` | ✅ Concluída | 00:01 | 2 | [Ver](2026.02.04-13.38%20-%20Ajuste%20Launch%20FrotiX.Web.md) |
 | 2026-02-04 11:27 | WSL Build Setup | `[WSL]` `[Build]` `[NuGet]` `[Infra]` | ✅ Concluída | 00:02 | 3 | [Ver](2026.02.04-11.27%20-%20WSL%20Build%20Setup.md) |
@@ -24,4 +25,4 @@ Este arquivo é atualizado automaticamente pelo Claude Code para rastrear todas 
 
 ---
 
-**Última Atualização:** 2026-02-04 14:03
+**Última Atualização:** 2026-02-04 15:45
