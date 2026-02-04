@@ -170,12 +170,13 @@ namespace FrotiX
                 services.AddSingleton<ILogService, LogService>();
 
                 // Configura LoggerProvider customizado para capturar logs do ILogger (Debug Output)
-                services.AddLogging(builder =>
-                {
-                    var serviceProvider = services.BuildServiceProvider();
-                    var logService = serviceProvider.GetRequiredService<ILogService>();
-                    builder.AddFrotiXLogger(logService, Microsoft.Extensions.Logging.LogLevel.Warning);
-                });
+                services.AddSingleton<ILoggerProvider>(sp =>
+                    new FrotiXLoggerProvider(
+                        sp.GetRequiredService<ILogService>(),
+                        Microsoft.Extensions.Logging.LogLevel.Warning
+                    )
+                );
+                services.AddLogging();
 
                 // Filtros de exceção (devem ser Scoped para injeção de dependência)
                 services.AddScoped<GlobalExceptionFilter>();

@@ -52,10 +52,6 @@ public class LogErrosExportService : ILogErrosExportService
 
     // Cores do FrotiX
     private static readonly string PrimaryColor = "#1e40af";
-    private static readonly string SuccessColor = "#059669";
-    private static readonly string WarningColor = "#d97706";
-    private static readonly string DangerColor = "#dc2626";
-    private static readonly string InfoColor = "#0891b2";
 
     public LogErrosExportService(ILogRepository repository, ILogger<LogErrosExportService> logger)
     {

@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FrotiX.Data;
+using FrotiX.Helpers;
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -70,6 +71,7 @@ namespace FrotiX.Repository
             }
             catch (Exception erro)
             {
+                Alerta.TratamentoErroComLinha("RepactuacaoAtaRepository.cs", "RepactuacaoAtaRepository", erro);
                 throw;
             }
             }
@@ -113,6 +115,7 @@ namespace FrotiX.Repository
             }
             catch (Exception erro)
             {
+                Alerta.TratamentoErroComLinha("RepactuacaoAtaRepository.cs", "GetRepactuacaoAtaListForDropDown", erro);
                 throw;
             }
             }
@@ -159,6 +162,7 @@ namespace FrotiX.Repository
             }
             catch (Exception erro)
             {
+                Alerta.TratamentoErroComLinha("RepactuacaoAtaRepository.cs", "Update", erro);
                 throw;
             }
             }
