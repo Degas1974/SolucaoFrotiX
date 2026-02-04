@@ -40,6 +40,13 @@ $(document).ready(function () {
                             var dataToPost = JSON.stringify({ EmpenhoId: id });
                             var url = "/api/Empenho/Delete";
 
+                            /********************************************************************************
+                             * [AJAX] Endpoint: POST /api/Empenho/Delete
+                             * ======================================================================
+                             * 📥 ENVIA        : { EmpenhoId: number }
+                             * 📤 RECEBE       : { success: bool, message: string }
+                             * 🎯 MOTIVO       : Deletar empenho após confirmação do usuário
+                             ********************************************************************************/
                             $.ajax({
                                 url: url,
                                 type: "POST",

@@ -34,6 +34,15 @@ $(document).ready(function () {
                 var id = $(this).data("id");
 
                 // Verifica dependências antes de confirmar exclusão
+                /********************************************************************************
+                 * [AJAX] Endpoint: GET /api/AtaRegistroPrecos/VerificarDependencias
+                 * ======================================================================
+                 * 📥 ENVIA        : id (ID da ata)
+                 * 📤 RECEBE       : { success: bool, possuiDependencias: bool,
+                 *                     itens: number, veiculos: number }
+                 * 🎯 MOTIVO       : Verificar se ata possui itens/veículos antes de permitir
+                 *                   exclusão (regra de negócio: não deletar ata com dependências)
+                 ********************************************************************************/
                 $.ajax({
                     url: "/api/AtaRegistroPrecos/VerificarDependencias?id=" + id,
                     type: "GET",

@@ -66,6 +66,26 @@ public class ClaudeAnalysisService : IClaudeAnalysisService
     /// <summary>
     /// Analisa um erro e retorna sugestões de correção
     /// </summary>
+    /***********************************************************************************
+     * ⚡ FUNÇÃO: AnalyzeErrorAsync
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Enviar erro para Claude AI e retornar diagnóstico com sugestões
+     *                   de correção e prevenção em Markdown
+     *
+     * 📥 ENTRADAS     : logErro [LogErro] - Detalhes do erro do sistema
+     *
+     * 📤 SAÍDAS       : Task<ClaudeAnalysisResult> - Resultado com análise ou erro
+     *
+     * ⬅️ CHAMADO POR  : LogErrosAlertService, Controllers de erro
+     *
+     * ➡️ CHAMA        : IsConfigured [check]
+     *                   BuildErrorContext() [linha 83]
+     *                   _httpClient.PostAsync() [API Anthropic]
+     *                   ParseErrorMessage() [linha 122]
+     *
+     * 📝 OBSERVAÇÕES  : Enriquece com tokens de uso. Trata 3 tipos de erro: config,
+     *                   API falha e processamento. Try-catch abrangente.
+     ***********************************************************************************/
     public async Task<ClaudeAnalysisResult> AnalyzeErrorAsync(LogErro logErro)
     {
         if (!IsConfigured)
@@ -186,6 +206,25 @@ public class ClaudeAnalysisService : IClaudeAnalysisService
     /// <summary>
     /// Monta o contexto do erro para enviar ao Claude
     /// </summary>
+    /***********************************************************************************
+     * ⚡ FUNÇÃO: BuildErrorContext
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Formatar dados do erro em Markdown estruturado para envio a Claude.
+     *                   Inclui stack trace, inner exception, contexto HTTP
+     *
+     * 📥 ENTRADAS     : logErro [LogErro] - Objeto do banco com erro completo
+     *
+     * 📤 SAÍDAS       : string - Markdown formatado com seções estruturadas
+     *
+     * ⬅️ CHAMADO POR  : AnalyzeErrorAsync() [linha 102]
+     *
+     * ➡️ CHAMA        : TruncateIfNeeded() [linhas 236, 245, 254]
+     *                   StringBuilder.AppendLine() [múltiplas vezes]
+     *
+     * 📝 OBSERVAÇÕES  : Constrói prompt completo em Markdown. Trunca stack trace (3000),
+     *                   inner exception (1500), dados adicionais (1500) para evitar
+     *                   token limit da API Claude. Inclui instruções finais para análise.
+     ***********************************************************************************/
     private string BuildErrorContext(LogErro logErro)
     {
         var sb = new StringBuilder();
