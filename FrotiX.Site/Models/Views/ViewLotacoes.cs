@@ -1,14 +1,30 @@
-/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
-    ║ 🚀 ARQUIVO: ViewLotacoes.cs                                                                       ║
-    ║ 📂 CAMINHO: /Models/Views                                                                           ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 🎯 OBJETIVO: View SQL de lotações (setores/unidades) para listagens.                               ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 📋 PROPS: LotacaoMotoristaId, MotoristaId, UnidadeId, Unidade, DataInicio, Lotado                  ║
-    ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║ 🔗 DEPS: FrotiX.Services, FrotiX.Validations                                                        ║
-    ║ 📅 Atualizado: 2026 | 👤 FrotiX Team | 📝 Versão: 2.0                                              ║
-    ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝ */
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: ViewLotacoes.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Vista SQL somente leitura para consolida de lotações de motoristas.
+ *                   Agrupa dados de alocação por unidade/setor com status consolidado.
+ *                   Utilizada em relatórios de distribuição de RH, grid de lotações,
+ *                   análises de capacidade de unidades e planejamento de recursos.
+ *
+ * 📥 ENTRADAS     : Dados da view SQL vLotacoes:
+ *                   - LotacaoMotoristaId, MotoristaId, UnidadeId
+ *                   - NomeCategoria, Unidade, Motorista
+ *                   - DataInicio, Lotado (flag)
+ *
+ * 📤 SAÍDAS       : Registros de leitura (somente get; set) para relatórios e analytics
+ *
+ * 🔗 CHAMADA POR  : RelatorioSetorSolicitanteController
+ *                   Telas de análise de distribuição de pessoal
+ *
+ * 🔄 CHAMA        : Não se aplica (modelo puro)
+ *
+ * 📦 DEPENDÊNCIAS : System.ComponentModel.DataAnnotations
+ *                   FrotiX.Validations (para validações customizadas)
+ *
+ * 📝 OBSERVAÇÕES  : View SQL mapeada via DbSet<ViewLotacoes>
+ *                   Otimizada para relatórios gerenciais e BI
+ *                   Suporta agregações e análises por unidade/categoria
+ **************************************************************************************** */
 
 using System;
 using System.Collections.Generic;
@@ -26,42 +42,59 @@ namespace FrotiX.Models
     /****************************************************************************************
      * ⚡ MODEL: ViewLotacoes
      * --------------------------------------------------------------------------------------
-     * 🎯 OBJETIVO     : Representar view SQL de lotações consolidadas
+     * 🎯 OBJETIVO     : Representar view SQL de lotações consolidadas por unidade/categoria
      *
-     * 📥 ENTRADAS     : Motorista, unidade, categoria, data e status
+     * 📥 ENTRADAS     : Motorista, unidade, categoria, data e status de lotação
      *
-     * 📤 SAÍDAS       : Registro somente leitura para listagens
+     * 📤 SAÍDAS       : Registros somente leitura para listagens e relatórios
      *
-     * 🔗 CHAMADA POR  : Consultas de lotação e dashboards
+     * 🔗 CHAMADA POR  : Relatórios de distribuição, dashboards gerenciais
      *
-     * 🔄 CHAMA        : Não se aplica
+     * 🔄 CHAMA        : Não se aplica (modelo puro para leitura)
      ****************************************************************************************/
     public class ViewLotacoes
     {
-        // [DADOS] Identificador único da lotação
+        // [DADOS] LotacaoMotoristaId - GUID único da lotação.
+        // Chave primária do resultado da view; referencia LotacaoMotorista.LotacaoMotoristaId
         public Guid LotacaoMotoristaId { get; set; }
 
-        // [DADOS] Identificador do motorista
+        // [DADOS] MotoristaId - GUID do motorista (FK para Motorista).
+        // Identifica qual motorista está alocado nesta lotação.
         public Guid MotoristaId { get; set; }
 
-        // [DADOS] Identificador da unidade
+        // [DADOS] UnidadeId - GUID da unidade (FK para Unidade).
+        // Em qual unidade/setor o motorista está lotado.
         public Guid UnidadeId { get; set; }
 
-        // [DADOS] Nome da categoria do motorista
+        // [DADOS] NomeCategoria - Categoria funcional do motorista (string 1..100).
+        // Exemplo: "Motorista Categoria D", "Motorista Categoria E"
+        // Preenchido na view SQL (JOIN com Motorista.Categoria).
+        // Opcional; pode ser nulo se categoria não definida.
         public string? NomeCategoria { get; set; }
 
-        // [DADOS] Nome da unidade
+        // [DADOS] Unidade - Nome da unidade (string 1..100).
+        // Exemplo: "Unidade Central", "Unidade Norte"
+        // Preenchido na view SQL (JOIN com Unidade.Nome).
+        // Usado em relatórios e analytics por setor.
         public string? Unidade { get; set; }
 
-        // [DADOS] Nome do motorista
+        // [DADOS] Motorista - Nome completo do motorista (string 1..200).
+        // Exemplo: "João da Silva Santos"
+        // Preenchido na view SQL (JOIN com Motorista.Nome).
+        // Opcional; pode ser nulo em históricos deletados.
         public string? Motorista { get; set; }
 
-        // [DADOS] Data de início da lotação (formatada)
+        // [DADOS] DataInicio - Data de início da lotação (string formatada).
+        // Exemplo: "2026-01-15" ou "15/01/2026" (conforme localização)
+        // Quando motorista foi alocado à unidade.
+        // Opcional; pode ser nulo em registros antigos.
         public string? DataInicio { get; set; }
 
-        // [DADOS] Flag indicando se motorista está lotado
+        // [DADOS] Lotado - Flag indicando status atual da lotação (bool).
+        // true = motorista está efetivamente lotado (vigente)
+        // false = lotação encerrada ou suspensa
+        // [VALIDACAO] Obrigatório (nunca null); utilizado para filtros de ativos.
         public bool Lotado { get; set; }
     }
 }
-
 

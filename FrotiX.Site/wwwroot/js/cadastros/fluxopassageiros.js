@@ -92,6 +92,14 @@ function executarInsercaoLinha()
         }
 
         // Obtém categoria e valida limites específicos
+        /********************************************************************************
+         * [AJAX] Endpoint: GET /api/Viagem/PegaCategoria
+         * ======================================================================
+         * 📥 ENVIA        : id (ID do veículo)
+         * 📤 RECEBE       : categoria (string: "Ônibus", "Coletivos Pequenos", etc)
+         * 🎯 MOTIVO       : Buscar categoria do veículo para validar limite de
+         *                   passageiros conforme tipo de veículo
+         ********************************************************************************/
         $.ajax({
             type: "GET",
             url: "/api/Viagem/PegaCategoria",

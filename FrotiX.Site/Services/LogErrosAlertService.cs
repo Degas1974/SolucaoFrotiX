@@ -77,6 +77,23 @@ public class LogErrosAlertService : BackgroundService
         };
     }
 
+    /***********************************************************************************
+     * ⚡ FUNÇÃO: ExecuteAsync
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Inicializar o BackgroundService e configurar Timer para verificação
+     *                   periódica de alertas de erros (a cada 30 segundos)
+     *
+     * 📥 ENTRADAS     : stoppingToken [CancellationToken] - Token para parar serviço
+     *
+     * 📤 SAÍDAS       : Task - Operação assíncrona do ciclo de vida
+     *
+     * ⬅️ CHAMADO POR  : ASP.NET Core Host (durante startup)
+     *
+     * ➡️ CHAMA        : VerificarAlertas() [callback Timer, linha 88]
+     *
+     * 📝 OBSERVAÇÕES  : Timer roda a cada 30s com delay inicial de 10s para não
+     *                   saturar no startup. Monitoramento contínuo em background.
+     ***********************************************************************************/
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         try
@@ -99,6 +116,26 @@ public class LogErrosAlertService : BackgroundService
         }
     }
 
+    /***********************************************************************************
+     * ⚡ FUNÇÃO: VerificarAlertas
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Verificar thresholds de erros, detectar anomalias e erros críticos
+     *                   não resolvidos, disparando alertas quando necessário
+     *
+     * 📥 ENTRADAS     : state [object?] - Parâmetro do Timer (null)
+     *
+     * 📤 SAÍDAS       : void - Callback assíncrono do Timer
+     *
+     * ⬅️ CHAMADO POR  : Timer no ExecuteAsync() [linha 102] - a cada 30 segundos
+     *
+     * ➡️ CHAMA        : repository.CheckThresholdsAsync() [linha 130]
+     *                   repository.DetectAnomaliesAsync() [linha 137]
+     *                   repository.GetUnresolvedCriticalAsync() [linha 155]
+     *                   EnviarAlertaSeNecessario() [linhas 134, 151, 168]
+     *
+     * 📝 OBSERVAÇÕES  : Verifica 3 tipos de anomalias: thresholds, anomalias estatísticas
+     *                   e erros críticos não resolvidos. Try-catch abrangente.
+     ***********************************************************************************/
     private async void VerificarAlertas(object? state)
     {
         try
@@ -162,6 +199,28 @@ public class LogErrosAlertService : BackgroundService
         }
     }
 
+    /***********************************************************************************
+     * ⚡ FUNÇÃO: EnviarAlertaSeNecessario
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Verificar cooldown e descartar duplicatas, depois enviar alerta
+     *                   via SignalR para todos os clientes conectados
+     *
+     * 📥 ENTRADAS     : alerta [LogThresholdAlert] - Detalhes do alerta a enviar
+     *
+     * 📤 SAÍDAS       : Task - Operação assíncrona de envio
+     *
+     * ⬅️ CHAMADO POR  : VerificarAlertas() [linhas 154, 171, 188]
+     *
+     * ➡️ CHAMA        : _alertasSent.TryGetValue() [cache check]
+     *                   GetTituloAlerta() [linha 200]
+     *                   GetIconeAlerta() [linha 201]
+     *                   GetCorAlerta() [linha 202]
+     *                   _hubContext.Clients.All.SendAsync() [SignalR broadcast]
+     *                   LimparCacheAntigo() [linha 219]
+     *
+     * 📝 OBSERVAÇÕES  : Implementa cooldown de 5 minutos para evitar spam. Cache
+     *                   limpeza automática de entradas obsoletas (> 10 min).
+     ***********************************************************************************/
     private async Task EnviarAlertaSeNecessario(LogThresholdAlert alerta)
     {
         try

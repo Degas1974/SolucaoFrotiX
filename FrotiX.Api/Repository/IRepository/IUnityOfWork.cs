@@ -1,3 +1,28 @@
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: IUnitOfWork.cs
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Interface principal (Unit of Work pattern) que coordena e gerencia
+ *                   todos os repositories de domínio, abstração transacional e persistência
+ *                   de dados
+ *
+ * 📥 ENTRADAS     : Inicialização de transações, scope da sessão de banco de dados
+ *
+ * 📤 SAÍDAS       : Gerenciador central de acesso aos repositories, métodos Save() e
+ *                   SaveAsync() para persistência
+ *
+ * 🔗 CHAMADA POR  : Controllers, Services (padrão Dependency Injection)
+ *
+ * 🔄 CHAMA        : Todas as interfaces IRepository especializadas (Abastecimento,
+ *                   Contrato, Veiculo, Viagem, View repositories, etc.)
+ *
+ * 📦 DEPENDÊNCIAS : IRepository[T], IDisposable, System.Threading.Tasks, Models
+ *
+ * 📝 OBSERVAÇÕES  : Interface PARCIAL - tem extensões em arquivos de padrão:
+ *                   - IUnitOfWork.OcorrenciaViagem.cs (propriedades OcorrenciaViagem)
+ *                   - IUnitOfWork.RepactuacaoVeiculo.cs (propriedades Repactuação)
+ *                   Coordena transações ACID e garante consistência de dados
+ **************************************************************************************** */
+
 using System;
 using System.Threading.Tasks;
 
