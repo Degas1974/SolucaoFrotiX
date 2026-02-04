@@ -712,15 +712,8 @@ if (path == "/patrimonio/index" || path == "/patrimonio")
     {
         try
         {
-            // Coletar valores dos filtros
-            var ddtMarcaModelo = document.getElementById('ddtMarcaModelo');
-            var ddtSetorSecao = document.getElementById('ddtSetorSecao');
-            var cmbSituacao = document.getElementById('cmbSituacao');
-
-            var marcasModelos = [];
-            var setoresSecoes = [];
-            var situacao = "";
-
+            // [LOGICA] Coletar valores de 3 filtros Syncfusion e montar query string
+            // Fluxo: DropDownTree (marca/modelo) → DropDownTree (setor/seção) → ComboBox (situação)
             // Obter valores selecionados do DropDownTree Marca/Modelo
             if (ddtMarcaModelo && ddtMarcaModelo.ej2_instances && ddtMarcaModelo.ej2_instances[0])
             {

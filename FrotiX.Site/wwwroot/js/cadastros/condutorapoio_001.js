@@ -142,9 +142,36 @@ $(document).ready(function () {
     }
 });
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: loadList
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Inicializar DataTable de condutores de apoio com configurações de
+ *                   paginação, filtros e renderização dinâmica de status/ações
+ *
+ * 📥 ENTRADAS     : Nenhuma
+ *
+ * 📤 SAÍDAS       : DataTable inicializado globalmente (variável dataTable)
+ *
+ * ⬅️ CHAMADO POR  : $(document).ready [linha 23]
+ *
+ * ➡️ CHAMA        : $.ajax (GET /api/condutorapoio) [AJAX]
+ *                   DataTable() [jQuery plugin]
+ *                   Alerta.TratamentoErroComLinha
+ *
+ * 📝 OBSERVAÇÕES  : Renderização customizada para status (Ativo/Inativo) e ações
+ *                   (Editar/Excluir). Try-catch em cada render.
+ ****************************************************************************************/
 function loadList() {
     try
     {
+        /********************************************************************************
+         * [AJAX] Endpoint: GET /api/condutorapoio
+         * ======================================================================
+         * 📥 ENVIA        : Nenhum parâmetro (GET)
+         * 📤 RECEBE       : { data: [ { condutorId, descricao, status }, ... ] }
+         * 🎯 MOTIVO       : Carregar lista de condutores de apoio para exibição
+         *                   na tabela com status e ações (Editar/Excluir)
+         ********************************************************************************/
         dataTable = $("#tblCondutor").DataTable({
             columnDefs: [
                 {
