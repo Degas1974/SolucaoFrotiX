@@ -92,6 +92,27 @@ namespace FrotiX.Services
         }
 
         // 🎯 MÉTODOS DE ATALHO
+        /***********************************************************************************
+         * ⚡ FUNÇÃO: ShowSuccess
+         * ⚡ FUNÇÃO: ShowError
+         * ⚡ FUNÇÃO: ShowWarning
+         * ⚡ FUNÇÃO: ShowInfo
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Atalhos para show() com cores pré-definidas. Facilitam chamadas
+         *                   sem precisar lembrar nome da cor inglês/português
+         *
+         * 📥 ENTRADAS     : message [string] - Mensagem a exibir
+         *                   duration [int] - Duração em ms (opcional, padrão 2000-3000)
+         *
+         * 📤 SAÍDAS       : void - Enqueue na TempData
+         *
+         * ⬅️ CHAMADO POR  : Controllers, PageModels (qualquer método público)
+         *
+         * ➡️ CHAMA        : show() [linhas 95-101]
+         *
+         * 📝 OBSERVAÇÕES  : ShowError tem duração padrão 3000ms, outros 2000ms.
+         *                   São lambdas simples para facilitar chamada.
+         ***********************************************************************************/
         public static void ShowSuccess(string message , int duration = 2000)
             => show("Verde" , message , duration);
 
@@ -104,6 +125,25 @@ namespace FrotiX.Services
         public static void ShowInfo(string message , int duration = 2000)
             => show("Azul" , message , duration);
 
+        /***********************************************************************************
+         * ⚡ FUNÇÃO: EscapeJs
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : Escapar caracteres especiais em string para segurança em contexto JS.
+         *                   Evita injection de código malformado via quotes
+         *
+         * 📥 ENTRADAS     : input [string] - String com potencial caracteres problemáticos
+         *
+         * 📤 SAÍDAS       : string - String escapada segura para contexto JavaScript
+         *
+         * ⬅️ CHAMADO POR  : show() [linha 78]
+         *
+         * ➡️ CHAMA        : string.IsNullOrEmpty() [standard .NET]
+         *                   string.Replace() [standard .NET] - múltiplas vezes
+         *
+         * 📝 OBSERVAÇÕES  : CRÍTICO para segurança XSS. Escapa:
+         *                   \ → \\ | ' → \' | " → \" | \n → \\n | \r → \\r
+         *                   Deve ser chamado ANTES de colocar string em contexto JS string.
+         ***********************************************************************************/
         private static string EscapeJs(string input)
         {
             if (string.IsNullOrEmpty(input))

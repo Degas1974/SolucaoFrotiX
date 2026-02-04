@@ -21,6 +21,26 @@
 
 //Escolheu um órgão
 //=================
+/****************************************************************************************
+ * ⚡ FUNÇÃO: lstOrgaoChange
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Buscar lista de empenhos da API conforme órgão selecionado e
+ *                   atualizar dropdown Syncfusion lstEmpenhos
+ *
+ * 📥 ENTRADAS     : lstOrgao.value (ID do órgão selecionado)
+ *
+ * 📤 SAÍDAS       : Syncfusion DropDown lstEmpenhos atualizado com dataSource,
+ *                   campo txtEmpenhoMultaId limpo
+ *
+ * ⬅️ CHAMADO POR  : Syncfusion change event lstOrgao
+ *
+ * ➡️ CHAMA        : GET /Multa/UpsertPenalidade?handler=AJAXPreencheListaEmpenhos [AJAX]
+ *                   ej2_instances[0] (Syncfusion API)
+ *                   Alerta.TratamentoErroComLinha
+ *
+ * 📝 OBSERVAÇÕES  : Limpa lstEmpenhos antes de carregar. Constrói EmpenhoList dinamicamente.
+ *                   Usa ej2_instances[0] para acessar instância Syncfusion.
+ ****************************************************************************************/
 function lstOrgaoChange() {
     try
     {
@@ -38,6 +58,14 @@ function lstOrgaoChange() {
 
         var orgaoid = String(lstOrgao.value);
 
+        /********************************************************************************
+         * [AJAX] Endpoint: GET /Multa/UpsertPenalidade?handler=AJAXPreencheListaEmpenhos
+         * ======================================================================
+         * 📥 ENVIA        : id (ID do órgão autuante)
+         * 📤 RECEBE       : { data: [ { empenhoMultaId, notaEmpenho }, ... ] }
+         * 🎯 MOTIVO       : Carregar lista de empenhos de um órgão específico para
+         *                   popular dropdown Syncfusion lstEmpenhos
+         ********************************************************************************/
         $.ajax({
             url: "/Multa/UpsertPenalidade?handler=AJAXPreencheListaEmpenhos",
             method: "GET",
@@ -52,6 +80,7 @@ function lstOrgaoChange() {
                         var empenhomultaid = res.data[0].empenhoMultaId;
                         var notaempenho = res.data[0].notaEmpenho;
 
+                        // [LOGICA] Constrói array de empenhos a partir da resposta
                         let EmpenhoList = [
                             { EmpenhoMultaId: empenhomultaid, NotaEmpenho: notaempenho },
                         ];
@@ -71,6 +100,7 @@ function lstOrgaoChange() {
                             EmpenhoList.push(empenho);
                         }
 
+                        // [UI] Atualiza dropdown Syncfusion com novos dados
                         document.getElementById("lstEmpenhos").ej2_instances[0].dataSource =
                             EmpenhoList;
                         document.getElementById("lstEmpenhos").ej2_instances[0].dataBind();
@@ -78,7 +108,7 @@ function lstOrgaoChange() {
                 }
                 catch (error)
                 {
-                    Alerta.TratamentoErroComLinha("autuacao_<num>.js", "success", error);
+                    Alerta.TratamentoErroComLinha("autuacao_<num>.js", "lstOrgaoChange.success", error);
                 }
             },
         });
