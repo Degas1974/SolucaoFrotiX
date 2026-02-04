@@ -18,9 +18,27 @@
 
 var AporteTable;
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: Inicialização e Handler de Exclusão de Aporte
+ * --------------------------------------------------------------------------------------
+ *
+ * 🎯 OBJETIVO     : Gerenciar eventos de exclusão de aportes (empenho/empenho-multa)
+ *                   com confirmação e recarregamento de dados
+ *
+ * 📥 ENTRADAS     : Evento document.ready, clique em .btn-deleteaporte
+ *
+ * 📤 SAÍDAS       : Confirmação via Alerta.Confirmar, POST /api/Empenho/DeleteMovimentacao,
+ *                   Toast de sucesso/erro, reload DataTable
+ *
+ * ⬅️ CHAMADO POR  : $(document).ready (inicialização)
+ *
+ * ➡️ CHAMA        : Alerta.Confirmar, $.ajax, AppToast.show, Alerta.TratamentoErroComLinha
+ *
+ ****************************************************************************************/
 $(document).ready(function () {
     try
     {
+        /****** Handler delegado para clique em botão de remover aporte ******/
         $(document).on("click", ".btn-deleteaporte", function () {
             try
             {

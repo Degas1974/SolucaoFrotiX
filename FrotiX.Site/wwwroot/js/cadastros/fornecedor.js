@@ -168,6 +168,15 @@ function loadList()
 {
     try
     {
+        /********************************************************************************
+         * [AJAX] Endpoint: GET /api/fornecedor
+         * ======================================================================
+         * 📥 ENVIA        : Nenhum parâmetro (GET)
+         * 📤 RECEBE       : { data: [ { fornecedorId, cnpj, descricaoFornecedor,
+         *                     contato01, telefone01, status }, ... ] }
+         * 🎯 MOTIVO       : Carregar lista de fornecedores para exibir na tabela
+         *                   com status (Ativo/Inativo) e ações (Editar/Excluir)
+         ********************************************************************************/
         dataTable = $("#tblFornecedor").DataTable({
             columnDefs: [
                 {

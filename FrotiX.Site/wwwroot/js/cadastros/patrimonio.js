@@ -530,6 +530,31 @@ if (path == "/patrimonio/index" || path == "/patrimonio")
         }
     });
 
+    /********************************************************************************
+     * ⚡ FUNÇÃO: carregarFiltros
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : Carregar dados dos 3 filtros principais (marca/modelo,
+     *                   setor/seção, situação) via AJAX e inicializar DropDownTree/ComboBox.
+     *
+     * 📥 ENTRADAS     : Nenhum parâmetro direto
+     *
+     * 📤 SAÍDAS       : DropDownTree/ComboBox populados com dados da API:
+     *                   - ddtMarcaModelo: árvore marca/modelo
+     *                   - ddtSetorSecao: árvore setor/seção
+     *                   - cmbSituacao: combo de situações
+     *                   - btnFiltrarPatrimonios: event listener configurado
+     *
+     * ⬅️ CHAMADO POR  : $(document).ready (index) [linha 521-525]
+     *
+     * ➡️ CHAMA        : GET /api/Patrimonio/ListaMarcasModelos
+     *                   GET /api/Patrimonio/ListaSetoresSecoes
+     *                   GET /api/Patrimonio/ListaSituacoes
+     *                   aplicarFiltros() [ao clicar btnFiltrarPatrimonios]
+     *
+     * 📝 OBSERVAÇÕES  : - Dispara 3 requisições AJAX paralelas (não sequenciais)
+     *                   - Cada AJAX tem seus próprios try-catch (success e error)
+     *                   - btnFiltrarPatrimonios mostra loading durante filtro
+     ********************************************************************************/
     // Carregar dados dos filtros
     function carregarFiltros()
     {

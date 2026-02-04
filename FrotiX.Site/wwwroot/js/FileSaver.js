@@ -1,4 +1,27 @@
-﻿/*
+﻿/* ================================================================================================
+ * ⚡ ARQUIVO: FileSaver.js (BIBLIOTECA TERCEIRIZADA)
+ * ------------------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Biblioteca para salvar arquivos no navegador (blobs, strings, URLs)
+ *                   com suporte cross-browser (download attribute, msSaveOrOpenBlob, FileReader)
+ * 📥 ENTRADAS     : blob (Blob object) ou string (URL/data), nome do arquivo, opcões
+ * 📤 SAÍDAS       : Trigger download do arquivo no navegador (saveAs global)
+ * 🔗 CHAMADA POR  : Qualquer página que precise exportar arquivos (Excel, PDF, etc)
+ * 🔄 CHAMA        : bom(), download(), corsEnabled(), click(), FileReader, XMLHttpRequest
+ * 📦 DEPENDÊNCIAS : Nenhuma (vanilla JS puro)
+ * 📝 OBSERVAÇÕES  : Arquivo terceirizado (Eli Grey - MIT License). Detecta WebView macOS,
+ *                   suporta navegadores legados. Use: saveAs(blob, 'nome.ext')
+ *
+ * 📋 FUNÇÕES PRINCIPAIS:
+ * • saveAs(blob, name, opts) - Main API: salva blob/string como arquivo
+ * • bom(blob, opts) - Prepend UTF-8 BOM para XML/text tipos
+ * • download(url, name, opts) - Download via XHR + saveAs
+ * • corsEnabled(url) - Verifica se URL permite CORS
+ * • click(node) - Dispara clique em elemento (cross-browser)
+ *
+ * ⚠️ NÃO MODIFICAR: Arquivo terceirizado. Só atualizar se houver vulnerabilidade.
+ * ================================================================================================ */
+
+/*
 * FileSaver.js
 * A saveAs() FileSaver implementation.
 *

@@ -113,6 +113,25 @@ $(document).ready(function () {
     }
 });
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: loadList
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Inicializar DataTable de encarregados com configurações de paginação,
+ *                   filtros, exportação (Excel/PDF) e renderização de status/ações
+ *
+ * 📥 ENTRADAS     : Nenhuma
+ *
+ * 📤 SAÍDAS       : DataTable inicializado e armazenado em variável global
+ *
+ * ⬅️ CHAMADO POR  : $(document).ready [linha 26]
+ *
+ * ➡️ CHAMA        : $.ajax (GET /api/encarregado) [AJAX]
+ *                   DataTable() [jQuery plugin]
+ *                   Alerta.TratamentoErroComLinha
+ *
+ * 📝 OBSERVAÇÕES  : Configurações de renderização para status (Ativo/Inativo) e ações
+ *                   (Editar/Foto/Deletar). Try-catch nos renders para capturar erros.
+ ****************************************************************************************/
 function loadList() {
     try {
         dataTable = $("#tblEncarregado").DataTable({
@@ -133,6 +152,15 @@ function loadList() {
                 { targets: 5, className: "text-center", width: "16%" }
             ],
             responsive: true,
+            /********************************************************************************
+             * [AJAX] Endpoint: GET /api/encarregado
+             * ======================================================================
+             * 📥 ENVIA        : Nenhum parâmetro
+             * 📤 RECEBE       : { data: [ { encarregadoId, nome, ponto, celular01,
+             *                     contratoEncarregado, status }, ... ] }
+             * 🎯 MOTIVO       : Carregar lista completa de encarregados para exibir
+             *                   na tabela com status, contrato e ações (editar/excluir)
+             ********************************************************************************/
             ajax: {
                 url: "/api/encarregado",
                 type: "GET",

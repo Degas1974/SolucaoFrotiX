@@ -1,17 +1,42 @@
-/*
-    ═══════════════════════════════════════════════════════════════════════════════
-    📄 DOCUMENTAÇÃO COMPLETA DISPONÍVEL
-    ═══════════════════════════════════════════════════════════════════════════════
-    
-    📍 Localização: Documentacao/Pages/Operador - Index.md
-    📅 Última Atualização: 08/01/2026
-    📋 Versão: 2.0 (Padrão FrotiX Simplificado)
-    
-    Este arquivo contém a lógica JavaScript do DataTable e ações da página de
-    listagem de Operadores. Para entender completamente a funcionalidade,
-    consulte a documentação acima.
-    ═══════════════════════════════════════════════════════════════════════════════
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: operador.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar listagem de operadores com DataTable, exclusão, edição,
+ *                   atualização de status (ativo/inativo), visualização de foto.
+ *                   Implementa handlers delegados para compatibilidade com grid dinâmico.
+ *
+ * 📥 ENTRADAS     : Página: /Operador/Index (listagem com filtros)
+ *                   Cliques em: .btn-delete (data-id), .updateStatusOperador (data-url),
+ *                   .btn-foto (data-id), .btn-editar (href com id)
+ *                   Respostas de Alerta.Confirmar (confirmação modal)
+ *
+ * 📤 SAÍDAS       : - DataTable: grid de operadores com paginação e filtros
+ *                   - Alertas: confirmação de exclusão, mensagens de sucesso/erro
+ *                   - Toast: notificações AppToast (Verde/Vermelho)
+ *                   - Modal: foto do operador
+ *                   - Redirecionamentos: após edição
+ *
+ * 🔗 CHAMADA POR  : - Pages/Operador/Index.cshtml
+ *                   - Eventos DOM: click em .btn-delete, .updateStatusOperador
+ *                   - $(document).ready (inicialização)
+ *
+ * 🔄 CHAMA        : - loadList() [inicializa DataTable]
+ *                   - POST /api/Operador/Delete [AJAX - exclusão]
+ *                   - GET /api/Operador/UpdateStatusOperador [AJAX - toggle status]
+ *                   - GET /api/operador [AJAX - lista paginada]
+ *                   - Alerta.Confirmar() [SweetAlert]
+ *                   - AppToast.show() [toast notifications]
+ *                   - Alerta.TratamentoErroComLinha() [error handling]
+ *
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables 1.10.25+, Syncfusion (status badges),
+ *                   Alerta.js (FrotiX alerts), AppToast (notifications)
+ *
+ * 📝 OBSERVAÇÕES  : - Try-catch aninhado em todos os níveis (ready, click, AJAX)
+ *                   - Handler delegado previne problemas com DataTable dinâmico
+ *                   - Status togglável com cores: verde (ativo) / cinza (inativo)
+ *                   - Ícones duotone F24: fa-circle-check, fa-circle-xmark, fa-trash-can
+ *                   - Botões ações: editar (azul), foto (cinza), excluir (vermelho)
+ **************************************************************************************** */
 
 var dataTable;
 
@@ -109,6 +134,30 @@ $(document).ready(function () {
     }
 });
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: loadList
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Inicializar DataTable de operadores com configuração completa
+ *                   (colunas, ordenação, renderizadores, comportamento responsivo).
+ *
+ * 📥 ENTRADAS     : Nenhum parâmetro direto
+ *
+ * 📤 SAÍDAS       : DataTable inicializado em #tblOperador com:
+ *                   - Grid paginado com operadores da API
+ *                   - Colunas: Nome, Ponto, Celular, Contrato, Status, Ações
+ *                   - Status com badges clicáveis (ativo/inativo)
+ *                   - Botões: editar (azul), foto (cinza), excluir (vermelho)
+ *
+ * ⬅️ CHAMADO POR  : $(document).ready [linha 18]
+ *
+ * ➡️ CHAMA        : $.ajax GET /api/operador [linha 132-135]
+ *                   DataTable() [jQuery plugin]
+ *                   render callbacks para status e ações
+ *
+ * 📝 OBSERVAÇÕES  : - Renderizadores de status com feedback imediato
+ *                   - Try-catch em todos os renders para segurança
+ *                   - Responsivo com classes CSS Bootstrap
+ ****************************************************************************************/
 function loadList() {
     try {
         dataTable = $("#tblOperador").DataTable({

@@ -1,17 +1,39 @@
-/*
-    ═══════════════════════════════════════════════════════════════════════════════
-    📄 DOCUMENTAÇÃO COMPLETA DISPONÍVEL
-    ═══════════════════════════════════════════════════════════════════════════════
-    
-    📍 Localização: Documentacao/Pages/Requisitante - Index.md
-    📅 Última Atualização: 08/01/2026
-    📋 Versão: 2.0 (Padrão FrotiX Simplificado)
-    
-    Este arquivo contém a lógica JavaScript do DataTable e ações da página de
-    listagem de Requisitantes. Para entender completamente a funcionalidade,
-    consulte a documentação acima.
-    ═══════════════════════════════════════════════════════════════════════════════
-*/
+/* ****************************************************************************************
+ * ⚡ ARQUIVO: requisitante.js
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Gerenciar listagem de requisitantes com DataTable, exclusão delegada,
+ *                   toggle de status (ativo/inativo), edição via modal/página.
+ *                   Implementa badges clicáveis e handlers padronizados FrotiX.
+ *
+ * 📥 ENTRADAS     : Página: /Requisitante/Index (listagem com filtros)
+ *                   Cliques em: .btn-delete (data-id), .btn-toggle-status (data-url)
+ *                   Respostas de Alerta.Confirmar (confirmação exclusão)
+ *
+ * 📤 SAÍDAS       : - DataTable: grid de requisitantes com paginação
+ *                   - Alertas: confirmação de exclusão, sucesso/erro de status
+ *                   - Toast: notificações AppToast (Verde/Vermelho)
+ *                   - Badges: status com cores (verde=ativo / cinza=inativo)
+ *                   - Redirecionamentos: para edição de requisitante
+ *
+ * 🔗 CHAMADA POR  : - Pages/Requisitante/Index.cshtml
+ *                   - Eventos DOM: click .btn-delete, .btn-toggle-status
+ *                   - $(document).ready (inicialização)
+ *
+ * 🔄 CHAMA        : - loadList() [inicializa DataTable]
+ *                   - POST /api/Requisitante/Delete [AJAX]
+ *                   - GET /api/Requisitante/updateStatusRequisitante [AJAX]
+ *                   - GET /api/requisitante [AJAX - lista]
+ *                   - Alerta.Confirmar() [SweetAlert]
+ *                   - AppToast.show() [toast]
+ *                   - Alerta.TratamentoErroComLinha() [error handling]
+ *
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, DataTables 1.10.25+, Alerta.js, AppToast
+ *
+ * 📝 OBSERVAÇÕES  : - Try-catch aninhado nos clicks, AJAX, callbacks
+ *                   - Badges clicáveis com rótulos e ícones duotone
+ *                   - Botões ações padrão: editar (azul), excluir (vinho)
+ *                   - Status muda em tempo real sem reload completo
+ **************************************************************************************** */
 
 var dataTable;
 
@@ -160,6 +182,30 @@ $(document).ready(function ()
     }
 });
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: loadList
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Inicializar DataTable de requisitantes com colunas, paginação,
+ *                   status clicável e botões de ação (editar, excluir).
+ *
+ * 📥 ENTRADAS     : Nenhum parâmetro direto
+ *
+ * 📤 SAÍDAS       : DataTable em #tblRequisitante com:
+ *                   - Grid paginado com requisitantes
+ *                   - Colunas: Ponto, Nome, Ramal, Setor, Status (clicável), Ações
+ *                   - Badges status com cores e ícones duotone
+ *                   - Botões ações: editar (azul), excluir (vinho)
+ *
+ * ⬅️ CHAMADO POR  : $(document).ready [linha 18]
+ *
+ * ➡️ CHAMA        : $.ajax GET /api/requisitante [linha 203-206]
+ *                   DataTable() [jQuery plugin]
+ *                   Render callbacks para status e ações
+ *
+ * 📝 OBSERVAÇÕES  : - Status é elemento clicável (ftx-badge-clickable)
+ *                   - Try-catch em renderizadores para tratamento de erro
+ *                   - Segue padrão FrotiX de cores e ícones
+ ****************************************************************************************/
 function loadList()
 {
     try
