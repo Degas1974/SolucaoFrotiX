@@ -133,3 +133,11 @@ services.AddScoped<IReportSourceResolver, CustomReportSourceResolver>();
 - `Reports/*.trdx`: Arquivos de relatório Telerik (XML)
 - `Controllers/Relatorio*Controller.cs`: Controllers que expõem relatórios
 - `Telerik.Reporting`: Biblioteca Telerik Reporting
+
+---
+
+## Log de Modificacoes
+
+| Versao | Data       | Autor          | Descricao |
+|--------|------------|----------------|-----------|
+| 2.1    | 04/02/2026 | GitHub Copilot | Adiciona using System para suportar Exception e InvalidOperationException. |

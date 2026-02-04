@@ -83,6 +83,8 @@ dotnet build "$solution_path" -c Debug --no-restore
 - Warning TKL002 (Telerik/Kendo) indica ausencia de license file no WSL. Coloque o arquivo em /home/degas/.telerik/telerik-license.txt ou defina TELERIK_LICENSE_PATH.
 - Licenca copiada para /home/degas/.telerik/telerik-license.txt para remover o warning.
 - Warnings CS0168/CS0414 e ASP0000 foram tratados (logs nos catch e ajustes no Startup).
+- Builds Debug e Release executados sem warnings.
+- Se o build for executado no repo em /mnt/d, copie o NuGet.WSL.config para FrotiX.Site (arquivo ignorado no git).
 
 ## Log de Modificacoes
 
@@ -91,3 +93,4 @@ dotnet build "$solution_path" -c Debug --no-restore
 | 1.0    | 04/02/2026 | GitHub Copilot  | Cria setup WSL com NuGet config separado e script de build. |
 | 1.1    | 04/02/2026 | GitHub Copilot  | Documenta node_modules do bs5-patcher, build Release e warnings do build. |
 | 1.2    | 04/02/2026 | GitHub Copilot  | Registra licenca no WSL e limpeza dos warnings CS0168/CS0414/ASP0000. |
+| 1.3    | 04/02/2026 | GitHub Copilot  | Registra build limpo e nota sobre NuGet.WSL.config no /mnt/d. |
