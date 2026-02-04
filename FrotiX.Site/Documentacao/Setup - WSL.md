@@ -16,6 +16,23 @@ Este documento descreve o fluxo de build do FrotiX.Site em WSL, usando um NuGet 
 2. Verificar se os caminhos do NuGet.WSL.config apontam para as pastas corretas.
 3. Executar o script build-wsl.sh a partir do FrotiX.Site.
 
+## Node modules (bs5-patcher)
+
+O build depende de assets em wwwroot/js/bs5-patcher/node_modules. Se o build falhar com erro de package.json ausente, copie o node_modules do Windows para o WSL:
+
+```bash
+cp -a "/mnt/d/FrotiX/Solucao FrotiX 2026/FrotiX.Site/wwwroot/js/bs5-patcher/node_modules/." "/home/degas/FrotiX/Solucao FrotiX 2026/FrotiX.Site/wwwroot/js/bs5-patcher/node_modules/"
+```
+
+## Build Release
+
+Para validar Release no WSL:
+
+```bash
+cd "/home/degas/FrotiX/Solucao FrotiX 2026/FrotiX.Site"
+dotnet build FrotiX.sln -c Release --no-restore
+```
+
 ## NuGet.WSL.config
 
 O arquivo abaixo mantem as mesmas sources do Windows, mas com caminhos Linux:
@@ -63,9 +80,12 @@ dotnet build "$solution_path" -c Debug --no-restore
 - O NuGet.config padrao do Windows permanece intacto.
 - O NuGet.WSL.config deve permanecer ignorado no git.
 - O espelho local e necessario para pacotes Stimulsoft/Telerik.
+- Warning TKL002 (Telerik/Kendo) indica ausencia de license file no WSL. Coloque o arquivo em /home/degas/.telerik/telerik-license.txt ou defina TELERIK_LICENSE_PATH.
+- Warnings CS0168/CS0414 e ASP0000 aparecem no build e nao impedem a compilacao.
 
 ## Log de Modificacoes
 
 | Versao | Data       | Autor           | Descricao |
 |--------|------------|-----------------|-----------|
 | 1.0    | 04/02/2026 | GitHub Copilot  | Cria setup WSL com NuGet config separado e script de build. |
+| 1.1    | 04/02/2026 | GitHub Copilot  | Documenta node_modules do bs5-patcher, build Release e warnings do build. |
