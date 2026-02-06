@@ -74,19 +74,36 @@ BEGIN TRY
         EXEC sp_executesql @fkDrop;
     END
 
-    -- PASSO 2: Remover o índice único OU unique constraint existente
+    -- PASSO 2: Remover DEFAULT constraint em FornecedorId
+    -- (A coluna é definida como DEFAULT (newid()) — precisa dropar antes de ALTER COLUMN)
+    DECLARE @defName NVARCHAR(256);
+    SELECT @defName = dc.name
+    FROM sys.default_constraints dc
+    WHERE dc.parent_object_id = OBJECT_ID('dbo.Fornecedor')
+      AND dc.parent_column_id = COLUMNPROPERTY(OBJECT_ID('dbo.Fornecedor'), 'FornecedorId', 'ColumnId');
+
+    IF @defName IS NOT NULL
+    BEGIN
+        DECLARE @dropDef NVARCHAR(500) = 'ALTER TABLE dbo.Fornecedor DROP CONSTRAINT [' + @defName + ']';
+        EXEC sp_executesql @dropDef;
+        PRINT '[1.1] DEFAULT constraint [' + @defName + '] removida.';
+    END
+
+    -- PASSO 3: Remover o índice único OU unique constraint existente
     IF EXISTS (SELECT 1 FROM sys.key_constraints WHERE name = 'KEY_Fornecedor_FornecedorId' AND parent_object_id = OBJECT_ID('dbo.Fornecedor'))
         ALTER TABLE dbo.Fornecedor DROP CONSTRAINT KEY_Fornecedor_FornecedorId;
     ELSE IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'KEY_Fornecedor_FornecedorId' AND object_id = OBJECT_ID('dbo.Fornecedor'))
         DROP INDEX KEY_Fornecedor_FornecedorId ON dbo.Fornecedor;
 
-    -- PASSO 3: Alterar coluna para NOT NULL
+    -- PASSO 4: Alterar coluna para NOT NULL
     ALTER TABLE dbo.Fornecedor ALTER COLUMN FornecedorId uniqueidentifier NOT NULL;
 
-    -- PASSO 4: Adicionar PRIMARY KEY
-    ALTER TABLE dbo.Fornecedor ADD CONSTRAINT PK_Fornecedor_FornecedorId PRIMARY KEY CLUSTERED (FornecedorId);
+    -- PASSO 5: Adicionar PRIMARY KEY com DEFAULT (newid()) restaurado
+    ALTER TABLE dbo.Fornecedor ADD
+        CONSTRAINT PK_Fornecedor_FornecedorId PRIMARY KEY CLUSTERED (FornecedorId),
+        CONSTRAINT DF_Fornecedor_FornecedorId DEFAULT (newid()) FOR FornecedorId;
 
-    -- PASSO 5: Recriar as FKs que foram removidas (agora apontando para a PK)
+    -- PASSO 6: Recriar as FKs que foram removidas (agora apontando para a PK)
     IF LEN(@fkRecreate) > 0
     BEGIN
         PRINT '[1.1] Recriando FKs que referenciam Fornecedor...';

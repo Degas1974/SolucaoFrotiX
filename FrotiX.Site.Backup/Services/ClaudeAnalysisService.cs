@@ -11,80 +11,62 @@ namespace FrotiX.Services
     /// </summary>
     public class ClaudeAnalysisService : IClaudeAnalysisService
     {
-        public async Task<string> AnalisarPadraoAsync(List<string> erros)
-        {
-            // Implementação futura: enviar para Claude API
-            // Por enquanto, análise simples local
+        /// <summary>
+        /// Indica se o serviço está configurado (sempre false nesta implementação mock)
+        /// </summary>
+        public bool IsConfigured => false;
 
-            if (erros == null || !erros.Any())
+        /// <summary>
+        /// Analisa um erro e retorna sugestões de correção (implementação mock)
+        /// </summary>
+        public async Task<ClaudeAnalysisResult> AnalyzeErrorAsync(LogErro logErro)
+        {
+            // Implementação mock - aguardando integração real com Claude API
+            await Task.CompletedTask;
+
+            if (logErro == null)
             {
-                return "Nenhum erro para analisar";
+                return new ClaudeAnalysisResult
+                {
+                    Success = false,
+                    Error = "LogErro não pode ser null"
+                };
             }
 
+            // Análise básica local (sem API)
             var analise = new List<string>();
 
-            // Contar erros de CORS
-            var errosCors = erros.Count(e => e.Contains("CORS") || e.Contains("cross-origin"));
-            if (errosCors > 0)
+            if (logErro.Mensagem?.Contains("CORS") == true || logErro.Mensagem?.Contains("cross-origin") == true)
             {
-                analise.Add($"⚠️ {errosCors} erro(s) relacionados a CORS detectados");
+                analise.Add("⚠️ Erro relacionado a CORS detectado");
+                analise.Add("💡 Sugestão: Verifique as configurações de CORS no servidor");
             }
 
-            // Contar Promise rejeitadas
-            var promisesRejeitadas = erros.Count(e => e.Contains("Promise rejeitada"));
-            if (promisesRejeitadas > 0)
+            if (logErro.Mensagem?.Contains("Promise") == true)
             {
-                analise.Add($"⚠️ {promisesRejeitadas} Promise(s) rejeitada(s) sem tratamento");
+                analise.Add("⚠️ Promise rejeitada sem tratamento detectada");
+                analise.Add("💡 Sugestão: Adicione .catch() ou try/catch ao redor de await");
             }
 
-            // Contar erros HTTP
-            var errosHttp = erros.Count(e => e.Contains("HTTP"));
-            if (errosHttp > 0)
+            if (logErro.Mensagem?.Contains("HTTP") == true)
             {
-                analise.Add($"⚠️ {errosHttp} erro(s) de requisição HTTP");
+                analise.Add("⚠️ Erro de requisição HTTP detectado");
+                analise.Add("💡 Sugestão: Verifique a conectividade e endpoints da API");
             }
 
-            return analise.Any() 
+            var analysisText = analise.Any() 
                 ? string.Join("\n", analise) 
-                : "Nenhum padrão específico detectado";
-        }
+                : "Nenhum padrão específico detectado. Análise completa requer integração com Claude API.";
 
-        public async Task<Dictionary<string, int>> ClassificarErrosAsync(List<string> erros)
-        {
-            var classificacao = new Dictionary<string, int>
+            return new ClaudeAnalysisResult
             {
-                ["CORS"] = 0,
-                ["Promise"] = 0,
-                ["HTTP"] = 0,
-                ["Runtime"] = 0,
-                ["Outros"] = 0
+                Success = true,
+                Analysis = analysisText,
+                Model = "mock-local-analysis",
+                InputTokens = 0,
+                OutputTokens = 0,
+                AnalyzedAt = DateTime.Now
             };
-
-            foreach (var erro in erros)
-            {
-                if (erro.Contains("CORS") || erro.Contains("cross-origin"))
-                {
-                    classificacao["CORS"]++;
-                }
-                else if (erro.Contains("Promise"))
-                {
-                    classificacao["Promise"]++;
-                }
-                else if (erro.Contains("HTTP"))
-                {
-                    classificacao["HTTP"]++;
-                }
-                else if (erro.Contains("ReferenceError") || erro.Contains("TypeError"))
-                {
-                    classificacao["Runtime"]++;
-                }
-                else
-                {
-                    classificacao["Outros"]++;
-                }
-            }
-
-            return await Task.FromResult(classificacao);
         }
     }
 }
