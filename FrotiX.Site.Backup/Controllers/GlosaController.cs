@@ -167,6 +167,9 @@ public class GlosaController :ControllerBase
             Alerta.TratamentoErroComLinha("GlosaController.cs" , "Detalhes" , error);
             return StatusCode(500);
         }
+    }
+
+    /// ╔══════════════════════════════════════════════════════════════════════════════╗
     /// ║ 📌 NOME: ExportResumo (Excel)                                                ║
         /// ╠══════════════════════════════════════════════════════════════════════════════╣
         /// ║ 📝 DESCRIÇÃO:                                                                ║
@@ -367,3 +370,5 @@ public class GlosaController :ControllerBase
         foreach (var cell in table.HeadersRow().Cells())
             if (headers.Contains(cell.GetString().Trim()))
                 ws.Column(cell.Address.ColumnNumber).Style.DateFormat.Format = "dd/MM/yyyy";
+    }
+}
