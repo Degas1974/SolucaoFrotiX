@@ -180,8 +180,10 @@ namespace FrotiX.Controllers
                         TempData["success"] = "Escala criada com sucesso!";
                         return RedirectToAction(nameof(Index));
                     }
-_logger.LogError(ex, "Erro ao criar escala"
-                    TempData["error"] = "Motorista é obrigatório";
+                    else
+                    {
+                        TempData["error"] = "Motorista é obrigatório";
+                    }
                 }
                 catch (Exception ex)
                 {

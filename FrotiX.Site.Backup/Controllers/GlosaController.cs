@@ -184,15 +184,6 @@ public class GlosaController :ControllerBase
             [FromQuery] int mes,
             [FromQuery] int ano
         )
-        {
-    // apenas Resumo
-    [HttpGet("export/resumo")]
-    [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
-    public IActionResult ExportResumo(
-        [FromQuery] Guid contratoId ,
-        [FromQuery] int mes ,
-        [FromQuery] int ano
-    )
     {
         try
         {
@@ -220,8 +211,19 @@ public class GlosaController :ControllerBase
             Alerta.TratamentoErroComLinha("GlosaController.cs" , "ExportResumo" , error);
             return StatusCode(500);
         }
+    }
+
+    /// <summary>
+    /// Exportar detalhes de glosa em Excel.
+    /// </summary>
+    [HttpGet("export/detalhes")]
+    [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
+    public IActionResult ExportDetalhes(
+        [FromQuery] Guid contratoId,
+        [FromQuery] int mes,
+        [FromQuery] int ano
     )
-        {
+    {
             try
             {
                 // [DADOS] Coleta dados detalhados para exportação.
@@ -289,10 +291,6 @@ public class GlosaController :ControllerBase
                 tbResumo.Theme = XLTableTheme.TableStyleMedium2;
                 // [FORMATO] Ajusta colunas monetárias do resumo.
                 FormatCurrencyColumns(
-    // ambas as abas
-    [HttpGet("export")]
-    [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
-    public IActionResult ExportAmbos(
         [FromQuery] Guid contratoId ,
         [FromQuery] int mes ,
         [FromQuery] int ano

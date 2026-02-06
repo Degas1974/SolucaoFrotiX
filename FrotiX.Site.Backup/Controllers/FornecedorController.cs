@@ -76,37 +76,13 @@ namespace FrotiX.Controllers
             catch (Exception error)
             {
                 Alerta.TratamentoErroComLinha("FornecedorController.cs" , "Get" , error);
-                return StatusCode(500
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
-        /// ╔══════════════════════════════════════════════════════════════════════════════╗
-        /// ║ 📌 NOME: Delete                                                              ║
-        /// ╠══════════════════════════════════════════════════════════════════════════════╣
-        /// ║ 📝 DESCRIÇÃO:                                                                ║
-        /// ║    Remove um fornecedor após validar vínculos com contratos.                 ║
-        /// ║                                                                              ║
-        /// ║ 🎯 IMPORTÂNCIA PARA A SOLUÇÃO:                                              ║
-        /// ║    Evita exclusões que quebrem integridade referencial.                      ║
-        /// ╠══════════════════════════════════════════════════════════════════════════════╣
-        /// ║ 📥 PARÂMETROS:                                                               ║
-        /// ║    • model (FornecedorViewModel): contém o ID do fornecedor.                  ║
-        /// ║                                                                              ║
-        /// ║ 📤 RETORNO:                                                                  ║
-        /// ║    • IActionResult: JSON com status da operação.                              ║
-        /// ║    • Consumidor: UI de Fornecedores.                                         ║
-        /// ╠══════════════════════════════════════════════════════════════════════════════╣
-        /// ║ 📞 FUNÇÕES QUE CHAMA:                                                        ║
-        /// ║    • _unitOfWork.Fornecedor.GetFirstOrDefault()                               ║
-        /****************************************************************************************
-         * ⚡ FUNÇÃO: Delete
-         * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Excluir fornecedor do banco validando integridade referencial
-         * 📥 ENTRADAS     : [FornecedorViewModel] model - contém FornecedorId
-         * 📤 SAÍDAS       : [IActionResult] JSON success/message
-         * 🔄 CHAMA        : Fornecedor.GetFirstOrDefault(), Contrato, Remove(), Save()
-         * ⚠️  VALIDAÇÃO   : Bloqueia exclusão se houver contratos associados ao fornecedor
-         ****************************************************************************************/
+        /// Remove um fornecedor após validar vínculos com contratos.
+        /// </summary>
         [Route("Delete")]
         [HttpPost]
         public IActionResult Delete(FornecedorViewModel model)
@@ -154,45 +130,13 @@ namespace FrotiX.Controllers
             catch (Exception error)
             {
                 Alerta.TratamentoErroComLinha("FornecedorController.cs" , "Delete" , error);
-                return StatusCode(500
-        /// ╠══════════════════════════════════════════════════════════════════════════════╣
-        /// ║ 📞 FUNÇÕES QUE CHAMA:                                                        ║
-        /// ║    • _unitOfWork.Fornecedor.GetFirstOrDefault()                               ║
-        /// ║    • _unitOfWork.Fornecedor.Update() / Save()                                 ║
-        /// ║    • _logService.Error() / Alerta.TratamentoErroComLinha() → erros.          ║
-        /// ╠══════════════════════════════════════════════════════════════════════════════╣
-        /// ║ 📲 CHAMADA POR:                                                              ║
-        /// ║    • POST /api/Fornecedor/UpdateStatusFornecedor                             ║
-        /// ╠══════════════════════════════════════════════════════════════════════════════╣
-        /// ║ 🔗 ESCOPO: EXTERNA - Cadastros                                               ║
-        /// ║    • Arquivos relacionados: Pages/Fornecedor/*.cshtml                         ║
-        /// ╚══════════════════════════════════════════════════════════════════════════════╝
+                return StatusCode(500);
+            }
+        }
+
+        /// <summary>
+        /// Alternar status do fornecedor entre ativo e inativo.
         /// </summary>
-        [Route("UpdateStatusFornecedor")]
-        [HttpPost] // Adicionado HttpPost para segurança, embora a rota seja customizada
-        public JsonResult UpdateStatusFornecedor(Guid Id)
-        {
-            try
-            {
-                // [REGRA] Valida ID
-                if (Id != Guid.Empty)
-                {
-                    // [DADOS] Carrega fornecedor
-                    var objFromDb = _unitOfWork.Fornecedor.GetFirstOrDefault(u =>
-                        u.FornecedorId == Id
-                    );
-                    string Description = "";
-         ****************************************************************************************
-         * ⚡ FUNÇÃO: UpdateStatusFornecedor
-         * --------------------------------------------------------------------------------------
-         * 🎯 OBJETIVO     : Alternar status do fornecedor entre ativo e inativo
-         *                   Retorna mensagem descritiva com o novo status
-         * 📥 ENTRADAS     : [Guid] Id - FornecedorId
-         * 📤 SAÍDAS       : [JsonResult] { success: bool, message: string, type: int }
-         * ⬅️ CHAMADO POR  : JavaScript (AJAX) ao clicar botão de ativar/desativar
-         * ➡️ CHAMA        : Fornecedor.GetFirstOrDefault(), Update(), Save()
-         * 📝 OBSERVAÇÕES  : type=0 (ativo), type=1 (inativo) para feedback visual
-         ****************************************************************************************/
         [Route("UpdateStatusFornecedor")]
         public JsonResult UpdateStatusFornecedor(Guid Id)
         {
