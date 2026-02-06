@@ -187,19 +187,19 @@ public class GlosaController :ControllerBase
         {
         try
         {
-            var resumo = _service.ListarResumo(contratoId , mes , ano).ToList();
+            var resumo = _service.ListarResumo(contratoId, mes, ano).ToList();
 
             using var wb = new XLWorkbook();
             var ws = wb.Worksheets.Add("Resumo");
-            var table = ws.Cell(1 , 1).InsertTable(resumo , true);
+            var table = ws.Cell(1, 1).InsertTable(resumo, true);
             table.Theme = XLTableTheme.TableStyleMedium2;
 
             FormatCurrencyColumns(
-                ws ,
-                table ,
-                "PrecoDiario" ,
-                "PrecoTotalMensal" ,
-                "Glosa" ,
+                ws,
+                table,
+                "PrecoDiario",
+                "PrecoTotalMensal",
+                "Glosa",
                 "ValorParaAteste"
             );
             ws.Columns().AdjustToContents();
@@ -225,7 +225,7 @@ public class GlosaController :ControllerBase
     )
     {
         try
-            {
+        {
                 // [DADOS] Coleta dados detalhados para exportação.
                 var detalhes = _service.ListarDetalhes(contratoId, mes, ano).ToList();
 
@@ -321,31 +321,25 @@ public class GlosaController :ControllerBase
             return StatusCode(500);
         }
     }
-                headerNames
-                    ?.Where(h => !string.IsNullOrWhiteSpace(h))
-                    .Select(h => h.Trim())
-                    .ToHashSet(StringComparer.OrdinalIgnoreCase)
-                ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var cell in table.HeadersRow().Cells())
-                if (headers.Contains(cell.GetString().Trim()))
+    private static IActionResult BuildExcelFileResult(XLWorkbook wb, string fileName)
     {
         using var ms = new MemoryStream();
         wb.SaveAs(ms);
         return new FileContentResult(
-            ms.ToArray() ,
+            ms.ToArray(),
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
         {
-            FileDownloadName = fileName ,
+            FileDownloadName = fileName
         };
     }
 
     private static void FormatCurrencyColumns(
-        IXLWorksheet ws ,
-        IXLTable table ,
-        params string[] headerNames
-{
+        IXLWorksheet ws,
+        IXLTable table,
+        params string[] headerNames)
+    {
         var headers =
             headerNames
                 ?.Where(h => !string.IsNullOrWhiteSpace(h))
@@ -359,10 +353,10 @@ public class GlosaController :ControllerBase
     }
 
     private static void FormatDateColumns(
-        IXLWorksheet ws ,
-        IXLTable table ,
-        params string[] headerNames
-{
+        IXLWorksheet ws,
+        IXLTable table,
+        params string[] headerNames)
+    {
         var headers =
             headerNames
                 ?.Where(h => !string.IsNullOrWhiteSpace(h))

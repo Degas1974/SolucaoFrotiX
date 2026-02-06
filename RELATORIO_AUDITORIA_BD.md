@@ -859,9 +859,9 @@ PRINT 'SP sp_RecalcularEstatisticasMultasMotoristas criada.';
 
 ---
 
-## PARTE 8 — SCRIPT DE EXECUÇÃO CONSOLIDADO
+## PARTE 7 — SCRIPT DE EXECUÇÃO CONSOLIDADO
 
-### 8.1 Ordem de Execução Recomendada
+### 7.1 Ordem de Execução Recomendada
 
 **FASE 1 — Correções Críticas (executar primeiro, em ambiente de teste):**
 1. Script 1.1 — Corrigir Fornecedor PK
@@ -894,18 +894,16 @@ PRINT 'SP sp_RecalcularEstatisticasMultasMotoristas criada.';
 22. Script 4.4 — Remover índice redundante VeiculoId
 23. Script 4.5 — Remover índices simples SetorId e RequisitanteId
 
-**FASE 5 — Triggers e SPs (após validar que não conflitam com lógica existente):**
-24. Script 6.1 — Trigger atualização quilometragem
-25. Script 6.2 — Trigger datas de status manutenção
-26. Script 7.1 — SP estatísticas de multas
+**FASE 5 — SP (após validar que não conflita com lógica existente):**
+24. Script 6.1 — SP estatísticas de multas
 
 **FASE 6 — Limpeza (após backup completo):**
-27. Script 5.1 — Remover tabelas backup
-28. Script 5.2 — Remover views obsoletas
+25. Script 5.1 — Remover tabelas backup
+26. Script 5.2 — Remover views obsoletas
 
 ---
 
-## PARTE 9 — RESUMO DE IMPACTO ESPERADO
+## PARTE 8 — RESUMO DE IMPACTO ESPERADO
 
 | Ação | Impacto Performance | Impacto Integridade |
 |---|---|---|
@@ -916,8 +914,6 @@ PRINT 'SP sp_RecalcularEstatisticasMultasMotoristas criada.';
 | Novos índices CorridasTaxi | **ALTO** — acelera queries sem índice | Neutro |
 | Novos índices NotaFiscal | **MÉDIO** — acelera ViewEmpenhos | Neutro |
 | Remover ~8 índices redundantes | **POSITIVO** — menos overhead em INSERT/UPDATE | Neutro |
-| Trigger quilometragem | Neutro | **MÉDIO** — garante consistência |
-| Trigger datas manutenção | Neutro | **MÉDIO** — garante timestamps |
 
 ---
 
