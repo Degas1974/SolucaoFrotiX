@@ -1,0 +1,130 @@
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║ 🚀 ARQUIVO: ViewAtaFornecedorRepository.cs                                                         ║
+   ║ 📂 CAMINHO: Repository/                                                                            ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 🎯 OBJETIVO DO ARQUIVO:                                                                            ║
+   ║    Repositório para a SQL View ViewAtaFornecedor.                                                  ║
+   ║    Disponibiliza listagens consolidadas de atas e fornecedores.                                    ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ 📋 MÉTODOS DISPONÍVEIS:                                                                            ║
+   ║    • ViewAtaFornecedorRepository(FrotiXDbContext db)                                               ║
+   ║    • GetViewAtaFornecedorListForDropDown()                                                         ║
+   ║    • Update(ViewAtaFornecedor viewAtaFornecedor)                                                   ║
+   ╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+   ║ ⚠️ OBSERVAÇÕES:                                                                                     ║
+   ║    Views são somente leitura; Update é mantido por compatibilidade.                                ║
+   ╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using FrotiX.Data;
+using FrotiX.Models;
+using FrotiX.Repository.IRepository;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace FrotiX.Repository
+    {
+    
+    // ╭───────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │ 🎯 CLASSE: ViewAtaFornecedorRepository                                                        │
+    // │ 📦 HERDA DE: Repository                                                    │
+    // │ 🔌 IMPLEMENTA: IViewAtaFornecedorRepository                                                   │
+    // ╰───────────────────────────────────────────────────────────────────────────────────────────────╯
+    
+    // Repositório responsável pela view de atas e fornecedores.
+    // Fornece listagens para UI com dados consolidados.
+    
+    public class ViewAtaFornecedorRepository : Repository<ViewAtaFornecedor>, IViewAtaFornecedorRepository
+        {
+        private new readonly FrotiXDbContext _db;
+
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: ViewAtaFornecedorRepository                                                   │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : UnitOfWork, Services, Controllers                                     │
+        // │    ➡️ CHAMA       : base(db)                                                             │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Inicializar o repositório com o contexto do banco de dados.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // db - Contexto do banco de dados da aplicação.
+        
+        
+        // Param db: Instância de <see cref="FrotiXDbContext"/>.
+        public ViewAtaFornecedorRepository(FrotiXDbContext db) : base(db)
+            {
+            _db = db;
+            }
+
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: GetViewAtaFornecedorListForDropDown                                           │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Controllers, Services, UI (DropDowns)                                │
+        // │    ➡️ CHAMA       : DbContext.ViewAtaFornecedor, OrderBy, Select                         │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Obter lista da view de atas e fornecedores para composição de dropdowns.
+        // Ordena pelo campo AtaVeiculo.
+        
+        
+        
+        // 📤 RETORNO:
+        // IEnumerable&lt;SelectListItem&gt; - Itens prontos para seleção em UI.
+        
+        
+        // Returns: Lista de itens de seleção para atas/fornecedores.
+        public IEnumerable<SelectListItem> GetViewAtaFornecedorListForDropDown()
+            {
+            return _db.ViewAtaFornecedor
+            .OrderBy(o => o.AtaVeiculo)
+            .Select(i => new SelectListItem()
+                {
+                Text = i.AtaVeiculo.ToString(),
+                Value = i.AtaId.ToString()
+                }); ; ;
+            }
+
+        
+        // ╭───────────────────────────────────────────────────────────────────────────────────────╮
+        // │ ⚡ MÉTODO: Update                                                                        │
+        // │ 🔗 RASTREABILIDADE:                                                                      │
+        // │    ⬅️ CHAMADO POR : Controllers, Services                                                 │
+        // │    ➡️ CHAMA       : DbContext.ViewAtaFornecedor.FirstOrDefault, _db.Update,               │
+        // │                     _db.SaveChanges                                                     │
+        // ╰───────────────────────────────────────────────────────────────────────────────────────╯
+        
+        
+        // 🎯 OBJETIVO:
+        // Manter compatibilidade com o padrão de repositórios.
+        // Views são somente leitura; operação não é recomendada.
+        
+        
+        
+        // 📥 PARÂMETROS:
+        // viewAtaFornecedor - Entidade com dados da view.
+        
+        
+        // Param viewAtaFornecedor: Entidade <see cref="ViewAtaFornecedor"/>.
+        public new void Update(ViewAtaFornecedor viewAtaFornecedor)
+            {
+            var objFromDb = _db.ViewAtaFornecedor.FirstOrDefault(s => s.AtaId == viewAtaFornecedor.AtaId);
+
+            _db.Update(viewAtaFornecedor);
+            _db.SaveChanges();
+
+            }
+
+
+        }
+    }

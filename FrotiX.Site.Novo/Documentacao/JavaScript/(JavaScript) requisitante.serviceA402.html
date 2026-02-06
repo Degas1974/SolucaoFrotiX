@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentação: requisitante.service.js - Problema e Solução - Sistema FrotiX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #e8e8e8;
+            color: #2c3e50;
+            line-height: 1.6;
+            padding: 20mm;
+        }
+
+        .page {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 15mm;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        header.hero {
+            background: linear-gradient(135deg, #b66a3d 0%, #8b5130 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 25px;
+            box-shadow:
+                0 0 0 2px #000,
+                0 0 0 4px #fff,
+                0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        header.hero img {
+            width: 70px;
+            height: 70px;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+
+        header.hero h1 {
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header.hero .subtitle {
+            font-size: 1em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #b66a3d;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title img.icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        h3 {
+            color: #722F37;
+            font-size: 1.15em;
+            margin-top: 18px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        p, li {
+            margin-bottom: 10px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        ul li {
+            list-style-type: none;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        ul li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #b66a3d;
+            font-weight: bold;
+        }
+
+        ol li {
+            margin-bottom: 8px;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+
+        .alert-danger strong {
+            color: #dc3545;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-left: 5px solid #557570;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+
+        .alert-success strong {
+            color: #557570;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+
+        .alert-warning strong {
+            color: #856404;
+        }
+
+        code {
+            background: #33465c;
+            color: #e8e8e8;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #33465c;
+            color: #e8e8e8;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 1px solid #1a2332;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+            font-size: 0.85em;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .badge-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .badge-success {
+            background: #557570;
+            color: white;
+        }
+
+        .badge-info {
+            background: #325d88;
+            color: white;
+        }
+
+        footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #dee2e6;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.85em;
+        }
+
+        .watermark {
+            position: absolute;
+            bottom: 15mm;
+            right: 15mm;
+            opacity: 0.1;
+            font-size: 4em;
+            color: #b66a3d;
+            transform: rotate(-45deg);
+            pointer-events: none;
+        }
+
+        .diagram {
+            background: #f8f9fa;
+            border: 2px dashed #325d88;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85em;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="watermark">FROTIX</div>
+
+        <header class="hero">
+            <img src="../../Fontawesome/duotone/bug.svg" alt="Ícone" />
+            <div>
+                <h1>Problema Resolvido</h1>
+                <p class="subtitle">Correção Crítica do Fechamento Automático do Accordion</p>
+            </div>
+        </header>
+
+        <!-- Problema Original -->
+        <section class="card">
+            <div class="section-title">
+                <img class="icon" src="../../Fontawesome/duotone/circle-exclamation.svg" alt="Problema" />
+                Problema Original
+            </div>
+
+            <div class="alert-danger">
+                <strong>Sintoma Crítico:</strong> Usuário não conseguia cadastrar requisitante durante agendamento.
+            </div>
+
+            <h3>Fluxo do Problema</h3>
+            <ol>
+                <li>Usuário clicava em "Novo Requisitante" (accordion abria)</li>
+                <li>Preenchia todos os campos: Ponto, Nome, Ramal, Email</li>
+                <li>Clicava no DropDownTree de Setor para selecionar um setor</li>
+                <li><span class="badge badge-danger">❌ BUG</span> Accordion fechava automaticamente</li>
+                <li><span class="badge badge-danger">❌ BUG</span> Todos os campos eram limpos</li>
+                <li><span class="badge badge-danger">❌ BUG</span> Usuário não conseguia salvar o requisitante</li>
+            </ol>
+
+            <h3>Impacto no Usuário</h3>
+            <ul>
+                <li>Frustração extrema ao perder dados preenchidos</li>
+                <li>Necessidade de tentar múltiplas vezes sem sucesso</li>
+                <li>Interrupção completa do fluxo de trabalho de agendamento</li>
+                <li>Possível necessidade de navegar para outra tela para criar requisitante</li>
+            </ul>
+        </section>
+
+        <!-- Causa Raiz -->
+        <section class="card">
+            <div class="section-title">
+                <img class="icon" src="../../Fontawesome/duotone/magnifying-glass.svg" alt="Diagnóstico" />
+                Causa Raiz Identificada
+            </div>
+
+            <h3>Bootstrap Collapse Automático</h3>
+            <p>
+                O accordion de requisitante utiliza Bootstrap 5 com a classe <code>accordion-collapse collapse show</code>.
+                O Bootstrap Collapse possui um comportamento <strong>automático</strong> de fechar o accordion quando
+                detecta cliques "fora" do elemento accordion.
+            </p>
+
+            <h3>Popup Syncfusion Fora do Accordion</h3>
+            <p>
+                O DropDownTree do Syncfusion, quando aberto, renderiza o popup (lista de setores) <strong>diretamente
+                no <code>&lt;body&gt;</code></strong>, e não dentro da estrutura DOM do accordion. Isso significa que
+                o popup tecnicamente está "fora" do accordion.
+            </p>
+
+            <h3>Diagrama do Problema</h3>
+            <div class="diagram">
+&lt;div id="accordionRequisitante"&gt;
+  &lt;div id="collapseRequisitante" class="accordion-collapse collapse show"&gt;
+    &lt;!-- Campos do formulário --&gt;
+    &lt;input id="txtPonto" /&gt;
+    &lt;input id="txtNome" /&gt;
+    &lt;input id="txtRamal" /&gt;
+    &lt;input id="ddtSetorRequisitante" /&gt;  &lt;!-- DropDownTree AQUI --&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Popup renderizado FORA do accordion --&gt;
+&lt;body&gt;
+  &lt;div class="e-popup e-ddl-popup"&gt;  &lt;!-- POPUP DO SYNCFUSION --&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Setor 1&lt;/li&gt;
+      &lt;li&gt;Setor 2&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+            </div>
+
+            <h3>Sequência de Eventos do Bug</h3>
+            <ol>
+                <li>Usuário clica no DropDownTree → popup abre (renderizado no <code>&lt;body&gt;</code>)</li>
+                <li>Usuário clica em um setor no popup → evento <code>click</code> dispara</li>
+                <li>Bootstrap Collapse detecta clique "fora" do <code>#collapseRequisitante</code></li>
+                <li>Bootstrap automaticamente dispara evento <code>hide.bs.collapse</code></li>
+                <li>Accordion fecha (<code>display: none</code>)</li>
+                <li>Campos são limpos (comportamento da aplicação)</li>
+            </ol>
+
+            <div class="alert-warning">
+                <strong>Conclusão:</strong> O Bootstrap não consegue distinguir entre um "clique fora intencional para fechar"
+                e um "clique em popup Syncfusion legítimo". Isso causava fechamento indesejado.
+            </div>
+        </section>
+
+        <footer>
+            <p><strong>Sistema FrotiX</strong> - Câmara dos Deputados</p>
+            <p>Documentação gerada por Claude Code | Versão 1.1 | 12/01/2026</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Página 2 de 3 - Continua em (JavaScript) requisitante.serviceA403.html</p>
+        </footer>
+    </div>
+</body>
+</html>

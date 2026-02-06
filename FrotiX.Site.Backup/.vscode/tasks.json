@@ -1,0 +1,73 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "dotnet: restore",
+            "type": "shell",
+            "command": "dotnet restore",
+            "problemMatcher": []
+        },
+        {
+            "label": "dotnet: clean",
+            "type": "shell",
+            "command": "dotnet clean",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "dotnet: build",
+            "type": "shell",
+            "command": "dotnet build",
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "dotnet: test",
+            "type": "shell",
+            "command": "dotnet test",
+            "problemMatcher": "$msCompile",
+            "group": "test"
+        },
+        {
+            "label": "dotnet: run",
+            "type": "shell",
+            "command": "dotnet run --project \"FrotiX.csproj\""
+        },
+        {
+            "label": "dotnet: watch",
+            "type": "shell",
+            "command": "dotnet watch run --project \"FrotiX.csproj\""
+        },
+        {
+            "label": "FrotiX: prebuild cleanup",
+            "type": "shell",
+            "command": ".\\PreBuild.bat"
+        },
+        {
+            "label": "FrotiX: build (clean + restore + build)",
+            "dependsOn": [
+                "dotnet: clean",
+                "dotnet: restore",
+                "dotnet: build"
+            ],
+            "dependsOrder": "sequence"
+        },
+        {
+            "label": "FrotiX: build (prebuild + build)",
+            "dependsOn": [
+                "FrotiX: prebuild cleanup",
+                "dotnet: build"
+            ],
+            "dependsOrder": "sequence"
+        },
+        {
+            "label": "build-final",
+            "dependsOn": [
+                "dotnet: build"
+            ],
+            "dependsOrder": "sequence"
+        }
+    ]
+}

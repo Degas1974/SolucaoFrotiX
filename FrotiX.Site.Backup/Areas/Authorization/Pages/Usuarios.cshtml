@@ -1,0 +1,95 @@
+@*****************************************************************************************
+ * ⚡ ARQUIVO: Usuarios.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de gerenciamento de usuários (cadastros) com DataTable
+ *                   configurada via script externo (usuarios.js).
+ *
+ * 📥 ENTRADAS     : Interações no grid (ações de CRUD, filtros e paginação),
+ *                   eventos disparados por usuarios.js.
+ *
+ * 📤 SAÍDAS       : HTML com tabela e scripts que consomem endpoints de usuários.
+ *
+ * 🔗 CHAMADA POR  : Rota Razor Pages /Authorization/Usuarios.
+ *
+ * 🔄 CHAMA        : usuarios.js, endpoints de API consumidos via AJAX.
+ *
+ * 📦 DEPENDÊNCIAS : DataTables (CDN), usuarios.js, Bootstrap, jQuery.
+ *
+ * 📝 OBSERVAÇÕES  : Possui botão "Adicionar Usuário" e tabela #tblUser no layout.
+ *****************************************************************************************@
+
+@page
+@model UsuariosModel
+@{
+    ViewData["Title"] = "Usuários";
+    ViewData["PageName"] = "authorization_usuarios";
+    ViewData["Heading"] = "<i class='fal fa-shield-alt'></i> Cadastros: <span class='fw-300'>Usuários</span>";
+    ViewData["Category1"] = "Authorization";
+    ViewData["PageIcon"] = "fa-shield-alt";
+}
+
+@section HeadBlock {
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+}
+
+<style>
+    /* [DOC] Estilo customizado para destaque de linhas/cabeçalhos da tabela */
+    .fundo-cinza {
+        background-color: #2F4F4F;
+        color: aliceblue;
+    }
+    .label {
+        color: white;
+    }
+</style>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <table id="dt-list" class="table table-bordered table-hover table-striped w-100"></table>
+                    <section class="content float-right">
+                        <div class="row float-right">
+                            <div class="col-xs-12 float-right">
+                                <div class="box float-right">
+                                    <div class="box-header float-right" style="padding-bottom: 10px; padding-right: 10px">
+                                        <a href="/admin/user/create" class="btn btn-info">
+                                            <i class="fa fa-user-plus">
+                                            </i> Adicionar Usuário
+                                        </a>
+                                        <div class="box-body">
+                                            <span id="message"></span>
+
+                                            <!-- [DOC] Tabela de listagem de usuários populada via DataTable (usuarios.js) -->
+                                            <table id="tblUser" class="table table-bordered table-striped style="width:100%"">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Usuário</th>
+                                                        <th>Nome</th>
+                                                        <th>Email</th>
+                                                        <th>Papel</th>
+                                                        <th>Data de Registro</th>
+                                                        <th>Status</th>
+                                                        <th>Ação</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script src="~/js/usuarios.js"></script>
+
+}

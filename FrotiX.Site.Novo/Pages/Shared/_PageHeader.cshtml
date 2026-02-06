@@ -1,0 +1,225 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Shared/_PageHeader.cshtml
+ * OBJETIVO: Partial renderizando header (cabecalho) superior do FrotiX exibindo logo, menu
+ *           horizontal, 11 dropdowns (notificacoes, apps, mensagens, busca, usuario), botao
+ *           toggle sidebar, integrado com Layout master _Layout.cshtml via Settings.Features.AppHeader,
+ *           sistema CRITICO de navegacao e acesso rapido a funcionalidades.
+ * ENTRADAS: Settings (Features.AppHeader boolean flag habilita/desabilita header, AppLogo string
+ *           path da logo, AppName string nome do sistema exibido ao lado da logo), User claims
+ *           (usuario logado nome/email/foto para dropdown perfil), ViewBag dados dinamicos (contador
+ *           de notificacoes nao lidas badge vermelho no icone sino, mensagens nao lidas badge
+ *           azul no icone envelope se implementado)
+ * SAIDAS: Header HTML renderizado como tag header role="banner" position-fixed topo da tela width
+ *         100pc height 60px com: logo FrotiX linkada para /Dashboard (imagem 40x40px + texto
+ *         FrotiX fonte Poppins bold), botao toggle sidebar (icone fa-bars 3 linhas horizontais
+ *         click colapsa/expande sidebar), menu horizontal com 11 dropdowns (1. Notificacoes
+ *         icone fa-bell badge contador vermelho 11 dropdown renderiza partial _DropdownNotification
+ *         345 linhas lista estatica, 2. Apps icone fa-th dropdown renderiza partial _DropdownApp
+ *         160 linhas grid 3x3 icones, 3. Mensagens icone fa-envelope badge contador azul dropdown
+ *         renderiza partial _Contact 130 linhas lista contatos demo, 4. Busca icone fa-search
+ *         dropdown form input busca rapida hash nao implementado, 5-10. Dropdowns customizados
+ *         demo (Tasks, Documents, Settings, Reports, Analytics, Help), 11. Usuario icone avatar
+ *         circular 32x32px dropdown exibe nome/email links Meu Perfil/Configuracoes/Logout),
+ *         responsivo mobile hamburger menu collapse
+ * CHAMADA POR: Layout master _Layout.cshtml via partial name="_PageHeader" dentro de section
+ *              header se Settings.Features.AppHeader true (linha 42 do _Layout.cshtml), renderizado
+ *              automaticamente em todas as paginas que usam Layout = "_Layout"
+ * CHAMA: Partial _DropdownNotification.cshtml (345 linhas lista de 11 notificacoes estaticas
+ *        demo), Partial _DropdownApp.cshtml (160 linhas grid de 9 apps atalhos rapidos demo),
+ *        Partial _Contact.cshtml (130 linhas lista de 15 contatos chat sidebar demo), JavaScript
+ *        toggleSidebar (funcao customizada colapsa/expande sidebar via classe sidebar-collapsed
+ *        no body), Bootstrap 5 dropdown component (gerencia abertura/fechamento dos 11 dropdowns),
+ *        Font Awesome 6 Duotone (icones coloridos sino/grid/envelope/lupa/avatar), API backend
+ *        /api/Notificacoes/GetCountUnread (endpoint retorna contador de notificacoes nao lidas
+ *        usuario logado atualiza badge vermelho dinamicamente se implementado)
+ * DEPENDENCIAS: Bootstrap 5.3.8 (dropdown component, navbar responsive, badges), Font Awesome 6
+ *               Duotone (icones coloridos), jQuery 3.7.1 (handler toggleSidebar), custom CSS
+ *               site.css/frotix.css (estilos header cores gradient, hover effects, badges posicao),
+ *               Settings.Features.AppHeader boolean (habilita/desabilita header), User Claims
+ *               (dados usuario logado nome/email/foto)
+ * OBSERVACOES: 157 linhas partial CRITICO header do FrotiX. Dropdowns notificacoes/apps/mensagens
+ *              sao DEMOS template SmartAdmin com dados estaticos hardcoded NAO integrados ao
+ *              FrotiX real, considerar REMOVER ou IMPLEMENTAR sistemas reais (notificacoes de
+ *              eventos do sistema push SignalR, atalhos rapidos links para Dashboard/Viagens/Abastecimentos,
+ *              mensagens internas usuario-usuario). Badge contador notificacoes: icone fa-bell
+ *              exibe badge vermelho pill position-absolute top-0 right-0 com numero 11 estatico
+ *              hardcoded, implementar endpoint /api/Notificacoes/GetCountUnread retorna count
+ *              de notificacoes nao lidas usuario logado, JavaScript AJAX GET carrega contador
+ *              ao inicializar header atualiza badge dinamicamente, SignalR hub envia push quando
+ *              nova notificacao criada atualiza badge em tempo real sem refresh. Dropdown usuario:
+ *              exibe avatar circular 32x32px (foto do usuario se Settings.UserPhoto configurado,
+ *              senao avatar padrao /images/avatar-default.png), nome completo usuario logado
+ *              lido de User.Identity.Name ou Claims, links dropdown: Meu Perfil (link para /Usuarios/MeuPerfil
+ *              form edita senha/foto/preferencias), Configuracoes (link para /Usuarios/Configuracoes
+ *              ajustes tema/idioma/notificacoes), Logout (link para /Account/Logout POST desautentica
+ *              usuario redireciona Login). Botao toggle sidebar: click dispara JavaScript toggleSidebar
+ *              que adiciona/remove classe sidebar-collapsed do body, CSS transitions animam
+ *              sidebar slide left/right suave 300ms, icone fa-bars rotaciona 90deg quando sidebar
+ *              colapsada visual feedback. Responsivo mobile: media query max-width 768px navbar-expand-md
+ *              collapse menu horizontal transforma em hamburger menu vertical, dropdowns empilham
+ *              verticalmente ocupam width 100pc, logo reduz para 30x30px, texto FrotiX oculta
+ *              apenas icone. Header position-fixed: necessario compensar com padding-top body
+ *              (classe page-wrapper padding-top 60px) para conteudo nao ficar oculto atras do
+ *              header fixado, validar scroll smooth sem conflitos com sidebar fixed. Validar
+ *              ordem de renderizacao partials: _DropdownNotification/App/Contact devem carregar
+ *              APOS Bootstrap e jQuery para dropdowns funcionarem, erros console "dropdown requires
+ *              Popper" indicam Bootstrap carregado sem Popper.js dependencia bundle (usar bootstrap.bundle.min.js
+ *              que inclui Popper).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
+@if (Settings.Features.AppHeader)
+{
+    <header class="page-header" style="background-color: #3D5771 " role="banner">
+        <partial name="_Logo" />
+
+        @* Navegação quando em janela/mobile *@
+        <div class="hidden-lg-up">
+            <a href="#" class="header-btn btn press-scale-down" data-action="toggle" data-class="mobile-nav-on">
+                <i class="ni ni-menu"></i>
+            </a>
+        </div>
+
+
+        <div class="ml-auto d-flex">           
+            @* Home *@
+            <div>
+                <a href="/intel/analyticsdashboard" class="header-icon d-flex align-items-center justify-content-center ml-2" title="P&aacute;gina Inicial">
+                    <i class="fa-duotone fa-home"></i>
+                </a>
+            </div>
+
+            @* Agenda *@
+            <div>
+                <a href="/agenda/index" class="header-icon d-flex align-items-center justify-content-center ml-2" title="Agenda">
+                    <i class="fa-duotone fa-calendar-alt"></i>
+                </a>
+            </div>
+
+            @* Requisições *@
+            <div class="dropdown">
+                <a class="header-icon d-flex align-items-center justify-content-center ml-2" id="dropdownMenuButton" data-bs-toggle="dropdown" title="Gest&atilde;o de Requisi&ccedil;&otilde;es">
+                    <i class="fa-duotone fa-clipboard"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/setorsolicitante/index">Setores Solicitantes</a>
+                    <a class="dropdown-item" href="/requisitante/index">Requisitantes</a>
+                </div>
+            </div>
+            
+            @* Viagens *@
+            <div class="dropdown">
+                <a class="header-icon d-flex align-items-center justify-content-center ml-2" id="dropdownMenuButton" data-bs-toggle="dropdown" title="Gest&atilde;o de Viagens">
+                    <i class="fa-duotone fa-briefcase-clock"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/viagens/upsert">Insere Nova Viagem</a>
+                    <a class="dropdown-item" href="/viagens/index">Controle de Viagens</a>
+                    <a class="dropdown-item" href="/viagens/listaeventos">Gerencia Eventos</a>
+                    <a class="dropdown-item" href="/viagens/fluxopassageiros">Inserir Fichas MOB</a>
+                    <a class="dropdown-item" href="/viagens/gestaofluxo">Gest&atilde;o Fichas MOB</a>
+                </div>
+            </div>
+
+            @* Manutenção *@
+            <div class="dropdown">
+                <a class="header-icon d-flex align-items-center justify-content-center ml-2" id="dropdownMenuButton" data-bs-toggle="dropdown" title="Gest&atilde;o de Manuten&ccedil;&atilde;o">
+                    <i class="fa-duotone fa-car-wrench"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/ocorrencia/ocorrencias">Ocorr&ecirc;ncias</a>
+                    <a class="dropdown-item" href="/manutencao/listamanutencao">Registro de Manuten&ccedil;&atilde;o</a>
+                    <a class="dropdown-item" href="/authorization/roles">Relat&oacute;rio de Glosa</a>
+                    <a class="dropdown-item" href="/manutencao/controlelavagem">Controle de Lavagens</a>
+                    <a class="dropdown-item" href="/manutencao/pbilavagem">Gr&aacute;ficos Gerenciais</a>
+                </div>
+            </div>
+
+            @* Abastecimento *@
+            <div class="dropdown">
+                <a class="header-icon d-flex align-items-center justify-content-center ml-2" id="dropdownMenuButton" data-bs-toggle="dropdown" title="Gest&atilde;o de Abastecimento">
+                    <i class="fa-duotone fa-gas-pump"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/abastecimento/index">Abastecimentos</a>
+                    <a class="dropdown-item" href="/abastecimento/importacao">Importa&ccedil;&atilde;o de Dados</a>
+                    <a class="dropdown-item" href="/abastecimento/registracupons">Registro de Cupons</a>
+                    <a class="dropdown-item" href="/abastecimento/pbi">Graficos Gerenciais</a>
+                </div>
+            </div>
+
+            @* Contratos *@
+            <div class="dropdown">
+                <a class="header-icon d-flex align-items-center justify-content-center ml-2" id="dropdownMenuButton" data-bs-toggle="dropdown" title="Gest&atilde;o de Contratos">
+                    <i class="fa-duotone fa-folders"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/contrato/index">Rela&ccedil;&atilde;o de Contratos</a>
+                    <a class="dropdown-item" href="/ataregistroprecos/index">Atas de Registro de Pre&ccedil;os</a>
+                    <a class="dropdown-item" href="/contrato/RepactuacaoContrato">Repactua&ccedil;&atilde;o de Contratos</a>
+                    <a class="dropdown-item" href="/empenho/index">Cadastro de Empenhos</a>
+                    <a class="dropdown-item" href="/notafiscal/index">Entrada de Notas Fiscais</a>
+                    <a class="dropdown-item" href="/contrato/itenscontrato">Itens dos Contratos</a>
+                    <a class="dropdown-item" href="/fornecedor/index">Cadastro de Fornecedores</a>
+                </div>
+            </div>
+
+            @* Multas *@
+            <div class="dropdown">
+                <a class="header-icon d-flex align-items-center justify-content-center ml-2" id="dropdownMenuButton" data-bs-toggle="dropdown" title="Gest&atilde;o de Multas">
+                    <i class="fa-duotone fa-pen-to-square"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/multa/upsertautuacao">Nova Autua&ccedil;&atilde;o</a>
+                    <a class="dropdown-item" href="/multa/listaautuacao">Gest&atilde;o de Autua&ccedil;&atilde;o</a>
+                    <a class="dropdown-item" href="/multa/listapenalidade">Gest&atilde;o de Penalidades</a>
+                    <a class="dropdown-item" href="/multa/listaorgaosautuantes">&Oacute;rg&atilde;os Autuantes</a>
+                    <a class="dropdown-item" href="/multa/listaempenhosmulta">Empenhos</a>
+                    <a class="dropdown-item" href="/multa/listatiposmulta">Infra&ccedil;&otilde;es de Tr&acirc;nsito</a>
+                </div>
+            </div>
+
+            @* Cadastros *@
+            <div class="dropdown">
+                <a class="header-icon d-flex align-items-center justify-content-center ml-2" id="dropdownMenuButton" data-bs-toggle="dropdown" title="Gest&atilde;o de Cadastros">
+                    <i class="fa-duotone fa-map-marker-alt"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/motorista/index">Cadastro de Motoristas</a>
+                    <a class="dropdown-item" href="/operador/index">Cadastro de Operadores</a>
+                    <a class="dropdown-item" href="/lavador/index">Cadastro de Lavadores</a>
+                    <a class="dropdown-item" href="/veiculo/index">Cadastro de Ve&iacute;culos</a>
+                </div>
+            </div>
+
+            @* TaxiLeg *@
+            <div class="dropdown">
+                <a class="header-icon d-flex align-items-center justify-content-center ml-2" id="dropdownMenuButton" data-bs-toggle="dropdown" title="Taxileg" style="margin-right: 20px">
+                    <i class="fa-duotone fa-taxi"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/taxileg/importacao">Importa&ccedil;&atilde;o de Viagens Realizadas</a>
+                    <a class="dropdown-item" href="/taxileg/canceladas">Importa&ccedil;&atilde;o de Viagens Canceladas</a>
+                    <a class="dropdown-item" href="/taxileg/PBITaxiLeg">Graficos Gerenciais</a>
+                </div>
+            </div>
+
+			<partial name="_AlertasSino" />
+
+            @*Icone Pessoal*@
+            <div>
+                <a href="#" data-bs-toggle="dropdown" title="@(Settings.Theme.Email)" class="header-icon d-flex align-items-center justify-content-center ml-5">
+                    <img src="~/Images/barbudo.jpg" class="profile-image rounded-circle" alt="@(Settings.Theme.User)">
+                </a>
+                <div class="dropdown-menu dropdown-menu-animated dropdown-lg">
+                    <partial name="_DropdownMenu" />
+                </div>
+            </div>
+        </div>
+    </header>
+}
+
+<script>
+    $("#dropdownMenuButton").click();
+</script>
+

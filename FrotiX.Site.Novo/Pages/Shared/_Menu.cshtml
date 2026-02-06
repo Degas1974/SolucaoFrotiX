@@ -1,0 +1,103 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_Menu.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view do menu lateral de pastas/folders do inbox (email sidebar) com
+ *                   botão Compose, navegação (Inbox/Starred/Draft/Sent/Spam/Trash) e storage gauge.
+ * 📥 ENTRADAS     : ViewBag.PageName (ex: "page_inbox_general" para highlight Inbox active), cliques
+ *                   nos links folder, botão #btnGroupDrop1 dropdown (Work group A/New page/Edit signature),
+ *                   data-action="toggle" Compose panel, data-bs-target="#panel-compose"
+ * 📤 SAÍDAS       : <div id="js-inbox-menu"> sliding sidebar (slide-on-mobile-left) com botão Compose
+ *                   btn-vinho dropdown, 6 folders (Inbox ativo com .js-unread-emails-count, Starred (6),
+ *                   Draft (5), Sent, Spam, Trash), progress bar storage "1.5 GB (10%) of 15 GB",
+ *                   .slide-backdrop overlay para mobile (fecha menu ao clicar fora)
+ * 🔗 CHAMADA POR  : Pages/Page/InboxWrite.cshtml ou InboxGeneral.cshtml (layout composed - email pages),
+ *                   <partial name="_Menu"/> na coluna esquerda da grid inbox
+ * 🔄 CHAMA        : /page/inboxgeneral (Inbox link), #panel-compose (botão Compose toggle panel flutuante),
+ *                   data-action="toggle" data-class="d-flex" (JavaScript SmartAdmin - abre compose panel),
+ *                   data-focus="message-to" (foca input após abrir), JavaScript .js-unread-emails-count
+ *                   (atualiza contador dinamicamente via AJAX?), Settings.Theme.IconPrefix (Font Awesome),
+ *                   data-action="toggle" data-class="slide-on-mobile-left-show" (JavaScript mobile menu)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views, ViewBag.PageName), Bootstrap 5 (btn-group,
+ *                   btn btn-vinho, dropdown, progress, d-flex flex-column, rounded-pill), Font Awesome
+ *                   Duotone (fa-folder-open, fa-star, fa-edit, fa-paper-plane, fa-exclamation-triangle,
+ *                   fa-trash, fa-plus), SmartAdmin JavaScript (data-action="toggle" handlers, slide-on-mobile),
+ *                   CSS classes custom (btn-vinho, slide-on-mobile-left, slide-backdrop, fw-400 fs-xs)
+ * 📝 OBSERVAÇÕES  : 63 linhas. Menu SIDEBAR inbox SmartAdmin - não customizado FrotiX (manteve original).
+ *                   #js-inbox-menu sliding sidebar mobile (slide-on-mobile-left), desktop sempre visível.
+ *                   Botão Compose btn-vinho (vinho color theme) btn-block fs-md, dropdown #btnGroupDrop1
+ *                   com 3 opções: Work group A, New page, Edit signature + divider + "Add more" (fa-plus).
+ *                   6 folders com ícones Font Awesome:
+ *                   1. Inbox (/page/inboxgeneral) - active class condicional ViewBag.PageName, .js-unread-emails-count
+ *                   2. Starred - contador hardcoded (6)
+ *                   3. Draft - contador (5)
+ *                   4. Sent - sem contador
+ *                   5. Spam - fa-exclamation-triangle
+ *                   6. Trash - bold font-weight
+ *                   Folders rounded-pill border-top-left-radius-0 border-bottom-left-radius-0 (arredondado
+ *                   direita apenas). Storage gauge footer: "1.5 GB (10%) of 15 GB used" com progress-bar
+ *                   width 11% (descasamento! 10% vs 11% width - bug visual). .slide-backdrop overlay
+ *                   data-action="toggle" fecha menu mobile ao clicar fora.
+ **************************************************************************************** *@
+<div id="js-inbox-menu" class="flex-wrap position-relative bg-white slide-on-mobile slide-on-mobile-left">
+	<div class="position-absolute pos-top pos-bottom w-100">
+		<div class="d-flex h-100 flex-column">
+			<div class="px-3 px-sm-4 px-lg-5 py-4 align-items-center">
+				<div class="btn-group btn-block" role="group" aria-label="Button group with nested dropdown ">
+					<button type="button" class="btn btn-vinho btn-block fs-md" data-action="toggle" data-class="d-flex" data-bs-target="#panel-compose" data-focus="message-to">Compose</button>
+					<div class="btn-group" role="group">
+						<button id="btnGroupDrop1" type="button" class="btn btn-vinho dropdown-toggle px-2 js-waves-off" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+						<div class="dropdown-menu p-0" aria-labelledby="btnGroupDrop1">
+							<a class="dropdown-item" href="#">Work group A</a>
+							<a class="dropdown-item" href="#">New page</a>
+							<a class="dropdown-item" href="#">Edit signature</a>
+							<div class="dropdown-divider m-0"></div>
+							<a class="dropdown-item" href="#"> <i class="fa-duotone fa-plus width-1"></i> Add more</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="flex-1 pr-3">
+				<a href="/page/inboxgeneral" class="dropdown-item px-3 px-sm-4 pr-lg-3 pl-lg-5 py-2 fs-md font-weight-bold d-flex justify-content-between rounded-pill border-top-left-radius-0 border-bottom-left-radius-0 @(ViewBag.PageName == "page_inbox_general" ? "active" : "")">
+					<div>
+						<i class="fa-duotone fa-folder-open width-1"></i>Inbox
+					</div>
+					<div class="fw-400 fs-xs js-unread-emails-count"></div>
+				</a>
+				<a href="javascript:void(0)" class="dropdown-item px-3 px-sm-4 pr-lg-3 pl-lg-5 py-2 fs-md d-flex justify-content-between rounded-pill border-top-left-radius-0 border-bottom-left-radius-0">
+					<div>
+						<i class="fa-duotone fa-star width-1"></i>Starred
+					</div>
+					<div class="fw-400 fs-xs">(6)</div>
+				</a>
+				<a href="javascript:void(0)" class="dropdown-item px-3 px-sm-4 pr-lg-3 pl-lg-5 py-2 fs-md d-flex justify-content-between rounded-pill border-top-left-radius-0 border-bottom-left-radius-0">
+					<div>
+						<i class="fa-duotone fa-edit width-1"></i>Draft
+					</div>
+					<div class="fw-400 fs-xs">(5)</div>
+				</a>
+				<a href="javascript:void(0)" class="dropdown-item px-3 px-sm-4 pr-lg-3 pl-lg-5 py-2 fs-md d-flex justify-content-between rounded-pill border-top-left-radius-0 border-bottom-left-radius-0">
+					<div>
+						<i class="fa-duotone fa-paper-plane width-1"></i>Sent
+					</div>
+				</a>
+				<a href="javascript:void(0)" class="dropdown-item px-3 px-sm-4 pr-lg-3 pl-lg-5 py-2 fs-md d-flex justify-content-between rounded-pill border-top-left-radius-0 border-bottom-left-radius-0">
+					<div>
+						<i class="fa-duotone fa-exclamation-triangle width-1"></i>Spam
+					</div>
+				</a>
+				<a href="javascript:void(0)" class="dropdown-item px-3 px-sm-4 pr-lg-3 pl-lg-5 py-2 fs-md font-weight-bold d-flex justify-content-between rounded-pill border-top-left-radius-0 border-bottom-left-radius-0">
+					<div>
+						<i class="fa-duotone fa-trash width-1"></i>Trash
+					</div>
+				</a>
+			</div>
+			<div class="px-5 py-3 fs-nano fw-500">
+				1.5 GB (10%) of 15 GB used
+				<div class="progress mt-1" style="height: 7px;">
+					<div class="progress-bar" role="progressbar" style="width: 11%;" aria-valuenow="11" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="slide-backdrop" data-action="toggle" data-class="slide-on-mobile-left-show" data-bs-target="#js-inbox-menu"></div>

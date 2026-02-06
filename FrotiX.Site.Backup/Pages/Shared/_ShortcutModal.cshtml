@@ -1,0 +1,83 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_ShortcutModal.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view do modal de atalhos (shortcuts) exibido ao clicar no logo da sidebar,
+ *                   com 3 ícones coloridos: Home, Inbox, Add More (template SmartAdmin genérico).
+ * 📥 ENTRADAS     : ViewBag.AppShortcutModal (string - controla exibição do modal), trigger clique no
+ *                   logo (provavelmente data-bs-toggle="modal" data-bs-target="#modal-shortcut"),
+ *                   Settings.Theme.IconPrefix
+ * 📤 SAÍDAS       : Bootstrap modal #modal-shortcut (modal-backdrop-transparent, modal-dialog-top),
+ *                   lista 3 app-list-item: Home (fa-home, color-primary-500/300), Inbox (ni-envelope,
+ *                   color-success-500/300), Add More (fa-plus, color-primary-300), icon-stack multi-layer
+ * 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml ou _Logo.cshtml (logo clicável com data-bs-toggle="modal"),
+ *                   condicional @if (ViewBag.AppShortcutModal?.Length > 0)
+ * 🔄 CHAMA        : /intel/introduction (Home + Add More links), /page/inboxgeneral (Inbox link),
+ *                   Settings.Theme.IconPrefix (fa-solid, fa-duotone), Bootstrap modal JavaScript,
+ *                   CSS classes (modal-dialog-top, modal-transparent, app-list, app-list-item,
+ *                   icon-stack, base base-7, icon-stack-3x/2x/1x, color-primary-500/300, color-success-500/300)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views, ViewBag), SmartSettings injection (@Settings),
+ *                   Bootstrap 5 (modal, modal-backdrop-transparent, modal-dialog-top), Font Awesome
+ *                   (fa-home, fa-plus), NI icons (ni ni-envelope - SmartAdmin custom icon font),
+ *                   CSS classes custom (modal-transparent, app-list, icon-stack multi-layer system,
+ *                   base base-7, opacity-100, color-primary-500/300/color-success-500/300)
+ * 📝 OBSERVAÇÕES  : 47 linhas. Modal shortcuts SmartAdmin TEMPLATE - não customizado para FrotiX.
+ *                   Renderização condicional ViewBag.AppShortcutModal?.Length > 0 (set no PageModel?).
+ *                   modal-dialog-top (aparece no topo da tela), modal-backdrop-transparent (overlay
+ *                   transparente). icon-stack sistema multi-layer: 3 elementos sobrepostos (base 3x, 2x, icon 1x)
+ *                   criando efeito 3D. 3 shortcuts:
+ *                   1. Home (/intel/introduction) - ícone fa-home, cores primary-500/300
+ *                   2. Inbox (/page/inboxgeneral) - ícone ni-envelope (NI custom), cores success-500/300
+ *                   3. Add More (/intel/introduction) - ícone fa-plus, cor primary-300
+ *                   NI icons (ni ni-envelope) são custom do SmartAdmin (não Font Awesome). app-list w-auto
+ *                   h-auto p-0 text-left (lista sem largura/altura fixa, sem padding, texto esquerda).
+ *                   Para FrotiX: substituir links por rotas reais (dashboard, alertas, etc.), adicionar
+ *                   shortcuts relevantes (Viagens, Veículos, Relatórios).
+ **************************************************************************************** *@
+@if (ViewBag.AppShortcutModal?.Length > 0)
+{
+<div class="modal fade modal-backdrop-transparent" id="modal-shortcut" tabindex="-1" role="dialog" aria-labelledby="modal-shortcut" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-top modal-transparent" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<ul class="app-list w-auto h-auto p-0 text-left">
+					<li>
+						<a href="/intel/introduction" class="app-list-item text-white border-0 m-0">
+							<div class="icon-stack">
+								<i class="base base-7 icon-stack-3x opacity-100 color-primary-500 "></i> 
+								<i class="base base-7 icon-stack-2x opacity-100 color-primary-300 "></i> 
+								<i class="@(Settings.Theme.IconPrefix) fa-home icon-stack-1x opacity-100 color-white"></i>
+							</div>
+							<span class="app-list-name">
+							Home
+							</span>
+						</a>
+					</li>
+					<li>
+						<a href="/page/inboxgeneral" class="app-list-item text-white border-0 m-0">
+							<div class="icon-stack">
+								<i class="base base-7 icon-stack-3x opacity-100 color-success-500 "></i> 
+								<i class="base base-7 icon-stack-2x opacity-100 color-success-300 "></i> 
+								<i class="ni ni-envelope icon-stack-1x text-white"></i>   
+							</div>
+							<span class="app-list-name">
+							Inbox
+							</span>
+						</a>
+					</li>
+					<li>
+						<a href="/intel/introduction" class="app-list-item text-white border-0 m-0">
+							<div class="icon-stack">
+								<i class="base base-7 icon-stack-2x opacity-100 color-primary-300 "></i> 
+								<i class="@(Settings.Theme.IconPrefix) fa-plus icon-stack-1x opacity-100 color-white"></i>
+							</div>
+							<span class="app-list-name">
+							Add More
+							</span>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+}

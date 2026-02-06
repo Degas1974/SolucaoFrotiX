@@ -1,0 +1,54 @@
+@* ************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_NavFooter.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial renderizando footer da sidebar com botão minimizar (toggle)
+ *                   e 3 botões de ação rápida (chat, suporte, chamada) com tooltips.
+ *
+ * 📥 ENTRADAS     : Clique minimize (data-action toggle nav-function-minify), cliques
+ *                   botões ação (javascript:void(0)), Settings.Theme.IconPrefix
+ *
+ * 📤 SAÍDAS       : <div class="nav-footer shadow-top"> com botão chevron duplo (NI icons),
+ *                   3 botões com ícones Font Awesome, tooltips Bootstrap, toggle class
+ *                   nav-function-minify no body (minimiza sidebar width)
+ *
+ * 🔗 CHAMADA POR  : Pages/Shared/_LeftPanel.cshtml (partial COMENTADO/DESABILITADO em FrotiX),
+ *                   seria renderizado no rodapé da sidebar
+ *
+ * 🔄 CHAMA        : JavaScript data-action toggle handler (minimiza sidebar), CSS
+ *                   nav-function-minify, Bootstrap 5 tooltips, Settings.Theme.IconPrefix
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, SmartSettings (settings), Bootstrap 5,
+ *                   Font Awesome 6 (ícones), NI icons (ni-chevron-right customizado),
+ *                   JavaScript handlers data-action
+ *
+ * 📝 OBSERVAÇÕES  : 43 linhas (total com botões). Partial INATIVO (comentado em _LeftPanel).
+ *                   Botão minimize hidden-md-down (visível apenas mobile/tablet). Toggle
+ *                   nav-function-minify reduz largura sidebar + oculta texto labels. 3 botões
+ *                   ação são placeholders SmartAdmin (javascript:void(0) - sem lógica real).
+ *                   Para ativar: descomentar _LeftPanel, implementar handlers. NI icons
+ *                   ni-chevron-right custom SmartAdmin (não Font Awesome).
+ * ************************************************************************************
+ *@
+<div class="nav-footer shadow-top">
+	<a href="#" onclick="return false;" data-action="toggle" data-class="nav-function-minify" class="hidden-md-down">
+		<i class="ni ni-chevron-right"></i>
+		<i class="ni ni-chevron-right"></i>
+	</a>
+	<ul class="list-table m-auto nav-footer-buttons">
+		<li>
+			<a href="javascript:void(0);" data-bs-toggle="tooltip" data-placement="top" title="Chat logs">
+				<i class="@(Settings.Theme.IconPrefix) fa-comments"></i>
+			</a>
+		</li>
+		<li>
+			<a href="javascript:void(0);" data-bs-toggle="tooltip" data-placement="top" title="Support Chat">
+				<i class="@(Settings.Theme.IconPrefix) fa-life-ring"></i>
+			</a>
+		</li>
+		<li>
+			<a href="javascript:void(0);" data-bs-toggle="tooltip" data-placement="top" title="Make a call">
+				<i class="@(Settings.Theme.IconPrefix) fa-phone"></i>
+			</a>
+		</li>
+	</ul>
+</div>

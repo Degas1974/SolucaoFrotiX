@@ -1,0 +1,83 @@
+@page
+
+@model FrotiX.Pages.Veiculo.IndexModel
+
+@{
+    ViewData["Title"] = "Veículos";
+    ViewData["PageName"] = "veiculo_index";
+    ViewData["Heading"] = "<i class='fa-duotone fa-car'></i> Cadastros: <span class='fw-300'>Veículos</span>";
+    ViewData["Category1"] = "Cadastros";
+    ViewData["PageIcon"] = "fa-duotone fa-car";
+}
+
+@section HeadBlock {
+	<style>
+		/* ======== OUTLINE BRANCO NO BOTÃO DO HEADER (Padrão FrotiX) ======== */
+		.ftx-card-header .btn-fundo-laranja {
+			outline: 2px solid rgba(255, 255, 255, 0.5) !important;
+			outline-offset: 1px;
+			transition: all 0.2s ease;
+		}
+
+		.ftx-card-header .btn-fundo-laranja:hover {
+			outline: 2px solid rgba(255, 255, 255, 0.8) !important;
+			outline-offset: 2px;
+		}
+	</style>
+}
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="panel">
+            <div class="panel-container show">
+
+                <!-- HEADER AZUL PADRÃO FROTIX -->
+                <div class="ftx-card-header">
+                    <h2 class="titulo-paginas">
+                        <i class="fa-duotone fa-cars"></i>
+                        Gestão de Veículos
+                    </h2>
+                    <div class="ftx-card-actions">
+                        <a href="/Veiculo/Upsert" class="btn btn-fundo-laranja" data-ftx-loading>
+                            <i class="fa-duotone fa-clone-plus icon-pulse me-1"></i>
+                            Adicionar Veículo
+                        </a>
+                    </div>
+                </div>
+
+                <!-- CONTEÚDO -->
+                <div class="panel-content">
+                    <div class="box-body">
+
+                        <!-- DATATABLE -->
+                        <div id="divVeiculos">
+                            <table id="tblVeiculo" class="table table-bordered table-striped" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Placa</th>
+                                        <th>Marca/Modelo</th>
+                                        <th>Contrato</th>
+                                        <th>Sigla</th>
+                                        <th>Combustível</th>
+                                        <th>Consumo</th>
+                                        <th>Km</th>
+                                        <th>Reserva</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section ScriptsBlock {
+    <script src="~/js/cadastros/veiculo_index.js" asp-append-version="true"></script>
+}

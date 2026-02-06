@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Program.cs - Documentação FrotiX</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 24mm 20mm;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #1f2937;
+            line-height: 1.5;
+            font-size: 12px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #8b5e3c;
+            margin: 0 0 8px 0;
+        }
+
+        h1 {
+            font-size: 20px;
+        }
+
+        h2 {
+            font-size: 16px;
+            margin-top: 18px;
+        }
+
+        h3 {
+            font-size: 13px;
+            margin-top: 14px;
+        }
+
+        .meta {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 14px;
+        }
+
+        .box {
+            background: #f8f3ee;
+            border-left: 4px solid #c4956a;
+            padding: 10px 12px;
+            margin: 8px 0;
+        }
+
+        code,
+        pre {
+            font-family: "Consolas", monospace;
+        }
+
+        pre {
+            background: #111827;
+            color: #f9fafb;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 11px;
+        }
+
+        ul {
+            margin: 6px 0 0 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Program.cs — Inicialização do Host</h1>
+    <div class="meta">
+        <strong>Arquivo:</strong> Program.cs<br />
+        <strong>Papel:</strong> ponto de entrada, criação do host e handlers globais.
+    </div>
+
+    <div class="box">
+        Este arquivo garante o bootstrap seguro do FrotiX, com fallback de log em arquivo caso o DI falhe.
+    </div>
+
+    <h2>Responsabilidades Principais</h2>
+    <ul>
+        <li>Criar o host via <code>CreateHostBuilder</code>.</li>
+        <li>Registrar handlers globais para exceções.</li>
+        <li>Manter log de emergência quando não há DI.</li>
+    </ul>
+
+    <h2>Fluxo de Inicialização</h2>
+    <pre><code>// Build + Handlers
+var host = CreateHostBuilder(args).Build();
+ConfigureGlobalExceptionHandlers(host.Services);
+
+// Inicia a aplicação
+host.Run();</code></pre>
+
+    <h2>Tratamento de Erros</h2>
+    <ul>
+        <li>Todo o <code>Main</code> está envolvido por try/catch.</li>
+        <li>Erro crítico dispara <code>Alerta.TratamentoErroComLinha</code>.</li>
+        <li>Fallback grava log direto em arquivo.</li>
+    </ul>
+
+    <h2>Snippet: Handler Global</h2>
+    <pre><code>AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+{
+    logService.Error("ERRO NÃO TRATADO (AppDomain)",
+        e.ExceptionObject as Exception,
+        "AppDomain",
+        "UnhandledException");
+};</code></pre>
+</body>
+
+</html>

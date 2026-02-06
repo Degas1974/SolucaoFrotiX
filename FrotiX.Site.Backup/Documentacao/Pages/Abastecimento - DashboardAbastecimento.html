@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Documentação - Abastecimento - DashboardAbastecimento</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 24mm 20mm;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #1f2937;
+            line-height: 1.5;
+            font-size: 12px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #8b5e3c;
+            margin: 0 0 8px 0;
+        }
+
+        h1 {
+            font-size: 20px;
+        }
+
+        h2 {
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        h3 {
+            font-size: 13px;
+            margin-top: 14px;
+        }
+
+        .meta {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+
+        .section {
+            margin-top: 16px;
+        }
+
+        .log-entry {
+            border-left: 4px solid #c4956a;
+            padding-left: 10px;
+            margin-bottom: 12px;
+        }
+
+        ul {
+            margin: 6px 0 0 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Documentação: Abastecimento - DashboardAbastecimento</h1>
+    <div class="meta">
+        <strong>Última Atualização:</strong> 17/01/2026<br />
+        <strong>Versão:</strong> 0.3
+    </div>
+
+    <div class="section">
+        <h2>Visão Geral</h2>
+        <p>Dashboard de Abastecimentos com foco em indicadores gerais, consumo mensal e consumo por veículo.</p>
+    </div>
+
+    <div class="section">
+        <h2>Arquivos Principais</h2>
+        <ul>
+            <li><strong>Page:</strong> Pages/Abastecimento/DashboardAbastecimento.cshtml</li>
+            <li><strong>Scripts:</strong> wwwroot/js/dashboards/dashboard-abastecimento.js</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Log de Modificações</h2>
+
+        <div class="log-entry">
+            <h3>17/01/2026 - Ajustes nos Filtros de Consumo por Veículo</h3>
+            <ul>
+                <li>Reorganização dos controles (Período Fixo + Período Personalizado na primeira linha).</li>
+                <li>Placa movida para a segunda linha com label ampliado.</li>
+                <li>Lista de placas sincronizada com mudanças de período e seleção de placa com recarregamento imediato.
+                </li>
+                <li>Datas do período personalizado atualizam a lista automaticamente quando o intervalo é concluído.
+                </li>
+                <li>Placa selecionada é mantida quando ainda há abastecimentos no período; toast amarelo avisa quando
+                    ela sai da lista.</li>
+                <li>Períodos Rápidos removidos para simplificar a seleção.</li>
+                <li>Lista de placas exibe Placa + Marca/Modelo conforme cadastro do veículo.</li>
+                <li>Toast amarelo exibido após o overlay e com duração ampliada.</li>
+                <li>Label do período não mantém a placa quando não há seleção ativa.</li>
+                <li>Filtros executados ao selecionar o mês ou completar datas válidas no período personalizado.</li>
+                <li>Data inicial maior que a final limpa o campo "Até".</li>
+                <li>Ao preencher apenas uma das datas, a lista de placas é esvaziada.</li>
+                <li>Toast amarelo padrão permanece 6 segundos.</li>
+                <li>Toast de mês sem dados exibido após o loading.</li>
+            </ul>
+        </div>
+
+        <div class="log-entry">
+            <h3>15/01/2026 - Melhorias na Aba Consumo por Veículo</h3>
+            <ul>
+                <li>Gráficos vazios com mensagem orientativa quando não há veículo selecionado.</li>
+                <li>Remoção do filtro de modelo e ajustes visuais na placa.</li>
+                <li>Melhorias no ranking e destaque do mês selecionado.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>

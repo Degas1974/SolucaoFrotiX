@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Agenda - Index (Implementação) | FrotiX</title>
+    <style>
+        :root {
+            --vinho: #722F37;
+            --azul: #325d88;
+            --cinza: #f5f7fb;
+            --card: #fff;
+            --texto: #1f1f1f;
+            --shadow: 0 20px 45px -18px rgba(0, 0, 0, .35);
+            --radius: 14px;
+            --header-bg: #b66a3d;
+            --code-bg: #33465c;
+        }
+
+        @page {
+            size: A4;
+            margin: 16mm;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Inter", system-ui, -apple-system, sans-serif;
+            background: var(--cinza);
+            color: var(--texto);
+            padding: 22px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .page {
+            width: 210mm;
+            max-width: 100%;
+        }
+
+        .hero {
+            background: var(--header-bg);
+            color: #fff;
+            padding: 22px 24px;
+            border-radius: var(--radius);
+            box-shadow: 0 0 0 1px #000, 0 0 0 4px #fff, var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 26px;
+            letter-spacing: 0.2px;
+        }
+
+        .subtitle {
+            margin: 6px 0 0;
+            font-size: 13px;
+            opacity: 0.92;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 18px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 16px 18px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            margin: 0 0 10px;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--vinho);
+        }
+
+        ul {
+            margin: 6px 0 0 18px;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        code {
+            background: var(--code-bg);
+            color: #e9edf5;
+            padding: 10px 12px;
+            border-radius: 10px;
+            display: block;
+            white-space: pre-wrap;
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            color: var(--vinho);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <header class="hero">
+            <div>
+                <h1>Agenda - Index (Técnico)</h1>
+                <p class="subtitle">Agenda de Viagens · Recorrência e modal de agendamento · Versão 5.4</p>
+            </div>
+        </header>
+
+        <main class="grid">
+            <section class="card">
+                <div class="section-title">Visão Geral</div>
+                <p>View principal da agenda com calendário FullCalendar e modal complexo de agendamento/viagem. Regras
+                    de recorrência são controladas por módulos JS específicos.</p>
+                <ul>
+                    <li>Calendário interativo com edição de eventos.</li>
+                    <li>Modal de recorrência com períodos Diário/Semanal/Quinzenal/Mensal/Variada.</li>
+                    <li>Integração Syncfusion para DatePickers e DropDowns.</li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <div class="section-title">Data Final Recorrência (UI)</div>
+                <p>Em modo de edição, a Data Final Recorrência pode ser exibida como texto readonly para evitar falhas
+                    de inicialização do DatePicker.</p>
+                <code>
+CSS: .ftx-final-recorrencia-texto
+- text-align: left
+- width: 50%
+- margin: 0
+
+JS: mostrarTxtFinalRecorrencia()
+- Alterna DatePicker/texto conforme flags de edição
+
+CSS: .ftx-ocultar-recorrencia-date
+- display: none !important
+
+CSS: .ftx-ocultar-recorrencia-texto
+- display: none !important
+
+JS: MutationObserver (ocultação persistente)
+- Reaplica display none quando Syncfusion reescreve o wrapper
+      </code>
+            </section>
+
+            <section class="card" style="grid-column: 1 / -1;">
+                <div class="section-title">Log de Implementação</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Versão</th>
+                            <th>Data</th>
+                            <th>Alteração</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>5.4</td>
+                            <td>18/01/2026</td>
+                            <td>Classe dedicada para ocultar texto readonly em modo novo.</td>
+                        </tr>
+                        <tr>
+                            <td>4.8</td>
+                            <td>18/01/2026</td>
+                            <td>Centralização do texto readonly e reforço de ocultação do DatePicker.</td>
+                        </tr>
+                        <tr>
+                            <td>4.7</td>
+                            <td>18/01/2026</td>
+                            <td>Config global + botão dev-only para alternar modo de recorrência.</td>
+                        </tr>
+                        <tr>
+                            <td>4.6</td>
+                            <td>18/01/2026</td>
+                            <td>Introdução do campo readonly para Data Final Recorrência em edição.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>

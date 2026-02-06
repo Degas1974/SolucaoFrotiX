@@ -1,0 +1,523 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/MovimentacaoPatrimonio/Upsert.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário criar/editar movimentação de patrimônio (origem readonly, destino editável)
+ * 📥 ENTRADAS     : @page, @model UpsertModel, campos: cmbPatrimonio, dataMov, StatusCheckbox, SetorOrigem (readonly), cmbSetorDestino, cmbSecoesDestino
+ * 📤 SAÍDAS       : POST /api/Patrimonio/CreateMovimentacao ou UpdateMovimentacao, redirect para Index, AppToast feedback
+ * 🔗 CHAMADA POR  : Index.cshtml (botão "Inserir Movimentação", edição via API), menu navegação
+ * 🔄 CHAMA        : /api/Patrimonio/GetMovimentacao (edição), /api/Patrimonio/CreateMovimentacao, /api/Patrimonio/UpdateMovimentacao, ~/js/cadastros/movimentacaopatrimonio.js
+ * 📦 DEPENDÊNCIAS : Syncfusion.EJ2 (ComboBox, DatePicker, Checkbox), Bootstrap 5.3.8 (CDN redundante), Font Awesome Duotone
+ * 📝 OBSERVAÇÕES  : Total: 532 linhas. PROBLEMA: Bootstrap CDN redundante (já no layout), CSS inline grande (142 linhas) - pode ser extraído, JavaScript inline extenso (300+ linhas) - deveria estar no movimentacaopatrimonio.js, DUPLICAÇÃO: Funções carregarDadosMovimentacao e salvarMovimentacao inline quando deveriam estar no JS externo, BUG POTENCIAL: Validação "seção destino == seção origem" não considera setor (linha 456), Hidden fields: MovimentacaoPatrimonioId, SetorOrigemId, SecaoOrigemId, PatrimonioId - correto
+ **************************************************************************************** *@
+@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Syncfusion.EJ2
+
+@model FrotiX.Pages.MovimentacaoPatrimonio.UpsertModel
+
+@{
+    ViewData["Title"] = "Movimentação de Patrimônio";
+    ViewData["PageName"] = "movimentacaopatrimonio_upsert";
+    ViewData["Heading"] = "<i class='fa-duotone fa-conveyor-belt-boxes'></i> Cadastros: <span class='fw-300'>Movimentação de Patrimônio</span>";
+    ViewData["Category1"] = "Movimentações";
+    ViewData["PageIcon"] = "fa-conveyor-belt-boxes";
+}
+
+<style>
+    :root {
+        --ctrl-h: 40px;
+        --ctrl-pad-y: .375rem;
+        --ctrl-pad-x: .75rem;
+        --ctrl-radius: .25rem;
+        --accent-orange-dark: #C24E00;
+    }
+
+    .control-height,
+    .form-control {
+        height: var(--ctrl-h) !important;
+        padding: var(--ctrl-pad-y) var(--ctrl-pad-x) !important;
+        font-size: 1rem !important;
+        line-height: 1.5 !important;
+        border-radius: var(--ctrl-radius) !important;
+    }
+
+    .e-control-wrapper.e-input-group,
+    .e-input-group.e-control-wrapper {
+        height: var(--ctrl-h) !important;
+        border-radius: var(--ctrl-radius) !important;
+        background-color: #fff !important;
+        border: 1px solid #ced4da !important;
+    }
+
+        .e-control-wrapper.e-input-group input.e-input {
+            height: calc(var(--ctrl-h) - 2px) !important;
+            line-height: calc(var(--ctrl-h) - 2px) !important;
+            padding: var(--ctrl-pad-y) var(--ctrl-pad-x) !important;
+            font-size: 1rem !important;
+            background: transparent !important;
+            border: none !important;
+        }
+
+    .e-input-group-icon,
+    .e-clear-icon,
+    .e-ddl-icon {
+        height: calc(var(--ctrl-h) - 2px) !important;
+        line-height: calc(var(--ctrl-h) - 2px) !important;
+        min-height: calc(var(--ctrl-h) - 2px) !important;
+    }
+
+    .e-control-wrapper.e-input-focus,
+    .e-input-group.e-control-wrapper.e-input-focus {
+        border-color: #80bdff !important;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25) !important;
+    }
+
+    .e-input-group::before,
+    .e-input-group::after {
+        display: none !important;
+    }
+
+    .section-legend {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        margin: 0 0 .5rem 0;
+        font-weight: 700;
+        font-size: 1.05rem;
+    }
+
+        .section-legend .legend-note {
+            font-weight: 500;
+            font-size: .9rem;
+            color: #6c757d;
+        }
+
+    .label {
+        margin-bottom: .25rem;
+        margin-top: .25rem;
+        font-weight: 600;
+    }
+
+    input[type=checkbox] {
+        vertical-align: middle;
+        position: relative;
+        bottom: 1px;
+    }
+
+    .escondido {
+        display: none;
+    }
+
+    .espacofundo {
+        padding-bottom: 20px;
+    }
+
+    .status-switch {
+        margin-top: 32px;
+    }
+
+    .page-header {
+        border-bottom: 1px solid #325d88;
+    }
+
+    .section-legend.text-orange-dark {
+        color: var(--accent-orange-dark) !important;
+    }
+
+        .section-legend.text-orange-dark .fa-duotone {
+            --fa-primary-color: var(--accent-orange-dark);
+            --fa-secondary-color: var(--accent-orange-dark);
+        }
+</style>
+
+<form id="formsMovimentacaoPatrimonio">
+    <div class="row espacofundo">
+        <div class="col-xl-12">
+            <div id="panel-1" class="panel">
+                <div id="painelfundo" class="panel-container show espacofundo">
+                    <div class="panel-content">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <!-- IDs Hidden -->
+                        <input type="hidden" id="MovimentacaoPatrimonioId"
+                               value="@(Model.MovimentacaoPatrimonioObj?.MovimentacaoPatrimonio?.MovimentacaoPatrimonioId ?? Guid.Empty)" />
+                        <input type="hidden" id="SetorOrigemId" value="" />
+                        <input type="hidden" id="SecaoOrigemId" value="" />
+                        <input type="hidden" id="PatrimonioId" value="" />
+
+                        <!-- Cabeçalho -->
+                        <div class="col-12 px-3 page-header">
+                            <h2 class="titulo-pagina my-2">
+                                <i class="fa-duotone fa-exchange"></i>
+                                &nbsp;<span id="tituloFormulario">Nova Movimentação de Patrimônio</span>
+                            </h2>
+                        </div>
+
+                        <div class="col-12 pt-3">
+                            <!-- Linha 1: Patrimônio, Data e Status -->
+                            <div class="row mb-3">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label class="label" for="cmbPatrimonio">Patrimônio *</label>
+                                        <ejs-combobox id="cmbPatrimonio"
+                                                      placeholder="Selecione o Patrimônio"
+                                                      allowFiltering="true"
+                                                      filterType="Contains"
+                                                      popupHeight="200px"
+                                                      width="100%"
+                                                      showClearButton="true">
+                                            <e-combobox-fields text="text" value="value"></e-combobox-fields>
+                                        </ejs-combobox>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <div class="form-group">
+                                        <label class="label" for="dataMov">Data da Movimentação *</label>
+                                        <ejs-datepicker id="dataMov"
+                                                        format="dd/MM/yyyy"
+                                                        floatLabelType="Never"
+                                                        placeholder="dd/mm/aaaa"
+                                                        width="100%">
+                                        </ejs-datepicker>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-2">
+                                    <div class="status-switch">
+                                        <label for="StatusCheckbox" class="status-title me-2">Status:</label>
+                                        <ejs-checkbox id="StatusCheckbox"
+                                                      name="StatusCheckbox"
+                                                      change="onEJ2CheckboxChange">
+                                        </ejs-checkbox>
+                                        <label id="StatusCheckboxLabel"
+                                               class="status-label ms-2"
+                                               for="StatusCheckbox"></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Linha 2: ORIGEM (somente leitura) -->
+                            <fieldset class="mb-3">
+                                <legend class="section-legend text-orange-dark">
+                                    <i class="fa-duotone fa-location-dot"></i>
+                                    Origem <span class="legend-note">onde está</span>
+                                </legend>
+                                <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-group">
+                                            <label class="label" for="SetorOrigem">Setor (Origem)</label>
+                                            <input id="SetorOrigem"
+                                                   type="text"
+                                                   class="form-control control-height"
+                                                   disabled
+                                                   readonly />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-group">
+                                            <label class="label" for="SecaoOrigem">Seção (Origem)</label>
+                                            <input id="SecaoOrigem"
+                                                   type="text"
+                                                   class="form-control control-height"
+                                                   disabled
+                                                   readonly />
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <!-- Linha 3: DESTINO -->
+                            <fieldset class="mb-4">
+                                <legend class="section-legend text-orange-dark">
+                                    <i class="fa-duotone fa-arrow-right-arrow-left"></i>
+                                    Destino <span class="legend-note">para onde vai</span>
+                                </legend>
+                                <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-group">
+                                            <label class="label" for="cmbSetorDestino">Setor (Destino) *</label>
+                                            <ejs-combobox id="cmbSetorDestino"
+                                                          placeholder="Selecione o Setor de Destino"
+                                                          allowFiltering="true"
+                                                          filterType="Contains"
+                                                          popupHeight="200px"
+                                                          width="100%"
+                                                          showClearButton="true">
+                                                <e-combobox-fields text="text" value="value"></e-combobox-fields>
+                                            </ejs-combobox>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md-6" id="divSecaoDestino">
+                                        <div class="form-group">
+                                            <label class="label" for="cmbSecoesDestino">Seção (Destino) *</label>
+                                            <ejs-combobox id="cmbSecoesDestino"
+                                                          placeholder="Primeiro selecione o Setor de Destino"
+                                                          allowFiltering="true"
+                                                          filterType="Contains"
+                                                          popupHeight="200px"
+                                                          width="100%"
+                                                          showClearButton="true">
+                                                <e-combobox-fields text="text" value="value"></e-combobox-fields>
+                                            </ejs-combobox>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <!-- Botões de Ação -->
+                            <div class="form-group row">
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <button type="button"
+                                                    id="btnSalvar"
+                                                    class="btn btn-azul btn-submit-spin form-control me-4"
+                                                    style="max-width:300px; display:inline-block"
+                                                    data-ejtip="Salvar a movimentação de patrimônio">
+                                                <i class="fa-duotone fa-floppy-disk icon-space icon-pulse"></i>&nbsp;&nbsp;
+                                                <span id="textoBotaoSalvar">Criar Movimentação</span>
+                                            </button>
+
+                                            <a asp-page="./Index"
+                                               class="btn btn-ftx-fechar form-control"
+                                               style="max-width:300px; display:inline-block"
+                                               data-ftx-loading>
+                                                <i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i> Cancelar Operação
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section ScriptsBlock {
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+    <script src="~/js/cadastros/movimentacaopatrimonio.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function () {
+            try {
+                // Verificar se é edição
+                var movimentacaoId = $('#MovimentacaoPatrimonioId').val();
+                var isEdicao = movimentacaoId && movimentacaoId !== '00000000-0000-0000-0000-000000000000';
+
+                if (isEdicao) {
+                    $('#tituloFormulario').text('Atualizar Movimentação');
+                    $('#textoBotaoSalvar').text('Atualizar Movimentação');
+                    carregarDadosMovimentacao(movimentacaoId);
+                }
+
+                // Handler do botão salvar
+                $('#btnSalvar').on('click', function (e) {
+                    try {
+                        e.preventDefault();
+                        salvarMovimentacao();
+                    }
+                    catch (error) {
+                        Alerta.TratamentoErroComLinha("Upsert.cshtml", "btnSalvar.click", error);
+                    }
+                });
+
+                // Prevenir submit com Enter
+                $('#formsMovimentacaoPatrimonio').on('keypress', function (e) {
+                    try {
+                        if (e.key === 'Enter' || e.keyCode === 13) {
+                            var src = e.target || e.srcElement;
+                            if (src.tagName.toLowerCase() !== 'textarea' && src.tagName.toLowerCase() !== 'button') {
+                                e.preventDefault();
+                                return false;
+                            }
+                        }
+                    }
+                    catch (error) {
+                        Alerta.TratamentoErroComLinha("Upsert.cshtml", "formsMovimentacaoPatrimonio.keypress", error);
+                    }
+                });
+            }
+            catch (error) {
+                Alerta.TratamentoErroComLinha("Upsert.cshtml", "document.ready", error);
+            }
+        });
+
+        function carregarDadosMovimentacao(id) {
+            try {
+                $.ajax({
+                    url: '/api/Patrimonio/GetMovimentacao',
+                    type: 'GET',
+                    data: { id: id },
+                    success: function (res) {
+                        try {
+                            if (res && res.success) {
+                                var data = res.data;
+
+                                // Preencher campos hidden
+                                $('#SetorOrigemId').val(data.setorOrigemId || '');
+                                $('#SecaoOrigemId').val(data.secaoOrigemId || '');
+                                $('#PatrimonioId').val(data.patrimonioId || '');
+
+                                // Preencher campos visuais
+                                $('#SetorOrigem').val(data.setorOrigemNome || '');
+                                $('#SecaoOrigem').val(data.secaoOrigemNome || '');
+
+                                // Atualizar combos EJ2
+                                setTimeout(function () {
+                                    try {
+                                        var cmbPatrimonio = document.getElementById('cmbPatrimonio')?.ej2_instances?.[0];
+                                        if (cmbPatrimonio) cmbPatrimonio.value = data.patrimonioId;
+
+                                        var cmbSetorDestino = document.getElementById('cmbSetorDestino')?.ej2_instances?.[0];
+                                        if (cmbSetorDestino) cmbSetorDestino.value = data.setorDestinoId;
+
+                                        var cmbSecaoDestino = document.getElementById('cmbSecoesDestino')?.ej2_instances?.[0];
+                                        if (cmbSecaoDestino) cmbSecaoDestino.value = data.secaoDestinoId;
+
+                                        var datePicker = document.getElementById('dataMov')?.ej2_instances?.[0];
+                                        if (datePicker && data.dataMovimentacao) {
+                                            datePicker.value = new Date(data.dataMovimentacao);
+                                        }
+                                    }
+                                    catch (error) {
+                                        Alerta.TratamentoErroComLinha("Upsert.cshtml", "carregarDadosMovimentacao.setTimeout", error);
+                                    }
+                                }, 500);
+                            }
+                        }
+                        catch (error) {
+                            Alerta.TratamentoErroComLinha("Upsert.cshtml", "carregarDadosMovimentacao.success", error);
+                        }
+                    },
+                    error: function (err) {
+                        try {
+                            console.error('Erro ao carregar movimentação:', err);
+                            AppToast.show("Vermelho", "Erro ao carregar dados da movimentação", 2000);
+                        }
+                        catch (error) {
+                            Alerta.TratamentoErroComLinha("Upsert.cshtml", "carregarDadosMovimentacao.error", error);
+                        }
+                    }
+                });
+            }
+            catch (error) {
+                Alerta.TratamentoErroComLinha("Upsert.cshtml", "carregarDadosMovimentacao", error);
+            }
+        }
+
+        function salvarMovimentacao() {
+            try {
+                // Coletar dados dos componentes EJ2
+                var cmbPatrimonio = document.getElementById('cmbPatrimonio')?.ej2_instances?.[0];
+                var cmbSetorDestino = document.getElementById('cmbSetorDestino')?.ej2_instances?.[0];
+                var cmbSecaoDestino = document.getElementById('cmbSecoesDestino')?.ej2_instances?.[0];
+                var datePicker = document.getElementById('dataMov')?.ej2_instances?.[0];
+                var statusCheckbox = document.getElementById('StatusCheckbox')?.ej2_instances?.[0];
+
+                // Montar objeto de dados
+                var dados = {
+                    movimentacaoPatrimonioId: $('#MovimentacaoPatrimonioId').val(),
+                    patrimonioId: cmbPatrimonio?.value || $('#PatrimonioId').val(),
+                    dataMovimentacao: datePicker?.value ? datePicker.value.toISOString() : null,
+                    setorOrigemId: $('#SetorOrigemId').val(),
+                    secaoOrigemId: $('#SecaoOrigemId').val(),
+                    setorDestinoId: cmbSetorDestino?.value,
+                    secaoDestinoId: cmbSecaoDestino?.value,
+                    statusPatrimonio: statusCheckbox?.checked || false
+                };
+
+                // Validações
+                var erros = [];
+
+                if (!dados.patrimonioId || dados.patrimonioId === '') {
+                    erros.push('O Patrimônio não pode estar em branco!');
+                }
+
+                if (!dados.dataMovimentacao) {
+                    erros.push('A data não pode estar em branco!');
+                }
+
+                if (!dados.setorOrigemId || dados.setorOrigemId === '') {
+                    erros.push('O setor de origem não pode estar em branco!');
+                }
+
+                if (!dados.secaoOrigemId || dados.secaoOrigemId === '') {
+                    erros.push('A seção de origem não pode estar em branco!');
+                }
+
+                if (!dados.setorDestinoId || dados.setorDestinoId === '') {
+                    erros.push('O setor de destino não pode estar em branco!');
+                }
+
+                if (!dados.secaoDestinoId || dados.secaoDestinoId === '') {
+                    erros.push('A seção de destino não pode estar em branco!');
+                }
+
+                if (dados.secaoDestinoId && dados.secaoOrigemId && dados.secaoDestinoId === dados.secaoOrigemId) {
+                    erros.push('A seção de destino não pode ser a mesma que a seção de origem!');
+                }
+
+                if (erros.length > 0) {
+                    Alerta.Erro('Erro no formulário', erros.join('\n'), 'OK');
+                    return;
+                }
+
+                // Determinar URL e método
+                var isEdicao = dados.movimentacaoPatrimonioId &&
+                    dados.movimentacaoPatrimonioId !== '00000000-0000-0000-0000-000000000000';
+
+                var url = isEdicao ? '/api/Patrimonio/UpdateMovimentacao' : '/api/Patrimonio/CreateMovimentacao';
+
+                // Enviar dados via AJAX
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: JSON.stringify(dados),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    success: function (res) {
+                        try {
+                            if (res.success) {
+                                AppToast.show("Verde", res.message || (isEdicao ? 'Movimentação atualizada com sucesso!' : 'Movimentação registrada com sucesso!'), 3000);
+                                setTimeout(function () {
+                                    try {
+                                        window.location.href = '/MovimentacaoPatrimonio/Index';
+                                    }
+                                    catch (error) {
+                                        Alerta.TratamentoErroComLinha("Upsert.cshtml", "salvarMovimentacao.success.setTimeout", error);
+                                    }
+                                }, 1500);
+                            } else {
+                                AppToast.show("Vermelho", res.message || 'Erro ao salvar movimentação', 5000);
+                            }
+                        }
+                        catch (error) {
+                            Alerta.TratamentoErroComLinha("Upsert.cshtml", "salvarMovimentacao.success", error);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        try {
+                            console.error('Erro ao salvar:', error);
+                            AppToast.show("Vermelho", "Erro ao salvar movimentação. Verifique os dados e tente novamente.", 5000);
+                        }
+                        catch (error) {
+                            Alerta.TratamentoErroComLinha("Upsert.cshtml", "salvarMovimentacao.error", error);
+                        }
+                    }
+                });
+            }
+            catch (error) {
+                Alerta.TratamentoErroComLinha("Upsert.cshtml", "salvarMovimentacao", error);
+            }
+        }
+    </script>
+
+}

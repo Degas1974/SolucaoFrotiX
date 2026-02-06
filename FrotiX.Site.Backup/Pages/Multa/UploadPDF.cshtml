@@ -1,0 +1,163 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Multa/UploadPDF.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página simples para upload de PDF (genérico - possivelmente obsoleta ou teste)
+ * 📥 ENTRADAS     : @page, @model UploadPDFModel, Syncfusion Uploader #uploaderPDF (arquivo .pdf), eventos: success, failure, removing
+ * 📤 SAÍDAS       : POST /Multa/UploadPDF?handler=Save, DELETE /Multa/UploadPDF?handler=Remove, campo #txtArquivo (nome arquivo), PDFViewer #pdfviewer (exibição)
+ * 🔗 CHAMADA POR  : Possivelmente obsoleta - não encontrado link em outros arquivos analisados
+ * 🔄 CHAMA        : /Multa/UploadPDF handlers (Save/Remove), /api/MultaPdfViewer (service), /Upload/{filename} (path PDFs)
+ * 📦 DEPENDÊNCIAS : Syncfusion.EJ2 (Uploader, PDFViewer), Bootstrap 5.3.8 (CDN redundante), Microsoft.AspNetCore.Antiforgery, Font Awesome Duotone
+ * 📝 OBSERVAÇÕES  : Total: 118 linhas. SUSPEITA: Página genérica de upload - pode ser removida se não usada (verificar rotas/menu), Bootstrap CDN redundante, CSS inline mínimo (9 linhas) - aceitável, JavaScript inline pequeno (54 linhas) mas poderia ser extraído - 3 handlers (onUploadSuccess, onUploadFailure, onFileRemoving), Antiforgery token: adiciona via DOMContentLoaded - correto, PDFViewer inicialmente oculto (display:none) - mostra após upload bem-sucedido, MELHORIAS: Falta validação de tamanho arquivo, falta feedback visual durante upload (spinner)
+ **************************************************************************************** *@
+@page
+@model FrotiX.Pages.Multa.UploadPDFModel
+@using Syncfusion.EJ2
+
+@{
+	ViewData["Title"] = "Upload de PDF";
+	ViewData["PageName"] = "multa_uploadpdf";
+}
+
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@Html.AntiForgeryToken()
+
+<style>
+	.e-upload {
+		width: 100%;
+		max-width: 500px;
+	}
+
+	.e-pv-toolbar {
+		border-radius: .25rem;
+	}
+
+	#txtArquivo {
+		max-width: 420px;
+		margin: 10px 0;
+	}
+</style>
+
+<h2>Upload de PDF</h2>
+
+<div class="row">
+	<div class="col-md-8">
+		<ejs-uploader id="uploaderPDF" multiple="false" autoUpload="true" allowedExtensions=".pdf"
+			success="onUploadSuccess" failure="onUploadFailure" removing="onFileRemoving">
+			<e-uploader-asyncsettings saveUrl="/Multa/UploadPDF?handler=Save"
+				removeUrl="/Multa/UploadPDF?handler=Remove">
+			</e-uploader-asyncsettings>
+		</ejs-uploader>
+
+		<input type="text" id="txtArquivo" class="form-control" placeholder="nome do arquivo..." readonly />
+
+		<div id="pdfViewerContainer" style="margin-top: 20px;">
+			<ejs-pdfviewer id="pdfviewer" style="height:600px;width:100%;display:none;"
+				serviceUrl="/api/MultaPdfViewer">
+			</ejs-pdfviewer>
+		</div>
+	</div>
+</div>
+
+@section ScriptsBlock {
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+		crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+		crossorigin="anonymous"></script>
+
+	<script>
+			/**
+			 * ═══════════════════════════════════════════════════════════════════════════
+			 * UPLOAD DE PDF - HANDLERS DO UPLOADER SYNCFUSION
+			 * ═══════════════════════════════════════════════════════════════════════════
+			 * @@description Gerencia upload de arquivos PDF de multas / autuações
+			* com preview no PdfViewer Syncfusion.
+			 */
+
+			/**
+			 * Handler de sucesso no upload.
+			 * @@param { Object } args - Argumentos do evento success.
+			 * @@description Carrega PDF no viewer e exibe toast de confirmação.
+			 */
+		function onUploadSuccess(args) {
+			try {
+				if (args.operation === 'upload') {
+					const file = args.file;
+					if (file && file.name) {
+						$("#txtArquivo").val(file.name);
+
+						// Carrega o PDF no viewer
+						const pdfPath = "/Upload/" + encodeURIComponent(file.name);
+						const pdfViewer = document.getElementById('pdfviewer').ej2_instances[0];
+
+						if (pdfViewer) {
+							pdfViewer.load(pdfPath, null);
+							$("#pdfviewer").show();
+						}
+
+						AppToast.show("Verde", "Upload concluído com sucesso!", 2000);
+					}
+				}
+			}
+			catch (error) {
+				Alerta.TratamentoErroComLinha("UploadPDF.cshtml", "onUploadSuccess", error);
+			}
+		}
+
+			/**
+			 * Handler de falha no upload.
+			 * @@param { Object } args - Argumentos do evento failure.
+			 * @@description Exibe toast de erro.
+			 */
+		function onUploadFailure(args) {
+			try {
+				AppToast.show("Vermelho", "Falha no upload do arquivo!", 3000);
+			}
+			catch (error) {
+				Alerta.TratamentoErroComLinha("UploadPDF.cshtml", "onUploadFailure", error);
+			}
+		}
+
+			/**
+			 * Handler de remoção de arquivo.
+			 * @@param { Object } args - Argumentos do evento removing.
+			 * @@description Limpa campo, oculta viewer e descarrega PDF.
+			 */
+		function onFileRemoving(args) {
+			try {
+				$("#txtArquivo").val('');
+				$("#pdfviewer").hide();
+
+				const pdfViewer = document.getElementById('pdfviewer').ej2_instances[0];
+				if (pdfViewer) {
+					pdfViewer.unload();
+				}
+
+				AppToast.show("Amarelo", "Arquivo removido.", 2000);
+			}
+			catch (error) {
+				Alerta.TratamentoErroComLinha("UploadPDF.cshtml", "onFileRemoving", error);
+			}
+		}
+
+		/**
+		 * Configura token anti-CSRF no uploader após DOM pronto.
+		 */
+		document.addEventListener('DOMContentLoaded', function () {
+			try {
+				const uploader = document.getElementById('uploaderPDF');
+				if (uploader && uploader.ej2_instances && uploader.ej2_instances[0]) {
+					uploader.ej2_instances[0].uploading = function (args) {
+						const token = document.getElementsByName('__RequestVerificationToken')[0];
+						if (token) {
+							args.currentRequest.setRequestHeader('RequestVerificationToken', token.value);
+						}
+					};
+				}
+			}
+			catch (error) {
+				Alerta.TratamentoErroComLinha("UploadPDF.cshtml", "DOMContentLoaded", error);
+			}
+		});
+	</script>
+}

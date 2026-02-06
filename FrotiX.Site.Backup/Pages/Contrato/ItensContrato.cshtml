@@ -1,0 +1,955 @@
+@page
+
+@model FrotiX.Pages.Contrato.ItensContratoModel
+
+@{
+    ViewData["Title"] = "Itens dos Contratos e Atas";
+    ViewData["PageName"] = "itenscontrato_index";
+    ViewData["Heading"] = "<i class='fa-duotone fa-sitemap'></i> Cadastros: <span class='fw-300'>Itens dos Contratos e Atas</span>";
+    ViewData["Category1"] = "Cadastros";
+    ViewData["PageIcon"] = "fa-duotone fa-sitemap";
+}
+
+@section HeadBlock {
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+}
+
+<style>
+    /* ========== VARIÁVEIS ========== */
+    :root {
+        --header-bg: #3D5771;
+        --table-header-bg: #547a99;
+        --accent-color: #4a90a4;
+        --success-color: #28a745;
+        --danger-color: #dc3545;
+        --text-light: #f8f9fa;
+        --text-muted: #6c757d;
+        --border-radius: 8px;
+        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+        --transition: all 0.3s ease;
+        --verde-militar: #4a5d23;
+        --cinza-escuro: #495057;
+    }
+
+    /* ========== SWITCH CONTRATO/ATA - SEGMENTED CONTROL ========== */
+    .segmented-control {
+        display: inline-flex;
+        background: #e9ecef;
+        border-radius: 30px;
+        padding: 4px;
+        margin-bottom: 1.25rem;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .segmented-control .seg-btn {
+        padding: 0.6rem 1.5rem;
+        border-radius: 25px;
+        font-family: 'Outfit', sans-serif;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+        background: transparent;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .segmented-control .seg-btn.active {
+        background: var(--header-bg);
+        color: white;
+        box-shadow: 0 2px 8px rgba(61, 87, 113, 0.4);
+    }
+
+    .segmented-control .seg-btn:hover:not(.active) {
+        background: rgba(61, 87, 113, 0.15);
+        color: var(--header-bg);
+    }
+
+    .segmented-control .seg-btn i {
+        font-size: 1rem;
+    }
+
+    /* ========== SELEÇÃO DE CONTRATO/ATA ========== */
+    .selection-panel {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: var(--border-radius);
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .selection-panel label {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+        display: block;
+        font-size: 0.9rem;
+    }
+
+    .selection-panel select {
+        border-radius: 6px;
+        border: 2px solid #ced4da;
+        padding: 0.6rem 0.75rem;
+        font-size: 0.95rem;
+        transition: var(--transition);
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .selection-panel select:focus {
+        border-color: var(--header-bg);
+        box-shadow: 0 0 0 3px rgba(61, 87, 113, 0.15);
+    }
+
+    /* ========== RESUMO DO CONTRATO/ATA ========== */
+    .resumo-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border: 1px solid #e0e0e0;
+        border-radius: var(--border-radius);
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        display: none;
+    }
+
+    .resumo-card.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .resumo-card .resumo-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--header-bg);
+    }
+
+    .resumo-card .resumo-title {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--header-bg);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .resumo-card .resumo-badge {
+        padding: 0.4rem 0.85rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .resumo-card .resumo-badge.locacao {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        color: white;
+    }
+
+    .resumo-card .resumo-badge.terceirizacao {
+        background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
+        color: white;
+    }
+
+    .resumo-card .resumo-badge.servico {
+        background: linear-gradient(135deg, #fd7e14 0%, #e06500 100%);
+        color: white;
+    }
+
+    .resumo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .resumo-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .resumo-item .label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.25rem;
+        font-family: 'Outfit', sans-serif;
+        font-weight: 500;
+    }
+
+    .resumo-item .value {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 600;
+        color: #212529;
+        font-size: 0.95rem;
+    }
+
+    /* ========== RESUMO SERVIÇO ========== */
+    .resumo-servico {
+        background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+        border: 1px solid #ffc107;
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        text-align: center;
+        display: none;
+    }
+
+    .resumo-servico.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .resumo-servico i {
+        font-size: 3rem;
+        color: #fd7e14;
+        margin-bottom: 1rem;
+    }
+
+    .resumo-servico h5 {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        color: #856404;
+        margin-bottom: 0.5rem;
+    }
+
+    .resumo-servico p {
+        color: #856404;
+        margin: 0;
+    }
+
+    /* ========== TABSTRIP ========== */
+    .tabstrip-container {
+        display: none;
+    }
+
+    .tabstrip-container.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .nav-tabs-custom {
+        border-bottom: 2px solid #dee2e6;
+        margin-bottom: 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .nav-tabs-custom .nav-item {
+        margin-bottom: -2px;
+    }
+
+    .nav-tabs-custom .nav-link {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 600;
+        color: #6c757d;
+        padding: 0.75rem 1.25rem;
+        border: 2px solid transparent;
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .nav-tabs-custom .nav-link:hover {
+        color: var(--header-bg);
+        background: #f8f9fa;
+        border-color: #dee2e6 #dee2e6 transparent;
+    }
+
+    .nav-tabs-custom .nav-link.active {
+        color: white;
+        background: var(--header-bg);
+        border-color: var(--header-bg);
+    }
+
+    .nav-tabs-custom .nav-link .badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .nav-tabs-custom .nav-link.active .badge {
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+    }
+
+    .tab-content-custom {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-top: none;
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+        padding: 1.5rem;
+    }
+
+    /* ========== TOOLBAR DA ABA ========== */
+    .tab-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .tab-toolbar .info-contratada {
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+    }
+
+    .tab-toolbar .info-contratada strong {
+        color: var(--header-bg);
+        font-weight: 700;
+    }
+
+    .btn-incluir {
+        background: linear-gradient(135deg, var(--success-color) 0%, #218838 100%);
+        color: white;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-family: 'Outfit', sans-serif;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+
+    .btn-incluir:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        color: white;
+    }
+
+    .btn-incluir i {
+        font-size: 1rem;
+    }
+
+    /* ========== DATATABLE CUSTOMIZADO ========== */
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .table-container table.dataTable thead th {
+        background: var(--table-header-bg) !important;
+        color: white !important;
+        font-family: 'Outfit', sans-serif;
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 0.75rem 0.5rem;
+        border: none !important;
+        white-space: nowrap;
+    }
+
+    .table-container table.dataTable tbody td {
+        font-size: 0.85rem;
+        padding: 0.6rem 0.5rem;
+        vertical-align: middle;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .table-container table.dataTable tbody tr:hover {
+        background-color: #e8f4f8 !important;
+    }
+
+    /* Remove barra de rolagem horizontal do DataTable */
+    .table-container {
+        overflow-x: hidden;
+    }
+
+    .dataTables_wrapper {
+        overflow-x: hidden;
+    }
+
+    /* ========== BOTÕES DE AÇÃO - PADRÃO FROTIX ========== */
+    .btn-action {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-action.btn-vinho {
+        background: var(--danger-color);
+        color: white;
+    }
+
+    .btn-action.btn-vinho:hover {
+        background: #c82333;
+        transform: scale(1.1);
+        box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
+    }
+
+    /* ========== FILTRO POR ITEM ========== */
+    .filtro-item-container {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border: 1px solid #dee2e6;
+        border-radius: var(--border-radius);
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .filtro-item-group {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .filtro-item-group label {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #495057;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .filtro-item-group label i {
+        color: #6c757d;
+    }
+
+    .filtro-item-group select {
+        min-width: 280px;
+        max-width: 400px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.85rem;
+        padding: 0.4rem 0.75rem;
+        border-radius: 6px;
+        border: 1px solid #ced4da;
+    }
+
+    .filtro-item-group select:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        outline: none;
+    }
+
+    .btn-filtrar {
+        background: linear-gradient(135deg, #b45a3c 0%, #c96d4e 100%);
+        color: white;
+        border: none;
+        padding: 0.4rem 1rem;
+        border-radius: 6px;
+        font-family: 'Outfit', sans-serif;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-filtrar:hover {
+        background: linear-gradient(135deg, #9c4d33 0%, #b45a3c 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(180, 90, 60, 0.4);
+    }
+
+    .btn-filtrar:active {
+        transform: translateY(0);
+    }
+
+    .btn-limpar-filtro {
+        background: #6c757d;
+        color: white;
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-limpar-filtro:hover {
+        background: #5a6268;
+        transform: scale(1.05);
+    }
+
+    /* ========== CARD DE CONTADORES ========== */
+    .card-contadores {
+        display: none;
+        margin-top: 1rem;
+        padding: 0.75rem 1rem;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: var(--border-radius);
+    }
+
+    .card-contadores.show {
+        display: flex;
+        gap: 2rem;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .card-contadores .contador {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.9rem;
+    }
+
+    .card-contadores .contador i {
+        font-size: 1rem;
+    }
+
+    .card-contadores .contador.ativos i {
+        color: var(--verde-militar);
+    }
+
+    .card-contadores .contador.inativos i {
+        color: var(--cinza-escuro);
+    }
+
+    .card-contadores .contador strong {
+        font-weight: 700;
+    }
+
+    /* ========== MODAIS ========== */
+    .modal-content {
+        border-radius: var(--border-radius);
+        border: none;
+        box-shadow: var(--shadow-md);
+    }
+
+    .modal-body label {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Estado loading do botão salvar */
+    .btn-verde.loading .icon-default {
+        display: none !important;
+    }
+
+    .btn-verde.loading .spinner {
+        display: inline-block !important;
+    }
+
+    /* ========== SHIMMER LOADING ========== */
+    .shimmer-container {
+        display: none;
+    }
+
+    .shimmer-container.show {
+        display: block;
+    }
+
+    .shimmer {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: shimmerAnim 1.5s infinite;
+        border-radius: 4px;
+        height: 40px;
+        margin-bottom: 0.5rem;
+    }
+
+    @@keyframes shimmerAnim {
+        0% {
+            background-position: -200% 0;
+        }
+
+        100% {
+            background-position: 200% 0;
+        }
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .fa-spin {
+        animation: spin 1s linear infinite;
+    }
+</style>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="panel" id="panel-itens">
+            <!-- Header Padrão FrotiX -->
+            <div class="ftx-card-header">
+                <h2 class="titulo-paginas">
+                    <i class="fa-duotone fa-sitemap"></i>
+                    Itens dos Contratos e Atas
+                </h2>
+            </div>
+
+            <div class="panel-container show">
+                <div class="panel-content p-3">
+
+                    <!-- Switch Contrato/Ata - Segmented Control -->
+                    <div class="segmented-control">
+                        <button type="button" class="seg-btn active" id="btnSwitchContrato"
+                            onclick="switchTipo('contrato')">
+                            <i class="fa-duotone fa-file-contract"></i> CONTRATOS
+                        </button>
+                        <button type="button" class="seg-btn" id="btnSwitchAta" onclick="switchTipo('ata')">
+                            <i class="fa-duotone fa-clipboard-list"></i> ATAS DE REGISTRO DE PREÇOS
+                        </button>
+                    </div>
+
+                    <!-- Painel de Seleção -->
+                    <div class="selection-panel">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>Status</label>
+                                <select id="ddlStatus" class="form-control">
+                                    <option value="true" selected>Ativo</option>
+                                    <option value="false">Inativo</option>
+                                </select>
+                            </div>
+                            <div class="col-md-10" id="divContrato">
+                                <label>Selecione o Contrato</label>
+                                <select id="ddlContrato" class="form-control">
+                                    <option value="">-- Selecione um Contrato --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-10" id="divAta" style="display:none;">
+                                <label>Selecione a Ata</label>
+                                <select id="ddlAta" class="form-control">
+                                    <option value="">-- Selecione uma Ata --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shimmer Loading -->
+                    <div class="shimmer-container" id="shimmerContainer">
+                        <div class="shimmer" style="width: 100%; height: 80px;"></div>
+                        <div class="shimmer" style="width: 100%; height: 200px;"></div>
+                    </div>
+
+                    <!-- Resumo do Contrato -->
+                    <div class="resumo-card" id="resumoContrato">
+                        <div class="resumo-header">
+                            <div class="resumo-title">
+                                <i class="fa-duotone fa-file-contract"></i>
+                                <span id="resumoContratoNumero">Contrato</span>
+                            </div>
+                            <span class="resumo-badge locacao" id="resumoContratoBadge">LOCAÇÃO</span>
+                        </div>
+                        <div class="resumo-grid">
+                            <div class="resumo-item">
+                                <span class="label">FORNECEDOR</span>
+                                <span class="value" id="resumoFornecedor">-</span>
+                            </div>
+                            <div class="resumo-item">
+                                <span class="label">OBJETO</span>
+                                <span class="value" id="resumoObjeto">-</span>
+                            </div>
+                            <div class="resumo-item">
+                                <span class="label">VIGÊNCIA</span>
+                                <span class="value" id="resumoVigencia">-</span>
+                            </div>
+                            <div class="resumo-item">
+                                <span class="label">VALOR</span>
+                                <span class="value" id="resumoValor">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resumo da Ata -->
+                    <div class="resumo-card" id="resumoAta">
+                        <div class="resumo-header">
+                            <div class="resumo-title">
+                                <i class="fa-duotone fa-clipboard-list"></i>
+                                <span id="resumoAtaNumero">Ata</span>
+                            </div>
+                            <span class="resumo-badge locacao">ATA</span>
+                        </div>
+                        <div class="resumo-grid">
+                            <div class="resumo-item">
+                                <span class="label">FORNECEDOR</span>
+                                <span class="value" id="resumoAtaFornecedor">-</span>
+                            </div>
+                            <div class="resumo-item">
+                                <span class="label">OBJETO</span>
+                                <span class="value" id="resumoAtaObjeto">-</span>
+                            </div>
+                            <div class="resumo-item">
+                                <span class="label">VIGÊNCIA</span>
+                                <span class="value" id="resumoAtaVigencia">-</span>
+                            </div>
+                            <div class="resumo-item">
+                                <span class="label">VALOR</span>
+                                <span class="value" id="resumoAtaValor">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resumo Serviço (sem TabStrip) -->
+                    <div class="resumo-servico" id="resumoServico">
+                        <i class="fa-duotone fa-tools"></i>
+                        <h5>Contrato de Serviço</h5>
+                        <p>Contratos de serviço não possuem itens vinculados.</p>
+                    </div>
+
+                    <!-- TabStrip -->
+                    <div class="tabstrip-container" id="tabstripContainer">
+                        <ul class="nav nav-tabs nav-tabs-custom" role="tablist">
+                            <li class="nav-item" id="navItemVeiculos" style="display:none;">
+                                <a class="nav-link" id="tabVeiculos" data-bs-toggle="tab" href="#paneVeiculos"
+                                    role="tab">
+                                    <i class="fa-duotone fa-car"></i> Veículos
+                                    <span class="badge" id="badgeVeiculos">0</span>
+                                </a>
+                            </li>
+                            <li class="nav-item" id="navItemEncarregados" style="display:none;">
+                                <a class="nav-link" id="tabEncarregados" data-bs-toggle="tab" href="#paneEncarregados"
+                                    role="tab">
+                                    <i class="fa-duotone fa-user-tie"></i> Encarregados
+                                    <span class="badge" id="badgeEncarregados">0</span>
+                                </a>
+                            </li>
+                            <li class="nav-item" id="navItemOperadores" style="display:none;">
+                                <a class="nav-link" id="tabOperadores" data-bs-toggle="tab" href="#paneOperadores"
+                                    role="tab">
+                                    <i class="fa-duotone fa-user-cog"></i> Operadores
+                                    <span class="badge" id="badgeOperadores">0</span>
+                                </a>
+                            </li>
+                            <li class="nav-item" id="navItemMotoristas" style="display:none;">
+                                <a class="nav-link" id="tabMotoristas" data-bs-toggle="tab" href="#paneMotoristas"
+                                    role="tab">
+                                    <i class="fa-duotone fa-steering-wheel"></i> Motoristas
+                                    <span class="badge" id="badgeMotoristas">0</span>
+                                </a>
+                            </li>
+                            <li class="nav-item" id="navItemLavadores" style="display:none;">
+                                <a class="nav-link" id="tabLavadores" data-bs-toggle="tab" href="#paneLavadores"
+                                    role="tab">
+                                    <i class="fa-duotone fa-soap"></i> Lavadores
+                                    <span class="badge" id="badgeLavadores">0</span>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content tab-content-custom">
+                            <!-- Tab Veículos -->
+                            <div class="tab-pane fade" id="paneVeiculos" role="tabpanel">
+                                <div class="tab-toolbar">
+                                    <div class="info-contratada">
+                                        Quantidade Contratada: <strong id="qtdContratadaVeiculos">0</strong>
+                                        <span id="spanCustoVeiculos"> | Custo Mensal: <strong
+                                                id="custoMensalVeiculos">R$ 0,00</strong></span>
+                                    </div>
+                                    <button type="button" class="btn btn-azul" onclick="abrirModalVeiculo()">
+                                        <i class="fa-duotone fa-circle-plus"></i> Incluir Veículo
+                                    </button>
+                                </div>
+
+                                <!-- Filtro por Item -->
+                                <div class="filtro-item-container">
+                                    <div class="filtro-item-group">
+                                        <label for="ddlFiltroItem"><i class="fa-duotone fa-filter"></i> Filtrar por
+                                            Item:</label>
+                                        <select id="ddlFiltroItem" class="form-control">
+                                            <option value="">-- Todos os Itens --</option>
+                                        </select>
+                                        <button type="button" class="btn-filtrar" onclick="filtrarPorItem()">
+                                            <i class="fa-duotone fa-search"></i> Filtrar
+                                        </button>
+                                        <button type="button" class="btn-limpar-filtro" onclick="limparFiltroItem()"
+                                            title="Limpar Filtro">
+                                            <i class="fa-duotone fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="table-container">
+                                    <table id="tblVeiculos" class="table table-bordered table-striped w-100">
+                                        <thead>
+                                            <tr>
+                                                <th width="220">ITEM</th>
+                                                <th>PLACA</th>
+                                                <th>MARCA/MODELO</th>
+                                                <th width="100">STATUS</th>
+                                                <th width="60">AÇÃO</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                                <!-- Card Contadores Veículos -->
+                                <div class="card-contadores" id="cardContadoresVeiculos">
+                                    <div class="contador ativos">
+                                        <i class="fa-duotone fa-check-circle"></i>
+                                        <span>Veículos Ativos: <strong id="qtdVeiculosAtivos">0</strong></span>
+                                    </div>
+                                    <div class="contador inativos">
+                                        <i class="fa-duotone fa-times-circle"></i>
+                                        <span>Veículos Inativos: <strong id="qtdVeiculosInativos">0</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab Encarregados -->
+                            <div class="tab-pane fade" id="paneEncarregados" role="tabpanel">
+                                <div class="tab-toolbar">
+                                    <div class="info-contratada">
+                                        Quantidade Contratada: <strong id="qtdContratadaEncarregados">0</strong>
+                                        | Custo Mensal: <strong id="custoMensalEncarregados">R$ 0,00</strong>
+                                    </div>
+                                    <button type="button" class="btn btn-azul" onclick="abrirModalEncarregado()">
+                                        <i class="fa-duotone fa-circle-plus"></i> Incluir Encarregado
+                                    </button>
+                                </div>
+                                <div class="table-container">
+                                    <table id="tblEncarregados" class="table table-bordered table-striped w-100">
+                                        <thead>
+                                            <tr>
+                                                <th>NOME</th>
+                                                <th>PONTO</th>
+                                                <th>CELULAR</th>
+                                                <th>STATUS</th>
+                                                <th width="60">AÇÃO</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Tab Operadores -->
+                            <div class="tab-pane fade" id="paneOperadores" role="tabpanel">
+                                <div class="tab-toolbar">
+                                    <div class="info-contratada">
+                                        Quantidade Contratada: <strong id="qtdContratadaOperadores">0</strong>
+                                        | Custo Mensal: <strong id="custoMensalOperadores">R$ 0,00</strong>
+                                    </div>
+                                    <button type="button" class="btn btn-azul" onclick="abrirModalOperador()">
+                                        <i class="fa-duotone fa-circle-plus"></i> Incluir Operador
+                                    </button>
+                                </div>
+                                <div class="table-container">
+                                    <table id="tblOperadores" class="table table-bordered table-striped w-100">
+                                        <thead>
+                                            <tr>
+                                                <th>NOME</th>
+                                                <th>PONTO</th>
+                                                <th>CELULAR</th>
+                                                <th>STATUS</th>
+                                                <th width="60">AÇÃO</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Tab Motoristas -->
+                            <div class="tab-pane fade" id="paneMotoristas" role="tabpanel">
+                                <div class="tab-toolbar">
+                                    <div class="info-contratada">
+                                        Quantidade Contratada: <strong id="qtdContratadaMotoristas">0</strong>
+                                        | Custo Mensal: <strong id="custoMensalMotoristas">R$ 0,00</strong>
+                                    </div>
+                                    <button type="button" class="btn btn-azul" onclick="abrirModalMotorista()">
+                                        <i class="fa-duotone fa-circle-plus"></i> Incluir Motorista
+                                    </button>
+                                </div>
+                                <div class="table-container">
+                                    <table id="tblMotoristas" class="table table-bordered table-striped w-100">
+                                        <thead>
+                                            <tr>
+                                                <th>NOME</th>
+                                                <th>PONTO</th>
+                                                <th>CNH</th>
+                                                <th>CELULAR</th>
+                                                <th>STATUS</th>
+                                                <th width="60">AÇÃO</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Tab Lavadores -->
+                            <div class="tab-pane fade" id="paneLavadores" role="tabpanel">
+                                <div class="tab-toolbar">
+                                    <div class="info-contratada">
+                                        Quantidade Contratada: <strong id="qtdContratadaLavadores">0</strong>
+                                        | Custo Mensal: <strong id="custoMensalLavadores">R$ 0,00</strong>
+                                    </div>
+                                    <button type="button" class="btn btn-azul" onclick="abrirModalLavador()">
+                                        <i class="fa-duotone fa-circle-plus"></i> Incluir Lavador
+                                    </button>
+                                </div>
+                                <div class="table-container">
+                                    <table id="tblLavadores" class="table table-bordered table-striped w-100">
+                                        <thead>
+                                            <tr>
+                                                <th>NOME</th>
+                                                <th>PONTO</th>
+                                                <th>CELULAR</th>
+                                                <th>STATUS</th>
+                                                <th width="60">AÇÃO</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section ScriptsBlock {
+    <script src="~/js/cadastros/itenscontrato.js" asp-append-version="true"></script>
+}

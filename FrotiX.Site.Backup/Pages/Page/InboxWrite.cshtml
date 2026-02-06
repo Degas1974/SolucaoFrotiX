@@ -1,0 +1,84 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Page/InboxWrite.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de composição de novo email com layout especial "composed" (sem sidebar
+ *                   padrão, menu email esquerda, compose area direita) e JavaScript para minify nav.
+ * 📥 ENTRADAS     : @page route /Page/InboxWrite, @model InboxWriteModel (code-behind), layout
+ *                   composed ativado via PreemptiveClass, clique botão toggle menu mobile, input search
+ * 📤 SAÍDAS       : Layout 3 colunas: _Menu (sidebar esquerda inbox folders), compose area central
+ *                   (header "New message" + _ComposeLayout form), _Compose panel (flutuante direita),
+ *                   JavaScript initApp.pushSettings minify + hide shortcut menu, FA Solid/Brands CSS
+ * 🔗 CHAMADA POR  : Link "Compose" no menu inbox, botão novo email, route /Page/InboxWrite,
+ *                   InboxWriteModel.OnGet() (code-behind)
+ * 🔄 CHAMA        : InboxWriteModel (code-behind), Shared/_Menu.cshtml (folders esquerda), Shared/_ComposeLayout.cshtml
+ *                   (form email), Shared/_Compose.cshtml (panel flutuante), initApp.pushSettings()
+ *                   (SmartAdmin - salva layout settings), FA CSS (fa-solid.css, fa-brands.css),
+ *                   data-action="toggle" (menu mobile), filtro search input
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, InboxWriteModel (Pages/Page/InboxWrite.cshtml.cs),
+ *                   Shared/_Menu.cshtml + _ComposeLayout.cshtml + _Compose.cshtml, Font Awesome Solid/Brands
+ *                   (fa-solid.css, fa-brands.css - override default duotone?), SmartAdmin initApp.pushSettings(),
+ *                   Bootstrap 5 (d-flex flex-column flex-grow-1, align-items-center, border-faded),
+ *                   jQuery ($('.shortcut-menu').addClass), Settings.Theme.IconPrefix (fa-ellipsis-v, fa-search)
+ * 📝 OBSERVAÇÕES  : 48 linhas. Layout ESPECIAL "composed" (ViewData PreemptiveClass = "nav-function-minify
+ *                   layout-composed") - difere do layout padrão FrotiX. 3-column: _Menu (email folders
+ *                   esquerda) + área central (header + _ComposeLayout) + _Compose panel (direita flutuante).
+ *                   ViewData config:
+ *                   - PageName: "page_inbox_write"
+ *                   - Heading: "inbox"
+ *                   - PreemptiveClass: "nav-function-minify layout-composed" (força layout no load)
+ *                   @section HeadBlock carrega FA Solid/Brands CSS (override duotone padrão _Layout?).
+ *                   Header com botão mobile toggle menu (data-action="toggle" data-class="slide-on-mobile-left-show"
+ *                   data-bs-target="#js-inbox-menu"), ícone fa-ellipsis-v. Search input "Filter emails"
+ *                   (hidden-lg-down - só desktop, max-width 23rem). _ComposeLayout em flex-grow-1 container
+ *                   position-absolute (ocupa espaço disponível). @section ScriptsBlock: initApp.pushSettings
+ *                   ("nav-function-minify layout-composed", false) força layout sem salvar local,
+ *                   $('.shortcut-menu').addClass('d-none') esconde menu shortcuts flutuante.
+ **************************************************************************************** *@
+@page
+@model InboxWriteModel
+@{
+	ViewData["Title"] = "Inbox Write";
+	ViewData["PageName"] = "page_inbox_write";
+	ViewData["Heading"] = "inbox";
+	ViewData["Category1"] = "Page Views";
+	ViewData["PreemptiveClass"] = "nav-function-minify layout-composed";
+}
+@section HeadBlock {
+<link rel="stylesheet" media="screen, print" href="~/css/fa-solid.css">
+<link rel="stylesheet" media="screen, print" href="~/css/fa-brands.css">
+}
+<div class="d-flex flex-grow-1 p-0">
+	<partial name="_Menu"/>
+	<div class="d-flex flex-column flex-grow-1 bg-white">
+		<div class="flex-grow-0">
+			<div class="d-flex align-items-center pl-2 pr-3 py-3 pl-sm-3 pr-sm-4 py-sm-4 px-lg-5 py-lg-4  border-faded border-top-0 border-left-0 border-right-0 flex-shrink-0">
+				<a href="javascript:void(0);" class="pl-3 pr-3 py-2 d-flex d-lg-none align-items-center justify-content-center mr-2 btn" data-action="toggle" data-class="slide-on-mobile-left-show" data-bs-target="#js-inbox-menu">
+				<i class="@(Settings.Theme.IconPrefix) fa-ellipsis-v h1 mb-0 "></i>
+				</a>
+				<h1 class="subheader-title"> 
+					New message
+				</h1>
+				<div class="d-flex position-relative ml-auto hidden-lg-down" style="max-width: 23rem;">
+					<i class="fa-duotone fa-search position-absolute pos-left fs-lg px-3 py-2 mt-1"></i>
+					<input type="text" class="form-control bg-subtlelight pl-6" placeholder="Filter emails">
+				</div>
+			</div>
+		</div>
+		<div class="flex-wrap align-items-center flex-grow-1 position-relative bg-white mx-lg-3">
+			<div class=" position-absolute pos-top pos-bottom w-100">
+				<div class="d-flex h-100 flex-column">
+					<partial name="_ComposeLayout"/>
+				</div>
+			</div>
+		</div>
+	</div>
+	<partial name="_Compose"/>
+</div>
+@section ScriptsBlock {
+<script type="text/javascript">
+	// push settings with "false" save to local
+	initApp.pushSettings("nav-function-minify layout-composed", false);
+	$('.shortcut-menu').addClass('d-none');
+</script>
+}
+

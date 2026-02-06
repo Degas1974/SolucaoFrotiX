@@ -1,0 +1,56 @@
+﻿@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Manutencao/PBILavagem.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de dashboard Power BI embedded para "Controle de Lavagem Veicular".
+ *                   Exibe relatório interativo do Power BI em iframe com 900px altura.
+ * 📥 ENTRADAS     : @page route /Manutencao/PBILavagem, @model FrotiX.Pages.Viagens.TaxiLegModel
+ *                   (MODEL ERRADO! deve ser ManutencaoModel ou PBILavagemModel), ViewData configuration,
+ *                   Power BI embed URL (https://app.powerbi.com/view?r=eyJrIjoiOWE0ODBhODItMTJkOC00ZDRkLWE2MzEtZjY1MDI3YWNmMDBhIiwidCI6IjU2MjFkNjRmLTRjZjgtNDdmNS1iMzc5LTJiMmFiNzljMWM1ZiJ9)
+ * 📤 SAÍDAS       : <iframe> 100% width, 900px height, frameborder="0", allowFullScreen, title
+ *                   "Controle de Lavagem Veicular", panel-content wrapper (#divPainel)
+ * 🔗 CHAMADA POR  : Link no menu "Gráficos > Lavagens", route /Manutencao/PBILavagem, sidebar navigation
+ * 🔄 CHAMA        : TaxiLegModel.OnGet() (code-behind - MODEL INCORRETO!), Power BI embed URL,
+ *                   @Html.AntiForgeryToken() (CSRF protection), Syncfusion.EJ2 TagHelpers (importado
+ *                   mas NÃO usado), ViewData breadcrumb/heading rendering, CSS classes (panel,
+ *                   panel-container show, panel-content)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, TaxiLegModel (MODEL ERRADO - deve ser PBILavagemModel),
+ *                   Power BI embedded (app.powerbi.com), @Html.AntiForgeryToken, Syncfusion.EJ2
+ *                   (importado mas não usado), CSS classes panel/panel-container (do tema)
+ * 📝 OBSERVAÇÕES  : 27 linhas. **BUG MODEL**: usa TaxiLegModel em vez de modelo específico (copiar/paste
+ *                   error). @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers duplicado (já em
+ *                   _ViewImports). Syncfusion.EJ2 importado mas NÃO há componentes EJ2 na página.
+ *                   ViewData config:
+ *                   - Title: "Lavagens"
+ *                   - PageName: "manutencao_pbilavagem"
+ *                   - Heading: "<i class='fa-duotone fa-car-wash'></i> Gráficos: <span class='fw-300'>Lavagens</span>"
+ *                   - PageIcon: "fa-duotone fa-car-wash"
+ *                   Power BI embed URL com token read-only (view?r=...). Iframe allow fullscreen.
+ *                   Altura fixa 900px pode causar scroll em mobiles (não responsívo).
+ **************************************************************************************** *@
+@page
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Syncfusion.EJ2
+@model FrotiX.Pages.Viagens.TaxiLegModel
+@Html.AntiForgeryToken()
+
+@{
+    ViewData["Title"] = "Lavagens";
+    ViewData["PageName"] = "manutencao_pbilavagem";
+    ViewData["Heading"] = "<i class='fa-duotone fa-car-wash'></i> Gráficos: <span class='fw-300'>Lavagens</span>";
+    ViewData["Category1"] = "Gráficos";
+    ViewData["PageIcon"] = "fa-duotone fa-car-wash";
+}
+
+<div class="row">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-container show">
+                <div id="divPainel" class="panel-content">
+
+                    <iframe title="Controle de Lavagem Veicular" width="100%" height="900" src="https://app.powerbi.com/view?r=eyJrIjoiOWE0ODBhODItMTJkOC00ZDRkLWE2MzEtZjY1MDI3YWNmMDBhIiwidCI6IjU2MjFkNjRmLTRjZjgtNDdmNS1iMzc5LTJiMmFiNzljMWM1ZiJ9" frameborder="0" allowFullScreen="true"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+

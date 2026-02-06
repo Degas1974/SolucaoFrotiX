@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Documentação - Viagens - Upsert</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 24mm 20mm;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #1f2937;
+            line-height: 1.5;
+            font-size: 12px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #8b5e3c;
+            margin: 0 0 8px 0;
+        }
+
+        h1 {
+            font-size: 20px;
+        }
+
+        h2 {
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        h3 {
+            font-size: 13px;
+            margin-top: 14px;
+        }
+
+        .meta {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+
+        .section {
+            margin-top: 16px;
+        }
+
+        .log-entry {
+            border-left: 4px solid #c4956a;
+            padding-left: 10px;
+            margin-bottom: 12px;
+        }
+
+        ul {
+            margin: 6px 0 0 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Documentação: Viagens - Upsert (Criação e Edição)</h1>
+    <div class="meta">
+        <strong>Última Atualização:</strong> 22/01/2026 16:50<br />
+        <strong>Versão:</strong> 1.6
+    </div>
+
+    <div class="section">
+        <h2>Visão Geral</h2>
+        <p>Formulário de criação/edição de viagens com validações cruzadas, cálculo de duração, integração com ficha de
+            vistoria e tratamento de rubricas.</p>
+    </div>
+
+    <div class="section">
+        <h2>Arquivos Principais</h2>
+        <ul>
+            <li><strong>Page:</strong> Pages/Viagens/Upsert.cshtml</li>
+            <li><strong>Scripts:</strong> wwwroot/js/cadastros/ViagemUpsert.js</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Log de Modificações</h2>
+
+        <div class="log-entry">
+            <h3>22/01/2026 16:50 - Ajustes de formatação</h3>
+            <ul>
+                <li>Ajustes de títulos e blocos de código no Markdown.</li>
+                <li>Remoção de seção duplicada com texto corrompido.</li>
+            </ul>
+        </div>
+
+        <div class="log-entry">
+            <h3>22/01/2026 14:00 - Fix de rubrica inicial na view</h3>
+            <ul>
+                <li>Ajustada a referência para usar a propriedade <strong>Rubrica</strong> do modelo Viagem.</li>
+                <li>Elimina o erro CS1061 e mantém a detecção de viagem mobile.</li>
+            </ul>
+        </div>
+
+        <div class="log-entry">
+            <h3>16/01/2026 18:15 - Migração para comparador compartilhado</h3>
+            <ul>
+                <li>Removida classe local <em>NaturalStringComparer</em> e adotado helper compartilhado.</li>
+            </ul>
+        </div>
+
+        <div class="log-entry">
+            <h3>16/01/2026 - Ordenação alfabética pt-BR</h3>
+            <ul>
+                <li>Ordenação de requisitantes ajustada para cultura pt-BR, ignorando acentos.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>

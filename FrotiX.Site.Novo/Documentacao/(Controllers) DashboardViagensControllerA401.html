@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>DashboardViagensController | FrotiX</title>
+  <style>
+    :root { --vinho:#722F37; --vinho-light:#8B3A44; --azul:#325d88; --azul-light:#3d6f9e; --terracota:#A97B6E; --terracota-light:#C08B7E; --verde:#557570; --verde-light:#6A8A85; --cinza:#f5f7fb; --card:#fff; --texto:#1f1f1f; --shadow:0 20px 45px -18px rgba(0,0,0,.35); --radius:14px; --header-bg:#b66a3d; --code-bg:#33465c; }
+    @page { size: A4; margin: 16mm; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:"Segoe UI","Inter",system-ui,-apple-system,sans-serif; background: radial-gradient(circle at 12% 20%, rgba(50,93,136,.08), transparent 26%), radial-gradient(circle at 90% 10%, rgba(114,47,55,.10), transparent 30%), var(--cinza); color:var(--texto); padding:22px; display:flex; justify-content:center; }
+    .page { width:210mm; max-width:100%; }
+    .hero { background:var(--header-bg); color:#fff; padding:22px 24px; border-radius:var(--radius); box-shadow:0 0 0 1px #000, 0 0 0 4px #fff, var(--shadow); display:flex; align-items:center; gap:16px; }
+     .hero .icon { width:50px; height:50px; filter:drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+    h1 { margin:0; font-size:26px; letter-spacing:0.2px; }
+    .subtitle { margin:6px 0 0; font-size:13px; opacity:0.92; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; margin-top:18px; }
+    .card { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px 18px; border:1px solid rgba(0,0,0,0.05); }
+    .section-title { display:flex; align-items:center; gap:10px; margin:0 0 10px; font-size:15px; font-weight:800; color:var(--vinho); }
+    .icon { width:18px; height:18px; vertical-align:middle; filter:drop-shadow(0 2px 4px rgba(0,0,0,.15)); }
+    ul { margin:6px 0 0 18px; padding:0; } li { margin-bottom:6px; }
+    code { background:var(--code-bg); color:#e9edf5; padding:10px 12px; border-radius:10px; display:block; white-space:pre-wrap; font-size:12px; line-height:1.45; box-shadow: inset 0 1px 0 rgba(255,255,255,0.03); }
+  </style>
+</head>
+
+  
+  <body>
+  <svg style="display:none" aria-hidden="true" focusable="false">
+  
+</svg>
+  <div class="page">
+    <header class="hero">
+      <svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-plane-departure"></use></svg>
+      <div>
+        <h1>DashboardViagensController</h1>
+        <p class="subtitle">KPIs, séries e PDFs de viagens com filtros de outliers · Última atualização: 08/01/2026 · Versão: 2.0</p>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-info"></use></svg>Visão geral</div>
+        <p>Entrega estatísticas gerais (totais, custos, km), séries por período, comparativos (período atual vs anterior) e filtros de outliers (ex.: KM > 2000). Possui partial para exportação PDF.</p>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-route"></use></svg>Endpoints</div>
+        <ul>
+          <li><strong>GET /api/DashboardViagens/ObterEstatisticasGerais</strong> — KPIs gerais; filtros <code>dataInicio</code>/<code>dataFim</code> (default 30 dias).</li>
+          <li><strong>GET /api/DashboardViagens/ObterSeries</strong> — séries temporais (km, custos, viagens).</li>
+          <li><strong>GET /api/DashboardViagens/ExportacaoPDF</strong> (partial) — exporta relatório em PDF.</li>
+        </ul>
+        <p style="font-size:12px;color:#555;">Aplica filtro de outliers (Km > 2000; KmFinal < KmInicial).</p>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-code"></use></svg>Snippet (conceito)</div>
+        <code>
+// Filtra outliers e compara período<br>
+var viagens = _context.Viagem.AsNoTracking()<br>
+  .Where(v => v.Data >= dataInicio && v.Data <= dataFim)<br>
+  .Where(v => v.KmFinal >= v.KmInicial && (v.KmFinal - v.KmInicial) <= 2000);<br>
+var totalKm = await viagens.SumAsync(v => v.KmFinal - v.KmInicial);<br>
+// Comparar com período anterior<br>
+var comparativo = await CalcularComparativo(dataInicio, dataFim);<br>
+return Ok(new { totalKm, comparativo });
+        </code>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-link"></use></svg>Interconexões</div>
+        <ul>
+          <li>Pages: dashboards de viagens (gráficos/heatmaps).</li>
+          <li>Repos/DB: <code>_context.Viagem</code>; custos via pipeline <code>sp_CalculaCustosViagem</code>/<code>sp_RecalcularCustosTodasViagens</code>.</li>
+          <li>Jobs: <code>sp_JobAtualizacaoViagens</code> orquestra recalculo diário.</li>
+          <li>Exports: partial <code>DashboardViagensController_ExportacaoPDF.cs</code>.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-list-check"></use></svg>Log</div>
+        <ul><li><strong>08/01/2026</strong> — Documentação inicial completa. Versão 2.0.</li></ul>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+
+
+

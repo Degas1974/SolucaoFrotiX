@@ -1,0 +1,52 @@
+﻿@*
+╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ 📌 ARQUIVO: _Layout.cshtml                                                                           ║
+║ 📂 CAMINHO: /Areas/Identity/Pages                                                                   ║
+╠════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║ 🧭 OBJETIVO: Layout principal das páginas da área Identity (SmartAdmin).                            ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+*@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    @* [DOC] Partial _Head contém meta tags, CSS e configurações do <head> *@
+    <partial name="_Head" />
+    @* [DOC] Seção opcional para scripts/estilos adicionais no cabeçalho *@
+    @RenderSection("Header", required: false)
+</head>
+<body>
+    @* [DOC] Banner de consentimento de cookies (LGPD/GDPR) *@
+    <partial name="_CookieConsentPartial" />
+    <!-- BEGIN Page Wrapper -->
+    <div class="page-wrapper">
+        <div class="page-inner bg-brand-gradient">
+            <div class="page-content-wrapper bg-transparent m-0">
+                @* [DOC] Cabeçalho da página (logo, menu, etc.) *@
+                <partial name="_PageHeader" />
+                @* [DOC] Container principal com background SVG pattern fixo *@
+                <div class="flex-1" style="background: url('/img/svg/pattern-1.svg') no-repeat center bottom fixed; background-size: cover;">
+                    <div class="container py-4 my-lg-5 px-4 px-sm-0">
+                        <div class="row">
+                            @* [DOC] Seção opcional para título/breadcrumb da página *@
+                            @RenderSection("PageHeading", required: false)
+                            @* [DOC] Conteúdo principal da página renderizado aqui *@
+                            @RenderBody()
+                        </div>
+                    </div>
+                    @* [DOC] Rodapé da página (copyright, links, etc.) *@
+                    <partial name="_PageFooter" />
+                    @* [DOC] Referência de perfis de cor (tema claro/escuro) *@
+                    <partial name="_ColorProfileReference" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Page Wrapper -->
+    @* [DOC] Script de rastreamento Google Analytics *@
+    <partial name="_GoogleAnalytics" />
+    @* [DOC] Scripts base (jQuery, Bootstrap, plugins essenciais) *@
+    <partial name="_ScriptsBasePlugins" />
+    @* [DOC] Seção opcional para scripts específicos da página *@
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

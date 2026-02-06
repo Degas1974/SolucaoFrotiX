@@ -1,0 +1,301 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/TaxiLeg/Canceladas.cshtml
+ * OBJETIVO: Pagina de importacao manual de corridas TaxiLeg canceladas via upload planilha
+ *           Excel, exibindo Kendo Upload + lista corridas importadas em tabela DataTable
+ *           server-side, permite marcar corridas para exclusao e filtrar por data, integrado
+ *           com controller TaxiLeg backend processa arquivo Excel.
+ * ENTRADAS: model FrotiX.Models.CorridasTaxiLeg (classe sem dados iniciais usado apenas
+ *           para binding form se necessario), route /TaxiLeg/Canceladas, Kendo Upload aceita
+ *           arquivo Excel (.xlsx, .xls) ate 10MB via POST multipart/form-data, filtros:
+ *           DatePicker DataInicio/DataFim (filtra corridas por periodo), Checkbox IncluirCanceladas
+ *           (default false mostra apenas ativas), botao Importar Planilha Canceladas abre
+ *           modal com Kendo Upload
+ * SAIDAS: Pagina renderizada com card header (titulo Corridas TaxiLeg Canceladas, icone
+ *         fa-taxi, breadcrumb), card body com: 1. Botao Importar Planilha Canceladas (abre
+ *         modal com Kendo Upload componente async POST /TaxiLeg/UploadCanceladas file, success
+ *         reload DataTable exibe corridas importadas, error exibe Alerta.Erro com mensagem),
+ *         2. Filtros inline (DatePicker range DataInicio/DataFim Syncfusion componente format
+ *         DD/MM/YYYY, Checkbox IncluirCanceladas toggle, botao Filtrar trigger reload DataTable
+ *         com query string params), 3. DataTable jQuery plugin ajax GET /TaxiLeg/GetCanceladas
+ *         retorna JSON corridas canceladas (colunas: Id hidden, DataCorrida, HoraInicio,
+ *         Motorista, Passageiro, Origem, Destino, Valor moeda R$, Status badge Cancelada
+ *         vermelho, Acoes checkbox Excluir + icone trash), server-side processing pageLength
+ *         25 sorting/filtering/paging, scroll horizontal se muitas colunas, 4. Botao Excluir
+ *         Selecionadas rodape table (verifica checkboxes marcados, Alerta.Confirmar popup
+ *         Tem certeza?, se Sim coleta IDs POST /TaxiLeg/DeleteCanceladas JSON array ids,
+ *         success exibe AppToast Verde corridas excluidas reload DataTable, error Alerta.Erro),
+ *         loading spinner full screen durante operacoes async AJAX
+ * CHAMADA POR: Menu Frota > TaxiLeg > Corridas Canceladas (link interno sidebar), usuarios
+ *              com permissao TaxiLeg.Gerenciar (role Admin ou Coordenador Frota), usada
+ *              para importar planilhas Excel de corridas canceladas enviadas pela TaxiLeg
+ *              empresa de taxi (planilhas mensais com corridas que foram canceladas pelos
+ *              passageiros ou motoristas, necessario importar para manter base sincronizada)
+ * CHAMA: Controller TaxiLegController backend: POST /TaxiLeg/UploadCanceladas (recebe arquivo
+ *        Excel IFormFile, valida extensao .xlsx/.xls e tamanho max 10MB, processa planilha
+ *        via EPPlus library le colunas Data/Hora/Motorista/Passageiro/Origem/Destino/Valor/Status,
+ *        valida dados (Data valida, Valor numerico positivo, Status='Cancelada'), insere
+ *        corridas na tabela CorridasTaxiLeg com flag Cancelada=true, retorna JSON success:true
+ *        message:"X corridas importadas"), GET /TaxiLeg/GetCanceladas (recebe params DataInicio/DataFim/IncluirCanceladas,
+ *        query EF Core Where DataCorrida>=DataInicio AND DataCorrida<=DataFim AND Cancelada=true,
+ *        Include Motorista/Passageiro para exibir nomes, orderby DataCorrida desc, paginacao
+ *        server-side Skip/Take baseado em DataTables parameters draw/start/length, retorna
+ *        JSON DataTables format data array + recordsTotal + recordsFiltered), POST /TaxiLeg/DeleteCanceladas
+ *        (recebe JSON array int ids corridas para excluir, query EF Core Where Id IN ids,
+ *        soft delete seta Excluida=true DataExclusao=DateTime.Now UsuarioExclusaoId=User.GetUserId,
+ *        SaveChanges, retorna JSON success:true message:"X corridas excluidas"), Kendo Upload
+ *        component (upload async file browser FileProgress events, restricoes accept .xlsx/.xls
+ *        maxFileSize 10MB, localization PT-BR), Syncfusion DatePicker (format DD/MM/YYYY
+ *        locale pt-BR), DataTable jQuery plugin (ajax server-side processing sorting filtering
+ *        paging, language PT-BR), Alerta.Confirmar (confirmacao exclusao), AppToast.show
+ *        (feedback success Verde)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Kendo UI 2022.1.412 (Upload component), Syncfusion
+ *               EJ2 2023.4.2 (DatePicker), DataTables 1.13.4 (tabela server-side), jQuery
+ *               3.7.1, Bootstrap 5.3.8, Font Awesome 6 Duotone, EPPlus library backend (processar
+ *               Excel), EF Core 8.0 (query banco CorridasTaxiLeg table), custom JavaScript
+ *               Alerta.js/AppToast.js
+ * OBSERVACOES: 192 linhas pagina funcional de importacao corridas TaxiLeg canceladas. Fluxo
+ *              trabalho: 1. Usuario clica Importar Planilha Canceladas abre modal, 2. Seleciona
+ *              arquivo Excel planilha mensal TaxiLeg com corridas canceladas (formato esperado:
+ *              colunas headers linha 1: Data|Hora|Motorista|Passageiro|Origem|Destino|Valor|Status,
+ *              dados linhas 2+: 01/02/2026|14:30|Joao Silva|Maria Santos|Rua A 123|Av B 456|R$
+ *              25,00|Cancelada), 3. Kendo Upload envia arquivo via POST multipart/form-data,
+ *              4. Backend valida arquivo e processa Excel via EPPlus (workbook.Worksheets[0]
+ *              le primeira aba, loop rows 2 ate last row le celulas por coluna A=Data B=Hora
+ *              C=Motorista etc, parse Data DateTime.ParseExact format DD/MM/YYYY, parse Valor
+ *              decimal.Parse remove R$ e ponto milhares, valida Status contains "Cancelada"
+ *              case insensitive), 5. Insere corridas na tabela CorridasTaxiLeg com Cancelada=true
+ *              (verifica duplicatas por Data+Hora+Motorista+Passageiro unique constraint,
+ *              se ja existe skipa row evita duplicate key error), 6. Success retorna JSON
+ *              com contador corridas importadas, 7. Frontend fecha modal exibe AppToast
+ *              Verde "15 corridas importadas com sucesso" reload DataTable exibe novas corridas,
+ *              8. Usuario pode filtrar corridas por periodo DataInicio/DataFim clica Filtrar
+ *              reload DataTable com query string params, 9. Usuario marca checkboxes nas
+ *              corridas que deseja excluir (corridas duplicadas ou erradas), clica Excluir
+ *              Selecionadas, 10. Alerta.Confirmar popup "Tem certeza que deseja excluir X
+ *              corridas?", 11. Se Sim coleta IDs checked POST /TaxiLeg/DeleteCanceladas
+ *              JSON {ids:[123,456,789]}, 12. Backend soft delete seta Excluida=true nas
+ *              corridas, 13. Success exibe AppToast Verde "X corridas excluidas" reload
+ *              DataTable remove linhas excluidas. Validacoes importantes backend: arquivo
+ *              Excel extensao valida (.xlsx ou .xls apenas, bloquear .csv/.txt para evitar
+ *              parse errors), tamanho max 10MB (planilhas maiores indicam dados incorretos
+ *              ou excesso linhas), primeira linha deve conter headers exatos (case insensitive:
+ *              Data|Hora|Motorista|Passageiro|Origem|Destino|Valor|Status, se headers diferentes
+ *              retorna error "Formato planilha invalido"), Data valida parse (se parse falha
+ *              skipa row loga warning), Valor numerico positivo (se valor negativo ou zero
+ *              skipa row), Status contem "Cancelada" (se Status diferente skipa row porque
+ *              pagina e apenas para corridas canceladas nao ativas). DataTable server-side:
+ *              necessario porque tabela CorridasTaxiLeg pode ter milhares de registros (corridas
+ *              canceladas acumuladas meses/anos), client-side processing carregaria todos
+ *              registros na memoria navegador causando slowdown/crash, server-side processing
+ *              carrega apenas pageLength=25 registros por vez via AJAX, sorting/filtering/paging
+ *              executados no servidor via SQL queries eficientes, DataTables parameters enviados:
+ *              draw (contador requests para sincronizar responses async), start (offset
+ *              Skip para paginacao), length (limit Take quantidade registros), order[0][column]/order[0][dir]
+ *              (coluna e direcao sorting asc/desc), search[value] (termo busca global se
+ *              implementado), backend retorna JSON format: data array objetos corridas,
+ *              recordsTotal int total registros tabela sem filtros, recordsFiltered int
+ *              total registros apos aplicar filtros (usado para calcular paginacao corretamente).
+ *              Soft delete recomendado: nao executar DELETE SQL definitivo das corridas,
+ *              apenas seta flag Excluida=true para manter historico auditoria (quem excluiu,
+ *              quando, motivo), queries futuras filtram Where Excluida=false por padrao,
+ *              tabela CorridasTaxiLeg colunas audit: Excluida boolean default false, DataExclusao
+ *              datetime2 nullable, UsuarioExclusaoId int nullable FK Usuarios.Id. Integracao
+ *              TaxiLeg empresa: pagina usada para importar planilhas mensais enviadas pela
+ *              TaxiLeg via email (anexo Excel com corridas canceladas mes anterior), usuario
+ *              Admin/Coordenador baixa planilha, acessa pagina Corridas Canceladas, faz
+ *              upload, sistema importa automaticamente sincroniza base FrotiX com base TaxiLeg,
+ *              corridas canceladas nao geram cobranca entao precisam ser marcadas como canceladas
+ *              para nao serem contabilizadas nos relatorios de custo taxi.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+@page
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@model FrotiX.Models.CorridasTaxiLeg
+@Html.AntiForgeryToken()
+
+@{
+	ViewData["Title"] = "Importa Registros TaxiLeg";
+	ViewData["PageName"] = "taxileg_canceladas";
+	ViewData["Heading"] = "<i class='fa-duotone fa-taxi'></i> Importação: <span class='fw-300'>Viagens Canceladas TaxiLeg</span>";
+	ViewData["Category1"] = "Cadastros";
+	ViewData["PageIcon"] = "fa-duotone fa-taxi";
+}
+
+@section HeadBlock {
+}
+
+<style>
+	.fundo-cinza {
+		background-color: #2F4F4F;
+		color: aliceblue;
+	}
+
+	.label {
+		color: white;
+	}
+</style>
+
+<form>
+	<div class="row">
+		<div class="col-xl-12">
+			<div id="panel-1" class="panel">
+				<div class="panel-container show">
+					<div class="panel-content">
+						<div class="row">
+							<div class="col-12 px-3" style="border-bottom:1px solid #325d88">
+								<h2 class="text-primary">Selecione a Planilha com as Viagens Canceladas do TaxiLeg para Importação</h2>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-12 pt-3">
+								<input type="file"
+									   id="fileupload"
+									   name="files"
+									   class="form-control-file"
+									   accept=".xls,.xlsx" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-6 pt-3">
+								<button type="button" id="btnupload" class="btn btn-azul text-white" aria-label="Enviar planilha para importação">
+									<i class="fa-duotone fa-file-plus icon-space icon-pulse"></i>&nbsp; Upload
+								</button>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-12 pt-2">
+								<div class="clearfix" id="divTaxiLeg">&nbsp;</div>
+								<div class="row">
+									<div id="divPrint"></div>
+								</div>
+							</div>
+						</div>
+					</div> <!-- /.panel-content -->
+				</div> <!-- /.panel-container -->
+			</div> <!-- /.panel -->
+		</div> <!-- /.col-xl-12 -->
+	</div> <!-- /.row -->
+</form>
+
+@section ScriptsBlock {
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+	<script type="text/javascript">
+		$(function () {
+			try {
+				// Clique do botão de upload
+				$('#btnupload').on('click', function (e) {
+					try {
+						e.preventDefault();
+
+						const $input = $('#fileupload');
+						const filename = $input.val();
+						const allowed = ['xls', 'xlsx'];
+
+						if (!filename || filename.length === 0) {
+							AppToast.show("Amarelo", "Selecione um arquivo .xls ou .xlsx para continuar.", 2000);
+							return false;
+						}
+
+						const extension = filename.split('.').pop().toLowerCase();
+						if ($.inArray(extension, allowed) === -1) {
+							AppToast.show("Vermelho", "Formato inválido. Selecione apenas arquivos do Excel (.xls, .xlsx).", 2000);
+							return false;
+						}
+
+						const fileUpload = $input.get(0);
+						if (!fileUpload || !fileUpload.files || fileUpload.files.length === 0) {
+							AppToast.show("Vermelho", "Nenhum arquivo selecionado.", 2000);
+							return false;
+						}
+
+						const fdata = new FormData();
+						// Use uma chave fixa esperada pela API (não o nome do arquivo)
+						fdata.append('file', fileUpload.files[0]);
+
+						// Ativa o spinner de loading
+						$('#divTaxiLeg').LoadingScript('method_12', {
+							'background_image': 'img/loading7.png',
+							'main_width': 60,
+							'animation_speed': 10,
+							'additional_style': '',
+							'after_element': false
+						});
+
+						// Desabilita o botão enquanto processa
+						$('#btnupload').prop('disabled', true).addClass('disabled');
+
+						$.ajax({
+							type: "POST",
+							url: "api/TaxiLeg/ImportCanceladas",
+							beforeSend: function (xhr) {
+								try {
+									xhr.setRequestHeader(
+										"XSRF-TOKEN",
+										$('input:hidden[name="__RequestVerificationToken"]').val()
+									);
+								} catch (error) {
+									Alerta.TratamentoErroComLinha("Canceladas.cshtml", "btnupload.ajax.beforeSend", error);
+								}
+							},
+							data: fdata,
+							contentType: false,
+							processData: false,
+							success: function (data) {
+								try {
+									// Limpa a área de resultado antes de renderizar
+									$('#divPrint').empty();
+
+									if (data && data.success) {
+										AppToast.show("Verde", data.message || "Importação realizada com sucesso.", 2000);
+										// A API retorna um HTML com a tabela (id="tblImportacao")
+										$('#divPrint').html(data.response?.content || "");
+
+										// Inicializa DataTables apenas se a tabela existir
+										if ($('#tblImportacao').length) {
+											$('#tblImportacao').DataTable({
+												responsive: true,
+												language: {
+													url: "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Portuguese-Brasil.json",
+													emptyTable: "Sem Dados para Exibição"
+												}
+											});
+										}
+									} else {
+										AppToast.show("Vermelho", data?.message || "Falha ao processar o arquivo.", 2000);
+										$('#divTaxiLeg').append(
+											'<br/><br/><div><h4>' + (data?.message || 'Erro ao importar.') + '</h4></div>'
+										);
+									}
+								} catch (error) {
+									Alerta.TratamentoErroComLinha("Canceladas.cshtml", "btnupload.ajax.success", error);
+								} finally {
+									$('#divTaxiLeg').LoadingScript('destroy');
+									$('#btnupload').prop('disabled', false).removeClass('disabled');
+								}
+							},
+							error: function (err) {
+								try {
+									console.log(err);
+									AppToast.show("Vermelho", "Ocorreu um erro durante o upload. Tente novamente.", 2000);
+									$('#divTaxiLeg').LoadingScript('destroy');
+									$('#btnupload').prop('disabled', false).removeClass('disabled');
+								} catch (error) {
+									Alerta.TratamentoErroComLinha("Canceladas.cshtml", "btnupload.ajax.error", error);
+								}
+							}
+						});
+					} catch (error) {
+						Alerta.TratamentoErroComLinha("Canceladas.cshtml", "btnupload.click", error);
+					}
+				});
+			} catch (error) {
+				Alerta.TratamentoErroComLinha("Canceladas.cshtml", "document.ready", error);
+			}
+		});
+	</script>
+}

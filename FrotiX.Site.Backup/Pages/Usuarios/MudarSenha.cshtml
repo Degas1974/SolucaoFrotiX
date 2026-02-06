@@ -1,0 +1,259 @@
+@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@model FrotiX.Pages.Usuarios.MudarSenhaModel
+
+@{
+    ViewData["Title"] = "Mudar Senha";
+    ViewData["PageName"] = "Usuarios_MudarSenha";
+    ViewData["Heading"] = "<i class='fa-duotone fa-shield-keyhole'></i> Segurança: <span class='fw-300'>Alterar Senha</span>";
+    ViewData["Category1"] = "Segurança";
+    ViewData["PageIcon"] = "fa-duotone fa-shield-keyhole";
+}
+
+<style>
+    .btn-ftx-eye-orange {
+        background-color: #ff6b35 !important;
+        color: white !important;
+        border: 2px solid #ff6b35 !important;
+        border-left: none !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-ftx-eye-orange:hover {
+        background-color: #e55a2b !important;
+        border-color: #e55a2b !important;
+        color: white !important;
+        transform: scale(1.05);
+    }
+
+    .ftx-password-input {
+        border: 2px solid #dee2e6 !important;
+        border-right: none !important;
+        height: 45px;
+        font-size: 1.1rem;
+    }
+
+    .ftx-password-input:focus {
+        border-color: #ff6b35 !important;
+        box-shadow: none !important;
+    }
+
+    .ftx-user-info-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 1.25rem;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
+        transition: transform 0.3s ease;
+    }
+
+    .ftx-user-info-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .ftx-user-avatar-container {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 3px solid #ff6b35;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2);
+    }
+
+    .ftx-user-avatar-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .ftx-user-avatar-container i {
+        font-size: 2rem;
+        color: #adb5bd;
+    }
+
+    .label-frotix {
+        color: #6c757d;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .titulo-paginas {
+        font-family: 'Outfit', sans-serif;
+        color: #333;
+    }
+</style>
+
+<div class="row mb-4 align-items-center">
+    <div class="col-12 d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+            <div class="me-3 d-flex align-items-center justify-content-center"
+                style="width: 65px; height: 65px; background: #fff1ec; border-radius: 16px; border: 1px solid #ff6b35; box-shadow: 0 4px 10px rgba(255, 107, 53, 0.15);">
+                <i class="fa-duotone fa-key-skeleton fa-2x"
+                    style="--fa-primary-color: #ff6b35; --fa-secondary-color: #6c757d;"></i>
+            </div>
+            <div>
+                <h1 class="h3 mb-0 fw-bold titulo-paginas">Mudança de Senha</h1>
+                <p class="text-muted small mb-0">Gerencie a segurança da sua conta FrotiX</p>
+            </div>
+        </div>
+        <div>
+            <a href="/Usuarios/Index" class="btn btn-header-orange">
+                <i class="fa-duotone fa-rotate-left icon-space icon-rotate-left"></i>
+                Voltar para a Lista
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8 col-12">
+        <div class="card ftx-card-styled shadow-lg border-0" style="border-radius: 16px; overflow: hidden;">
+            <div class="card-body p-4 p-lg-5">
+
+                <div class="label-frotix mb-3">Usuário Logado</div>
+                <div class="ftx-user-info-card d-flex align-items-center">
+                    <div class="ftx-user-avatar-container me-3">
+                        @if (!string.IsNullOrEmpty(Model.FotoBase64))
+                        {
+                            <img src="@Model.FotoBase64" alt="Foto do Usuário" />
+                        }
+                        else
+                        {
+                            <i class="fa-duotone fa-user-gear"></i>
+                        }
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="label-frotix mb-1" style="font-size: 0.7rem; color: #ff6b35;">Dados do Usuário</div>
+                        <div class="fw-bold text-dark fs-5 mb-0" style="line-height: 1.2;">
+                            (@Model.Ponto) - @Model.NomeCompleto
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.StatusMessage))
+                {
+                    <div class="alert alert-success border-0 shadow-sm mb-4 d-flex align-items-center" role="alert"
+                        style="background-color: #d4edda; color: #155724; border-radius: 10px;">
+                        <i class="fa-duotone fa-circle-check fa-lg me-3"></i>
+                        <div>@Model.StatusMessage</div>
+                    </div>
+                }
+
+                <form method="post" id="formMudarSenha">
+                    <input type="hidden" asp-for="ReturnUrl" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                    <div class="p-3 mb-4"
+                        style="background-color: #f0f7ff; border-radius: 10px; border-left: 4px solid #007bff;">
+                        <p class="text-primary small mb-0">
+                            <i class="fa-duotone fa-circle-info me-2"></i>
+                            A nova senha precisa conter ao menos 8 caracteres e seguir as regras de complexidade padrão.
+                        </p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.SenhaAtual" class="form-label fw-bold text-secondary">Senha Atual</label>
+                        <div class="input-group">
+                            <input asp-for="Input.SenhaAtual" type="password" class="form-control ftx-password-input"
+                                id="senhaAtual" placeholder="Digite sua senha atual" />
+                            <button type="button" class="btn btn-ftx-eye-orange js-toggle-password"
+                                data-target="senhaAtual" aria-label="Mostrar senha atual">
+                                <i class="fa-duotone fa-eye"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Input.SenhaAtual" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.NovaSenha" class="form-label fw-bold text-secondary">Nova Senha</label>
+                        <div class="input-group">
+                            <input asp-for="Input.NovaSenha" type="password" class="form-control ftx-password-input"
+                                id="novaSenha" placeholder="Escolha uma senha forte" />
+                            <button type="button" class="btn btn-ftx-eye-orange js-toggle-password"
+                                data-target="novaSenha" aria-label="Mostrar nova senha">
+                                <i class="fa-duotone fa-eye"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Input.NovaSenha" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Input.ConfirmacaoNovaSenha" class="form-label fw-bold text-secondary">Confirmar
+                            Nova Senha</label>
+                        <div class="input-group">
+                            <input asp-for="Input.ConfirmacaoNovaSenha" type="password"
+                                class="form-control ftx-password-input" id="confirmacaoNovaSenha"
+                                placeholder="Repita a nova senha" />
+                            <button type="button" class="btn btn-ftx-eye-orange js-toggle-password"
+                                data-target="confirmacaoNovaSenha" aria-label="Mostrar confirmação da nova senha">
+                                <i class="fa-duotone fa-eye"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Input.ConfirmacaoNovaSenha" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex flex-column flex-md-row gap-3 mt-4">
+                        <button type="submit" class="btn btn-azul btn-submit-spin flex-fill py-3 fw-bold">
+                            <i class="fa-duotone fa-floppy-disk me-2 icon-pulse"></i>
+                            Confirmar Mudança
+                        </button>
+                        <a class="btn btn-vinho flex-fill py-3 fw-bold d-flex align-items-center justify-content-center"
+                            href="@Model.ReturnUrl">
+                            <i class="fa-duotone fa-ban me-2"></i>
+                            Cancelar Operação
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section ScriptsBlock {
+    <script>
+        document.querySelectorAll(".js-toggle-password").forEach(function (trigger) {
+            trigger.addEventListener("click", function () {
+                var targetId = trigger.getAttribute("data-target");
+                if (!targetId) {
+                    return;
+                }
+
+                var input = document.getElementById(targetId);
+                if (!input) {
+                    return;
+                }
+
+                var icon = trigger.querySelector("i");
+                var isPassword = input.type === "password";
+                input.type = isPassword ? "text" : "password";
+
+                if (icon) {
+                    icon.classList.remove("fa-eye", "fa-eye-slash");
+                    icon.classList.add(isPassword ? "fa-eye-slash" : "fa-eye");
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            $('#formMudarSenha').on('submit', function () {
+                if ($(this).valid()) {
+                    console.log("Formulário válido, processando...");
+                }
+            });
+        });
+    </script>
+}

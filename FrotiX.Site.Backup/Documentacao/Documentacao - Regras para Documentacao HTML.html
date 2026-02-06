@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Documentacao - Regras para Documentacao HTML | FrotiX</title>
+  <style>
+    :root {
+      --vinho: #722F37; --vinho-light: #8B3A44;
+      --azul: #325d88; --azul-light: #3d6f9e;
+      --terracota: #A97B6E; --terracota-light: #C08B7E;
+      --verde: #557570; --verde-light: #6A8A85;
+      --cinza: #f5f7fb; --card: #ffffff; --texto: #1f1f1f;
+      --shadow: 0 20px 45px -18px rgba(0,0,0,.35);
+      --radius: 14px; --header-bg: #b66a3d; --code-bg: #33465c;
+    }
+    @page { size: A4; margin: 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: "Segoe UI","Inter",system-ui,-apple-system,sans-serif;
+      background: radial-gradient(circle at 12% 20%, rgba(50,93,136,.08), transparent 26%), radial-gradient(circle at 90% 10%, rgba(114,47,55,.10), transparent 30%), var(--cinza);
+      color: var(--texto); padding: 22px; display: flex; justify-content: center;
+    }
+    .page { width: 210mm; max-width: 100%; }
+    .hero {
+      background: var(--header-bg); color: #fff; padding: 22px 24px;
+      border-radius: var(--radius); box-shadow: 0 0 0 1px #000, 0 0 0 4px #fff, var(--shadow);
+      display: flex; align-items: center; gap: 16px;
+    }
+    .hero .icon { width: 50px; height: 50px; filter: drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+    h1 { margin: 0; font-size: 26px; letter-spacing: 0.2px; }
+    .subtitle { margin: 6px 0 0; font-size: 13px; opacity: 0.92; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 18px; }
+    .card {
+      background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 16px 18px; border: 1px solid rgba(0,0,0,0.05);
+    }
+    .section-title { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; font-size: 15px; font-weight: 800; color: var(--vinho); }
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; font-weight: 600; background: rgba(169,123,110,.12); color: var(--terracota); margin: 4px 8px 4px 0; font-size: 12px; }
+    code, pre {
+      background: var(--code-bg); color: #e9edf5; padding: 10px 12px;
+      border-radius: 10px; display: block; white-space: pre-wrap; font-size: 12px; line-height: 1.45;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    ul { margin: 6px 0 0 18px; padding: 0; }
+    li { margin-bottom: 6px; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border-radius: 14px; background: rgba(50,93,136,.12); color: var(--azul); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px; }
+    .badge-color { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 12px; font-weight: 700; color: #1f1f1f; background: rgba(0,0,0,.04); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); margin: 4px 0; }
+    .badge-chip { width: 16px; height: 16px; border-radius: 6px; border: 1px solid rgba(0,0,0,.18); box-shadow: inset 0 0 0 1px rgba(255,255,255,.45); }
+    .status { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 12px; font-weight: 700; color: #fff; }
+    .status-ok { background: #22c55e; }
+    .status-warn { background: #d97706; }
+    .status-bad { background: #b91c1c; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <svg class="icon" aria-hidden="true" focusable="false" viewBox="0 0 640 640"><path opacity=".4" fill="currentColor" d="M320 136L320 518C323.6 518 327.3 517.4 330.8 516.1L369.4 502.3C410.9 487.5 454.5 479.9 498.6 479.9L560.1 479.9C586.6 479.9 608.1 458.4 608.1 431.9L608.1 143.9C608.1 117.4 586.6 95.9 560.1 95.9L498.6 95.9C454.6 95.9 410.9 103.5 369.4 118.3L320 136z"/><path fill="currentColor" d="M270.6 118.4L320 136L320 518C316.4 518 312.7 517.4 309.2 516.1L270.6 502.3C229.2 487.6 185.5 480 141.5 480L80 480C53.5 480 32 458.5 32 432L32 144C32 117.5 53.5 96 80 96L141.5 96C185.5 96 229.2 103.6 270.7 118.4zM56 528L141.5 528C188.3 528 234.7 536 278.7 551.8L317.3 565.6C319 566.2 320.9 566.2 322.7 565.6L361.3 551.8C405.3 536.1 451.8 528 498.5 528L584 528C597.3 528 608 538.7 608 552C608 565.3 597.3 576 584 576L498.5 576C457.2 576 416.3 583.1 377.4 597L338.8 610.8C326.6 615.1 313.3 615.1 301.1 610.8L262.6 597C223.7 583.1 182.8 576 141.5 576L56 576C42.7 576 32 565.3 32 552C32 538.7 42.7 528 56 528z"/></svg>
+      <div>
+        <h1>Documentacao - Regras para Documentacao HTML</h1>
+        <p class="subtitle">Guia consolidado a partir de Documentacao em Html.md, Indice Geral e paginas A4 existentes.</p>
+      </div>
+    </header>
+
+    <main class="grid">
+
+      <section class="card">
+        <div class="section-title">Objetivo Geral</div>
+        <ul>
+          <li>Converter todos os arquivos <code>*.md</code> de <code>Documentacao/</code> e subpastas em versoes <code>*.html</code> A4, preservando os originais.</li>
+          <li>Produzir um Manual Tecnico completo e visualmente consistente do FrotiX, com linguagem acessivel e prosa leve.</li>
+          <li>Garantir que cada pagina HTML possa ser impressa ou convertida para PDF sem quebra de layout.</li>
+        </ul>
+        <div class="pill">Qualidade > velocidade</div>
+        <div class="pill">Nunca apagar .md</div>
+        <div class="pill">Atualizar documentacao periodicamente</div>
+      </section>
+
+      <section class="card">
+        <div class="section-title">Local e nomenclatura do HTML</div>
+        <ul>
+          <li>Gerar cada HTML na mesma pasta do <code>.md</code> origem, sem mover para outras pastas.</li>
+          <li>Nome base = nome real do <code>.md</code>; aplicar sufixo <code>A401, A402...</code> apenas quando o mesmo arquivo precisar de multiplas folhas A4. Nao inventar titulos ou pastas (ex.: nao criar "GESTAO" se nao existir).</li>
+          <li>Converter em ordem alfabetica por diretorio e arquivo, preservando todos os <code>.md</code>.</li>
+          <li>Se o <code>.md</code> original estiver fora do padrao, alinhar o HTML ao nome correto do item documentado.</li>
+          <li>Listar no console o nome e o caminho de cada HTML concluido para rastreabilidade.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title">Fase 1 - Pesquisa e Aprendizado</div>
+        <ul>
+          <li>Ler todos os <code>.md</code> em <code>Documentacao/</code> e subpastas.</li>
+          <li>Mapear: estrutura de banco (tabelas, views, triggers, stored procedures), padroes de nomenclatura (<code>&lt;Tabela&gt;Id</code>), controllers, Razor Pages, arquivos JS e interacao AJAX.</li>
+          <li>Identificar uso de controles (Syncfusion, Telerik), padroes de inicializacao e comunicacao JS-Controllers.</li>
+          <li>Rever sistemas globais: alertas (alerta.js, sweetalert_interop.js), tooltips/toasts (global-toast.js, syncfusion_tooltips.js), agenda (FullCalendar, recorrencias, viagens), alertas com sino (SignalR).</li>
+          <li>Extrair identidade visual de <code>wwwroot/css/frotix.css</code> (cores, botoes, modais, tela de espera) e exemplos de <code>EndPoints/*.html</code>.</li>
+          <li>Registrar insights em <code>Manual/manual-mockup.md</code> antes de iniciar conversoes.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title">Fase 2 - Conversao MD -> HTML (A4)</div>
+        <ul>
+          <li>Ordem alfabetica por diretorio; criar um <code>.html</code> para cada <code>.md</code>, sem remover os originais.</li>
+          <li>Nomenclatura: <code>(Diretorio) NomeA4XX.html</code> (ex.: <code>(Controllers) HomeControllerA401.html</code>). Se exceder 1 pagina A4, use <code>A4.01</code>, <code>A4.02</code> etc. para o <em>mesmo</em> arquivo.</li>
+          <li>Layout A4: header laranja <code>#b66a3d</code> com borda dupla (preto + branco), cards brancos, snippets em <code>#33465c</code>.</li>
+          <li>Cores padrao: vinho <code>#722F37</code>, azul <code>#325d88</code>, terracota <code>#A97B6E</code>, verde <code>#557570</code>; variantes "light" em uso complementar.</li>
+          <li>Icones: FontAwesome Duotone; sempre inline (SVG) para exportar PDF; uso intensivo e intencional em headers, cards, listas e notas.</li>
+          <li>Conteudo: prosa leve, mas tecnica; explicar interdependencias (Models -> Controllers -> Pages -> JS -> BD).</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title">Fase 3 - Manual Tecnico</div>
+        <ul>
+          <li>Organizar por temas (BD, Razor Pages, Controles, JS, Controllers, Padroes de Codigo, Sistemas Globais, Design System).</li>
+          <li>Incluir termos tecnicos, jargoes e snippets de forma natural; referenciar os HTMLs gerados.</li>
+          <li>Formato: HTML em <code>Manual/</code> com indice navegavel; manter o mesmo padrao visual A4.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title">Requisitos Visuais e Estruturais</div>
+        <ul>
+          <li>Header: laranja <code>#b66a3d</code>, fonte branca pesada, borda preta fina + borda branca larga.</li>
+          <li>Cards: sombra leve (<code>var(--shadow)</code>), cantos <code>14px</code>; fundo cinza claro geral (<code>var(--cinza)</code>).</li>
+          <li>Snippets: fundo <code>#33465c</code>; fonte clara; bloco com bordas suaves.</li>
+          <li>Botoes e modais: seguir <code>frotix.css</code> (btn-azul, btn-vinho, header laranja, modal padrao FrotiX).</li>
+          <li>Tela de espera: overlay escuro com logo pulsante (padrao FrotiX Spin Overlay).</li>
+          <li>Tipografia: usar familia padrao do site (Segoe UI/Inter/system). Evitar fontes externas.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title">Conteudo Minimo por Pagina</div>
+        <ul>
+          <li>Contexto e proposito do arquivo convertido.</li>
+          <li>Interdependencias: quem usa, onde, como se conecta (Controllers, Pages, JS, BD).</li>
+          <li>Principais endpoints/metodos ou entidades (quando aplicavel) e fluxo resumido.</li>
+          <li>Padroes de inicializacao (controles Syncfusion/Telerik) e chamadas AJAX.</li>
+          <li>Erros e cuidados: tratamento com <code>Alerta.TratamentoErroComLinha</code>, validacoes e bordas de caso.</li>
+        </ul>
+        <div class="pill">Tom narrativo + precisao tecnica</div>
+        <div class="pill">Sem copiar/colar cru de .md: sempre enriquecer</div>
+      </section>
+
+      <section class="card">
+        <div class="section-title">Procedimento Operacional</div>
+        <ul>
+          <li>Antes de converter: concluir leitura (Fase 1) e registrar insights no <code>manual-mockup.md</code>.</li>
+          <li>Converter em ordem alfabetica; se faltar espaco em uma A4, criar <code>A4.01</code>, <code>A4.02</code> para o mesmo item.</li>
+          <li>Validar impressao/PDF: checar se cabe em A4 sem cortes e se icones inline aparecem.</li>
+          <li>Reportar progresso a cada 10-15 arquivos; manter consistencia visual.</li>
+          <li>Nao excluir nem sobrescrever <code>.md</code>; apenas adicionar <code>.html</code> pares.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title">Pontos Criticos (Regra Critica)</div>
+        <ul>
+          <li>Pesquisa completa antes da primeira conversao; sem pular a fase de aprendizado.</li>
+          <li>Visual uniforme: header laranja FrotiX, cinza claro de fundo, cards com icones Duotone, snippets em azul petroleo.</li>
+          <li>Interdependencia explicita: sempre descrever quem consome e quem prove dados.</li>
+          <li>Sem atalhos de velocidade: priorizar texto fluido e explicativo, sem perda de detalhes tecnicos.</li>
+          <li>Conferir nomes: nao gerar HTML para arquivos inexistentes; manter alinhamento ao nome do <code>.md</code>.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title">Paleta e componentes FrotiX</div>
+        <div class="pill">Consulte sempre GEMINI.md + Claude.md + frotix.css + frotix.js</div>
+        <ul>
+          <li class="badge-color"><span class="badge-chip" style="background:#722F37;"></span>Vinho #722F37 (cancelar/fechar, btn-ftx-fechar)</li>
+          <li class="badge-color"><span class="badge-chip" style="background:#325d88;"></span>Azul #325D88 (btn-azul, botao primario, tooltips)</li>
+          <li class="badge-color"><span class="badge-chip" style="background:#A97B6E;"></span>Terracota #A97B6E (headers suaves, cartoes)</li>
+          <li class="badge-color"><span class="badge-chip" style="background:#557570;"></span>Verde #557570 (estados ok suaves)</li>
+          <li class="badge-color"><span class="badge-chip" style="background:#A0522D;"></span>Laranja header #A0522D (btn-header-orange)</li>
+        </ul>
+        <ul>
+          <li><strong>Botoes padrao:</strong> <code>btn-header-orange</code> (novo), <code>btn-azul btn-submit-spin</code> (salvar), <code>btn-ftx-fechar</code> (cancelar), <code>btn-voltar</code> (voltar). Colunas de Acao com icones duotone no tamanho <code>var(--ftx-action-icon)</code>.</li>
+          <li><strong>Modal padrao FrotiX:</strong> cabecalho com icone duotone, borda dupla branca/preta, fundo claro; usar classes do <code>frotix.css</code>.</li>
+          <li><strong>Overlay/Tela de espera:</strong> usar <code>ftx-spin-overlay</code> e logo pulsante (padrao <code>frotix.js</code>); obrigatorio em operacoes assincronas.</li>
+          <li><strong>Badges de status:</strong> <span class="status status-ok">ATIVO</span> / <span class="status status-warn">PENDENTE</span> / <span class="status status-bad">ERRO</span>; usar variaveis globais do CSS.</li>
+          <li><strong>Icones duotone em SVG inline:</strong> uso intensivo e decorativo/explicativo em titulos, cards e listas; primaria <code>#ff6b35</code>, secundaria <code>#6c757d</code> (ajustar conforme contexto).</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title">Referencias Internas</div>
+        <ul>
+          <li>Fontes consolidadas: <code>Documentacao em Html.md</code>, <code>(Documentacao) 0-INDICE-GERALA401.html</code>, <code>(Documentacao) Documentacao em HtmlA401.html</code>, <code>(Documentacao) REGRA-CRITICA-ATUALIZACAO-DOCUMENTACAOA401.html</code>.</li>
+          <li>Exemplos de visual: <code>Documentacao/EndPoints/UsersEndpoint.html</code> e <code>RolesEndpoint.html</code>.</li>
+          <li>Identidade visual: <code>wwwroot/css/frotix.css</code> (cores, botoes, modais, overlay).</li>
+          <li>Sistemas globais: <code>wwwroot/js/frotix.js</code>, <code>alerta.js</code>, <code>sweetalert_interop.js</code>, <code>global-toast.js</code>, <code>syncfusion_tooltips.js</code>.</li>
+          <li>Contexto do projeto: <code>GEMINI.md</code> e <code>Claude.md</code> (stack, UX, alertas, try-catch obrigatorio).</li>
+        </ul>
+      </section>
+
+    </main>
+  </div>
+</body>
+</html>

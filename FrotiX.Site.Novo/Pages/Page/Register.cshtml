@@ -1,0 +1,176 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Page/Register.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de registro/cadastro self-service SmartAdmin template ("Register now, its free!"),
+ *                   form fname/lname/email/password/terms checkbox, NÃO customizado FrotiX, NÃO funcional.
+ * 📥 ENTRADAS     : @page route /Page/Register, @model RegisterModel (code-behind), form inputs (fname, lname,
+ *                   emailverify required, userpassword required 8-20 chars, terms checkbox required, newsletter
+ *                   checkbox optional), submit #js-login-btn
+ * 📤 SAÍDAS       : Página full-height auth layout com header brand-gradient (logo + link "Already a member?
+ *                   Secure Login" /page/login), hero h2 "Register now, its free!" text-white, alert-primary
+ *                   "Heads Up! server maintenance" (hardcoded demo), form card bg-faded (fname/lname row col-6,
+ *                   emailverify, userpassword, custom-checkbox terms required + newsletter optional), btn-vinho
+ *                   btn-block btn-lg "Send verification", footer copyright, background pattern-1.svg, jQuery validation
+ * 🔗 CHAMADA POR  : Link "Register" em login pages, route /Page/Register, RegisterModel.OnGet() (code-behind),
+ *                   menu "Create Account" header auth pages
+ * 🔄 CHAMA        : RegisterModel (code-behind Page/Register.cshtml.cs), Settings (App, AppName, IconPrefix),
+ *                   /page/login (link "Secure Login" header), ~/img/logo.png, ~/img/svg/pattern-1.svg background,
+ *                   ~/css/fa-brands.css (@section HeadBlock - override duotone?), ViewBag.CopyrightInverse (Html.Raw),
+ *                   jQuery #js-login validation, form.checkValidity(), form action condicional **SYNTAX ERROR**
+ *                   {{#if app-flavor-subscript}} Handlebars em Razor linha 46!, Font Awesome Duotone (implícito),
+ *                   Bootstrap 5 (form-control, custom-control-input/label, invalid-feedback, help-block, btn btn-vinho)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, RegisterModel (code-behind), SmartSettings injection (@Settings),
+ *                   Bootstrap 5 (auth layout, form validation, custom-control checkbox), Font Awesome Brands
+ *                   (fa-brands.css), jQuery (validation #js-login-btn click), HTML5 form validation (checkValidity(),
+ *                   was-validated, required attributes), CSS classes custom (auth, bg-brand-gradient, page-logo
+ *                   width-mobile-auto, rounded-plus, fs-xxl fw-500, hidden-sm-down, opacity-50/60, btn-vinho btn-block
+ *                   btn-lg, position-absolute pos-bottom/left/right)
+ * 📝 OBSERVAÇÕES  : 111 linhas. Página REGISTER template SmartAdmin - NÃO customizado FrotiX (manteve original demo).
+ *                   ViewData config:
+ *                   - Title: "Login" (E RRADO! deve ser "Register" ou "Create Account")
+ *                   - PageName: "page_login" (ERRADO! deve ser "page_register")
+ *                   @section HeadBlock: fa-brands.css (Font Awesome Brands - override duotone? social media icons?).
+ *                   Layout auth (page-wrapper auth, page-inner bg-brand-gradient, bg-transparent). Header height-10
+ *                   shadow-lg bg-brand-gradient: logo + link "Already a member? Secure Login" (/page/login). Hero
+ *                   flex-1 pattern-1.svg background: h2 fs-xxl fw-500 mt-4 text-white "Register now, its free!" +
+ *                   small h3 fw-300 opacity-60 "Your registration is free for a limited time... ready to go wherever
+ *                   you go!". Alert-primary text-dark "Heads Up! Due to server maintenance from 9:30GTA to 12GTA,
+ *                   the verification emails could be delayed by up to 10 minutes." (HARDCODED demo text - remover).
+ *                   Form #js-login col-xl-6 centered, card p-4 rounded-plus bg-faded:
+ *                   - **SYNTAX ERROR linha 46**: form {{#if app-flavor-subscript}} action="intel_introduction.html"
+ *                     } else { } action="intel_analytics_dashboard.html" (Handlebars syntax em Razor - NÃO funciona!)
+ *                   - Row col-6 pr-1/pl-1: input #fname placeholder "First Name" required + input #lname "Last Name"
+ *                     required, invalid-feedback "No, you missed this one."
+ *                   - Input #emailverify email required, placeholder "Email for verification", invalid-feedback,
+ *                     help-block "Your email will also be your username"
+ *                   - Input #userpassword password required, placeholder "minimm 8 characters" (TYPO: "minimm"),
+ *                     invalid-feedback "Sorry, you missed this one.", help-block "Your password must be 8-20 characters
+ *                     long, contain letters and numbers, and must not contain spaces, special characters, or emoji."
+ *                   - Custom-control custom-checkbox: input #terms required, label "I agree to terms & conditions",
+ *                     invalid-feedback "You must agree before proceeding" + input #newsletter optional, label
+ *                     "Sign up for newsletters (dont worry, we won't send so many)" (TYPO: "dont")
+ *                   - Button #js-login-btn btn-block btn-vinho btn-lg mt-3 col-md-4 ml-auto text-right "Send verification"
+ *                   Footer position-absolute pos-bottom pos-left pos-right p-3 text-center Html.Raw(ViewBag.CopyrightInverse).
+ *                   @section ScriptsBlock: jQuery validation #js-login-btn click same as Forget.cshtml (prevent default
+ *                   se checkValidity false, adiciona was-validated, comentário "Perform ajax submit here...").
+ *                   Para produção FrotiX:
+ *                   1. Corrigir Handlebars syntax (usar asp-action ou JavaScript condicional)
+ *                   2. Implementar OnPost real com Identity UserManager.CreateAsync
+ *                   3. Enviar email verificação real (SmtpClient/SendGrid)
+ *                   4. Remover alert "server maintenance" demo
+ *                   5. Corrigir TYPOs ("minimm" → "minimum", "dont" → "don't")
+ *                   6. Adicionar reCAPTCHA (prevenir spam bots)
+ *                   7. Corrigir Title/PageName ViewData
+ *                   8. Customizar texto para contexto FrotiX ("Câmara dos Deputados" etc)
+ **************************************************************************************** *@
+@page
+@model RegisterModel
+@{ 
+	ViewData["Title"] = "Login";
+	ViewData["PageName"] = "page_login";
+}
+@section HeadBlock {
+<link rel="stylesheet" media="screen, print" href="~/css/fa-brands.css">
+}
+<div class="page-wrapper auth">
+	<div class="page-inner bg-brand-gradient">
+		<div class="page-content-wrapper bg-transparent m-0">
+			<div class="height-10 w-100 shadow-lg px-4 bg-brand-gradient">
+				<div class="d-flex align-items-center container p-0">
+					<div class="page-logo width-mobile-auto m-0 align-items-center justify-content-center p-0 bg-transparent bg-img-none shadow-0 height-9 border-0">
+						<a href="javascript:void(0)" class="page-logo-link press-scale-down d-flex align-items-center">
+						<img src="~/img/logo.png" alt="@Settings.App WebApp" aria-roledescription="logo">
+						<span class="page-logo-text mr-1">@Settings.AppName</span>
+						</a>
+					</div>
+					<span class="text-white opacity-50 ml-auto mr-2 hidden-sm-down">
+						Already a member?
+					</span>
+					<a href="/page/login" class="btn-link text-white ml-auto ml-sm-0">
+						Secure Login
+					</a>
+				</div>
+			</div>
+			<div class="flex-1" style="background: url(/img/svg/pattern-1.svg) no-repeat center bottom fixed; background-size: cover;">
+				<div class="container py-4 py-lg-5 my-lg-5 px-4 px-sm-0">
+					<div class="row">
+						<div class="col-xl-12">
+							<h2 class="fs-xxl fw-500 mt-4 text-white text-center">
+								Register now, its free!
+								<small class="h3 fw-300 mt-3 mb-5 text-white opacity-60 hidden-sm-down">
+								Your registration is free for a limited time. Enjoy @Settings.App on your mobile, desktop or tablet. 
+								<br>It is ready to go wherever you go!
+								</small>
+							</h2>
+						</div>
+						<div class="col-xl-6 ml-auto mr-auto">
+							<div class="card p-4 rounded-plus bg-faded">
+								<div class="alert alert-primary text-dark" role="alert">
+									<strong>Heads Up!</strong> Due to server maintenance from 9:30GTA to 12GTA, the verification emails could be delayed by up to 10 minutes. 
+								</div>
+								<form id="js-login" novalidate="" {{#if app-flavor-subscript}} action="intel_introduction.html" } else { } action="intel_analytics_dashboard.html">
+									<div class="form-group row">
+										<label class="col-xl-12 form-label" for="fname">Your first and last name</label>
+										<div class="col-6 pr-1">
+											<input type="text" id="fname" class="form-control" placeholder="First Name" required>
+											<div class="invalid-feedback">No, you missed this one.</div>
+										</div>
+										<div class="col-6 pl-1">
+											<input type="text" id="lname" class="form-control" placeholder="Last Name" required>
+											<div class="invalid-feedback">No, you missed this one.</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="form-label" for="emailverify">Email will be needed for verification and account recovery</label>
+										<input type="email" id="emailverify" class="form-control" placeholder="Email for verification" required>
+										<div class="invalid-feedback">No, you missed this one.</div>
+										<div class="help-block">Your email will also be your username</div>
+									</div>
+									<div class="form-group">
+										<label class="form-label" for="userpassword">Pick a password: <br>Don't reuse your bank password, we didn't spend a lot on security for this app.</label>
+										<input type="password" id="userpassword" class="form-control" placeholder="minimm 8 characters" required>
+										<div class="invalid-feedback">Sorry, you missed this one.</div>
+										<div class="help-block">Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.</div>
+									</div>
+									<div class="form-group demo">
+										<div class="custom-control custom-checkbox">
+											<input type="checkbox" class="custom-control-input" id="terms" required>
+											<label class="custom-control-label" for="terms"> I agree to terms & conditions</label>
+											<div class="invalid-feedback">You must agree before proceeding</div>
+										</div>
+										<div class="custom-control custom-checkbox">
+											<input type="checkbox" class="custom-control-input" id="newsletter">
+											<label class="custom-control-label" for="newsletter">Sign up for newsletters (dont worry, we won't send so many)</label>
+										</div>
+									</div>
+									<div class="row no-gutters">
+										<div class="col-md-4 ml-auto text-right">
+											<button id="js-login-btn" type="submit" class="btn btn-block btn-vinho btn-lg mt-3">Send verification</button>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="position-absolute pos-bottom pos-left pos-right p-3 text-center text-white">
+					@Html.Raw(ViewBag.CopyrightInverse)
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+@section ScriptsBlock {
+<script>
+	$("#js-login-btn").click(function(event) {
+		// Fetch form to apply custom Bootstrap validation
+		var form = $("#js-login")
+		if (form[0].checkValidity() === false) {
+			event.preventDefault()
+			event.stopPropagation()
+		}
+		form.addClass('was-validated');
+		// Perform ajax submit here...
+	});
+</script>
+}

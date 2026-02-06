@@ -1,0 +1,24 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_PageContentOverlay.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view MINIMALISTA de overlay escuro sobre conteúdo em mobile quando
+ *                   sidebar está aberta. Clique no overlay fecha menu (toggle class mobile-nav-on).
+ * 📥 ENTRADAS     : Clique do usuário no overlay (data-action="toggle" data-class="mobile-nav-on"),
+ *                   abertura do menu mobile (body.mobile-nav-on adiciona class)
+ * 📤 SAÍDAS       : <div class="page-content-overlay"> transparente por padrão, escuro/visível quando
+ *                   body tem classe mobile-nav-on, clique toggled class (fecha sidebar mobile)
+ * 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml (provavelmente após .page-wrapper ou .page-content),
+ *                   renderizado sempre (não condicional), visível apenas em mobile com sidebar aberta
+ * 🔄 CHAMA        : JavaScript data-action="toggle" handler (SmartAdmin - app.bundle.js?), toggle
+ *                   CSS class "mobile-nav-on" no body/html, CSS .page-content-overlay (z-index,
+ *                   background, opacity, transition)
+ * 📦 DEPENDÊNCIAS : JavaScript data-action handler (SmartAdmin framework), CSS .page-content-overlay
+ *                   (estilo do overlay - provavelmente position-fixed, z-index alto, background rgba
+ *                   preto semi-transparente, transition opacity), mobile breakpoint (@media)
+ * 📝 OBSERVAÇÕES  : 1 linha. Overlay para UX mobile - impede interação com conteúdo quando sidebar
+ *                   aberta, clique fecha menu. data-action="toggle" data-class="mobile-nav-on" remove
+ *                   classe do body (fecha sidebar). CSS provavelmente: .page-content-overlay { display: none; }
+ *                   body.mobile-nav-on .page-content-overlay { display: block; opacity: 0.5; } Padrão
+ *                   em apps mobile com sidebar overlay (não push content).
+ *****************************************************************************************@
+<div class="page-content-overlay" data-action="toggle" data-class="mobile-nav-on"></div>

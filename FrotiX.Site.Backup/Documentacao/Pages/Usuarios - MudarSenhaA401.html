@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Usuários - Mudar Senha (Refatoração 2026) | FrotiX</title>
+    <style>
+        :root {
+            --vinho: #722F37;
+            --vinho-light: #8B3A44;
+            --azul: #325d88;
+            --azul-light: #3d6f9e;
+            --terracota: #A97B6E;
+            --terracota-light: #C08B7E;
+            --verde: #557570;
+            --verde-light: #6A8A85;
+            --cinza: #f5f7fb;
+            --card: #fff;
+            --texto: #1f1f1f;
+            --shadow: 0 20px 45px -18px rgba(0, 0, 0, .35);
+            --radius: 14px;
+            --header-bg: #ff6b35;
+            --code-bg: #33465c;
+        }
+
+        @page {
+            size: A4;
+            margin: 16mm;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Inter", system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at 12% 20%, rgba(255, 107, 53, .08), transparent 26%), radial-gradient(circle at 90% 10%, rgba(114, 47, 55, .10), transparent 30%), var(--cinza);
+            color: var(--texto);
+            padding: 22px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .page {
+            width: 210mm;
+            max-width: 100%;
+        }
+
+        .hero {
+            background: var(--header-bg);
+            color: #fff;
+            padding: 22px 24px;
+            border-radius: var(--radius);
+            box-shadow: 0 0 0 1px #000, 0 0 0 4px #fff, var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .hero i {
+            font-size: 40px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 26px;
+            letter-spacing: 0.2px;
+        }
+
+        .subtitle {
+            margin: 6px 0 0;
+            font-size: 13px;
+            opacity: 0.92;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-top: 18px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 16px 18px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 0 10px;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--vinho);
+        }
+
+        code {
+            background: var(--code-bg);
+            color: #e9edf5;
+            padding: 10px 12px;
+            border-radius: 10px;
+            display: block;
+            white-space: pre-wrap;
+            font-size: 12px;
+            line-height: 1.45;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+        }
+
+        .log-item {
+            border-left: 4px solid var(--header-bg);
+            padding-left: 15px;
+            margin-bottom: 20px;
+        }
+
+        .log-date {
+            font-weight: bold;
+            color: var(--vinho);
+            margin-bottom: 5px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <header class="hero">
+            <div>
+                <h1>Usuários - Mudar Senha (Técnico)</h1>
+                <p class="subtitle">Refatoração para Padrão FrotiX 2026 · Razor Pages · Versão 1.0</p>
+            </div>
+        </header>
+
+        <main class="grid">
+            <section class="card">
+                <div class="section-title">Visão Geral do Componente</div>
+                <p>A página foi redesenhada para oferecer uma gestão de segurança simplificada, integrada ao perfil
+                    estendido do usuário.</p>
+                <ul>
+                    <li>Interface Duotone (Padrão 2026)</li>
+                    <li>Identificação via Ponto e Nome (Title Case)</li>
+                    <li>Toggle de visibilidade customizado</li>
+                    <li>Integração com ASP.NET Identity</li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <div class="section-title">Backend: MudarSenha.cshtml.cs</div>
+                <p>Lógica de carregamento de detalhes do usuário logado através do <code>IUnitOfWork</code>.</p>
+                <code>
+private async Task LoadUserDetailsAsync(IdentityUser baseUser) {
+    var user = await _unitOfWork.AspNetUsers.GetFirstOrDefaultAsync(u => u.Id == baseUser.Id);
+    if (user != null) {
+        Ponto = user.Ponto;
+        NomeCompleto = textInfo.ToTitleCase(user.NomeCompleto.ToLower());
+        // (...)
+    }
+}
+      </code>
+            </section>
+
+            <section class="card">
+                <div class="section-title">Frontend: Definição de @page</div>
+                <p>Correção crítica feita para evitar erro 404 por conflito de rotas.</p>
+                <code>
+@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model FrotiX.Pages.Usuarios.MudarSenhaModel
+      </code>
+            </section>
+
+            <section class="card">
+                <div class="section-title">Log de Modificações</div>
+                <div class="log-item">
+                    <span class="log-date">21/01/2026</span>
+                    <strong>Refatoração Padrão 2026</strong>
+                    <p style="font-size: 11px;">Interface Duotone, Formatação Title Case, Botões btn-azul e btn-vinho,
+                        correção de rota explícita.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>
