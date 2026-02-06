@@ -39,7 +39,9 @@ BEGIN TRY
     -- ----------------------------------------------------------
     -- SCRIPT 1.1: Corrigir Fornecedor - Adicionar PRIMARY KEY
     -- Converte FornecedorId de NULL + UNIQUE INDEX para
-    -- NOT NULL + PRIMARY KEY
+    -- NOT NULL + PRIMARY KEY.
+    -- Precisa temporariamente remover FKs que referenciam
+    -- Fornecedor.FornecedorId (ex: Contrato, AtaRegistroPrecos)
     -- ----------------------------------------------------------
     PRINT '[1.1] Verificando Fornecedor.FornecedorId...';
 
@@ -49,15 +51,47 @@ BEGIN TRY
         RAISERROR('[1.1] BLOQUEIO: Existem registros com FornecedorId NULL na tabela Fornecedor. Corrija antes de continuar.', 16, 1);
     END
 
-    -- Remover o índice único existente
-    IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'KEY_Fornecedor_FornecedorId' AND object_id = OBJECT_ID('dbo.Fornecedor'))
+    -- PASSO 1: Salvar e remover FKs que referenciam Fornecedor.FornecedorId
+    -- (Outras tabelas como Contrato, AtaRegistroPrecos possuem FKs para esta coluna)
+    DECLARE @fkDrop NVARCHAR(MAX) = N'';
+    DECLARE @fkRecreate NVARCHAR(MAX) = N'';
+
+    SELECT
+        @fkDrop = @fkDrop + 'ALTER TABLE ' + QUOTENAME(SCHEMA_NAME(fk.schema_id)) + '.' + QUOTENAME(OBJECT_NAME(fk.parent_object_id))
+            + ' DROP CONSTRAINT ' + QUOTENAME(fk.name) + '; ',
+        @fkRecreate = @fkRecreate + 'ALTER TABLE ' + QUOTENAME(SCHEMA_NAME(fk.schema_id)) + '.' + QUOTENAME(OBJECT_NAME(fk.parent_object_id))
+            + ' WITH NOCHECK ADD CONSTRAINT ' + QUOTENAME(fk.name) + ' FOREIGN KEY ('
+            + COL_NAME(fkc.parent_object_id, fkc.parent_column_id) + ') REFERENCES '
+            + QUOTENAME(SCHEMA_NAME(fk.schema_id)) + '.' + QUOTENAME(OBJECT_NAME(fk.referenced_object_id))
+            + '(' + COL_NAME(fkc.referenced_object_id, fkc.referenced_column_id) + '); '
+    FROM sys.foreign_keys fk
+    JOIN sys.foreign_key_columns fkc ON fk.object_id = fkc.constraint_object_id
+    WHERE fk.referenced_object_id = OBJECT_ID('dbo.Fornecedor');
+
+    IF LEN(@fkDrop) > 0
+    BEGIN
+        PRINT '[1.1] Removendo FKs temporariamente que referenciam Fornecedor...';
+        EXEC sp_executesql @fkDrop;
+    END
+
+    -- PASSO 2: Remover o índice único OU unique constraint existente
+    IF EXISTS (SELECT 1 FROM sys.key_constraints WHERE name = 'KEY_Fornecedor_FornecedorId' AND parent_object_id = OBJECT_ID('dbo.Fornecedor'))
+        ALTER TABLE dbo.Fornecedor DROP CONSTRAINT KEY_Fornecedor_FornecedorId;
+    ELSE IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'KEY_Fornecedor_FornecedorId' AND object_id = OBJECT_ID('dbo.Fornecedor'))
         DROP INDEX KEY_Fornecedor_FornecedorId ON dbo.Fornecedor;
 
-    -- Alterar coluna para NOT NULL
+    -- PASSO 3: Alterar coluna para NOT NULL
     ALTER TABLE dbo.Fornecedor ALTER COLUMN FornecedorId uniqueidentifier NOT NULL;
 
-    -- Adicionar PRIMARY KEY
+    -- PASSO 4: Adicionar PRIMARY KEY
     ALTER TABLE dbo.Fornecedor ADD CONSTRAINT PK_Fornecedor_FornecedorId PRIMARY KEY CLUSTERED (FornecedorId);
+
+    -- PASSO 5: Recriar as FKs que foram removidas (agora apontando para a PK)
+    IF LEN(@fkRecreate) > 0
+    BEGIN
+        PRINT '[1.1] Recriando FKs que referenciam Fornecedor...';
+        EXEC sp_executesql @fkRecreate;
+    END
 
     PRINT '[1.1] OK - Fornecedor: PRIMARY KEY criada com sucesso.';
     PRINT '';

@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FrotiX.Models;
 
-namespace FrotiX.Site.Services
+namespace FrotiX.Services
 {
     /// <summary>
     /// Serviço para análise de padrões de erro (placeholder para integração futura com IA)
