@@ -195,4 +195,10 @@ namespace FrotiX.Controllers
                 );
                 return new JsonResult(new
                 {
+                    success = false,
+                    message = "Erro ao atualizar status do fornecedor"
+                });
+            }
+        }
+    }
                     sucesso = false

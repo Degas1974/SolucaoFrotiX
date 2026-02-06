@@ -22,7 +22,6 @@
 | **Índices faltantes (recomendados)** | **12** |
 | **Índices redundantes/sobrepostos** | **6** |
 | **Problemas estruturais** | **3** |
-| **Triggers recomendadas** | **2** |
 
 ---
 
@@ -793,115 +792,15 @@ PRINT 'Viagem: Índices simples SetorId e RequisitanteId removidos.';
 
 ---
 
-## PARTE 6 — TRIGGERS RECOMENDADAS
+## PARTE 6 — STORED PROCEDURES RECOMENDADAS
 
-### 6.1 Trigger de Atualização Automática de Quilometragem do Veículo
-
-**Situação atual:** A quilometragem do veículo (`Veiculo.Quilometragem`) deve ser atualizada quando uma viagem é finalizada (Status = 'Realizada' com KmFinal > 0). Atualmente isso é feito apenas pelo código C#.
-
-**Benefício:** Garantir que a quilometragem nunca fique desatualizada, mesmo em cenários de atualização direta no banco.
-
-```sql
--- ============================================================
--- SCRIPT 6.1: Trigger para atualizar quilometragem do veículo
--- Propósito: Quando uma viagem é finalizada (Status=Realizada),
--- atualizar automaticamente a quilometragem do veículo se o
--- KmFinal da viagem for maior que a quilometragem atual.
--- Isso garante consistência mesmo em atualizações diretas.
--- ============================================================
-
-CREATE OR ALTER TRIGGER dbo.trg_Viagem_AtualizarQuilometragemVeiculo
-ON dbo.Viagem
-AFTER UPDATE
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    -- Só executa quando Status muda para 'Realizada'
-    IF NOT EXISTS (
-        SELECT 1 FROM inserted i
-        JOIN deleted d ON i.ViagemId = d.ViagemId
-        WHERE i.Status = 'Realizada' AND d.Status <> 'Realizada'
-    ) RETURN;
-
-    -- Anti-recursão
-    IF TRIGGER_NESTLEVEL() > 1 RETURN;
-
-    UPDATE v
-    SET v.Quilometragem = i.KmFinal
-    FROM dbo.Veiculo v
-    JOIN inserted i ON v.VeiculoId = i.VeiculoId
-    JOIN deleted d ON i.ViagemId = d.ViagemId
-    WHERE i.Status = 'Realizada'
-      AND d.Status <> 'Realizada'
-      AND i.KmFinal > 0
-      AND i.KmFinal > ISNULL(v.Quilometragem, 0);
-END;
-GO
-
-PRINT 'Trigger trg_Viagem_AtualizarQuilometragemVeiculo criada.';
-```
-
----
-
-### 6.2 Trigger para Log de Alteração de Status de Manutenção
-
-**Situação atual:** Não há rastreio de quem/quando alterou o status de uma manutenção.
-
-```sql
--- ============================================================
--- SCRIPT 6.2: Trigger para rastreio de mudança de status
--- Propósito: Quando StatusOS muda (Aberta→Fechada, etc.),
--- registrar automaticamente a data de transição nos campos
--- já existentes (DataFinalizacao, DataCancelamento).
--- Garante que estes timestamps sejam preenchidos mesmo em
--- atualizações diretas no banco, não apenas via aplicação.
--- ============================================================
-
-CREATE OR ALTER TRIGGER dbo.trg_Manutencao_AtualizarDatasStatus
-ON dbo.Manutencao
-AFTER UPDATE
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    IF NOT UPDATE(StatusOS) RETURN;
-    IF TRIGGER_NESTLEVEL() > 1 RETURN;
-
-    -- Quando Status muda para 'Fechada' e DataFinalizacao é NULL
-    UPDATE m
-    SET m.DataFinalizacao = GETDATE()
-    FROM dbo.Manutencao m
-    JOIN inserted i ON m.ManutencaoId = i.ManutencaoId
-    JOIN deleted d ON i.ManutencaoId = d.ManutencaoId
-    WHERE i.StatusOS = 'Fechada' AND d.StatusOS <> 'Fechada'
-      AND m.DataFinalizacao IS NULL;
-
-    -- Quando Status muda para 'Cancelada' e DataCancelamento é NULL
-    UPDATE m
-    SET m.DataCancelamento = GETDATE()
-    FROM dbo.Manutencao m
-    JOIN inserted i ON m.ManutencaoId = i.ManutencaoId
-    JOIN deleted d ON i.ManutencaoId = d.ManutencaoId
-    WHERE i.StatusOS = 'Cancelada' AND d.StatusOS <> 'Cancelada'
-      AND m.DataCancelamento IS NULL;
-END;
-GO
-
-PRINT 'Trigger trg_Manutencao_AtualizarDatasStatus criada.';
-```
-
----
-
-## PARTE 7 — STORED PROCEDURES RECOMENDADAS
-
-### 7.1 SP para Recálculo de Estatísticas de Multas por Motorista
+### 6.1 SP para Recálculo de Estatísticas de Multas por Motorista
 
 **Situação atual:** Não existe uma SP consolidada para estatísticas de multas como existe para viagens e abastecimentos.
 
 ```sql
 -- ============================================================
--- SCRIPT 7.1: SP para estatísticas de multa por motorista
+-- SCRIPT 6.1: SP para estatísticas de multa por motorista
 -- Propósito: Complementar o sistema de estatísticas existente.
 -- As tabelas EstatisticaMotoristasMensal já têm campos
 -- TotalMultas e ValorTotalMultas, mas dependem das triggers

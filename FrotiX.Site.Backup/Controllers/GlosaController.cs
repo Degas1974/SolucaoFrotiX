@@ -184,7 +184,7 @@ public class GlosaController :ControllerBase
             [FromQuery] int mes,
             [FromQuery] int ano
         )
-    {
+        {
         try
         {
             var resumo = _service.ListarResumo(contratoId , mes , ano).ToList();
@@ -224,7 +224,7 @@ public class GlosaController :ControllerBase
         [FromQuery] int ano
     )
     {
-            try
+        try
             {
                 // [DADOS] Coleta dados detalhados para exportação.
                 var detalhes = _service.ListarDetalhes(contratoId, mes, ano).ToList();
@@ -291,22 +291,6 @@ public class GlosaController :ControllerBase
                 tbResumo.Theme = XLTableTheme.TableStyleMedium2;
                 // [FORMATO] Ajusta colunas monetárias do resumo.
                 FormatCurrencyColumns(
-        [FromQuery] Guid contratoId ,
-        [FromQuery] int mes ,
-        [FromQuery] int ano
-    )
-    {
-        try
-        {
-            var resumo = _service.ListarResumo(contratoId , mes , ano).ToList();
-            var detalhes = _service.ListarDetalhes(contratoId , mes , ano).ToList();
-
-            using var wb = new XLWorkbook();
-
-            var wsResumo = wb.Worksheets.Add("Resumo");
-            var tbResumo = wsResumo.Cell(1 , 1).InsertTable(resumo , true);
-            tbResumo.Theme = XLTableTheme.TableStyleMedium2;
-            FormatCurrencyColumns(
                 wsResumo ,
                 tbResumo ,
                 "PrecoDiario" ,
@@ -336,8 +320,7 @@ public class GlosaController :ControllerBase
             Alerta.TratamentoErroComLinha("GlosaController.cs" , "ExportAmbos" , error);
             return StatusCode(500);
         }
-    {
-            var headers =
+    }
                 headerNames
                     ?.Where(h => !string.IsNullOrWhiteSpace(h))
                     .Select(h => h.Trim())
