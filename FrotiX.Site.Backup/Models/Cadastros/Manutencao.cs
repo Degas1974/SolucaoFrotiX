@@ -88,14 +88,17 @@ namespace FrotiX.Models
 
         // Usuário responsável pelo cancelamento.
         [Display(Name = "IdUsuarioCancelamento")]
+        [Column(TypeName = "nvarchar(450)")]
         public string? IdUsuarioCancelamento { get; set; }
 
         // Usuário responsável pela criação.
         [Display(Name = "IdUsuarioAlteracao")]
+        [Column(TypeName = "nvarchar(450)")]
         public string? IdUsuarioCriacao { get; set; }
 
         // Usuário responsável pela finalização.
         [Display(Name = "IdUsuarioCancelamento")]
+        [Column(TypeName = "nvarchar(450)")]
         public string? IdUsuarioFinalizacao { get; set; }
 
         // Identificador único da manutenção.

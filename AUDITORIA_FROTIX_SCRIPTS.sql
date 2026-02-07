@@ -19,6 +19,7 @@ GO
 
 SET NOCOUNT ON;
 SET XACT_ABORT ON; -- Garante rollback automático em qualquer erro
+SET DEADLOCK_PRIORITY HIGH; -- Evita que este script seja vítima de deadlock
 GO
 
 BEGIN TRY
@@ -227,12 +228,18 @@ BEGIN TRY
 
     -- ----------------------------------------------------------
     -- SCRIPT 2.1: FK Viagem.UsuarioIdCriacao → AspNetUsers
-    -- IGNORADO: Tipo incompatível — Viagem.UsuarioIdCriacao é
-    -- varchar(100) mas AspNetUsers.Id é nvarchar(450).
-    -- Para criar esta FK, seria necessário ALTER COLUMN primeiro,
-    -- o que pode impactar EF Core e índices existentes.
+    -- Primeiro converte a coluna de varchar(100) para nvarchar(450)
+    -- para compatibilidade com AspNetUsers.Id, depois cria a FK.
     -- ----------------------------------------------------------
-    PRINT '[2.1] IGNORADO - Viagem.UsuarioIdCriacao: tipo incompatível (varchar(100) vs nvarchar(450)).';
+    PRINT '[2.1] Convertendo Viagem.UsuarioIdCriacao para nvarchar(450) e criando FK...';
+
+    EXEC sp_executesql N'ALTER TABLE dbo.Viagem ALTER COLUMN UsuarioIdCriacao nvarchar(450) NULL';
+
+    ALTER TABLE dbo.Viagem WITH NOCHECK
+      ADD CONSTRAINT FK_Viagem_UsuarioIdCriacao
+      FOREIGN KEY (UsuarioIdCriacao) REFERENCES dbo.AspNetUsers (Id);
+
+    PRINT '[2.1] OK - Viagem.UsuarioIdCriacao: convertida para nvarchar(450) + FK criada.';
     PRINT '';
 
     -- ----------------------------------------------------------
@@ -297,12 +304,29 @@ BEGIN TRY
 
     -- ----------------------------------------------------------
     -- SCRIPT 2.6: FKs Manutencao → AspNetUsers (3 colunas de usuário)
-    -- IGNORADO: IdUsuarioCriacao, IdUsuarioFinalizacao e
-    -- IdUsuarioCancelamento são varchar(100), mas AspNetUsers.Id
-    -- é nvarchar(450). IdUsuarioAlteracao (já com FK) é nvarchar(450).
-    -- Para criar estas FKs, seria necessário ALTER COLUMN primeiro.
+    -- Converte IdUsuarioCriacao, IdUsuarioFinalizacao e
+    -- IdUsuarioCancelamento de varchar(100) para nvarchar(450)
+    -- (IdUsuarioAlteracao já é nvarchar(450) com FK existente)
     -- ----------------------------------------------------------
-    PRINT '[2.6] IGNORADO - Manutencao: 3 colunas de usuario com tipo incompatível (varchar(100) vs nvarchar(450)).';
+    PRINT '[2.6] Convertendo 3 colunas de usuario em Manutencao para nvarchar(450) e criando FKs...';
+
+    EXEC sp_executesql N'ALTER TABLE dbo.Manutencao ALTER COLUMN IdUsuarioCriacao nvarchar(450) NULL';
+    EXEC sp_executesql N'ALTER TABLE dbo.Manutencao ALTER COLUMN IdUsuarioFinalizacao nvarchar(450) NULL';
+    EXEC sp_executesql N'ALTER TABLE dbo.Manutencao ALTER COLUMN IdUsuarioCancelamento nvarchar(450) NULL';
+
+    ALTER TABLE dbo.Manutencao WITH NOCHECK
+      ADD CONSTRAINT FK_Manutencao_IdUsuarioCriacao
+      FOREIGN KEY (IdUsuarioCriacao) REFERENCES dbo.AspNetUsers (Id);
+
+    ALTER TABLE dbo.Manutencao WITH NOCHECK
+      ADD CONSTRAINT FK_Manutencao_IdUsuarioFinalizacao
+      FOREIGN KEY (IdUsuarioFinalizacao) REFERENCES dbo.AspNetUsers (Id);
+
+    ALTER TABLE dbo.Manutencao WITH NOCHECK
+      ADD CONSTRAINT FK_Manutencao_IdUsuarioCancelamento
+      FOREIGN KEY (IdUsuarioCancelamento) REFERENCES dbo.AspNetUsers (Id);
+
+    PRINT '[2.6] OK - Manutencao: 3 colunas convertidas para nvarchar(450) + 3 FKs criadas.';
     PRINT '';
 
     -- ----------------------------------------------------------
@@ -332,7 +356,7 @@ BEGIN TRY
 
     CREATE NONCLUSTERED INDEX IX_Abastecimento_DataHora_Cobertura
     ON dbo.Abastecimento (DataHora DESC)
-    INCLUDE (VeiculoId, MotoristaId, CombustivelId, ValorTotal, LitrosAbastecidos, ValorUnitario, TipoCombustivel, Categoria)
+    INCLUDE (VeiculoId, MotoristaId, CombustivelId, ValorUnitario, Litros)
     WITH (FILLFACTOR = 90)
     ON [PRIMARY];
 
@@ -347,7 +371,7 @@ BEGIN TRY
 
     CREATE NONCLUSTERED INDEX IX_Abastecimento_MotoristaId_DataHora
     ON dbo.Abastecimento (MotoristaId, DataHora DESC)
-    INCLUDE (ValorTotal, LitrosAbastecidos, CombustivelId)
+    INCLUDE (ValorUnitario, Litros, CombustivelId)
     WHERE (MotoristaId IS NOT NULL)
     WITH (FILLFACTOR = 90)
     ON [PRIMARY];
@@ -663,12 +687,16 @@ GO
 /*
 PRINT 'Ativando validação completa das FKs...';
 
+ALTER TABLE dbo.Viagem WITH CHECK CHECK CONSTRAINT FK_Viagem_UsuarioIdCriacao;
 ALTER TABLE dbo.Lavador WITH CHECK CHECK CONSTRAINT FK_Lavador_ContratoId;
 ALTER TABLE dbo.MovimentacaoEmpenhoMulta WITH CHECK CHECK CONSTRAINT FK_MovimentacaoEmpenhoMulta_EmpenhoMultaId;
 ALTER TABLE dbo.AlertasFrotiX WITH CHECK CHECK CONSTRAINT FK_AlertasFrotiX_UsuarioCriadorId;
 ALTER TABLE dbo.Motorista WITH CHECK CHECK CONSTRAINT FK_Motorista_UnidadeId;
 ALTER TABLE dbo.Motorista WITH CHECK CHECK CONSTRAINT FK_Motorista_ContratoId;
 ALTER TABLE dbo.Motorista WITH CHECK CHECK CONSTRAINT FK_Motorista_CondutorId;
+ALTER TABLE dbo.Manutencao WITH CHECK CHECK CONSTRAINT FK_Manutencao_IdUsuarioCriacao;
+ALTER TABLE dbo.Manutencao WITH CHECK CHECK CONSTRAINT FK_Manutencao_IdUsuarioFinalizacao;
+ALTER TABLE dbo.Manutencao WITH CHECK CHECK CONSTRAINT FK_Manutencao_IdUsuarioCancelamento;
 ALTER TABLE dbo.ItensManutencao WITH CHECK CHECK CONSTRAINT FK_ItensManutencao_ViagemId;
 
 PRINT 'Todas as FKs agora validam dados existentes (trusted).';

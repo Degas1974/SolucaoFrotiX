@@ -472,6 +472,7 @@ namespace FrotiX.Models
         // Usuário de cancelamento.
         public string? UsuarioIdCancelamento { get; set; }
         // Usuário de criação.
+        [Column(TypeName = "nvarchar(450)")]
         public string? UsuarioIdCriacao { get; set; }
         // Usuário de finalização.
         public string? UsuarioIdFinalizacao { get; set; }
