@@ -1,4 +1,4 @@
-﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
 ║  🚀 ARQUIVO: IContratoRepository.cs                                                                              ║
 ║  📂 CAMINHO: Repository/IRepository/                                                                             ║
 ║  🎯 OBJETIVO: Interface do repositório de Contrato. Define contrato para operações com contratos                ║

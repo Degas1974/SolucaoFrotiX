@@ -40,8 +40,8 @@ BEGIN TRY
     -- SCRIPT 1.1: Corrigir Fornecedor - Adicionar PRIMARY KEY
     -- Converte FornecedorId de NULL + UNIQUE INDEX para
     -- NOT NULL + PRIMARY KEY.
-    -- Precisa temporariamente remover FKs que referenciam
-    -- Fornecedor.FornecedorId (ex: Contrato, AtaRegistroPrecos)
+    -- Usa EXEC para cada DDL, forçando compilação em runtime
+    -- (evita erro 8111 por pré-validação do batch)
     -- ----------------------------------------------------------
     PRINT '[1.1] Verificando Fornecedor.FornecedorId...';
 
@@ -51,8 +51,7 @@ BEGIN TRY
         RAISERROR('[1.1] BLOQUEIO: Existem registros com FornecedorId NULL na tabela Fornecedor. Corrija antes de continuar.', 16, 1);
     END
 
-    -- PASSO 1: Salvar e remover FKs que referenciam Fornecedor.FornecedorId
-    -- (Outras tabelas como Contrato, AtaRegistroPrecos possuem FKs para esta coluna)
+    -- PASSO 1: Remover FKs que referenciam Fornecedor.FornecedorId
     DECLARE @fkDrop NVARCHAR(MAX) = N'';
     DECLARE @fkRecreate NVARCHAR(MAX) = N'';
 
@@ -70,44 +69,83 @@ BEGIN TRY
 
     IF LEN(@fkDrop) > 0
     BEGIN
-        PRINT '[1.1] Removendo FKs temporariamente que referenciam Fornecedor...';
+        PRINT '[1.1] PASSO 1: Removendo FKs que referenciam Fornecedor...';
         EXEC sp_executesql @fkDrop;
+        PRINT '[1.1] PASSO 1: OK';
     END
+    ELSE
+        PRINT '[1.1] PASSO 1: Nenhuma FK externa encontrada.';
 
     -- PASSO 2: Remover DEFAULT constraint em FornecedorId
-    -- (A coluna é definida como DEFAULT (newid()) — precisa dropar antes de ALTER COLUMN)
     DECLARE @defName NVARCHAR(256);
     SELECT @defName = dc.name
     FROM sys.default_constraints dc
+    JOIN sys.columns c ON dc.parent_object_id = c.object_id AND dc.parent_column_id = c.column_id
     WHERE dc.parent_object_id = OBJECT_ID('dbo.Fornecedor')
-      AND dc.parent_column_id = COLUMNPROPERTY(OBJECT_ID('dbo.Fornecedor'), 'FornecedorId', 'ColumnId');
+      AND c.name = 'FornecedorId';
 
     IF @defName IS NOT NULL
     BEGIN
-        DECLARE @dropDef NVARCHAR(500) = 'ALTER TABLE dbo.Fornecedor DROP CONSTRAINT [' + @defName + ']';
+        PRINT '[1.1] PASSO 2: Removendo DEFAULT [' + @defName + ']...';
+        DECLARE @dropDef NVARCHAR(500) = N'ALTER TABLE dbo.Fornecedor DROP CONSTRAINT [' + @defName + N']';
         EXEC sp_executesql @dropDef;
-        PRINT '[1.1] DEFAULT constraint [' + @defName + '] removida.';
+        PRINT '[1.1] PASSO 2: OK';
     END
+    ELSE
+        PRINT '[1.1] PASSO 2: AVISO - Nenhum DEFAULT encontrado para FornecedorId!';
 
-    -- PASSO 3: Remover o índice único OU unique constraint existente
-    IF EXISTS (SELECT 1 FROM sys.key_constraints WHERE name = 'KEY_Fornecedor_FornecedorId' AND parent_object_id = OBJECT_ID('dbo.Fornecedor'))
-        ALTER TABLE dbo.Fornecedor DROP CONSTRAINT KEY_Fornecedor_FornecedorId;
-    ELSE IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'KEY_Fornecedor_FornecedorId' AND object_id = OBJECT_ID('dbo.Fornecedor'))
-        DROP INDEX KEY_Fornecedor_FornecedorId ON dbo.Fornecedor;
+    -- PASSO 3: Remover TODAS as constraints e índices na coluna FornecedorId
+    -- (abordagem agressiva: busca tudo via sys.indexes)
+    DECLARE @dropAll NVARCHAR(MAX) = N'';
 
-    -- PASSO 4: Alterar coluna para NOT NULL
-    ALTER TABLE dbo.Fornecedor ALTER COLUMN FornecedorId uniqueidentifier NOT NULL;
+    -- 3a: Key constraints (PK, UNIQUE)
+    SELECT @dropAll = @dropAll + 'ALTER TABLE dbo.Fornecedor DROP CONSTRAINT ' + QUOTENAME(kc.name) + '; '
+    FROM sys.key_constraints kc
+    WHERE kc.parent_object_id = OBJECT_ID('dbo.Fornecedor');
 
-    -- PASSO 5: Adicionar PRIMARY KEY com DEFAULT (newid()) restaurado
-    ALTER TABLE dbo.Fornecedor ADD
-        CONSTRAINT PK_Fornecedor_FornecedorId PRIMARY KEY CLUSTERED (FornecedorId),
-        CONSTRAINT DF_Fornecedor_FornecedorId DEFAULT (newid()) FOR FornecedorId;
+    -- 3b: Índices não-constraint
+    SELECT @dropAll = @dropAll + 'DROP INDEX ' + QUOTENAME(i.name) + ' ON dbo.Fornecedor; '
+    FROM sys.indexes i
+    WHERE i.object_id = OBJECT_ID('dbo.Fornecedor')
+      AND i.name IS NOT NULL
+      AND i.is_primary_key = 0
+      AND i.is_unique_constraint = 0
+      AND i.type > 0; -- Não é HEAP
 
-    -- PASSO 6: Recriar as FKs que foram removidas (agora apontando para a PK)
+    IF LEN(@dropAll) > 0
+    BEGIN
+        PRINT '[1.1] PASSO 3: Removendo constraints/índices: ' + @dropAll;
+        EXEC sp_executesql @dropAll;
+        PRINT '[1.1] PASSO 3: OK';
+    END
+    ELSE
+        PRINT '[1.1] PASSO 3: Nenhuma constraint/índice encontrado.';
+
+    -- PASSO 4: Alterar coluna para NOT NULL (via EXEC para runtime compilation)
+    PRINT '[1.1] PASSO 4: ALTER COLUMN FornecedorId NOT NULL...';
+    EXEC sp_executesql N'ALTER TABLE dbo.Fornecedor ALTER COLUMN FornecedorId uniqueidentifier NOT NULL';
+
+    -- Verificar se funcionou
+    DECLARE @isNullable BIT;
+    SELECT @isNullable = c.is_nullable FROM sys.columns c
+    WHERE c.object_id = OBJECT_ID('dbo.Fornecedor') AND c.name = 'FornecedorId';
+    PRINT '[1.1] PASSO 4: is_nullable = ' + CAST(@isNullable AS VARCHAR);
+    IF @isNullable = 1
+        RAISERROR('[1.1] FALHA: ALTER COLUMN não alterou a nullability! Coluna ainda é nullable.', 16, 1);
+    PRINT '[1.1] PASSO 4: OK';
+
+    -- PASSO 5: Adicionar PRIMARY KEY + DEFAULT (via EXEC para runtime compilation)
+    PRINT '[1.1] PASSO 5: Criando PRIMARY KEY + DEFAULT...';
+    EXEC sp_executesql N'ALTER TABLE dbo.Fornecedor ADD CONSTRAINT PK_Fornecedor_FornecedorId PRIMARY KEY CLUSTERED (FornecedorId)';
+    EXEC sp_executesql N'ALTER TABLE dbo.Fornecedor ADD CONSTRAINT DF_Fornecedor_FornecedorId DEFAULT (newid()) FOR FornecedorId';
+    PRINT '[1.1] PASSO 5: OK';
+
+    -- PASSO 6: Recriar as FKs removidas
     IF LEN(@fkRecreate) > 0
     BEGIN
-        PRINT '[1.1] Recriando FKs que referenciam Fornecedor...';
+        PRINT '[1.1] PASSO 6: Recriando FKs...';
         EXEC sp_executesql @fkRecreate;
+        PRINT '[1.1] PASSO 6: OK';
     END
 
     PRINT '[1.1] OK - Fornecedor: PRIMARY KEY criada com sucesso.';
@@ -189,16 +227,12 @@ BEGIN TRY
 
     -- ----------------------------------------------------------
     -- SCRIPT 2.1: FK Viagem.UsuarioIdCriacao → AspNetUsers
-    -- Apenas UsuarioIdCriacao (as demais 5 colunas de usuário
-    -- ficam com validação via código para não impactar performance)
+    -- IGNORADO: Tipo incompatível — Viagem.UsuarioIdCriacao é
+    -- varchar(100) mas AspNetUsers.Id é nvarchar(450).
+    -- Para criar esta FK, seria necessário ALTER COLUMN primeiro,
+    -- o que pode impactar EF Core e índices existentes.
     -- ----------------------------------------------------------
-    PRINT '[2.1] Criando FK Viagem.UsuarioIdCriacao...';
-
-    ALTER TABLE dbo.Viagem WITH NOCHECK
-      ADD CONSTRAINT FK_Viagem_UsuarioIdCriacao
-      FOREIGN KEY (UsuarioIdCriacao) REFERENCES dbo.AspNetUsers (Id);
-
-    PRINT '[2.1] OK - Viagem: FK UsuarioIdCriacao criada.';
+    PRINT '[2.1] IGNORADO - Viagem.UsuarioIdCriacao: tipo incompatível (varchar(100) vs nvarchar(450)).';
     PRINT '';
 
     -- ----------------------------------------------------------
@@ -263,26 +297,12 @@ BEGIN TRY
 
     -- ----------------------------------------------------------
     -- SCRIPT 2.6: FKs Manutencao → AspNetUsers (3 colunas de usuário)
-    -- Apenas IdUsuarioAlteracao já possui FK, as outras 3 não
+    -- IGNORADO: IdUsuarioCriacao, IdUsuarioFinalizacao e
+    -- IdUsuarioCancelamento são varchar(100), mas AspNetUsers.Id
+    -- é nvarchar(450). IdUsuarioAlteracao (já com FK) é nvarchar(450).
+    -- Para criar estas FKs, seria necessário ALTER COLUMN primeiro.
     -- ----------------------------------------------------------
-    PRINT '[2.6] Criando 3 FKs de usuário em Manutencao...';
-
-    -- 2.6a: Manutencao.IdUsuarioCriacao
-    ALTER TABLE dbo.Manutencao WITH NOCHECK
-      ADD CONSTRAINT FK_Manutencao_IdUsuarioCriacao
-      FOREIGN KEY (IdUsuarioCriacao) REFERENCES dbo.AspNetUsers (Id);
-
-    -- 2.6b: Manutencao.IdUsuarioFinalizacao
-    ALTER TABLE dbo.Manutencao WITH NOCHECK
-      ADD CONSTRAINT FK_Manutencao_IdUsuarioFinalizacao
-      FOREIGN KEY (IdUsuarioFinalizacao) REFERENCES dbo.AspNetUsers (Id);
-
-    -- 2.6c: Manutencao.IdUsuarioCancelamento
-    ALTER TABLE dbo.Manutencao WITH NOCHECK
-      ADD CONSTRAINT FK_Manutencao_IdUsuarioCancelamento
-      FOREIGN KEY (IdUsuarioCancelamento) REFERENCES dbo.AspNetUsers (Id);
-
-    PRINT '[2.6] OK - Manutencao: 3 FKs de usuario criadas.';
+    PRINT '[2.6] IGNORADO - Manutencao: 3 colunas de usuario com tipo incompatível (varchar(100) vs nvarchar(450)).';
     PRINT '';
 
     -- ----------------------------------------------------------
@@ -643,16 +663,12 @@ GO
 /*
 PRINT 'Ativando validação completa das FKs...';
 
-ALTER TABLE dbo.Viagem WITH CHECK CHECK CONSTRAINT FK_Viagem_UsuarioIdCriacao;
 ALTER TABLE dbo.Lavador WITH CHECK CHECK CONSTRAINT FK_Lavador_ContratoId;
 ALTER TABLE dbo.MovimentacaoEmpenhoMulta WITH CHECK CHECK CONSTRAINT FK_MovimentacaoEmpenhoMulta_EmpenhoMultaId;
 ALTER TABLE dbo.AlertasFrotiX WITH CHECK CHECK CONSTRAINT FK_AlertasFrotiX_UsuarioCriadorId;
 ALTER TABLE dbo.Motorista WITH CHECK CHECK CONSTRAINT FK_Motorista_UnidadeId;
 ALTER TABLE dbo.Motorista WITH CHECK CHECK CONSTRAINT FK_Motorista_ContratoId;
 ALTER TABLE dbo.Motorista WITH CHECK CHECK CONSTRAINT FK_Motorista_CondutorId;
-ALTER TABLE dbo.Manutencao WITH CHECK CHECK CONSTRAINT FK_Manutencao_IdUsuarioCriacao;
-ALTER TABLE dbo.Manutencao WITH CHECK CHECK CONSTRAINT FK_Manutencao_IdUsuarioFinalizacao;
-ALTER TABLE dbo.Manutencao WITH CHECK CHECK CONSTRAINT FK_Manutencao_IdUsuarioCancelamento;
 ALTER TABLE dbo.ItensManutencao WITH CHECK CHECK CONSTRAINT FK_ItensManutencao_ViagemId;
 
 PRINT 'Todas as FKs agora validam dados existentes (trusted).';

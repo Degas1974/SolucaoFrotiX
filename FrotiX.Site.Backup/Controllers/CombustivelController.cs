@@ -127,7 +127,7 @@ namespace FrotiX.Controllers
         /// ║    • Consumidor: UI de Combustíveis.                                         ║
         /// ╠══════════════════════════════════════════════════════════════════════════════╣
         /// ║ 📞 FUNÇÕES QUE CHAMA:                                                        ║
-        /// ║    • _unitOfWork.Combustivel.GetFirstOrDefaultWithTracking()                  ║
+        /// ║    • _unitOfWork.Combustivel.GetFirstOrDefault()                  ║
         /// ║    • _unitOfWork.Veiculo.GetFirstOrDefault()                                  ║
         /// ║    • _unitOfWork.Combustivel.Remove()                                         ║
         /// ║    • _unitOfWork.Save()                                                      ║
@@ -149,7 +149,7 @@ namespace FrotiX.Controllers
                 if (model != null && model.CombustivelId != Guid.Empty)
                 {
                     // [DADOS] Carrega combustível
-                    var objFromDb = _unitOfWork.Combustivel.GetFirstOrDefaultWithTracking(u =>
+                    var objFromDb = _unitOfWork.Combustivel.GetFirstOrDefault(u =>
                         u.CombustivelId == model.CombustivelId
                     );
                     if (objFromDb != null)
@@ -210,7 +210,7 @@ namespace FrotiX.Controllers
         /// ║    • Consumidor: UI de Combustíveis.                                         ║
         /// ╠══════════════════════════════════════════════════════════════════════════════╣
         /// ║ 📞 FUNÇÕES QUE CHAMA:                                                        ║
-        /// ║    • _unitOfWork.Combustivel.GetFirstOrDefaultWithTracking()                  ║
+        /// ║    • _unitOfWork.Combustivel.GetFirstOrDefault()                  ║
         /// ║    • _unitOfWork.Combustivel.Update()                                         ║
         /// ║    • _unitOfWork.Save()                                                      ║
         /// ║    • _log.Error() / Alerta.TratamentoErroComLinha() → erros.                  ║
@@ -231,7 +231,7 @@ namespace FrotiX.Controllers
                 if (Id != Guid.Empty)
                 {
                     // [DADOS] Carrega combustível
-                    var objFromDb = _unitOfWork.Combustivel.GetFirstOrDefaultWithTracking(u =>
+                    var objFromDb = _unitOfWork.Combustivel.GetFirstOrDefault(u =>
                         u.CombustivelId == Id
                     );
                     string Description = "";

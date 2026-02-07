@@ -1,6 +1,7 @@
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -151,7 +152,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error("Erro ao listar pendências de abastecimento", error, "AbastecimentoController.Pendencias.cs", "ListarPendencias");
+                _logger.LogError("Erro ao listar pendências de abastecimento", error, "AbastecimentoController.Pendencias.cs", "ListarPendencias");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Pendencias.cs", "ListarPendencias", error);
                 return StatusCode(500, new { success = false, message = error.Message });
             }
@@ -192,7 +193,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error("Erro ao contabilizar pendências", error, "AbastecimentoController.Pendencias.cs", "ContarPendencias");
+                _logger.LogError("Erro ao contabilizar pendências", error, "AbastecimentoController.Pendencias.cs", "ContarPendencias");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Pendencias.cs", "ContarPendencias", error);
                 return StatusCode(500, new { success = false, message = error.Message });
             }
@@ -251,7 +252,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error($"Erro ao recuperar pendência {id}", error, "AbastecimentoController.Pendencias.cs", "ObterPendencia");
+                _logger.LogError(error, "`$1");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Pendencias.cs", "ObterPendencia", error);
                 return StatusCode(500, new { success = false, message = error.Message });
             }
@@ -340,7 +341,7 @@ namespace FrotiX.Controllers
 
                 double consumoFinal = request.Litros > 0 ? kmRodado / request.Litros.Value : 0;
 
-                _log.Info($"Pendência {request.AbastecimentoPendenteId} resolvida com sucesso", "AbastecimentoController.Pendencias.cs", "ResolverPendencia");
+                _logger.LogInformation($"Pendência {request.AbastecimentoPendenteId} resolvida com sucesso");
 
                 return Ok(new
                 {
@@ -350,7 +351,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error($"Erro ao resolver pendência {request.AbastecimentoPendenteId}", error, "AbastecimentoController.Pendencias.cs", "ResolverPendencia");
+                _logger.LogError(error, "`$1");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Pendencias.cs", "ResolverPendencia", error);
                 return StatusCode(500, new { success = false, message = error.Message });
             }
@@ -436,7 +437,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error($"Erro ao salvar alterações da pendência {request.AbastecimentoPendenteId}", error, "AbastecimentoController.Pendencias.cs", "SalvarPendencia");
+                _logger.LogError(error, "`$1");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Pendencias.cs", "SalvarPendencia", error);
                 return StatusCode(500, new { success = false, message = error.Message });
             }
@@ -474,7 +475,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error($"Erro no fluxo Salvar+Importar pendência {request.AbastecimentoPendenteId}", error, "AbastecimentoController.Pendencias.cs", "SalvarEImportarPendencia");
+                _logger.LogError(error, "`$1");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Pendencias.cs", "SalvarEImportarPendencia", error);
                 return StatusCode(500, new { success = false, message = error.Message });
             }
@@ -517,7 +518,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error($"Erro ao excluir pendência {request.AbastecimentoPendenteId}", error, "AbastecimentoController.Pendencias.cs", "ExcluirPendencia");
+                _logger.LogError(error, "`$1");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Pendencias.cs", "ExcluirPendencia", error);
                 return StatusCode(500, new { success = false, message = error.Message });
             }
@@ -556,13 +557,13 @@ namespace FrotiX.Controllers
 
                 _unitOfWork.Save();
 
-                _log.Info($"{quantidade} pendências excluídas manualmente", "AbastecimentoController.Pendencias.cs", "ExcluirTodasPendencias");
+                _logger.LogInformation($"{quantidade} pendências excluídas manualmente");
 
                 return Ok(new { success = true, message = $"{quantidade} pendência(s) excluída(s) com sucesso" });
             }
             catch (Exception error)
             {
-                _log.Error("Erro ao excluir todas as pendências", error, "AbastecimentoController.Pendencias.cs", "ExcluirTodasPendencias");
+                _logger.LogError("Erro ao excluir todas as pendências", error, "AbastecimentoController.Pendencias.cs", "ExcluirTodasPendencias");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Pendencias.cs", "ExcluirTodasPendencias", error);
                 return StatusCode(500, new { success = false, message = error.Message });
             }
@@ -627,7 +628,7 @@ namespace FrotiX.Controllers
                 _unitOfWork.AbastecimentoPendente.Update(pendencia);
                 _unitOfWork.Save();
 
-                _log.Info($"Sugestão aplicada na pendência {request.AbastecimentoPendenteId}", "AbastecimentoController.Pendencias.cs", "AplicarSugestao");
+                _logger.LogInformation($"Sugestão aplicada na pendência {request.AbastecimentoPendenteId}");
 
                 return Ok(new
                 {
@@ -639,7 +640,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error($"Erro ao aplicar sugestão na pendência {request.AbastecimentoPendenteId}", error, "AbastecimentoController.Pendencias.cs", "AplicarSugestao");
+                _logger.LogError(error, "`$1");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Pendencias.cs", "AplicarSugestao", error);
                 return StatusCode(500, new { success = false, message = error.Message });
             }
@@ -816,7 +817,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error($"Erro interno ao salvar pendência {request.AbastecimentoPendenteId}", error, "AbastecimentoController.Pendencias.cs", "SalvarPendenciaInterno");
+                _logger.LogError(error, "`$1");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Pendencias.cs", "SalvarPendenciaInterno", error);
                 throw;
             }
@@ -850,7 +851,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error($"Erro ao atualizar média de consumo do veículo {veiculoId}", error, "AbastecimentoController.Pendencias.cs", "AtualizarMediaConsumoVeiculo");
+                _logger.LogError(error, "`$1");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Pendencias.cs", "AtualizarMediaConsumoVeiculo", error);
             }
         }

@@ -1,4 +1,4 @@
-﻿// gerado pelo TryCatchHelper
+// gerado pelo TryCatchHelper
 global using FrotiX.Helpers;
 
 

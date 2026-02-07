@@ -254,7 +254,6 @@ public class GlosaController :ControllerBase
             }
             catch (Exception error)
             {
-                _logService.Error(error.Message, error, "GlosaController.cs", "ExportDetalhes");
                 Alerta.TratamentoErroComLinha("GlosaController.cs", "ExportDetalhes", error);
                 return StatusCode(500);
             }

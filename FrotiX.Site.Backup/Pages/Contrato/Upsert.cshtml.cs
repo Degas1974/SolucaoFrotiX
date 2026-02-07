@@ -92,7 +92,7 @@ namespace FrotiX.Pages.Contrato
 
                 if (id != Guid.Empty)
                 {
-                    ContratoObj.Contrato = _unitOfWork.Contrato.GetFirstOrDefaultWithTracking(u =>
+                    ContratoObj.Contrato = _unitOfWork.Contrato.GetFirstOrDefault(u =>
                         u.ContratoId == id
                     );
                     if (ContratoObj == null)

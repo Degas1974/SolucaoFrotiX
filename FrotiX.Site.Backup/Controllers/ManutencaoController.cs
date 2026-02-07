@@ -992,8 +992,7 @@ namespace FrotiX.Controllers
                 //===============
                 var objLavagem = new Lavagem();
                 objLavagem.Data = lavagem.Data;
-                objLavagem.HorarioInicio = lavagem.HorarioInicio;
-                objLavagem.HorarioFim = lavagem.HorarioFim;
+                objLavagem = lavagem;
                 objLavagem.VeiculoId = lavagem.VeiculoId;
                 objLavagem.MotoristaId = lavagem.MotoristaId;
 
@@ -1153,8 +1152,8 @@ namespace FrotiX.Controllers
                     {
                         vl.LavagemId ,
                         vl.Data ,
-                        HorarioInicio = DateTime.Parse(vl.HorarioInicio).ToString("HH:mm") ,
-                        HorarioFim = !string.IsNullOrEmpty(vl.HorarioFim) ? DateTime.Parse(vl.HorarioFim).ToString("HH:mm") : null ,
+                        HorarioInicio = DateTime.Parse(vl.Horario).ToString("HH:mm") ,
+                        
                         vl.DescricaoVeiculo ,
                         vl.Nome ,
                         vl.Lavadores ,
@@ -1224,8 +1223,8 @@ namespace FrotiX.Controllers
                     {
                         vl.LavagemId ,
                         vl.Data ,
-                        HorarioInicio = DateTime.Parse(vl.HorarioInicio).ToString("HH:mm") ,
-                        HorarioFim = !string.IsNullOrEmpty(vl.HorarioFim) ? DateTime.Parse(vl.HorarioFim).ToString("HH:mm") : null ,
+                        HorarioInicio = DateTime.Parse(vl.Horario).ToString("HH:mm") ,
+                        
                         vl.DescricaoVeiculo ,
                         vl.Nome ,
                         vl.Lavadores ,
@@ -1268,8 +1267,8 @@ namespace FrotiX.Controllers
                     {
                         vl.LavagemId ,
                         vl.Data ,
-                        HorarioInicio = DateTime.Parse(vl.HorarioInicio).ToString("HH:mm") ,
-                        HorarioFim = !string.IsNullOrEmpty(vl.HorarioFim) ? DateTime.Parse(vl.HorarioFim).ToString("HH:mm") : null ,
+                        HorarioInicio = DateTime.Parse(vl.Horario).ToString("HH:mm") ,
+                        
                         vl.DescricaoVeiculo ,
                         vl.Nome ,
                         vl.Lavadores ,
@@ -1311,8 +1310,8 @@ namespace FrotiX.Controllers
                     {
                         vl.LavagemId ,
                         vl.Data ,
-                        HorarioInicio = DateTime.Parse(vl.HorarioInicio).ToString("HH:mm") ,
-                        HorarioFim = !string.IsNullOrEmpty(vl.HorarioFim) ? DateTime.Parse(vl.HorarioFim).ToString("HH:mm") : null ,
+                        HorarioInicio = DateTime.Parse(vl.Horario).ToString("HH:mm") ,
+                        
                         vl.DescricaoVeiculo ,
                         vl.Nome ,
                         vl.Lavadores ,
@@ -1355,8 +1354,8 @@ namespace FrotiX.Controllers
                     {
                         vl.LavagemId ,
                         vl.Data ,
-                        HorarioInicio = DateTime.Parse(vl.HorarioInicio).ToString("HH:mm") ,
-                        HorarioFim = !string.IsNullOrEmpty(vl.HorarioFim) ? DateTime.Parse(vl.HorarioFim).ToString("HH:mm") : null ,
+                        HorarioInicio = DateTime.Parse(vl.Horario).ToString("HH:mm") ,
+                        
                         vl.DescricaoVeiculo ,
                         vl.Nome ,
                         vl.Lavadores ,

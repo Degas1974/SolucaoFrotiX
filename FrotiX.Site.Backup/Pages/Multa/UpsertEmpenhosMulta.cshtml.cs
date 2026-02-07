@@ -84,7 +84,7 @@ namespace FrotiX.Pages.Multa
 
                 if (id != Guid.Empty)
                 {
-                    EmpenhoMultaObj.EmpenhoMulta = _unitOfWork.EmpenhoMulta.GetFirstOrDefaultWithTracking(e =>
+                    EmpenhoMultaObj.EmpenhoMulta = _unitOfWork.EmpenhoMulta.GetFirstOrDefault(e =>
                         e.EmpenhoMultaId == id
                     );
                     if (EmpenhoMultaObj == null)

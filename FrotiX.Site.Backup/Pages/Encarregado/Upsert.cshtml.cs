@@ -142,7 +142,7 @@ namespace FrotiX.Pages.Encarregado
 
                 if (id != Guid.Empty)
                 {
-                    EncarregadoObj.Encarregado = _unitOfWork.Encarregado.GetFirstOrDefaultWithTracking(u =>
+                    EncarregadoObj.Encarregado = _unitOfWork.Encarregado.GetFirstOrDefault(u =>
                         u.EncarregadoId == id
                     );
                     if (EncarregadoObj == null)

@@ -188,8 +188,8 @@ namespace FrotiX.Controllers
 
                 // [LOGICA] Horário de maior fluxo
                 var horarioPico = lavagens
-                    .Where(l => l.HorarioInicio.HasValue)
-                    .GroupBy(l => l.HorarioInicio.Value.Hour)
+                    .Where(l => l.Data.HasValue)
+                    .GroupBy(l => l.Data.Value.Hour)
                     .Select(g => new { Hora = $"{g.Key:D2}:00", Quantidade = g.Count() })
                     .OrderByDescending(x => x.Quantidade)
                     .FirstOrDefault();
@@ -342,7 +342,7 @@ namespace FrotiX.Controllers
 
                 // [DADOS] Carrega lavagens com horário
                 var lavagens = await _context.Lavagem
-                    .Where(l => l.Data >= dataInicio && l.Data <= dataFim && l.HorarioInicio.HasValue)
+                    .Where(l => l.Data >= dataInicio && l.Data <= dataFim && l.Data.HasValue)
                     .ToListAsync();
 
                 // [LOGICA] Série por hora
@@ -350,7 +350,7 @@ namespace FrotiX.Controllers
                     .Select(h => new
                     {
                         hora = $"{h:D2}:00",
-                        quantidade = lavagens.Count(l => l.HorarioInicio.Value.Hour == h)
+                        quantidade = lavagens.Count(l => l.Data.Value.Hour == h)
                     })
                     .ToList();
 
@@ -558,11 +558,11 @@ namespace FrotiX.Controllers
                 }
 
                 var lavagens = await _context.Lavagem
-                    .Where(l => l.Data >= dataInicio && l.Data <= dataFim && l.Data.HasValue && l.HorarioInicio.HasValue)
+                    .Where(l => l.Data >= dataInicio && l.Data <= dataFim && l.Data.HasValue)
                     .ToListAsync();
 
                 var resultado = lavagens
-                    .GroupBy(l => new { Dia = (int)l.Data.Value.DayOfWeek, Hora = l.HorarioInicio.Value.Hour })
+                    .GroupBy(l => new { Dia = (int)l.Data.Value.DayOfWeek, Hora = l.Data.Value.Hour })
                     .Select(g => new
                     {
                         dia = g.Key.Dia,

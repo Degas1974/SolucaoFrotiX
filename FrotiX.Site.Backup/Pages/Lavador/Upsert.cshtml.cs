@@ -117,7 +117,7 @@ namespace FrotiX.Pages.Lavador
 
                 if (id != Guid.Empty)
                 {
-                    LavadorObj.Lavador = _unitOfWork.Lavador.GetFirstOrDefaultWithTracking(u => u.LavadorId == id);
+                    LavadorObj.Lavador = _unitOfWork.Lavador.GetFirstOrDefault(u => u.LavadorId == id);
                     if (LavadorObj == null)
                     {
                         return NotFound();

@@ -1,4 +1,4 @@
-﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
 ║  🚀 ARQUIVO: ICorridasTaxiLegCanceladas.cs                                                                       ║
 ║  📂 CAMINHO: Repository/IRepository/                                                                             ║
 ║  🎯 OBJETIVO: Interface do repositório de CorridasCanceladasTaxiLeg, gerenciando corridas canceladas            ║

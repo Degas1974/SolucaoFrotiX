@@ -17,10 +17,10 @@
  * 📝 OBSERVAÇÕES  : Fluxo inicial de autenticação; mensagens de erro exibidas em #error_msg.
  *****************************************************************************************@
 @page
-@model FrotiX.Areas.Identity.Pages.ConfirmarSenha.ConfirmarSenhaModel
+@model FrotiX.Areas.Identity.Pages.ConfirmarSenhaModel
 @{
     ViewData["Title"] = "FrotiX | Confirmar Email";
-    Layout = Layout = "_ConfirmacaoLayout";
+    Layout = "_ConfirmacaoLayout";
 }
 <div class="login-content">
 
@@ -40,7 +40,7 @@
                 <div class="input-group-addon">
                     <i class="entypo-key"></i>
                 </div>
-                <input name="Password" asp-for="@Model.Password" type="password" class="form-control" placeholder="Senha" autocomplete="off" data-validate="required" />
+                <input name="Password" asp-for="@Model.Input.Password" type="password" class="form-control" placeholder="Senha" autocomplete="off" data-validate="required" />
             </div>
         </div>
 
@@ -50,7 +50,7 @@
                 <div class="input-group-addon">
                     <i class="entypo-key"></i>
                 </div>
-                <input name="ConfirmacaoPassword" asp-for="@Model.ConfirmacaoPassword" type="password" class="form-control" placeholder="Confirmação de Senha" autocomplete="off" data-validate="required" />
+                <input name="ConfirmacaoPassword" asp-for="@Model.Input.ConfirmacaoPassword" type="password" class="form-control" placeholder="Confirmação de Senha" autocomplete="off" data-validate="required" />
             </div>
 
         </div>

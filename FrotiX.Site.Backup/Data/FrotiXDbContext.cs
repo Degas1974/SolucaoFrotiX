@@ -22,6 +22,7 @@ using FrotiX.Models.Estatisticas;
 using FrotiX.Models.Views;
 
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace FrotiX.Data
 {

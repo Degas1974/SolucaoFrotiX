@@ -90,7 +90,7 @@ namespace FrotiX.Pages.Empenho
 
                 if (id != Guid.Empty)
                 {
-                    EmpenhoObj.Empenho = _unitOfWork.Empenho.GetFirstOrDefaultWithTracking(u =>
+                    EmpenhoObj.Empenho = _unitOfWork.Empenho.GetFirstOrDefault(u =>
                         u.EmpenhoId == id
                     );
                     if (EmpenhoObj == null)

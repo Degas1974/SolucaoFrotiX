@@ -1,4 +1,4 @@
-﻿// TextNormalization/Repository/ProperDataRepository.cs
+// TextNormalization/Repository/ProperDataRepository.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;

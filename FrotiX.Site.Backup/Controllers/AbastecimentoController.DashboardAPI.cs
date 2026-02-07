@@ -3,6 +3,7 @@ using FrotiX.Models.Estatisticas;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -211,7 +212,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error(error.Message, error, "AbastecimentoController.DashboardAPI.cs", "DashboardDados");
+                _logger.LogError(error.Message, error, "AbastecimentoController.DashboardAPI.cs", "DashboardDados");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.DashboardAPI.cs", "DashboardDados", error);
                 return StatusCode(500, new { message = "Erro ao carregar dados do dashboard" });
             }
@@ -352,7 +353,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error(error.Message, error, "AbastecimentoController.DashboardAPI.cs", "DashboardDadosPeriodo");
+                _logger.LogError(error.Message, error, "AbastecimentoController.DashboardAPI.cs", "DashboardDadosPeriodo");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.DashboardAPI.cs", "DashboardDadosPeriodo", error);
                 return StatusCode(500, new { message = "Erro ao carregar dados do dashboard por período" });
             }
@@ -529,7 +530,7 @@ namespace FrotiX.Controllers
 
                 if (!temDadosEstatisticos)
                 {
-                    _log.Warning($"Dados estatísticos não encontrados para o ano {ano}. Iniciando Fallback.");
+                    _logger.LogWarning($"Dados estatísticos não encontrados para o ano {ano}. Iniciando Fallback.");
                     return DashboardMensalFallback(ano, mes);
                 }
 
@@ -659,7 +660,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error($", errorErro ao carregar DashboardMensal para ano={ano}, mes={mes}");
+                _logger.LogError($", errorErro ao carregar DashboardMensal para ano={ano}, mes={mes}");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.DashboardAPI.cs", "DashboardMensal", error);
                 return StatusCode(500, new { message = "Erro ao carregar dados mensais" });
             }
@@ -810,7 +811,7 @@ namespace FrotiX.Controllers
 
                 if (!temDadosEstatisticos)
                 {
-                    _log.Warning($"Dados estatísticos de veículo não encontrados para o ano {ano}. Iniciando Fallback.");
+                    _logger.LogWarning($"Dados estatísticos de veículo não encontrados para o ano {ano}. Iniciando Fallback.");
                     return DashboardVeiculoFallback(ano, mes, veiculoId, tipoVeiculo);
                 }
 
@@ -1033,7 +1034,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error($", errorErro ao carregar DashboardVeiculo para ano={ano}, mes={mes}");
+                _logger.LogError($", errorErro ao carregar DashboardVeiculo para ano={ano}, mes={mes}");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.DashboardAPI.cs", "DashboardVeiculo", error);
                 return StatusCode(500, new { message = "Erro ao carregar dados por veículo" });
             }
@@ -1137,7 +1138,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error($", errorErro ao carregar DashboardDadosVeiculoPeriodo para {dataInicio} até {dataFim}");
+                _logger.LogError($", errorErro ao carregar DashboardDadosVeiculoPeriodo para {dataInicio} até {dataFim}");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.DashboardAPI.cs", "DashboardDadosVeiculoPeriodo", error);
                 return StatusCode(500, new { message = "Erro ao carregar dados por veículo por período" });
             }
@@ -1331,7 +1332,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error($", errorErro ao carregar DashboardDetalhes");
+                _logger.LogError($", errorErro ao carregar DashboardDetalhes");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.DashboardAPI.cs", "DashboardDetalhes", error);
                 return StatusCode(500, new { message = "Erro ao carregar detalhes" });
             }
@@ -1411,12 +1412,12 @@ namespace FrotiX.Controllers
                     });
                 }
 
-                _log.Warning($"Dados de Heatmap de Hora não encontrados para ano={ano}. Iniciando Fallback.");
+                _logger.LogWarning($"Dados de Heatmap de Hora não encontrados para ano={ano}. Iniciando Fallback.");
                 return DashboardHeatmapHoraFallback(ano, mes);
             }
             catch (Exception error)
             {
-                _log.Error($", errorErro ao carregar DashboardHeatmapHora");
+                _logger.LogError($", errorErro ao carregar DashboardHeatmapHora");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.DashboardAPI.cs", "DashboardHeatmapHora", error);
                 return StatusCode(500, new { message = "Erro ao carregar mapa de calor" });
             }
@@ -1516,12 +1517,12 @@ namespace FrotiX.Controllers
                     });
                 }
 
-                _log.Warning($"Dados de Heatmap de Categoria não encontrados para ano={ano}. Iniciando Fallback.");
+                _logger.LogWarning($"Dados de Heatmap de Categoria não encontrados para ano={ano}. Iniciando Fallback.");
                 return DashboardHeatmapCategoriaFallback(ano);
             }
             catch (Exception error)
             {
-                _log.Error($", errorErro ao carregar DashboardHeatmapCategoria");
+                _logger.LogError($", errorErro ao carregar DashboardHeatmapCategoria");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.DashboardAPI.cs", "DashboardHeatmapCategoria", error);
                 return StatusCode(500, new { message = "Erro ao carregar mapa de calor" });
             }
@@ -1643,7 +1644,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error($", errorErro ao carregar DashboardHeatmapVeiculo");
+                _logger.LogError($", errorErro ao carregar DashboardHeatmapVeiculo");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.DashboardAPI.cs", "DashboardHeatmapVeiculo", error);
                 return StatusCode(500, new { message = "Erro ao carregar mapa de calor de veículo" });
             }
@@ -1690,7 +1691,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error(error.Message, error, "AbastecimentoController.DashboardAPI.cs", "DashboardMesesDisponiveis");
+                _logger.LogError(error.Message, error, "AbastecimentoController.DashboardAPI.cs", "DashboardMesesDisponiveis");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.DashboardAPI.cs", "DashboardMesesDisponiveis", error);
                 return StatusCode(500, new { message = "Erro ao carregar meses disponíveis" });
             }
@@ -2047,7 +2048,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error($", errorErro ao carregar DashboardAbastecimentosCategoria para categoria={categoria}");
+                _logger.LogError($", errorErro ao carregar DashboardAbastecimentosCategoria para categoria={categoria}");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.DashboardAPI.cs", "DashboardAbastecimentosCategoria", error);
                 return StatusCode(500, new { message = "Erro ao carregar abastecimentos da categoria" });
             }

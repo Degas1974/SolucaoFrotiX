@@ -171,7 +171,7 @@ namespace FrotiX.Controllers
             {
                 if (model != null && model.EmpenhoId != Guid.Empty)
                 {
-                    var objFromDb = _unitOfWork.Empenho.GetFirstOrDefaultWithTracking(u =>
+                    var objFromDb = _unitOfWork.Empenho.GetFirstOrDefault(u =>
                         u.EmpenhoId == model.EmpenhoId
                     );
                     if (objFromDb != null)
@@ -239,7 +239,7 @@ namespace FrotiX.Controllers
                 // Valor já vem correto do frontend (sem divisão por 100)
                 _unitOfWork.MovimentacaoEmpenho.Add(movimentacao);
 
-                var empenho = _unitOfWork.Empenho.GetFirstOrDefaultWithTracking(u =>
+                var empenho = _unitOfWork.Empenho.GetFirstOrDefault(u =>
                     u.EmpenhoId == movimentacao.EmpenhoId
                 );
                 empenho.SaldoFinal = empenho.SaldoFinal + movimentacao.Valor;
@@ -271,7 +271,7 @@ namespace FrotiX.Controllers
         {
             try
             {
-                var movimentacaoDb = _unitOfWork.MovimentacaoEmpenho.GetFirstOrDefaultWithTracking(u =>
+                var movimentacaoDb = _unitOfWork.MovimentacaoEmpenho.GetFirstOrDefault(u =>
                     u.MovimentacaoId == movimentacao.MovimentacaoId
                 );
 
@@ -280,7 +280,7 @@ namespace FrotiX.Controllers
                 // Valor já vem correto do frontend (sem divisão por 100)
                 _unitOfWork.MovimentacaoEmpenho.Update(movimentacao);
 
-                var empenho = _unitOfWork.Empenho.GetFirstOrDefaultWithTracking(u =>
+                var empenho = _unitOfWork.Empenho.GetFirstOrDefault(u =>
                     u.EmpenhoId == movimentacao.EmpenhoId
                 );
                 empenho.SaldoFinal = empenho.SaldoFinal - valorAnterior + movimentacao.Valor;
@@ -312,7 +312,7 @@ namespace FrotiX.Controllers
         {
             try
             {
-                var movimentacaoDb = _unitOfWork.MovimentacaoEmpenho.GetFirstOrDefaultWithTracking(u =>
+                var movimentacaoDb = _unitOfWork.MovimentacaoEmpenho.GetFirstOrDefault(u =>
                     u.MovimentacaoId == movimentacao.MovimentacaoId
                 );
 
@@ -321,7 +321,7 @@ namespace FrotiX.Controllers
                 // Valor já vem correto do frontend (sem divisão por 100)
                 _unitOfWork.MovimentacaoEmpenho.Update(movimentacao);
 
-                var empenho = _unitOfWork.Empenho.GetFirstOrDefaultWithTracking(u =>
+                var empenho = _unitOfWork.Empenho.GetFirstOrDefault(u =>
                     u.EmpenhoId == movimentacao.EmpenhoId
                 );
                 empenho.SaldoFinal = empenho.SaldoFinal + valorAnterior - movimentacao.Valor;
@@ -354,12 +354,12 @@ namespace FrotiX.Controllers
             {
                 if (model.mEmpenho != null && model.mEmpenho.MovimentacaoId != Guid.Empty)
                 {
-                    var objFromDb = _unitOfWork.MovimentacaoEmpenho.GetFirstOrDefaultWithTracking(u =>
+                    var objFromDb = _unitOfWork.MovimentacaoEmpenho.GetFirstOrDefault(u =>
                         u.MovimentacaoId == model.mEmpenho.MovimentacaoId
                     );
                     if (objFromDb != null)
                     {
-                        var empenho = _unitOfWork.Empenho.GetFirstOrDefaultWithTracking(u =>
+                        var empenho = _unitOfWork.Empenho.GetFirstOrDefault(u =>
                             u.EmpenhoId == objFromDb.EmpenhoId
                         );
 
@@ -389,12 +389,12 @@ namespace FrotiX.Controllers
                     && model.mEmpenhoMulta.MovimentacaoId != Guid.Empty
                 )
                 {
-                    var objFromDb = _unitOfWork.MovimentacaoEmpenhoMulta.GetFirstOrDefaultWithTracking(u =>
+                    var objFromDb = _unitOfWork.MovimentacaoEmpenhoMulta.GetFirstOrDefault(u =>
                         u.MovimentacaoId == model.mEmpenhoMulta.MovimentacaoId
                     );
                     if (objFromDb != null)
                     {
-                        var empenhoMulta = _unitOfWork.EmpenhoMulta.GetFirstOrDefaultWithTracking(u =>
+                        var empenhoMulta = _unitOfWork.EmpenhoMulta.GetFirstOrDefault(u =>
                             u.EmpenhoMultaId == objFromDb.EmpenhoMultaId
                         );
 
@@ -445,7 +445,7 @@ namespace FrotiX.Controllers
                 movimentacao.Valor = movimentacao.Valor * -1;
                 _unitOfWork.MovimentacaoEmpenho.Add(movimentacao);
 
-                var empenho = _unitOfWork.Empenho.GetFirstOrDefaultWithTracking(u =>
+                var empenho = _unitOfWork.Empenho.GetFirstOrDefault(u =>
                     u.EmpenhoId == movimentacao.EmpenhoId
                 );
                 empenho.SaldoFinal = empenho.SaldoFinal + movimentacao.Valor;

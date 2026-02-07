@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using NPOI.HSSF.UserModel;
@@ -220,7 +221,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error("Erro ao enviar progresso da importação via SignalR", error, "AbastecimentoController.Import.cs", "EnviarProgresso");
+                _logger.LogError("Erro ao enviar progresso da importação via SignalR", error, "AbastecimentoController.Import.cs", "EnviarProgresso");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Import.cs", "EnviarProgresso", error);
             }
         }
@@ -255,7 +256,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error("Erro ao enviar resumo da planilha via SignalR", error, "AbastecimentoController.Import.cs", "EnviarResumoPlnailha");
+                _logger.LogError("Erro ao enviar resumo da planilha via SignalR", error, "AbastecimentoController.Import.cs", "EnviarResumoPlnailha");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Import.cs", "EnviarResumoPlnailha", error);
             }
         }
@@ -825,7 +826,7 @@ namespace FrotiX.Controllers
             catch (Exception error)
             {
                 await EnviarProgresso(connectionId, 0, "Erro", error.Message);
-                _log.Error(error.Message, error, "AbastecimentoController.Import.cs", "ImportarNovo");
+                _logger.LogError(error.Message, error, "AbastecimentoController.Import.cs", "ImportarNovo");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Import.cs", "ImportarNovo", error);
                 return StatusCode(500, new ResultadoImportacao
                 {
@@ -864,7 +865,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error(error.Message, error, "AbastecimentoController.Import.cs", "DeterminarTipoPendencia");
+                _logger.LogError(error.Message, error, "AbastecimentoController.Import.cs", "DeterminarTipoPendencia");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Import.cs", "DeterminarTipoPendencia", error);
                 return "erro";
             }
@@ -921,7 +922,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error("Erro ao processar conversão de data/hora (NPOI)", error, "AbastecimentoController.Import.cs", "ParseDataHora");
+                _logger.LogError("Erro ao processar conversão de data/hora (NPOI)", error, "AbastecimentoController.Import.cs", "ParseDataHora");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Import.cs", "ParseDataHora", error);
                 return null;
             }
@@ -954,7 +955,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error("Erro ao normalizar descrição do produto comercial", error, "AbastecimentoController.Import.cs", "LimparProduto");
+                _logger.LogError("Erro ao normalizar descrição do produto comercial", error, "AbastecimentoController.Import.cs", "LimparProduto");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Import.cs", "LimparProduto", error);
                 return null;
             }
@@ -1139,7 +1140,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error(error.Message, error, "AbastecimentoController.Import.cs", "LerPlanilhaDinamica");
+                _logger.LogError(error.Message, error, "AbastecimentoController.Import.cs", "LerPlanilhaDinamica");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Import.cs", "LerPlanilhaDinamica", error);
                 return new ResultadoLeituraPlanilha
                 {
@@ -1344,7 +1345,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error("Erro crítico ao ler arquivo CSV de exportação comercial", error, "AbastecimentoController.Import.cs", "LerArquivoCsvAsync");
+                _logger.LogError("Erro crítico ao ler arquivo CSV de exportação comercial", error, "AbastecimentoController.Import.cs", "LerArquivoCsvAsync");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Import.cs", "LerArquivoCsvAsync", error);
                 return new Dictionary<int, LinhaCsv>();
             }
@@ -1493,7 +1494,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
-                _log.Error("Erro crítico ao ler arquivo XLSX de apoio comercial (NPOI)", error, "AbastecimentoController.Import.cs", "LerArquivoXlsxAsync");
+                _logger.LogError("Erro crítico ao ler arquivo XLSX de apoio comercial (NPOI)", error, "AbastecimentoController.Import.cs", "LerArquivoXlsxAsync");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Import.cs", "LerArquivoXlsxAsync", error);
                 return new Dictionary<int, LinhaXlsx>();
             }
@@ -2106,7 +2107,7 @@ namespace FrotiX.Controllers
             catch (Exception error)
             {
                 await EnviarProgresso(connectionId, 0, "Erro", error.Message);
-                _log.Error("Erro crítico no processo de importação Dual (CSV+XLSX)", error, "AbastecimentoController.Import.cs", "ImportarDualInternal");
+                _logger.LogError("Erro crítico no processo de importação Dual (CSV+XLSX)", error, "AbastecimentoController.Import.cs", "ImportarDualInternal");
                 Alerta.TratamentoErroComLinha("AbastecimentoController.Import.cs", "ImportarDualInternal", error);
                 return StatusCode(500, new ResultadoImportacao
                 {

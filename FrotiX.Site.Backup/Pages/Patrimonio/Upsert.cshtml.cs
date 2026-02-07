@@ -93,7 +93,7 @@ namespace FrotiX.Pages.Patrimonio
 
                 if (id != Guid.Empty)
                 {
-                    PatrimonioObj.Patrimonio = _unitOfWork.Patrimonio.GetFirstOrDefaultWithTracking(u =>
+                    PatrimonioObj.Patrimonio = _unitOfWork.Patrimonio.GetFirstOrDefault(u =>
                         u.PatrimonioId == id
                     );
                     if (PatrimonioObj == null)

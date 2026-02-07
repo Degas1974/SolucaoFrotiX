@@ -1,4 +1,4 @@
-﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
 ║  🚀 ARQUIVO: ICombustivelRepository.cs                                                                           ║
 ║  📂 CAMINHO: Repository/IRepository/                                                                             ║
 ║  🎯 OBJETIVO: Interface do repositório de Combustível, gerenciando tipos de combustível cadastrados            ║

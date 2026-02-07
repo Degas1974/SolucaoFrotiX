@@ -97,7 +97,7 @@ namespace FrotiX.Pages.AtaRegistroPrecos
 
                 if (id != Guid.Empty)
                 {
-                    AtaObj.AtaRegistroPrecos = _unitOfWork.AtaRegistroPrecos.GetFirstOrDefaultWithTracking(u => u.AtaId == id);
+                    AtaObj.AtaRegistroPrecos = _unitOfWork.AtaRegistroPrecos.GetFirstOrDefault(u => u.AtaId == id);
                     if (AtaObj == null)
                     {
                         return NotFound();

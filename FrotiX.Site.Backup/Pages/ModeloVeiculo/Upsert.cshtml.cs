@@ -87,7 +87,7 @@ namespace FrotiX.Pages.ModeloVeiculo
 
                 if (id != Guid.Empty)
                 {
-                    ModeloVeiculoObj.ModeloVeiculo = _unitOfWork.ModeloVeiculo.GetFirstOrDefaultWithTracking(u => u.ModeloId == id);
+                    ModeloVeiculoObj.ModeloVeiculo = _unitOfWork.ModeloVeiculo.GetFirstOrDefault(u => u.ModeloId == id);
                     if (ModeloVeiculoObj == null)
                     {
                         return NotFound();

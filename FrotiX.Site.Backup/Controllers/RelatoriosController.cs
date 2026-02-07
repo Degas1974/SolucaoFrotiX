@@ -42,6 +42,7 @@ public class RelatoriosController : Controller
     private readonly FrotiXDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
     private readonly RelatorioEconomildoPdfService _pdfService;
+    private readonly ILogService _log;
 
     /// ╔══════════════════════════════════════════════════════════════════════════════╗
     /// ║ 📌 NOME: RelatoriosController (Construtor)                                 ║

@@ -316,7 +316,7 @@ namespace FrotiX.Controllers
                 TipoAlerta.Motorista => ("Motorista", "fa-duotone fa-user-tie", "#14b8a6"),
                 TipoAlerta.Veiculo => ("Veiculo", "fa-duotone fa-car", "#7c3aed"),
                 TipoAlerta.Anuncio => ("Anuncio", "fa-duotone fa-bullhorn", "#dc2626"),
-                TipoAlerta.Aniversario => ("Aniversario", "fa-duotone fa-cake-candles", "#ec4899"),
+                // TipoAlerta.Aniversario => ("Aniversario", "fa-duotone fa-cake-candles", "#ec4899"), // Não existe na enum
                 _ => ("Geral", "fa-duotone fa-bell", "#6b7280")
             };
         }

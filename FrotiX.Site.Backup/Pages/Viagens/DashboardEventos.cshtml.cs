@@ -18,6 +18,7 @@
  * ║ @relevancia Gestão de viagens                                                                       ║
  * ╚══════════════════════════════════════════════════════════════════════════════════════════════════════╝
  */
+using System;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FrotiX.Pages.Eventos

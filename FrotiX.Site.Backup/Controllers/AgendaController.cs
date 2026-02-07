@@ -786,7 +786,7 @@ namespace FrotiX.Controllers
 
                 if (isNew == false)
                 {
-                    var agendamentoAtual = _unitOfWork.Viagem.GetFirstOrDefaultWithTracking(vg =>
+                    var agendamentoAtual = _unitOfWork.Viagem.GetFirstOrDefault(vg =>
                         vg.ViagemId == viagem.ViagemId
                     );
                     if (agendamentoAtual == null)
@@ -862,7 +862,7 @@ namespace FrotiX.Controllers
 
                     if (viagem.KmFinal != null && viagem.KmFinal != 0)
                     {
-                        var veiculo = _unitOfWork.Veiculo.GetFirstOrDefaultWithTracking(vcl =>
+                        var veiculo = _unitOfWork.Veiculo.GetFirstOrDefault(vcl =>
                             vcl.VeiculoId == viagem.VeiculoId
                         );
                         if (veiculo != null && veiculo.Quilometragem < viagem.KmFinal)
@@ -904,7 +904,7 @@ namespace FrotiX.Controllers
 
                     if (viagem.KmFinal != null && viagem.KmFinal != 0)
                     {
-                        var veiculo = _unitOfWork.Veiculo.GetFirstOrDefaultWithTracking(v =>
+                        var veiculo = _unitOfWork.Veiculo.GetFirstOrDefault(v =>
                             v.VeiculoId == viagem.VeiculoId
                         );
                         if (veiculo.Quilometragem < viagem.KmFinal)
@@ -964,7 +964,7 @@ namespace FrotiX.Controllers
         {
             try
             {
-                var objFromDb = _unitOfWork.Viagem.GetFirstOrDefaultWithTracking(v =>
+                var objFromDb = _unitOfWork.Viagem.GetFirstOrDefault(v =>
                     v.ViagemId == viagem.ViagemId
                 );
                 if (objFromDb == null)
@@ -1113,7 +1113,7 @@ namespace FrotiX.Controllers
         {
             try
             {
-                var objFromDb = _unitOfWork.Viagem.GetFirstOrDefaultWithTracking(v =>
+                var objFromDb = _unitOfWork.Viagem.GetFirstOrDefault(v =>
                     v.ViagemId == viagem.ViagemId
                 );
                 if (objFromDb == null)

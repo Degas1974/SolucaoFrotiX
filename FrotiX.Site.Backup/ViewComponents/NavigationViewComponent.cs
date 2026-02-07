@@ -1,4 +1,4 @@
-﻿using FrotiX.Models;
+using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using System;

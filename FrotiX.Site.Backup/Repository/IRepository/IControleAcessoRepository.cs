@@ -1,4 +1,4 @@
-﻿/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+/* ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
 ║  🚀 ARQUIVO: IControleAcessoRepository.cs                                                                        ║
 ║  📂 CAMINHO: Repository/IRepository/                                                                             ║
 ║  🎯 OBJETIVO: Interface do repositório de ControleAcesso, gerenciando registros de acesso de veículos em         ║

@@ -106,7 +106,7 @@ namespace FrotiX.Controllers
                 if (model != null && model.MarcaId != Guid.Empty)
                 {
                     // [DADOS] Carrega marca com tracking.
-                    var objFromDb = _unitOfWork.MarcaVeiculo.GetFirstOrDefaultWithTracking(u =>
+                    var objFromDb = _unitOfWork.MarcaVeiculo.GetFirstOrDefault(u =>
                         u.MarcaId == model.MarcaId
                     );
                     if (objFromDb != null)
@@ -174,7 +174,7 @@ namespace FrotiX.Controllers
                 if (Id != Guid.Empty)
                 {
                     // [DADOS] Carrega marca com tracking.
-                    var objFromDb = _unitOfWork.MarcaVeiculo.GetFirstOrDefaultWithTracking(u =>
+                    var objFromDb = _unitOfWork.MarcaVeiculo.GetFirstOrDefault(u =>
                         u.MarcaId == Id
                     );
                     string Description = "";

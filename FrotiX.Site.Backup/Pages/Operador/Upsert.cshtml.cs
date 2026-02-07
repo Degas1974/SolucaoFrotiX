@@ -119,7 +119,7 @@ namespace FrotiX.Pages.Operador
 
                 if (id != Guid.Empty)
                 {
-                    OperadorObj.Operador = _unitOfWork.Operador.GetFirstOrDefaultWithTracking(u =>
+                    OperadorObj.Operador = _unitOfWork.Operador.GetFirstOrDefault(u =>
                         u.OperadorId == id
                     );
                     if (OperadorObj == null)

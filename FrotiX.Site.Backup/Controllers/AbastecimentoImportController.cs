@@ -118,14 +118,13 @@ namespace FrotiX.Controllers
         {
             try
             {
-                // [REGRA] Hack para usar lÃ³gica do AbastecimentoController sem validaÃ§Ãµes globais
+                // [REGRA] Hack para usar lógica do AbastecimentoController sem validações globais
                 var mainController = new AbastecimentoController(
                     _logger as ILogger<AbastecimentoController>,
                     _hostingEnvironment,
                     _unitOfWork,
                     _hubContext,
-                    _context,
-                    _log
+                    _context
                 );
 
                 // [LOGICA] Copiar Contexto HTTP

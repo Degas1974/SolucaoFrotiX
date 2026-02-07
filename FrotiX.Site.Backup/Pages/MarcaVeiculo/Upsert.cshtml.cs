@@ -62,7 +62,7 @@ namespace FrotiX.Pages.MarcaVeiculo
 
                 if (id != Guid.Empty)
                 {
-                    MarcaVeiculoObj = _unitOfWork.MarcaVeiculo.GetFirstOrDefaultWithTracking(u => u.MarcaId == id);
+                    MarcaVeiculoObj = _unitOfWork.MarcaVeiculo.GetFirstOrDefault(u => u.MarcaId == id);
                     if (MarcaVeiculoObj == null)
                     {
                         return NotFound();

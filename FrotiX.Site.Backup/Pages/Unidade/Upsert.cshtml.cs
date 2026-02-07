@@ -61,7 +61,7 @@ namespace FrotiX.Pages.Unidade
                 UnidadeObj = new Models.Unidade();
                 if (id != Guid.Empty)
                 {
-                    UnidadeObj = _unitOfWork.Unidade.GetFirstOrDefaultWithTracking(u => u.UnidadeId == id);
+                    UnidadeObj = _unitOfWork.Unidade.GetFirstOrDefault(u => u.UnidadeId == id);
                     if (UnidadeObj == null)
                     {
                         return NotFound();

@@ -61,7 +61,7 @@ namespace FrotiX.Pages.Combustivel
                 CombustivelObj = new Models.Combustivel();
                 if (id != Guid.Empty)
                 {
-                    CombustivelObj = _unitOfWork.Combustivel.GetFirstOrDefaultWithTracking(u => u.CombustivelId == id);
+                    CombustivelObj = _unitOfWork.Combustivel.GetFirstOrDefault(u => u.CombustivelId == id);
                     if (CombustivelObj == null)
                     {
                         return NotFound();

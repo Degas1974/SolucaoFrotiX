@@ -158,7 +158,7 @@ namespace FrotiX.Pages.Manutencao
 
                 if (id != Guid.Empty)
                 {
-                    ManutencaoObj.Manutencao = _unitOfWork.Manutencao.GetFirstOrDefaultWithTracking(u => u.ManutencaoId == id);
+                    ManutencaoObj.Manutencao = _unitOfWork.Manutencao.GetFirstOrDefault(u => u.ManutencaoId == id);
                     if (ManutencaoObj?.Manutencao == null)
                         return NotFound();
                 }

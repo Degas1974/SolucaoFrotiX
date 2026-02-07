@@ -156,7 +156,7 @@ namespace FrotiX.Controllers
                 if (model != null && model.LavadorId != Guid.Empty)
                 {
                     // [DADOS] Carrega entidade para remoção.
-                    var objFromDb = _unitOfWork.Lavador.GetFirstOrDefaultWithTracking(u =>
+                    var objFromDb = _unitOfWork.Lavador.GetFirstOrDefault(u =>
                         u.LavadorId == model.LavadorId
                     );
                     if (objFromDb != null)
@@ -219,7 +219,7 @@ namespace FrotiX.Controllers
                 if (Id != Guid.Empty)
                 {
                     // [DADOS] Carrega lavador com tracking.
-                    var objFromDb = _unitOfWork.Lavador.GetFirstOrDefaultWithTracking(u => u.LavadorId == Id);
+                    var objFromDb = _unitOfWork.Lavador.GetFirstOrDefault(u => u.LavadorId == Id);
                     string Description = "";
                     int type = 0;
 
@@ -442,13 +442,13 @@ namespace FrotiX.Controllers
                 if (model != null && model.LavadorId != Guid.Empty)
                 {
                     // [DADOS] Carrega lavador com tracking.
-                    var objFromDb = _unitOfWork.Lavador.GetFirstOrDefaultWithTracking(u =>
+                    var objFromDb = _unitOfWork.Lavador.GetFirstOrDefault(u =>
                         u.LavadorId == model.LavadorId
                     );
                     if (objFromDb != null)
                     {
                         // [REGRA] Verifica vínculo específico antes de excluir.
-                        var lavadorContrato = _unitOfWork.LavadorContrato.GetFirstOrDefaultWithTracking(u =>
+                        var lavadorContrato = _unitOfWork.LavadorContrato.GetFirstOrDefault(u =>
                             u.LavadorId == model.LavadorId && u.ContratoId == model.ContratoId
                         );
                         if (lavadorContrato != null)
