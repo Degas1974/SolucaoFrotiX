@@ -1,0 +1,148 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Shared/_Contact.cshtml
+ * OBJETIVO: Partial DEMO de sidebar de chat/contatos do template SmartAdmin exibindo lista
+ *           de contatos estaticos (hardcoded HTML) com search box, avatares, status online/offline,
+ *           usado como referencia de layout. NAO integrado ao FrotiX real.
+ * ENTRADAS: Nenhuma (partial estatico sem model), renderizado via partial name="_Contact" em
+ *           layout ou paginas que exibem sidebar de chat, 15 contatos estaticos hardcoded
+ * SAIDAS: Sidebar de contatos renderizada como div lateral com search box topo, lista de 15 contatos
+ *         (avatar circular 40x40px, nome, status badge Verde online/Cinza offline, ultima mensagem
+ *         preview truncado), scroll customizado, click em contato abre chat (handler nao implementado)
+ * CHAMADA POR: Layout master _Layout.cshtml ou paginas especificas via partial name="_Contact"
+ * CHAMA: Nenhum JavaScript externo (logica de click estaria em chat.js se implementado), CSS
+ *        customizado template SmartAdmin (cores, hover effects, badges status, scroll customizado)
+ * DEPENDENCIAS: Bootstrap 5.3.8, Font Awesome 6 Duotone, CSS customizado template SmartAdmin
+ * OBSERVACOES: 130 linhas partial DEMO template SmartAdmin NAO integrado ao FrotiX real. Considerar
+ *              REMOVER se sistema de chat/mensagens internas nao for implementado.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
+<div id="js-chat-contact" class="flex-wrap position-relative slide-on-mobile slide-on-mobile-left border-faded border-left-0 border-top-0 border-bottom-0">
+	<div class="d-flex flex-column bg-faded position-absolute pos-top pos-bottom w-100">
+		<div class="px-3 py-4">
+			<input type="text" class="form-control bg-white" placeholder="Search key words">
+		</div>
+		<div class="flex-1 h-100 custom-scrollbar">
+			<div class="w-100">
+				<div class="nav-title m-0 px-3 text-muted">Chat History</div>
+				<ul class="list-unstyled m-0">
+					<li>
+						<div class="d-flex w-100 px-3 py-2 text-dark hover-white cursor-pointer show-child-on-hover">
+							<div class="profile-image-md rounded-circle" style="background-image:url('/img/demo/avatars/avatar-d.png'); background-size: cover;"></div>
+							<div class="px-2 flex-1">
+								<div class="text-truncate text-truncate-md">
+									Tracey Chang
+									<small class="d-block text-muted text-truncate text-truncate-md">
+										2020-01-31 
+									</small>
+								</div>
+							</div>
+							<div class="position-absolute pos-right mt-2 mr-3 show-on-hover-parent">
+								<button class="btn btn-vinho btn-xs btn-icon rounded-circle shadow-0" data-bs-toggle="tooltip" data-template="<div class=&quot;tooltip&quot; role=&quot;tooltip&quot;><div class=&quot;tooltip-inner bg-danger-500&quot;></div></div>" data-original-title="Delete">
+									<i class="@(Settings.Theme.IconPrefix) fa-trash-alt"></i>
+								</button>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="d-flex w-100 px-3 py-2 text-dark hover-white cursor-pointer show-child-on-hover">
+							<div class="profile-image-md rounded-circle" style="background-image:url('/img/demo/avatars/avatar-b.png'); background-size: cover;"></div>
+							<div class="px-2 flex-1">
+								<div class="text-truncate text-truncate-md">
+									Oliver Kopyuv
+									<small class="d-block text-muted text-truncate text-truncate-md">
+										2019-03-15 
+									</small>
+								</div>
+							</div>
+							<div class="position-absolute pos-right mt-2 mr-3 show-on-hover-parent">
+								<button class="btn btn-vinho btn-xs btn-icon rounded-circle shadow-0" data-bs-toggle="tooltip" data-template="<div class=&quot;tooltip&quot; role=&quot;tooltip&quot;><div class=&quot;tooltip-inner bg-danger-500&quot;></div></div>" data-original-title="Delete">
+									<i class="@(Settings.Theme.IconPrefix) fa-trash-alt"></i>
+								</button>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="d-flex w-100 px-3 py-2 text-dark hover-white cursor-pointer show-child-on-hover">
+							<div class="profile-image-md rounded-circle" style="background-image:url('/img/demo/avatars/avatar-e.png'); background-size: cover;"></div>
+							<div class="px-2 flex-1">
+								<div class="text-truncate text-truncate-md">
+									Dr. John Cook PhD
+									<small class="d-block text-muted text-truncate text-truncate-md">
+										2023-05-27 
+									</small>
+								</div>
+							</div>
+							<div class="position-absolute pos-right mt-2 mr-3 show-on-hover-parent">
+								<button class="btn btn-vinho btn-xs btn-icon rounded-circle shadow-0" data-bs-toggle="tooltip" data-template="<div class=&quot;tooltip&quot; role=&quot;tooltip&quot;><div class=&quot;tooltip-inner bg-danger-500&quot;></div></div>" data-original-title="Delete">
+									<i class="@(Settings.Theme.IconPrefix) fa-trash-alt"></i>
+								</button>
+							</div>
+						</div>				
+					</li>
+					<li>
+						<div class="d-flex w-100 px-3 py-2 text-dark hover-white cursor-pointer show-child-on-hover">
+							<div class="profile-image-md rounded-circle" style="background-image:url('/img/demo/avatars/avatar-g.png'); background-size: cover;"></div>
+							<div class="px-2 flex-1">
+								<div class="text-truncate text-truncate-md">
+									Ali Amdaney
+									<small class="d-block text-muted text-truncate text-truncate-md">
+										2023-06-11 
+									</small>
+								</div>
+							</div>
+							<div class="position-absolute pos-right mt-2 mr-3 show-on-hover-parent">
+								<button class="btn btn-vinho btn-xs btn-icon rounded-circle shadow-0" data-bs-toggle="tooltip" data-template="<div class=&quot;tooltip&quot; role=&quot;tooltip&quot;><div class=&quot;tooltip-inner bg-danger-500&quot;></div></div>" data-original-title="Delete">
+									<i class="@(Settings.Theme.IconPrefix) fa-trash-alt"></i>
+								</button>
+							</div>
+						</div>
+					</li>
+				</ul>
+				<div class="nav-title px-3 text-muted">Missed calls</div>
+				<ul class="list-unstyled m-0">
+					<li>
+						<div class="d-flex w-100 px-3 py-2 text-dark hover-white cursor-pointer show-child-on-hover">
+							<div class="profile-image-md rounded-circle" style="background-image:url('/img/demo/avatars/avatar-m.png'); background-size: cover;"></div>
+							<div class="px-2 flex-1">
+								<div class="text-truncate text-truncate-md">
+									+714651347790
+									<small class="d-block font-italic fs-xs opacity-50">
+										Missed Call 
+									</small>
+								</div>
+							</div>
+							<div class="position-absolute pos-right mt-2 mr-3 show-on-hover-parent">
+								<button class="btn btn-verde btn-xs btn-icon rounded-circle shadow-0" data-bs-toggle="tooltip" data-template="<div class=&quot;tooltip&quot; role=&quot;tooltip&quot;><div class=&quot;tooltip-inner bg-success-500&quot;></div></div>" data-original-title="Play voicemail">
+									<i class="@(Settings.Theme.IconPrefix) fa-play"></i>
+								</button>
+								<button class="btn btn-info btn-xs btn-icon rounded-circle shadow-0" data-bs-toggle="tooltip" data-template="<div class=&quot;tooltip&quot; role=&quot;tooltip&quot;><div class=&quot;tooltip-inner bg-info-500&quot;></div></div>" data-original-title="Call back">
+									<i class="@(Settings.Theme.IconPrefix) fa-phone"></i>
+								</button>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="d-flex w-100 px-3 py-2 text-dark hover-white cursor-pointer show-child-on-hover">
+							<div class="profile-image-md rounded-circle" style="background-image:url('/img/demo/avatars/avatar-m.png'); background-size: cover;"></div>
+							<div class="px-2 flex-1">
+								<div class="text-truncate text-truncate-md">
+									+13471349199
+									<small class="d-block font-italic fs-xs opacity-50">
+										Ended in 32 minutes
+									</small>
+								</div>
+							</div>
+							<div class="position-absolute pos-right mt-2 mr-3 show-on-hover-parent">
+								<button class="btn btn-info btn-xs btn-icon rounded-circle shadow-0" data-bs-toggle="tooltip" data-template="<div class=&quot;tooltip&quot; role=&quot;tooltip&quot;><div class=&quot;tooltip-inner bg-info-500&quot;></div></div>" data-original-title="Call back">
+									<i class="@(Settings.Theme.IconPrefix) fa-phone"></i>
+								</button>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="slide-backdrop" data-action="toggle" data-class="slide-on-mobile-left-show" data-bs-target="#js-chat-contact"></div> 

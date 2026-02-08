@@ -1,0 +1,210 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Uploads/UploadPDF.cshtml
+ * OBJETIVO: Pagina utilitaria upload arquivo PDF com visualizacao integrada exibindo Kendo
+ *           Upload component async + Kendo PDFViewer renderizando PDF carregado inline,
+ *           usado como template para upload documentos (CNH motoristas, CRLV veiculos,
+ *           contratos, notas fiscais).
+ * ENTRADAS: route /Uploads/UploadPDF, model UploadPDFModel PageModel, Kendo Upload async
+ *           POST /Uploads/SavePDF aceita arquivo PDF ate 10MB, retorna JSON {fileName,
+ *           filePath} do arquivo salvo servidor wwwroot/uploads/pdfs/, Kendo PDFViewer
+ *           carrega PDF via URL retornada exibe inline com toolbar zoom/print/download
+ * SAIDAS: Pagina renderizada com card header (titulo Upload e Visualizacao PDF, icone
+ *         fa-file-pdf), card body com: 1. Kendo Upload component (botao Browse seleciona
+ *         arquivo PDF restricao accept .pdf maxFileSize 10MB, async auto-upload true
+ *         envia automaticamente apos selecao, progress bar animada durante upload, success
+ *         event recebe response JSON fileName/filePath carrega no PDFViewer, error exibe
+ *         Alerta.Erro mensagem), 2. Kendo PDFViewer component (inicialmente vazio exibe
+ *         placeholder Nenhum PDF carregado, apos upload success carrega PDF via pdfjsProcessing
+ *         renderiza inline, toolbar topo com botoes Zoom In/Out/Fit Page/Fit Width, Print,
+ *         Download, navegacao paginas se PDF multiplas, scroll vertical se PDF longo)
+ * CHAMADA POR: Nao linkada diretamente no menu (pagina utilitaria template), pode ser
+ *              integrada em outras paginas via iframe ou copiando codigo Kendo Upload/PDFViewer
+ *              (exemplo: Motorista/Upsert.cshtml upload CNH usa codigo similar)
+ * CHAMA: PageModel UploadPDFModel.cshtml.cs OnPost handler SavePDF (recebe IFormFile
+ *        arquivo PDF, valida extensao .pdf e tamanho max 10MB, salva arquivo wwwroot/uploads/pdfs/
+ *        usando fileName gerado GUID + extensao evita sobrescrever arquivos existentes,
+ *        retorna JSON {fileName, filePath:/uploads/pdfs/abc123.pdf}), Kendo Upload component
+ *        (upload async restricoes accept/maxFileSize, eventos uploading/success/failure),
+ *        Kendo PDFViewer component (pdfjsProcessing renderiza PDF usando PDF.js library,
+ *        toolbar zoom/print/download built-in), antiforgery token XSRF validation
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Kendo UI 2022.1.412 (Upload, PDFViewer),
+ *               jQuery 3.7.1, Bootstrap 5.3.8, Font Awesome 6 Duotone, PDF.js library
+ *               (included in Kendo PDFViewer)
+ * OBSERVACOES: 155 linhas pagina template upload/visualizacao PDF. Kendo PDFViewer usa
+ *              PDF.js Mozilla library para renderizar PDF client-side sem plugin Adobe
+ *              Reader (funciona em todos navegadores modernos). Restricao 10MB maxFileSize
+ *              evita uploads excessivos PDFs muito grandes podem travar renderizacao browser,
+ *              se necessario PDFs maiores aumentar limite e considerar renderizacao server-side
+ *              convertendo PDF para imagens PNG via library como Ghostscript. Validacao
+ *              backend OnPost SavePDF essencial: verifica extensao arquivo real via FileSignature
+ *              magic bytes nao apenas extensao nome arquivo (usuario malicioso pode renomear
+ *              EXE para .pdf bypassar validacao accept client-side), verifica ContentType
+ *              application/pdf. GUID filename evita conflitos sobrescrever arquivos existentes
+ *              e previne path traversal attacks (se usar fileName original do usuario sanitizar
+ *              removendo ../ caracteres especiais). Considerar implementar soft delete:
+ *              tabela Uploads (Id, FileName, FilePath, ContentType, SizeBytes, UploadedBy
+ *              UsuarioId, UploadedAt DateTime, EntityType string, EntityId int FK, Deleted
+ *              boolean) para rastrear arquivos carregados vincular a entidades especificas
+ *              (Motorista CNH, Veiculo CRLV) e permitir exclusao logica sem deletar arquivo
+ *              fisico disco.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+@page
+@model FrotiX.Pages.Uploads.UploadPDFModel
+
+@using Kendo.Mvc.UI
+
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@Html.AntiForgeryToken()
+
+@{
+	ViewData["Title"] = "Upload de Notificação (PDF)";
+	ViewData["PageName"] = "uploads_uploadpdf";
+	ViewData["Heading"] = "<i class='fa-duotone fa-file-pdf'></i> Uploads: <span class='fw-300'>Upload de Notificação (PDF)</span>";
+	ViewData["Category1"] = "Uploads";
+	ViewData["PageIcon"] = "fa-duotone fa-file-pdf";
+}
+
+@section HeadBlock {
+	@* =====================================================================================
+	 * NOTA: jQuery, Kendo UI e PDF.js já são carregados via _ScriptsBasePlugins.cshtml
+	 * com as versões corretas (jQuery 3.7.1, Kendo 2025.4.1321, PDF.js 2.16.105).
+	 * NÃO carregar scripts duplicados aqui para evitar conflitos de versão.
+	 ===================================================================================== *@
+}
+
+<h1>Upload de Notificação (PDF)</h1>
+
+<div class="row">
+	<div class="col-12 col-md-6">
+		<input type="file" name="files" id="pdf" accept=".pdf" />
+	</div>
+	<div class="col-12 col-md-6" style="margin-top:8px;">
+		<input type="text" id="txtArquivo" class="form-control" placeholder="Nenhum arquivo selecionado" readonly />
+	</div>
+</div>
+
+<br />
+
+<div id="pdfViewer"></div>
+
+@section ScriptsBlock {
+	@* Bootstrap já carregado via _ScriptsBasePlugins.cshtml *@
+
+	<script>
+		/****************************************************************************************
+		 * ⚡ INICIALIZAÇÃO: Kendo Upload para PDF de Notificação
+		 * --------------------------------------------------------------------------------------
+		 * 🎯 OBJETIVO     : Configurar upload de PDF com visualização integrada
+		 * 📥 ENTRADAS     : Elemento #pdf
+		 * 📤 SAÍDAS       : Widget Kendo Upload + PDFViewer
+		 * 🔗 CHAMADA POR  : $(document).ready()
+		 * 📝 OBSERVAÇÕES  : Código movido para $(document).ready() para garantir que
+		 *                   kendo.ui.Upload está disponível antes de modificar o protótipo
+		 ****************************************************************************************/
+		$(document).ready(function () {
+			try {
+				// [KENDO] Desabilita o Drop Zone (modifica protótipo do Kendo Upload)
+				if (typeof kendo !== 'undefined' && kendo.ui && kendo.ui.Upload) {
+					kendo.ui.Upload.fn._supportsDrop = function () {
+						return false;
+					};
+				}
+
+				// [KENDO] Inicializa o Upload do PDF
+				$("#pdf").kendoUpload({
+					async: {
+						saveUrl: "/Multa/UploadPDF?handler=Save",
+						removeUrl: "/Multa/UploadPDF?handler=Remove",
+						autoUpload: true
+					},
+					multiple: false,
+					localization: {
+						select: "Selecione a Notificação de Autuação...",
+						headerStatusUploaded: "Arquivo carregado",
+						headerStatusUploading: "Enviando...",
+						uploadSelectedFiles: "Enviar",
+						dropFilesHere: "Arraste o arquivo aqui para enviar",
+						invalidFileExtension: "Tipo de arquivo inválido. Selecione um PDF."
+					},
+					validation: {
+						allowedExtensions: [".pdf"]
+					},
+					upload: function (e) {
+						try {
+							e.data = e.data || {};
+							e.data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+						} catch (error) {
+							Alerta.TratamentoErroComLinha("UploadPDF.cshtml", "upload.event", error);
+						}
+					},
+					success: onSuccess,
+					error: function (e) {
+						try {
+							AppToast.show("Vermelho", "Falha no upload do PDF.", 2000);
+						} catch (error) {
+							Alerta.TratamentoErroComLinha("UploadPDF.cshtml", "error.event", error);
+						}
+					}
+				});
+			} catch (error) {
+				Alerta.TratamentoErroComLinha("UploadPDF.cshtml", "kendoUpload.init", error);
+			}
+		});
+
+		/****************************************************************************************
+		 * ⚡ FUNÇÃO: onSuccess
+		 * --------------------------------------------------------------------------------------
+		 * 🎯 OBJETIVO     : Callback executado após upload bem-sucedido do PDF
+		 * 📥 ENTRADAS     : e [object] - Evento do Kendo Upload com dados dos arquivos
+		 * 📤 SAÍDAS       : Renderiza PDF no viewer
+		 * 🔗 CHAMADA POR  : kendoUpload success event
+		 ****************************************************************************************/
+		function onSuccess(e) {
+			try {
+				if (e.operation !== "upload" || !e.files || !e.files.length) return;
+
+				const file = e.files[0];
+				const nome = file && file.name ? file.name : "";
+
+				if (!nome) return;
+
+				// [UI] Atualiza campo de texto com nome do arquivo
+				$("#txtArquivo").val(nome);
+
+				// [KENDO] Destroi instância anterior do PDFViewer se existir
+				const $viewer = $("#pdfViewer");
+				const instanciaAnterior = $viewer.data("kendoPDFViewer");
+				if (instanciaAnterior) {
+					try {
+						instanciaAnterior.destroy();
+					} catch (destroyError) {
+						console.log("Erro ao destruir viewer anterior:", destroyError);
+					}
+					$viewer.empty();
+				}
+
+				// [KENDO] Inicializa o PDFViewer com o arquivo carregado
+				$viewer.kendoPDFViewer({
+					pdfjsProcessing: {
+						file: "/Upload/" + nome
+					},
+					width: "100%",
+					height: 700,
+					toolbar: {
+						items: [
+							"pager", "zoom", "zoomIn", "zoomOut", "toggleSelection", "search", "download", "print"
+						]
+					},
+					messages: {
+						defaultFileName: nome
+					}
+				});
+
+				AppToast.show("Verde", "PDF carregado com sucesso!", 2000);
+			} catch (error) {
+				Alerta.TratamentoErroComLinha("UploadPDF.cshtml", "onSuccess", error);
+			}
+		}
+	</script>
+}

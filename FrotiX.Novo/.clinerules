@@ -1,0 +1,27 @@
+# ⚠️ ATENÇÃO: Este NÃO é o arquivo de regras principal!
+
+Este arquivo redireciona para o arquivo principal de regras.
+
+## 📖 ARQUIVO PRINCIPAL DE REGRAS
+
+**RegrasDesenvolvimentoFrotiX.md**
+
+## 🔄 INSTRUÇÕES OBRIGATÓRIAS
+
+1. **Ao iniciar sessão**: Leia `RegrasDesenvolvimentoFrotiX.md` COMPLETAMENTE
+2. **Ao gerar código**: Siga TODAS as regras de `RegrasDesenvolvimentoFrotiX.md`
+3. **Ao adicionar novas regras**: Adicione APENAS em `RegrasDesenvolvimentoFrotiX.md`
+4. **NUNCA modifique**: Este arquivo `.clinerules`
+
+## 💡 NOTA PARA DESENVOLVEDORES
+
+Este arquivo serve como **ponto de entrada**. 
+Ele redireciona para as regras completas em `RegrasDesenvolvimentoFrotiX.md`, garantindo que:
+
+1. As regras sejam lidas no início de cada sessão
+2. Novas regras sejam adicionadas no local correto
+3. Haja consistência entre todas as IAs do projeto
+
+---
+
+**📄 ARQUIVO PRINCIPAL**: `RegrasDesenvolvimentoFrotiX.md`

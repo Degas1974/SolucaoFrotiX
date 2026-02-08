@@ -1,0 +1,127 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Usuarios/Registrar.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de registro/cadastro de novos usuários FrotiX (admin register user) com
+ *                   form 3 campos (Ponto username, Nome Completo, Email @camara.leg.br), envia email verificação.
+ * 📥 ENTRADAS     : @page route /Usuarios/Registrar, @model RegisterModel (code-behind), form inputs (Ponto p_,
+ *                   NomeCompleto, Email @camara.leg.br required autocomplete off), Model.ReturnUrl, submit
+ * 📤 SAÍDAS       : Panel com header dual-icon (fa-user-plus) "Registrar Usuário", card bg-faded form com 3
+ *                   inputs (Ponto col-4 pr-1, NomeCompleto col-8 pl-1, Email col-12), validation summaries
+ *                   (asp-validation-for alert alert-primary), botão btn-azul fa-file-plus "Enviar Email de
+ *                   Verificação" (col-md-3 ml-auto), Bootstrap 5 CDN (REDUNDANTE!)
+ * 🔗 CHAMADA POR  : Menu admin "Cadastros > Registrar Usuário", route /Usuarios/Registrar, RegisterModel.OnGet(),
+ *                   link dashboard admin, acesso somente usuários autorizados (role Admin?)
+ * 🔄 CHAMA        : RegisterModel (code-behind Usuarios/Registrar.cshtml.cs), Model.ReturnUrl (asp-route-returnUrl),
+ *                   Model.Input (Ponto, NomeCompleto, Email - InputModel), asp-validation-summary All,
+ *                   asp-validation-for (Ponto, NomeCompleto, Email), ViewData (breadcrumb/heading fa-user-plus),
+ *                   Bootstrap 5 CDN (jsdelivr.net v5.3.8 - CSS + JS bundle), Font Awesome Duotone (fa-user-plus
+ *                   heading/icon, fa-file-plus botão), CSS inline (.form-control-xs, .label - N/ÃO usados!)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, RegisterModel (code-behind - Identity UserManager?), Bootstrap 5
+ *                   CDN (REDUNDANTE - já no _Layout), Form Tag Helpers (asp-for, asp-validation-for,
+ *                   asp-validation-summary, asp-route-returnUrl), Font Awesome 6 Duotone, CSS classes custom
+ *                   (btn-azul, icon-space icon-pulse, titulo-paginas, form-control-xs N/ÃO usado)
+ * 📝 OBSERVAÇÕES  : 81 linhas. Página registro usuários FrotiX (admin cadastra user, não self-register).
+ *                   ViewData config:
+ *                   - Title: "Usuários"
+ *                   - PageName: "usuarios_registrar"
+ *                   - Heading: "<i class='fa-duotone fa-user-plus'></i> Cadastros: <span class='fw-300'>Registrar Usuário</span>"
+ *                   - Category1: "Cadastros"
+ *                   - PageIcon: "fa-duotone fa-user-plus"
+ *                   CSS inline (N/ÃO usado): .form-control-xs (height calc(1em + .775rem + 2px), padding .125rem
+ *                   .25rem, font-size .75rem), .label (margin-bottom -5px, margin-top 10px). Form structure:
+ *                   1. Row col-4 pr-1: Ponto (username) placeholder "p_" help-block "O Ponto será o nome do usuário"
+ *                   2. Row col-8 pl-1: NomeCompleto placeholder "Nome Completo"
+ *                   3. Email @camara.leg.br required autocomplete off (prevenir browser autofill)
+ *                   Validation asp-validation-summary All (alert alert-primary text-dark - mostra todos erros no topo),
+ *                   asp-validation-for individual (invalid-feedback spans). Botão #js-login-btn (ID genérico - deve
+ *                   ser #btnRegistrar!) btn-azul form-control mt-3 col-md-3 ml-auto (direita) fa-file-plus
+ *                   "Enviar Email de Verificação". Bootstrap 5 CDN NO @section ScriptsBlock (REDUNDANTE! _Layout
+ *                   já inclui). **PROBLEMAS**:
+ *                   1. CSS inline .form-control-xs e .label declarados mas N/ÃO usados (remover)
+ *                   2. Bootstrap CDN redundante (remover)
+ *                   3. Button ID "js-login-btn" genérico (renomear para "btnRegistrar" ou "btnEnviarEmail")
+ *                   4. Form duplicado? (2x <form> tags - linha 28 e 33 - erro HTML!)
+ *                   Fluxo esperado: Admin preenche Ponto/Nome/Email → OnPost RegisterModel → cria user Identity
+ *                   (sem senha ainda) → envia email com link verificação → user clica link → define senha.
+ **************************************************************************************** *@
+@page
+@model RegisterModel
+@{
+	ViewData["Title"] = "Usuários";
+	ViewData["PageName"] = "usuarios_registrar";
+	ViewData["Heading"] = "<i class='fa-duotone fa-user-plus'></i> Cadastros: <span class='fw-300'>Registrar Usuário</span>";
+	ViewData["Category1"] = "Cadastros";
+	ViewData["PageIcon"] = "fa-duotone fa-user-plus";
+}
+
+<style>
+	.form-control-xs {
+		height: calc(1em + .775rem + 2px) !important;
+		padding: .125rem .25rem !important;
+		font-size: .75rem !important;
+		line-height: 1.5;
+		border-radius: .2rem;
+	}
+
+	.label {
+		margin-bottom: -5px;
+		margin-top: 10px;
+	}
+</style>
+
+@section HeadBlock {
+}
+
+<form method="post">
+	<div class="row">
+		<div class="col-xl-12">
+			<div id="panel-1" class="panel">
+				<div class="panel-container show">
+					<div class="panel-content">
+						<div class="col-xl-12 ml-auto mr-auto">
+							<div class="card p-4 rounded-plus bg-faded">
+								<form id="js-login" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+									<div asp-validation-summary="All" class="alert alert-primary text-dark"></div>
+									<div class="form-group row">
+										<div class="col-4 pr-1">
+											<label class="pl-1 text-black-50 font-weight-bold">Entre com o ponto do usuário</label>
+											<span class="invalid-feedback" asp-validation-for="Input.Ponto">O ponto do usuário é obrigatório.</span>
+											<input type="text" asp-for="Input.Ponto" class="form-control" placeholder="p_" />
+											<div class="help-block">O Ponto será o nome do usuário</div>
+										</div>
+										<div class="col-8 pl-1">
+											<label class="pl-1 text-black-50 font-weight-bold">Entre o nome do usuário</label>
+											<span class="invalid-feedback" asp-validation-for="Input.NomeCompleto">O nome é obrigatório.</span>
+											<input type="text" asp-for="Input.NomeCompleto" class="form-control" placeholder="Nome Completo" />
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="pl-1 text-black-50 font-weight-bold" asp-for="Input.Email">Entre com o email da RedeCamara</label>
+										<span class="invalid-feedback" asp-validation-for="Input.Email">O email é obrigatório.</span>
+										<input type="email" asp-for="Input.Email" class="form-control" placeholder="@@camara.leg.br" required="required" autocomplete="off" />
+									</div>
+									<div class="form-group">
+										<div class="row no-gutters">
+											<div class="col-md-3 ml-auto text-right">
+												<button id="js-login-btn" type="submit" class="btn btn-azul form-control mt-3">
+													<i class="fa-duotone fa-file-plus icon-space icon-pulse"></i> Enviar Email de Verificação
+												</button>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+@section ScriptsBlock {
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+}

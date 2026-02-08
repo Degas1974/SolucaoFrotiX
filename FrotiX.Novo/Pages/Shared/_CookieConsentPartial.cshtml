@@ -1,0 +1,62 @@
+﻿@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_CookieConsentPartial.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view do banner GDPR/LGPD de consentimento de cookies, exibido apenas
+ *                   nas páginas de register/login para usuários não-tracked. Banner fixo topo.
+ * 📥 ENTRADAS     : ViewBag.PageName ("register" ou "login"), Context.Features.Get<ITrackingConsentFeature>()
+ *                   (ASP.NET Core tracking consent), consentFeature.CreateConsentCookie() (cookie string)
+ * 📤 SAÍDAS       : Bootstrap alert #cookieConsent position-fixed top (z-index 999999), bg-fusion-500,
+ *                   botão "Accept" (data-cookie-string), botão "Learn more", JavaScript inline set cookie,
+ *                   texto "This website is using cookies" + explicação GDPR
+ * 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml (provavelmente no <body> ou após <header>), renderização
+ *                   condicional @if (showBanner) - só em register/login sem CanTrack
+ * 🔄 CHAMA        : ITrackingConsentFeature (Context.Features), consentFeature?.CanTrack (verifica
+ *                   tracking consent), consentFeature?.CreateConsentCookie() (gera cookie string),
+ *                   JavaScript addEventListener "click" set document.cookie, Bootstrap dismiss alert
+ *                   (data-dismiss="alert"), Font Awesome fa-times, CSS classes (alert, alert-dismissible,
+ *                   fade show, position-fixed, pos-top pos-left pos-right, rounded-0, shadow-lg)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, Microsoft.AspNetCore.Http.Features (ITrackingConsentFeature),
+ *                   Bootstrap 5 (alert, close, btn btn-sm btn-terracota btn-light), Font Awesome Duotone
+ *                   (fa-times), JavaScript nativo (querySelector, addEventListener, dataset.cookieString),
+ *                   CSS classes custom (bg-fusion-500, pos-top pos-left pos-right, btn-terracota)
+ * 📝 OBSERVAÇÕES  : 30 linhas. Banner GDPR compliance exibido APENAS em register/login E se usuário
+ *                   não tem tracking consent (!consentFeature?.CanTrack). Condicional C#:
+ *                   var shouldShowBanner = ViewBag.PageName == "register" || ViewBag.PageName == "login";
+ *                   var showBanner = shouldShowBanner && !consentFeature?.CanTrack ?? false;
+ *                   Banner position-fixed topo (pos-top pos-left pos-right), z-index 999999 (overlay tudo),
+ *                   margin 0 !important, rounded-0 (sem border-radius). Botão Accept executa JavaScript
+ *                   inline set cookie (document.cookie = button.dataset.cookieString). Botão Learn more
+ *                   sem href (placeholder). Texto genérico GDPR: "We use them to give you the best
+ *                   experience...". Para produção: adicionar link real Learn more (política de privacidade).
+ **************************************************************************************** *@
+@using Microsoft.AspNetCore.Http.Features
+
+@{
+    var shouldShowBanner = ViewBag.PageName == "register" || ViewBag.PageName == "login";
+    var consentFeature = Context.Features.Get<ITrackingConsentFeature>();
+    var showBanner = shouldShowBanner && !consentFeature?.CanTrack ?? false;
+    var cookieString = consentFeature?.CreateConsentCookie();
+}
+
+@if (showBanner)
+{
+    <div id="cookieConsent" class="alert bg-fusion-500 alert-dismissible fade show position-fixed pos-top pos-left pos-right rounded-0 border-0 m-0 shadow-lg" role="alert" style="z-index: 999999;margin: 0 !important;">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true"><i class="fa-duotone fa-times"></i></span>
+        </button>
+        <h4 class="m-0">This website is using cookies.</h4>
+        We use them to give you the best experience. If you continue using our website, we'll assume that you are happy to receive all cookies on this website.
+        <div class="d-flex mt-3">
+            <button class="btn btn-sm btn-terracota mr-2" data-dismiss="alert" aria-label="Close" data-cookie-string="@cookieString">Accept</button>
+            <button class="btn btn-sm btn-light">Learn more</button>
+        </div>
+    </div>
+    <script>
+        (function () {
+            var button = document.querySelector("#cookieConsent button[data-cookie-string]");
+            button.addEventListener("click", function () {
+                document.cookie = button.dataset.cookieString;
+            }, false);
+        })();
+    </script>
+}
