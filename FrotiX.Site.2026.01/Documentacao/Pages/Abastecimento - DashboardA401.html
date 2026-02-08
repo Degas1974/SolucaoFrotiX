@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Dashboard de Abastecimento | FrotiX</title>
+  <style>
+    :root { --vinho:#722F37; --vinho-light:#8B3A44; --azul:#325d88; --azul-light:#3d6f9e; --terracota:#A97B6E; --terracota-light:#C08B7E; --verde:#557570; --verde-light:#6A8A85; --cinza:#f5f7fb; --card:#fff; --texto:#1f1f1f; --shadow:0 20px 45px -18px rgba(0,0,0,.35); --radius:14px; --header-bg:#b66a3d; --code-bg:#33465c; }
+    @page { size: A4; margin: 16mm; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:"Segoe UI","Inter",system-ui,-apple-system,sans-serif; background: radial-gradient(circle at 12% 20%, rgba(50,93,136,.08), transparent 26%), radial-gradient(circle at 90% 10%, rgba(114,47,55,.10), transparent 30%), var(--cinza); color:var(--texto); padding:22px; display:flex; justify-content:center; }
+    .page { width:210mm; max-width:100%; }
+    .hero { background:var(--header-bg); color:#fff; padding:22px 24px; border-radius:var(--radius); box-shadow:0 0 0 1px #000, 0 0 0 4px #fff, var(--shadow); display:flex; align-items:center; gap:16px; }
+    .hero img { width:50px; height:50px; filter:drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+    h1 { margin:0; font-size:26px; letter-spacing:0.2px; }
+    .subtitle { margin:6px 0 0; font-size:13px; opacity:0.92; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; margin-top:18px; }
+    .card { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px 18px; border:1px solid rgba(0,0,0,0.05); }
+    .section-title { display:flex; align-items:center; gap:10px; margin:0 0 10px; font-size:15px; font-weight:800; color:var(--vinho); }
+    .icon { width:18px; height:18px; vertical-align:middle; filter:drop-shadow(0 2px 4px rgba(0,0,0,.15)); }
+    ul { margin:6px 0 0 18px; padding:0; } li { margin-bottom:6px; }
+    code { background:var(--code-bg); color:#e9edf5; padding:10px 12px; border-radius:10px; display:block; white-space:pre-wrap; font-size:12px; line-height:1.45; box-shadow: inset 0 1px 0 rgba(255,255,255,0.03); }
+    .tag { display:inline-block; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:600; background:#eee; color:#555; margin-right:4px; }
+    .tag.green { background:#d1e7dd; color:#0f5132; }
+    .tag.blue { background:#cfe2ff; color:#084298; }
+    .color-swatch { display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; border:1px solid rgba(0,0,0,0.1); vertical-align:middle; }
+    table { width:100%; border-collapse:collapse; font-size:13px; margin-top:10px; }
+    th, td { text-align:left; padding:8px; border-bottom:1px solid #eee; }
+    th { color:var(--vinho); font-weight:600; }
+  </style>
+</head>
+
+<svg style="display:none" aria-hidden="true" focusable="false">
+  <symbol id="fa-chart-pie" viewBox="0 0 576 512"><path opacity=".4" fill="currentColor" d="M304 240V16.6c0-9 7-16.6 16-16.6C443.7 0 544 100.3 544 224c0 9-7.6 16-16.6 16H304z"/><path fill="currentColor" d="M32 256c0 123.7 100.3 224 224 224V288H32V256zm0-32h224V16.6C115.6 24.3 0 128.5 0 256V224z"/></symbol>
+  <symbol id="fa-layer-group" viewBox="0 0 576 512"><path opacity=".4" fill="currentColor" d="M288 281.3L56 165.3 288 49.3 520 165.3 288 281.3zM238.4 340.4L33.3 237.9C13.6 228 0 207.7 0 185.7v14.1c0 21.9 13.5 42.2 33.3 52.1l230.4 115.2c15.2 7.6 33.3 7.6 48.6 0l16.7-8.3-90.6-19.4z"/><path fill="currentColor" d="M288 448c-17 0-33.1-6.7-45.2-18.7l-7.4-7.4-1.6 .3c-11.8 2.5-24.1-1.3-32-10s-10.7-20.9-7.3-32.5l77.1-262.1c4.5-15.3 18.6-25.9 34.5-25.9s30 10.6 34.5 25.9L417.8 379.7c3.4 11.6 .6 23.9-7.3 32.5s-20.2 12.5-32 10l-1.6-.3-7.4 7.4C357.3 441.3 341.2 448 324.2 448H288zM576 344c0 22-13.6 42.2-33.3 52.1L368 483.4V448h-43.8c-10.9 0-21.2-4.3-28.9-12l-7.4-7.4-15.9 3.4 10.1-34.3L360 131.9l2.8-1.4 179.9 89.9c19.8 9.9 33.3 30.2 33.3 52.1v71.5z"/></symbol>
+  <symbol id="fa-palette" viewBox="0 0 512 512"><path opacity=".4" fill="currentColor" d="M512 256c0 141.4-114.6 256-256 256C114.6 512 0 397.4 0 256S114.6 0 256 0c141.4 0 256 114.6 256 256z"/><path fill="currentColor" d="M128 208a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm64 96a32 32 0 1 1 -64 0 32 32 0 1 1 64 0zm96 56a32 32 0 1 1 0-64 32 32 0 1 1 0 64zm96-96a32 32 0 1 1 -64 0 32 32 0 1 1 64 0zm-53.7-90.3C306 149.3 286.7 136 264 136c-22 0-40 16-40 40s18 40 40 40c4 0 7.8-.5 11.4-1.5c-4.2 13.6-2.1 28.8 6.3 40.5l96 136c7.7 10.9 22 15.6 34.6 11.4s19.8-18.4 17.5-31.4l-49.1-279c-1.3-7.5-6.9-13.6-14.4-15.7s-15.6 1-20.8 6.7l-15.2 16.7z"/></symbol>
+  <symbol id="fa-server" viewBox="0 0 512 512"><path opacity=".4" fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96v64c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM64 288c-35.3 0-64 28.7-64 64v64c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V352c0-35.3-28.7-64-64-64H64z"/><path fill="currentColor" d="M0 256c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V192c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v64zM416 432a32 32 0 1 0 0-64 32 32 0 1 0 0 64zM128 400c17.7 0 32 14.3 32 32s-14.3 32-32 32s-32-14.3-32-32s14.3-32 32-32zm288-256a32 32 0 1 0 0-64 32 32 0 1 0 0 64zM128 144c17.7 0 32 14.3 32 32s-14.3 32-32 32s-32-14.3-32-32s14.3-32 32-32zM416 304a32 32 0 1 0 0-64 32 32 0 1 0 0 64zM96 272a32 32 0 1 0 64 0 32 32 0 1 0 -64 0z"/></symbol>
+  <symbol id="fa-filter" viewBox="0 0 512 512"><path opacity=".4" fill="currentColor" d="M32 64C14.3 64 0 49.7 0 32S14.3 0 32 0H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H32z"/><path fill="currentColor" d="M3.5 38.5c-4 10.3-1 21.9 7.6 28.9l162 133.1c9.9 8.1 15.6 20.3 15.6 33.1V448c0 14.8 10 27.7 24.2 31.3s29.3-1.4 36.8-12.1l64-91.4c6.1-8.7 9.4-19.1 9.4-29.8V233.7c0-12.8 5.7-25 15.6-33.1l162-133.1c8.5-7 11.5-18.6 7.6-28.9S493.6 14 482.5 14H29.5C18.4 14 8.5 22.8 4.6 32.8L3.5 38.5z"/></symbol>
+  <symbol id="fa-list-check" viewBox="0 0 640 640"><path opacity=".4" fill="currentColor" d="M224 480C224 462.3 238.3 448 256 448L544 448C561.7 448 576 462.3 576 480C576 497.7 561.7 512 544 512L256 512C238.3 512 224 497.7 224 480zM288 160C288 142.3 302.3 128 320 128L544 128C561.7 128 576 142.3 576 160C576 177.7 561.7 192 544 192L320 192C302.3 192 288 177.7 288 160zM288 320C288 302.3 302.3 288 320 288L544 288C561.7 288 576 302.3 576 320C576 337.7 561.7 352 544 352L320 352C302.3 352 288 337.7 288 320z"/><path fill="currentColor" d="M203.7 133.8C211.3 122.9 208.7 108 197.8 100.4C186.9 92.8 172 95.4 164.4 106.3L124.7 162.8L105 143C95.6 133.7 80.4 133.7 71 143C61.6 152.3 61.7 167.6 71 177L111 217C116 222 123 224.6 130.1 223.9C137.2 223.2 143.6 219.6 147.7 213.8L203.7 133.8zM203.7 293.8C211.3 282.9 208.7 268 197.8 260.4C186.9 252.8 172 255.4 164.4 266.3L124.7 322.8L105 303C95.6 293.6 80.4 293.6 71.1 303C61.8 312.4 61.7 327.6 71 337L111 377C116 382 123 384.6 130.1 383.9C137.2 383.2 143.6 379.6 147.7 373.8L203.7 293.8zM128 520C150.1 520 168 502.1 168 480C168 457.9 150.1 440 128 440C105.9 440 88 457.9 88 480C88 502.1 105.9 520 128 520z"/></symbol>
+</svg>
+
+<div class="page">
+  <header class="hero">
+    <svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-chart-pie"></use></svg>
+    <div>
+      <h1>Dashboard de Abastecimento</h1>
+      <p class="subtitle">Análise gerencial consolidada de frota · Última atualização: 06/01/2026 · Versão: 1.1</p>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="card">
+      <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-layer-group"></use></svg>Visão Geral</div>
+      <p>Ferramenta gerencial completa para análise de abastecimento. Design sofisticado em paleta Caramelo, com 3 abas temáticas e filtros inteligentes.</p>
+      <ul>
+        <li><span class="tag green">3 Abas</span> Consumo Geral, Mensal e Por Veículo</li>
+        <li><span class="tag blue">Gráficos</span> Barras, Linhas, Pizza, Heatmap</li>
+        <li><span class="tag blue">Syncfusion</span> Renderização visual avançada</li>
+        <li><span class="tag green">Interativo</span> Filtros, Modais e Drill-down</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-palette"></use></svg>Tema Visual (Caramelo)</div>
+      <p>Design exclusivo baseado em tons terrosos para reduzir fadiga visual e destacar métricas.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;">
+        <div><span class="color-swatch" style="background:#a8784c"></span>Primary #a8784c</div>
+        <div><span class="color-swatch" style="background:#c4956a"></span>Secondary #c4956a</div>
+        <div><span class="color-swatch" style="background:#d4a574"></span>Accent #d4a574</div>
+        <div><span class="color-swatch" style="background:#6d472c"></span>Darker #6d472c</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-server"></use></svg>API Endpoints</div>
+      <ul>
+        <li><code>GET /DashboardGeral</code> - Resumo, KPIs e Heatmap geral</li>
+        <li><code>GET /DashboardMensal</code> - Detalhamento dia-a-dia e rankings</li>
+        <li><code>GET /DashboardVeiculo</code> - Drill-down específico por placa</li>
+        <li><code>GET /DashboardMesesDisponiveis</code> - Filtros dinâmicos</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-filter"></use></svg>Lógica de Filtros</div>
+      <p>Sistema inteligente que prioriza dados recentes:</p>
+      <code>
+// Lógica de Fallback
+if (filtro == null) {
+  buscarUltimoMesComDados();
+}
+// Dropdowns
+popularDinamicamente(mesesDisponiveis);
+posicionarAutomaticamente();
+      </code>
+    </section>
+
+    <section class="card" style="grid-column: 1 / -1;">
+      <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-list-check"></use></svg>Log de Modificações Recentes</div>
+      <table>
+        <thead><tr><th>Data</th><th>Título</th><th>Impacto</th></tr></thead>
+        <tbody>
+          <tr><td>06/01/2026</td><td>Correções Críticas de Performance</td><td>Resolveu travamento inicial buscando apenas último mês por padrão. Dropdowns agora dinâmicos.</td></tr>
+          <tr><td>06/01/2025</td><td>Criação da Documentação</td><td>Mapeamento completo de arquitetura, estilos e endpoints.</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+</body>
+</html>

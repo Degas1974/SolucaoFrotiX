@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Gestão de Abastecimento | FrotiX</title>
+  <style>
+    :root { --vinho:#722F37; --vinho-light:#8B3A44; --azul:#325d88; --azul-light:#3d6f9e; --terracota:#A97B6E; --terracota-light:#C08B7E; --verde:#557570; --verde-light:#6A8A85; --cinza:#f5f7fb; --card:#fff; --texto:#1f1f1f; --shadow:0 20px 45px -18px rgba(0,0,0,.35); --radius:14px; --header-bg:#b66a3d; --code-bg:#33465c; }
+    @page { size: A4; margin: 16mm; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:"Segoe UI","Inter",system-ui,-apple-system,sans-serif; background: radial-gradient(circle at 12% 20%, rgba(50,93,136,.08), transparent 26%), radial-gradient(circle at 90% 10%, rgba(114,47,55,.10), transparent 30%), var(--cinza); color:var(--texto); padding:22px; display:flex; justify-content:center; }
+    .page { width:210mm; max-width:100%; }
+    .hero { background:var(--header-bg); color:#fff; padding:22px 24px; border-radius:var(--radius); box-shadow:0 0 0 1px #000, 0 0 0 4px #fff, var(--shadow); display:flex; align-items:center; gap:16px; }
+    .hero img { width:50px; height:50px; filter:drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+    h1 { margin:0; font-size:26px; letter-spacing:0.2px; }
+    .subtitle { margin:6px 0 0; font-size:13px; opacity:0.92; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; margin-top:18px; }
+    .card { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px 18px; border:1px solid rgba(0,0,0,0.05); }
+    .section-title { display:flex; align-items:center; gap:10px; margin:0 0 10px; font-size:15px; font-weight:800; color:var(--vinho); }
+    .icon { width:18px; height:18px; vertical-align:middle; filter:drop-shadow(0 2px 4px rgba(0,0,0,.15)); }
+    ul { margin:6px 0 0 18px; padding:0; } li { margin-bottom:6px; }
+    code { background:var(--code-bg); color:#e9edf5; padding:10px 12px; border-radius:10px; display:block; white-space:pre-wrap; font-size:12px; line-height:1.45; box-shadow: inset 0 1px 0 rgba(255,255,255,0.03); }
+    .tag { display:inline-block; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:600; background:#eee; color:#555; margin-right:4px; }
+    .tag.green { background:#d1e7dd; color:#0f5132; }
+    .tag.blue { background:#cfe2ff; color:#084298; }
+    table { width:100%; border-collapse:collapse; font-size:13px; margin-top:10px; }
+    th, td { text-align:left; padding:8px; border-bottom:1px solid #eee; }
+    th { color:var(--vinho); font-weight:600; }
+  </style>
+</head>
+
+<svg style="display:none" aria-hidden="true" focusable="false">
+  <symbol id="fa-gas-pump" viewBox="0 0 512 512"><path opacity=".4" fill="currentColor" d="M112 48H96C78.3 48 64 62.3 64 80s14.3 32 32 32h16c17.7 0 32-14.3 32-32s-14.3-32-32-32zm0 96H96c-17.7 0-32 14.3-32 32s14.3 32 32 32h16c17.7 0 32-14.3 32-32s-14.3-32-32-32zM32 304v64H160c17.7 0 32 14.3 32 32v32c0 44.2 35.8 80 80 80H432c44.2 0 80-35.8 80-80V272c0-88.4-71.6-160-160-160H224V80c0-26.5-21.5-48-48-48H48C21.5 32 0 53.5 0 80V432c0 26.5 21.5 48 48 48h64c26.5 0 48-21.5 48-48V304H32zm240 80h96c8.8 0 16-7.2 16-16s-7.2-16-16-16H272c-8.8 0-16 7.2-16 16s7.2 16 16 16z"/><path fill="currentColor" d="M363.3 32c-6.2 0-11.3 5.1-11.3 11.3V80c0 17.7 14.3 32 32 32H400c17.7 0 32-14.3 32-32V43.3c0-6.2-5.1-11.3-11.3-11.3H363.3zM224 112H352c88.4 0 160 71.6 160 160v22.6l-50.7-50.7c-9.5-9.5-24-11.7-36.1-5.7L320 290.7V272c0-53-43-96-96-96V112z"/></symbol>
+  <symbol id="fa-filter" viewBox="0 0 512 512"><path opacity=".4" fill="currentColor" d="M32 64C14.3 64 0 49.7 0 32S14.3 0 32 0H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H32z"/><path fill="currentColor" d="M3.5 38.5c-4 10.3-1 21.9 7.6 28.9l162 133.1c9.9 8.1 15.6 20.3 15.6 33.1V448c0 14.8 10 27.7 24.2 31.3s29.3-1.4 36.8-12.1l64-91.4c6.1-8.7 9.4-19.1 9.4-29.8V233.7c0-12.8 5.7-25 15.6-33.1l162-133.1c8.5-7 11.5-18.6 7.6-28.9S493.6 14 482.5 14H29.5C18.4 14 8.5 22.8 4.6 32.8L3.5 38.5z"/></symbol>
+  <symbol id="fa-server" viewBox="0 0 512 512"><path opacity=".4" fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96v64c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM64 288c-35.3 0-64 28.7-64 64v64c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V352c0-35.3-28.7-64-64-64H64z"/><path fill="currentColor" d="M0 256c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V192c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v64zM416 432a32 32 0 1 0 0-64 32 32 0 1 0 0 64zM128 400c17.7 0 32 14.3 32 32s-14.3 32-32 32s-32-14.3-32-32s14.3-32 32-32zm288-256a32 32 0 1 0 0-64 32 32 0 1 0 0 64zM128 144c17.7 0 32 14.3 32 32s-14.3 32-32 32s-32-14.3-32-32s14.3-32 32-32zM416 304a32 32 0 1 0 0-64 32 32 0 1 0 0 64zM96 272a32 32 0 1 0 64 0 32 32 0 1 0 -64 0z"/></symbol>
+  <symbol id="fa-code" viewBox="0 0 640 640"><path opacity=".4" fill="currentColor" d="M225.2 535.2C220.3 552.2 230.2 569.9 247.2 574.8C264.2 579.7 281.9 569.8 286.8 552.8L414.8 104.8C419.7 87.8 409.8 70.1 392.8 65.2C375.8 60.3 358.1 70.2 353.2 87.2L225.2 535.2z"/><path fill="currentColor" d="M457.4 201.4C444.9 213.9 444.9 234.2 457.4 246.7L530.8 320.1L457.4 393.5C444.9 406 444.9 426.3 457.4 438.8C469.9 451.3 490.2 451.3 502.7 438.8L598.7 342.8C611.2 330.3 611.2 310 598.7 297.5L502.7 201.5C490.2 189 469.9 189 457.4 201.5zM182.7 201.4C170.2 188.9 149.9 188.9 137.4 201.4L41.4 297.4C28.9 309.9 28.9 330.2 41.4 342.7L137.4 438.7C149.9 451.2 170.2 451.2 182.7 438.7C195.2 426.2 195.2 405.9 182.7 393.4L109.3 320L182.6 246.6C195.1 234.1 195.1 213.8 182.6 201.3z"/></symbol>
+  <symbol id="fa-bug" viewBox="0 0 512 512"><path opacity=".4" fill="currentColor" d="M106.2 305.8c-10-18.1-32.9-24.7-51.1-14.7L22.6 309.2C9.5 316.4 1.3 330 1.4 344.9c.1 14.9 8.6 28.4 21.8 35.3l32.5 16.9c18.1 9.4 40.7 2.3 50.1-15.8c9.4-18.1 2.3-40.7-15.8-50.1l-6-3.1 6.5-3.6c18.1-10 24.7-32.9 14.7-51.1l-1.1-2c.1-.1 .3-.2 .4-.3s.3-.2 .5-.3zm39.1-85.7l1.1 2c10 18.1 32.9 24.7 51.1 14.7s24.7-32.9 14.7-51.1l-1.1-2c-10-18.1-32.9-24.7-51.1-14.7s-24.7 32.9-14.7 51.1zm311.5 86l.4 .3c.1 .1 .3 .2 .4 .3l-1.1 2c-10 18.1-3.3 41 14.7 51.1l6.5 3.6-6 3.1c-18.1 9.4-25.2 32-15.8 50.1c9.4 18.1 32 25.2 50.1 15.8l32.5-16.9c13.2-6.9 21.7-20.4 21.8-35.3c.1-14.9-8.1-28.5-21.2-35.7l-32.5-18.1c-18.1-10.1-41-3.4-51.1 14.7l0 0zm43.3-88c10-18.1 3.3-41-14.7-51.1s-41-3.3-51.1 14.7l-1.1 2c-10 18.1-3.3 41 14.7 51.1s41 3.3 51.1-14.7l1.1-2z"/><path fill="currentColor" d="M256 128c-48.4 0-88.7 36.1-94.8 82.8c12.3-15.3 29.3-27.1 48.7-33.1c11.3 22.3 34.2 37.6 60.8 37.6s49.5-15.3 60.8-37.6c19.3 5.9 36.3 17.8 48.7 33.1C374.7 164.1 334.4 128 256 128zM92.1 289.4C90.3 306 109.7 319.4 125.8 313.7l10-3.6c4.4-1.5 9-2.2 13.6-2.2c16.3 0 31.2 9.6 38.4 24.8L209 377.3c9.9 20.9 25.4 38.6 44.9 51.3c-2.4 16.5-16.7 29.3-33.9 29.3c-20.3 0-36.5-17.6-34.1-37.7c2.1-17.6-13.3-32.1-30.8-29.3c-15.4 2.5-25.5 17.9-21 32.9c7.9 26.6 32.4 46.1 61.8 46.1c4.8 0 9.4-.5 13.8-1.5c.3 .1 .6 .2 1 .3c13.9 4.6 28.6 6.9 43.3 6.9s29.4-2.3 43.3-6.9c.3-.1 .7-.2 1-.3c4.4 1 9 1.5 13.8 1.5c29.4 0 54-19.5 61.8-46.1c4.5-15-5.6-30.4-21-32.9c-17.5-2.8-32.9 11.7-30.8 29.3c2.4 20.1-13.8 37.7-34.1 37.7c-17.2 0-31.5-12.8-33.9-29.3c19.5-12.7 35-30.4 44.9-51.3l21.2-44.6c7.1-15.2 22.1-24.8 38.4-24.8c4.6 0 9.2 .7 13.6 2.2l10 3.6c16.1 5.7 35.5-7.7 33.7-24.3c-3-28.2-16.2-53.5-36-72.3c-4.4 16-19.2 27.8-36.7 27.8H219.8c-17.5 0-32.3-11.8-36.7-27.8c-19.7 18.8-33 44.1-36 72.3l0 0zM170.5 86.8l20.1-20.1c-1.6-1.1-3.2-2.3-4.9-3.4C149.2 39.1 106.8 24 64 24c-8.8 0-16 7.2-16 16s7.2 16 16 16c35.6 0 70.9 12.6 98.7 35.3c-1.5 1.1-2.9 2.2-4.3 3.3L138.3 115c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l22.6-22.6c3.2-3.2 5.8-6.9 7.6-10.9H298.2c1.8 4 4.4 7.6 7.6 10.9l22.6 22.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-20.1-20.1c-1.4-1.1-2.8-2.2-4.3-3.3C377.1 68.6 412.4 56 448 56c8.8 0 16-7.2 16-16s-7.2-16-16-16c-42.8 0-85.2 15.1-121.7 39.3c-1.7 1.1-3.2 2.3-4.9 3.4l20.1 20.1c5.9 5.9 6.2 15.2 .7 21.5c-30.8 35.6-76 58.4-126.2 58.4s-95.3-22.8-126.2-58.4c-5.5-6.3-5.2-15.6 .7-21.5z"/></symbol>
+</svg>
+
+<div class="page">
+  <header class="hero">
+    <svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-gas-pump"></use></svg>
+    <div>
+      <h1>Gestão de Abastecimento</h1>
+      <p class="subtitle">Controle central de abastecimentos, edição de KM e exportação · Versão 1.0</p>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="card">
+      <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-filter"></use></svg>Visão Geral</div>
+      <p>Gerenciamento completo dos abastecimentos da frota. Permite listar, filtrar com precisão (por Unidade, Motorista, Veículo), editar quilometragens erradas e exportar relatórios.</p>
+      <ul>
+        <li><span class="tag green">DataTable</span> Listagem robusta com filtros e paginação</li>
+        <li><span class="tag blue">Syncfusion</span> ComboBoxes de filtro avançados</li>
+        <li><span class="tag blue">Edição</span> Modal para correção de KM Rodado</li>
+        <li><span class="tag green">Export</span> Excel (.xlsx) e PDF Paisagem</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-server"></use></svg>Arquitetura e API</div>
+      <p>Padrão MVC com API REST para dados dinâmicos. Frontend consome JSON.</p>
+      <table style="margin-bottom:12px">
+        <tr><th>Endpoint</th><th>Descrição</th></tr>
+        <tr><td><code>GET /api/abastecimento</code></td><td>Retorna todos os registros</td></tr>
+        <tr><td><code>GET /AbastecimentoData</code></td><td>Filtra por Data (DD/MM/YYYY)</td></tr>
+        <tr><td><code>GET /AbastecimentoVeiculos</code></td><td>Filtra por ID Veículo</td></tr>
+        <tr><td><code>POST /EditaKm</code></td><td>Atualiza KM (Body JSON)</td></tr>
+      </table>
+    </section>
+
+    <section class="card">
+      <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-code"></use></svg>Lógica de Filtros Exclusivos</div>
+      <p>Sistema inteligente que garante apenas um filtro ativo por vez para evitar conflitos.</p>
+      <code>
+function DefineEscolhaVeiculo() {
+    escolhendoVeiculo = true;
+    escolhendoUnidade = false;
+    escolhendoMotorista = false;
+    escolhendoCombustivel = false;
+    escolhendoData = false;
+    // Reseta inputs visuais
+    $("#txtData").val('');
+}
+      </code>
+    </section>
+
+    <section class="card">
+      <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-bug"></use></svg>Troubleshooting</div>
+      <ul>
+        <li><strong>DataTable não carrega:</strong> Verificar console para erro 500 ou JSON malformado.</li>
+        <li><strong>Modal não limpa:</strong> O evento <code>hide.bs.modal</code> deve resetar o input e o estado do botão.</li>
+        <li><strong>Spinner travado:</strong> Ocorreu erro no AJAX sem catch. Verificar <code>Alerta.TratamentoErroComLinha</code>.</li>
+      </ul>
+    </section>
+
+    <section class="card" style="grid-column: 1 / -1;">
+      <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-list-check"></use></svg>Log de Modificações</div>
+      <table>
+        <thead><tr><th>Data</th><th>Título</th><th>Impacto</th></tr></thead>
+        <tbody>
+          <tr><td>06/01/2025</td><td>Criação da Documentação</td><td>Mapeamento completo de endpoints, filtros e modal de edição.</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+</body>
+</html>

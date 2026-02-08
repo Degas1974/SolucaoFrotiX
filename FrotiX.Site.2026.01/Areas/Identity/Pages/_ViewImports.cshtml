@@ -1,0 +1,26 @@
+﻿@*****************************************************************************************
+ * ⚡ ARQUIVO: _ViewImports.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Centralizar imports e Tag Helpers usados por todas as páginas Razor
+ *                   da área Identity.
+ *
+ * 📥 ENTRADAS     : Nenhuma (arquivo de configuração Razor).
+ *
+ * 📤 SAÍDAS       : Namespaces globais e Tag Helpers disponíveis nas views.
+ *
+ * 🔗 CHAMADA POR  : Motor Razor (aplicado automaticamente a Pages e subdiretórios).
+ *
+ * 🔄 CHAMA        : Nenhum.
+ *
+ * 📦 DEPENDÊNCIAS : Microsoft.AspNetCore.Identity, Tag Helpers MVC.
+ *
+ * 📝 OBSERVAÇÕES  : Define o namespace base da área Identity.
+ *****************************************************************************************@
+@* [DOC] Importa namespace do ASP.NET Core Identity para acesso a UserManager, SignInManager, etc. *@
+@using Microsoft.AspNetCore.Identity
+@* [DOC] Importa namespace da área Identity do FrotiX *@
+@using FrotiX.Areas.Identity
+@* [DOC] Define namespace padrão para todas as páginas Razor desta área *@
+@namespace FrotiX.Areas.Identity.Pages
+@* [DOC] Habilita Tag Helpers do MVC (asp-area, asp-page, asp-for, etc.) *@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers

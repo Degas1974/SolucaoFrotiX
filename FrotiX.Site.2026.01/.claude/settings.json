@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep:*)",
+      "Bash(pwsh -ExecutionPolicy Bypass -File \"c:\\\\FrotiX\\\\Solucao FrotiX 2026\\\\FrotiX.Site\\\\Scripts\\\\AddAsTrackingToControllers.ps1\")"
+    ]
+  }
+}
