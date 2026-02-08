@@ -1,0 +1,521 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/TaxiLeg/Importacao.cshtml
+ * OBJETIVO: Pagina COMPLEXA de importacao massiva de corridas TaxiLeg via upload planilha
+ *           Excel exibindo Syncfusion Grid inline editing + validacao batch + progress bar
+ *           tempo real SignalR, permite editar/excluir corridas pre-importacao antes de
+ *           salvar no banco, sistema CRITICO para sincronizar dados TaxiLeg empresa com
+ *           FrotiX, integrado com controller TaxiLeg backend processa Excel em background.
+ * ENTRADAS: route /TaxiLeg/Importacao, ViewData (Title, PageName, Heading com icone taxi),
+ *           Syncfusion Uploader aceita arquivo Excel (.xlsx, .xls) ate 50MB via POST async
+ *           multipart/form-data /TaxiLeg/ProcessarImportacao, arquivo retorna JSON array
+ *           corridas parseadas exibidas no Grid para validacao usuario, Grid dataSource
+ *           local array corridas (colunas: Id auto, DataCorrida date, HoraInicio time,
+ *           HoraConclusao time, Motorista string, Passageiro string, Origem string endereco,
+ *           Destino string endereco, DistanciaKm decimal, Valor decimal moeda, Status dropdown
+ *           Concluida/Cancelada/Pendente), Grid permite inline editing double-click celula,
+ *           batch mode acumula alteracoes memoria sem salvar banco, validacao client-side
+ *           (DataCorrida obrigatoria valida, Valor numerico positivo min 0.01, Status obrigatorio),
+ *           botao Salvar Importacao rodape Grid POST batch /TaxiLeg/SalvarImportacao envia
+ *           JSON array todas corridas editadas, progress bar download/upload/processamento
+ *           animada + contador registros processados atualizado via SignalR push tempo real
+ * SAIDAS: Pagina renderizada com card header (titulo Importar Planilha TaxiLeg, icone
+ *         fa-taxi colorido, breadcrumb Frota > TaxiLeg > Importacao), card body com: 1.
+ *         Alert Info topo explicando fluxo importacao (Selecione arquivo Excel corridas
+ *         TaxiLeg mes anterior, sistema processara automaticamente, valide dados no grid
+ *         abaixo antes de salvar), 2. Syncfusion Uploader component async (botao Browse
+ *         seleciona arquivo Excel, restricoes accept .xlsx/.xls maxFileSize 50MB, auto-upload
+ *         true envia arquivo automaticamente apos selecao, events: uploading exibe progress
+ *         bar animada percentage, success processa response JSON array corridas bind no
+ *         Grid, failure exibe Alerta.Erro com mensagem erro parse Excel), 3. Loading spinner
+ *         overlay full screen durante upload com texto Processando planilha aguarde...,
+ *         4. Syncfusion Grid component (dataSource local array corridas importadas, allowEditing
+ *         true inline double-click celula, editSettings mode Batch acumula alteracoes memoria,
+ *         allowDeleting true icone trash por row, columns 12: Id hidden auto-increment,
+ *         DataCorrida DatePicker format DD/MM/YYYY obrigatorio, HoraInicio TimePicker format
+ *         HH:mm, HoraConclusao TimePicker, Motorista TextBox maxlength 100, Passageiro
+ *         TextBox maxlength 100, Origem TextBox maxlength 200, Destino TextBox maxlength
+ *         200, DistanciaKm NumericTextBox decimals 2 min 0 suffix km, Valor NumericTextBox
+ *         format moeda R$ decimals 2 min 0.01 obrigatorio, Status DropDownList dataSource
+ *         [Concluida,Cancelada,Pendente] default Concluida obrigatorio, Acoes template
+ *         botao Delete icone trash red hover), toolbar topo [Search, ExcelExport, PdfExport,
+ *         ColumnChooser] permite busca rapida e exportar grid validado, footer exibe contador
+ *         X registros carregados aguardando salvamento, 5. Progress bar horizontal width
+ *         100pc height 30px topo card exibida apenas durante processamento (progress iniciado
+ *         0pc azul claro, animacao striped ativa, label texto centro X de Y registros processados,
+ *         atualizado via SignalR hub /importacaoHub recebe push backend percentage e contador,
+ *         progress completa 100pc verde escuro label Importacao concluida X registros salvos
+ *         auto-hide 3s), 6. Botoes rodape card: Cancelar Importacao (limpa Grid e Uploader
+ *         volta estado inicial sem salvar nada), Salvar Importacao primary button disabled
+ *         se Grid vazio (valida Grid client-side verifica campos obrigatorios preenchidos,
+ *         se invalido exibe Alerta.Warning highlight celulas invalidas red border, se valido
+ *         coleta dataSource Grid inteiro POST /TaxiLeg/SalvarImportacao JSON {corridas:[...]},
+ *         exibe loading spinner, backend processa batch insere corridas tabela CorridasTaxiLeg,
+ *         envia progress via SignalR a cada 100 registros salvos, success exibe AppToast
+ *         Verde Importacao concluida X corridas salvas redirect /TaxiLeg/Index lista corridas,
+ *         error exibe Alerta.Erro com mensagem detalhada + row que causou erro)
+ * CHAMADA POR: Menu Frota > TaxiLeg > Importar Planilha (link interno sidebar), usuarios
+ *              com permissao TaxiLeg.Importar (role Admin ou Coordenador Frota), usada mensalmente
+ *              para importar planilha Excel enviada pela TaxiLeg empresa de taxi (planilha
+ *              contem todas corridas realizadas mes anterior com dados Motorista/Passageiro/Valores,
+ *              necessario importar para FrotiX calcular custos taxi e gerar relatorios gerenciais)
+ * CHAMA: Controller TaxiLegController backend: POST /TaxiLeg/ProcessarImportacao (recebe
+ *        IFormFile arquivo Excel, valida extensao .xlsx/.xls e tamanho max 50MB, processa
+ *        planilha em background via EPPlus library: workbook.Worksheets[0] le primeira
+ *        aba, verifica headers linha 1 contem colunas esperadas Data|Hora Inicio|Hora Conclusao|Motorista|Passageiro|Origem|Destino|Distancia
+ *        Km|Valor|Status case insensitive, loop rows 2 ate last row le celulas por coluna
+ *        index A=Data B=HoraInicio C=HoraConclusao etc, parse Data DateTime.ParseExact
+ *        format DD/MM/YYYY culture pt-BR, parse HoraInicio TimeSpan.ParseExact format HH:mm,
+ *        parse DistanciaKm decimal.Parse remove sufixo km e converte separador virgula,
+ *        parse Valor decimal.Parse remove simbolo R$ e ponto milhares converte virgula
+ *        decimal, parse Status string Concluida|Cancelada|Pendente default Concluida se
+ *        vazio, valida dados (Data valida intervalo last 60 days ate today, HoraInicio
+ *        <= HoraConclusao, DistanciaKm > 0, Valor >= 0.01, Motorista/Passageiro/Origem/Destino
+ *        nao vazios maxlength), se validacao falha adiciona objeto erro com rowNumber e
+ *        mensagem detalhada ao array erros, se valida adiciona objeto corrida ao array
+ *        corridas, apos loop retorna JSON {success:true, corridas:[array], erros:[array],
+ *        totalProcessados:count} se erros array vazio senao {success:false, erros:[array
+ *        detalhado]}), POST /TaxiLeg/SalvarImportacao (recebe JSON array corridas validadas
+ *        do Grid, inicia transacao EF Core BeginTransaction, cria SignalR hub connection
+ *        /importacaoHub envia progress inicial 0pc, loop array corridas: para cada corrida
+ *        verifica duplicata Where DataCorrida=corrida.Data AND HoraInicio=corrida.Hora
+ *        AND MotoristaId=corrida.MotoristaId (parse Motorista nome busca na tabela Motoristas
+ *        ou cria novo se nao existe, mesmo para Passageiro busca/cria na Usuarios), se
+ *        duplicata skipa row incrementa contador duplicatas, senao insere new CorridasTaxiLeg
+ *        entity seta propriedades DbContext.Add, a cada 100 corridas processadas SaveChanges
+ *        commit batch e envia SignalR progress percentage=(processados/total)*100 contador=processados,
+ *        apos loop final SaveChanges commit restante, CommitTransaction, envia SignalR
+ *        progress 100pc contador=total, retorna JSON {success:true, totalSalvas:count,
+ *        totalDuplicatas:countDup, mensagem:"X corridas importadas com sucesso Y duplicatas
+ *        ignoradas"}, se exception RollbackTransaction retorna JSON {success:false, error:ex.Message}),
+ *        SignalR Hub ImportacaoHub (metodo EnviarProgress recebe connectionId e dados progress
+ *        percentage/contador, Clients.Client(connectionId).SendAsync("ReceiveProgress",
+ *        percentage, contador) envia push para cliente especifico), Syncfusion Uploader
+ *        component (upload async restricoes accept/maxFileSize, eventos uploading/success/failure,
+ *        localization PT-BR), Syncfusion Grid component (dataSource local binding, allowEditing
+ *        inline batch mode, editSettings toolbar Delete, columns editors DatePicker/TimePicker/NumericTextBox/DropDownList
+ *        com validationRules obrigatorio/min/max, toolbar Search/Export, events actionComplete
+ *        valida campos apos edit), SignalR client JavaScript (HubConnectionBuilder cria
+ *        connection /importacaoHub, connection.on("ReceiveProgress") handler atualiza
+ *        progress bar percentage e contador texto dinamicamente, connection.start() conecta
+ *        ao inicializar pagina), Alerta.Warning/Erro/Confirmar (validacoes e confirmacoes),
+ *        AppToast.show Verde (feedback success)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 ASP.NET Core 2023.4.2 (Uploader,
+ *               Grid, DatePicker, TimePicker, NumericTextBox, DropDownList), SignalR 7.0
+ *               (progress push tempo real), jQuery 3.7.1, Bootstrap 5.3.8, Font Awesome
+ *               6 Duotone, EPPlus 7.0 library backend (processar Excel XLSX), EF Core 8.0
+ *               (insert batch transacao CorridasTaxiLeg table), custom JavaScript Alerta.js/AppToast.js
+ * OBSERVACOES: 363 linhas pagina COMPLEXA importacao TaxiLeg sistema CRITICO. Fluxo trabalho:
+ *              1. Usuario acessa /TaxiLeg/Importacao pagina carrega vazia, 2. Clica Browse
+ *              seleciona arquivo Excel planilha TaxiLeg mes anterior (formato esperado 10-12
+ *              colunas headers linha 1, dados linhas 2+ cerca 500-2000 rows corridas mensais),
+ *              3. Syncfusion Uploader auto-upload true envia arquivo automaticamente via
+ *              POST multipart/form-data, exibe loading spinner overlay Processando planilha,
+ *              4. Backend recebe arquivo valida extensao/tamanho, processa Excel via EPPlus
+ *              em background thread para nao bloquear request (planilhas grandes 2000+
+ *              rows podem levar 10-30s processar), 5. Parse cada row extrai dados aplica
+ *              validacoes, acumula objetos corridas validas e erros em arrays separados,
+ *              6. Retorna JSON {corridas:[array 1500 objetos], erros:[array 50 objetos
+ *              com rowNumber e mensagem]} se teve erros parse mas conseguiu processar resto,
+ *              ou {success:false, erros:[...]} se erro critico impediu processamento, 7.
+ *              Frontend recebe response JSON, se success=false exibe Alerta.Erro lista
+ *              erros, se success=true bind array corridas no Syncfusion Grid dataSource
+ *              local renderiza tabela com 1500 rows, exibe alert warning se erros array
+ *              nao vazio (X linhas da planilha continham erros e foram ignoradas: [lista
+ *              rowNumber e mensagens]), 8. Usuario visualiza corridas no Grid editable,
+ *              pode double-click qualquer celula editar inline (corrigir Motorista nome
+ *              errado, ajustar Valor incorreto, mudar Status de Concluida para Cancelada
+ *              se corrida foi cancelada), Grid batch mode acumula alteracoes memoria nao
+ *              salva automaticamente, 9. Usuario pode deletar rows clicando icone trash
+ *              vermelho na coluna Acoes (corridas duplicadas ou totalmente erradas), confirmacao
+ *              Tem certeza? via Alerta.Confirmar, 10. Usuario valida visualmente dados
+ *              no Grid (scroll vertical revisa corridas, usa Search toolbar busca Motorista
+ *              especifico ou Passageiro, usa ColumnChooser oculta colunas desnecessarias
+ *              para facilitar revisao), 11. Usuario clica Salvar Importacao botao rodape,
+ *              12. JavaScript valida Grid client-side verifica campos obrigatorios preenchidos
+ *              (DataCorrida/Valor/Status nao vazios, Valor >= 0.01), se invalido highlight
+ *              celulas red border exibe Alerta.Warning lista campos invalidos nao salva,
+ *              13. Se valido coleta Grid.dataSource inteiro array corridas POST /TaxiLeg/SalvarImportacao
+ *              JSON {corridas:[array 1500 objetos]}, exibe loading spinner Salvando importacao,
+ *              14. Backend recebe array inicia transacao EF Core, cria SignalR connection
+ *              envia progress inicial 0pc, 15. Loop array corridas processa batch 100:
+ *              verifica duplicatas (query Where Data+Hora+Motorista match), busca/cria
+ *              Motorista e Passageiro entities na tabela Usuarios se nao existem (Motoristas
+ *              podem ser novos contratados pela TaxiLeg nao cadastrados ainda no FrotiX),
+ *              insere new CorridasTaxiLeg entity seta FK MotoristaId/PassageiroId, a cada
+ *              100 corridas SaveChanges commit batch parcial envia SignalR progress percentage=(300/1500)*100=20pc
+ *              contador=300, 16. Frontend recebe SignalR push ReceiveProgress atualiza
+ *              progress bar width=20pc label texto 300 de 1500 registros processados animacao
+ *              striped ativa, usuario ve progress bar avancando tempo real feedback visual,
+ *              17. Backend continua loop proximo batch 100 commit envia progress 26pc contador=400,
+ *              18. Progress bar atualiza 26pc label 400 de 1500, 19. Loop ate processar
+ *              todos 1500 SaveChanges final CommitTransaction, envia SignalR progress 100pc
+ *              contador=1500, retorna JSON {success:true, totalSalvas:1450, totalDuplicatas:50,
+ *              mensagem:"1450 corridas importadas 50 duplicatas ignoradas"}, 20. Frontend
+ *              recebe success progress bar completa 100pc verde label Importacao concluida
+ *              1450 corridas salvas auto-hide 3s, exibe AppToast Verde mensagem success,
+ *              setTimeout redirect /TaxiLeg/Index lista todas corridas importadas com filtros,
+ *              21. Se erro durante salvamento backend RollbackTransaction desfaz inserts
+ *              parciais retorna JSON {success:false, error:"Erro ao salvar corrida linha
+ *              523: Valor invalido"}, frontend exibe Alerta.Erro mensagem detalhada usuario
+ *              pode corrigir row 523 no Grid tentar salvar novamente. Validacoes importantes
+ *              backend parse Excel: headers linha 1 devem conter colunas esperadas exatas
+ *              (case insensitive mas nomes devem match: Data|Hora Inicio|Hora Conclusao|Motorista|Passageiro|Origem|Destino|Distancia
+ *              Km|Valor|Status, se headers diferentes ou ordem diferente retorna erro "Formato
+ *              planilha invalido colunas esperadas: [lista]" nao processa), Data valida
+ *              intervalo last 60 days ate today (corridas muito antigas indicam planilha
+ *              errada ou reenvio duplicado mes anterior, corridas futuras invalidas, se
+ *              Data fora range adiciona erro row "Data corrida invalida linha X: data deve
+ *              estar entre DD/MM/YYYY e DD/MM/YYYY"), HoraInicio <= HoraConclusao logica
+ *              (se HoraConclusao < HoraInicio indica erro digitacao ou corrida passou meia-noite,
+ *              adiciona warning row mas nao bloqueia import), DistanciaKm > 0 (distancia
+ *              zero indica corrida cancelada antes de iniciar, verifica Status se Cancelada
+ *              permite senao adiciona erro), Valor >= 0.01 (valor zero invalido indica
+ *              erro planilha, minimo R$ 0.01 bandeirada), Motorista/Passageiro nomes nao
+ *              vazios maxlength 100 (nomes muito longos indicam dados incorretos ou coluna
+ *              errada lida), Origem/Destino enderecos nao vazios maxlength 200 (enderecos
+ *              completos Rua X numero Y bairro Z cidade podem ser longos mas limite 200
+ *              evita lixo). Duplicatas: query verifica DataCorrida+HoraInicio+MotoristaId
+ *              match (mesma corrida mesmo motorista mesmo horario indica duplicata exata,
+ *              skipa insert incrementa contador duplicatas para informar usuario), nao
+ *              verifica Passageiro em duplicata porque motorista pode fazer multiplas corridas
+ *              mesmo horario se planilha agregada, considerar adicionar validacao business
+ *              rule: mesmo Motorista nao pode ter 2 corridas overlap horarios (HoraInicio1
+ *              <= HoraInicio2 < HoraConclusao1 indica conflito motorista nao pode estar
+ *              em 2 lugares simultaneos). SignalR progress tempo real: essencial para planilhas
+ *              grandes 1000+ rows porque salvamento pode levar 30-60s, progress bar animada
+ *              da feedback visual usuario sabe que sistema esta processando nao travado,
+ *              contador registros processados permite estimar tempo restante (se 300 de
+ *              1500 em 10s = ~50s total), sem SignalR usuario so ve loading spinner sem
+ *              feedback pode pensar que travou e fechar pagina perdendo importacao. Batch
+ *              SaveChanges a cada 100 corridas: otimiza performance e progress, SaveChanges
+ *              apos cada insert individual seria MUITO lento (1500 roundtrips banco), SaveChanges
+ *              apenas no final seria rapido mas nao permite progress intermediario e se
+ *              erro na corrida 1400 perde todo trabalho e RollbackTransaction desfaz 1399
+ *              corridas validas, batch 100 e sweet spot balanceia performance/progress/seguranca.
+ *              Grid inline editing batch mode: permite usuario revisar e corrigir dados
+ *              ANTES de salvar no banco (essencial porque planilhas Excel TaxiLeg podem
+ *              conter erros digitacao, nomes motoristas grafados errado, valores incorretos),
+ *              batch mode acumula alteracoes memoria ate clicar Salvar evita salvar automaticamente
+ *              cada celula editada (seria lento e perigoso), usuario tem controle total
+ *              pode editar multiplas celulas/rows depois salva tudo de uma vez ou cancela
+ *              tudo. Integracao TaxiLeg empresa: pagina CRITICA para operacao FrotiX porque
+ *              sistema depende de dados corridas taxi para: calcular custos taxi mes (totalizador
+ *              Sum Valor group by Motorista/Passageiro/CentroCusto), gerar relatorios
+ *              gerenciais custos frota (compara custo taxi vs custo veiculos proprios
+ *              para decisoes investimento), controlar orcamento taxi por setor (cada SetorSolicitante
+ *              tem orcamento mensal taxi limite, sistema alerta quando atingir 80pc e bloqueia
+ *              quando atingir 100pc), auditoria corridas (rastrear quem usou taxi quando
+ *              onde quanto custou para compliance e controle interno), sem importacao
+ *              mensal dados ficam desatualizados relatorios incorretos. Recomendacao futuro:
+ *              automatizar importacao via API TaxiLeg se empresa disponibilizar (Job agendado
+ *              roda 1x por dia GET /api/TaxiLeg/GetCorridasRecentes last 24h, processa
+ *              JSON response insere corridas novas automaticamente sem intervencao usuario,
+ *              elimina trabalho manual mensal upload planilha Excel e reduz erros humanos),
+ *              se API nao disponivel considerar RPA bot monitora email inbox busca emails
+ *              TaxiLeg com anexo Excel planilha mensal, baixa anexo automaticamente triggera
+ *              importacao (reduz trabalho usuario apenas revisar dados importados nao precisar
+ *              baixar anexo e fazer upload manual).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+@page
+
+@{
+	ViewData["Title"] = "Importar Planilha TaxiLeg";
+	ViewData["PageName"] = "taxileg_importacao";
+	ViewData["Heading"] = "<i class='fa-duotone fa-taxi'></i> Importação: <span class='fw-300'>Planilha TaxiLeg</span>";
+	ViewData["Category1"] = "Cadastros";
+	ViewData["PageIcon"] = "fa-duotone fa-taxi";
+}
+
+@section HeadBlock {
+	<link rel="stylesheet" href="~/css/ImportaTaxiLeg.css" />
+}
+
+<div class="row h-100">
+	<!-- altura total da janela -->
+	<div class="col-xl-12 d-flex flex-column h-100">
+		<div id="panel-1" class="panel flex-grow-1 d-flex flex-column">
+			<div class="panel-container show flex-grow-1 d-flex flex-column">
+				<div class="panel-content d-flex flex-column flex-grow-1">
+
+					<!-- Token anti-forgery para AJAX -->
+					@Html.AntiForgeryToken()
+
+					<!-- Bloco de controles (altura fixa) -->
+					<div id="controles" class="container mt-4">
+						<h2 class="text-primary mb-4">Importar Planilha TaxiLeg</h2>
+						<div class="row mb-3">
+							<div class="col-12 col-md-6">
+								<input type="file" id="fileupload" class="form-control" accept=".xls,.xlsx" />
+							</div>
+							<div class="col-12 col-md-6">
+								<button id="btnupload" class="btn btn-azul text-white" aria-label="Fazer upload da planilha do TaxiLeg">
+									<i class="fa-duotone fa-file-plus icon-space icon-pulse"></i> &nbsp; Upload
+								</button>
+							</div>
+						</div>
+					</div>
+
+					<!-- Grid: cresce para preencher o restante -->
+					<div id="divTaxiLeg" class="flex-grow-1 px-0 w-100"></div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section ScriptsBlock {
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+	<!-- Syncfusion JS -->
+	<script src="https://cdn.syncfusion.com/ej2/dist/ej2.min.js"></script>
+	<!-- jQuery -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<!-- Script de loading (opcional) -->
+	<script src="js/loading_script.js"></script>
+
+	<script type="text/javascript">
+		$(function () {
+			try {
+				$('#btnupload').on('click', function (e) {
+					try {
+						e.preventDefault();
+
+						const allowedExt = ['xls', 'xlsx'];
+						const $input = $('#fileupload');
+						const filename = $input.val();
+
+						if (!filename || filename.length === 0) {
+							AppToast.show("Amarelo", "Por favor, selecione um arquivo.", 2000);
+							return false;
+						}
+
+						const extension = filename.split('.').pop().toLowerCase();
+						if ($.inArray(extension, allowedExt) === -1) {
+							AppToast.show("Vermelho", "Por favor, selecione apenas arquivos do Excel (.xls, .xlsx).", 2000);
+							return false;
+						}
+
+						const fileUpload = $input.get(0);
+						if (!fileUpload || !fileUpload.files || fileUpload.files.length === 0) {
+							AppToast.show("Vermelho", "Nenhum arquivo selecionado.", 2000);
+							return false;
+						}
+
+						const fdata = new FormData();
+						fdata.append('file', fileUpload.files[0]);
+
+						// Ativa o loading (opcional)
+						if ($('#divTaxiLeg').LoadingScript) {
+							$('#divTaxiLeg').LoadingScript('method_12', {
+								'background_image': 'img/loading7.png',
+								'main_width': 60,
+								'animation_speed': 10,
+								'additional_style': '',
+								'after_element': false
+							});
+						}
+
+						// Desabilita o botão durante o upload
+						$('#btnupload').prop('disabled', true).addClass('disabled');
+
+						$.ajax({
+							type: "POST",
+							url: "/api/TaxiLeg/Import",
+							data: fdata,
+							contentType: false,
+							processData: false,
+							beforeSend: function (xhr) {
+								try {
+									// Envia o token anti-CSRF (se exigido pela API)
+									const token = $('input[name="__RequestVerificationToken"]').val();
+									if (token) {
+										xhr.setRequestHeader("XSRF-TOKEN", token);
+									}
+								} catch (error) {
+									Alerta.TratamentoErroComLinha("Importacao.cshtml", "btnupload.ajax.beforeSend", error);
+								}
+							},
+							success: function (data) {
+								try {
+									// Sucesso quando a API retorna a coleção de dados
+									if (data && Array.isArray(data.data) && data.data.length > 0) {
+										AppToast.show('Verde', 'Planilha importada com sucesso!', 2000);
+										renderSyncfusionGrid(data.data);
+									} else if (data && data.success === true && Array.isArray(data.response?.data) && data.response.data.length > 0) {
+										// Fallback para outra estrutura de retorno
+										AppToast.show('Verde', data.message || 'Planilha importada com sucesso!', 2000);
+										renderSyncfusionGrid(data.response.data);
+									} else {
+										const msg = (data && data.message) ? data.message : 'Nenhum dado para exibir.';
+										AppToast.show('Amarela', msg, 2000);
+										$('#divTaxiLeg').html(`
+											<div class="taxi-leg-container">
+												<h4>${msg}</h4>
+											</div>
+										`);
+									}
+								} catch (error) {
+									Alerta.TratamentoErroComLinha("Importacao.cshtml", "btnupload.ajax.success", error);
+								} finally {
+									if ($('#divTaxiLeg').LoadingScript) {
+										$('#divTaxiLeg').LoadingScript('destroy');
+									}
+									$('#btnupload').prop('disabled', false).removeClass('disabled');
+								}
+							},
+							error: function (err) {
+								try {
+									console.log(err);
+									AppToast.show('Vermelho', 'Erro na importação! Tente novamente.', 2000);
+									if ($('#divTaxiLeg').LoadingScript) {
+										$('#divTaxiLeg').LoadingScript('destroy');
+									}
+									$('#btnupload').prop('disabled', false).removeClass('disabled');
+								} catch (error) {
+									Alerta.TratamentoErroComLinha("Importacao.cshtml", "btnupload.ajax.error", error);
+								}
+							}
+						});
+					} catch (error) {
+						Alerta.TratamentoErroComLinha("Importacao.cshtml", "btnupload.click", error);
+					}
+				});
+			} catch (error) {
+				Alerta.TratamentoErroComLinha("Importacao.cshtml", "document.ready", error);
+			}
+		});
+
+		function resetScroll(g) {
+			try {
+				// conteúdo
+				const content = g.getContent().querySelector('.e-content');
+				if (content) content.scrollLeft = 0;
+
+				// cabeçalho (mantém sincronizado)
+				const header = g.getHeaderContent().querySelector('.e-headercontent');
+				if (header) header.scrollLeft = 0;
+			} catch (error) {
+				Alerta.TratamentoErroComLinha("Importacao.cshtml", "resetScroll", error);
+			}
+		}
+
+		function renderSyncfusionGrid(dados) {
+			try {
+				// Limpa antes de renderizar
+				$('#divTaxiLeg').html('');
+
+				var grid = new ej.grids.Grid({
+					dataSource: dados,
+					allowPaging: true,
+					allowSorting: true,
+					allowScrolling: true,
+					height: '700px',            // altura fixa para caber no layout
+					width: '100%',
+					toolbar: ['Print'],
+					printMode: 'AllPages',
+					pageSettings: { pageSize: 19 },
+					columns: [
+						{ field: 'qru', headerText: 'QRU', width: 90, textAlign: 'Center' },
+						{ field: 'setor', headerText: 'Setor', width: 90, textAlign: 'Center' },
+						{ field: 'descSetor', headerText: 'Descrição Setor', width: 150 },
+						{ field: 'unidade', headerText: 'Unidade', width: 110, textAlign: 'Center' },
+						{ field: 'descUnidade', headerText: 'Descrição Unidade', width: 200 },
+						{ field: 'qtdPassageiros', headerText: 'Passageiros', width: 110, textAlign: 'Center' },
+						{ field: 'motivoUso', headerText: 'Motivo Uso', width: 200 },
+						{ field: 'dataAgenda', headerText: 'Data Inicial', width: 110, textAlign: 'Center', format: 'dd/MM/yyyy', type: 'date' },
+						{ field: 'horaAgenda', headerText: 'Hora', width: 100 },
+						{ field: 'horaAceite', headerText: 'Aceite', width: 100 },
+						{ field: 'horaLocal', headerText: 'Local', width: 100 },
+						{ field: 'horaInicio', headerText: 'Início', width: 100 },
+						{ field: 'horaFinal', headerText: 'Final', width: 100 },
+						{ field: 'dataFinal', headerText: 'Data Final', width: 110, textAlign: 'Center', format: 'dd/MM/yyyy', type: 'date' },
+						{ field: 'origemCorrida', headerText: 'Origem', width: 200 },
+						{ field: 'destinoCorrida', headerText: 'Destino', width: 200 },
+						{ field: 'kmReal', headerText: 'Km', width: 90, textAlign: 'Right', format: 'N2' },
+						{ field: 'qtdEstrelas', headerText: 'Estrelas', width: 100, textAlign: 'Center' },
+						{ field: 'avaliacao', headerText: 'Avaliação', width: 120, textAlign: 'Center' },
+						{ field: 'duracao', headerText: 'Duração', width: 100, textAlign: 'Right' },
+						{ field: 'espera', headerText: 'Espera', width: 100, textAlign: 'Right' },
+						{
+							field: 'glosa',
+							headerText: 'Glosa',
+							width: 100,
+							textAlign: 'Center',
+							template: function (args) {
+								try {
+									return args.glosa === true
+										? `<span class="botao-sim-fake">
+											   <i class="fa-duotone fa-skull-crossbones"></i>
+											   Sim
+										   </span>`
+										: '';
+								} catch (error) {
+									Alerta.TratamentoErroComLinha("Importacao.cshtml", "grid.glosa.template", error);
+									return '';
+								}
+							}
+						},
+						{
+							field: 'valorGlosa',
+							headerText: 'Valor da Glosa',
+							width: 140,
+							textAlign: 'Right',
+							template: function (e) {
+								try {
+									return (e && typeof e.valorGlosa === 'number')
+										? e.valorGlosa.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+										: (e && e.valorGlosa ? Number(e.valorGlosa).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '');
+								} catch (error) {
+									Alerta.TratamentoErroComLinha("Importacao.cshtml", "grid.valorGlosa.template", error);
+									return '';
+								}
+							}
+						}
+					],
+					aggregates: [{
+						columns: [{
+							field: 'valorGlosa',
+							type: 'Sum',
+							footerTemplate: function (args) {
+								try {
+									const total = Number(args.Sum) || 0;
+									return `<span style="font-weight:bold;white-space:nowrap">
+												Total: ${total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+											</span>`;
+								} catch (error) {
+									Alerta.TratamentoErroComLinha("Importacao.cshtml", "grid.aggregates.footerTemplate", error);
+									return '';
+								}
+							}
+						}]
+					}],
+					created: function () {
+						try {
+							resetScroll(this);
+						} catch (error) {
+							Alerta.TratamentoErroComLinha("Importacao.cshtml", "grid.created", error);
+						}
+					},
+					dataBound: function () {
+						try {
+							// garante que sempre parte do 0
+							const content = this.getContent();
+							if (content && content.firstChild) {
+								content.firstChild.scrollLeft = 0;
+							}
+						} catch (error) {
+							Alerta.TratamentoErroComLinha("Importacao.cshtml", "grid.dataBound", error);
+						}
+					}
+				});
+
+				grid.appendTo('#divTaxiLeg');
+			} catch (error) {
+				Alerta.TratamentoErroComLinha("Importacao.cshtml", "renderSyncfusionGrid", error);
+			}
+		}
+	</script>
+}

@@ -1,0 +1,266 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Shared/Components/Navigation/Default.cshtml
+ * OBJETIVO: View Component de menu de navegacao padrao (sidebar) do template SmartAdmin exibindo
+ *           menu estatico hierarquico (hardcoded HTML) com itens de menu, subitens, icones Font
+ *           Awesome, badges de notificacoes, usado como referencia de layout. NAO e o menu real
+ *           do FrotiX (menu real e TreeView.cshtml com recursos dinamicos do banco).
+ * ENTRADAS: Model SmartNavigation (classe do template SmartAdmin com estrutura de menu estatica),
+ *           ViewData PageName (identifica pagina ativa para highlight do item de menu correspondente),
+ *           funcao recursiva RenderMenuItem para renderizar itens de menu aninhados em hierarquia
+ * SAIDAS: Menu sidebar renderizado como lista UL LI aninhada com itens de menu (texto, icone,
+ *         badge contador opcional, seta expand/collapse para subitens), item ativo highlighted
+ *         com classe .active baseado em PageName, subitens colapsados por padrao expandem ao
+ *         clicar no item pai, icones Font Awesome Duotone coloridos, badges de notificacoes
+ *         (exemplo: 3 new messages, 12 alerts) estaticos demonstrativos
+ * CHAMADA POR: Layout master _Layout.cshtml via Component.InvokeAsync("Navigation") ou tag helper
+ *              vc:navigation (se configurado ViewComponent), carregado automaticamente em todas
+ *              as paginas que usam layout padrao do template SmartAdmin
+ * CHAMA: Funcao recursiva RenderMenuItem definida na section functions do proprio arquivo (percorre
+ *        arvore de menu recursivamente renderizando cada item e seus filhos aninhados), nenhum
+ *        JavaScript externo (logica de expand/collapse esta no template SmartAdmin base),
+ *        nenhum endpoint API (menu e estatico hardcoded sem dados dinamicos do banco)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0 View Components, SmartNavigation model do template
+ *               SmartAdmin, CSS padrao do template para sidebar menu (cores, hover effects,
+ *               expand/collapse animation), Font Awesome 6 Duotone (icones de menu coloridos)
+ * OBSERVACOES: 226 linhas de View Component DEMO template SmartAdmin NAO usado no FrotiX real.
+ *              Menu real do FrotiX esta em TreeView.cshtml que carrega recursos dinamicamente
+ *              do banco de dados via RecursoTreeDTO. Considerar REMOVER este arquivo Default.cshtml
+ *              se nao for necessario manter referencia do template original. Menu demonstrativo
+ *              possui estrutura hierarquica estatica: Dashboard (item raiz), Application Views
+ *              (item pai com subitens: Inbox, Email, Calendar, Contacts), UI Components (item pai
+ *              com subitens: Buttons, Cards, Modals, Tables), cada item possui: icone Font Awesome,
+ *              texto label, badge contador opcional (New, 3, 12), seta expand/collapse se tiver
+ *              subitens. Funcao RenderMenuItem recursiva: recebe MenuItem object com propriedades
+ *              Title, Icon, Url, Badge, Children List, renderiza LI com link A href se Url existe,
+ *              se Children existe renderiza UL aninhado chamando RenderMenuItem recursivamente para
+ *              cada filho. Highlight item ativo: compara ViewData PageName com propriedade PageName
+ *              do MenuItem, se match adiciona classe .active ao LI destacando visualmente item
+ *              correspondente a pagina atual (background azul, texto branco, icone destacado).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
+@model SmartNavigation
+@{
+    var pageName = ViewData["PageName"]?.ToString().ToLower();
+}
+
+@functions {
+    // ✅ Função helper para normalizar ícone para DUOTONE
+    private static string NormalizarIcone(string icon) {
+        if (string.IsNullOrEmpty(icon)) return "fa-duotone fa-circle";
+        if (!icon.Contains("fa-duotone")) {
+            return icon.Replace("fa-regular", "fa-duotone")
+                       .Replace("fa-solid", "fa-duotone")
+                       .Replace("fa-light", "fa-duotone");
+        }
+        return icon;
+    }
+}
+
+<style>
+
+/* ====== CORES DOS ÍCONES DUOTONE ====== */
+/* Primary: laranja forte | Secondary: cinza médio */
+.nav-menu .fa-duotone {
+    --fa-primary-color: #ff6b35;      /* Laranja forte */
+    --fa-secondary-color: #6c757d;    /* Cinza médio */
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 1;
+    margin-right: 0.5rem;  /* Espaçamento de 2 caracteres */
+}
+
+/* Ícones dos subitens - mantém cores padrão */
+.nav-menu .subitem-icon.fa-duotone {
+    --fa-primary-color: #ff6b35;
+    --fa-secondary-color: #6c757d;
+    margin-right: 0.5rem;  /* Espaçamento de 2 caracteres */
+}
+
+.dropdown-toggle::after {
+  color: #b1d4e0;
+}
+
+.fa-chevron-down {
+  color: #b1d4e0;
+}
+
+.collapse-sign > em:before {
+    color: #b1d4e0;
+}
+
+/* Ícones de stack - NÃO incluir .fa-circle aqui pois afeta a bolinha */
+[class^="base-"],
+[class*=" icon-stack"] {
+    color: #b1d4e0;
+}
+
+/* ====== INDICADOR DE SELEÇÃO (BOLINHA) - LADO DIREITO ====== */
+/* Links do menu precisam ser position relative para a bolinha absoluta */
+.nav-menu li > a {
+    position: relative;
+}
+
+/* Bolinha oculta por padrão */
+.nav-menu .selection-dot {
+    display: none;
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.45rem;
+    color: #ffc107 !important; /* Amarelo - importante para sobrescrever regras gerais */
+}
+
+/* Bolinha visível quando item está ativo */
+.nav-menu li.active > a .selection-dot {
+    display: block;
+}
+
+/* ====== INDENTAÇÃO DOS SUBITENS ====== */
+/* Nível 2 - subitens: adiciona indentação extra */
+.nav-menu > li > ul > li > a .subitem-icon {
+    margin-left: 5px !important;
+}
+
+/* Nível 3 - sub-subitens: adiciona ainda mais indentação */
+.nav-menu > li > ul > li > ul > li > a .subitem-icon {
+    margin-left: 15px !important;
+}
+
+/* Ícones dos subitens */
+.nav-menu .subitem-icon {
+    font-size: 0.85rem;
+    margin-right: 8px;
+    opacity: 0.8;
+}
+
+/* Item ativo com destaque - SEM deslocar o texto */
+.nav-menu li.active > a {
+    background: rgba(255, 193, 7, 0.15) !important;
+    border-left: 3px solid #ffc107;
+}
+
+</style>
+
+<ul id="js-nav-menu" class="nav-menu">
+    @*    @foreach (var group in Model.Lists)*@
+    @foreach (var group in Model.Lists.AuthorizeFor(User))
+    {
+        @if (group.Items.Any())
+        {
+            var groups = group.Items.Select(x => x.Href.ToPage()).Where(x => !x.IsVoid()).ToList();
+
+            group.Items.ForEach(item =>
+            {
+                var result = item.Items?.Select(x => x.Href.ToPage()).Where(x => !x.IsVoid()).ToList();
+                if (result?.Any() == true)
+                {
+                    groups = groups.Concat(result).ToList();
+                }
+            });
+            <li class="@(groups.Contains(pageName) ? "active open" : "")">
+                <a href="#" data-filter-tags="@group.Tags">
+                    <i class="@NormalizarIcone(group.Icon)"></i>
+                    <span class="nav-link-text" data-i18n="@group.I18n">@group.Text.AsRaw()</span>
+                    @if (group.Span.HasValue())
+                    {
+                        <span class="@group.Span.Class">@group.Span.Text.AsRaw()</span>
+                    }
+                </a>
+                <ul>
+                    @{
+                        foreach (var item in group.Items)
+                        {
+                            var items = item.Items?.Select(x => x.Href.ToPage()).Where(x => !x.IsVoid()).ToList();
+
+                            if (item.Disabled)
+                            {
+                                <text>
+                                    <li class="disabled">
+                                </text>
+                            }
+                            else
+                            {
+                                if (items?.Any() == true)
+                                {
+                                    <text>
+                                    <li class="@(items.Contains(pageName) || item.IsRelatedTo(pageName) ? "active open" : "")">
+                                    </text>
+                                }
+                                else
+                                {
+                                    <text>
+                                    <li class="@(pageName == item.Href.ToPage() ? "active" : "")">
+                                    </text>
+                                }
+                            }
+                            <text>
+                                <a href="@item.Route" data-filter-tags="@item.Tags">
+                                    @if (!string.IsNullOrEmpty(item.Icon))
+                                    {
+                                        <i class="@NormalizarIcone(item.Icon) subitem-icon"></i>
+                                    }
+                                    <span class="nav-link-text" data-i18n="@item.I18n">@item.Text.AsRaw()</span>
+                                    @if (item.Span.HasValue())
+                                    {
+                                        <span class="@item.Span.Class">@item.Span.Text.AsRaw()</span>
+                                    }
+                                    <i class="fa-solid fa-circle selection-dot"></i>
+                                </a>
+                            </text>
+                            if (item.Items?.Any() == true)
+                            {
+                                <text>
+                                    <ul>
+                                        @foreach (var subItem in item.Items)
+                                        {
+                                            if (subItem.Disabled)
+                                            {
+                                                <text>
+                                                <li class="disabled">
+                                </text>
+                            }
+                            else
+                            {
+                                <text>
+                                <li class="@(pageName == subItem.Href.ToPage() ? "active" : "")">
+                                </text>
+                            }
+                            <a href="@subItem.Route" data-filter-tags="@subItem.Tags">
+                                @if (!string.IsNullOrEmpty(subItem.Icon))
+                                {
+                                    <i class="@NormalizarIcone(subItem.Icon) subitem-icon"></i>
+                                }
+                                <span class="nav-link-text" data-i18n="@subItem.I18n">@subItem.Text.AsRaw()</span>
+                                <i class="fa-solid fa-circle selection-dot"></i>
+                            </a>
+                        @:</li>
+                    }
+                                    </ul>
+                                    </text>
+                                }
+                            @:</li>
+                        }
+                    }
+                </ul>
+            </li>
+        }
+        else
+        {
+            if (group.Type == ItemType.Category)
+            {
+                <li class="nav-title">@group.Title</li>
+            }
+            else
+            {
+                <li class="@(pageName == group.Href.ToPage() ? "active" : "")">
+                    <a href="@group.Route" data-filter-tags="@group.Tags">
+                        <i class="@NormalizarIcone(group.Icon)" text-warning></i>
+                        <span class="nav-link-text" data-i18n="@group.I18n">@group.Title.AsRaw()</span>
+                        <i class="fa-solid fa-circle selection-dot"></i>
+                    </a>
+                </li>
+            }
+        }
+    }
+</ul>

@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DocGeneratorController API (Página 2) | FrotiX - Documentação Técnica</title>
+
+  <!-- FontAwesome Kit FrotiX -->
+  <script src="https://kit.fontawesome.com/afeb78ad1f.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* ==================== VARIÁVEIS CSS ==================== */
+    :root {
+      --color-header: #b66a3d;
+      --color-vinho: #722F37;
+      --color-azul: #325d88;
+      --color-terracota: #A97B6E;
+      --color-verde: #557570;
+      --color-code-bg: #33465c;
+      --color-code-text: #e8eaed;
+      --color-card-bg: #ffffff;
+      --color-border: #dee2e6;
+      --color-text: #212529;
+      --color-text-muted: #6c757d;
+      --color-bg: #f0f0f0;
+    }
+
+    /* ==================== RESET E BASE ==================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 10pt;
+      line-height: 1.5;
+      color: var(--color-text);
+      background: var(--color-bg);
+      padding: 0;
+      margin: 0;
+    }
+
+    /* ==================== LAYOUT A4 ==================== */
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 20px auto;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      padding: 15mm;
+    }
+
+    /* ==================== HEADER ==================== */
+    .hero {
+      background: linear-gradient(135deg, var(--color-header) 0%, #8a5030 100%);
+      color: white;
+      padding: 20px 24px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+      border: 2px solid #333;
+      box-shadow:
+        0 0 0 3px white,
+        0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .hero i {
+      font-size: 56px;
+      color: white;
+    }
+
+    .hero h1 {
+      font-size: 22pt;
+      font-weight: 700;
+      margin: 0;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .hero .subtitle {
+      font-size: 11pt;
+      margin: 4px 0 0 0;
+      opacity: 0.95;
+      font-weight: 400;
+    }
+
+    /* ==================== CARDS ==================== */
+    .card {
+      background: var(--color-card-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    }
+
+    .section-title {
+      font-size: 13pt;
+      font-weight: 700;
+      color: var(--color-azul);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--color-azul);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title i.icon {
+      font-size: 20px;
+      color: var(--color-azul);
+    }
+
+    /* ==================== TIPOGRAFIA ==================== */
+    h2 {
+      font-size: 12pt;
+      font-weight: 600;
+      color: var(--color-vinho);
+      margin: 12px 0 8px 0;
+    }
+
+    h3 {
+      font-size: 11pt;
+      font-weight: 600;
+      color: var(--color-verde);
+      margin: 10px 0 6px 0;
+    }
+
+    p {
+      margin-bottom: 8px;
+      text-align: justify;
+    }
+
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 8px;
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    /* ==================== CODE SNIPPETS ==================== */
+    code {
+      background: var(--color-code-bg);
+      color: var(--color-code-text);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 9pt;
+    }
+
+    pre {
+      background: var(--color-code-bg);
+      color: var(--color-code-text);
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 10px 0;
+      border: 1px solid #1e2a38;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      font-size: 8.5pt;
+    }
+
+    /* ==================== TABELAS ==================== */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      font-size: 9pt;
+    }
+
+    table th {
+      background: var(--color-azul);
+      color: white;
+      padding: 8px;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    table td {
+      padding: 6px 8px;
+      border: 1px solid var(--color-border);
+    }
+
+    table tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+
+    /* ==================== BADGES ==================== */
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 8.5pt;
+      font-weight: 600;
+      margin-right: 6px;
+    }
+
+    .badge-get { background: #28a745; color: white; }
+    .badge-post { background: #007bff; color: white; }
+    .badge-put { background: #ffc107; color: #333; }
+    .badge-delete { background: #dc3545; color: white; }
+
+    /* ==================== ALERTAS ==================== */
+    .alert {
+      padding: 10px 12px;
+      border-radius: 6px;
+      margin: 10px 0;
+      border-left: 4px solid;
+    }
+
+    .alert-info {
+      background: #d1ecf1;
+      border-color: #0c5460;
+      color: #0c5460;
+    }
+
+    .alert-warning {
+      background: #fff3cd;
+      border-color: #856404;
+      color: #856404;
+    }
+
+    /* ==================== UTILIDADES ==================== */
+    .text-muted {
+      color: var(--color-text-muted);
+      font-size: 9pt;
+    }
+
+    .mt-1 { margin-top: 8px; }
+    .mb-1 { margin-bottom: 8px; }
+    .mt-2 { margin-top: 16px; }
+    .mb-2 { margin-bottom: 16px; }
+
+    strong {
+      color: var(--color-vinho);
+    }
+
+    .endpoint-card {
+      background: #f8f9fa;
+      border-left: 4px solid var(--color-azul);
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+
+    .page-number {
+      text-align: right;
+      color: var(--color-text-muted);
+      font-size: 9pt;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- HEADER -->
+    <header class="hero">
+      <i class="fa-duotone fa-file-code"></i>
+      <div>
+        <h1>DocGeneratorController API (Continuação)</h1>
+        <p class="subtitle">Endpoints de Monitoramento e Gerenciamento</p>
+      </div>
+    </header>
+
+    <!-- ENDPOINTS - CONTINUAÇÃO -->
+    <section class="card">
+      <div class="section-title">
+        <i class="icon fa-duotone fa-plug"></i>
+        Endpoints da API (Continuação)
+      </div>
+
+      <p><strong>Resposta do POST /api/DocGenerator/generate:</strong></p>
+      <pre><code>{
+  "success": true,
+  "data": {
+    "jobId": "doc-gen-2026-01-13-14-30-45-abc123",
+    "startedAt": "2026-01-13T14:30:45.123Z",
+    "totalFiles": 15
+  }
+}</code></pre>
+      <p class="text-muted">
+        O job é executado em background e envia atualizações de progresso via SignalR. O cliente pode monitorar o status usando o <code>jobId</code> retornado.
+      </p>
+
+      <div class="endpoint-card mt-2">
+        <h3><span class="badge badge-get">GET</span> /api/DocGenerator/job/{jobId}</h3>
+        <p>
+          <strong>Propósito:</strong> Obtém o status detalhado de um job de geração em execução ou já finalizado.
+        </p>
+        <p><strong>Parâmetros:</strong> <code>jobId</code> (string, na URL)</p>
+        <p><strong>Retorno (JSON):</strong></p>
+        <pre><code>{
+  "success": true,
+  "data": {
+    "jobId": "doc-gen-2026-01-13-14-30-45-abc123",
+    "startedAt": "2026-01-13T14:30:45.123Z",
+    "completedAt": null,
+    "isRunning": true,
+    "isCancelled": false,
+    "totalFiles": 15,
+    "processedFiles": 7,
+    "successCount": 6,
+    "failedCount": 1,
+    "skippedCount": 0,
+    "currentFile": "Controllers/ViagemController.cs",
+    "currentStatus": "Processing",
+    "results": [...]
+  }
+}</code></pre>
+        <p class="text-muted mt-1">
+          Use este endpoint para implementar barras de progresso ou dashboards de monitoramento em tempo real.
+        </p>
+      </div>
+
+      <div class="endpoint-card">
+        <h3><span class="badge badge-post">POST</span> /api/DocGenerator/job/{jobId}/cancel</h3>
+        <p>
+          <strong>Propósito:</strong> Cancela um job de geração em execução.
+        </p>
+        <p><strong>Parâmetros:</strong> <code>jobId</code> (string, na URL)</p>
+        <p><strong>Retorno (JSON):</strong></p>
+        <pre><code>{
+  "success": true,
+  "message": "Job cancelado"
+}</code></pre>
+        <p class="text-muted mt-1">
+          O cancelamento é cooperativo: o job para na próxima oportunidade segura, finalizando o arquivo atual antes de encerrar.
+        </p>
+      </div>
+
+      <div class="endpoint-card">
+        <h3><span class="badge badge-get">GET</span> /api/DocGenerator/jobs?count=10</h3>
+        <p>
+          <strong>Propósito:</strong> Lista os jobs de geração mais recentes (histórico).
+        </p>
+        <p><strong>Parâmetros Query:</strong> <code>count</code> (int, opcional, padrão=10)</p>
+        <p><strong>Retorno (JSON):</strong></p>
+        <pre><code>{
+  "success": true,
+  "data": [
+    {
+      "jobId": "doc-gen-2026-01-13-14-30-45-abc123",
+      "startedAt": "2026-01-13T14:30:45.123Z",
+      "completedAt": "2026-01-13T14:35:12.456Z",
+      "isRunning": false,
+      "totalFiles": 15,
+      "successCount": 14,
+      "failedCount": 1,
+      "skippedCount": 0
+    }
+  ]
+}</code></pre>
+      </div>
+
+      <div class="endpoint-card">
+        <h3><span class="badge badge-post">POST</span> /api/DocGenerator/cache/clear</h3>
+        <p>
+          <strong>Propósito:</strong> Limpa todo o cache de documentação, forçando regeneração completa na próxima execução.
+        </p>
+        <p><strong>Retorno (JSON):</strong></p>
+        <pre><code>{
+  "success": true,
+  "message": "Cache limpo"
+}</code></pre>
+        <p class="text-muted mt-1">
+          Use com cautela: limpar o cache pode aumentar significativamente o tempo da próxima geração.
+        </p>
+      </div>
+    </section>
+
+    <!-- ENDPOINTS AUXILIARES -->
+    <section class="card">
+      <div class="section-title">
+        <i class="icon fa-duotone fa-robot"></i>
+        Endpoints Auxiliares
+      </div>
+
+      <div class="endpoint-card">
+        <h3><span class="badge badge-get">GET</span> /api/DocGenerator/providers</h3>
+        <p>
+          <strong>Propósito:</strong> Lista todos os provedores de IA disponíveis e seu status de configuração.
+        </p>
+        <p><strong>Retorno (JSON):</strong></p>
+        <pre><code>{
+  "success": true,
+  "data": [
+    {
+      "id": "none",
+      "name": "Sem IA (Heurísticas)",
+      "available": true,
+      "configured": true,
+      "configHint": ""
+    },
+    {
+      "id": "openai",
+      "name": "OpenAI (GPT-5.2)",
+      "available": true,
+      "configured": false,
+      "configHint": "Configure DOCGENERATOR_OPENAI_APIKEY"
+    },
+    {
+      "id": "claude",
+      "name": "Claude 4.5 (Anthropic)",
+      "available": true,
+      "configured": true,
+      "configHint": ""
+    },
+    {
+      "id": "gemini",
+      "name": "Gemini 3 Pro (Google)",
+      "available": true,
+      "configured": false,
+      "configHint": "Configure DOCGENERATOR_GEMINI_APIKEY"
+    }
+  ]
+}</code></pre>
+        <p class="text-muted mt-1">
+          Use este endpoint para preencher dropdowns de seleção de IA na interface, mostrando apenas provedores configurados.
+        </p>
+      </div>
+
+      <div class="endpoint-card">
+        <h3><span class="badge badge-get">GET</span> /api/DocGenerator/tests/run</h3>
+        <p>
+          <strong>Propósito:</strong> Executa todos os testes unitários do sistema DocGenerator e retorna o relatório.
+        </p>
+        <p><strong>Retorno (JSON):</strong></p>
+        <pre><code>{
+  "success": true,
+  "data": {
+    "report": "Todos os testes passaram (15/15)",
+    "executedAt": "2026-01-13T14:45:30.789Z"
+  }
+}</code></pre>
+        <p class="text-muted mt-1">
+          Útil para diagnóstico e validação do sistema antes de executar gerações grandes.
+        </p>
+      </div>
+    </section>
+
+    <div class="page-number">Página 2 de 3</div>
+  </div>
+</body>
+</html>

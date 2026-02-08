@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>AbastecimentoController | FrotiX</title>
+  <style>
+    :root {
+      --vinho: #722F37; --vinho-light: #8B3A44;
+      --azul: #325d88; --azul-light: #3d6f9e;
+      --terracota: #A97B6E; --terracota-light: #C08B7E;
+      --verde: #557570; --verde-light: #6A8A85;
+      --cinza: #f5f7fb; --card: #ffffff; --texto: #1f1f1f;
+      --shadow: 0 20px 45px -18px rgba(0,0,0,.35);
+      --radius: 14px; --header-bg: #b66a3d; --code-bg: #33465c;
+    }
+    @page { size: A4; margin: 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: "Segoe UI","Inter",system-ui,-apple-system,sans-serif;
+      background: radial-gradient(circle at 12% 20%, rgba(50,93,136,.08), transparent 26%), radial-gradient(circle at 90% 10%, rgba(114,47,55,.10), transparent 30%), var(--cinza);
+      color: var(--texto); padding: 22px; display: flex; justify-content: center;
+    }
+    .page { width: 210mm; max-width: 100%; }
+    .hero {
+      background: var(--header-bg); color: #fff; padding: 22px 24px;
+      border-radius: var(--radius); box-shadow: 0 0 0 1px #000, 0 0 0 4px #fff, var(--shadow);
+      display: flex; align-items: center; gap: 16px;
+    }
+     .hero .icon { width: 50px; height: 50px; filter: drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+    h1 { margin: 0; font-size: 26px; letter-spacing: 0.2px; }
+    .subtitle { margin: 6px 0 0; font-size: 13px; opacity: 0.92; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 18px; }
+    .card {
+      background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 16px 18px; border: 1px solid rgba(0,0,0,0.05);
+    }
+    .section-title { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; font-size: 15px; font-weight: 800; color: var(--vinho); }
+    .icon { width: 18px; height: 18px; vertical-align: middle; filter: drop-shadow(0 2px 4px rgba(0,0,0,.15)); }
+    ul { margin: 6px 0 0 18px; padding: 0; }
+    li { margin-bottom: 6px; }
+    code {
+      background: var(--code-bg); color: #e9edf5; padding: 10px 12px;
+      border-radius: 10px; display: block; white-space: pre-wrap; font-size: 12px; line-height: 1.45;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+  </style>
+</head>
+
+  
+  <body>
+  <svg style="display:none" aria-hidden="true" focusable="false">
+  
+</svg>
+  <div class="page">
+    <header class="hero">
+      <svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-gas-pump"></use></svg>
+      <div>
+        <h1>AbastecimentoController</h1>
+        <p class="subtitle">CRUD, importação Excel e dashboards de abastecimento · Última atualização: 08/01/2026 · Versão: 2.0</p>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-info"></use></svg>Visão geral</div>
+        <p>Controller crítico (partial class) que gerencia abastecimentos: CRUD, filtros avançados, importação XLS/XLSX com validações, dashboards e pendências. Usa SignalR para notificar durante importações.</p>
+        <ul>
+          <li>Partial: <code>AbastecimentoController.cs</code>, <code>.DashboardAPI.cs</code>, <code>.Pendencias.cs</code>, <code>.Import.cs</code>, <code>AbastecimentoImportController.cs</code>.</li>
+          <li>Pages: Index, Pendencias, Importacao, DashboardAbastecimento.</li>
+          <li>Models/Views: <code>Abastecimento</code>, <code>AbastecimentoPendente</code>, <code>ViewAbastecimentos</code>; Hub: <code>ImportacaoHub</code>.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-layer-group"></use></svg>Arquitetura e padrões</div>
+        <ul>
+          <li>ASP.NET Core 3.1+, EF Core, NPOI (Excel), SignalR.</li>
+          <li>Repository/UnitOfWork; utiliza <code>ViewAbastecimentos</code> para listagens.</li>
+          <li><code>TransactionScope</code> com timeout 30 min na importação.</li>
+          <li>Combustíveis mapeados por GUIDs fixos (ponto de atenção).</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-route"></use></svg>Endpoints principais</div>
+        <ul>
+          <li><strong>GET /api/Abastecimento</strong> – lista geral (DataTable).</li>
+          <li>Filtros: <code>/AbastecimentoVeiculos</code>, <code>/AbastecimentoCombustivel</code>, <code>/AbastecimentoUnidade</code>, <code>/AbastecimentoMotorista</code>, <code>/AbastecimentoData</code>.</li>
+          <li><strong>POST /api/Abastecimento/Import</strong> – importa XLS/XLSX (crítico).</li>
+          <li><strong>POST /api/Abastecimento/EditaKm</strong> – corrige KM rodado.</li>
+          <li>Dropdowns: <code>MotoristaList</code>, <code>UnidadeList</code>, <code>CombustivelList</code>, <code>VeiculoList</code>.</li>
+          <li>Cupons: <code>ListaRegistroCupons</code>, <code>PegaRegistroCupons</code>, <code>PegaRegistroCuponsData</code>, <code>DeleteRegistro</code>.</li>
+        </ul>
+        <p style="font-size:12px;color:#555;">Dashboards/Pendências/Importação dual em arquivos parciais dedicados.</p>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-file-excel"></use></svg>Importação Excel (XLS/XLSX)</div>
+        <code>
+Upload → NPOI (XLS/XLSX) → validações → TransactionScope (30 min) → save linha a linha<br>
+Colunas: 0 Data (dup), 5 Placa, 7 Data/Hora, 10 Motorista, 11 KM Anterior, 12 KM Atual, 13 Combustível, 14 Valor unit., 15 Litros<br>
+KmRodado = col12 - col11 · Consumo = KmRodado / Litros<br>
+Preview HTML: tabela com Data, Placa, Motorista, KM, Combustível, Valor, Litros, Consumo, Média.
+        </code>
+        <ul>
+          <li>Valida duplicidade (apenas primeira linha), veículo, motorista, combustível (GUIDs fixos).</li>
+          <li>Salvar a cada linha (pode ser lento) → sugestão: batch/save final.</li>
+          <li>Usa <code>ViewMediaConsumo</code> para média; senão usa consumo atual.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-link"></use></svg>Interconexões</div>
+        <ul>
+          <li>Páginas chamam: listagens e filtros (Index), pendências (Pendencias.cshtml), importações (Importacao.cshtml).</li>
+          <li>Repos: <code>_unitOfWork.Abastecimento</code>, <code>ViewAbastecimentos</code>, <code>Veiculo</code>, <code>Motorista</code>, <code>Combustivel</code>, <code>Unidade</code>, <code>ViewMediaConsumo</code>, <code>RegistroCupomAbastecimento</code>.</li>
+          <li>SignalR: <code>_hubContext</code> para progressos/alertas de importação.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-bug"></use></svg>Troubleshooting</div>
+        <ul>
+          <li>Veículo/Motorista não encontrado → validar cadastro/formato (placa/nome).</li>
+          <li>KM rodado negativo → conferir colunas 11/12; usar <code>EditaKm</code>.</li>
+          <li>Duplicidade por data → valida só a 1ª linha; ampliar validação.</li>
+          <li>Importação lenta → evitar <code>Save()</code> por linha; agrupar.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-list-check"></use></svg>Log de modificações</div>
+        <ul>
+          <li><strong>08/01/2026</strong> — Documentação inicial completa. Versão 2.0.</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+
+
+

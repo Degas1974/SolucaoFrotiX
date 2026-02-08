@@ -1,0 +1,44 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_PageFooter.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view do rodapé da página (page-footer) com links e informações
+ *                   institucionais. Atualmente TODO COMENTADO - footer vazio no FrotiX.
+ * 📥 ENTRADAS     : Settings.Features.AppFooter (flag booleano - controla exibição do footer),
+ *                   Settings.App, Settings.AppFlavor, Settings.Theme.IconPrefix (COMENTADOS)
+ * 📤 SAÍDAS       : <footer class="page-footer" role="contentinfo"> VAZIO (todo conteúdo comentado),
+ *                   estrutura flex com copyright e links About/License/Documentation (desabilitados)
+ * 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml (provavelmente antes </body>), conditional rendering
+ *                   @if (Settings.Features.AppFooter)
+ * 🔄 CHAMA        : NADA atualmente (todo código comentado). Originalmente chamava:
+ *                   - /intel/introduction (About - COMENTADO)
+ *                   - /info/applicensing (License - COMENTADO)
+ *                   - /info/appdocs (Documentation - COMENTADO)
+ *                   - Link Walapa/SmartAdmin (template origin - COMENTADO)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views), SmartSettings injection (@Settings),
+ *                   Bootstrap 5 (d-flex, align-items-center, text-muted, list-table),
+ *                   CSS classes page-footer, hidden-md-down (COMENTADOS)
+ * 📝 OBSERVAÇÕES  : 15 linhas. Footer VAZIO - customização FrotiX removeu todo conteúdo do SmartAdmin.
+ *                   Código comentado mostra template original:
+ *                   - Copyright "2020 © @Settings.App for @Settings.AppFlavor by Walapa"
+ *                   - Links para About/License/Documentation/Help
+ *                   - Ícone fa-question-circle para suporte
+ *                   Renderização condicional Settings.Features.AppFooter provavelmente = false
+ *                   (footer não exibido). Pode ser re-enabled adicionando conteúdo FrotiX
+ *                   (ex: "FrotiX v2026 | Suporte: suporte@frotix.com.br").
+ **************************************************************************************** *@
+@if (Settings.Features.AppFooter)
+{
+<footer class="page-footer" role="contentinfo">
+	<div class="d-flex align-items-center flex-1 text-muted">
+		@*<span class="hidden-md-down fw-700">2020 &copy; @Settings.App for @Settings.AppFlavor by&nbsp;<a href="https://wrapbootstrap.com/theme/smartadmin-asp.net-core-responsive-webapp-WB073L89G?ref=Walapa" class="text-primary fw-500" title="Walapa" target="_blank">Walapa</a></span>*@
+	</div>
+	<div>
+		<ul class="list-table m-0">
+			@*<li><a href="/intel/introduction" class="text-secondary fw-700">About</a></li>
+			<li class="pl-3"><a href="/info/applicensing" class="text-secondary fw-700">License</a></li>
+			<li class="pl-3"><a href="/info/appdocs" class="text-secondary fw-700">Documentation</a></li>
+			<li class="pl-3 fs-xl"><a href="https://wrapbootstrap.com/user/Walapa" class="text-secondary" target="_blank"><i class="@(Settings.Theme.IconPrefix) fa-question-circle" aria-hidden="true"></i></a></li>*@
+		</ul>
+	</div>
+</footer>
+}

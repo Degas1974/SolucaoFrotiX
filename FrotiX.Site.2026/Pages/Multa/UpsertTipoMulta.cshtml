@@ -1,0 +1,170 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Multa/UpsertTipoMulta.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário criar/editar tipo de multa/infração (CTB - Código de Trânsito Brasileiro)
+ * 📥 ENTRADAS     : @page, @model UpsertTipoMultaModel, campos: Artigo, Infracao (select gravidade), CodigoDenatran (inputmask 999-9), Desdobramento, Descricao (RTE Syncfusion)
+ * 📤 SAÍDAS       : POST (handler=Submit), redirect para ListaTiposMulta
+ * 🔗 CHAMADA POR  : ListaTiposMulta (botão "Nova Infração", editar linha)
+ * 🔄 CHAMA        : (assumido) /Multa/UpsertTipoMulta handler, /api/Viagem/SaveImage (RTE upload), ~/js/jquery.inputmask.js, ./ListaTiposMulta
+ * 📦 DEPENDÊNCIAS : Syncfusion.EJ2 (RichTextEditor), jquery.inputmask.js, Bootstrap (implícito), Font Awesome Duotone, Alerta.TratamentoErroComLinha (custom)
+ * 📝 OBSERVAÇÕES  : Total: 133 linhas. LEVE: Arquivo enxuto e bem estruturado - bom exemplo, CSS inline: ZERO (usa classes do layout) - excelente, JavaScript inline mínimo (24 linhas) - apenas inputmask e toolbarClick - aceitável, InputMask no CodigoDenatran (999-9) - padrão Denatran correto, RTE Syncfusion: usa toolbarClick para antiforgery token em upload imagem - segurança OK, Try-catch em todos os handlers - padrão de erro consistente, MELHORIAS: Validação client-side do formato Denatran (além do inputmask), Select Infração: hardcoded 4 opções (Gravíssima, Grave, Média, Leve) - correto para CTB
+ **************************************************************************************** *@
+@page
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Syncfusion.EJ2
+
+@model FrotiX.Pages.Multa.UpsertTipoMultaModel
+
+@{
+    var isEdit = Model.TipoMultaObj.TipoMultaId != Guid.Empty;
+    ViewData["Title"] = "Código de Trânsito Brasileiro";
+    ViewData["PageName"] = "multa_upserttipomulta";
+    ViewData["Heading"] = "<i class='fa-duotone fa-ballot-check'></i> Cadastros: <span class='fw-300'>Código de Trânsito - Tipos de Multa</span>";
+    ViewData["Category1"] = "Cadastros";
+    ViewData["PageIcon"] = "fa-duotone fa-ballot-check";
+}
+
+<form method="post" asp-action="Upsert">
+    @Html.AntiForgeryToken()
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div id="panel-1" class="panel">
+                <div class="panel-container show">
+
+                    <!-- HEADER PADRÃO FROTIX -->
+                    <div class="ftx-card-header">
+                        <h2 class="titulo-paginas">
+                            <i class="fa-duotone fa-ballot-check"></i>
+                            @(isEdit ? "Editar" : "Nova") Infração de Trânsito
+                        </h2>
+                        <div class="ftx-card-actions">
+                            <a asp-page="./ListaTiposMulta" class="btn btn-fundo-laranja" data-ftx-loading>
+                                <i class="fa-duotone fa-rotate-left icon-space icon-rotate-left"></i>
+                                Voltar à Lista
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- CONTEÚDO -->
+                    <div class="panel-content">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        @if (isEdit)
+                        {
+                            <input type="hidden" asp-for="TipoMultaObj.TipoMultaId" />
+                        }
+
+                        <div class="row g-3">
+                            <!-- Artigo -->
+                            <div class="col-md-9">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold" asp-for="TipoMultaObj.Artigo"></label>
+                                    <span class="text-danger" asp-validation-for="TipoMultaObj.Artigo"></span>
+                                    <input class="form-control" asp-for="TipoMultaObj.Artigo" data-ejtip="Artigo do Código de Trânsito" />
+                                </div>
+                            </div>
+
+                            <!-- Infração -->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold" asp-for="TipoMultaObj.Infracao"></label>
+                                    <span class="text-danger" asp-validation-for="TipoMultaObj.Infracao"></span>
+                                    <select class="form-control" asp-for="TipoMultaObj.Infracao" data-ejtip="Gravidade da Infração">
+                                        <option value="">-- Infração --</option>
+                                        <option value="Gravíssima">Gravíssima</option>
+                                        <option value="Grave">Grave</option>
+                                        <option value="Média">Média</option>
+                                        <option value="Leve">Leve</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Código Denatran -->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold" asp-for="TipoMultaObj.CodigoDenatran"></label>
+                                    <span class="text-danger" asp-validation-for="TipoMultaObj.CodigoDenatran"></span>
+                                    <input id="txtDenatran" class="form-control" asp-for="TipoMultaObj.CodigoDenatran" data-ejtip="Código Denatran" />
+                                </div>
+                            </div>
+
+                            <!-- Desdobramento -->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold" asp-for="TipoMultaObj.Desdobramento"></label>
+                                    <span class="text-danger" asp-validation-for="TipoMultaObj.Desdobramento"></span>
+                                    <input class="form-control" asp-for="TipoMultaObj.Desdobramento" data-ejtip="Desdobramento da Infração" />
+                                </div>
+                            </div>
+
+                            <!-- Descrição -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold">Descrição da Multa</label>
+                                    <ejs-richtexteditor ejs-for="@Model.TipoMultaObj.Descricao" id="rte" toolbarClick="toolbarClick" locale="pt-BR" height="200px">
+                                        <e-richtexteditor-insertimagesettings saveUrl="api/Viagem/SaveImage" path="./DadosEditaveis/ImagensViagens/"></e-richtexteditor-insertimagesettings>
+                                    </ejs-richtexteditor>
+                                    <div id="errorMessage">
+                                        <span class="text-danger" asp-validation-for="@Model.TipoMultaObj.Descricao"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botões -->
+                            <div class="col-12 mt-4">
+                                <div class="d-flex gap-2">
+                                    <button type="submit" value="Submit" asp-page-handler="Submit" class="btn btn-azul btn-submit-spin px-4">
+                                        <i class="fa-duotone fa-floppy-disk icon-space icon-pulse"></i>
+                                        @(isEdit ? "Atualizar Infração" : "Criar Infração")
+                                    </button>
+                                    <a asp-page="./ListaTiposMulta" class="btn btn-ftx-fechar px-4" data-ftx-loading>
+                                        <i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i>
+                                        Cancelar Operação
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section ScriptsBlock {
+    <script src="~/js/jquery.inputmask.js" asp-append-version="true"></script>
+
+    <script asp-append-version="true">
+        $(document).ready(function () {
+            try {
+                $("#txtDenatran").inputmask("999-9");
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("UpsertTipoMulta.cshtml", "document.ready", error);
+            }
+        });
+
+        function toolbarClick(e) {
+            try {
+                if (e.item.id == "rte_toolbar_Image") {
+                    var element = document.getElementById('rte_upload');
+                    if (element && element.ej2_instances && element.ej2_instances[0]) {
+                        element.ej2_instances[0].uploading = function upload(args) {
+                            try {
+                                var tokenInput = document.getElementsByName('__RequestVerificationToken')[0];
+                                if (tokenInput) {
+                                    args.currentRequest.setRequestHeader('XSRF-TOKEN', tokenInput.value);
+                                }
+                            } catch (error) {
+                                Alerta.TratamentoErroComLinha("UpsertTipoMulta.cshtml", "uploading", error);
+                            }
+                        };
+                    }
+                }
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("UpsertTipoMulta.cshtml", "toolbarClick", error);
+            }
+        }
+    </script>
+}

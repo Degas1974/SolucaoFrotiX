@@ -2,6 +2,19 @@
 # FrotiX - Repositório Principal
 # ===================================================
 
+# Build .NET
+bin/
+obj/
+
+# Arquivos Windows / IDE
+nul
+*.user
+*.suo
+.vs/
+
+# Gemini AI (contém credenciais OAuth)
+.gemini/
+
 # Exemplos e bibliotecas de terceiros
 Kendo.Mvc.Examples/
 

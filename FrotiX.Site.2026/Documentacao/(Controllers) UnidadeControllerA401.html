@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>UnidadeController | FrotiX</title>
+  <style>
+    :root {
+      --vinho: #722F37; --vinho-light: #8B3A44;
+      --azul: #325d88; --azul-light: #3d6f9e;
+      --terracota: #A97B6E; --terracota-light: #C08B7E;
+      --verde: #557570; --verde-light: #6A8A85;
+      --cinza: #f5f7fb; --card: #ffffff; --texto: #1f1f1f;
+      --shadow: 0 20px 45px -18px rgba(0,0,0,.35);
+      --radius: 14px; --header-bg: #b66a3d; --code-bg: #33465c;
+    }
+    @page { size: A4; margin: 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: "Segoe UI","Inter",system-ui,-apple-system,sans-serif;
+      background: radial-gradient(circle at 12% 20%, rgba(50,93,136,.08), transparent 26%), radial-gradient(circle at 90% 10%, rgba(114,47,55,.10), transparent 30%), var(--cinza);
+      color: var(--texto); padding: 22px; display: flex; justify-content: center;
+    }
+    .page { width: 210mm; max-width: 100%; }
+    .hero {
+      background: var(--header-bg); color: #fff; padding: 22px 24px;
+      border-radius: var(--radius); box-shadow: 0 0 0 1px #000, 0 0 0 4px #fff, var(--shadow);
+      display: flex; align-items: center; gap: 16px;
+    }
+    .hero img { width: 50px; height: 50px; filter: drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+    h1 { margin: 0; font-size: 26px; letter-spacing: 0.2px; }
+    .subtitle { margin: 6px 0 0; font-size: 13px; opacity: 0.92; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 18px; }
+    .card {
+      background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 16px 18px; border: 1px solid rgba(0,0,0,0.05);
+    }
+    .section-title { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; font-size: 15px; font-weight: 800; color: var(--vinho); }
+    .icon { width: 18px; height: 18px; vertical-align: middle; filter: drop-shadow(0 2px 4px rgba(0,0,0,.15)); }
+    ul { margin: 6px 0 0 18px; padding: 0; }
+    li { margin-bottom: 6px; }
+    code {
+      background: var(--code-bg); color: #e9edf5; padding: 10px 12px;
+      border-radius: 10px; display: block; white-space: pre-wrap; font-size: 12px; line-height: 1.45;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+  </style>
+</head>
+
+  
+  <body>
+  <svg style="display:none" aria-hidden="true" focusable="false">
+  
+</svg>
+  <div class="page">
+    <header class="hero">
+      <svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-house-building"></use></svg>
+      <div>
+        <h1>UnidadeController</h1>
+        <p class="subtitle">Unidades e sistema de lotação de motoristas • Última atualização: 08/01/2026 • Versão 2.0</p>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-info"></use></svg>Visão geral</div>
+        <p>Um dos controllers mais complexos: além do CRUD de unidades, gere o sistema de lotação de motoristas (histórico, coberturas temporárias), valida veículos vinculados e emite notificações (<code>INotyfService</code>).</p>
+        <ul>
+          <li>CRUD de unidades com status.</li>
+          <li>Gestão de lotação e cobertura de motoristas.</li>
+          <li>Validação de dependências (veículos) antes de excluir.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-route"></use></svg>Endpoints principais</div>
+        <ul>
+          <li><strong>GET /api/Unidade</strong> – lista unidades.</li>
+          <li><strong>POST /api/Unidade/Delete</strong> – bloqueia se houver veículos (<code>Veiculo.UnidadeId</code>).</li>
+          <li><strong>GET /api/Unidade/UpdateStatus</strong> – ativa/inativa.</li>
+          <li><strong>GET /api/Unidade/ListaLotacao</strong> – histórico de lotações por motorista.</li>
+          <li><strong>GET /api/Unidade/LotaMotorista</strong> – cria lotação (crítico).</li>
+          <li><strong>GET /api/Unidade/CobrirMotorista</strong> – coberturas temporárias.</li>
+        </ul>
+        <code>
+GET /api/Unidade/LotaMotorista?MotoristaId=...&UnidadeId=...&DataInicio=2026-01-01&DataFim=&Lotado=true&Motivo=Lota%C3%A7%C3%A3o%20regular
+        </code>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-link"></use></svg>Interconexões</div>
+        <ul>
+          <li>Páginas: <code>Pages/Unidade/*.cshtml</code> (Index, LotacaoMotoristas, VisualizaLotacoes).</li>
+          <li>Repos: <code>_unitOfWork.Unidade</code>, <code>_unitOfWork.LotacaoMotorista</code>, <code>_unitOfWork.Motorista</code>, <code>_unitOfWork.Veiculo</code>.</li>
+          <li>Notificações via <code>INotyfService</code> na UI.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-bug"></use></svg>Cuidados</div>
+        <ul>
+          <li>Excluir unidade: bloquear se houver veículos associados.</li>
+          <li>Lotações: garantir idempotência para não duplicar histórico.</li>
+          <li>Cobertura: validar datas de início/fim e conflitos com lotação ativa.</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+
+

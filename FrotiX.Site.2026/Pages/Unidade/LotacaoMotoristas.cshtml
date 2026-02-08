@@ -1,0 +1,1740 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Unidade/LotacaoMotoristas.cshtml
+ * OBJETIVO: Pagina COMPLEXA de lotacao/vinculacao de motoristas em unidades organizacionais
+ *           exibindo Syncfusion TreeGrid hierarquico 4 niveis (Diretoria>Coordenacao>Divisao>Secao)
+ *           com ComboBox cascading inline editing por nivel permitindo vincular multiplos
+ *           motoristas a cada unidade com periodo vigencia, sistema CRITICO para controle
+ *           organizacional motoristas e relatorios por setor.
+ * ENTRADAS: route /Unidade/LotacaoMotoristas, ViewData (Title, PageName, Heading), Syncfusion
+ *           TreeGrid dataSource URL GET /api/Unidade/GetTreeHierarquico retorna JSON hierarquia
+ *           4 niveis com motoristas lotados (IdMap auto para TreeGrid, ParentIdMap FK pai
+ *           hierarquia null para Diretorias raiz, Nivel int 1-4, Nome string unidade, Tipo
+ *           string Diretoria/Coordenacao/Divisao/Secao, MotoristaId int nullable FK Motoristas.Id,
+ *           MotoristaTexto string nome completo motorista se lotado, DataInicio date vigencia
+ *           lotacao, DataFim date nullable fim vigencia, Ativo boolean se lotacao vigente
+ *           hoje, hasChild boolean true se tem filhos hierarquia), toolbar com 4 ComboBox
+ *           cascading filters (Diretoria raiz nivel 1, Coordenacao nivel 2 filtra por Diretoria
+ *           selecionada, Divisao nivel 3 filtra por Coordenacao, Secao nivel 4 filtra por
+ *           Divisao), TreeGrid permite inline editing double-click celula Motorista (ComboBox
+ *           editor dataSource GET /api/Motoristas/GetAtivos retorna dropdown motoristas
+ *           disponiveis filtra apenas nao lotados ou lotados em outras unidades permite
+ *           transferencia), DatePicker editors DataInicio/DataFim vigencia, Checkbox editor
+ *           Ativo, batch mode acumula alteracoes, botao Salvar Lotacoes POST batch /api/Unidade/SalvarLotacoes
+ * SAIDAS: Pagina renderizada com card header (titulo Lotacao de Motoristas por Unidade,
+ *         icone fa-sitemap hierarquico, breadcrumb Cadastros > Unidades > Lotacao Motoristas),
+ *         card body com: 1. Toolbar topo com 4 ComboBox cascading filters Syncfusion (Diretoria
+ *         dropdown lista Diretorias nivel 1, change event carrega Coordenacoes nivel 2
+ *         filtra Where DiretoriaId=selected, limpa Divisao/Secao, Coordenacao dropdown
+ *         disabled ate selecionar Diretoria, Divisao dropdown disabled ate Coordenacao,
+ *         Secao dropdown disabled ate Divisao, permite drill-down hierarquico navegacao,
+ *         botao Limpar Filtros reseta dropdowns expande TreeGrid completo), 2. Alert Info
+ *         explicativo (Selecione unidade e dbl-click coluna Motorista para vincular, DataInicio/DataFim
+ *         definem periodo vigencia, desmarcar Ativo encerra lotacao), 3. Syncfusion TreeGrid
+ *         component (dataSource URL /api/Unidade/GetTreeHierarquico load async hierarquia
+ *         completa 4 niveis, treeColumnIndex 1 coluna Nome exibe tree expand/collapse,
+ *         idMapping IdMap, parentIdMapping ParentIdMap, hasChildMapping hasChild, allowEditing
+ *         true inline double-click celula, editSettings mode Batch acumula alteracoes,
+ *         columns 10: IdMap hidden, ParentIdMap hidden, Nivel int readonly badge colorido
+ *         (1 Azul Diretoria, 2 Verde Coordenacao, 3 Amarelo Divisao, 4 Vermelho Secao),
+ *         Nome string readonly width 300px tree column com indent hierarquico, Tipo string
+ *         readonly badge pill, MotoristaId int hidden FK, MotoristaTexto ComboBox editor
+ *         dataSource /api/Motoristas/GetAtivos allowFiltering true placeholder Selecione
+ *         motorista width 250px, DataInicio DatePicker editor format DD/MM/YYYY obrigatorio
+ *         default hoje, DataFim DatePicker editor format DD/MM/YYYY nullable permite lotacao
+ *         indeterminada, Ativo Checkbox editor default true, Acoes template botoes Editar
+ *         icone pencil azul + Deletar icone trash vermelho), toolbar [Add, Edit, Delete,
+ *         Update, Cancel, Search, ExpandAll, CollapseAll, ExcelExport] permite gerenciar
+ *         lotacoes e exportar, allowFiltering true searchbar topo, allowSorting true click
+ *         header ordena, height 600px scroll vertical se muitos niveis, 4. Botao Salvar
+ *         Lotacoes rodape primary (disabled se Grid sem alteracoes batch, valida campos
+ *         obrigatorios MotoristaTexto/DataInicio preenchidos, se invalido highlight red
+ *         border exibe Alerta.Warning, se valido coleta Grid.getBatchChanges retorna objeto
+ *         {addedRecords:[...], changedRecords:[...], deletedRecords:[...]} POST /api/Unidade/SalvarLotacoes
+ *         JSON batch, exibe loading spinner, success exibe AppToast Verde X lotacoes salvas
+ *         reload TreeGrid atualiza hierarquia, error Alerta.Erro mensagem), 5. Botao Cancelar
+ *         Alteracoes secondary (limpa batch changes Grid volta estado original carregado)
+ * CHAMADA POR: Menu Cadastros > Unidades > Lotacao Motoristas (link interno sidebar),
+ *              usuarios com permissao Unidade.Gerenciar (role Admin ou Coordenador RH),
+ *              usada para vincular motoristas em unidades organizacionais definindo estrutura
+ *              hierarquica responsabilidades (motorista lotado em Secao X reporta para
+ *              Divisao Y que reporta para Coordenacao Z que reporta para Diretoria W, estrutura
+ *              usada em relatorios por setor, controle orcamento, aprovacao viagens)
+ * CHAMA: API UnidadeController backend: GET /api/Unidade/GetTreeHierarquico (query EF
+ *        Core hierarquica recursiva CTE ou query multipla com Joins, carrega Diretorias
+ *        Where Nivel=1 ParentId IS NULL, para cada Diretoria carrega Coordenacoes Where
+ *        ParentId=DiretoriaId Nivel=2, repete para Divisoes Nivel=3 e Secoes Nivel=4,
+ *        Include LotacoesMotoristas join Motoristas para carregar MotoristaTexto nome,
+ *        filtra LotacoesMotoristas Where Ativo=true OU DataFim IS NULL OU DataFim>=hoje
+ *        (apenas lotacoes vigentes), mapeia para DTO TreeGrid format {IdMap, ParentIdMap,
+ *        Nivel, Nome, Tipo, MotoristaId, MotoristaTexto, DataInicio, DataFim, Ativo,
+ *        hasChild}, retorna JSON array objetos flat mas com ParentIdMap links hierarquia
+ *        TreeGrid reconstroi arvore client-side), POST /api/Unidade/SalvarLotacoes (recebe
+ *        JSON {addedRecords:[...], changedRecords:[...], deletedRecords:[...]}, inicia
+ *        transacao EF Core BeginTransaction, processa addedRecords loop: para cada record
+ *        valida MotoristaId existe na tabela Motoristas, valida UnidadeId existe, verifica
+ *        duplicata motorista ja lotado na mesma unidade periodo overlap (Where MotoristaId=record.MotoristaId
+ *        AND UnidadeId=record.UnidadeId AND ((DataInicio<=record.DataInicio AND DataFim>=record.DataInicio)
+ *        OR (DataInicio<=record.DataFim AND DataFim>=record.DataFim)) indica overlap,
+ *        se duplicata adiciona erro lista nao insere, senao insere new LotacaoMotorista
+ *        entity DbContext.Add), processa changedRecords loop: para cada record carrega
+ *        LotacaoMotorista entity Where Id=record.IdMap, atualiza propriedades MotoristaId/DataInicio/DataFim/Ativo,
+ *        se Ativo=false seta DataFim=hoje encerra lotacao, verifica overlap com outras
+ *        lotacoes mesmo motorista mesma unidade, se invalido adiciona erro, senao DbContext.Update),
+ *        processa deletedRecords loop: para cada record soft delete LotacaoMotorista Where
+ *        Id=record.IdMap seta Excluida=true DataExclusao=hoje (nao DELETE fisico para
+ *        manter historico auditoria), SaveChanges commit todas alteracoes batch, CommitTransaction,
+ *        retorna JSON {success:true, totalAdicionadas:countAdd, totalAlteradas:countUpd,
+ *        totalExcluidas:countDel, mensagem:"Lotacoes salvas com sucesso"}, se exception
+ *        RollbackTransaction retorna JSON {success:false, error:ex.Message, erros:[lista
+ *        detalhada]}), GET /api/Motoristas/GetAtivos (query EF Core Where Ativo=true
+ *        AND Excluido=false, orderby Nome, Select new {Id, Nome, CPF, Matricula}, retorna
+ *        JSON array motoristas para dropdown ComboBox editor, pode filtrar apenas motoristas
+ *        sem lotacao vigente ou permitir todos para transferencia), Syncfusion TreeGrid
+ *        component (dataSource URL hierarchical binding, idMapping/parentIdMapping constroi
+ *        arvore, treeColumnIndex define coluna tree, allowEditing inline batch mode, editSettings
+ *        ComboBox/DatePicker/Checkbox editors customizados, toolbar Add/Edit/Delete/ExpandAll/CollapseAll,
+ *        events actionComplete valida campos apos edit, dataBound aplica estilos condicionais
+ *        colorir badges nivel), Alerta.Warning/Erro (validacoes e erros), AppToast.show
+ *        Verde (feedback success)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 ASP.NET Core 2023.4.2 (TreeGrid,
+ *               ComboBox cascading, DatePicker, Checkbox), jQuery 3.7.1, Bootstrap 5.3.8,
+ *               Font Awesome 6 Duotone, EF Core 8.0 (query hierarquica CTE recursive,
+ *               transacao batch SaveChanges), custom JavaScript Alerta.js/AppToast.js
+ * OBSERVACOES: 1560 linhas pagina COMPLEXA CRITICA lotacao motoristas hierarquia 4 niveis.
+ *              TreeGrid hierarquico: permite visualizar estrutura organizacional completa
+ *              em arvore expand/collapse intuitiva (Diretoria Administrative expande mostra
+ *              Coordenacoes Financeira/RH/TI, Coordenacao Financeira expande mostra Divisoes
+ *              Contas a Pagar/Contas a Receber, Divisao Contas a Pagar expande mostra Secoes
+ *              Fornecedores/Tributos), cada nivel exibe motoristas lotados naquela unidade
+ *              com periodo vigencia e status ativo. ComboBox cascading filters toolbar:
+ *              facilita navegacao drill-down hierarquica (seleciona Diretoria Administrative
+ *              carrega apenas Coordenacoes desta Diretoria no dropdown Coordenacao, seleciona
+ *              Coordenacao Financeira carrega apenas Divisoes desta Coordenacao no dropdown
+ *              Divisao, permite focar em sub-arvore especifica sem poluir tela com hierarquia
+ *              completa), botao Limpar Filtros reseta navegacao expande arvore completa.
+ *              Inline editing batch mode: usuario pode dbl-click celula MotoristaTexto
+ *              de qualquer unidade (Diretoria/Coordenacao/Divisao/Secao) abre ComboBox
+ *              dropdown lista motoristas disponiveis, seleciona motorista preenche DataInicio
+ *              vigencia (default hoje), opcionalmente preenche DataFim se lotacao temporaria,
+ *              marca Ativo checkbox (default true), pode editar multiplas unidades/motoristas
+ *              antes de salvar (batch mode acumula alteracoes memoria), clica Salvar Lotacoes
+ *              envia todas alteracoes de uma vez POST batch otimiza performance. Validacoes
+ *              backend: motorista nao pode ter lotacao overlap periodos mesma unidade (business
+ *              rule: se motorista lotado Secao A de 01/01/2026 ate 31/12/2026 nao pode
+ *              adicionar nova lotacao Secao A de 01/06/2026 ate 30/06/2026 porque overlap,
+ *              sistema valida overlap via query SQL DateRanges overlap formula ((DataInicio1<=DataInicio2
+ *              AND DataFim1>=DataInicio2) OR (DataInicio1<=DataFim2 AND DataFim1>=DataFim2)),
+ *              se overlap detected retorna erro usuario deve ajustar datas ou encerrar
+ *              lotacao anterior antes de adicionar nova), motorista pode ter multiplas
+ *              lotacoes em unidades DIFERENTES simultaneamente (exemplo: motorista vinculado
+ *              50pc Secao A e 50pc Secao B para compartilhar custos entre departamentos,
+ *              sistema permite desde que nao overlap mesma unidade). Encerrar lotacao:
+ *              usuario pode dbl-click celula Ativo desmarca checkbox seta false, sistema
+ *              automaticamente seta DataFim=hoje encerra lotacao (motorista desligado ou
+ *              transferido para outra unidade nova lotacao), lotacao encerrada permanece
+ *              visivel no TreeGrid para historico mas badge Status muda para Inativo cinza,
+ *              relatorios futuros nao incluem lotacoes inativas apenas vigentes. Soft delete:
+ *              usuario pode clicar botao Delete icone trash na coluna Acoes remove lotacao,
+ *              sistema nao executa DELETE SQL fisico apenas seta flag Excluida=true para
+ *              manter historico auditoria (rastrear quem lotou motorista quando onde por
+ *              quanto tempo para compliance e controle interno), queries futuras filtram
+ *              Where Excluida=false por padrao excluindo lotacoes deletadas da visualizacao.
+ *              Hierarquia 4 niveis: estrutura organizacional FrotiX segue padrao governo/empresas
+ *              grandes (Diretoria nivel 1 topo hierarquia responsavel area macro Administrativa/Operacional/Comercial,
+ *              Coordenacao nivel 2 coordena departamentos especificos Financeiro/RH/TI,
+ *              Divisao nivel 3 divide coordenacoes em areas menores Contas a Pagar/Folha
+ *              Pagamento/Suporte Tecnico, Secao nivel 4 menor unidade operacional Fornecedores/Beneficios/Redes),
+ *              motoristas geralmente lotados em Secoes nivel 4 (unidade operacional direta),
+ *              mas sistema permite lotar em qualquer nivel (motorista pode ser lotado diretamente
+ *              em Diretoria se cargo comissionado diretor, ou Coordenacao se coordenador,
+ *              flexibilidade adapta estruturas organizacionais diversas). Relatorios por
+ *              setor: lotacoes de motoristas usadas em multiplos relatorios gerenciais
+ *              (Relatorio Custos Frota por Setor totaliza combustivel+manutencao+multas
+ *              dos veiculos dirigidos por motoristas lotados em cada Secao/Divisao/Coordenacao/Diretoria,
+ *              permite diretores verem custos de suas areas, Relatorio Viagens por Setor
+ *              totaliza quantidade viagens e distancia percorrida por motoristas de cada
+ *              unidade, Relatorio Multas por Setor identifica unidades com mais infrações
+ *              para acoes corretivas treinamento motoristas), sem lotacoes corretas relatorios
+ *              ficam imprecisos dificulta gestao. Periodo vigencia: DataInicio/DataFim
+ *              definem quando lotacao estava ativa (essencial para relatorios historicos:
+ *              Relatorio Custos Janeiro 2026 deve considerar apenas motoristas que estavam
+ *              lotados em Janeiro Where DataInicio<=31/01/2026 AND (DataFim IS NULL OR
+ *              DataFim>=01/01/2026), se motorista transferido meio do mes sistema rateia
+ *              custos proporcionalmente entre unidades origem/destino baseado em dias lotados),
+ *              DataFim IS NULL indica lotacao indeterminada vigente ate ser encerrada manualmente.
+ *              Performance: TreeGrid com hierarquia 4 niveis e 1000+ registros (50 Diretorias
+ *              * 5 Coordenacoes * 4 Divisoes * 3 Secoes = 3000 unidades organizacionais)
+ *              pode ser lento, otimizacoes: query backend usa indexes em ParentId/Nivel
+ *              colunas para joins rapidos, TreeGrid load on demand carrega apenas niveis
+ *              visiveis (Diretorias nivel 1 carregadas inicialmente collapsed, ao expandir
+ *              Diretoria carrega Coordenacoes filhas lazy loading, expande Coordenacao
+ *              carrega Divisoes, reduz payload inicial e renderizacao), ComboBox cascading
+ *              filters carrega apenas unidades filtradas por nivel superior (seleciona
+ *              Diretoria A nao carrega Coordenacoes de Diretoria B reducing dropdown size),
+ *              cache server-side hierarquia completa em memoria Cache.Set expiracao 1h
+ *              evita query banco toda request. Integracao com outros modulos: LotacoesMotoristas
+ *              tabela referenciada por multiplos modulos FrotiX (Viagens.MotoristaId join
+ *              LotacoesMotoristas.MotoristaId obtem UnidadeId do motorista na data viagem
+ *              para vincular custo viagem a unidade correta, Abastecimentos.VeiculoId
+ *              join Veiculos.MotoristaResponsavelId join LotacoesMotoristas obtem unidade
+ *              do motorista responsavel veiculo para alocar custo combustivel, Multas.VeiculoId
+ *              join Veiculos join LotacoesMotoristas obtem unidade do motorista que cometeu
+ *              infração para debitar custo multa no orcamento da unidade), estrutura central
+ *              contabilidade custos por setor.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+@page
+
+@using FrotiX.Repository.IRepository
+@using FrotiX.Pages.Multa
+@using Syncfusion.EJ2
+@using Stimulsoft.Report.Mvc
+
+@inject IUnitOfWork _unitOfWork
+
+@{
+    @functions{
+        public void OnGet()
+        {
+            FrotiX.Pages.Multa.ListaMultaModel.Initialize(_unitOfWork);
+            ViewData["lstMotorista"] = new ListaMotorista(_unitOfWork).MotoristaList();
+            ViewData["lstUnidade"]   = new ListaUnidades(_unitOfWork).UnidadesList();
+            ViewData["lstMudança"]   = new ListaMudancas(_unitOfWork).MudançasList();
+        }
+    }
+}
+
+@{
+    ViewData["Title"]     = "Lotação de Motoristas";
+    ViewData["PageName"]  = "unidade_lotacaomotoristas";
+    ViewData["Heading"]   = "<i class='fa-duotone fa-pen-to-square'></i> Unidades: <span class='fw-300'>Lotação de Motoristas</span>";
+    ViewData["Category1"] = "Lotação";
+    ViewData["PageIcon"]  = "fa-duotone fa-pen-to-square";
+}
+
+@section HeadBlock {
+	<style>
+/* ======== OUTLINE BRANCO NO BOTÃO DO HEADER (Padrão FrotiX) ======== */
+		.ftx-card-header .btn-fundo-laranja {
+			outline: 2px solid rgba(255, 255, 255, 0.5) !important;
+			outline-offset: 1px;
+			transition: all 0.2s ease;
+		}
+
+		.ftx-card-header .btn-fundo-laranja:hover {
+			outline: 2px solid rgba(255, 255, 255, 0.8) !important;
+			outline-offset: 2px;
+		}
+
+	</style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.2/pdf.js"></script>
+    <script>
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.2/pdf.worker.js';
+    </script>
+
+    <!-- FONTE OUTFIT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ====== HEADER AZUL PADRÃO FROTIX ====== */
+        .ftx-card-header {
+            background-color: #3D5771;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ftx-card-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @@keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .ftx-card-header .titulo-paginas {
+            color: #fff !important;
+            font-family: 'Outfit', sans-serif !important;
+            font-weight: 900 !important;
+            font-size: 1.5rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Ícone do header: cores definidas no frotix.css global */
+        .ftx-card-header .titulo-paginas i.fa-duotone {
+            font-size: 1.75rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .ftx-card-actions {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ====== BOTÃO INICIAR LOTAÇÃO NO HEADER ====== */
+        .ftx-card-header .btn-fundo-laranja {
+            border: 2px solid rgba(255, 255, 255, 0.7) !important;
+            outline: 1px solid rgba(255, 255, 255, 0.3) !important;
+            padding: 0.5rem 1rem !important;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ====== PANEL CONTENT ====== */
+        .panel-content {
+            padding: 1.25rem;
+            background: #f8f9fa;
+        }
+
+        /* ====== CARD DE FILTRO ====== */
+        .ftx-filter-card {
+            background: #fff;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+
+        .ftx-filter-header {
+            background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ftx-filter-header i {
+            --fa-primary-color: #3D5771;
+            --fa-secondary-color: #6b8ba3;
+            --fa-secondary-opacity: 0.7;
+            font-size: 0.95rem;
+        }
+
+        .ftx-filter-header span {
+            font-family: 'Outfit', sans-serif !important;
+            font-weight: 600 !important;
+            font-size: 0.85rem;
+            color: #3D5771;
+        }
+
+        .ftx-filter-body {
+            padding: 1rem;
+        }
+
+        /* ====== MODAL DE LOADING FROTIX ====== */
+        .ftx-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .ftx-loading-box {
+            background: linear-gradient(135deg, #3D5771 0%, #2d4259 100%);
+            border-radius: 12px;
+            padding: 2rem 3rem;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .ftx-loading-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: ftx-spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @@keyframes ftx-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .ftx-loading-box p {
+            color: #fff;
+            font-weight: 600;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        /* ====== DATATABLE AJUSTES ====== */
+        #tblLotacao_wrapper {
+            background: #fff;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        #tblLotacao thead {
+            background-color: #3D5771;
+        }
+
+        #tblLotacao thead th {
+            color: #fff !important;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.75rem 0.5rem;
+            border: none;
+            white-space: nowrap;
+        }
+
+        #tblLotacao tbody td {
+            vertical-align: middle;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        #tblLotacao tbody tr:hover {
+            background-color: rgba(61, 87, 113, 0.08) !important;
+        }
+
+        /* ====== BOTÕES DE AÇÃO NA TABELA ====== */
+        .ftx-btn-acoes {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.375rem;
+        }
+
+        /* ====== MODAL PADRÃO FROTIX ====== */
+        .ftx-modal .modal-content {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .ftx-modal .modal-header {
+            background-color: #3D5771;
+            padding: 1rem 1.25rem;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ftx-modal .modal-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        .ftx-modal .modal-header.header-terracota {
+            background-color: #A0522D;
+        }
+
+        .ftx-modal .modal-title {
+            color: #fff;
+            font-family: 'Outfit', sans-serif !important;
+            font-weight: 700 !important;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            z-index: 1;
+            margin: 0;
+        }
+
+        .ftx-modal .modal-title i {
+            --fa-primary-color: #fff;
+            --fa-secondary-color: rgba(255, 255, 255, 0.6);
+            --fa-secondary-opacity: 0.6;
+            font-size: 1.25rem;
+        }
+
+        .ftx-modal .btn-close-white {
+            filter: brightness(0) invert(1);
+            opacity: 0.8;
+            position: relative;
+            z-index: 1;
+        }
+
+        .ftx-modal .btn-close-white:hover {
+            opacity: 1;
+        }
+
+        .ftx-modal .modal-body {
+            padding: 1.25rem;
+            background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
+        }
+
+        .ftx-modal .modal-footer {
+            border-top: 1px solid rgba(0,0,0,0.08);
+            padding: 1rem 1.25rem;
+            background: #f8f9fa;
+            gap: 0.75rem;
+        }
+
+        .ftx-modal .modal-footer .btn {
+            flex: 1;
+            padding: 0.65rem 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        /* ====== FORM DENTRO DO MODAL ====== */
+        .ftx-modal .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .ftx-modal .form-group label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #495057;
+            margin-bottom: 0.35rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .ftx-modal .form-group label i {
+            --fa-primary-color: #6c757d;
+            --fa-secondary-color: #adb5bd;
+            font-size: 0.9rem;
+        }
+
+        .ftx-modal .form-control-xs {
+            min-height: 2.1rem;
+            padding: 0.35rem 0.65rem;
+            font-size: 0.85rem;
+            border-radius: 4px;
+        }
+
+        /* ====== CHECKBOX ESTILIZADO ====== */
+        .ftx-check-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .ftx-check-card:hover {
+            border-color: #3D5771;
+            background: #fff;
+        }
+
+        .ftx-check-card .form-check-input {
+            width: 1.1rem;
+            height: 1.1rem;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .ftx-check-card .form-check-input:checked {
+            background-color: #38A169;
+            border-color: #38A169;
+        }
+
+        .ftx-check-card label {
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: #495057;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .esconde-div {
+            display: none;
+        }
+
+        .disabledDiv {
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        /* ====== RESPONSIVO ====== */
+        @@media (max-width: 768px) {
+            .ftx-card-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .ftx-card-header .titulo-paginas {
+                font-size: 1.2rem;
+            }
+
+            .ftx-btn-acoes {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+}
+
+<script>
+    var defaultRTE;
+
+    function onCreate() {
+        try {
+            defaultRTE = this;
+        } catch (error) {
+            Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "onCreate", error);
+        }
+    }
+
+    var motoristaId = "";
+    var dataTableLotacao = null;
+
+    function onMotoristaChange() {
+        try {
+            var motoristas = document.getElementById('lstMotorista').ej2_instances[0];
+            if (motoristas && motoristas.value) {
+                motoristaId = motoristas.value;
+                ListaTblLotacoes(motoristaId);
+            } else {
+                // Destruir DataTable de forma segura
+                if (dataTableLotacao !== null) {
+                    try {
+                        dataTableLotacao.clear().draw();
+                        dataTableLotacao.destroy();
+                        dataTableLotacao = null;
+                    } catch (e) {
+                        console.warn("DataTable destroy warning:", e);
+                    }
+                }
+                $('#tblLotacao tbody').empty();
+            }
+        } catch (error) {
+            Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "onMotoristaChange", error);
+        }
+    }
+</script>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-container show">
+
+                <!-- HEADER AZUL PADRÃO FROTIX -->
+                <div class="ftx-card-header">
+                    <h2 class="titulo-paginas">
+                        <i class="fa-duotone fa-users-between-lines"></i>
+                        Lotação de Motoristas
+                    </h2>
+                    <div class="ftx-card-actions">
+                        <button type="button" 
+                                class="btn btn-fundo-laranja" 
+                                id="btn-inicialotacao" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#modalIniciaLotacao">
+                            <i class="fa-duotone fa-file-plus icon-pulse me-1"></i>
+                            Iniciar Lotação
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CONTEÚDO -->
+                <div class="panel-content">
+
+                    <!-- CARD DE FILTRO -->
+                    <div class="ftx-filter-card">
+                        <div class="ftx-filter-header">
+                            <i class="fa-duotone fa-filter"></i>
+                            <span>Escolha o Motorista para visualizar seu Histórico de Lotações</span>
+                        </div>
+                        <div class="ftx-filter-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ejs-combobox id="lstMotorista"
+                                                  placeholder="Selecione um Motorista"
+                                                  allowFiltering="true"
+                                                  filterType="Contains"
+                                                  dataSource="@ViewData["lstMotorista"]"
+                                                  popupHeight="250px"
+                                                  width="100%"
+                                                  showClearButton="true"
+                                                  change="onMotoristaChange">
+                                        <e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
+                                    </ejs-combobox>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TABELA DE LOTAÇÕES -->
+                    <div id="divLotacoes">
+                        <table id="tblLotacao" class="table table-bordered table-striped" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Nome da Unidade</th>
+                                    <th>Data Início</th>
+                                    <th>Data Fim</th>
+                                    <th>Lotado</th>
+                                    <th>Motivo</th>
+                                    <th>Ação</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- OVERLAY DE LOADING PADRÃO FROTIX -->
+<div id="loadingOverlayMot" class="ftx-spin-overlay" style="z-index: 999999; cursor: wait; display: none;">
+    <div class="ftx-spin-box" style="text-align: center; min-width: 300px;">
+        <img src="/images/logo_gota_frotix_transparente.png" alt="FrotiX" class="ftx-loading-logo" style="display: block;" />
+        <div class="ftx-loading-bar"></div>
+        <div class="ftx-loading-text" id="txtLoadingMessage">Carregando...</div>
+        <div class="ftx-loading-subtext">Aguarde, por favor</div>
+    </div>
+</div>
+<div class="modal fade ftx-modal" id="modalIniciaLotacao" tabindex="-1" aria-labelledby="modalIniciaLotacaoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header header-terracota">
+                <h5 class="modal-title" id="modalIniciaLotacaoLabel">
+                    <i class="fa-duotone fa-user-plus"></i>
+                    Lotar Motorista em uma Unidade
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="frmLotacao">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>
+                                    <i class="fa-duotone fa-user-tie"></i>
+                                    Motorista
+                                </label>
+                                <ejs-combobox id="lstMotoristaLotacao"
+                                              placeholder="Selecione um Motorista"
+                                              allowFiltering="true"
+                                              filterType="Contains"
+                                              dataSource="@ViewData["lstMotorista"]"
+                                              popupHeight="250px"
+                                              width="100%"
+                                              showClearButton="true">
+                                    <e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
+                                </ejs-combobox>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>
+                                    <i class="fa-duotone fa-building"></i>
+                                    Unidade
+                                </label>
+                                <ejs-combobox id="lstUnidadeLotacao"
+                                              placeholder="Selecione uma Unidade"
+                                              allowFiltering="true"
+                                              filterType="Contains"
+                                              dataSource="@ViewData["lstUnidade"]"
+                                              popupHeight="250px"
+                                              width="100%"
+                                              showClearButton="true">
+                                    <e-combobox-fields text="Descricao" value="UnidadeId"></e-combobox-fields>
+                                </ejs-combobox>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>
+                                    <i class="fa-duotone fa-clipboard-list"></i>
+                                    Motivo da Lotação
+                                </label>
+                                <ejs-combobox id="lstMotivoLotacao"
+                                              placeholder="Selecione um Motivo"
+                                              allowFiltering="true"
+                                              filterType="Contains"
+                                              dataSource="@ViewData["lstMudança"]"
+                                              popupHeight="250px"
+                                              width="100%"
+                                              showClearButton="true">
+                                    <e-combobox-fields text="Descricao" value="MudancaId"></e-combobox-fields>
+                                </ejs-combobox>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>
+                                    <i class="fa-duotone fa-calendar-plus"></i>
+                                    Data de Início
+                                </label>
+                                <input id="txtDataInicio" class="form-control form-control-xs" type="date" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>
+                                    <i class="fa-duotone fa-calendar-xmark"></i>
+                                    Data Fim
+                                </label>
+                                <input id="txtDataFim" class="form-control form-control-xs" type="date" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <div class="ftx-check-card">
+                                    <input class="form-check-input" type="checkbox" id="chkLotado">
+                                    <label for="chkLotado">Atualmente Lotado</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btnLotaMotorista" class="btn btn-azul" type="button">
+                    <i class="fa-duotone fa-check icon-pulse"></i>
+                    Confirmar Lotação
+                </button>
+                <button id="btnFecharLotacao" type="button" class="btn btn-vinho" data-bs-dismiss="modal">
+                    <i class="fa-duotone fa-xmark icon-pulse"></i>
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* ===================== MODAL EDITA LOTAÇÃO ===================== *@
+<div class="modal fade ftx-modal" id="modalEditaLotacao" tabindex="-1" aria-labelledby="modalEditaLotacaoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditaLotacaoLabel">
+                    <i class="fa-duotone fa-pen-to-square"></i>
+                    Editar Lotação do Motorista
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="frmEditaLotacao">
+                    <input type="hidden" id="txtIdEdita" />
+
+                    <div class="row" id="divEditaLotacao">
+                        <div class="col-12" id="divMotoristaEdicao">
+                            <div class="form-group">
+                                <label>
+                                    <i class="fa-duotone fa-user-tie"></i>
+                                    Motorista
+                                </label>
+                                <ejs-combobox id="lstMotoristaEditaLotacao"
+                                              placeholder="Selecione um Motorista"
+                                              allowFiltering="true"
+                                              filterType="Contains"
+                                              dataSource="@ViewData["lstMotorista"]"
+                                              popupHeight="250px"
+                                              width="100%"
+                                              showClearButton="true">
+                                    <e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
+                                </ejs-combobox>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>
+                                    <i class="fa-duotone fa-building"></i>
+                                    Unidade
+                                </label>
+                                <ejs-combobox id="lstUnidadeEditaLotacao"
+                                              placeholder="Selecione uma Unidade"
+                                              allowFiltering="true"
+                                              filterType="Contains"
+                                              dataSource="@ViewData["lstUnidade"]"
+                                              popupHeight="250px"
+                                              width="100%"
+                                              showClearButton="true">
+                                    <e-combobox-fields text="Descricao" value="UnidadeId"></e-combobox-fields>
+                                </ejs-combobox>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>
+                                    <i class="fa-duotone fa-clipboard-list"></i>
+                                    Motivo
+                                </label>
+                                <ejs-combobox id="lstEditaMotivo"
+                                              placeholder="Selecione um Motivo"
+                                              allowFiltering="true"
+                                              filterType="Contains"
+                                              dataSource="@ViewData["lstMudança"]"
+                                              popupHeight="250px"
+                                              width="100%"
+                                              showClearButton="true">
+                                    <e-combobox-fields text="Descricao" value="MudancaId"></e-combobox-fields>
+                                </ejs-combobox>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>
+                                    <i class="fa-duotone fa-calendar-plus"></i>
+                                    Data de Início
+                                </label>
+                                <input id="txtDataInicioEdicao" class="form-control form-control-xs" type="date" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>
+                                    <i class="fa-duotone fa-calendar-xmark"></i>
+                                    Data Fim
+                                </label>
+                                <input id="txtDataFimEdicao" class="form-control form-control-xs" type="date" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>
+                                    <i class="fa-duotone fa-eraser"></i>
+                                    Limpar Data Fim
+                                </label>
+                                <button type="button" class="btn fundo-vermelho btn-icon-28 d-block" onclick="ApagaDataFim()">
+                                    <i class="fa-duotone fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="ftx-check-card">
+                                <input class="form-check-input" type="checkbox" id="chkLotadoEdicao">
+                                <label for="chkLotadoEdicao">Motorista atualmente lotado nesta Unidade</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btnEditaLotacao" class="btn btn-azul" type="button">
+                    <i class="fa-duotone fa-floppy-disk icon-pulse"></i>
+                    Salvar Alterações
+                </button>
+                <button id="btnFecharLotacaoEdicao" type="button" class="btn btn-vinho" data-bs-dismiss="modal">
+                    <i class="fa-duotone fa-xmark icon-pulse"></i>
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* ===================== MODAL FINALIZA LOTAÇÃO ===================== *@
+<div class="modal fade ftx-modal" id="modalFinalizaLotacao" tabindex="-1" aria-labelledby="modalFinalizaLotacaoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalFinalizaLotacaoLabel">
+                    <i class="fa-duotone fa-user-minus"></i>
+                    Finalizar Lotação do Motorista
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="txtIdFinaliza" />
+
+                <div class="row" id="divFinalizaLotacao">
+                    <div class="col-md-6" id="divMotoristaFinalizacao">
+                        <div class="form-group">
+                            <label>
+                                <i class="fa-duotone fa-user-tie"></i>
+                                Motorista
+                            </label>
+                            <ejs-combobox id="lstMotoristaFinalizaLotacao"
+                                          placeholder="Selecione um Motorista"
+                                          allowFiltering="true"
+                                          filterType="Contains"
+                                          dataSource="@ViewData["lstMotorista"]"
+                                          popupHeight="250px"
+                                          width="100%"
+                                          showClearButton="true">
+                                <e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
+                            </ejs-combobox>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6" id="divUnidade">
+                        <div class="form-group">
+                            <label>
+                                <i class="fa-duotone fa-building"></i>
+                                Unidade Atual
+                            </label>
+                            <ejs-combobox id="lstUnidadeLotacaoAtual"
+                                          placeholder="Selecione uma Unidade"
+                                          allowFiltering="true"
+                                          filterType="Contains"
+                                          dataSource="@ViewData["lstUnidade"]"
+                                          popupHeight="250px"
+                                          width="100%"
+                                          showClearButton="true">
+                                <e-combobox-fields text="Descricao" value="UnidadeId"></e-combobox-fields>
+                            </ejs-combobox>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                <i class="fa-duotone fa-clipboard-list"></i>
+                                Motivo do Fim da Lotação
+                            </label>
+                            <select class="form-control form-control-xs" id="lstUnidadeNovoMotivo">
+                                <option value="">-- Selecione uma opção --</option>
+                                <option value="Férias">Férias</option>
+                                <option value="Cobertura">Cobertura</option>
+                                <option value="Retorno">Retorno</option>
+                                <option value="Devolução">Devolução</option>
+                                <option value="À Pedido">À Pedido</option>
+                                <option value="Lotação Inicial">Lotação Inicial</option>
+                                <option value="Desligamento">Desligamento</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="divDataInicio">
+                        <div class="form-group">
+                            <label>
+                                <i class="fa-duotone fa-calendar-plus"></i>
+                                Data Início
+                            </label>
+                            <input id="txtDataInicioFinaliza" class="form-control form-control-xs" type="date" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>
+                                <i class="fa-duotone fa-calendar-xmark"></i>
+                                Data Fim
+                            </label>
+                            <input id="txtDataFimFinaliza" class="form-control form-control-xs" type="date" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="divNovaLotacao">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label>
+                                <i class="fa-duotone fa-building-circle-arrow-right"></i>
+                                Nova Lotação (se necessário)
+                            </label>
+                            <ejs-combobox id="lstUnidadeNovaLotacao"
+                                          placeholder="Selecione uma Unidade"
+                                          allowFiltering="true"
+                                          filterType="Contains"
+                                          dataSource="@ViewData["lstUnidade"]"
+                                          popupHeight="250px"
+                                          width="100%"
+                                          showClearButton="true">
+                                <e-combobox-fields text="Descricao" value="UnidadeId"></e-combobox-fields>
+                            </ejs-combobox>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>
+                                <i class="fa-duotone fa-calendar-day"></i>
+                                Data Início Nova Lotação
+                            </label>
+                            <input id="txtDataInicioNovoMotivo" class="form-control form-control-xs" type="date" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row esconde-div" id="divCobertura">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label>
+                                <i class="fa-duotone fa-user-clock"></i>
+                                Motorista de Cobertura das Férias
+                            </label>
+                            <ejs-combobox id="lstUnidadeMotoristaCobertura"
+                                          placeholder="Selecione o Motorista da Cobertura"
+                                          allowFiltering="true"
+                                          filterType="Contains"
+                                          dataSource="@ViewData["lstMotorista"]"
+                                          popupHeight="450px"
+                                          width="100%"
+                                          showClearButton="true">
+                                <e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
+                            </ejs-combobox>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                <i class="fa-duotone fa-calendar-plus"></i>
+                                Data Início Cobertura
+                            </label>
+                            <input id="txtDataInicioCobertura" class="form-control form-control-xs" type="date" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                <i class="fa-duotone fa-calendar-xmark"></i>
+                                Data Fim Cobertura
+                            </label>
+                            <input id="txtDataFimCobertura" class="form-control form-control-xs" type="date" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnRemoveMotoristaLotacao" class="btn btn-azul" type="button" onclick="FinalizaLotacao()">
+                    <i class="fa-duotone fa-check icon-pulse"></i>
+                    Confirmar Finalização
+                </button>
+                <button id="btnFecharLotacaoFinalizacao" type="button" class="btn btn-vinho" data-bs-dismiss="modal">
+                    <i class="fa-duotone fa-xmark icon-pulse"></i>
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section ScriptsBlock {
+    <script>
+        // Funções auxiliares para loading - Padrão FrotiX (Overlay)
+        function mostrarLoading(mensagem) {
+            try {
+                $('#txtLoadingMessage').text(mensagem || 'Carregando...');
+                var overlay = document.getElementById('loadingOverlayMot');
+                if (overlay) {
+                    overlay.style.display = 'flex';
+                }
+            } catch (error) {
+                console.warn("Erro ao mostrar loading:", error);
+            }
+        }
+
+        function esconderLoading() {
+            try {
+                var overlay = document.getElementById('loadingOverlayMot');
+                if (overlay) {
+                    overlay.style.display = 'none';
+                }
+            } catch (error) {
+                console.warn("Erro ao esconder loading:", error);
+            }
+        }
+
+        function ListaTblLotacoes(motoristaId) {
+            try {
+                // Mostrar loading padrão FrotiX
+                mostrarLoading('Carregando Lotações do Motorista...');
+
+                // Destruir DataTable de forma segura usando variável global
+                if (dataTableLotacao !== null) {
+                    try {
+                        dataTableLotacao.clear().draw();
+                        dataTableLotacao.destroy();
+                        dataTableLotacao = null;
+                    } catch (e) {
+                        console.warn("DataTable destroy warning:", e);
+                    }
+                }
+                
+                // Limpar tbody
+                $('#tblLotacao tbody').empty();
+
+                dataTableLotacao = $('#tblLotacao').DataTable({
+                    select: {
+                        style: 'multi',
+                        selector: 'td:first-child'
+                    },
+                    autoWidth: false,
+                    dom: 'Bfrtip',
+                    lengthMenu: [
+                        [10, 25, 50, -1],
+                        ['10 linhas', '25 linhas', '50 linhas', 'Todas as Linhas']
+                    ],
+                    buttons: ['pageLength', 'excel', { extend: 'pdfHtml5', orientation: 'landscape', pageSize: 'LEGAL' }],
+                    order: [],
+                    columnDefs: [
+                        { targets: 0, className: "text-left", width: "35%" },
+                        { targets: 1, className: "text-center", width: "10%" },
+                        { targets: 2, className: "text-center", width: "10%" },
+                        { targets: 3, className: "text-center", width: "10%" },
+                        { targets: 4, className: "text-center", width: "15%" },
+                        { targets: 5, className: "text-center", width: "20%" },
+                        { targets: 6, className: "text-center", width: "1%", visible: false },
+                        { targets: 7, className: "text-center", width: "1%", visible: false },
+                        { targets: 8, className: "text-center", width: "1%", visible: false }
+                    ],
+                    responsive: true,
+                    ajax: {
+                        url: "/api/unidade/listalotacao",
+                        type: "GET",
+                        data: { motoristaId: motoristaId },
+                        datatype: "json",
+                        dataSrc: function(json) {
+                            esconderLoading();
+                            // Tratar diferentes formatos de resposta
+                            if (Array.isArray(json)) {
+                                return json;
+                            }
+                            if (json && json.data) {
+                                return json.data;
+                            }
+                            return [];
+                        },
+                        error: function(xhr, error, thrown) {
+                            esconderLoading();
+                            console.error("Erro ao carregar lotações:", error, thrown);
+                        }
+                    },
+                    columns: [
+                        { data: "unidade" },
+                        { data: "dataInicial" },
+                        { data: "dataFim" },
+                        {
+                            data: "lotado",
+                            render: function (data, type, row) {
+                                try {
+                                    if (data) {
+                                        return `<a href="javascript:void(0)" class="btn btn-verde btn-xs" data-ejtip="Motorista lotado">
+                                                    <i class="fa-duotone fa-circle-check"></i> Lotado
+                                                </a>`;
+                                    }
+                                    return `<a href="javascript:void(0)" class="btn fundo-cinza btn-xs" data-ejtip="Motorista removido">
+                                                <i class="fa-duotone fa-circle-xmark"></i> Removido
+                                            </a>`;
+                                } catch (error) {
+                                    Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "lotado.render", error);
+                                    return "";
+                                }
+                            }
+                        },
+                        {
+                            data: "motivo",
+                            render: function (data, type, full) {
+                                try {
+                                    return `<span data-ejtip="${full.motoristaCoberturaId || ''}">${data || ''}</span>`;
+                                } catch (error) {
+                                    Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "motivo.render", error);
+                                    return "";
+                                }
+                            }
+                        },
+                        {
+                            data: "lotacaoMotoristaId",
+                            render: function (data, type, full) {
+                                try {
+                                    return `<div class="ftx-btn-acoes">
+                                                <a href="javascript:void(0)" 
+                                                   class="btn btn-editar btn-icon-28 btn-editalotacao" 
+                                                   data-ejtip="Editar Lotação" 
+                                                   data-id="${data}">
+                                                    <i class="fa-duotone fa-pen-to-square"></i>
+                                                </a>
+                                                <a href="javascript:void(0)" 
+                                                   class="btn btn-fundo-laranja btn-icon-28 btn-finalizalotacao" 
+                                                   data-ejtip="Finalizar Lotação" 
+                                                   data-id="${data}">
+                                                    <i class="fa-duotone fa-right-from-bracket"></i>
+                                                </a>
+                                                <a href="javascript:void(0)" 
+                                                   class="btn fundo-vermelho btn-icon-28 btn-apagar" 
+                                                   data-ejtip="Excluir Lotação" 
+                                                   data-id="${data}">
+                                                    <i class="fa-duotone fa-trash-can"></i>
+                                                </a>
+                                            </div>`;
+                                } catch (error) {
+                                    Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "acoes.render", error);
+                                    return "";
+                                }
+                            }
+                        },
+                        { data: "unidadeId" },
+                        { data: "lotacaoMotoristaId" },
+                        { data: "lotado" }
+                    ],
+                    language: {
+                        url: "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Portuguese-Brasil.json",
+                        emptyTable: "Nenhum registro encontrado"
+                    },
+                    width: "100%"
+                });
+            } catch (error) {
+                esconderLoading();
+                Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "ListaTblLotacoes", error);
+            }
+        }
+    </script>
+
+    <script>
+        function ApagaDataFim() {
+            try {
+                $('#txtDataFimEdicao').val('');
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "ApagaDataFim", error);
+            }
+        }
+
+        // Handler do botão Lotar Motorista
+        $('#btnLotaMotorista').on('click', function () {
+            try {
+                var motoristaIdLocal = document.getElementById('lstMotoristaLotacao').ej2_instances[0].value;
+                var unidadeId = document.getElementById('lstUnidadeLotacao').ej2_instances[0].value;
+                var motivoId = document.getElementById('lstMotivoLotacao').ej2_instances[0].value;
+                var dataInicio = $('#txtDataInicio').val();
+                var dataFim = $('#txtDataFim').val();
+                var lotado = document.getElementById('chkLotado').checked;
+
+                if (!motoristaIdLocal || !unidadeId || !motivoId || !dataInicio) {
+                    Alerta.Erro("Campos Obrigatórios", "Preencha todos os campos obrigatórios!");
+                    return;
+                }
+
+                $.ajax({
+                    url: "/api/unidade/CriaLotacaoMotorista",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify({
+                        MotoristaId: motoristaIdLocal,
+                        UnidadeId: unidadeId,
+                        Motivo: motivoId,
+                        DataInicioLotacao: dataInicio,
+                        DataFimLotacao: dataFim,
+                        Lotado: lotado
+                    }),
+                    success: function (data) {
+                        try {
+                            if (data.success) {
+                                AppToast.show("Verde", data.message, 2000);
+                                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalIniciaLotacao')).hide();
+                                document.getElementById('lstMotorista').ej2_instances[0].value = motoristaIdLocal;
+                                ListaTblLotacoes(motoristaIdLocal);
+                            } else {
+                                AppToast.show("Vermelho", data.message, 3000);
+                            }
+                        } catch (error) {
+                            Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "btnLotaMotorista.success", error);
+                        }
+                    },
+                    error: function (err) {
+                        try {
+                            console.error("Erro ao lotar motorista:", err);
+                            AppToast.show("Vermelho", "Erro ao processar a lotação", 3000);
+                        } catch (error) {
+                            Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "btnLotaMotorista.error", error);
+                        }
+                    }
+                });
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "btnLotaMotorista.click", error);
+            }
+        });
+
+        // Handler do botão Editar Lotação
+        $('#btnEditaLotacao').on('click', function () {
+            try {
+                var lotacaoMotoristaId = $('#txtIdEdita').val();
+                var motoristaIdLocal = document.getElementById('lstMotoristaEditaLotacao').ej2_instances[0].value;
+                var unidadeId = document.getElementById('lstUnidadeEditaLotacao').ej2_instances[0].value;
+                var motivoId = document.getElementById('lstEditaMotivo').ej2_instances[0].value;
+                var dataInicio = $('#txtDataInicioEdicao').val();
+                var dataFim = $('#txtDataFimEdicao').val();
+                var lotado = document.getElementById('chkLotadoEdicao').checked;
+
+                $.ajax({
+                    url: "/api/unidade/EditaLotacaoMotorista",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify({
+                        LotacaoMotoristaId: lotacaoMotoristaId,
+                        MotoristaId: motoristaIdLocal,
+                        UnidadeId: unidadeId,
+                        Motivo: motivoId,
+                        DataInicioLotacao: dataInicio,
+                        DataFimLotacao: dataFim,
+                        Lotado: lotado
+                    }),
+                    success: function (data) {
+                        try {
+                            if (data.success) {
+                                AppToast.show("Verde", data.message, 2000);
+                                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalEditaLotacao')).hide();
+                                ListaTblLotacoes(motoristaId);
+                            } else {
+                                AppToast.show("Vermelho", data.message, 3000);
+                            }
+                        } catch (error) {
+                            Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "btnEditaLotacao.success", error);
+                        }
+                    },
+                    error: function (err) {
+                        try {
+                            console.error("Erro ao editar lotação:", err);
+                            AppToast.show("Vermelho", "Erro ao processar a edição", 3000);
+                        } catch (error) {
+                            Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "btnEditaLotacao.error", error);
+                        }
+                    }
+                });
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "btnEditaLotacao.click", error);
+            }
+        });
+
+        // Handler do botão Apagar
+        $(document).on('click', '.btn-apagar', function () {
+            try {
+                var lotacaoMotoristaId = $(this).data('id');
+
+                Alerta.Confirmar(
+                    "Confirmar Exclusão",
+                    "Você tem certeza que deseja excluir esta lotação?",
+                    "Sim, excluir",
+                    "Cancelar"
+                ).then((confirmed) => {
+                    try {
+                        if (confirmed) {
+                            $.ajax({
+                                url: "/api/unidade/DeletaLotacaoMotorista",
+                                type: "POST",
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                data: JSON.stringify({ LotacaoMotoristaId: lotacaoMotoristaId }),
+                                success: function (data) {
+                                    try {
+                                        if (data.success) {
+                                            AppToast.show("Verde", data.message, 2000);
+                                            ListaTblLotacoes(motoristaId);
+                                        } else {
+                                            AppToast.show("Vermelho", data.message, 3000);
+                                        }
+                                    } catch (error) {
+                                        Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "btn-apagar.success", error);
+                                    }
+                                },
+                                error: function (err) {
+                                    try {
+                                        console.error("Erro ao excluir lotação:", err);
+                                        AppToast.show("Vermelho", "Erro ao processar a exclusão", 3000);
+                                    } catch (error) {
+                                        Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "btn-apagar.error", error);
+                                    }
+                                }
+                            });
+                        }
+                    } catch (error) {
+                        Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "btn-apagar.confirmar", error);
+                    }
+                });
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "btn-apagar.click", error);
+            }
+        });
+
+        function FinalizaLotacao() {
+            try {
+                var lotacaoMotoristaId = $('#txtIdFinaliza').val();
+                var motoristaIdLocal = document.getElementById('lstMotoristaFinalizaLotacao').ej2_instances[0].value;
+                var unidadeId = document.getElementById('lstUnidadeLotacaoAtual').ej2_instances[0].value;
+                var novoMotivo = $('#lstUnidadeNovoMotivo').val();
+                var dataFim = $('#txtDataFimFinaliza').val();
+                var novaUnidadeId = document.getElementById('lstUnidadeNovaLotacao').ej2_instances[0].value;
+                var dataInicioNovaLotacao = $('#txtDataInicioNovoMotivo').val();
+                var motoristaCoberturaId = document.getElementById('lstUnidadeMotoristaCobertura').ej2_instances[0].value;
+                var dataInicioCobertura = $('#txtDataInicioCobertura').val();
+                var dataFimCobertura = $('#txtDataFimCobertura').val();
+
+                if (!dataFim) {
+                    Alerta.Erro("Campo Obrigatório", "Informe a Data Fim da lotação!");
+                    return;
+                }
+
+                $.ajax({
+                    url: "/api/unidade/FinalizaLotacaoMotorista",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify({
+                        LotacaoMotoristaId: lotacaoMotoristaId,
+                        MotoristaId: motoristaIdLocal,
+                        UnidadeId: unidadeId,
+                        NovoMotivo: novoMotivo,
+                        DataFimLotacao: dataFim,
+                        NovaUnidadeId: novaUnidadeId,
+                        DataInicioNovaLotacao: dataInicioNovaLotacao,
+                        MotoristaCoberturaId: motoristaCoberturaId,
+                        DataInicioCobertura: dataInicioCobertura,
+                        DataFimCobertura: dataFimCobertura
+                    }),
+                    success: function (data) {
+                        try {
+                            if (data.success) {
+                                AppToast.show("Verde", data.message, 2000);
+                                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalFinalizaLotacao')).hide();
+                                ListaTblLotacoes(motoristaIdLocal);
+                            } else {
+                                AppToast.show("Vermelho", data.message, 3000);
+                            }
+                        } catch (error) {
+                            Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "FinalizaLotacao.success", error);
+                        }
+                    },
+                    error: function (err) {
+                        try {
+                            console.error("Erro ao finalizar lotação:", err);
+                            AppToast.show("Vermelho", "Erro ao processar a finalização", 3000);
+                        } catch (error) {
+                            Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "FinalizaLotacao.error", error);
+                        }
+                    }
+                });
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "FinalizaLotacao", error);
+            }
+        }
+    </script>
+
+    <script>
+        var linhaSelecionada = 0;
+
+        $("#tblLotacao tbody").on("click", "tr", (e) => {
+            try {
+                linhaSelecionada = e.currentTarget._DT_RowIndex;
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "tblLotacao.tbody.click", error);
+            }
+        });
+
+        // Handler delegado para botão Editar Lotação
+        $(document).on('click', '.btn-editalotacao', function(e) {
+            try {
+                e.preventDefault();
+                e.stopPropagation();
+                var row = $(this).closest('tr');
+                linhaSelecionada = dataTableLotacao.row(row).index();
+                var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalEditaLotacao'));
+                modal.show();
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "btn-editalotacao.click", error);
+            }
+        });
+
+        // Handler delegado para botão Finalizar Lotação
+        $(document).on('click', '.btn-finalizalotacao', function(e) {
+            try {
+                e.preventDefault();
+                e.stopPropagation();
+                var row = $(this).closest('tr');
+                linhaSelecionada = dataTableLotacao.row(row).index();
+                var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalFinalizaLotacao'));
+                modal.show();
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "btn-finalizalotacao.click", error);
+            }
+        });
+
+        $('#modalEditaLotacao').on('shown.bs.modal', function () {
+            try {
+                var data = dataTableLotacao.row(linhaSelecionada).data();
+
+                var unidadeId = data['unidadeId'];
+                var lotacaoMotoristaId = data['lotacaoMotoristaId'];
+                var motivo = data['motivo'];
+
+                function sah1(el) {
+                    try { el.disabled = el.disabled ? false : true; } catch (E) { }
+                    if (el.childNodes && el.childNodes.length > 0) {
+                        for (var x = 0; x < el.childNodes.length; x++) {
+                            sah1(el.childNodes[x]);
+                        }
+                    }
+                }
+
+                $("#divMotoristaEdicao").attr("disabled", "disabled").off('click');
+                var x1 = $("#divMotoristaEdicao").hasClass("divDisable");
+                (x1 === true) ? $("#divMotoristaEdicao").removeClass("disabledDiv") : $("#divMotoristaEdicao").addClass("disabledDiv");
+                sah1(document.getElementById("divMotoristaEdicao"));
+
+                $('#txtIdEdita').val(lotacaoMotoristaId);
+                $('#btnEditaLotacao').attr("data-id", lotacaoMotoristaId);
+
+                document.getElementById('lstMotoristaEditaLotacao').ej2_instances[0].value = motoristaId;
+                document.getElementById('lstUnidadeEditaLotacao').ej2_instances[0].value = unidadeId;
+                document.getElementById('lstEditaMotivo').ej2_instances[0].value = motivo;
+
+                if (data['dataInicial']) {
+                    var di = data['dataInicial'].split("/");
+                    var dataInicio = `${di[2]}-${di[1]}-${di[0]}`;
+                    $('#txtDataInicioEdicao').val(dataInicio);
+                }
+
+                if (data['dataFim']) {
+                    var df = data['dataFim'].split("/");
+                    var dataFim = `${df[2]}-${df[1]}-${df[0]}`;
+                    $('#txtDataFimEdicao').val(dataFim);
+                }
+
+                document.getElementById("chkLotadoEdicao").checked = !!data['lotado'];
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "modalEditaLotacao.shown", error);
+            }
+        }).on("hide.bs.modal", function () {
+            try {
+                $('#txtIdEdita').val("");
+                document.getElementById('lstMotoristaEditaLotacao').ej2_instances[0].value = null;
+                document.getElementById('lstUnidadeEditaLotacao').ej2_instances[0].value = null;
+                document.getElementById('lstEditaMotivo').ej2_instances[0].value = null;
+                $('#txtDataInicioEdicao').val("");
+                $('#txtDataFimEdicao').val("");
+                document.getElementById("chkLotadoEdicao").checked = false;
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "modalEditaLotacao.hide", error);
+            }
+        });
+
+        $('#modalFinalizaLotacao').on('shown.bs.modal', function () {
+            try {
+                function sah1(el) {
+                    try { el.disabled = el.disabled ? false : true; } catch (E) { }
+                    if (el.childNodes && el.childNodes.length > 0) {
+                        for (var x = 0; x < el.childNodes.length; x++) {
+                            sah1(el.childNodes[x]);
+                        }
+                    }
+                }
+
+                $("#divMotoristaFinalizacao").attr("disabled", "disabled").off('click');
+                var x1 = $("#divMotoristaFinalizacao").hasClass("divDisable");
+                (x1 === true) ? $("#divMotoristaFinalizacao").removeClass("disabledDiv") : $("#divMotoristaFinalizacao").addClass("disabledDiv");
+                sah1(document.getElementById("divMotoristaFinalizacao"));
+
+                var x2 = $("#divUnidade").hasClass("divDisable");
+                (x2 === true) ? $("#divUnidade").removeClass("disabledDiv") : $("#divUnidade").addClass("disabledDiv");
+                sah1(document.getElementById("divUnidade"));
+
+                var data = dataTableLotacao.row(linhaSelecionada).data();
+
+                motoristaId = document.getElementById('lstMotorista').ej2_instances[0].value;
+                var unidadeId = data['unidadeId'];
+                var lotacaoMotoristaId = data['lotacaoMotoristaId'];
+                var motivo = data['motivo'];
+
+                $('#txtIdFinaliza').val(lotacaoMotoristaId);
+                $('#btnFecharLotacaoFinalizacao').attr("data-id", lotacaoMotoristaId);
+
+                document.getElementById('lstMotoristaFinalizaLotacao').ej2_instances[0].value = motoristaId;
+                document.getElementById('lstUnidadeLotacaoAtual').ej2_instances[0].value = unidadeId;
+                document.getElementById("lstUnidadeNovoMotivo").value = motivo;
+                document.getElementById('txtDataInicioNovoMotivo').value = "";
+
+                if (data['dataInicial']) {
+                    var di = data['dataInicial'].split("/");
+                    var dataInicio = `${di[2]}-${di[1]}-${di[0]}`;
+                    $('#txtDataInicioFinaliza').val(dataInicio);
+                }
+
+                document.getElementById('txtDataFimFinaliza').value = "";
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "modalFinalizaLotacao.shown", error);
+            }
+        }).on("hide.bs.modal", function () {
+            try {
+                $('#txtIdFinaliza').val("");
+                document.getElementById('lstMotoristaFinalizaLotacao').ej2_instances[0].value = null;
+                document.getElementById('lstUnidadeLotacaoAtual').ej2_instances[0].value = null;
+                document.getElementById("lstUnidadeNovoMotivo").value = null;
+                $('#txtDataInicioFinaliza').val("");
+                $('#txtDataFimFinaliza').val("");
+                $('#txtDataInicioCobertura').val("");
+                $('#txtDataFimCobertura').val("");
+                document.getElementById('lstUnidadeNovaLotacao').ej2_instances[0].value = null;
+                $('#txtDataInicioNovoMotivo').val("");
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "modalFinalizaLotacao.hide", error);
+            }
+        });
+
+        // Mostra/esconde seção de cobertura quando motivo = Férias
+        $('#lstUnidadeNovoMotivo').on('change', function () {
+            try {
+                if ($(this).val() === 'Férias') {
+                    $('#divCobertura').removeClass('esconde-div');
+                } else {
+                    $('#divCobertura').addClass('esconde-div');
+                }
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("LotacaoMotoristas.cshtml", "lstUnidadeNovoMotivo.change", error);
+            }
+        });
+    </script>
+}

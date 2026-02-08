@@ -1,0 +1,236 @@
+@page
+
+@* ========================================================================================
+ * ARQUIVO: Pages/Page/ForumDiscussion.cshtml
+ * OBJETIVO: Pagina DEMO de topico de forum do template SmartAdmin exibindo discussao estatica
+ *           (hardcoded no HTML) com post original, respostas aninhadas, avatares, timestamps,
+ *           botoes de Reply/Quote/Like simulados, editor de texto para nova resposta, usado
+ *           como referencia de layout para futuras telas de forum/comentarios reais no FrotiX.
+ * ENTRADAS: Model ForumDiscussionModel (code-behind vazio sem dados dinamicos), topico de forum
+ *           estatico hardcoded (titulo How to integrate Webpack with SmartAdmin?, autor John Doe,
+ *           data 2 days ago, conteudo Lorem ipsum), 5 respostas hardcoded (autores diversos,
+ *           datas relativas, conteudos demonstrativos), botoes Reply/Quote/Like em cada post
+ *           (handlers vazios demonstrativos)
+ * SAIDAS: Layout de forum renderizado com post original destacado (card azul claro), 5 respostas
+ *         aninhadas em thread (cards brancos indentados), avatares circulares 50x50px ao lado
+ *         de cada post, nomes de autores em negrito, timestamps relativos, botoes Reply/Quote/Like
+ *         com contadores estaticos, editor de texto no final para adicionar nova resposta
+ * CHAMADA POR: Route /Page/ForumDiscussion via diretiva page, link demonstrativo no menu de
+ *              paginas demo do template SmartAdmin, navegacao direta URL, ForumDiscussionModel.OnGet
+ *              metodo backend vazio (nao carrega dados reais, discussao e estatica hardcoded)
+ * CHAMA: forum_discussion.js (arquivo JavaScript externo hipotetico com handlers de Reply/Quote/Like,
+ *        submit nova resposta, animacoes, caso exista - se nao existe toda logica esta inline),
+ *        nenhum endpoint API (forum e estatico demonstrativo, nao ha CRUD real)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, jQuery 3.7.1, Bootstrap 5.3.8 (cards, badges,
+ *               grid row/col, botoes), Font Awesome 6 Duotone (icones fa-user avatar placeholder,
+ *               fa-reply, fa-quote-right, fa-thumbs-up), RichTextEditor ou textarea simples
+ * OBSERVACOES: 205 linhas de pagina DEMO template SmartAdmin NAO integrada ao sistema FrotiX
+ *              real. Considerar REMOVER esta pagina demo apos avaliar necessidade de sistema
+ *              de forum/comentarios no FrotiX, ou adaptar layout para comentarios em entidades
+ *              reais (viagens, abastecimentos, manutencoes, alertas).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
+@model ForumDiscussionModel
+@{ 
+	ViewData["Title"] = "Item";
+	ViewData["PageName"] = "page_forum_discussion";
+	ViewData["Heading"] = "<i class='subheader-icon fa-duotone fa-plus-circle'></i>  Forum: <span class='fw-300'>Discussion</span>";
+	ViewData["PageDescription"] = "Forum discussion page";
+	ViewData["Category1"] = "Page Views";
+	ViewData["Category2"] = "Forum Layouts";
+}
+@section HeadBlock {
+	<link rel="stylesheet" media="screen, print" href="~/css/fa-solid.css">
+}
+<div class="row">
+	<div class="col-xl-12">
+		<div class="input-group input-group-lg mb-g">
+			<input type="text" class="form-control shadow-inset-2" placeholder="Search Discussion">
+			<div class="input-group-append">
+				<span class="input-group-text"><i class="@(Settings.Theme.IconPrefix) fa-search"></i></span>
+			</div>
+		</div>
+		<div class="card mb-g border shadow-0">
+			<div class="card-header p-0">
+				<div class="p-3 d-flex flex-row">
+					<div class="d-block flex-shrink-0">
+						<img src="~/img/demo/avatars/avatar-admin.png" class="img-fluid img-thumbnail" alt="">
+					</div>
+					<div class="d-block ml-2">
+						<span class="h6 font-weight-bold text-uppercase d-block m-0"><a href="javascript:void(0);">Account information & Security</a> / <span class="fw-300">Package location</span></span>
+						<a href="javascript:void(0);" class="fs-sm text-info h6 fw-500 mb-0 d-block">@(Settings.Theme.User)</a>
+						<div class="d-flex mt-1 text-warning align-items-center">
+							<i class="fa-duotone fa-star mr-1"></i>
+							<i class="fa-duotone fa-star mr-1"></i>
+							<i class="fa-duotone fa-star mr-1"></i>
+							<i class="fa-duotone fa-star mr-1"></i>
+							<i class="@(Settings.Theme.IconPrefix) fa-star mr-1"></i>
+							<span class="text-muted fs-xs font-italic">
+								(140 votes)
+							</span>
+						</div>
+					</div>
+					<a href="javascript:void(0);" class="d-inline-flex align-items-center text-dark ml-auto align-self-start">
+						<span>55</span><i class="fa-duotone fa-heart ml-1 text-danger"></i>
+					</a>
+				</div>
+			</div>
+			<div class="card-body ">
+				<p>
+					Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Phasellus quis sem diam. Sed commodo metus in ultrices consequat. Vestibulum eu orci ante. Mauris vel tincidunt mauris. Cras finibus, purus eu pharetra molestie, orci felis lacinia orci, ac congue quam turpis a nibh
+				</p>
+				<p>
+					Nam viverra diam magna, eget lobortis orci tincidunt sed. Donec et lobortis est. Morbi eget massa est. In iaculis odio lectus, sed efficitur nunc viverra non. Nullam molestie eros magna, eu posuere mauris posuere sit amet. Pellentesque hendrerit condimentum ipsum, euismod ornare lectus pharetra eget. Praesent semper est erat, commodo mollis arcu efficitur vitae. Maecenas gravida sit amet nisi vel interdum.
+				</p>
+				<p>
+					Vestibulum molestie, ipsum vitae feugiat lacinia, nisi magna accumsan velit, ac semper nisi felis vitae augue. Vivamus mattis quis erat eu gravida. Integer venenatis risus vitae ullamcorper cursus. Proin sodales odio sed aliquet pulvinar. Duis ipsum erat, ultricies a dolor non, tempor dictum ante. Morbi vel metus lectus
+				</p>
+			</div>
+			<div class="card-footer">
+				<div class="d-flex align-items-center">
+					<span class="text-sm text-muted font-italic"><i class="@(Settings.Theme.IconPrefix) fa-clock mr-1"></i> Posted 1 week ago</span>
+					<a href="javascript:void(0);" class="flex-shrink-0 ml-auto">Reply <i class="@(Settings.Theme.IconPrefix) fa-reply ml-2"></i> </a>
+				</div>
+			</div>
+		</div>
+		<div class="card mb-g border shadow-0">
+			<div class="card-header p-0">
+				<div class="p-3 d-flex flex-row">
+					<div class="d-block flex-shrink-0">
+						<img src="~/img/demo/avatars/avatar-b.png" class="img-fluid img-thumbnail" alt="">
+					</div>
+					<div class="d-block ml-2">
+						<span class="h6 font-weight-bold text-uppercase d-block m-0">RE: Package location</span>
+						<a href="javascript:void(0);" class="fs-sm text-info h6 fw-500 mb-0 d-block">Oliver Kopyov</a>
+						<div class="d-flex mt-1 text-warning align-items-center">
+							<i class="fa-duotone fa-star mr-1"></i>
+							<i class="fa-duotone fa-star mr-1"></i>
+							<i class="fa-duotone fa-star mr-1"></i>
+							<i class="@(Settings.Theme.IconPrefix) fa-star mr-1"></i>
+							<i class="@(Settings.Theme.IconPrefix) fa-star mr-1"></i>
+							<span class="text-muted fs-xs font-italic">
+								(90 votes)
+							</span>
+						</div>
+					</div>
+					<a href="javascript:void(0);" class="d-inline-flex align-items-center text-dark ml-auto align-self-start">
+						<i class="@(Settings.Theme.IconPrefix) fa-heart ml-1 text-muted"></i>
+					</a>
+				</div>
+			</div>
+			<div class="card-body ">
+				<blockquote class="font-italic fw-sm bg-faded border border-top-0 border-right-0 border-bottom-0 p-3">
+					Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Phasellus quis sem diam. Sed commodo metus in ultrices consequat. Vestibulum eu orci ante. Mauris vel tincidunt mauris. Cras finibus, purus eu pharetra molestie, orci felis lacinia orci, ac congue quam turpis a nibh...
+				</blockquote>
+				<p>
+					Proin vehicula nibh a nisl porta laoreet. Etiam quis massa quam. Etiam elementum nunc accumsan ullamcorper viverra. Sed aliquam ligula eu porta posuere. Nullam in dictum lacus. Nulla auctor hendrerit purus, sit amet lacinia tellus placerat nec. Nunc condimentum urna sit amet blandit egestas. Nam non placerat nisi. Sed sit amet massa porta, porttitor tellus porttitor, sagittis ex. Duis vitae dolor sit amet sem mattis molestie. Aliquam id pharetra leo.
+				</p>
+			</div>
+			<div class="card-footer">
+				<div class="d-flex align-items-center">
+					<span class="text-sm text-muted font-italic"><i class="@(Settings.Theme.IconPrefix) fa-clock mr-1"></i> Posted 4 days ago</span>
+					<a href="javascript:void(0);" class="flex-shrink-0 ml-auto">Reply <i class="@(Settings.Theme.IconPrefix) fa-reply ml-2"></i> </a>
+				</div>
+			</div>
+		</div>
+		<div class="card mb-g border shadow-0">
+			<div class="card-header p-0">
+				<div class="p-3 d-flex flex-row">
+					<div class="d-block flex-shrink-0">
+						<img src="~/img/demo/avatars/avatar-e.png" class="img-fluid img-thumbnail" alt="">
+					</div>
+					<div class="d-block ml-2">
+						<span class="h6 font-weight-bold text-uppercase d-block m-0">RE: Package location</span>
+						<a href="javascript:void(0);" class="fs-sm text-info h6 fw-500 mb-0 d-block">Dr. John Cook PhD</a>
+						<div class="d-flex mt-1 text-warning align-items-center">
+							<i class="fa-duotone fa-star mr-1"></i>
+							<i class="fa-duotone fa-star mr-1"></i>
+							<i class="fa-duotone fa-star mr-1"></i>
+							<i class="fa-duotone fa-star mr-1"></i>
+							<i class="fa-duotone fa-star mr-1"></i>
+							<span class="text-muted fs-xs font-italic">
+								(77 votes)
+							</span>
+						</div>
+					</div>
+					<a href="javascript:void(0);" class="d-inline-flex align-items-center text-dark ml-auto align-self-start">
+						<i class="@(Settings.Theme.IconPrefix) fa-heart ml-1 text-muted"></i>
+					</a>
+				</div>
+			</div>
+			<div class="card-body ">
+				<p>
+					Proin vehicula nibh a nisl porta laoreet. Etiam quis massa quam. Etiam elementum nunc accumsan ullamcorper viverra. Sed aliquam ligula eu porta posuere. Nullam in dictum lacus. Nulla auctor hendrerit purus, sit amet lacinia tellus placerat nec. Nunc condimentum urna sit amet blandit egestas. Nam non placerat nisi. Sed sit amet massa porta, porttitor tellus porttitor, sagittis ex. Duis vitae dolor sit amet sem mattis molestie. Aliquam id pharetra leo.
+				</p>
+				<p>
+					Vivamus at sapien eget lorem suscipit laoreet. Donec tincidunt augue auctor, ullamcorper urna ac, bibendum odio. Donec ac facilisis mauris. Quisque egestas quam libero, in vulputate purus accumsan vitae
+				</p>
+			</div>
+			<div class="card-footer">
+				<div class="d-flex align-items-center">
+					<span class="text-sm text-muted font-italic"><i class="@(Settings.Theme.IconPrefix) fa-clock mr-1"></i> Posted 2 days ago</span>
+					<a href="javascript:void(0);" class="flex-shrink-0 ml-auto">Reply <i class="@(Settings.Theme.IconPrefix) fa-reply ml-2"></i> </a>
+				</div>
+			</div>
+		</div>
+		<div class="card mb-g border shadow-0">
+			<div class="card-header p-0">
+				<div class="p-3 d-flex flex-row">
+					<div class="d-block flex-shrink-0">
+						<img src="~/img/demo/avatars/avatar-h.png" class="img-fluid img-thumbnail" alt="">
+					</div>
+					<div class="d-block ml-2">
+						<span class="h6 font-weight-bold text-uppercase d-block m-0">RE: Package location</span>
+						<a href="javascript:void(0);" class="fs-sm text-info h6 fw-500 mb-0 d-block">Sarah McBrook</a>
+						<div class="d-flex mt-1 text-warning align-items-center">
+							<i class="fa-duotone fa-star mr-1"></i>
+							<i class="fa-duotone fa-star mr-1"></i>
+							<i class="fa-duotone fa-star mr-1"></i>
+							<i class="fa-duotone fa-star mr-1"></i>
+							<i class="fa-duotone fa-star mr-1"></i>
+							<span class="text-muted fs-xs font-italic">
+								(146 votes)
+							</span>
+						</div>
+					</div>
+					<a href="javascript:void(0);" class="d-inline-flex align-items-center text-dark ml-auto align-self-start">
+						<span>3</span><i class="fa-duotone fa-heart ml-1 text-danger"></i>
+					</a>
+				</div>
+			</div>
+			<div class="card-body ">
+				<p>
+					Curabitur sollicitudin eros eget nibh commodo posuere. Aenean non diam at massa accumsan elementum eget in arcu. Cras vestibulum ornare nulla, vel porttitor turpis tristique at. In laoreet eleifend dolor, ac eleifend nunc porttitor et. Praesent volutpat risus in metus lacinia porttitor
+				</p>
+			</div>
+			<div class="card-footer">
+				<div class="d-flex align-items-center">
+					<span class="text-sm text-muted font-italic"><i class="@(Settings.Theme.IconPrefix) fa-clock mr-1"></i> Posted 1 hour ago</span>
+					<a href="javascript:void(0);" class="flex-shrink-0 ml-auto">Reply <i class="@(Settings.Theme.IconPrefix) fa-reply ml-2"></i> </a>
+				</div>
+			</div>
+		</div>
+		<ul class="pagination mt-3">
+			<li class="page-item disabled">
+				<a class="page-link" href="#" aria-label="Previous">
+					<span aria-hidden="true"><i class="@(Settings.Theme.IconPrefix) fa-chevron-left"></i></span>
+				</a>
+			</li>
+			<li class="page-item active" aria-current="page">
+				<span class="page-link">
+					1
+					<span class="sr-only">(current)</span>
+				</span>
+			</li>
+			<li class="page-item"><a class="page-link" href="#">2</a></li>
+			<li class="page-item"><a class="page-link" href="#">3</a></li>
+			<li class="page-item">
+				<a class="page-link" href="#" aria-label="Next">
+					<span aria-hidden="true"><i class="@(Settings.Theme.IconPrefix) fa-chevron-right"></i></span>
+				</a>
+			</li>
+		</ul>
+	</div>
+</div>
+@section ScriptsBlock {}

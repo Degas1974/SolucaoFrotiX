@@ -1,0 +1,41 @@
+@* ************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_Logo.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view renderizando logo FrotiX clicável no topo da sidebar
+ *                   (link para dashboard), com imagem fixa e texto dinâmico do AppFlavor.
+ *
+ * 📥 ENTRADAS     : Settings.AppFlavor (nome da aplicação dinâmico), imagem ~/Images/frotix.png,
+ *                   SmartSettings injetado
+ *
+ * 📤 SAÍDAS       : <div class="page-logo"> com <a href="/intel/analyticsdashboard">
+ *                   e <img alt=""> com acessibilidade aria-roledescription="logo"
+ *
+ * 🔗 CHAMADA POR  : Pages/Shared/_LeftPanel.cshtml via <partial name="_Logo" />
+ *                   renderizado no topo da sidebar
+ *
+ * 🔄 CHAMA        : Rota /intel/analyticsdashboard (link ao clicado), imagem ~/Images/frotix.png,
+ *                   Settings.AppFlavor (alt text dinâmico)
+ *
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, SmartSettings (settings), Bootstrap CSS (classes),
+ *                   arquivo imagem ~/Images/frotix.png
+ *
+ * 📝 OBSERVAÇÕES  : 29 linhas. Customização SmartAdmin: logo/link fixos FrotiX. Código legado
+ *                   comentado mostra versão original (logo dinâmico via Theme.Logo, AppName,
+ *                   AppFlavorSubscript, AppShortcutModal - todos removidos). Acessibilidade:
+ *                   aria-roledescription, alt text, link semântico.
+ * ************************************************************************************
+ *@
+
+<div class="page-logo">
+    @*<a href="#" class="page-logo-link press-scale-down d-flex align-items-center position-relative">*@
+        @*<img src="~/img/@(Settings.Theme.Logo)" alt="@Settings.AppFlavor" aria-roledescription="logo">*@
+        <a href="/intel/analyticsdashboard">
+            <img src="~/Images/frotix.png" alt="@Settings.AppFlavor" aria-roledescription="logo">
+        </a>
+    @*<span class="page-logo-text mr-1">@Settings.AppName</span>*@
+        @*<span class="position-absolute text-white opacity-50 small pos-top pos-right mr-2 mt-n2">@Settings.AppFlavorSubscript</span>
+        @if (ViewBag.AppShortcutModal?.Length > 0)
+        {
+    <i class="@(Settings.Theme.IconPrefix) fa-angle-down d-inline-block ml-1 fs-lg color-primary-300"></i>}*@
+    @*</a>*@
+</div>

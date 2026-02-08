@@ -1,0 +1,963 @@
+@* ========================================================================================
+ * ARQUIVO: Pages/Shared/_ScriptsBasePlugins.cshtml
+ * OBJETIVO: Partial CRITICO carregando TODOS os scripts base e plugins JavaScript do FrotiX na
+ *           ordem correta dependencias (jQuery, Bootstrap, Syncfusion, Kendo, DataTables, Moment,
+ *           Stimulsoft, SignalR, Utils, Alerta, AppToast, kendo-error-suppressor), integrado
+ *           com Layout master _Layout.cshtml garantindo todos components funcionem corretamente,
+ *           sistema CRITICO sem este arquivo NENHUMA funcionalidade JavaScript funciona.
+ * ENTRADAS: Nenhuma (partial estatico sem parameters), renderizado via partial name="_ScriptsBasePlugins"
+ *           no Layout _Layout.cshtml rodape antes do RenderSection ScriptBlock (linha 715),
+ *           ASP.NET Core Tag Helpers asp-append-version adiciona hash query string para cache busting
+ * SAIDAS: Tags script renderizadas no rodape do HTML carregando na ordem: 1. jQuery 3.7.1 min
+ *         (fundacao para todos plugins), 2. Bootstrap 5.3.8 bundle min (inclui Popper.js para
+ *         dropdowns/tooltips/modals), 3. jQuery Validation 1.19.5 (validacao forms lado cliente),
+ *         4. jQuery Validation Unobtrusive 4.0.0 (integra validacao com asp-validation-for tag
+ *         helpers), 5. Syncfusion ej2-locale PT-BR (traducao components Syncfusion para portugues),
+ *         6. Syncfusion ej2.min.js 2023.4.2 (TODOS components Syncfusion TreeGrid/Grid/ComboBox/DatePicker/Charts),
+ *         7. Kendo all.min.js 2022.1.412 (components Kendo UI legacy Upload/PDFViewer/Editor),
+ *         8. kendo-error-suppressor.js (suprimi warnings console chatos Kendo trial license),
+ *         9. DataTables 1.13.4 bundle (plugin jQuery tabelas avancadas sorting/filtering/paging),
+ *         10. Moment.js 2.29.4 (biblioteca manipulacao datas formato/parse/diferenca), 11. Stimulsoft
+ *         Reports.Web 2023.3.1 min (visualizador de relatorios MRT integrado), 12. SignalR 7.0
+ *         (notificacoes tempo real push servidor para cliente), 13. Utils.js (funcoes utilitarias
+ *         globais formatacao moeda/data/validacoes CPF/CNPJ), 14. Alerta.js (wrapper SweetAlert2
+ *         alertas customizados Erro/Warning/Sucesso/Confirmar), 15. AppToast.js (sistema de
+ *         notificacoes toast posicao top-right Verde/Vermelho/Amarelo/Azul), scripts customizados
+ *         especificos do FrotiX configuracoes globais/handlers/inicializacoes
+ * CHAMADA POR: Layout master _Layout.cshtml via partial name="_ScriptsBasePlugins" dentro de
+ *              section scripts rodape (linha 715 antes do RenderSection ScriptBlock), renderizado
+ *              automaticamente em TODAS as paginas que usam Layout = "_Layout", carregamento
+ *              no rodape evita bloquear renderizacao HTML
+ * CHAMA: Scripts externos CDN e locais wwwroot/js e wwwroot/lib (jQuery, Bootstrap, Syncfusion,
+ *        Kendo, DataTables, Moment, Stimulsoft, SignalR, custom scripts Utils/Alerta/AppToast),
+ *        funcoes de inicializacao globais (configura defaults de components Syncfusion locale
+ *        PT-BR currencyCode BRL, configura Kendo culture pt-BR, inicializa DataTables defaults
+ *        pageLength 25 language portugues, configura SignalR logging Sync hub /chatHub)
+ * DEPENDENCIAS: jQuery 3.7.1 CDN (fundacao todos plugins), Bootstrap 5.3.8 bundle CDN, Syncfusion
+ *               EJ2 ASP.NET Core 2023.4.2 scripts e traducao PT-BR, Kendo UI 2022.1.412 scripts,
+ *               DataTables 1.13.4 bundle, Moment.js 2.29.4, Stimulsoft Reports.Web 2023.3.1,
+ *               SignalR 7.0, SweetAlert2 via Alerta.js wrapper, custom scripts Utils.js/Alerta.js/AppToast.js
+ *               locais wwwroot/js
+ * OBSERVACOES: 829 linhas partial CRITICO do FrotiX. ORDEM DE CARREGAMENTO E ESSENCIAL: jQuery
+ *              SEMPRE primeiro (todos plugins dependem dele), Bootstrap bundle APOS jQuery (inclui
+ *              Popper.js para dropdowns/tooltips funcionar), jQuery Validation + Unobtrusive
+ *              APOS jQuery e Bootstrap (validacao forms asp-validation-for), Syncfusion ej2.min.js
+ *              APOS jQuery (components Syncfusion TreeGrid/Grid/ComboBox dependem), Kendo all.min.js
+ *              APOS jQuery (components Kendo Upload/PDFViewer dependem), kendo-error-suppressor.js
+ *              IMEDIATAMENTE APOS Kendo (suprimi warnings trial antes de qualquer uso), DataTables
+ *              APOS jQuery e Bootstrap (plugin jQuery tabelas avancadas), Moment.js independente
+ *              (manipulacao datas sem dependencias), Stimulsoft APOS jQuery (visualizador relatorios),
+ *              SignalR independente (push tempo real), Utils.js APOS jQuery (funcoes customizadas
+ *              globais), Alerta.js APOS SweetAlert2 carregado (wrapper de alertas customizados),
+ *              AppToast.js independente (sistema notificacoes toast). Syncfusion locale PT-BR:
+ *              script ej2-locale.pt-br.js traduz TODOS components Syncfusion para portugues
+ *              (botoes Filtrar/Buscar/Exportar, mensagens validacao, labels calendario dias
+ *              semana/meses, formato data DD/MM/YYYY, separador decimal virgula, simbolo moeda
+ *              R$), carregado ANTES de ej2.min.js para components usarem traducao ao inicializar,
+ *              configuracao global: ej.base.setCulture('pt-BR') e ej.base.setCurrencyCode('BRL')
+ *              aplicam cultura brasileira em TODOS components Syncfusion automaticamente. Kendo
+ *              error suppressor: script customizado kendo-error-suppressor.js (50 linhas) intercepta
+ *              console.warn e console.error filtrando mensagens chatas do Kendo trial license
+ *              (This is trial version, Kendo UI trial license expired, Export disabled in trial,
+ *              Purchase license to remove watermark), implementacao: window.console original
+ *              backup, sobrescreve console.warn/error com funcoes custom que checam se mensagem
+ *              message.includes('trial') ou message.includes('license') se true ignora senao
+ *              chama console original backup log normalmente, resultado: console limpo sem spam
+ *              de trial warnings melhorando experiencia debug desenvolvedor. DataTables defaults:
+ *              jQuery.extend(jQuery.fn.dataTable.defaults, pageLength 25, language url /lib/datatables/i18n/pt-BR.json,
+ *              responsive true, autoWidth false, dom Bfrtip posiciona botoes topo, buttons array
+ *              copy/csv/excel/pdf/print exportacao) configura TODAS instancias DataTables do
+ *              sistema com defaults brasileiros, traducao pt-BR.json (Mostrando X ate Y de Z
+ *              registros, Buscar:, Nenhum registro encontrado, etc). SignalR hub connection:
+ *              verifica se Settings.Features.SignalR true entao cria connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").withAutomaticReconnect([0,2000,10000,30000]).build(),
+ *              connection.start() conecta ao hub SignalR do backend para notificacoes tempo
+ *              real, reconnect automatico se conexao cair (retry delays 0ms, 2s, 10s, 30s),
+ *              handlers: connection.on("ReceiveNotification", callback exibe AppToast com mensagem),
+ *              connection.on("RefreshPage", callback window.location.reload force refresh pagina
+ *              quando servidor envia sinal atualizar). Utils.js funcoes globais: formatarMoeda(valor)
+ *              retorna string R$ 1.234,56 formatacao brasileira, formatarData(data) retorna
+ *              string DD/MM/YYYY HH:mm, validarCPF(cpf) boolean valida digitos verificadores
+ *              CPF, validarCNPJ(cnpj) boolean valida CNPJ, padLeft(str, length, char) preenche
+ *              string com zeros esquerda, debounce(func, delay) utilitario evita chamadas excessivas
+ *              AJAX em eventos input/keyup. Alerta.js wrapper SweetAlert2: Alerta.Erro(mensagem)
+ *              exibe SweetAlert2 icone vermelho X titulo Erro botao OK, Alerta.Warning(mensagem)
+ *              icone amarelo ! titulo Atencao, Alerta.Sucesso(mensagem) icone verde check titulo
+ *              Sucesso auto-close 3s, Alerta.Confirmar(mensagem, callback) exibe SweetAlert2
+ *              confirmacao icone azul ? titulo Confirmacao botoes Sim/Nao, se Sim executa callback
+ *              funcao passada usada antes de deletar registros (Tem certeza que deseja excluir
+ *              este veiculo? Sim chama DELETE /api/Veiculos/Delete/123 exibe toast sucesso reload
+ *              grid). AppToast.js sistema notificacoes toast: AppToast.show(mensagem, tipo, duracao)
+ *              exibe toast posicao top-right com icone (tipo success Verde check, error Vermelho
+ *              X, warning Amarelo !, info Azul i), mensagem texto, auto-hide apos duracao ms
+ *              (default 5000ms = 5s), animacao slide-in fade-in suave, stack multiplos toasts
+ *              verticalmente sem overlap, usado para feedback operacoes CRUD (Veiculo salvo
+ *              com sucesso Verde, Erro ao salvar veiculo Vermelho, Veiculo ja cadastrado Amarelo).
+ *              Cache busting: asp-append-version="true" adiciona hash query string ?v=ABC123
+ *              nos paths de scripts baseado no hash do arquivo, garante navegador carrega versao
+ *              nova do script apos deploy sem precisar limpar cache manualmente, exemplo: /js/Utils.js?v=A1B2C3D4E5F6,
+ *              se arquivo mudar no servidor hash muda navegador detecta URL diferente baixa
+ *              nova versao. CRITICO: qualquer erro neste arquivo quebra JavaScript de TODAS
+ *              as paginas do sistema (nenhum component Syncfusion/Kendo funciona, validacao
+ *              forms falha, dropdowns nao abrem, grids nao carregam), testar cuidadosamente
+ *              apos alteracoes, validar ordem de carregamento scripts, validar paths corretos
+ *              (wwwroot/js/ para scripts locais, CDN para jQuery/Bootstrap), validar versoes
+ *              de bibliotecas (Syncfusion 2023.4.2 compativel com ASP.NET Core 8.0, Kendo 2022.1.412
+ *              legacy mantido para Upload/PDFViewer algumas paginas antigas). Se erro console
+ *              "jQuery is not defined": jQuery nao carregou (CDN offline ou path errado), verificar
+ *              script carrega ANTES de todos plugins. Se erro "ej is not defined": Syncfusion
+ *              ej2.min.js nao carregou, verificar path correto e ordem APOS jQuery. Se erro
+ *              "$ is not a function": conflito jQuery versoes ou carregado duas vezes, remover
+ *              duplicatas. Se dropdowns nao abrem: Bootstrap bundle nao carregado ou carregado
+ *              ANTES de jQuery, verificar ordem (jQuery -> Bootstrap bundle). Se validacao
+ *              forms nao funciona: jQuery Validation ou Unobtrusive nao carregados ou ordem
+ *              errada, carregar APOS jQuery e Bootstrap. Se grids Syncfusion nao renderizam:
+ *              locale PT-BR nao carregado ou carregado APOS ej2.min.js, carregar locale ANTES
+ *              de ej2.min.js.
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+<!-- ARQUIVO COMPLETO: _ScriptsBasePlugins.cshtml -->
+<!-- COPIE TODO O CONTEÚDO ABAIXO E SUBSTITUA O ARQUIVO EXISTENTE -->
+<!-- ⚠️ ORDEM CRÍTICA - NÃO ALTERE SEM NECESSIDADE ⚠️ -->
+
+<script src="~/js/kendo-error-suppressor.js" asp-append-version="true"></script>
+
+<!-- ============================================ -->
+<!-- GRUPO 1: DEPENDÊNCIAS BASE (ORDEM EXATA!) -->
+<!-- ============================================ -->
+<!-- 1. jQuery PRIMEIRO (antes de qualquer plugin que use $) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+		integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+		crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" asp-append-version="true"></script>
+
+<!-- 2. SignalR CDN (ANTES do signalr_manager.js!) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.14/signalr.min.js" crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr" crossorigin="anonymous"></script>
+
+<!-- Script de inicialização do SignalR com prevenção de dupla inicialização -->
+<script>
+	// Configuração para inicialização ÚNICA do SignalR
+	(function() {
+		// Flag global para evitar múltiplas inicializações
+		if (window._signalRAlertasIniciado) {
+			console.log('⚠️ Sistema de alertas já foi iniciado, pulando...');
+			return;
+		}
+		window._signalRAlertasIniciado = true;
+
+		document.addEventListener('DOMContentLoaded', function() {
+
+			// Verificar se o SignalR está disponível
+			function verificarSignalR() {
+				if (typeof signalR === 'undefined') {
+					console.error('SignalR não está carregado ainda');
+					setTimeout(verificarSignalR, 500);
+					return;
+				}
+
+				// Adicionar delay extra para garantir que tudo está pronto
+				setTimeout(function() {
+					inicializarSistemaAlertas();
+				}, 2000); // 2 segundos de delay total
+			}
+
+			function inicializarSistemaAlertas() {
+				// Verificar novamente para evitar dupla inicialização
+				if (window._alertasJaInicializados) {
+					console.log('✅ Alertas já inicializados');
+					return;
+				}
+				window._alertasJaInicializados = true;
+
+				console.log('Inicializando sistema de alertas do sino...');
+
+				// Função melhorada para o sino
+				function inicializarSignalR() {
+					console.log('Sino: Conectando ao SignalR Manager...');
+
+					if (!window.SignalRManager) {
+						console.error('SignalRManager não está disponível');
+						setTimeout(inicializarSignalR, 1000);
+						return;
+					}
+
+					// Obter conexão com tratamento de erro melhorado
+					window.SignalRManager.getConnection()
+						.then(function(connection) {
+							console.log('Sino conectado ao SignalRManager');
+
+							// Verificar informações de debug
+							var debugInfo = window.SignalRManager.getDebugInfo();
+							console.log('Informações de conexão:', debugInfo);
+
+							// Configurar eventos do sino (verificar se funções existem)
+							connection.on('NovoAlerta', function(alerta) {
+								console.log('Novo alerta recebido:', alerta);
+								if (typeof exibirNovoAlerta === 'function') {
+									exibirNovoAlerta(alerta);
+								}
+							});
+
+							connection.on('AtualizarBadgeAlertas', function(quantidade) {
+								console.log('Atualizar badge:', quantidade);
+								if (typeof atualizarBadge === 'function') {
+									atualizarBadge(quantidade);
+								}
+							});
+
+							connection.on('ExibirAlertasIniciais', function(alertas) {
+								console.log('Alertas iniciais:', alertas);
+								if (alertas && alertas.length > 0) {
+									if (typeof renderizarAlertas === 'function') {
+										renderizarAlertas(alertas);
+									}
+								}
+							});
+
+							// Registrar callbacks para reconexão
+							window.SignalRManager.registerCallback({
+								onReconnecting: function(error) {
+									console.log('Sino: SignalR reconectando...');
+								},
+								onReconnected: function(connectionId) {
+									console.log('Sino: SignalR reconectado');
+									if (typeof carregarAlertasAtivos === 'function') {
+										carregarAlertasAtivos();
+									}
+								},
+								onClose: function(error) {
+									console.log('Sino: SignalR desconectado');
+								}
+							});
+
+							console.log('Sino: Event handlers configurados');
+
+							if (typeof carregarAlertasAtivos === 'function') {
+								carregarAlertasAtivos();
+							}
+						})
+						.catch(function(error) {
+							// Silenciar erros esperados de WebSocket
+							if (!error.toString().includes('WebSocket')) {
+								console.error('Sino: Erro ao conectar SignalR:', error);
+							}
+						});
+				}
+
+				// Iniciar com delay
+				inicializarSignalR();
+			}
+
+			// Começar verificação
+			verificarSignalR();
+		});
+	})();
+</script>
+
+<!-- 3. SignalR Manager - Gerenciador Global (NOSSO - após SignalR CDN) -->
+<script src="~/js/signalr_manager.js" asp-append-version="true"></script>
+
+<!-- ============================================ -->
+<!-- GRUPO 3: FRAMEWORKS UI -->
+<!-- ============================================ -->
+
+<!-- ⚠️ Kendo UI carregado no GRUPO 4, DEPOIS do vendors.bundle.js -->
+<!-- (vendors.bundle.js recarrega jQuery e apaga $.fn.kendoEditor se Kendo vier antes) -->
+
+<!-- PDF.js para o Kendo PDFViewer -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js" crossorigin="anonymous"></script>
+<script>
+	if (window.pdfjsLib) {
+		pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+	}
+</script>
+
+@* <script src="/api/reports/resources/js/telerikReportViewer-19.1.25.521.min.js"></script>*@
+
+ <script src="/api/reports/resources/js/telerikReportViewer-19.1.25.521.min.js"></script>
+
+<!-- Syncfusion EJ2 (CDN Oficial Syncfusion) -->
+<script src="https://cdn.syncfusion.com/ej2/32.1.19/dist/ej2.min.js"></script>
+<!-- ============================================ -->
+<!-- SYNCFUSION LOCALIZAÇÃO PT-BR COMPLETA      -->
+<!-- CLDR + L10n para versão 32.1.23            -->
+<!-- ============================================ -->
+<script>
+(function() {
+    'use strict';
+
+    // URLs dos arquivos CLDR necessários (versão 44 - mais recente estável)
+    const CLDR_BASE = 'https://cdn.jsdelivr.net/npm/cldr-data@36.0.1';
+    const cldrUrls = [
+        `${CLDR_BASE}/main/pt/numbers.json`,
+        `${CLDR_BASE}/main/pt/ca-gregorian.json`,
+        `${CLDR_BASE}/main/pt/timeZoneNames.json`,
+        `${CLDR_BASE}/main/pt/currencies.json`,
+        `${CLDR_BASE}/supplemental/numberingSystems.json`,
+        `${CLDR_BASE}/supplemental/currencyData.json`
+    ];
+
+    // Traduções L10n customizadas para pt-BR (Syncfusion 32.x)
+    const ptBRLocale = {
+        'pt': {
+            // Grid
+            'grid': {
+                'EmptyRecord': 'Nenhum registro encontrado',
+                'True': 'Sim',
+                'False': 'Não',
+                'InvalidFilterMessage': 'Dados de filtro inválidos',
+                'GroupDropArea': 'Arraste um cabeçalho de coluna aqui para agrupar',
+                'UnGroup': 'Clique aqui para desagrupar',
+                'GroupDisable': 'Agrupamento desabilitado para esta coluna',
+                'FilterbarTitle': 'Célula de filtro',
+                'EmptyDataSourceError': 'DataSource não pode estar vazio no carregamento inicial',
+                'Add': 'Adicionar',
+                'Edit': 'Editar',
+                'Cancel': 'Cancelar',
+                'Update': 'Atualizar',
+                'Delete': 'Excluir',
+                'Print': 'Imprimir',
+                'Pdfexport': 'Exportar PDF',
+                'Excelexport': 'Exportar Excel',
+                'Wordexport': 'Exportar Word',
+                'Csvexport': 'Exportar CSV',
+                'Search': 'Buscar',
+                'Columnchooser': 'Colunas',
+                'Save': 'Salvar',
+                'Item': 'Item',
+                'Items': 'Itens',
+                'EditOperationAlert': 'Nenhum registro selecionado para edição',
+                'DeleteOperationAlert': 'Nenhum registro selecionado para exclusão',
+                'SaveButton': 'Salvar',
+                'OKButton': 'OK',
+                'CancelButton': 'Cancelar',
+                'EditFormTitle': 'Detalhes de ',
+                'AddFormTitle': 'Adicionar Novo Registro',
+                'BatchSaveConfirm': 'Deseja salvar as alterações?',
+                'BatchSaveLostChanges': 'Alterações não salvas serão perdidas. Deseja continuar?',
+                'ConfirmDelete': 'Tem certeza que deseja excluir o registro?',
+                'CancelEdit': 'Tem certeza que deseja cancelar as alterações?',
+                'ChooseColumns': 'Escolher Colunas',
+                'SearchColumns': 'Buscar Colunas',
+                'Matchs': 'Nenhuma correspondência encontrada',
+                'FilterButton': 'Filtrar',
+                'ClearButton': 'Limpar',
+                'StartsWith': 'Começa com',
+                'EndsWith': 'Termina com',
+                'Contains': 'Contém',
+                'Equal': 'Igual',
+                'NotEqual': 'Diferente',
+                'LessThan': 'Menor que',
+                'LessThanOrEqual': 'Menor ou igual',
+                'GreaterThan': 'Maior que',
+                'GreaterThanOrEqual': 'Maior ou igual',
+                'ChooseDate': 'Escolha uma data',
+                'EnterValue': 'Digite o valor',
+                'Copy': 'Copiar',
+                'Group': 'Agrupar por esta coluna',
+                'Ungroup': 'Desagrupar por esta coluna',
+                'autoFitAll': 'Ajustar todas as colunas',
+                'autoFit': 'Ajustar esta coluna',
+                'Export': 'Exportar',
+                'FirstPage': 'Primeira Página',
+                'LastPage': 'Última Página',
+                'PreviousPage': 'Página Anterior',
+                'NextPage': 'Próxima Página',
+                'SortAscending': 'Ordenar Crescente',
+                'SortDescending': 'Ordenar Decrescente',
+                'EditRecord': 'Editar Registro',
+                'DeleteRecord': 'Excluir Registro',
+                'FilterMenu': 'Filtro',
+                'SelectAll': 'Selecionar Todos',
+                'Blanks': '(Vazios)',
+                'FilterTrue': 'Sim',
+                'FilterFalse': 'Não',
+                'NoResult': 'Nenhum resultado encontrado',
+                'ClearFilter': 'Limpar Filtro',
+                'NumberFilter': 'Filtros Numéricos',
+                'TextFilter': 'Filtros de Texto',
+                'DateFilter': 'Filtros de Data',
+                'DateTimeFilter': 'Filtros de Data/Hora',
+                'MatchCase': 'Diferenciar maiúsculas',
+                'Between': 'Entre',
+                'CustomFilter': 'Filtro Personalizado',
+                'CustomFilterPlaceHolder': 'Digite o valor',
+                'CustomFilterDatePlaceHolder': 'Escolha uma data',
+                'AND': 'E',
+                'OR': 'OU',
+                'ShowRowsWhere': 'Mostrar linhas onde:',
+                'currentPageInfo': '{0} de {1} páginas',
+                'totalItemsInfo': '({0} itens)',
+                'firstPageTooltip': 'Ir para primeira página',
+                'lastPageTooltip': 'Ir para última página',
+                'nextPageTooltip': 'Ir para próxima página',
+                'previousPageTooltip': 'Ir para página anterior',
+                'nextPagerTooltip': 'Ir para próximos itens',
+                'previousPagerTooltip': 'Ir para itens anteriores',
+                'pagerDropDown': 'Itens por página',
+                'pagerAllDropDown': 'Itens',
+                'All': 'Todos'
+            },
+            // Pager
+            'pager': {
+                'currentPageInfo': '{0} de {1} páginas',
+                'totalItemsInfo': '({0} itens)',
+                'firstPageTooltip': 'Ir para primeira página',
+                'lastPageTooltip': 'Ir para última página',
+                'nextPageTooltip': 'Ir para próxima página',
+                'previousPageTooltip': 'Ir para página anterior',
+                'nextPagerTooltip': 'Ir para próximos itens',
+                'previousPagerTooltip': 'Ir para itens anteriores',
+                'pagerDropDown': 'Itens por página',
+                'pagerAllDropDown': 'Itens',
+                'All': 'Todos'
+            },
+            // DatePicker
+            'datepicker': {
+                'placeholder': 'Selecione uma data',
+                'today': 'Hoje'
+            },
+            // DateTimePicker
+            'datetimepicker': {
+                'placeholder': 'Selecione data e hora',
+                'today': 'Hoje'
+            },
+            // TimePicker
+            'timepicker': {
+                'placeholder': 'Selecione o horário'
+            },
+            // Calendar
+            'calendar': {
+                'today': 'Hoje'
+            },
+            // DateRangePicker
+            'daterangepicker': {
+                'placeholder': 'Selecione um período',
+                'startLabel': 'Data Inicial',
+                'endLabel': 'Data Final',
+                'applyText': 'Aplicar',
+                'cancelText': 'Cancelar',
+                'selectedDays': 'Dias Selecionados',
+                'days': 'Dias',
+                'customRange': 'Período Personalizado'
+            },
+            // DropDownList
+            'dropdownlist': {
+                'noRecordsTemplate': 'Nenhum registro encontrado',
+                'actionFailureTemplate': 'Falha na requisição'
+            },
+            // ComboBox
+            'combobox': {
+                'noRecordsTemplate': 'Nenhum registro encontrado',
+                'actionFailureTemplate': 'Falha na requisição'
+            },
+            // AutoComplete
+            'autocomplete': {
+                'noRecordsTemplate': 'Nenhum registro encontrado',
+                'actionFailureTemplate': 'Falha na requisição'
+            },
+            // MultiSelect
+            'multiselect': {
+                'noRecordsTemplate': 'Nenhum registro encontrado',
+                'actionFailureTemplate': 'Falha na requisição',
+                'selectAllText': 'Selecionar Todos',
+                'unSelectAllText': 'Desmarcar Todos',
+                'overflowCountTemplate': '+${count} mais...'
+            },
+            // ListBox
+            'listbox': {
+                'noRecordsTemplate': 'Nenhum registro encontrado'
+            },
+            // Uploader
+            'uploader': {
+                'Browse': 'Procurar',
+                'Clear': 'Limpar',
+                'Upload': 'Enviar',
+                'dropFilesHint': 'Ou solte arquivos aqui',
+                'invalidMinFileSize': 'Arquivo muito pequeno',
+                'invalidMaxFileSize': 'Arquivo muito grande',
+                'invalidFileType': 'Tipo de arquivo não permitido',
+                'uploadFailedMessage': 'Falha no upload',
+                'uploadSuccessMessage': 'Upload concluído',
+                'removedSuccessMessage': 'Arquivo removido',
+                'removedFailedMessage': 'Falha ao remover arquivo',
+                'inProgress': 'Enviando',
+                'readyToUploadMessage': 'Pronto para enviar',
+                'remove': 'Remover',
+                'cancel': 'Cancelar',
+                'delete': 'Excluir'
+            },
+            // NumericTextBox
+            'numerictextbox': {
+                'incrementTitle': 'Incrementar valor',
+                'decrementTitle': 'Decrementar valor'
+            },
+            // Dialog
+            'dialog': {
+                'close': 'Fechar'
+            },
+            // RichTextEditor
+            'richtexteditor': {
+                'alignments': 'Alinhamentos',
+                'justifyLeft': 'Alinhar à Esquerda',
+                'justifyCenter': 'Centralizar',
+                'justifyRight': 'Alinhar à Direita',
+                'justifyFull': 'Justificar',
+                'fontName': 'Fonte',
+                'fontSize': 'Tamanho',
+                'fontColor': 'Cor da Fonte',
+                'backgroundColor': 'Cor de Fundo',
+                'bold': 'Negrito',
+                'italic': 'Itálico',
+                'underline': 'Sublinhado',
+                'strikethrough': 'Tachado',
+                'clearFormat': 'Limpar Formatação',
+                'clearAll': 'Limpar Tudo',
+                'cut': 'Cortar',
+                'copy': 'Copiar',
+                'paste': 'Colar',
+                'unorderedList': 'Lista com Marcadores',
+                'orderedList': 'Lista Numerada',
+                'indent': 'Aumentar Recuo',
+                'outdent': 'Diminuir Recuo',
+                'undo': 'Desfazer',
+                'redo': 'Refazer',
+                'createLink': 'Inserir Link',
+                'image': 'Inserir Imagem',
+                'createTable': 'Criar Tabela',
+                'removeTable': 'Remover Tabela',
+                'sourcecode': 'Código Fonte',
+                'preview': 'Visualizar',
+                'maximize': 'Maximizar',
+                'minimize': 'Minimizar'
+            },
+            // Scheduler
+            'schedule': {
+                'day': 'Dia',
+                'week': 'Semana',
+                'workWeek': 'Semana de Trabalho',
+                'month': 'Mês',
+                'agenda': 'Agenda',
+                'weekAgenda': 'Agenda Semanal',
+                'workWeekAgenda': 'Agenda da Semana de Trabalho',
+                'monthAgenda': 'Agenda Mensal',
+                'today': 'Hoje',
+                'noEvents': 'Sem eventos',
+                'emptyContainer': 'Não há eventos agendados para este dia.',
+                'allDay': 'Dia inteiro',
+                'start': 'Início',
+                'end': 'Fim',
+                'more': 'mais',
+                'close': 'Fechar',
+                'cancel': 'Cancelar',
+                'noTitle': '(Sem título)',
+                'delete': 'Excluir',
+                'deleteEvent': 'Excluir Evento',
+                'deleteMultipleEvent': 'Excluir Múltiplos Eventos',
+                'selectedItems': 'Itens selecionados',
+                'deleteSeries': 'Excluir Série',
+                'edit': 'Editar',
+                'editSeries': 'Editar Série',
+                'editEvent': 'Editar Evento',
+                'createEvent': 'Criar',
+                'subject': 'Assunto',
+                'addTitle': 'Adicionar título',
+                'moreDetails': 'Mais Detalhes',
+                'save': 'Salvar',
+                'editContent': 'Deseja editar apenas este evento ou toda a série?',
+                'deleteRecurrenceContent': 'Deseja excluir apenas este evento ou toda a série?',
+                'deleteContent': 'Tem certeza que deseja excluir este evento?',
+                'deleteMultipleContent': 'Tem certeza que deseja excluir os eventos selecionados?',
+                'newEvent': 'Novo Evento',
+                'title': 'Título',
+                'location': 'Local',
+                'description': 'Descrição',
+                'timezone': 'Fuso Horário',
+                'startTimezone': 'Fuso Horário Inicial',
+                'endTimezone': 'Fuso Horário Final',
+                'repeat': 'Repetir',
+                'saveButton': 'Salvar',
+                'cancelButton': 'Cancelar',
+                'deleteButton': 'Excluir',
+                'recurrence': 'Recorrência',
+                'wrongPattern': 'O padrão de recorrência é inválido.',
+                'seriesChangeAlert': 'As alterações feitas em instâncias específicas desta série serão canceladas e esses eventos corresponderão à série novamente.',
+                'createError': 'A duração do evento deve ser menor que a frequência com que ele ocorre.',
+                'recurrenceDateValidation': 'Alguns meses têm menos dias do que a data selecionada. Para esses meses, a ocorrência cairá no último dia do mês.',
+                'sameDayAlert': 'Duas ocorrências do mesmo evento não podem ocorrer no mesmo dia.',
+                'editRecurrence': 'Editar Recorrência',
+                'repeats': 'Repete',
+                'alert': 'Alerta',
+                'startEndError': 'A data de término selecionada ocorre antes da data de início.',
+                'invalidDateError': 'O valor de data inserido é inválido.',
+                'ok': 'OK',
+                'occurrence': 'Ocorrência',
+                'series': 'Série',
+                'previous': 'Anterior',
+                'next': 'Próximo',
+                'timelineDay': 'Linha do Tempo - Dia',
+                'timelineWeek': 'Linha do Tempo - Semana',
+                'timelineWorkWeek': 'Linha do Tempo - Semana de Trabalho',
+                'timelineMonth': 'Linha do Tempo - Mês'
+            }
+        }
+    };
+
+    // Função para carregar CLDR de forma assíncrona
+    async function loadCldrData() {
+        try {
+            console.log('🌍 Carregando dados CLDR para pt-BR...');
+
+            const responses = await Promise.all(
+                cldrUrls.map(url =>
+                    fetch(url)
+                        .then(res => {
+                            if (!res.ok) throw new Error(`Falha ao carregar ${url}`);
+                            return res.json();
+                        })
+                        .catch(err => {
+                            console.warn(`⚠️ Não foi possível carregar: ${url}`, err.message);
+                            return null;
+                        })
+                )
+            );
+
+            // Filtrar respostas válidas
+            const validData = responses.filter(data => data !== null);
+
+            if (validData.length > 0 && typeof ej !== 'undefined' && ej.base && ej.base.loadCldr) {
+                ej.base.loadCldr(...validData);
+                console.log(`✅ CLDR carregado (${validData.length}/${cldrUrls.length} arquivos)`);
+            }
+
+            return true;
+        } catch (error) {
+            console.error('❌ Erro ao carregar CLDR:', error);
+            return false;
+        }
+    }
+
+    // Função para aplicar localizações
+    function applyLocalization() {
+        try {
+            if (typeof ej === 'undefined' || !ej.base) {
+                console.warn('⚠️ Syncfusion não carregado ainda');
+                return false;
+            }
+
+            // Carregar traduções L10n
+            if (ej.base.L10n && ej.base.L10n.load) {
+                ej.base.L10n.load(ptBRLocale);
+                console.log('✅ Traduções L10n pt-BR carregadas');
+            }
+
+            // Definir cultura
+            if (ej.base.setCulture) {
+                ej.base.setCulture('pt');
+                console.log('✅ Cultura definida: pt');
+            }
+
+            // Definir código da moeda
+            if (ej.base.setCurrencyCode) {
+                ej.base.setCurrencyCode('BRL');
+                console.log('✅ Moeda definida: BRL');
+            }
+
+            window.__syncfusionLocaleReady = true;
+            document.dispatchEvent(new CustomEvent('syncfusion-locale-ready'));
+
+            return true;
+        } catch (error) {
+            console.error('❌ Erro ao aplicar localização:', error);
+            return false;
+        }
+    }
+
+    // Inicialização
+    async function init() {
+        try {
+            // Primeiro aplicar traduções L10n (não depende do CLDR)
+            applyLocalization();
+
+            // Depois carregar CLDR em background (para formatação de números/datas)
+            await loadCldrData();
+
+            console.log('🎉 Localização Syncfusion pt-BR configurada com sucesso!');
+            window.__cldrLoaded = true;
+
+        } catch (error) {
+            console.error('❌ Erro na inicialização da localização:', error);
+            window.__cldrLoaded = false;
+        }
+    }
+
+    // Executar inicialização
+    init();
+
+})();
+</script>
+<!-- Registro de licença Syncfusion -->
+<script>
+	ej.base.registerLicense("Ngo9BigBOggjHTQxAR8/V1JGaF5cXGpCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdlWX1ecXRVRmRcUkFxWEtWYEs=");
+	// Flag e evento para indicar que licença foi registrada
+	window.syncfusionLicenseReady = true;
+	document.dispatchEvent(new CustomEvent('syncfusion-license-ready'));
+</script>
+
+<!-- Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+	  rel="stylesheet"
+	  integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+	  crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+		crossorigin="anonymous"></script>
+<!-- Shim para expor $.fn.tooltip usando Bootstrap 5 (evita logs \"bs.tooltip is not loaded\") -->
+<script>
+	(function ($, bootstrap) {
+		if (!$ || !bootstrap || !bootstrap.Tooltip) return;
+		if ($.fn.tooltip) return;
+		$.fn.tooltip = function (arg) {
+			return this.each(function () {
+				var instance = bootstrap.Tooltip.getInstance(this);
+				if (!instance) {
+					instance = new bootstrap.Tooltip(this, typeof arg === 'object' ? arg : {});
+				}
+				if (typeof arg === 'string' && typeof instance[arg] === 'function') {
+					instance[arg]();
+				}
+			});
+		};
+	})(window.jQuery, window.bootstrap);
+</script>
+
+<!-- Font Awesome -->
+<script src="https://kit.fontawesome.com/afeb78ad1f.js" crossorigin="anonymous"></script>
+
+<!-- ============================================ -->
+<!-- GRUPO 2: FUNÇÕES GLOBAIS DO PROJETO -->
+<!-- ============================================ -->
+<!-- Funções Globais do FrotiX (usa $, deixe depois do jQuery) -->
+<script src="~/js/dt-better-errors.js" asp-append-version="true"></script>
+<script src="~/js/frotix.js" asp-append-version="true"></script>
+
+<!-- ============================================ -->
+<!-- GRUPO 4: BUNDLES DO PROJETO -->
+<!-- ============================================ -->
+
+<script src="~/js/vendors.bundle.js"></script>
+
+<!-- Kendo UI - CDN Oficial Telerik -->
+<script src="https://kendo.cdn.telerik.com/2023.1.117/js/jszip.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2025.2.520/js/kendo.all.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2025.2.520/js/kendo.aspnetmvc.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2025.2.520/js/cultures/kendo.culture.pt-BR.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2025.2.520/js/messages/kendo.messages.pt-BR.min.js"></script>
+<script>
+	// Definir cultura padrão do Kendo UI para pt-BR
+	try {
+		if (typeof kendo !== 'undefined') {
+			kendo.culture("pt-BR");
+			console.log('✅ Kendo UI cultura pt-BR configurada');
+		}
+	} catch (error) {
+		if (window.Alerta && Alerta.TratamentoErroComLinha) {
+			Alerta.TratamentoErroComLinha("_ScriptsBasePlugins.cshtml", "kendo.culture", error);
+		} else {
+			console.error('Erro ao definir cultura do Kendo UI:', error);
+		}
+	}
+</script>
+
+<script src="/js/shims/jquery.throttle-debounce.js"></script>
+<script>
+(function () {
+  if (!(window.bootstrap && (bootstrap.Dropdown || bootstrap.Tooltip || bootstrap.Popover))) return;
+
+  // Dropdowns: inicializa todos os com data-bs-toggle="dropdown"
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(function (el) {
+      new bootstrap.Dropdown(el, {
+        popperConfig: function (defaultCfg) {
+          defaultCfg = defaultCfg || {};
+          defaultCfg.modifiers = (defaultCfg.modifiers || []).concat([
+            { name: 'computeStyles', options: { gpuAcceleration: false } }
+          ]);
+          return defaultCfg;
+        }
+      });
+    });
+
+    // Tooltips (se você usa)
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+      new bootstrap.Tooltip(el, {
+        popperConfig: { modifiers: [{ name: 'computeStyles', options: { gpuAcceleration: false } }] }
+      });
+    });
+
+    // Popovers (se você usa)
+    document.querySelectorAll('[data-bs-toggle="popover"]').forEach(function (el) {
+      new bootstrap.Popover(el, {
+        popperConfig: { modifiers: [{ name: 'computeStyles', options: { gpuAcceleration: false } }] }
+      });
+    });
+  });
+})();
+</script>
+<script src="/js/shims/rgb2hex.js"></script>
+<script src="~/js/app.bundle.js" asp-append-version="true"></script>
+<script src="~/js/site.js"></script>
+<script src="~/js/botao-loading.js"></script>
+<script src="~/js/loading_script.js"></script>
+
+<!-- ============================================ -->
+<!-- GRUPO 5: BIBLIOTECAS DE DADOS E TABELAS -->
+<!-- ============================================ -->
+<!-- Moment.js -->
+<script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/min/moment.min.js" crossorigin="anonymous"></script>
+
+<!-- DataTables + Plugins -->
+<link rel="stylesheet" href="https://cdn.datatables.net/v/dt/dt-1.13.8/b-2.4.2/r-2.5.0/sl-1.7.0/datatables.min.css" crossorigin="anonymous">
+<script src="https://cdn.datatables.net/v/dt/dt-1.13.8/b-2.4.2/r-2.5.0/sl-1.7.0/datatables.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.13.8/sorting/datetime-moment.js" crossorigin="anonymous"></script>
+
+<!-- JSZip e PDFMake (para exportação DataTables) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js" crossorigin="anonymous"></script>
+
+<!-- Configurar formatos de data do DataTables -->
+<script>
+	$.fn.dataTable.moment('DD/MM/YYYY');
+	$.fn.dataTable.moment('DD/MM/YYYY HH:mm:ss');
+</script>
+
+<!-- ============================================ -->
+<!-- GRUPO 6: BIBLIOTECAS UI E ALERTAS -->
+<!-- ============================================ -->
+<!-- jQuery UI -->
+<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js" crossorigin="anonymous"></script>
+
+<!-- Toastr -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" crossorigin="anonymous"></script>
+
+<!-- SweetAlert2 (versão fixada) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.min.css" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.all.min.js" crossorigin="anonymous"></script>
+
+<!-- Select2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" crossorigin="anonymous"></script>
+
+<!-- TinyMCE (com API Key válida) -->
+<script src="https://cdn.tiny.cloud/1/kl9497zd17qjx1o2xzsybc9rf2dikkylq4ou0riihjjo7wbg/tinymce/8/tinymce.min.js"
+		referrerpolicy="origin"
+		crossorigin="anonymous"></script>
+
+<!-- ============================================ -->
+<!-- GRUPO 7: HELPERS E WRAPPERS DO PROJETO -->
+<!-- ============================================ -->
+<!-- Helpers próprios (DEPOIS de carregar swal/Swal) -->
+<script src="js/toastHelper_006.js"></script>
+<script src="js/sweetalert_interop.js" asp-append-version="true"></script>
+<script src="js/alerta.js" asp-append-version="true"></script>
+<script src="js/error_handler.js" asp-append-version="true"></script>
+
+<!-- Configurações Syncfusion -->
+<script src="~/js/global-toast.js" asp-append-version="true"></script>
+<script src="~/js/syncfusion_tooltips.js" asp-append-version="true"></script>
+
+<!-- 4. Alertas Navbar (NOSSO - após SignalR Manager) -->
+<script src="~/js/alertasfrotix/alertas_navbar.js" asp-append-version="true"></script>
+<script src="~/js/alertasfrotix/alertas_gestao.js" asp-append-version="true"></script>
+
+<!-- ============================================ -->
+<!-- GRUPO 8: FUNÇÕES UTILITÁRIAS -->
+<!-- ============================================ -->
+<!-- Função moeda (mantida) -->
+<script>
+	function moeda(a,e,r,t){let n="",h=j=0,u=tamanho2=0,l=ajd2="",o=window.Event?t.which:t.keyCode;if(13==o||8==o)return!0;if(n=String.fromCharCode(o),-1=="0123456789".indexOf(n))return!1;for(u=a.value.length,h=0;h<u&&("0"==a.value.charAt(h)||a.value.charAt(h)==r);h++);for(l="";h<u;h++)-1!="0123456789".indexOf(a.value.charAt(h))&&(l+=a.value.charAt(h));if(l+=n,0==(u=l.length)&&(a.value=""),1==u&&(a.value="0"+r+"0"+l),2==u&&(a.value="0"+r+l),u>2){for(ajd2="",j=0,h=u-3;h>=0;h--)3==j&&(ajd2+=e,j=0),ajd2+=l.charAt(h),j++;for(a.value="",tamanho2=ajd2.length,h=tamanho2-1;h>=0;h--)a.value+=ajd2.charAt(h);a.value+=r+l.substr(u-2,u)}return!1}
+</script>
+
+<!-- ============================================ -->
+<!-- GRUPO 9: CONFIGURAÇÕES ESPECÍFICAS -->
+<!-- ============================================ -->
+<!-- Configuração do Rich Text Editor (EJ2) -->
+<script>
+	var defaultRTE;
+	function onCreate(){ defaultRTE = this; }
+	function toolbarClick(e){
+	  if(e.item.id=="rte_toolbar_Image"){
+		var element=document.getElementById('rte_upload');
+		element.ej2_instances[0].uploading=function(args){
+		  args.currentRequest.setRequestHeader('XSRF-TOKEN', document.getElementsByName('__RequestVerificationToken')[0].value);
+		}
+	  }
+	}
+	ej.base.L10n.load({
+	  "pt-BR": { "richtexteditor": {
+		"alignments":"Alinhamentos","justifyLeft":"Alinhar à Esquerda","justifyCenter":"Centralizar","justifyRight":"Alinhar à Direita","justifyFull":"Justificar",
+		"fontName":"Nome da Fonte","fontSize":"Tamanho da Fonte","fontColor":"Cor da Fonte","backgroundColor":"Cor de Fundo","bold":"Negrito","italic":"Itálico",
+		"underline":"Sublinhado","strikethrough":"Tachado","clearFormat":"Limpa Formatação","clearAll":"Limpa Tudo","cut":"Cortar","copy":"Copiar","paste":"Colar",
+		"unorderedList":"Lista com Marcadores","orderedList":"Lista Numerada","indent":"Aumentar Identação","outdent":"Diminuir Identação","undo":"Desfazer",
+		"redo":"Refazer","superscript":"Sobrescrito","subscript":"Subscrito","createLink":"Inserir Link","openLink":"Abrir Link","editLink":"Editar Link",
+		"removeLink":"Remover Link","image":"Inserir Imagem","replace":"Substituir","align":"Alinhar","caption":"Título da Imagem","remove":"Remover",
+		"insertLink":"Inserir Link","display":"Exibir","altText":"Texto Alternativo","dimension":"Mudar Tamanho","fullscreen":"Maximizar","maximize":"Maximizar",
+		"minimize":"Minimizar","lowerCase":"Caixa Baixa","upperCase":"Caixa Alta","print":"Imprimir","formats":"Formatos","sourcecode":"Visualizar Código",
+		"preview":"Exibir","viewside":"ViewSide","insertCode":"Inserir Código","linkText":"Exibir Texto","linkTooltipLabel":"Título","linkWebUrl":"Endereço Web",
+		"linkTitle":"Entre com um título","linkurl":"http://exemplo.com","linkOpenInNewWindow":"Abrir Link em Nova Janela","linkHeader":"Inserir Link",
+		"dialogInsert":"Inserir","dialogCancel":"Cancelar","dialogUpdate":"Atualizar","imageHeader":"Inserir Imagem",
+		"imageLinkHeader":"Você pode proporcionar um link da web","mdimageLink":"Favor proporcionar uma URL para sua imagem",
+		"imageUploadMessage":"Solte a imagem aqui ou busque para o upload","imageDeviceUploadMessage":"Clique aqui para o upload",
+		"imageAlternateText":"Texto Alternativo","alternateHeader":"Texto Alternativo","browse":"Procurar","imageUrl":"http://exemplo.com/imagem.png","imageCaption":"Título",
+		"imageSizeHeader":"Tamanho da Imagem","imageHeight":"Altura","imageWidth":"Largura","textPlaceholder":"Entre com um Texto","inserttablebtn":"Inserir Tabela",
+		"tabledialogHeader":"Inserir Tabela","tableWidth":"Largura","cellpadding":"Espaçamento de célula","cellspacing":"Espaçamento de célula",
+		"columns":"Número de colunas","rows":"Número de linhas","tableRows":"Linhas da Tabela","tableColumns":"Colunas da Tabela",
+		"tableCellHorizontalAlign":"Alinhamento Horizontal da Célular","tableCellVerticalAlign":"Alinhamento Vertical da Célular",
+		"createTable":"Criar Tabela","removeTable":"Remover Tabela","tableHeader":"Cabeçalho da Tabela","tableRemove":"Remover Tabela",
+		"tableCellBackground":"Fundo da Célula","tableEditProperties":"Editar Propriedades da Tabela","styles":"Estilos",
+		"insertColumnLeft":"Inserir Coluna à Esquerda","insertColumnRight":"Inserir Coluna à Direita","deleteColumn":"Apagar Coluna",
+		"insertRowBefore":"Inserir Linha Antes","insertRowAfter":"Inserir Linha Depois","deleteRow":"Apagar Linha","tableEditHeader":"Edita Tabela",
+		"TableHeadingText":"Cabeçalho","TableColText":"Col","imageInsertLinkHeader":"Inserir Link","editImageHeader":"Edita Imagem",
+		"alignmentsDropDownLeft":"Alinhar à Esquerda","alignmentsDropDownCenter":"Centralizar","alignmentsDropDownRight":"Alinhar à Direita",
+		"alignmentsDropDownJustify":"Justificar","imageDisplayDropDownInline":"Inline","imageDisplayDropDownBreak":"Break",
+		"tableInsertRowDropDownBefore":"Inserir linha antes","tableInsertRowDropDownAfter":"Inserir linha depois","tableInsertRowDropDownDelete":"Apagar linha",
+		"tableInsertColumnDropDownLeft":"Inserir coluna à esquerda","tableInsertColumnDropDownRight":"Inserir coluna à direita",
+		"tableInsertColumnDropDownDelete":"Apagar Coluna","tableVerticalAlignDropDownTop":"Alinhar no Topo","tableVerticalAlignDropDownMiddle":"Alinhar no Meio",
+		"tableVerticalAlignDropDownBottom":"Alinhar no Fundo","tableStylesDropDownDashedBorder":"Bordas Pontilhadas","tableStylesDropDownAlternateRows":"Linhas Alternadas",
+		"pasteFormat":"Colar Formato","pasteFormatContent":"Escolha a ação de formatação","plainText":"Texto Simples","cleanFormat":"Limpar","keepFormat":"Manter",
+		"formatsDropDownParagraph":"Parágrafo","formatsDropDownCode":"Código","formatsDropDownQuotation":"Citação","formatsDropDownHeading1":"Cabeçalho 1",
+		"formatsDropDownHeading2":"Cabeçalho 2","formatsDropDownHeading3":"Cabeçalho 3","formatsDropDownHeading4":"Cabeçalho 4",
+		"fontNameSegoeUI":"SegoeUI","fontNameArial":"Arial","fontNameGeorgia":"Georgia","fontNameImpact":"Impact","fontNameTahoma":"Tahoma",
+		"fontNameTimesNewRoman":"Times New Roman","fontNameVerdana":"Verdana"
+	  }}});
+</script>
+
+<!-- ============================================ -->
+<!-- GRUPO 10: UTILITÁRIOS DE LIMPEZA -->
+<!-- ============================================ -->
+<!-- Limpa a tela depois de fechar modais/overlays -->
+<script>
+	function limparResiduosModalVanilla(){
+	  document.querySelectorAll('.modal-backdrop, .swal2-container, .swal2-backdrop-show').forEach(e=>e.remove());
+	  document.body.classList.remove('modal-open');
+	  document.body.style.overflow='';
+	  document.body.style.zIndex='';
+	  document.querySelectorAll('div').forEach(div=>{
+		const s=getComputedStyle(div);
+		if((s.position==='fixed'||s.position==='absolute') && parseInt(s.zIndex||0)>=1040 &&
+		   ((parseInt(s.width)===window.innerWidth)||s.width==='100vw'||s.left==='0px') &&
+		   ((parseInt(s.height)===window.innerHeight)||s.height==='100vh'||s.top==='0px')){
+		  if(!div.classList.contains('fc') && !div.classList.contains('fc-view-harness')){
+			div.remove();
+		  }
+		}
+	  });
+	}
+</script>
+
+<!-- NOTA: Traduções L10n completas já carregadas no início do arquivo (SYNCFUSION LOCALIZAÇÃO PT-BR COMPLETA) -->

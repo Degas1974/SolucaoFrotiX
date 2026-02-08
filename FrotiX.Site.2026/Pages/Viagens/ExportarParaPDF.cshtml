@@ -1,0 +1,27 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Viagens/ExportarParaPDF.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Endpoint para exportação de Viagens para PDF. Layout = null indica que
+ *                   a resposta é um arquivo PDF (não HTML renderizado). Lógica no code-behind.
+ * 📥 ENTRADAS     : Parâmetros via query string (IDs de viagens, filtros, range de datas),
+ *                   requisição GET para /Viagens/ExportarParaPDF, user context (autorização)
+ * 📤 SAÍDAS       : Arquivo PDF (return File(pdfBytes, "application/pdf", "viagens.pdf")),
+ *                   header Content-Disposition attachment, não renderiza HTML (Layout=null)
+ * 🔗 CHAMADA POR  : Botão "Exportar PDF" em Pages/Viagens/Index.cshtml ou viagens.js,
+ *                   link direto <a href="/Viagens/ExportarParaPDF?ids=..."> ou window.open()
+ * 🔄 CHAMA        : ExportarParaPDFModel.OnGet (code-behind), ViagensRepository (buscar dados),
+ *                   biblioteca PDF (provavelmente Syncfusion PDF, iTextSharp, DinkToPdf, ou QuestPDF),
+ *                   template de relatório PDF, logos/imagens em wwwroot/
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, ExportarParaPDFModel (code-behind), biblioteca PDF
+ *                   (Syncfusion.Pdf?, iTextSharp, DinkToPdf, QuestPDF), ViagensRepository,
+ *                   autorização (user permissions)
+ * 📝 OBSERVAÇÕES  : 5 linhas. Layout = null ESSENCIAL - evita renderização de _Layout.cshtml,
+ *                   permitindo retornar arquivo binário (PDF). Todo processamento no code-behind:
+ *                   buscar viagens, gerar PDF, return File(stream). Padrão comum para exportações
+ *                   (Excel, CSV, PDF). View vazia - não há HTML no @{ } block.
+ **************************************************************************************** *@
+@page
+@model FrotiX.Pages.Viagens.ExportarParaPDFModel
+@{
+    Layout = null;
+}

@@ -1,0 +1,20 @@
+﻿@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/_ViewStart.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Configurar o layout padrão (_Layout) para TODAS as páginas Razor da pasta
+ *                   Pages. Executado ANTES de cada view renderizar. Padrão ASP.NET Core.
+ * 📥 ENTRADAS     : Execução automática pelo ASP.NET Core Razor Pages engine ao renderizar
+ *                   qualquer .cshtml em Pages/ ou subpastas (exceto se sobrescrito)
+ * 📤 SAÍDAS       : Define Layout = "_Layout" para todas as views, garantindo estrutura HTML
+ *                   consistente (header, nav, footer), sem precisação manual em cada arquivo
+ * 🔗 CHAMADA POR  : ASP.NET Core Razor Pages pipeline automaticamente (View Discovery)
+ * 🔄 CHAMA        : Pages/Shared/_Layout.cshtml (layout principal do sistema FrotiX)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (ViewStart convention), _Layout.cshtml (arquivo base)
+ * 📝 OBSERVAÇÕES  : 3 linhas. Arquivo FUNDAMENTAL - configuraa layout de TODAS as páginas.
+ *                   Sobrescrito em áreas específicas (Areas/Identity, Areas/Authorization) com
+ *                   seus próprios _ViewStart.cshtml. Convenção ASP.NET Core: _ViewStart.cshtml
+ *                   executa ANTES da view, _ViewImports.cshtml adiciona namespaces/taghelpers.
+ **************************************************************************************** *@
+@{
+    Layout = "_Layout";
+}
