@@ -12,9 +12,6 @@ nul
 *.suo
 .vs/
 
-# Gemini AI (contém credenciais OAuth)
-.gemini/
-
 # Exemplos e bibliotecas de terceiros
 Kendo.Mvc.Examples/
 
