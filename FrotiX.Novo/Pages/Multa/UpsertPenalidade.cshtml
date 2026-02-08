@@ -1,13 +1,13 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Multa/UpsertPenalidade.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/Multa/UpsertPenalidade.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Formulário criar/editar penalidade/boleto de multa (herdado de autuação) + 4 uploads PDFs (autuação, penalidade, eDoc, comprovante) + checkboxes Paga/EnviadaSecle
- * 📥 ENTRADAS     : @page, @model UpsertPenalidadeModel, campos herdados autuação + Vencimento, Paga (checkbox), EnviadaSecle (checkbox), ProcessoEDoc, NoFichaVistoria (com btnFicha), 4 uploaders (uploaderAutuacao, uploaderPenalidade, uploaderEDoc, uploaderComprovante), RTE observações (Syncfusion)
- * 📤 SAÍDAS       : POST (handler=Submit ou Edit), redirect para ListaPenalidade, AppToast feedback, 4 PDFViewers inline, modal #modalFicha (ficha vistoria)
- * 🔗 CHAMADA POR  : ListaPenalidade (botão "Adicionar Penalidade", editar linha, transformar autuação), menu navegação
- * 🔄 CHAMA        : (assumido) /api/Multa/CreatePenalidade ou UpdatePenalidade, /api/MultaUpload/save|remove (4x), /api/MultaPdfViewer (4x), /api/Viagem/SaveImage (RTE), ~/js/cadastros/upsert_penalidade.js
- * 📦 DEPENDÊNCIAS : Syncfusion.EJ2 (ComboBox, DropDownList, DatePicker, Uploader x4, PDFViewer x4, RichTextEditor), Bootstrap 5.3.8 (CDN redundante), Font Awesome Duotone, CSS ftx-card-styled.css
- * 📝 OBSERVAÇÕES  : Total: 762 linhas. PROBLEMA GRAVE: 4 uploaders + 4 PDF viewers inline = MUITO PESADO, Considerar abas/accordion, Bootstrap CDN redundante, CSS inline extenso (316 linhas) - extrair, JavaScript inline grande (446 linhas) - DEVE extrair (parseCurrencyBR, moeda, formatCurrencyBR, spinners, valores), DUPLICAÇÃO: Funções moeda/parseCurrency repetidas (mesmas do UpsertAutuacao), COMPLEXIDADE: Checkboxes custom (chkPaga, chkEnviadaSecle) com hidden fields - padrão ASP.NET Core correto mas verboso, Campos valor: usa hidden fields (hdnValorAteVencimento/PosVencimento) - consistente com UpsertAutuacao, BUG POTENCIAL: 4 PDF viewers renderizados mesmo sem PDFs - considerar lazy load, Modal ficha: btnFicha desabilitado por padrão - habilitar via JS se NoFichaVistoria preenchido
+ * ðŸŽ¯ OBJETIVO     : FormulÃ¡rio criar/editar penalidade/boleto de multa (herdado de autuaÃ§Ã£o) + 4 uploads PDFs (autuaÃ§Ã£o, penalidade, eDoc, comprovante) + checkboxes Paga/EnviadaSecle
+ * ðŸ“¥ ENTRADAS     : @page, @model UpsertPenalidadeModel, campos herdados autuaÃ§Ã£o + Vencimento, Paga (checkbox), EnviadaSecle (checkbox), ProcessoEDoc, NoFichaVistoria (com btnFicha), 4 uploaders (uploaderAutuacao, uploaderPenalidade, uploaderEDoc, uploaderComprovante), RTE observaÃ§Ãµes (Syncfusion)
+ * ðŸ“¤ SAÃDAS       : POST (handler=Submit ou Edit), redirect para ListaPenalidade, AppToast feedback, 4 PDFViewers inline, modal #modalFicha (ficha vistoria)
+ * ðŸ”— CHAMADA POR  : ListaPenalidade (botÃ£o "Adicionar Penalidade", editar linha, transformar autuaÃ§Ã£o), menu navegaÃ§Ã£o
+ * ðŸ”„ CHAMA        : (assumido) /api/Multa/CreatePenalidade ou UpdatePenalidade, /api/MultaUpload/save|remove (4x), /api/MultaPdfViewer (4x), /api/Viagem/SaveImage (RTE), ~/js/cadastros/upsert_penalidade.js
+ * ðŸ“¦ DEPENDÃŠNCIAS : Syncfusion.EJ2 (ComboBox, DropDownList, DatePicker, Uploader x4, PDFViewer x4, RichTextEditor), Bootstrap 5.3.8 (CDN redundante), Font Awesome Duotone, CSS ftx-card-styled.css
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : Total: 762 linhas. PROBLEMA GRAVE: 4 uploaders + 4 PDF viewers inline = MUITO PESADO, Considerar abas/accordion, Bootstrap CDN redundante, CSS inline extenso (316 linhas) - extrair, JavaScript inline grande (446 linhas) - DEVE extrair (parseCurrencyBR, moeda, formatCurrencyBR, spinners, valores), DUPLICAÃ‡ÃƒO: FunÃ§Ãµes moeda/parseCurrency repetidas (mesmas do UpsertAutuacao), COMPLEXIDADE: Checkboxes custom (chkPaga, chkEnviadaSecle) com hidden fields - padrÃ£o ASP.NET Core correto mas verboso, Campos valor: usa hidden fields (hdnValorAteVencimento/PosVencimento) - consistente com UpsertAutuacao, BUG POTENCIAL: 4 PDF viewers renderizados mesmo sem PDFs - considerar lazy load, Modal ficha: btnFicha desabilitado por padrÃ£o - habilitar via JS se NoFichaVistoria preenchido
  **************************************************************************************** *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -17,9 +17,9 @@
 @Html.AntiForgeryToken()
 
 @{
-	ViewData["Title"] = "Notificações";
+	ViewData["Title"] = "NotificaÃ§Ãµes";
 	ViewData["PageName"] = "multa_upsertpenalidade";
-	ViewData["Heading"] = "<i class='fa-duotone fa-pen-to-square'></i> Cadastros: <span class='fw-300'>Notificação de Penalidade</span>";
+	ViewData["Heading"] = "<i class='fa-duotone fa-pen-to-square'></i> Cadastros: <span class='fw-300'>NotificaÃ§Ã£o de Penalidade</span>";
 	ViewData["Category1"] = "Cadastros";
 	ViewData["PageIcon"] = "fa-duotone fa-pen-to-square";
 }
@@ -28,7 +28,7 @@
 	<link href="~/css/ftx-card-styled.css" rel="stylesheet" asp-append-version="true" />
 
 	<style>
-		/* ====== ANIMAÇÃO WIGGLE FROTIX ====== */
+		/* ====== ANIMAÃ‡ÃƒO WIGGLE FROTIX ====== */
 		@@keyframes buttonWiggle {
 			0% { transform: translateY(0) rotate(0deg); }
 			25% { transform: translateY(-2px) rotate(-1deg); }
@@ -37,7 +37,7 @@
 			100% { transform: translateY(0) rotate(0deg); }
 		}
 
-		/* ====== VARIÁVEIS LOCAIS ====== */
+		/* ====== VARIÃVEIS LOCAIS ====== */
 		:root {
 			--ftx-penalidade-azul: #3D5771;
 			--ftx-penalidade-azul-dark: #2d4559;
@@ -74,7 +74,7 @@
 			color: #495057;
 		}
 
-		/* ===== ÍCONE DUOTONE NO HEADER ===== */
+		/* ===== ÃCONE DUOTONE NO HEADER ===== */
 		.ftx-card-header .titulo-paginas i {
 			--fa-primary-color: #fff !important;
 			--fa-secondary-color: #C67750 !important;
@@ -103,7 +103,7 @@
 			border-radius: .25rem;
 		}
 
-		/* ====== BOTÕES DE AÇÃO - COM SOMBREADO FORTE ====== */
+		/* ====== BOTÃ•ES DE AÃ‡ÃƒO - COM SOMBREADO FORTE ====== */
 		.btn-azul {
 			background-color: var(--ftx-penalidade-azul) !important;
 			border: none !important;
@@ -167,7 +167,7 @@
 			color: #fff !important;
 		}
 
-		/* ====== SPINNER NOS BOTÕES ====== */
+		/* ====== SPINNER NOS BOTÃ•ES ====== */
 		.btn .spinner-border {
 			width: 1rem;
 			height: 1rem;
@@ -224,7 +224,7 @@
 			box-shadow: 0 0 0 0.2rem rgba(61, 87, 113, 0.25);
 		}
 
-		/* ===== ESTILOS DO MODAL FICHA - PADRÃO FROTIX ===== */
+		/* ===== ESTILOS DO MODAL FICHA - PADRÃƒO FROTIX ===== */
 		#modalFicha .modal-dialog {
 			max-width: 700px;
 		}
@@ -269,7 +269,7 @@
 			box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 		}
 
-		/* ====== BOTÕES DOS MODAIS - COM SOMBREADO FORTE ====== */
+		/* ====== BOTÃ•ES DOS MODAIS - COM SOMBREADO FORTE ====== */
 		.btn-modal-fechar {
 			background-color: var(--ftx-penalidade-vinho) !important;
 			color: #fff !important;
@@ -317,7 +317,7 @@
 			<div id="panel-1" class="panel ftx-card-styled">
 				<div class="panel-container show">
 
-					<!-- Header Padrão FrotiX -->
+					<!-- Header PadrÃ£o FrotiX -->
 					<div class="ftx-card-header d-flex justify-content-between align-items-center">
 						<h2 class="titulo-paginas mb-0">
 							<i class="fa-duotone fa-gavel"></i>
@@ -326,7 +326,7 @@
 						<div class="ftx-card-actions">
 							<a asp-page="/Multa/ListaPenalidade" class="btn btn-header-orange" data-ftx-loading>
 								<i class="fa-duotone fa-rotate-left icon-space icon-rotate-left"></i>
-								Voltar à Lista
+								Voltar Ã  Lista
 							</a>
 						</div>
 					</div>
@@ -449,8 +449,8 @@
 							<div class="row pb-12">
 								<div class="col-10">
 									<div class="form-group">
-										<label class="label font-weight-bold">Infração</label>
-										<ejs-dropdownlist id="lstInfracao" dataSource="@ViewData["dataInfracao"]" placeholder="Selecione uma Infração..." allowFiltering="true" filterType="Contains" popupHeight="220px" ejs-for="@Model.MultaObj.Multa.TipoMultaId">
+										<label class="label font-weight-bold">InfraÃ§Ã£o</label>
+										<ejs-dropdownlist id="lstInfracao" dataSource="@ViewData["dataInfracao"]" placeholder="Selecione uma InfraÃ§Ã£o..." allowFiltering="true" filterType="Contains" popupHeight="220px" ejs-for="@Model.MultaObj.Multa.TipoMultaId">
 											<e-dropdownlist-fields text="Descricao" value="TipoMultaId"></e-dropdownlist-fields>
 										</ejs-dropdownlist>
 									</div>
@@ -492,8 +492,8 @@
 
 							<div class="row">
 								<div class="col-12 col-md-6 col-xl-4">
-									<label class="label font-weight-bold">Órgão Autuante</label>
-									<ejs-combobox id="lstOrgao" placeholder="Selecione um Órgão Autuante" allowFiltering="true" filterType="Contains" dataSource="@ViewData["dataOrgao"]" popupHeight="200px" width="100%" showClearButton="true" ejs-for="@Model.MultaObj.Multa.OrgaoAutuanteId">
+									<label class="label font-weight-bold">Ã“rgÃ£o Autuante</label>
+									<ejs-combobox id="lstOrgao" placeholder="Selecione um Ã“rgÃ£o Autuante" allowFiltering="true" filterType="Contains" dataSource="@ViewData["dataOrgao"]" popupHeight="200px" width="100%" showClearButton="true" ejs-for="@Model.MultaObj.Multa.OrgaoAutuanteId">
 										<e-combobox-fields text="Descricao" value="OrgaoId"></e-combobox-fields>
 									</ejs-combobox>
 								</div>
@@ -513,19 +513,19 @@
 
 							<div class="row">
 								<div class="col-12 col-md-6 col-xl-4">
-									<label class="label font-weight-bold">Veículo</label>
-									<ejs-combobox id="lstVeiculo" placeholder="Selecione um Veículo" allowFiltering="true" filterType="Contains" dataSource="@ViewData["dataVeiculo"]" popupHeight="200px" width="100%" showClearButton="true" ejs-for="@Model.MultaObj.Multa.VeiculoId">
+									<label class="label font-weight-bold">VeÃ­culo</label>
+									<ejs-combobox id="lstVeiculo" placeholder="Selecione um VeÃ­culo" allowFiltering="true" filterType="Contains" dataSource="@ViewData["dataVeiculo"]" popupHeight="200px" width="100%" showClearButton="true" ejs-for="@Model.MultaObj.Multa.VeiculoId">
 										<e-combobox-fields text="Descricao" value="VeiculoId"></e-combobox-fields>
 									</ejs-combobox>
 								</div>
 								<div class="col-12 col-md-6 col-xl-4">
-									<label class="label font-weight-bold">Contrato do Veículo</label>
+									<label class="label font-weight-bold">Contrato do VeÃ­culo</label>
 									<ejs-combobox id="lstContratoVeiculo" placeholder="Selecione um Contrato" allowFiltering="true" filterType="Contains" dataSource="@ViewData["dataContratoVeiculos"]" popupHeight="200px" width="100%" showClearButton="true" ejs-for="@Model.MultaObj.Multa.ContratoVeiculoId" enabled="false">
 										<e-combobox-fields text="Descricao" value="ContratoId"></e-combobox-fields>
 									</ejs-combobox>
 								</div>
 								<div class="col-12 col-md-6 col-xl-4">
-									<label class="label font-weight-bold">Ata do Veículo</label>
+									<label class="label font-weight-bold">Ata do VeÃ­culo</label>
 									<ejs-combobox id="lstAtaVeiculo" placeholder="Selecione uma Ata" allowFiltering="true" filterType="Contains" dataSource="@ViewData["dataAtaVeiculos"]" popupHeight="200px" width="100%" showClearButton="true" ejs-for="@Model.MultaObj.Multa.AtaVeiculoId" enabled="false">
 										<e-combobox-fields text="Descricao" value="AtaId"></e-combobox-fields>
 									</ejs-combobox>
@@ -550,11 +550,11 @@
 							<br />
 
 							<!-- ============================================== -->
-							<!-- UPLOAD E VIEWER - AUTUAÇÃO -->
+							<!-- UPLOAD E VIEWER - AUTUAÃ‡ÃƒO -->
 							<!-- ============================================== -->
 							<div class="row">
 								<div class="col-md-12 col-xl-10">
-									<label class="label font-weight-bold">Notificação de Autuação (PDF)</label>
+									<label class="label font-weight-bold">NotificaÃ§Ã£o de AutuaÃ§Ã£o (PDF)</label>
 
 									<ejs-uploader id="uploaderAutuacao"
 									              name="UploadFiles"
@@ -582,7 +582,7 @@
 							<!-- ============================================== -->
 							<div class="row">
 								<div class="col-md-12 col-xl-10">
-									<label class="label font-weight-bold">Notificação de Penalidade (PDF)</label>
+									<label class="label font-weight-bold">NotificaÃ§Ã£o de Penalidade (PDF)</label>
 
 									<ejs-uploader id="uploaderPenalidade"
 									              name="UploadFiles"
@@ -662,13 +662,13 @@
 							<br />
 
 							<!-- ============================================== -->
-							<!-- OBSERVAÇÕES - RICH TEXT EDITOR -->
+							<!-- OBSERVAÃ‡Ã•ES - RICH TEXT EDITOR -->
 							<!-- ============================================== -->
 							<div class="row">
 								<div class="col-md-12 col-xl-10 control-section">
 									<div class="control-wrapper">
 										<div>
-											<label class="label font-weight-bold">Observações a respeito da Multa</label>
+											<label class="label font-weight-bold">ObservaÃ§Ãµes a respeito da Multa</label>
 											<ejs-richtexteditor ejs-for="@Model.MultaObj.Multa.Observacao" id="rte" toolbarClick="toolbarClick" locale="pt-BR" height="150px">
 												<e-richtexteditor-insertimagesettings saveUrl="api/Viagem/SaveImage" path="./DadosEditaveis/ImagensViagens/"></e-richtexteditor-insertimagesettings>
 											</ejs-richtexteditor>
@@ -684,7 +684,7 @@
 							<br />
 
 							<!-- ============================================== -->
-							<!-- BOTÕES DE AÇÃO -->
+							<!-- BOTÃ•ES DE AÃ‡ÃƒO -->
 							<!-- ============================================== -->
 							<div class="form-group row">
 								<div class="col-12">
@@ -730,7 +730,7 @@
 										<div class="col-12 col-md-4">
 											<a asp-page="./ListaPenalidade" class="btn btn-ftx-fechar form-control" data-ftx-loading>
 												<i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i>
-												<span>Cancelar Operação</span>
+												<span>Cancelar OperaÃ§Ã£o</span>
 											</a>
 										</div>
 									</div>
@@ -745,7 +745,7 @@
 	</div>
 </form>
 
-@* ================ Modal Ficha de Vistoria - Padrão FrotiX ================ *@
+@* ================ Modal Ficha de Vistoria - PadrÃ£o FrotiX ================ *@
 <div class="modal fade" id="modalFicha" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
@@ -775,8 +775,8 @@
 
 @section ScriptsBlock {
 
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
 	<script>
 		const MultaId = "@(Model.MultaObj.Multa?.MultaId.ToString() ?? "")";
@@ -790,8 +790,8 @@
 	</script>
 
 	<script>
-		// ===== UTILITÁRIOS =====
-		// Converte valor BR para número (ex: "10.000,50" -> 10000.50)
+		// ===== UTILITÃRIOS =====
+		// Converte valor BR para nÃºmero (ex: "10.000,50" -> 10000.50)
 		function parseCurrencyBR(str) {
 			try {
 				if (!str) return 0;
@@ -807,7 +807,7 @@
 			}
 		}
 
-		// Função de formatação de moeda (últimos 2 dígitos = centavos)
+		// FunÃ§Ã£o de formataÃ§Ã£o de moeda (Ãºltimos 2 dÃ­gitos = centavos)
 		// Para R$ 1.000,00 digite 100000
 		function moeda(input, sep, dec, event) {
 			try {
@@ -823,7 +823,7 @@
 
 				if ("0123456789".indexOf(digitado) === -1) return false;
 
-				// Remove o prefixo R$ para processar apenas números
+				// Remove o prefixo R$ para processar apenas nÃºmeros
 				let valorAtual = input.value.replace('R$ ', '');
 
 				for (tamanho = valorAtual.length, i = 0;
@@ -872,7 +872,7 @@
 			}
 		}
 
-		// Formata número para exibição BR (ex: 10000.50 -> "R$ 10.000,50")
+		// Formata nÃºmero para exibiÃ§Ã£o BR (ex: 10000.50 -> "R$ 10.000,50")
 		function formatCurrencyBR(valor) {
 			try {
 				if (!valor && valor !== 0) return "";
@@ -887,10 +887,10 @@
 	<script src="~/js/cadastros/upsert_penalidade.js" asp-append-version="true"></script>
 
 	<script>
-		// ===== INICIALIZAÇÃO DOS CAMPOS DE VALOR =====
+		// ===== INICIALIZAÃ‡ÃƒO DOS CAMPOS DE VALOR =====
 		document.addEventListener('DOMContentLoaded', function () {
 			try {
-				// Carrega valores iniciais formatados nos campos visíveis
+				// Carrega valores iniciais formatados nos campos visÃ­veis
 				const hdnAteVenc = document.getElementById('hdnValorAteVencimento');
 				const hdnPosVenc = document.getElementById('hdnValorPosVencimento');
 				const txtAteVenc = document.getElementById('txtValorAteVencimento');
@@ -926,7 +926,7 @@
 	</script>
 
 	<script>
-		// ===== SPINNER NOS BOTÕES DE SUBMIT =====
+		// ===== SPINNER NOS BOTÃ•ES DE SUBMIT =====
 		document.addEventListener('DOMContentLoaded', function () {
 			try {
 				const btnSubmit = document.getElementById('btnSubmit');
@@ -954,3 +954,4 @@
 		});
 	</script>
 }
+

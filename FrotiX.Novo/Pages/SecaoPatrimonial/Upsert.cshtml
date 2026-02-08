@@ -1,4 +1,4 @@
-@page
+﻿@page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @* ========================================================================================
@@ -23,9 +23,9 @@
 @model FrotiX.Pages.Secao.UpsertModel
 
 @{
-	ViewData["Title"] = "Seção Patrimonial";
+	ViewData["Title"] = "SeÃ§Ã£o Patrimonial";
 	ViewData["PageName"] = "secaopatrimonial_upsert";
-	ViewData["Heading"] = "<i class='fa-duotone fa-shop'></i> Cadastros: <span class='fw-300'>Seção Patrimonial</span>";
+	ViewData["Heading"] = "<i class='fa-duotone fa-shop'></i> Cadastros: <span class='fw-300'>SeÃ§Ã£o Patrimonial</span>";
 	ViewData["Category1"] = "Cadastros";
 	ViewData["PageIcon"] = "fa-duotone fa-shop";
 }
@@ -76,7 +76,7 @@
 					<div class="ftx-card-header">
 						<h2 class="titulo-paginas">
 							<i class="fa-duotone fa-warehouse-full"></i>
-							@(Model.SecaoObj.SetorId != Guid.Empty ? "Atualizar " : "Criar ")Seção Patrimonial
+							@(Model.SecaoObj.SetorId != Guid.Empty ? "Atualizar " : "Criar ")SeÃ§Ã£o Patrimonial
 						</h2>
 					</div>
 
@@ -95,7 +95,7 @@
 								<div class="col-4">
 									<div class="form-group">
 										<label class="label font-weight-bold ftx-label label-required"
-											asp-for="SecaoObj.NomeSecao">Nome da Seção Patrimonial</label>
+											asp-for="SecaoObj.NomeSecao">Nome da SeÃ§Ã£o Patrimonial</label>
 										<span class="text-danger font-weight-light"
 											asp-validation-for="SecaoObj.NomeSecao"></span>
 										<input class="form-control form-control-sm" asp-for="SecaoObj.NomeSecao" />
@@ -139,7 +139,7 @@
 													asp-route-id=@Model.SecaoObj.SecaoId
 													class="btn btn-azul btn-submit-spin form-control" style="width:300px">
 													<i class="fa-duotone fa-floppy-disk icon-space icon-pulse"></i>
-													Atualizar Seção Patrimonial
+													Atualizar SeÃ§Ã£o Patrimonial
 												</button>
 											}
 											else
@@ -147,7 +147,7 @@
 												<button type="submit" value="Submit" asp-page-handler="Submit"
 													class="btn btn-azul btn-submit-spin form-control" style="width:300px">
 													<i class="fa-duotone fa-floppy-disk icon-space icon-pulse"></i>
-													Criar Seção Patrimonial
+													Criar SeÃ§Ã£o Patrimonial
 												</button>
 											}
 										</div>
@@ -155,7 +155,7 @@
 											<a asp-page="./Index" class="btn btn-ftx-fechar form-control"
 												style="width:300px" data-ftx-loading>
 												<i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i>
-												Cancelar Operação
+												Cancelar OperaÃ§Ã£o
 											</a>
 										</div>
 									</div>
@@ -170,10 +170,8 @@
 </form>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-		crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-		crossorigin="anonymous"></script>
+	
+	
 
 	<script src="~/js/dropify.min.js"></script>
 	<script src="~/js/cadastros/secao_patrimonial.js" asp-append-version="true"></script>

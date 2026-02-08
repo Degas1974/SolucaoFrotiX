@@ -1,13 +1,13 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Multa/ListaPenalidade.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/Multa/ListaPenalidade.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Listagem de penalidades/boletos de multas com filtros, visualização PDFs (penalidade/comprovante), registro de pagamento, exclusão
- * 📥 ENTRADAS     : @page, @model Multa, filtros: lstOrgao, lstTiposMulta, lstVeiculos, lstMotorista, lstStatus, cliques: btn-editar, btn-pagamento, btn-apagar, btn-exibe-penalidade, btn-exibe-comprovante
- * 📤 SAÍDAS       : DataTable #tblMulta (JSON /api/multa/listamultas fase=Penalidade), modais (registrar pagamento, exibir PDFs), POST /api/Multa/RegistraPagamento, AppToast feedback
- * 🔗 CHAMADA POR  : Menu Multas, ./UpsertPenalidade (após transformar autuação), navegação
- * 🔄 CHAMA        : /api/multa/listamultas, /api/Multa/Delete, /api/Multa/PegaEmpenhoMultaId, /api/Multa/RegistraPagamento, /api/MultaPdfViewer, /api/MultaUpload/save|remove, ./UpsertPenalidade
- * 📦 DEPENDÊNCIAS : Syncfusion.EJ2 (ComboBox, PDFViewer, Uploader), Bootstrap 5.3.8 (CDN redundante), DataTables (Buttons, Select), Font Awesome Duotone
- * 📝 OBSERVAÇÕES  : Total: 2119 linhas (ARQUIVO MAIS LONGO - CRÍTICO). PROBLEMA GRAVÍSSIMO: 2119 linhas é INACEITÁVEL, Arquivo deve ser refatorado em componentes/partials, Bootstrap CDN redundante, CSS inline GIGANTE (647 linhas) - URGENTE extrair, JavaScript inline MASSIVO (1472 linhas) - URGENTE extrair, DUPLICAÇÃO EXTREMA: funções moeda(), parseCurrencyBR(), renderStatusBadge(), handlers uploaders, viewers - tudo inline, BUG: Modal pagamento (#modalRegistraPagamento) - z-index do footer VS container PDF viewer (comentário linha 508), Modal registrar pagamento: validação de valor (considera prefixo R$) - correto, PERFORMANCE: DataTable com 14 colunas - considerar paginação server-side, Uploader comprovante: eventos vinculados manualmente (onComprovanteUploadSuccess) - complexo
+ * ðŸŽ¯ OBJETIVO     : Listagem de penalidades/boletos de multas com filtros, visualizaÃ§Ã£o PDFs (penalidade/comprovante), registro de pagamento, exclusÃ£o
+ * ðŸ“¥ ENTRADAS     : @page, @model Multa, filtros: lstOrgao, lstTiposMulta, lstVeiculos, lstMotorista, lstStatus, cliques: btn-editar, btn-pagamento, btn-apagar, btn-exibe-penalidade, btn-exibe-comprovante
+ * ðŸ“¤ SAÃDAS       : DataTable #tblMulta (JSON /api/multa/listamultas fase=Penalidade), modais (registrar pagamento, exibir PDFs), POST /api/Multa/RegistraPagamento, AppToast feedback
+ * ðŸ”— CHAMADA POR  : Menu Multas, ./UpsertPenalidade (apÃ³s transformar autuaÃ§Ã£o), navegaÃ§Ã£o
+ * ðŸ”„ CHAMA        : /api/multa/listamultas, /api/Multa/Delete, /api/Multa/PegaEmpenhoMultaId, /api/Multa/RegistraPagamento, /api/MultaPdfViewer, /api/MultaUpload/save|remove, ./UpsertPenalidade
+ * ðŸ“¦ DEPENDÃŠNCIAS : Syncfusion.EJ2 (ComboBox, PDFViewer, Uploader), Bootstrap 5.3.8 (CDN redundante), DataTables (Buttons, Select), Font Awesome Duotone
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : Total: 2119 linhas (ARQUIVO MAIS LONGO - CRÃTICO). PROBLEMA GRAVÃSSIMO: 2119 linhas Ã© INACEITÃVEL, Arquivo deve ser refatorado em componentes/partials, Bootstrap CDN redundante, CSS inline GIGANTE (647 linhas) - URGENTE extrair, JavaScript inline MASSIVO (1472 linhas) - URGENTE extrair, DUPLICAÃ‡ÃƒO EXTREMA: funÃ§Ãµes moeda(), parseCurrencyBR(), renderStatusBadge(), handlers uploaders, viewers - tudo inline, BUG: Modal pagamento (#modalRegistraPagamento) - z-index do footer VS container PDF viewer (comentÃ¡rio linha 508), Modal registrar pagamento: validaÃ§Ã£o de valor (considera prefixo R$) - correto, PERFORMANCE: DataTable com 14 colunas - considerar paginaÃ§Ã£o server-side, Uploader comprovante: eventos vinculados manualmente (onComprovanteUploadSuccess) - complexo
  **************************************************************************************** *@
 @page
 
@@ -52,7 +52,7 @@
 		/* ====== FONTE OUTFIT ====== */
 		@@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
 
-		/* ====== ANIMAÇÃO GLOW FROTIX ====== */
+		/* ====== ANIMAÃ‡ÃƒO GLOW FROTIX ====== */
 		@@keyframes buttonWiggle {
 			0% { transform: translateY(0) rotate(0deg); }
 			25% { transform: translateY(-2px) rotate(-1deg); }
@@ -61,7 +61,7 @@
 			100% { transform: translateY(0) rotate(0deg); }
 		}
 
-		/* ====== VARIÁVEIS LOCAIS ====== */
+		/* ====== VARIÃVEIS LOCAIS ====== */
 		:root {
 			--ftx-penalidade-laranja: #D2691E;
 			--ftx-penalidade-laranja-hover: #E07020;
@@ -84,7 +84,7 @@
 			--fa-secondary-color: rgba(255,255,255,0.7) !important;
 		}
 
-		/* ====== ÁREA DE FILTROS ====== */
+		/* ====== ÃREA DE FILTROS ====== */
 		.ftx-penalidade-filters {
 			padding: 1.25rem 1.5rem;
 			background: linear-gradient(180deg, #fafbfc 0%, #fff 100%);
@@ -126,7 +126,7 @@
 			margin-bottom: 0.35rem;
 		}
 
-		/* Botão de Filtrar - COM GLOW AZUL */
+		/* BotÃ£o de Filtrar - COM GLOW AZUL */
 		.btn-filtrar-penalidade {
 			background-color: #3D5771 !important;
 			color: #fff !important;
@@ -226,14 +226,14 @@
 			box-shadow: 0 2px 4px rgba(21, 128, 61, 0.3);
 		}
 
-		/* Pendente - Âmbar */
+		/* Pendente - Ã‚mbar */
 		.ftx-badge-pendente {
 			background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
 			color: #fff;
 			box-shadow: 0 2px 4px rgba(217, 119, 6, 0.3);
 		}
 
-		/* À Enviar Secle - Azul */
+		/* Ã€ Enviar Secle - Azul */
 		.ftx-badge-secle {
 			background: linear-gradient(135deg, #4a89c5 0%, #3a6fa0 100%);
 			color: #fff;
@@ -261,7 +261,7 @@
 			box-shadow: 0 2px 4px rgba(107, 114, 128, 0.3);
 		}
 
-		/* ====== BOTÕES DE AÇÃO NA TABELA - COM GLOW FROTIX ====== */
+		/* ====== BOTÃ•ES DE AÃ‡ÃƒO NA TABELA - COM GLOW FROTIX ====== */
 		.ftx-btn-icon {
 			width: 28px;
 			height: 28px;
@@ -329,7 +329,7 @@
 			box-shadow: 0 0 0 0.2rem rgba(210, 105, 30, 0.35) !important;
 		}
 
-		/* Pagamento Desabilitado - Já possui comprovante */
+		/* Pagamento Desabilitado - JÃ¡ possui comprovante */
 		.ftx-btn-pagamento-disabled {
 			background-color: #999 !important;
 			box-shadow: none !important;
@@ -425,7 +425,7 @@
 		}
 
 		/* ====== ESTILOS DOS MODAIS ====== */
-		/* Modal PDF Genérico */
+		/* Modal PDF GenÃ©rico */
 		#modalPDF .modal-dialog {
 			max-width: 800px;
 		}
@@ -510,7 +510,7 @@
 			z-index: 5;
 		}
 
-		/* Modal Exibir Notificação de Penalidade (PDF) */
+		/* Modal Exibir NotificaÃ§Ã£o de Penalidade (PDF) */
 		#modalExibePDFPenalidade .modal-dialog {
 			max-width: 900px;
 		}
@@ -578,8 +578,8 @@
 			gap: 0.5rem;
 		}
 
-		/* ====== BOTÕES DOS MODAIS - COM GLOW FROTIX ====== */
-		/* Botões de ação do modal - agora usa classes globais do frotix.css */
+		/* ====== BOTÃ•ES DOS MODAIS - COM GLOW FROTIX ====== */
+		/* BotÃµes de aÃ§Ã£o do modal - agora usa classes globais do frotix.css */
 		/* btn-ftx-fechar, btn-ftx-voltar, btn-ftx-confirmar, etc. */
 
 		.btn-modal-confirmar {
@@ -643,7 +643,7 @@
 			animation: none !important;
 		}
 
-		/* Spinner dentro de botão */
+		/* Spinner dentro de botÃ£o */
 		.btn .spinner-border {
 			width: 1rem;
 			height: 1rem;
@@ -703,7 +703,7 @@
 			<div id="panel-1" class="panel ftx-card-styled">
 				<div class="panel-container show">
 
-					<!-- Header Padrão FrotiX -->
+					<!-- Header PadrÃ£o FrotiX -->
 					<div class="ftx-card-header">
 						<h2 class="titulo-paginas">
 							<i class="fa-duotone fa-messages-dollar"></i>
@@ -715,7 +715,7 @@
 						</a>
 					</div>
 
-					<!-- Área de Filtros -->
+					<!-- Ãrea de Filtros -->
 					<div class="ftx-penalidade-filters">
 						<div class="ftx-penalidade-filters-title">
 							<i class="fa-duotone fa-filter"></i>
@@ -723,9 +723,9 @@
 						</div>
 
 						<div class="ftx-penalidade-filters-grid">
-							<!-- Órgão -->
+							<!-- Ã“rgÃ£o -->
 							<div class="ftx-penalidade-filter-group">
-								<label>Órgão Autuante</label>
+								<label>Ã“rgÃ£o Autuante</label>
 								<ejs-combobox id="lstOrgao"
 											  placeholder="Selecione..."
 											  allowFiltering="true" filterType="Contains"
@@ -735,9 +735,9 @@
 								</ejs-combobox>
 							</div>
 
-							<!-- Infração -->
+							<!-- InfraÃ§Ã£o -->
 							<div class="ftx-penalidade-filter-group">
-								<label>Infração</label>
+								<label>InfraÃ§Ã£o</label>
 								<ejs-combobox id="lstTiposMulta"
 											  placeholder="Selecione..."
 											  allowFiltering="true" filterType="Contains"
@@ -747,9 +747,9 @@
 								</ejs-combobox>
 							</div>
 
-							<!-- Veículo -->
+							<!-- VeÃ­culo -->
 							<div class="ftx-penalidade-filter-group">
-								<label>Veículo</label>
+								<label>VeÃ­culo</label>
 								<ejs-combobox id="lstVeiculos"
 											  placeholder="Selecione..."
 											  allowFiltering="true" filterType="Contains"
@@ -783,7 +783,7 @@
 								</ejs-combobox>
 							</div>
 
-							<!-- Botão Filtrar -->
+							<!-- BotÃ£o Filtrar -->
 							<div class="ftx-penalidade-filter-group">
 								<label>&nbsp;</label>
 								<button type="button" id="btnFiltro" name="btnFiltro"
@@ -804,19 +804,19 @@
 								<thead>
 									<tr>
 										<th></th>
-										<th>Nº Infração</th>
+										<th>NÂº InfraÃ§Ã£o</th>
 										<th>Data</th>
 										<th>Hora</th>
 										<th>Motorista</th>
-										<th>Veículo</th>
-										<th>Órgão</th>
-										<th>Infração</th>
+										<th>VeÃ­culo</th>
+										<th>Ã“rgÃ£o</th>
+										<th>InfraÃ§Ã£o</th>
 										<th>Local</th>
 										<th>Data Pagamento</th>
 										<th>Valor Pago</th>
-										<th>(R$) Pós Vencimento</th>
+										<th>(R$) PÃ³s Vencimento</th>
 										<th>Processo eDoc</th>
-										<th>Ação</th>
+										<th>AÃ§Ã£o</th>
 									</tr>
 								</thead>
 								<tbody></tbody>
@@ -831,7 +831,7 @@
 </form>
 
 @* ============================================================== *@
-@* Modal PDF Genérico (Ficha de Vistoria)                         *@
+@* Modal PDF GenÃ©rico (Ficha de Vistoria)                         *@
 @* ============================================================== *@
 <div class="modal fade" id="modalPDF" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 	<div class="modal-dialog modal-lg" role="document">
@@ -867,7 +867,7 @@
 </div>
 
 @* ============================================================== *@
-@* Modal – Registrar Pagamento                                    *@
+@* Modal â€“ Registrar Pagamento                                    *@
 @* ============================================================== *@
 <div class="modal fade" id="modalRegistraPagamento" tabindex="-1" aria-labelledby="h3Titulo" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 	<div class="modal-dialog modal-md">
@@ -876,7 +876,7 @@
 			<div class="modal-header">
 				<h4 class="modal-title" id="h3Titulo">
 					<i class="fa-duotone fa-money-bill-wave"></i>
-					Registrar Pagamento da Infração
+					Registrar Pagamento da InfraÃ§Ã£o
 				</h4>
 				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
 			</div>
@@ -959,7 +959,7 @@
 </div>
 
 @* ============================================================== *@
-@* Modal: Exibir Notificação de Penalidade (PDF)                  *@
+@* Modal: Exibir NotificaÃ§Ã£o de Penalidade (PDF)                  *@
 @* ============================================================== *@
 <div class="modal fade" id="modalExibePDFPenalidade" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 	<div class="modal-dialog modal-lg" role="document">
@@ -967,7 +967,7 @@
 			<div class="modal-header">
 				<h4 class="modal-title">
 					<i class="fa-duotone fa-file-lines"></i>
-					Notificação de Penalidade
+					NotificaÃ§Ã£o de Penalidade
 				</h4>
 				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
 			</div>
@@ -1030,7 +1030,7 @@
 	</div>
 </div>
 
-<!-- OVERLAY DE LOADING - PADRÃO FROTIX -->
+<!-- OVERLAY DE LOADING - PADRÃƒO FROTIX -->
 <div id="loadingOverlayPenalidade" class="ftx-spin-overlay" style="z-index: 999999; cursor: wait; display: none;">
     <div class="ftx-spin-box" style="text-align: center; min-width: 300px;">
         <img src="/images/logo_gota_frotix_transparente.png" alt="FrotiX" class="ftx-loading-logo" style="display: block;" />
@@ -1041,8 +1041,8 @@
 </div>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
 	<!-- DataTables -->
 	<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
@@ -1058,7 +1058,7 @@
 		var URLapi = "/api/multa/listamultas";
 
 		// ====================================================================
-		// FUNÇÕES DE LOADING OVERLAY - PADRÃO FROTIX
+		// FUNÃ‡Ã•ES DE LOADING OVERLAY - PADRÃƒO FROTIX
 		// ====================================================================
 		function mostrarLoading() {
 			$('#loadingOverlayPenalidade').css('display', 'flex');
@@ -1101,7 +1101,7 @@
 
 	<script>
 		// ====================================================================
-		// FUNÇÃO: RENDERIZAR BADGE DE STATUS
+		// FUNÃ‡ÃƒO: RENDERIZAR BADGE DE STATUS
 		// ====================================================================
 		function renderStatusBadge(status) {
 			try {
@@ -1119,7 +1119,7 @@
 					return `<span class="ftx-badge-status ftx-badge-infrator"><i class="fa-duotone fa-user-check"></i> ${status}</span>`;
 				}
 
-				// À Enviar Secle
+				// Ã€ Enviar Secle
 				if (statusLower.includes('enviar')) {
 					return `<span class="ftx-badge-status ftx-badge-secle"><i class="fa-duotone fa-paper-plane"></i> ${status}</span>`;
 				}
@@ -1144,11 +1144,11 @@
 		}
 
 		// ====================================================================
-		// FUNÇÃO: LISTAR PENALIDADES NA TABELA
+		// FUNÃ‡ÃƒO: LISTAR PENALIDADES NA TABELA
 		// ====================================================================
 		function ListaTblPenalidades() {
 			try {
-				// Mostra overlay de loading padrão FrotiX
+				// Mostra overlay de loading padrÃ£o FrotiX
 				mostrarLoading();
 
 				let veiculoId = "", tipoMultaId = "", motoristaId = "", orgaoAutuanteId = "", statusId = "";
@@ -1170,7 +1170,7 @@
 				}
 				$('#tblMulta tbody').empty();
 
-				console.log("Chamada Lista Penalidades – URLapi:", URLapi);
+				console.log("Chamada Lista Penalidades â€“ URLapi:", URLapi);
 
 				$('#tblMulta').DataTable({
                     order: [],
@@ -1186,7 +1186,7 @@
 							extend: 'pdfHtml5',
 							orientation: 'landscape',
 							pageSize: 'LEGAL',
-							text: 'Imprime Relatório para Secle',
+							text: 'Imprime RelatÃ³rio para Secle',
 							action: function (e, dt) {
 								const count = dt.rows({ selected: true }).count();
 								console.log('Linhas selecionadas:', count);
@@ -1211,7 +1211,7 @@
 							width: "3%",
 							render: function (data, type, full) {
 								return `<div class="text-center">
-									<a data-ejtip="Observação: ${full.observacao}" style="cursor:pointer;" data-id="${data}">
+									<a data-ejtip="ObservaÃ§Ã£o: ${full.observacao}" style="cursor:pointer;" data-id="${data}">
 										${full.numInfracao}
 									</a>
 								</div>`;
@@ -1239,7 +1239,7 @@
 							width: "8%",
 							render: function (data, type, full) {
 								return `<div class="text-center">
-									<a data-ejtip="Descrição: ${full.descricao}" style="cursor:pointer;" data-id="${data}">
+									<a data-ejtip="DescriÃ§Ã£o: ${full.descricao}" style="cursor:pointer;" data-id="${data}">
 										${full.artigo}
 									</a>
 								</div>`;
@@ -1273,7 +1273,7 @@
 						{ targets: 11, className: "text-right", width: "5%" },
 						{ targets: 12, className: "text-center", width: "5%" },
 						{
-							// Coluna de Ações com botões estilizados
+							// Coluna de AÃ§Ãµes com botÃµes estilizados
 							targets: 13,
 							className: "text-center",
 							width: "12%",
@@ -1281,10 +1281,10 @@
 								const hasPenalidadePDF = full.penalidadePDF && full.penalidadePDF !== '';
 								const hasComprovantePDF = full.comprovantePDF && full.comprovantePDF !== '';
 								
-								// Botão de pagamento: desabilitado se já tem comprovante
+								// BotÃ£o de pagamento: desabilitado se jÃ¡ tem comprovante
 								const pagamentoDisabled = hasComprovantePDF;
 								const pagamentoClass = pagamentoDisabled ? 'ftx-btn-pagamento-disabled' : '';
-								const pagamentoTooltip = pagamentoDisabled ? 'Pagamento já registrado' : (full.tooltip || 'Registrar Pagamento');
+								const pagamentoTooltip = pagamentoDisabled ? 'Pagamento jÃ¡ registrado' : (full.tooltip || 'Registrar Pagamento');
 
 								return `<div class="text-center" style="white-space: nowrap;">
 									<a href="/Multa/UpsertPenalidade?id=${data}"
@@ -1306,7 +1306,7 @@
 									<a class="ftx-btn-icon ftx-btn-pdf btn-exibe-penalidade ${!hasPenalidadePDF ? 'ftx-btn-pdf-disabled' : ''}"
 									   data-id="${data}" 
 									   data-penalidadepdf="${full.penalidadePDF || ''}"
-									   data-ejtip="Exibe a Notificação de Penalidade"
+									   data-ejtip="Exibe a NotificaÃ§Ã£o de Penalidade"
 									   ${!hasPenalidadePDF ? 'aria-disabled="true"' : ''}>
 										<i class="fa-duotone fa-file-lines"></i>
 									</a>
@@ -1387,8 +1387,8 @@
 				const id = $(this).data('id');
 
 				Alerta.Confirmar(
-					"Você tem certeza que deseja apagar esta Penalidade?",
-					"Não será possível recuperar os dados eliminados!",
+					"VocÃª tem certeza que deseja apagar esta Penalidade?",
+					"NÃ£o serÃ¡ possÃ­vel recuperar os dados eliminados!",
 					"Excluir",
 					"Cancelar"
 				).then(function (confirmed) {
@@ -1439,7 +1439,7 @@
 
 	<script>
 		// ====================================================================
-		// FUNÇÕES AUXILIARES PARA PDF - UPLOAD COMPROVANTE
+		// FUNÃ‡Ã•ES AUXILIARES PARA PDF - UPLOAD COMPROVANTE
 		// ====================================================================
 		var uploaderEventosVinculados = false;
 
@@ -1462,14 +1462,14 @@
 			{
 				if (!fileName || fileName === '' || fileName === 'null')
 				{
-					console.warn(`⚠️ Nome de arquivo inválido para carregar no viewer ${viewerId}`);
+					console.warn(`âš ï¸ Nome de arquivo invÃ¡lido para carregar no viewer ${viewerId}`);
 					return;
 				}
 
 				const viewer = getViewer(viewerId);
 				if (!viewer)
 				{
-					console.error(`❌ Viewer ${viewerId} não encontrado`);
+					console.error(`âŒ Viewer ${viewerId} nÃ£o encontrado`);
 					return;
 				}
 
@@ -1480,11 +1480,11 @@
 				viewer.documentPath = fileName;
 				viewer.dataBind();
 				viewer.load(fileName, null);
-				console.log(`✅ PDF carregado no viewer ${viewerId}: ${fileName}`);
+				console.log(`âœ… PDF carregado no viewer ${viewerId}: ${fileName}`);
 			} catch (error)
 			{
 				Alerta.TratamentoErroComLinha("ListaPenalidade.cshtml", "loadPdfInViewer", error);
-				console.error("❌ Erro ao carregar PDF:", error);
+				console.error("âŒ Erro ao carregar PDF:", error);
 			}
 		}
 
@@ -1500,7 +1500,7 @@
 				if (!fileName.endsWith(".pdf"))
 				{
 					args.cancel = true;
-					AppToast.show('Vermelho', 'Apenas arquivos PDF são permitidos', 3000);
+					AppToast.show('Vermelho', 'Apenas arquivos PDF sÃ£o permitidos', 3000);
 				}
 			} catch (error)
 			{
@@ -1514,17 +1514,17 @@
 			{
 				if (!args || !args.e) return;
 
-				console.log('✅ Upload Comprovante success args:', args);
+				console.log('âœ… Upload Comprovante success args:', args);
 
 				const serverResponse = typeof args.e.target.response === 'string'
 					? JSON.parse(args.e.target.response)
 					: args.e.target.response;
 
-				console.log('📦 Server response:', serverResponse);
+				console.log('ðŸ“¦ Server response:', serverResponse);
 
 				if (serverResponse.error)
 				{
-					console.error('❌ Erro do servidor:', serverResponse.error);
+					console.error('âŒ Erro do servidor:', serverResponse.error);
 					AppToast.show('Vermelho', serverResponse.error.message || 'Erro ao enviar arquivo', 3000);
 					return;
 				}
@@ -1532,13 +1532,13 @@
 				const uploadedFiles = serverResponse.files || [];
 				if (uploadedFiles.length === 0)
 				{
-					console.error('❌ Nenhum arquivo retornado pelo servidor');
+					console.error('âŒ Nenhum arquivo retornado pelo servidor');
 					return;
 				}
 
 				const fileName = uploadedFiles[0].name;
 				$('#txtComprovantePDF').val(fileName);
-				console.log('✅ txtComprovantePDF atualizado:', fileName);
+				console.log('âœ… txtComprovantePDF atualizado:', fileName);
 
 				loadPdfInViewer(fileName, 'ComprovantePDFViewer');
 				AppToast.show('Verde', 'Comprovante enviado com sucesso!', 3000);
@@ -1552,7 +1552,7 @@
 		{
 			try
 			{
-				console.error("❌ Erro no upload de Comprovante:", args);
+				console.error("âŒ Erro no upload de Comprovante:", args);
 				AppToast.show('Vermelho', 'Erro ao enviar PDF de Comprovante', 3000);
 			} catch (error)
 			{
@@ -1572,11 +1572,11 @@
 					uploaderComprovante.success = onComprovanteUploadSuccess;
 					uploaderComprovante.failure = onComprovanteUploadFailure;
 					uploaderEventosVinculados = true;
-					console.log('✅ Eventos do Uploader Comprovante vinculados');
+					console.log('âœ… Eventos do Uploader Comprovante vinculados');
 				}
 				else
 				{
-					console.warn('⚠️ Uploader pdfComprovante não encontrado');
+					console.warn('âš ï¸ Uploader pdfComprovante nÃ£o encontrado');
 				}
 			} catch (error) {
 				Alerta.TratamentoErroComLinha("ListaPenalidade.cshtml", "vincularEventosUploader", error);
@@ -1591,7 +1591,7 @@
 
 	<script>
 		// ====================================================================
-		// HANDLER CLIQUE NO BOTÃO DE PAGAMENTO (delegado)
+		// HANDLER CLIQUE NO BOTÃƒO DE PAGAMENTO (delegado)
 		// ====================================================================
 		$(document).on('click', '.btn-pagamento', function (e) {
 			try {
@@ -1603,13 +1603,13 @@
 					return false;
 				}
 				
-				// Pega o ID diretamente do atributo data-id do botão clicado
+				// Pega o ID diretamente do atributo data-id do botÃ£o clicado
 				const multaId = $(this).attr('data-id');
 				
-				console.log('🔍 Botão pagamento clicado, multaId:', multaId);
+				console.log('ðŸ” BotÃ£o pagamento clicado, multaId:', multaId);
 				
 				if (!multaId) {
-					AppToast.show('Vermelho', 'Erro: ID da multa não encontrado', 3000);
+					AppToast.show('Vermelho', 'Erro: ID da multa nÃ£o encontrado', 3000);
 					return false;
 				}
 				
@@ -1634,7 +1634,7 @@
 				}
 				document.getElementById('ComprovantePDFViewerContainer').style.display = 'none';
 				
-				// Vincula eventos do uploader (caso ainda não estejam vinculados)
+				// Vincula eventos do uploader (caso ainda nÃ£o estejam vinculados)
 				vincularEventosUploader();
 				
 				// Abre o modal
@@ -1646,12 +1646,12 @@
 
 		$('#modalRegistraPagamento').on('shown.bs.modal', function (event) {
 			try {
-				// O multaId já foi definido no handler de clique do botão
+				// O multaId jÃ¡ foi definido no handler de clique do botÃ£o
 				const multaId = $('#txtId').val();
 				
-				console.log('📋 Modal aberto, multaId:', multaId);
+				console.log('ðŸ“‹ Modal aberto, multaId:', multaId);
 
-				// Vincula eventos do uploader (caso ainda não estejam vinculados)
+				// Vincula eventos do uploader (caso ainda nÃ£o estejam vinculados)
 				vincularEventosUploader();
 
 				// Busca o EmpenhoMultaId
@@ -1717,7 +1717,7 @@
 				n = String.fromCharCode(o);
 				if ("0123456789".indexOf(n) === -1) return false;
 
-				// Remove o prefixo R$ para processar apenas números
+				// Remove o prefixo R$ para processar apenas nÃºmeros
 				let valorAtual = a.value.replace('R$ ', '');
 
 				u = valorAtual.length;
@@ -1766,7 +1766,7 @@
 
 	<script>
 		// ====================================================================
-		// EVENT HANDLER: BOTÃO REGISTRAR PAGAMENTO - COM SPINNER
+		// EVENT HANDLER: BOTÃƒO REGISTRAR PAGAMENTO - COM SPINNER
 		// ====================================================================
 		$("#btnPagamento").click(function (event) {
 			try {
@@ -1782,19 +1782,19 @@
 				const lstPagamento = document.getElementById("lstPagamento");
 
 				if (!$("#txtDataPagamento").val()) {
-					Alerta.Erro("Informação Ausente", "A Data de Pagamento é obrigatória", "Ok");
+					Alerta.Erro("InformaÃ§Ã£o Ausente", "A Data de Pagamento Ã© obrigatÃ³ria", "Ok");
 					return;
 				}
 
-				// Validação do valor - considera o prefixo R$
+				// ValidaÃ§Ã£o do valor - considera o prefixo R$
 				let valorDigitado = $("#txtValorPago").val().replace('R$ ', '').trim();
 				if (!valorDigitado || valorDigitado === "0" || valorDigitado === "0,00") {
-					Alerta.Erro("Informação Ausente", "O Valor Pago é obrigatório", "Ok");
+					Alerta.Erro("InformaÃ§Ã£o Ausente", "O Valor Pago Ã© obrigatÃ³rio", "Ok");
 					return;
 				}
 
 				if (!lstPagamento.value) {
-					Alerta.Erro("Informação Ausente", "A Forma de Pagamento é obrigatória", "Ok");
+					Alerta.Erro("InformaÃ§Ã£o Ausente", "A Forma de Pagamento Ã© obrigatÃ³ria", "Ok");
 					return;
 				}
 
@@ -1804,9 +1804,9 @@
 				btnText.text('Registrando...');
 				btn.prop('disabled', true);
 
-				const Status = (lstPagamento.value === "Defin") ? "À Enviar Secle" : "Paga (Infrator)";
+				const Status = (lstPagamento.value === "Defin") ? "Ã€ Enviar Secle" : "Paga (Infrator)";
 
-				// Remove R$, pontos de milhar e converte vírgula decimal para ponto
+				// Remove R$, pontos de milhar e converte vÃ­rgula decimal para ponto
 				let ValorPago = $('#txtValorPago').val().replace('R$ ', '').replaceAll(".", "");
 				ValorPago = ValorPago.replaceAll(",", ".");
 
@@ -1867,7 +1867,7 @@
 
 	<script>
 		// ====================================================================
-		// EVENT HANDLER: BOTÃO EXIBIR NOTIFICAÇÃO DE PENALIDADE
+		// EVENT HANDLER: BOTÃƒO EXIBIR NOTIFICAÃ‡ÃƒO DE PENALIDADE
 		// ====================================================================
 		$(document).on('click', '.btn-exibe-penalidade', function (e)
 		{
@@ -1875,18 +1875,18 @@
 			{
 				e.preventDefault();
 				
-				// Ignora se botão desabilitado
+				// Ignora se botÃ£o desabilitado
 				if ($(this).attr('aria-disabled') === 'true') return;
 				
 				const penalidadePDF = $(this).data('penalidadepdf');
 				
-				console.log('🔍 Clique em btn-exibe-penalidade, penalidadePDF:', penalidadePDF);
+				console.log('ðŸ” Clique em btn-exibe-penalidade, penalidadePDF:', penalidadePDF);
 				
 				if (!penalidadePDF || penalidadePDF === '')
 				{
 					Alerta.Warning(
-						'PDF não disponível',
-						'Esta penalidade não possui PDF anexado.',
+						'PDF nÃ£o disponÃ­vel',
+						'Esta penalidade nÃ£o possui PDF anexado.',
 						'OK'
 					);
 					return;
@@ -1902,7 +1902,7 @@
 		});
 
 		// ====================================================================
-		// EVENT HANDLER: BOTÃO EXIBIR COMPROVANTE DE PAGAMENTO
+		// EVENT HANDLER: BOTÃƒO EXIBIR COMPROVANTE DE PAGAMENTO
 		// ====================================================================
 		$(document).on('click', '.btn-exibe-comprovante', function (e)
 		{
@@ -1910,18 +1910,18 @@
 			{
 				e.preventDefault();
 				
-				// Ignora se botão desabilitado
+				// Ignora se botÃ£o desabilitado
 				if ($(this).attr('aria-disabled') === 'true') return;
 				
 				const comprovantePDF = $(this).data('comprovantepdf');
 				
-				console.log('🔍 Clique em btn-exibe-comprovante, comprovantePDF:', comprovantePDF);
+				console.log('ðŸ” Clique em btn-exibe-comprovante, comprovantePDF:', comprovantePDF);
 				
 				if (!comprovantePDF || comprovantePDF === '')
 				{
 					Alerta.Warning(
-						'PDF não disponível',
-						'Esta penalidade não possui comprovante de pagamento anexado.',
+						'PDF nÃ£o disponÃ­vel',
+						'Esta penalidade nÃ£o possui comprovante de pagamento anexado.',
 						'OK'
 					);
 					return;
@@ -1937,7 +1937,7 @@
 		});
 
 		// ====================================================================
-		// FUNÇÃO: EXIBIR PDF DE PENALIDADE NO MODAL
+		// FUNÃ‡ÃƒO: EXIBIR PDF DE PENALIDADE NO MODAL
 		// ====================================================================
 		function exibirPDFPenalidade(nomeArquivo)
 		{
@@ -1945,7 +1945,7 @@
 			{
 				if (!nomeArquivo || nomeArquivo === '')
 				{
-					console.error('Nome do arquivo PDF inválido');
+					console.error('Nome do arquivo PDF invÃ¡lido');
 					return;
 				}
 				
@@ -1955,31 +1955,31 @@
 				// Aguarda o modal ser renderizado antes de carregar o PDF
 				setTimeout(function() {
 					try {
-						// Obtém a instância do PDF Viewer
+						// ObtÃ©m a instÃ¢ncia do PDF Viewer
 						const viewerElement = document.getElementById('pdfViewerPenalidadeControl');
 						if (!viewerElement)
 						{
-							console.error('PDF Viewer de Penalidade não encontrado');
+							console.error('PDF Viewer de Penalidade nÃ£o encontrado');
 							return;
 						}
 						
 						const pdfViewer = viewerElement.ej2_instances?.[0];
 						if (!pdfViewer)
 						{
-							console.error('Instância do PDF Viewer não encontrada');
+							console.error('InstÃ¢ncia do PDF Viewer nÃ£o encontrada');
 							return;
 						}
 						
 						// Ajusta o zoom quando o documento carregar
 						pdfViewer.documentLoad = function() {
 							try {
-								// Define zoom para ajustar à largura
+								// Define zoom para ajustar Ã  largura
 								setTimeout(function() {
 									pdfViewer.magnificationModule.fitToWidth();
-									console.log('✅ Zoom ajustado para FitToWidth');
+									console.log('âœ… Zoom ajustado para FitToWidth');
 								}, 100);
 							} catch (err) {
-								console.warn('⚠️ Não foi possível ajustar zoom automaticamente:', err);
+								console.warn('âš ï¸ NÃ£o foi possÃ­vel ajustar zoom automaticamente:', err);
 							}
 						};
 						
@@ -1988,9 +1988,9 @@
 						pdfViewer.dataBind();
 						pdfViewer.load(nomeArquivo, null);
 						
-						console.log('✅ PDF de Penalidade carregado:', nomeArquivo);
+						console.log('âœ… PDF de Penalidade carregado:', nomeArquivo);
 					} catch (err) {
-						console.error('❌ Erro ao carregar PDF:', err);
+						console.error('âŒ Erro ao carregar PDF:', err);
 						Alerta.TratamentoErroComLinha("ListaPenalidade.cshtml", "exibirPDFPenalidade.timeout", err);
 					}
 				}, 500);
@@ -2002,7 +2002,7 @@
 		}
 
 		// ====================================================================
-		// FUNÇÃO: EXIBIR COMPROVANTE DE PAGAMENTO NO MODAL
+		// FUNÃ‡ÃƒO: EXIBIR COMPROVANTE DE PAGAMENTO NO MODAL
 		// ====================================================================
 		function exibirComprovantePDF(nomeArquivo)
 		{
@@ -2010,7 +2010,7 @@
 			{
 				if (!nomeArquivo || nomeArquivo === '')
 				{
-					console.error('Nome do arquivo PDF inválido');
+					console.error('Nome do arquivo PDF invÃ¡lido');
 					return;
 				}
 				
@@ -2020,31 +2020,31 @@
 				// Aguarda o modal ser renderizado antes de carregar o PDF
 				setTimeout(function() {
 					try {
-						// Obtém a instância do PDF Viewer
+						// ObtÃ©m a instÃ¢ncia do PDF Viewer
 						const viewerElement = document.getElementById('pdfViewerComprovanteControl');
 						if (!viewerElement)
 						{
-							console.error('PDF Viewer de Comprovante não encontrado');
+							console.error('PDF Viewer de Comprovante nÃ£o encontrado');
 							return;
 						}
 						
 						const pdfViewer = viewerElement.ej2_instances?.[0];
 						if (!pdfViewer)
 						{
-							console.error('Instância do PDF Viewer não encontrada');
+							console.error('InstÃ¢ncia do PDF Viewer nÃ£o encontrada');
 							return;
 						}
 						
 						// Ajusta o zoom quando o documento carregar
 						pdfViewer.documentLoad = function() {
 							try {
-								// Define zoom para ajustar à largura
+								// Define zoom para ajustar Ã  largura
 								setTimeout(function() {
 									pdfViewer.magnificationModule.fitToWidth();
-									console.log('✅ Zoom ajustado para FitToWidth');
+									console.log('âœ… Zoom ajustado para FitToWidth');
 								}, 100);
 							} catch (err) {
-								console.warn('⚠️ Não foi possível ajustar zoom automaticamente:', err);
+								console.warn('âš ï¸ NÃ£o foi possÃ­vel ajustar zoom automaticamente:', err);
 							}
 						};
 						
@@ -2053,9 +2053,9 @@
 						pdfViewer.dataBind();
 						pdfViewer.load(nomeArquivo, null);
 						
-						console.log('✅ Comprovante PDF carregado:', nomeArquivo);
+						console.log('âœ… Comprovante PDF carregado:', nomeArquivo);
 					} catch (err) {
-						console.error('❌ Erro ao carregar PDF:', err);
+						console.error('âŒ Erro ao carregar PDF:', err);
 						Alerta.TratamentoErroComLinha("ListaPenalidade.cshtml", "exibirComprovantePDF.timeout", err);
 					}
 				}, 500);
@@ -2078,7 +2078,7 @@
 				{
 					pdfViewer.unload();
 				}
-				console.log('✅ Modal Penalidade fechado e viewer limpo');
+				console.log('âœ… Modal Penalidade fechado e viewer limpo');
 			}
 			catch (error)
 			{
@@ -2098,7 +2098,7 @@
 				{
 					pdfViewer.unload();
 				}
-				console.log('✅ Modal Comprovante fechado e viewer limpo');
+				console.log('âœ… Modal Comprovante fechado e viewer limpo');
 			}
 			catch (error)
 			{
@@ -2118,7 +2118,7 @@
 				{
 					pdfViewer.unload();
 				}
-				console.log('✅ Modal Ficha de Vistoria fechado e viewer limpo');
+				console.log('âœ… Modal Ficha de Vistoria fechado e viewer limpo');
 			}
 			catch (error)
 			{
@@ -2127,3 +2127,4 @@
 		});
 	</script>
 }
+

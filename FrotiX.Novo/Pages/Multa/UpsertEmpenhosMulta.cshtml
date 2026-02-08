@@ -1,13 +1,13 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Multa/UpsertEmpenhosMulta.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/Multa/UpsertEmpenhosMulta.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Formulário criar/editar empenho de órgão autuante (nota empenho, vigência, saldo, status) + edição inline aportes/anulações + visualização multas
- * 📥 ENTRADAS     : @page, @model UpsertEmpenhosMultaModel, campos: OrgaoAutuanteId, NotaEmpenho, AnoVigencia, SaldoInicial, Status (checkbox), formulários modais: txtDataAporte, txtDescricaoAporte, txtValorAporte (modal aporte), txtDataanulacao, txtDescricaoanulacao, txtValoranulacao (modal anulação)
- * 📤 SAÍDAS       : POST (handler=Submit), modais aportes/anulações/multas, POST /api/Multa/EditarAporte, /api/Multa/EditarAnulacao, AppToast feedback, reload page em edição
- * 🔗 CHAMADA POR  : ListaEmpenhosMulta (botão "Adicionar Empenho", editar linha), menu navegação
- * 🔄 CHAMA        : /api/Multa/SaldoMultas, /api/multa/listaaporte, /api/multa/listaanulacao, /api/Multa/EditarAporte, /api/Multa/EditarAnulacao, /api/multa/multaempenhopagas, ~/js/formplugins/select2/select2.bundle.js, ~/js/cadastros/aporte_001.js, ~/js/cadastros/anulacao_001.js, ./UpsertPenalidade
- * 📦 DEPENDÊNCIAS : Bootstrap 5.3.8 (CDN redundante), DataTables, Font Awesome Duotone, Select2, aporte_001.js, anulacao_001.js, moeda() function inline
- * 📝 OBSERVAÇÕES  : Total: 664 linhas. PROBLEMA: Bootstrap CDN redundante, CSS inline extenso (358 linhas) - extrair, JavaScript inline grande (306 linhas) - mover para JS externo, DUPLICAÇÃO: função moeda() inline novamente (repetida em múltiplos arquivos), DESIGN: Se novo empenho, marca Status=ativo por padrão (linha 652) - bom UX, Em modo edição: carrega 2 DataTables (#tblAporte, #tblanulacao) com footer callbacks calculando totais - excelente, Handlers "btn-editar-aporte/anulacao": leem dados da TR e preenchem modal - correto, BUG POTENCIAL: Formatação moeda BR sem verificar cultura do servidor - pode dar erro em servidores US locale, Modal multas: DataTable #tblMultas carrega multas pagas com este empenho - útil
+ * ðŸŽ¯ OBJETIVO     : FormulÃ¡rio criar/editar empenho de Ã³rgÃ£o autuante (nota empenho, vigÃªncia, saldo, status) + ediÃ§Ã£o inline aportes/anulaÃ§Ãµes + visualizaÃ§Ã£o multas
+ * ðŸ“¥ ENTRADAS     : @page, @model UpsertEmpenhosMultaModel, campos: OrgaoAutuanteId, NotaEmpenho, AnoVigencia, SaldoInicial, Status (checkbox), formulÃ¡rios modais: txtDataAporte, txtDescricaoAporte, txtValorAporte (modal aporte), txtDataanulacao, txtDescricaoanulacao, txtValoranulacao (modal anulaÃ§Ã£o)
+ * ðŸ“¤ SAÃDAS       : POST (handler=Submit), modais aportes/anulaÃ§Ãµes/multas, POST /api/Multa/EditarAporte, /api/Multa/EditarAnulacao, AppToast feedback, reload page em ediÃ§Ã£o
+ * ðŸ”— CHAMADA POR  : ListaEmpenhosMulta (botÃ£o "Adicionar Empenho", editar linha), menu navegaÃ§Ã£o
+ * ðŸ”„ CHAMA        : /api/Multa/SaldoMultas, /api/multa/listaaporte, /api/multa/listaanulacao, /api/Multa/EditarAporte, /api/Multa/EditarAnulacao, /api/multa/multaempenhopagas, ~/js/formplugins/select2/select2.bundle.js, ~/js/cadastros/aporte_001.js, ~/js/cadastros/anulacao_001.js, ./UpsertPenalidade
+ * ðŸ“¦ DEPENDÃŠNCIAS : Bootstrap 5.3.8 (CDN redundante), DataTables, Font Awesome Duotone, Select2, aporte_001.js, anulacao_001.js, moeda() function inline
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : Total: 664 linhas. PROBLEMA: Bootstrap CDN redundante, CSS inline extenso (358 linhas) - extrair, JavaScript inline grande (306 linhas) - mover para JS externo, DUPLICAÃ‡ÃƒO: funÃ§Ã£o moeda() inline novamente (repetida em mÃºltiplos arquivos), DESIGN: Se novo empenho, marca Status=ativo por padrÃ£o (linha 652) - bom UX, Em modo ediÃ§Ã£o: carrega 2 DataTables (#tblAporte, #tblanulacao) com footer callbacks calculando totais - excelente, Handlers "btn-editar-aporte/anulacao": leem dados da TR e preenchem modal - correto, BUG POTENCIAL: FormataÃ§Ã£o moeda BR sem verificar cultura do servidor - pode dar erro em servidores US locale, Modal multas: DataTable #tblMultas carrega multas pagas com este empenho - Ãºtil
  **************************************************************************************** *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -17,9 +17,9 @@
 @{
 	var isEdit = Model.EmpenhoMultaObj.EmpenhoMulta.EmpenhoMultaId != Guid.Empty;
 	var empenhoId = Model.EmpenhoMultaObj.EmpenhoMulta.EmpenhoMultaId.ToString();
-	ViewData["Title"] = "Empenhos dos Órgãos Autuantes";
+	ViewData["Title"] = "Empenhos dos Ã“rgÃ£os Autuantes";
 	ViewData["PageName"] = "multa_empenhosmulta";
-	ViewData["Heading"] = "<i class='fa-duotone fa-money-check-alt'></i>&nbsp;Cadastros: <span class='fw-300'>Empenhos dos Órgãos Autuantes</span>";
+	ViewData["Heading"] = "<i class='fa-duotone fa-money-check-alt'></i>&nbsp;Cadastros: <span class='fw-300'>Empenhos dos Ã“rgÃ£os Autuantes</span>";
 	ViewData["Category1"] = "Multas";
 	ViewData["PageIcon"] = "fa-duotone fa-money-check-alt";
 }
@@ -31,7 +31,7 @@
 		/* ====== FONTE OUTFIT ====== */
 		@@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
 
-		/* ====== ANIMAÇÃO GLOW FROTIX ====== */
+		/* ====== ANIMAÃ‡ÃƒO GLOW FROTIX ====== */
 		@@keyframes buttonWiggle {
 			0% { transform: translateY(0) rotate(0deg); }
 			25% { transform: translateY(-2px) rotate(-1deg); }
@@ -40,7 +40,7 @@
 			100% { transform: translateY(0) rotate(0deg); }
 		}
 
-		/* ====== VARIÁVEIS LOCAIS ====== */
+		/* ====== VARIÃVEIS LOCAIS ====== */
 		:root {
 			--ftx-empenho-azul: #3D5771;
 			--ftx-empenho-azul-hover: #2d4559;
@@ -52,7 +52,7 @@
 			--ftx-empenho-roxo-hover: #6d28d9;
 		}
 
-		/* ====== FORMULÁRIO ====== */
+		/* ====== FORMULÃRIO ====== */
 		.ftx-form-content {
 			padding: 1.5rem;
 		}
@@ -141,7 +141,7 @@
 			color: var(--ftx-empenho-vinho) !important;
 		}
 
-		/* ====== BOTÕES DE AÇÃO NA TABELA - COM GLOW FROTIX ====== */
+		/* ====== BOTÃ•ES DE AÃ‡ÃƒO NA TABELA - COM GLOW FROTIX ====== */
 		.ftx-btn-icon {
 			width: 28px;
 			height: 28px;
@@ -192,7 +192,7 @@
 		}
 		.ftx-btn-multas:hover { box-shadow: 0 0 20px rgba(124, 58, 237, 0.8), 0 6px 12px rgba(124, 58, 237, 0.5) !important; }
 
-		/* ====== BOTÕES PRINCIPAIS COM GLOW ====== */
+		/* ====== BOTÃ•ES PRINCIPAIS COM GLOW ====== */
 		.ftx-btn-submit {
 			background-color: var(--ftx-empenho-azul) !important;
 			color: #fff !important;
@@ -270,7 +270,7 @@
 			justify-content: flex-end;
 		}
 
-		/* ====== BOTÕES DOS MODAIS COM GLOW ====== */
+		/* ====== BOTÃ•ES DOS MODAIS COM GLOW ====== */
 		.ftx-btn-modal {
 			padding: 0.5rem 1.25rem;
 			border-radius: .375rem;
@@ -302,7 +302,7 @@
 		}
 		.ftx-btn-fechar:hover { box-shadow: 0 0 20px rgba(114, 47, 55, 0.8), 0 6px 12px rgba(114, 47, 55, 0.5) !important; }
 
-		/* ====== ÁREAS DE TABELAS ====== */
+		/* ====== ÃREAS DE TABELAS ====== */
 		.ftx-tables-section {
 			display: flex;
 			gap: 1.5rem;
@@ -319,7 +319,7 @@
 			padding: 1rem;
 		}
 
-		/* ====== BOTÕES DE AÇÃO ====== */
+		/* ====== BOTÃ•ES DE AÃ‡ÃƒO ====== */
 		.ftx-form-actions {
 			display: flex;
 			gap: 1rem;
@@ -367,15 +367,15 @@
 			<div id="panel-1" class="panel ftx-card-styled">
 				<div class="panel-container show">
 
-					<!-- Header Padrão FrotiX -->
+					<!-- Header PadrÃ£o FrotiX -->
 					<div class="ftx-card-header">
 						<h2 class="titulo-paginas">
 							<i class="fa-duotone fa-money-check-dollar"></i>
-							@(isEdit ? "Editar" : "Novo") Empenho do Órgão Autuante
+							@(isEdit ? "Editar" : "Novo") Empenho do Ã“rgÃ£o Autuante
 						</h2>
 					</div>
 
-					<!-- Conteúdo do Formulário -->
+					<!-- ConteÃºdo do FormulÃ¡rio -->
 					<div class="ftx-form-content">
 						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -384,7 +384,7 @@
 							<input type="hidden" asp-for="EmpenhoMultaObj.EmpenhoMulta.EmpenhoMultaId" />
 						}
 
-						<!-- Seção: Dados do Empenho -->
+						<!-- SeÃ§Ã£o: Dados do Empenho -->
 						<div class="ftx-form-section">
 							<div class="ftx-form-section-title">
 								<i class="fa-duotone fa-building-columns"></i>
@@ -394,11 +394,11 @@
 							<div class="row">
 								<div class="col-12 col-md-5">
 									<div class="form-group">
-										<label class="ftx-form-label" asp-for="EmpenhoMultaObj.EmpenhoMulta.OrgaoAutuanteId">Órgão Autuante</label>
+										<label class="ftx-form-label" asp-for="EmpenhoMultaObj.EmpenhoMulta.OrgaoAutuanteId">Ã“rgÃ£o Autuante</label>
 										@Html.DropDownListFor(
 											m => m.EmpenhoMultaObj.EmpenhoMulta.OrgaoAutuanteId,
 											Model.EmpenhoMultaObj.OrgaoList,
-											"-- Selecione um Órgão --",
+											"-- Selecione um Ã“rgÃ£o --",
 											new { @class = "form-control form-control-xs", @id = "listaorgao" })
 									</div>
 								</div>
@@ -409,13 +409,13 @@
 										<input class="form-control form-control-xs" 
 											   asp-for="EmpenhoMultaObj.EmpenhoMulta.NotaEmpenho" 
 											   placeholder="000000000000"
-											   data-ejtip="Número da Nota de Empenho (12 dígitos)" />
+											   data-ejtip="NÃºmero da Nota de Empenho (12 dÃ­gitos)" />
 									</div>
 								</div>
 								<div class="col-6 col-md-2">
 									<div class="form-group">
-										<label class="ftx-form-label" asp-for="EmpenhoMultaObj.EmpenhoMulta.AnoVigencia">Vigência</label>
-										<select class="form-control form-control-xs" asp-for="EmpenhoMultaObj.EmpenhoMulta.AnoVigencia" data-ejtip="Ano de Vigência">
+										<label class="ftx-form-label" asp-for="EmpenhoMultaObj.EmpenhoMulta.AnoVigencia">VigÃªncia</label>
+										<select class="form-control form-control-xs" asp-for="EmpenhoMultaObj.EmpenhoMulta.AnoVigencia" data-ejtip="Ano de VigÃªncia">
 											<option value="">-- Ano --</option>
 											<option value="2025">2025</option>
 											<option value="2024">2024</option>
@@ -478,10 +478,10 @@
 							</div>
 						</div>
 
-						<!-- Botões de Ação -->
+						<!-- BotÃµes de AÃ§Ã£o -->
 						<div class="ftx-form-actions">
 							<div>
-								<button type="submit" asp-page-handler="Submit" class="ftx-btn-submit btn-submit-spin" data-ejtip="@(isEdit ? "Atualizar empenho do órgão" : "Criar novo empenho do órgão")">
+								<button type="submit" asp-page-handler="Submit" class="ftx-btn-submit btn-submit-spin" data-ejtip="@(isEdit ? "Atualizar empenho do Ã³rgÃ£o" : "Criar novo empenho do Ã³rgÃ£o")">
 									<i class="fa-duotone fa-floppy-disk icon-space icon-pulse"></i>
 									@(isEdit ? "Atualizar Empenho" : "Criar Empenho")
 								</button>
@@ -489,12 +489,12 @@
 							<div>
 								<a asp-page="./ListaEmpenhosMulta" class="btn btn-ftx-fechar" data-ftx-loading>
 									<i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i>
-									Cancelar Operação
+									Cancelar OperaÃ§Ã£o
 								</a>
 							</div>
 						</div>
 
-						<!-- Tabelas de Aportes e Anulações (apenas em edição) -->
+						<!-- Tabelas de Aportes e AnulaÃ§Ãµes (apenas em ediÃ§Ã£o) -->
 						@if (isEdit)
 						{
 							<div class="ftx-tables-section">
@@ -502,15 +502,15 @@
 								<div class="ftx-table-card">
 									<h4 id="TituloAportes" class="ftx-table-title">
 										<i class="fa-duotone fa-circle-plus"></i>
-										Aportes/Reforços ao Empenho
+										Aportes/ReforÃ§os ao Empenho
 									</h4>
 									<table id="tblAporte" class="table table-bordered table-striped" width="100%">
 										<thead>
 											<tr>
 												<th>Data</th>
-												<th>Descrição</th>
+												<th>DescriÃ§Ã£o</th>
 												<th>Valor</th>
-												<th>Ação</th>
+												<th>AÃ§Ã£o</th>
 												<th>Id</th>
 												<th>Original</th>
 											</tr>
@@ -519,19 +519,19 @@
 									</table>
 								</div>
 
-								<!-- Tabela de Anulações -->
+								<!-- Tabela de AnulaÃ§Ãµes -->
 								<div class="ftx-table-card">
 									<h4 id="TituloAnulacoes" class="ftx-table-title">
 										<i class="fa-duotone fa-circle-minus"></i>
-										Anulações do Empenho
+										AnulaÃ§Ãµes do Empenho
 									</h4>
 									<table id="tblanulacao" class="table table-bordered table-striped" width="100%">
 										<thead>
 											<tr>
 												<th>Data</th>
-												<th>Descrição</th>
+												<th>DescriÃ§Ã£o</th>
 												<th>Valor</th>
-												<th>Ação</th>
+												<th>AÃ§Ã£o</th>
 												<th>Id</th>
 												<th>Original</th>
 											</tr>
@@ -564,11 +564,11 @@
 					<thead>
 						<tr>
 							<th>Data</th>
-							<th>Nº Infração</th>
+							<th>NÂº InfraÃ§Ã£o</th>
 							<th>Local</th>
 							<th>Data Pagamento</th>
 							<th>Valor Pago</th>
-							<th>Ação</th>
+							<th>AÃ§Ã£o</th>
 							<th>MultaId</th>
 						</tr>
 					</thead>
@@ -607,8 +607,8 @@
 					</div>
 					<div class="col-12 col-md-7">
 						<div class="form-group">
-							<label class="ftx-form-label">Descrição</label>
-							<input id="txtDescricaoAporte" class="form-control form-control-xs" placeholder="Descrição do aporte" />
+							<label class="ftx-form-label">DescriÃ§Ã£o</label>
+							<input id="txtDescricaoAporte" class="form-control form-control-xs" placeholder="DescriÃ§Ã£o do aporte" />
 						</div>
 					</div>
 				</div>
@@ -635,14 +635,14 @@
 	</div>
 </div>
 
-<!-- ====== MODAL EDITAR ANULAÇÃO ====== -->
+<!-- ====== MODAL EDITAR ANULAÃ‡ÃƒO ====== -->
 <div class="modal fade" id="modalanulacao" data-bs-backdrop="static" data-bs-keyboard="true">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="ftx-modal-header">
 				<h4 class="modal-title" id="lblTituloAnulacao">
 					<i class="fa-duotone fa-circle-minus"></i>
-					Editar Anulação
+					Editar AnulaÃ§Ã£o
 				</h4>
 			</div>
 			<div class="ftx-modal-body">
@@ -651,21 +651,21 @@
 				<div class="row">
 					<div class="col-12 col-md-5">
 						<div class="form-group">
-							<label class="ftx-form-label">Data da Anulação</label>
+							<label class="ftx-form-label">Data da AnulaÃ§Ã£o</label>
 							<input id="txtDataanulacao" class="form-control form-control-xs" type="date" />
 						</div>
 					</div>
 					<div class="col-12 col-md-7">
 						<div class="form-group">
-							<label class="ftx-form-label">Descrição</label>
-							<input id="txtDescricaoanulacao" class="form-control form-control-xs" placeholder="Descrição da anulação" />
+							<label class="ftx-form-label">DescriÃ§Ã£o</label>
+							<input id="txtDescricaoanulacao" class="form-control form-control-xs" placeholder="DescriÃ§Ã£o da anulaÃ§Ã£o" />
 						</div>
 					</div>
 				</div>
 				<div class="row mt-3">
 					<div class="col-12 col-md-4">
 						<div class="form-group">
-							<label class="ftx-form-label">Valor da Anulação</label>
+							<label class="ftx-form-label">Valor da AnulaÃ§Ã£o</label>
 							<input id="txtValoranulacao" class="form-control form-control-xs" style="text-align: right;" placeholder="0,00" onKeyPress="return(moeda(this,'.',',',event))" />
 						</div>
 					</div>
@@ -674,7 +674,7 @@
 			<div class="ftx-modal-footer">
 				<button id="btnAnular" class="ftx-btn-modal ftx-btn-confirmar" type="button">
 					<i class="fa-duotone fa-floppy-disk icon-pulse"></i>
-					Salvar Anulação
+					Salvar AnulaÃ§Ã£o
 				</button>
 				<button type="button" class="ftx-btn-modal ftx-btn-fechar" data-bs-dismiss="modal">
 					<i class="fa-duotone fa-xmark"></i>
@@ -686,8 +686,8 @@
 </div>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
 	<script src="~/js/formplugins/select2/select2.bundle.js" asp-append-version="true"></script>
 	<script src="~/js/cadastros/aporte_001.js" asp-append-version="true"></script>
@@ -700,7 +700,7 @@
 
 		$(document).ready(function () {
 			try {
-				// Se é novo empenho, marca como ativo por padrão
+				// Se Ã© novo empenho, marca como ativo por padrÃ£o
 				if (empenhoMultaId === '00000000-0000-0000-0000-000000000000') {
 					document.getElementById("chkStatus").checked = true;
 				}
@@ -789,7 +789,7 @@
 									return parseInt(a) + parseInt(b);
 								}, 0);
 								var soma = total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-								$("#TituloAportes").html('<i class="fa-duotone fa-circle-plus"></i> Aportes/Reforços: <span>' + soma + '</span>');
+								$("#TituloAportes").html('<i class="fa-duotone fa-circle-plus"></i> Aportes/ReforÃ§os: <span>' + soma + '</span>');
 							}
 							catch (error) {
 								Alerta.TratamentoErroComLinha("UpsertEmpenhosMulta.cshtml", "AporteTable.footerCallback", error);
@@ -797,7 +797,7 @@
 						}
 					});
 
-					// Carregar DataTable de Anulações
+					// Carregar DataTable de AnulaÃ§Ãµes
 					anulacaoTable = $('#tblanulacao').DataTable({
 						lengthChange: false,
 						searching: false,
@@ -826,10 +826,10 @@
 								render: function (data) {
 									try {
 										return `<div class="text-center" style="white-space: nowrap;">
-											<a class="ftx-btn-icon ftx-btn-editar btn-editar-anulacao" data-id="${data}" data-ejtip="Editar Anulação">
+											<a class="ftx-btn-icon ftx-btn-editar btn-editar-anulacao" data-id="${data}" data-ejtip="Editar AnulaÃ§Ã£o">
 												<i class="fa-duotone fa-pen-to-square"></i>
 											</a>
-											<a class="ftx-btn-icon ftx-btn-apagar btn-deleteanulacao" data-context="empenhoMulta" data-id="${data}" data-ejtip="Excluir Anulação">
+											<a class="ftx-btn-icon ftx-btn-apagar btn-deleteanulacao" data-context="empenhoMulta" data-id="${data}" data-ejtip="Excluir AnulaÃ§Ã£o">
 												<i class="fa-duotone fa-trash-can"></i>
 											</a>
 										</div>`;
@@ -845,7 +845,7 @@
 						],
 						language: {
 							url: "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Portuguese-Brasil.json",
-							emptyTable: "Nenhuma anulação cadastrada"
+							emptyTable: "Nenhuma anulaÃ§Ã£o cadastrada"
 						},
 						footerCallback: function (row, data, start, end, display) {
 							try {
@@ -853,7 +853,7 @@
 									return parseInt(a) + parseInt(b);
 								}, 0);
 								var soma = total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-								$("#TituloAnulacoes").html('<i class="fa-duotone fa-circle-minus"></i> Anulações: <span>' + soma + '</span>');
+								$("#TituloAnulacoes").html('<i class="fa-duotone fa-circle-minus"></i> AnulaÃ§Ãµes: <span>' + soma + '</span>');
 							}
 							catch (error) {
 								Alerta.TratamentoErroComLinha("UpsertEmpenhosMulta.cshtml", "anulacaoTable.footerCallback", error);
@@ -961,7 +961,7 @@
 					}
 				});
 
-				// ====== ABRIR MODAL EDITAR ANULAÇÃO ======
+				// ====== ABRIR MODAL EDITAR ANULAÃ‡ÃƒO ======
 				$(document).on("click", ".btn-editar-anulacao", function (e) {
 					try {
 						e.preventDefault();
@@ -981,7 +981,7 @@
 						$('#txtDescricaoanulacao').val(descricaoAnulacao);
 						$('#txtValoranulacao').val(valorAnulacao);
 						$('#txtMovimentacaoIdAnulacao').val(movimentacaoId);
-						$('#lblTituloAnulacao').html('<i class="fa-duotone fa-circle-minus"></i> Editar Anulação');
+						$('#lblTituloAnulacao').html('<i class="fa-duotone fa-circle-minus"></i> Editar AnulaÃ§Ã£o');
 
 						var modal = new bootstrap.Modal(document.getElementById('modalanulacao'));
 						modal.show();
@@ -997,21 +997,21 @@
 			}
 		});
 
-		// ====== BOTÃO SALVAR APORTE (MODAL) ======
+		// ====== BOTÃƒO SALVAR APORTE (MODAL) ======
 		$("#btnAportar").click(function (e) {
 			try {
 				e.preventDefault();
 
 				if ($("#txtDataAporte").val() === "") {
-					Alerta.Erro("Atenção", "A data do Aporte é obrigatória!", "Fechar");
+					Alerta.Erro("AtenÃ§Ã£o", "A data do Aporte Ã© obrigatÃ³ria!", "Fechar");
 					return;
 				}
 				if ($("#txtDescricaoAporte").val() === "") {
-					Alerta.Erro("Atenção", "A descrição do Aporte é obrigatória!", "Fechar");
+					Alerta.Erro("AtenÃ§Ã£o", "A descriÃ§Ã£o do Aporte Ã© obrigatÃ³ria!", "Fechar");
 					return;
 				}
 				if ($("#txtValorAporte").val() === "") {
-					Alerta.Erro("Atenção", "O valor do Aporte é obrigatório!", "Fechar");
+					Alerta.Erro("AtenÃ§Ã£o", "O valor do Aporte Ã© obrigatÃ³rio!", "Fechar");
 					return;
 				}
 
@@ -1053,21 +1053,21 @@
 			}
 		});
 
-		// ====== BOTÃO SALVAR ANULAÇÃO (MODAL) ======
+		// ====== BOTÃƒO SALVAR ANULAÃ‡ÃƒO (MODAL) ======
 		$("#btnAnular").click(function (e) {
 			try {
 				e.preventDefault();
 
 				if ($("#txtDataanulacao").val() === "") {
-					Alerta.Erro("Atenção", "A data da anulação é obrigatória!", "Fechar");
+					Alerta.Erro("AtenÃ§Ã£o", "A data da anulaÃ§Ã£o Ã© obrigatÃ³ria!", "Fechar");
 					return;
 				}
 				if ($("#txtDescricaoanulacao").val() === "") {
-					Alerta.Erro("Atenção", "A descrição da anulação é obrigatória!", "Fechar");
+					Alerta.Erro("AtenÃ§Ã£o", "A descriÃ§Ã£o da anulaÃ§Ã£o Ã© obrigatÃ³ria!", "Fechar");
 					return;
 				}
 				if ($("#txtValoranulacao").val() === "") {
-					Alerta.Erro("Atenção", "O valor da anulação é obrigatório!", "Fechar");
+					Alerta.Erro("AtenÃ§Ã£o", "O valor da anulaÃ§Ã£o Ã© obrigatÃ³rio!", "Fechar");
 					return;
 				}
 
@@ -1109,7 +1109,7 @@
 			}
 		});
 
-		// ====== MÁSCARA DE MOEDA ======
+		// ====== MÃSCARA DE MOEDA ======
 		function moeda(a, e, r, t) {
 			try {
 				let n = "", h = 0, j = 0, u = 0, tamanho2 = 0, ajd2 = "", l = "";
@@ -1145,3 +1145,4 @@
 		}
 	</script>
 }
+

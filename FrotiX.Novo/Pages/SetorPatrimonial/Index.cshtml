@@ -1,46 +1,46 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/SetorPatrimonial/Index.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/SetorPatrimonial/Index.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Página de listagem de Setores Patrimoniais (hierarquia superior às Seções)
- *                   com DataTable #tblSecao (4 colunas: Seção/Setor/Status/Ação), VARIANTE de
- *                   SecaoPatrimonial/Index.cshtml com diferenças visuais (btn-fundo-laranja vs btn-azul).
- * 📥 ENTRADAS     : @page route /SetorPatrimonial/Index, @model SecaoPatrimonial (MODEL DIRETO n/ão PageModel!
- *                   INCONSISTENTE!), JavaScript secao_patrimonial.js (AJAX loadList), clique botão adicionar
- * 📤 SAÍDAS       : Panel width 90% centered com header flexbox (título fa-warehouse + botão btn-fundo-laranja
- *                   data-ftx-loading "Adicionar Seção Patrimonial" link ./SecaoPatrimonial/Upsert), border-bottom
+ * ðŸŽ¯ OBJETIVO     : PÃ¡gina de listagem de Setores Patrimoniais (hierarquia superior Ã s SeÃ§Ãµes)
+ *                   com DataTable #tblSecao (4 colunas: SeÃ§Ã£o/Setor/Status/AÃ§Ã£o), VARIANTE de
+ *                   SecaoPatrimonial/Index.cshtml com diferenÃ§as visuais (btn-fundo-laranja vs btn-azul).
+ * ðŸ“¥ ENTRADAS     : @page route /SetorPatrimonial/Index, @model SecaoPatrimonial (MODEL DIRETO n/Ã£o PageModel!
+ *                   INCONSISTENTE!), JavaScript secao_patrimonial.js (AJAX loadList), clique botÃ£o adicionar
+ * ðŸ“¤ SAÃDAS       : Panel width 90% centered com header flexbox (tÃ­tulo fa-warehouse + botÃ£o btn-fundo-laranja
+ *                   data-ftx-loading "Adicionar SeÃ§Ã£o Patrimonial" link ./SecaoPatrimonial/Upsert), border-bottom
  *                   #325d88, DataTable #tblSecao (4 colunas tbody vazio), Bootstrap 5 CDN, secao_patrimonial.js
- * 🔗 CHAMADA POR  : Link menu "Cadastros > Setores Patrimoniais", route /SetorPatrimonial/Index,
+ * ðŸ”— CHAMADA POR  : Link menu "Cadastros > Setores Patrimoniais", route /SetorPatrimonial/Index,
  *                   sidebar navigation (se cadastrado no menu system)
- * 🔄 CHAMA        : @model SecaoPatrimonial (MODEL DIRETO - ERRADO! falta PageModel SetorPatrimonialIndexModel),
- *                   ./SecaoPatrimonial/Upsert (link adicionar - cross-link Setor→Seção intencional?),
+ * ðŸ”„ CHAMA        : @model SecaoPatrimonial (MODEL DIRETO - ERRADO! falta PageModel SetorPatrimonialIndexModel),
+ *                   ./SecaoPatrimonial/Upsert (link adicionar - cross-link Setorâ†’SeÃ§Ã£o intencional?),
  *                   ~/js/cadastros/secao_patrimonial.js (AJAX GET /api/SetorPatrimonial? loadList DataTable),
  *                   Bootstrap 5 CDN (jsdelivr.net v5.3.8), ViewData (breadcrumb/heading fa-shop), Font Awesome
  *                   Duotone (fa-shop, fa-warehouse, fa-clone-plus icon-pulse), CSS inline
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, SecaoPatrimonial model (N/ÃO PageModel! SetorPatrimonialIndexModel
- *                   provavelmente n/ão existe), Bootstrap 5 CDN (REDUNDANTE - já no _Layout), secao_patrimonial.js
+ * ðŸ“¦ DEPENDÃŠNCIAS : ASP.NET Core Razor Pages, SecaoPatrimonial model (N/ÃƒO PageModel! SetorPatrimonialIndexModel
+ *                   provavelmente n/Ã£o existe), Bootstrap 5 CDN (REDUNDANTE - jÃ¡ no _Layout), secao_patrimonial.js
  *                   (cadastros folder - AJAX list/delete/toggle), DataTables (table-bordered table-striped),
  *                   Font Awesome 6 Duotone, CSS btn-fundo-laranja (FrotiX), data-ftx-loading (loading handler)
- * 📝 OBSERVAÇÕES  : 73 linhas. VARIANTE de SecaoPatrimonial/Index.cshtml (estrutura idêntica, diferenças visuais).
- *                   **DIFERENÇAS vs SecaoPatrimonial/Index**:
- *                   1. Botão: btn-fundo-laranja (laranja cobre #c67750) vs btn-azul (azul petróleo #325d88)
- *                   2. Ícone: fa-clone-plus (clone/duplicate) vs fa-file-plus (new file)
- *                   3. Link: ./SecaoPatrimonial/Upsert (cross-reference Setor→Seção) vs ./SetorPatrimonial/Upsert
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : 73 linhas. VARIANTE de SecaoPatrimonial/Index.cshtml (estrutura idÃªntica, diferenÃ§as visuais).
+ *                   **DIFERENÃ‡AS vs SecaoPatrimonial/Index**:
+ *                   1. BotÃ£o: btn-fundo-laranja (laranja cobre #c67750) vs btn-azul (azul petrÃ³leo #325d88)
+ *                   2. Ãcone: fa-clone-plus (clone/duplicate) vs fa-file-plus (new file)
+ *                   3. Link: ./SecaoPatrimonial/Upsert (cross-reference Setorâ†’SeÃ§Ã£o) vs ./SetorPatrimonial/Upsert
  *                   4. Atributo: data-ftx-loading (loading state) vs sem atributo
  *                   **BUGS**:
  *                   1. **PageName ERRADO**: ViewData["PageName"] = "secaopatrimonial_index" (deve ser "setorpatrimonial_index"!)
- *                   2. **Texto inconsistente**: "Adicionar Seção Patrimonial" (deve ser "Adicionar Setor"!)
- *                   3. **MODEL inconsistente**: @model SecaoPatrimonial (DIRETO, n/ão PageModel)
+ *                   2. **Texto inconsistente**: "Adicionar SeÃ§Ã£o Patrimonial" (deve ser "Adicionar Setor"!)
+ *                   3. **MODEL inconsistente**: @model SecaoPatrimonial (DIRETO, n/Ã£o PageModel)
  *                   ViewData config:
- *                   - Title: "Seções Patrimoniais" (ERRADO! deve ser "Setores Patrimoniais")
- *                   - PageName: "secaopatrimonial_index" (ERRADO! cópia/paste bug)
- *                   - Heading: "<i class='fa-duotone fa-shop'></i> Cadastros: <span class='fw-300'>Seções Patrimoniais</span>"
+ *                   - Title: "SeÃ§Ãµes Patrimoniais" (ERRADO! deve ser "Setores Patrimoniais")
+ *                   - PageName: "secaopatrimonial_index" (ERRADO! cÃ³pia/paste bug)
+ *                   - Heading: "<i class='fa-duotone fa-shop'></i> Cadastros: <span class='fw-300'>SeÃ§Ãµes Patrimoniais</span>"
  *                   - PageIcon: "fa-duotone fa-shop"
- *                   Estrutura idêntica SecaoPatrimonial: panel width 90%, header d-flex justify-content-between,
+ *                   Estrutura idÃªntica SecaoPatrimonial: panel width 90%, header d-flex justify-content-between,
  *                   h2 titulo-pagina fa-warehouse, border-bottom #325d88, table #tblSecao (4 cols), Bootstrap CDN
  *                   redundante, secao_patrimonial.js cache busting. **RELACIONAMENTO**: Setor (hierarquia superior)
- *                   contém múltiplas Seções. Cross-link ./SecaoPatrimonial/Upsert pode ser intencional (criar
- *                   Seção dentro do Setor). Cores diferentes (laranja vs azul) distinguem visualmente hierarquia.
- *                   **AÇÃO RECOMENDADA**: Corrigir PageName, Title, texto botão ("Setor" n/ão "Seção"), verificar
+ *                   contÃ©m mÃºltiplas SeÃ§Ãµes. Cross-link ./SecaoPatrimonial/Upsert pode ser intencional (criar
+ *                   SeÃ§Ã£o dentro do Setor). Cores diferentes (laranja vs azul) distinguem visualmente hierarquia.
+ *                   **AÃ‡ÃƒO RECOMENDADA**: Corrigir PageName, Title, texto botÃ£o ("Setor" n/Ã£o "SeÃ§Ã£o"), verificar
  *                   cross-link intencional, criar PageModel SetorPatrimonialIndexModel.
  **************************************************************************************** *@
 @page
@@ -71,9 +71,9 @@
 	<div class="col-xl-12">
 		<div id="panel-1" class="panel" style="width: 90%; margin: 0 auto;">
 			<div class="panel-container show">
-				<!-- Adiciona espaçamento superior -->
+				<!-- Adiciona espaÃ§amento superior -->
 				<div class="pt-4">
-					<!-- Container para título e botão -->
+					<!-- Container para tÃ­tulo e botÃ£o -->
 					<div class="d-flex justify-content-between align-items-center px-3 mb-3 flex-nowrap">
 						<h2 class="titulo-pagina mb-0" style="white-space: nowrap;">
 							<i class="fa-duotone fa-warehouse"></i>
@@ -84,7 +84,7 @@
 							Adicionar Setor Patrimonial
 						</a>
 					</div>
-					<!-- Linha divisória -->
+					<!-- Linha divisÃ³ria -->
 					<div class="col-12" style="border-bottom:1px solid #325d88"></div>
 				</div>
 
@@ -97,7 +97,7 @@
 									<th>Setor</th>
 									<th>Detentor</th>
 									<th>Status</th>
-									<th>Ação</th>
+									<th>AÃ§Ã£o</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -111,8 +111,9 @@
 </div>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
 	<script src="~/js/cadastros/setor_patrimonial.js" asp-append-version="true"></script>
 }
+

@@ -1,4 +1,4 @@
-@page
+﻿@page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @* ========================================================================================
@@ -199,7 +199,7 @@
 											<a asp-page="./Index" class="btn btn-ftx-fechar form-control"
 												data-ftx-loading>
 												<i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i>
-												Cancelar Operação
+												Cancelar OperaÃ§Ã£o
 											</a>
 										</div>
 									</div>
@@ -214,15 +214,13 @@
 </form>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-		crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-		crossorigin="anonymous"></script>
+	
+	
 
 	<script type="text/javascript">
 		$(document).ready(function () {
 			try {
-				// Pré-seleciona o Setor Pai, se existir
+				// PrÃ©-seleciona o Setor Pai, se existir
 				document.getElementById("ddtree").ej2_instances[0].value = ["@Model.SetorSolicitanteObj.SetorPaiId"];
 			} catch (error) {
 				Alerta.TratamentoErroComLinha("Upsert.cshtml", "document.ready", error);

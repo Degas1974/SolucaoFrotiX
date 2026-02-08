@@ -1,13 +1,13 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Multa/UpsertOrgaoAutuante.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/Multa/UpsertOrgaoAutuante.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Formulário simples criar/editar órgão autuante (Sigla, Nome)
- * 📥 ENTRADAS     : @page, @model UpsertOrgaoAutuanteModel, campos: Sigla, Nome
- * 📤 SAÍDAS       : POST (handler=Submit), redirect para ListaOrgaosAutuantes (assumido)
- * 🔗 CHAMADA POR  : ListaOrgaosAutuantes (botão "Adicionar Órgão", editar linha)
- * 🔄 CHAMA        : (assumido via form post) /Multa/UpsertOrgaoAutuante handlers, ./ListaOrgaosAutuantes
- * 📦 DEPENDÊNCIAS : Bootstrap 5.3.8 (CDN redundante), Font Awesome Duotone, CSS ftx-card-styled.css
- * 📝 OBSERVAÇÕES  : Total: 186 linhas. Bootstrap CDN redundante, CSS inline moderado (117 linhas) - pode extrair mas formulário é simples, JavaScript inline: ZERO - excelente (formulário usa post puro), SIMPLICIDADE: Apenas 2 campos (Sigla, Nome) - correto para a entidade, Validação: não há JavaScript, validações devem estar no ModelState server-side - verificar, Botão submit: usa classes btn-submit-spin (spinner) - padrão FrotiX correto, Layout: ftx-card-styled, ftx-form-content, ftx-form-section - componentes consistentes - ótimo, data-ejtip nos campos (tooltips) - boa prática UX
+ * ðŸŽ¯ OBJETIVO     : FormulÃ¡rio simples criar/editar Ã³rgÃ£o autuante (Sigla, Nome)
+ * ðŸ“¥ ENTRADAS     : @page, @model UpsertOrgaoAutuanteModel, campos: Sigla, Nome
+ * ðŸ“¤ SAÃDAS       : POST (handler=Submit), redirect para ListaOrgaosAutuantes (assumido)
+ * ðŸ”— CHAMADA POR  : ListaOrgaosAutuantes (botÃ£o "Adicionar Ã“rgÃ£o", editar linha)
+ * ðŸ”„ CHAMA        : (assumido via form post) /Multa/UpsertOrgaoAutuante handlers, ./ListaOrgaosAutuantes
+ * ðŸ“¦ DEPENDÃŠNCIAS : Bootstrap 5.3.8 (CDN redundante), Font Awesome Duotone, CSS ftx-card-styled.css
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : Total: 186 linhas. Bootstrap CDN redundante, CSS inline moderado (117 linhas) - pode extrair mas formulÃ¡rio Ã© simples, JavaScript inline: ZERO - excelente (formulÃ¡rio usa post puro), SIMPLICIDADE: Apenas 2 campos (Sigla, Nome) - correto para a entidade, ValidaÃ§Ã£o: nÃ£o hÃ¡ JavaScript, validaÃ§Ãµes devem estar no ModelState server-side - verificar, BotÃ£o submit: usa classes btn-submit-spin (spinner) - padrÃ£o FrotiX correto, Layout: ftx-card-styled, ftx-form-content, ftx-form-section - componentes consistentes - Ã³timo, data-ejtip nos campos (tooltips) - boa prÃ¡tica UX
  **************************************************************************************** *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -16,9 +16,9 @@
 
 @{
 	var isEdit = Model.OrgaoAutuanteObj.OrgaoAutuanteId != Guid.Empty;
-	ViewData["Title"] = "Órgãos Autuantes";
+	ViewData["Title"] = "Ã“rgÃ£os Autuantes";
 	ViewData["PageName"] = "multa_upsertorgaoautuante";
-	ViewData["Heading"] = "<i class='fa-duotone fa-monument'></i>&nbsp;Cadastros: <span class='fw-300'>Órgãos Autuantes</span>";
+	ViewData["Heading"] = "<i class='fa-duotone fa-monument'></i>&nbsp;Cadastros: <span class='fw-300'>Ã“rgÃ£os Autuantes</span>";
 	ViewData["Category1"] = "Cadastros";
 	ViewData["PageIcon"] = "fa-duotone fa-monument";
 }
@@ -30,7 +30,7 @@
 		/* ====== FONTE OUTFIT ====== */
 		@@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
 
-		/* ====== ANIMAÇÃO GLOW FROTIX ====== */
+		/* ====== ANIMAÃ‡ÃƒO GLOW FROTIX ====== */
 		@@keyframes buttonWiggle {
 			0% { transform: translateY(0) rotate(0deg); }
 			25% { transform: translateY(-2px) rotate(-1deg); }
@@ -39,7 +39,7 @@
 			100% { transform: translateY(0) rotate(0deg); }
 		}
 
-		/* ====== VARIÁVEIS LOCAIS ====== */
+		/* ====== VARIÃVEIS LOCAIS ====== */
 		:root {
 			--ftx-orgao-azul: #3D5771;
 			--ftx-orgao-azul-hover: #2d4559;
@@ -60,7 +60,7 @@
 			--fa-secondary-color: rgba(255,255,255,0.7) !important;
 		}
 
-		/* ====== FORMULÁRIO ====== */
+		/* ====== FORMULÃRIO ====== */
 		.ftx-form-content {
 			padding: 1.5rem;
 		}
@@ -110,7 +110,7 @@
 			margin-bottom: 0.35rem;
 		}
 
-		/* ====== BOTÕES COM GLOW FROTIX ====== */
+		/* ====== BOTÃ•ES COM GLOW FROTIX ====== */
 		.ftx-btn-submit {
 			background-color: var(--ftx-orgao-azul) !important;
 			color: #fff !important;
@@ -170,7 +170,7 @@
 			box-shadow: 0 0 0 0.2rem rgba(114, 47, 55, 0.25) !important;
 		}
 
-		/* ====== ÁREA DE BOTÕES ====== */
+		/* ====== ÃREA DE BOTÃ•ES ====== */
 		.ftx-form-actions {
 			display: flex;
 			gap: 1rem;
@@ -209,15 +209,15 @@
 			<div id="panel-1" class="panel ftx-card-styled">
 				<div class="panel-container show">
 
-					<!-- Header Padrão FrotiX -->
+					<!-- Header PadrÃ£o FrotiX -->
 					<div class="ftx-card-header">
 						<h2 class="titulo-paginas">
 							<i class="fa-duotone fa-monument"></i>
-							@(isEdit ? "Editar" : "Novo") Órgão Autuante
+							@(isEdit ? "Editar" : "Novo") Ã“rgÃ£o Autuante
 						</h2>
 					</div>
 
-					<!-- Conteúdo do Formulário -->
+					<!-- ConteÃºdo do FormulÃ¡rio -->
 					<div class="ftx-form-content">
 						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -226,11 +226,11 @@
 							<input type="hidden" asp-for="OrgaoAutuanteObj.OrgaoAutuanteId" />
 						}
 
-						<!-- Seção: Dados do Órgão -->
+						<!-- SeÃ§Ã£o: Dados do Ã“rgÃ£o -->
 						<div class="ftx-form-section">
 							<div class="ftx-form-section-title">
 								<i class="fa-duotone fa-building-columns"></i>
-								Dados do Órgão
+								Dados do Ã“rgÃ£o
 							</div>
 
 							<div class="row">
@@ -241,7 +241,7 @@
 										<input class="form-control form-control-xs" 
 											   asp-for="OrgaoAutuanteObj.Sigla" 
 											   placeholder="Ex: DETRAN"
-											   data-ejtip="Sigla do Órgão Autuante" />
+											   data-ejtip="Sigla do Ã“rgÃ£o Autuante" />
 									</div>
 								</div>
 								<div class="col-12 col-sm-9 col-md-6">
@@ -250,25 +250,25 @@
 										<span class="text-danger font-weight-light" asp-validation-for="OrgaoAutuanteObj.Nome"></span>
 										<input class="form-control form-control-xs" 
 											   asp-for="OrgaoAutuanteObj.Nome" 
-											   placeholder="Ex: Departamento de Trânsito"
-											   data-ejtip="Nome Completo do Órgão Autuante" />
+											   placeholder="Ex: Departamento de TrÃ¢nsito"
+											   data-ejtip="Nome Completo do Ã“rgÃ£o Autuante" />
 									</div>
 								</div>
 							</div>
 						</div>
 
-						<!-- Botões de Ação -->
+						<!-- BotÃµes de AÃ§Ã£o -->
 						<div class="ftx-form-actions">
 							<div>
-								<button type="submit" asp-page-handler="Submit" class="ftx-btn-submit btn-submit-spin" data-ejtip="@(isEdit ? "Atualizar órgão autuante" : "Criar novo órgão autuante")">
+								<button type="submit" asp-page-handler="Submit" class="ftx-btn-submit btn-submit-spin" data-ejtip="@(isEdit ? "Atualizar Ã³rgÃ£o autuante" : "Criar novo Ã³rgÃ£o autuante")">
 									<i class="fa-duotone fa-floppy-disk icon-space icon-pulse"></i>
-									@(isEdit ? "Atualizar Órgão" : "Criar Órgão")
+									@(isEdit ? "Atualizar Ã“rgÃ£o" : "Criar Ã“rgÃ£o")
 								</button>
 							</div>
 							<div>
 								<a asp-page="./ListaOrgaosAutuantes" class="btn btn-ftx-fechar" data-ftx-loading>
 									<i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i>
-									Cancelar Operação
+									Cancelar OperaÃ§Ã£o
 								</a>
 							</div>
 						</div>
@@ -281,6 +281,7 @@
 </form>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 }
+

@@ -1,43 +1,43 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Uploads/UpsertAutuacao.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/Uploads/UpsertAutuacao.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Página de cadastro de autuação (upload de arquivos de multas) - EM DESENVOLVIMENTO.
- *                   Placeholder "Esta página está em desenvolvimento."
- * 📥 ENTRADAS     : @page route /Uploads/UpsertAutuacao, @model FrotiX.Pages.Uploads.UpsertMultaModel
+ * ðŸŽ¯ OBJETIVO     : PÃ¡gina de cadastro de autuaÃ§Ã£o (upload de arquivos de multas) - EM DESENVOLVIMENTO.
+ *                   Placeholder "Esta pÃ¡gina estÃ¡ em desenvolvimento."
+ * ðŸ“¥ ENTRADAS     : @page route /Uploads/UpsertAutuacao, @model FrotiX.Pages.Uploads.UpsertMultaModel
  *                   (NOME MODEL INCONSISTENTE! arquivo UpsertAutuacao usa model UpsertMulta),
  *                   ViewData configuration (Title, PageName, Heading, Category1, PageIcon)
- * 📤 SAÍDAS       : Panel com border-bottom azul petróleo (#325d88), título "Cadastro de Autuação",
- *                   parágrafo placeholder "Esta página está em desenvolvimento.", Bootstrap 5 CDN
+ * ðŸ“¤ SAÃDAS       : Panel com border-bottom azul petrÃ³leo (#325d88), tÃ­tulo "Cadastro de AutuaÃ§Ã£o",
+ *                   parÃ¡grafo placeholder "Esta pÃ¡gina estÃ¡ em desenvolvimento.", Bootstrap 5 CDN
  *                   no @section ScriptsBlock (link CSS + script JS)
- * 🔗 CHAMADA POR  : Link no menu "Uploads > Cadastro de Autuação", route /Uploads/UpsertAutuacao,
+ * ðŸ”— CHAMADA POR  : Link no menu "Uploads > Cadastro de AutuaÃ§Ã£o", route /Uploads/UpsertAutuacao,
  *                   sidebar navigation, UpsertMultaModel.OnGet() (code-behind)
- * 🔄 CHAMA        : UpsertMultaModel (code-behind - FrotiX.Pages.Uploads.UpsertMultaModel), ViewData
+ * ðŸ”„ CHAMA        : UpsertMultaModel (code-behind - FrotiX.Pages.Uploads.UpsertMultaModel), ViewData
  *                   breadcrumb/heading rendering, Bootstrap 5 CDN (jsdelivr.net v5.3.8 CSS + JS bundle),
  *                   CSS classes (panel, panel-container show, panel-content, col-xl-12 col-12, px-3 pt-3)
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, UpsertMultaModel (code-behind - NOME INCONSISTENTE com
+ * ðŸ“¦ DEPENDÃŠNCIAS : ASP.NET Core Razor Pages, UpsertMultaModel (code-behind - NOME INCONSISTENTE com
  *                   arquivo UpsertAutuacao!), Bootstrap 5 CDN (v5.3.8 - jsdelivr), CSS inline
- *                   border-bottom: 1px solid #325d88 (azul petróleo FrotiX), Font Awesome Duotone
- *                   fa-file-invoice (ícone autuação), CSS classes custom (text-primary)
- * 📝 OBSERVAÇÕES  : 39 linhas. Página PLACEHOLDER em desenvolvimento (não implementada). **PROBLEMA
+ *                   border-bottom: 1px solid #325d88 (azul petrÃ³leo FrotiX), Font Awesome Duotone
+ *                   fa-file-invoice (Ã­cone autuaÃ§Ã£o), CSS classes custom (text-primary)
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : 39 linhas. PÃ¡gina PLACEHOLDER em desenvolvimento (nÃ£o implementada). **PROBLEMA
  *                   NOME MODEL**: arquivo UpsertAutuacao.cshtml usa @model UpsertMultaModel (inconsistente!
  *                   deve ser UpsertAutuacaoModel). ViewData config:
- *                   - Title: "Cadastro de Autuação"
+ *                   - Title: "Cadastro de AutuaÃ§Ã£o"
  *                   - PageName: "uploads_upsertautuacao"
- *                   - Heading: "<i class='fa-duotone fa-file-invoice'></i> Uploads: <span class='fw-300'>Cadastro de Autuação</span>"
+ *                   - Heading: "<i class='fa-duotone fa-file-invoice'></i> Uploads: <span class='fw-300'>Cadastro de AutuaÃ§Ã£o</span>"
  *                   - PageIcon: "fa-duotone fa-file-invoice"
  *                   @section HeadBlock e ScriptsBlock vazios no template (ScriptsBlock adiciona Bootstrap 5
- *                   CDN - REDUNDANTE! Bootstrap já incluído no _Layout). border-bottom inline style
- *                   #325d88 (azul petróleo tema FrotiX). Parágrafo "Em desenvolvimento" sugere feature
- *                   futura para upload de autuações/multas escaneadas (PDF, imagem). Para implementação:
- *                   criar form com upload de arquivo, campos multa (descrição, valor, data), vehicle/driver.
+ *                   CDN - REDUNDANTE! Bootstrap jÃ¡ incluÃ­do no _Layout). border-bottom inline style
+ *                   #325d88 (azul petrÃ³leo tema FrotiX). ParÃ¡grafo "Em desenvolvimento" sugere feature
+ *                   futura para upload de autuaÃ§Ãµes/multas escaneadas (PDF, imagem). Para implementaÃ§Ã£o:
+ *                   criar form com upload de arquivo, campos multa (descriÃ§Ã£o, valor, data), vehicle/driver.
  **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Uploads.UpsertMultaModel
 
 @{
-	ViewData["Title"] = "Cadastro de Autuação";
+	ViewData["Title"] = "Cadastro de AutuaÃ§Ã£o";
 	ViewData["PageName"] = "uploads_upsertautuacao";
-	ViewData["Heading"] = "<i class='fa-duotone fa-file-invoice'></i> Uploads: <span class='fw-300'>Cadastro de Autuação</span>";
+	ViewData["Heading"] = "<i class='fa-duotone fa-file-invoice'></i> Uploads: <span class='fw-300'>Cadastro de AutuaÃ§Ã£o</span>";
 	ViewData["Category1"] = "Uploads";
 	ViewData["PageIcon"] = "fa-duotone fa-file-invoice";
 }
@@ -52,11 +52,11 @@
 			<div class="panel-container show">
 				<div class="panel-content">
 					<div class="col-12 px-3" style="border-bottom:1px solid #325d88">
-						<h2 class="text-primary">Cadastro de Autuação</h2>
+						<h2 class="text-primary">Cadastro de AutuaÃ§Ã£o</h2>
 					</div>
 
 					<div class="col-12 pt-3">
-						<p>Esta página está em desenvolvimento.</p>
+						<p>Esta pÃ¡gina estÃ¡ em desenvolvimento.</p>
 					</div>
 				</div>
 			</div>
@@ -66,7 +66,8 @@
 
 @section ScriptsBlock {
 
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
 }
+

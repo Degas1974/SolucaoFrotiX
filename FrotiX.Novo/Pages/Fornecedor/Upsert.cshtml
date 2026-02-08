@@ -1,29 +1,29 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Fornecedor/Upsert.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/Fornecedor/Upsert.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Formulário de criação/edição de Fornecedores com validação server-side
- *                   e JavaScript inline para formatar CNPJ automaticamente (mask dinâmica).
- * 📥 ENTRADAS     : @Model FrotiX.Pages.Fornecedor.UpsertModel, POST form submission,
+ * ðŸŽ¯ OBJETIVO     : FormulÃ¡rio de criaÃ§Ã£o/ediÃ§Ã£o de Fornecedores com validaÃ§Ã£o server-side
+ *                   e JavaScript inline para formatar CNPJ automaticamente (mask dinÃ¢mica).
+ * ðŸ“¥ ENTRADAS     : @Model FrotiX.Pages.Fornecedor.UpsertModel, POST form submission,
  *                   FornecedorObj properties (FornecedorId, CNPJ, DescricaoFornecedor,
  *                   Contato01/02, Telefone01/02, Status), input #cnpj (formatado via JS)
- * 📤 SAÍDAS       : POST para OnPostSubmit (UpsertModel code-behind), CNPJ formatado
- *                   00.000.000/0000-00 (JavaScript inline com Regex), validação asp-validation-*,
- *                   redirect para ./Index após sucesso, AppToast notificações
- * 🔗 CHAMADA POR  : Pages/Fornecedor/Index.cshtml (botão + Adicionar Fornecedor),
+ * ðŸ“¤ SAÃDAS       : POST para OnPostSubmit (UpsertModel code-behind), CNPJ formatado
+ *                   00.000.000/0000-00 (JavaScript inline com Regex), validaÃ§Ã£o asp-validation-*,
+ *                   redirect para ./Index apÃ³s sucesso, AppToast notificaÃ§Ãµes
+ * ðŸ”— CHAMADA POR  : Pages/Fornecedor/Index.cshtml (botÃ£o + Adicionar Fornecedor),
  *                   DataTable edit links, UpsertModel.OnGet()
- * 🔄 CHAMA        : UpsertModel.OnPostSubmit (code-behind), ./Index (cancelamento),
+ * ðŸ”„ CHAMA        : UpsertModel.OnPostSubmit (code-behind), ./Index (cancelamento),
  *                   JavaScript inline addEventListener (input #cnpj), Alerta.TratamentoErroComLinha
  *                   (try-catch em JS), ASP.NET validation system
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, Bootstrap 5 (CDN), Font Awesome 6 Duotone,
+ * ðŸ“¦ DEPENDÃŠNCIAS : ASP.NET Core Razor Pages, Bootstrap 5 (CDN), Font Awesome 6 Duotone,
  *                   Tag Helpers (asp-for, asp-validation-*), Alerta.js (tratamento de erros JS),
  *                   JavaScript nativo (addEventListener, Regex /\D/g)
- * 📝 OBSERVAÇÕES  : 191 linhas. **JAVASCRIPT INLINE**: Input listener formata CNPJ automaticamente
- *                   (line ~180): Regex remove não-dígitos, match groups (\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2}),
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : 191 linhas. **JAVASCRIPT INLINE**: Input listener formata CNPJ automaticamente
+ *                   (line ~180): Regex remove nÃ£o-dÃ­gitos, match groups (\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2}),
  *                   formata 00.000.000/0000-00. Try-catch aninhado (setup + listener). Form com
- *                   2 contatos/telefones (Contato01/02 - label-required só no primeiro). CNPJ no
- *                   col-4 (33% width), Descrição col-8 (66%). Status checkbox (Ativo/Inativo).
- *                   Header dinâmico (Criar/Atualizar baseado em FornecedorId != Empty). Input
- *                   hidden para FornecedorId em edição. Botão submit azul com spinner (btn-submit-spin).
+ *                   2 contatos/telefones (Contato01/02 - label-required sÃ³ no primeiro). CNPJ no
+ *                   col-4 (33% width), DescriÃ§Ã£o col-8 (66%). Status checkbox (Ativo/Inativo).
+ *                   Header dinÃ¢mico (Criar/Atualizar baseado em FornecedorId != Empty). Input
+ *                   hidden para FornecedorId em ediÃ§Ã£o. BotÃ£o submit azul com spinner (btn-submit-spin).
  *                   Placeholders descritivos. Col-8 layout (66%). CSS inline minimalista.
  **************************************************************************************** *@
 @page
@@ -101,7 +101,7 @@
 											asp-validation-for="FornecedorObj.DescricaoFornecedor"></span>
 										<input class="form-control form-control-xs"
 											asp-for="FornecedorObj.DescricaoFornecedor"
-											placeholder="Insira a razão social do fornecedor" />
+											placeholder="Insira a razÃ£o social do fornecedor" />
 									</div>
 								</div>
 							</div>
@@ -181,7 +181,7 @@
 											<a asp-page="./Index" class="btn btn-ftx-fechar form-control"
 												data-ftx-loading>
 												<i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i>
-												Cancelar Operação
+												Cancelar OperaÃ§Ã£o
 											</a>
 										</div>
 									</div>
@@ -196,32 +196,30 @@
 </form>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-		crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-		crossorigin="anonymous"></script>
+	
+	
 
 	<script>
 		/***
-		 * ⚡ FUNÇÃO: Formatação de CNPJ (Input Listener)
+		 * âš¡ FUNÃ‡ÃƒO: FormataÃ§Ã£o de CNPJ (Input Listener)
 		 * ============================================================================
-		 * 🎯 OBJETIVO     : Formatar automaticamente entrada de CNPJ em padrão
-		 *                   00.000.000/0000-00 durante digitação
+		 * ðŸŽ¯ OBJETIVO     : Formatar automaticamente entrada de CNPJ em padrÃ£o
+		 *                   00.000.000/0000-00 durante digitaÃ§Ã£o
 		 *
-		 * 📥 ENTRADAS     : Input #cnpj - valores digitados pelo usuário
+		 * ðŸ“¥ ENTRADAS     : Input #cnpj - valores digitados pelo usuÃ¡rio
 		 *
-		 * 📤 SAÍDAS       : Input #cnpj com CNPJ formatado (XX.XXX.XXX/XXXX-XX)
+		 * ðŸ“¤ SAÃDAS       : Input #cnpj com CNPJ formatado (XX.XXX.XXX/XXXX-XX)
 		 *
-		 * ⬅️ CHAMADO POR  : addEventListener('input') disparado a cada digitação
+		 * â¬…ï¸ CHAMADO POR  : addEventListener('input') disparado a cada digitaÃ§Ã£o
 		 *
-		 * 📝 OBSERVAÇÕES  : [VALIDACAO] Regex remove não-dígitos (/\D/g),
+		 * ðŸ“ OBSERVAÃ‡Ã•ES  : [VALIDACAO] Regex remove nÃ£o-dÃ­gitos (/\D/g),
 		 *                   agrupa em pattern (\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2}),
 		 *                   monta string formatada: 00.000.000/0000-00
 		 ***/
 		try {
 			document.getElementById('cnpj').addEventListener('input', function (e) {
 				try {
-					// [DADOS] Remove não-dígitos e agrupa em padrão CNPJ
+					// [DADOS] Remove nÃ£o-dÃ­gitos e agrupa em padrÃ£o CNPJ
 					var x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2})/);
 
 					// [LOGICA] Formata conforme grupos capturados

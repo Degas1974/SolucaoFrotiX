@@ -1,13 +1,13 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/MovimentacaoPatrimonio/Index.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/MovimentacaoPatrimonio/Index.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Listagem de movimentações de patrimônio com filtros dinâmicos (data, setor origem/destino, responsável)
- * 📥 ENTRADAS     : @page, @model IndexModel, filtros: drpDataMovimentacao, ddtSetorSecaoOrigem, ddtSetorSecaoDestino, cmbResponsavel
- * 📤 SAÍDAS       : DataTable #tblMovimentacaoPatrimonio (JSON via API), loading overlay ftx-spin-overlay, redirecionamento para Upsert
- * 🔗 CHAMADA POR  : Menu navegação (Movimentações), links diretos, botão "Inserir Movimentação"
- * 🔄 CHAMA        : /api/movimentacaopatrimonio (assumido), ~/js/cadastros/movimentacaopatrimonio.js, ./MovimentacaoPatrimonio/Upsert
- * 📦 DEPENDÊNCIAS : Syncfusion.EJ2 (DateRangePicker, DropDownTree, ComboBox), Bootstrap 5.3.8 (CDN), DataTables (implícito no JS), Font Awesome Duotone
- * 📝 OBSERVAÇÕES  : Total: 173 linhas. PROBLEMA: Bootstrap 5.3.8 CDN redundante (já carregado no _Layout), CSS inline pequeno (27 linhas) apenas para outline botão header - pode ser extraído, Loading overlay padrão FrotiX (bom padrão), JS externo correto (movimentacaopatrimonio.js), Falta validação: se filtros vazios DataTable pode tentar carregar tudo
+ * ðŸŽ¯ OBJETIVO     : Listagem de movimentaÃ§Ãµes de patrimÃ´nio com filtros dinÃ¢micos (data, setor origem/destino, responsÃ¡vel)
+ * ðŸ“¥ ENTRADAS     : @page, @model IndexModel, filtros: drpDataMovimentacao, ddtSetorSecaoOrigem, ddtSetorSecaoDestino, cmbResponsavel
+ * ðŸ“¤ SAÃDAS       : DataTable #tblMovimentacaoPatrimonio (JSON via API), loading overlay ftx-spin-overlay, redirecionamento para Upsert
+ * ðŸ”— CHAMADA POR  : Menu navegaÃ§Ã£o (MovimentaÃ§Ãµes), links diretos, botÃ£o "Inserir MovimentaÃ§Ã£o"
+ * ðŸ”„ CHAMA        : /api/movimentacaopatrimonio (assumido), ~/js/cadastros/movimentacaopatrimonio.js, ./MovimentacaoPatrimonio/Upsert
+ * ðŸ“¦ DEPENDÃŠNCIAS : Syncfusion.EJ2 (DateRangePicker, DropDownTree, ComboBox), Bootstrap 5.3.8 (CDN), DataTables (implÃ­cito no JS), Font Awesome Duotone
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : Total: 173 linhas. PROBLEMA: Bootstrap 5.3.8 CDN redundante (jÃ¡ carregado no _Layout), CSS inline pequeno (27 linhas) apenas para outline botÃ£o header - pode ser extraÃ­do, Loading overlay padrÃ£o FrotiX (bom padrÃ£o), JS externo correto (movimentacaopatrimonio.js), Falta validaÃ§Ã£o: se filtros vazios DataTable pode tentar carregar tudo
  **************************************************************************************** *@
 @page
 @using Syncfusion.EJ2
@@ -15,16 +15,16 @@
 @model FrotiX.Pages.MovimentacaoPatrimonio.IndexModel
 
 @{
-	ViewData["Title"] = "Movimentações";
+	ViewData["Title"] = "MovimentaÃ§Ãµes";
 	ViewData["PageName"] = "movimentacaopatrimonio_index";
-	ViewData["Heading"] = "<i class='fa-duotone fa-truck-fast'></i> Cadastros: <span class='fw-300'>Movimentações</span>";
-	ViewData["Category1"] = "Movimentações";
+	ViewData["Heading"] = "<i class='fa-duotone fa-truck-fast'></i> Cadastros: <span class='fw-300'>MovimentaÃ§Ãµes</span>";
+	ViewData["Category1"] = "MovimentaÃ§Ãµes";
 	ViewData["PageIcon"] = "fa-duotone fa-truck-fast";
 }
 
 @section HeadBlock {
 	<style>
-/* ======== OUTLINE BRANCO NO BOTÃO DO HEADER (Padrão FrotiX) ======== */
+/* ======== OUTLINE BRANCO NO BOTÃƒO DO HEADER (PadrÃ£o FrotiX) ======== */
 		.ftx-card-header .btn-fundo-laranja {
 			outline: 2px solid rgba(255, 255, 255, 0.5) !important;
 			outline-offset: 1px;
@@ -58,12 +58,12 @@
 				<div class="ftx-card-header">
 					<h2 class="titulo-paginas">
 						<i class="fa-duotone fa-conveyor-belt-boxes"></i>
-						Movimentação de Patrimônios
+						MovimentaÃ§Ã£o de PatrimÃ´nios
 					</h2>
 					<div class="ftx-card-actions">
 						<a href="./MovimentacaoPatrimonio/Upsert" class="btn btn-fundo-laranja" data-ftx-loading>
 							<i class="fa-duotone fa-clone-plus icon-pulse me-1"></i>
-							Inserir Movimentação
+							Inserir MovimentaÃ§Ã£o
 						</a>
 					</div>
 				</div>
@@ -75,11 +75,11 @@
 							<div class="d-flex justify-content-between align-items-center">
 								<label class="fw-bold mb-0">
 									<i class="fa-duotone fa-filter"></i>
-									Escolha os filtros desejados para visualizar as Movimentações:
+									Escolha os filtros desejados para visualizar as MovimentaÃ§Ãµes:
 								</label>
 								<button id="btnFiltrarMovimentacoes" class="btn btn-marrom">
 									<i class="fa-duotone fa-filter"></i>
-									Filtrar Movimentações
+									Filtrar MovimentaÃ§Ãµes
 								</button>
 							</div>
 						</div>
@@ -91,10 +91,10 @@
 								<div class="col-sm-3">
 									<label for="drpDataMovimentacao" class="form-label">
 										<i class="fa-duotone fa-calendar"></i>
-										Data Movimentação
+										Data MovimentaÃ§Ã£o
 									</label>
 									<ejs-daterangepicker id="drpDataMovimentacao" 
-										placeholder="Selecione o período" 
+										placeholder="Selecione o perÃ­odo" 
 										format="dd/MM/yyyy"
 										locale="pt-BR"
 										cssClass="e-outline">
@@ -104,10 +104,10 @@
 								<div class="col-sm-3">
 									<label for="ddtSetorSecaoOrigem" class="form-label">
 										<i class="fa-duotone fa-building"></i>
-										Setor/Seção Origem
+										Setor/SeÃ§Ã£o Origem
 									</label>
 									<ejs-dropdowntree id="ddtSetorSecaoOrigem"
-										placeholder="Selecione Setor/Seção Origem"
+										placeholder="Selecione Setor/SeÃ§Ã£o Origem"
 										popupHeight="300px"
 										showCheckBox="true"
 										mode="Delimiter"
@@ -120,10 +120,10 @@
 								<div class="col-sm-3">
 									<label for="ddtSetorSecaoDestino" class="form-label">
 										<i class="fa-duotone fa-building"></i>
-										Setor/Seção Destino
+										Setor/SeÃ§Ã£o Destino
 									</label>
 									<ejs-dropdowntree id="ddtSetorSecaoDestino"
-										placeholder="Selecione Setor/Seção Destino"
+										placeholder="Selecione Setor/SeÃ§Ã£o Destino"
 										popupHeight="300px"
 										showCheckBox="true"
 										mode="Delimiter"
@@ -136,10 +136,10 @@
 								<div class="col-sm-3">
 									<label for="cmbResponsavel" class="form-label">
 										<i class="fa-duotone fa-user"></i>
-										Responsável
+										ResponsÃ¡vel
 									</label>
 									<ejs-combobox id="cmbResponsavel"
-										placeholder="Selecione o Responsável"
+										placeholder="Selecione o ResponsÃ¡vel"
 										allowFiltering="true"
 										filterBarPlaceholder="Buscar..."
 										cssClass="e-outline">
@@ -153,15 +153,15 @@
 						<table id="tblMovimentacaoPatrimonio" class="table table-bordered table-striped" width="100%">
 							<thead>
 								<tr>
-									<th>Data Movimentação</th>
+									<th>Data MovimentaÃ§Ã£o</th>
 									<th>NPR</th>
-									<th>Descrição</th>
+									<th>DescriÃ§Ã£o</th>
 									<th>Setor Origem</th>
-									<th>Seção Origem</th>
+									<th>SeÃ§Ã£o Origem</th>
 									<th>Setor Destino</th>
-									<th>Seção Destino</th>
-									<th>Responsável Movimentação</th>
-									<th>Ação</th>
+									<th>SeÃ§Ã£o Destino</th>
+									<th>ResponsÃ¡vel MovimentaÃ§Ã£o</th>
+									<th>AÃ§Ã£o</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -174,7 +174,7 @@
 	</div>
 </div>
 
-<!-- OVERLAY DE LOADING - PADRÃO FROTIX -->
+<!-- OVERLAY DE LOADING - PADRÃƒO FROTIX -->
 <div id="loadingOverlayMovPatrimonio" class="ftx-spin-overlay" style="z-index: 999999; cursor: wait; display: none;">
     <div class="ftx-spin-box" style="text-align: center; min-width: 300px;">
         <img src="/images/logo_gota_frotix_transparente.png" alt="FrotiX" class="ftx-loading-logo" style="display: block;" />
@@ -185,8 +185,9 @@
 </div>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
 	<script src="~/js/cadastros/movimentacaopatrimonio.js" asp-append-version="true"></script>
 }
+

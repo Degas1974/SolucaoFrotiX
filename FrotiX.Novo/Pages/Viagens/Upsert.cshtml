@@ -1,28 +1,28 @@
-@*
- * ⚡ ARQUIVO: Pages/Viagens/Upsert.cshtml
+﻿@*
+ * âš¡ ARQUIVO: Pages/Viagens/Upsert.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Formulário completo criar/editar viagem com campos viagem (data/hora, motorista, veículo,
- *                   origem, destino, KM), ficha vistoria (imagem preview), descrição viagem (Kendo Editor),
- *                   múltiplos modais (ocorrências, anexos), validações Syncfusion, integração com DocumentEditor
- * 📥 ENTRADAS     : @page /Viagens/Upsert, @model UpsertModel, route parameter id para edição (opcional),
+ * ðŸŽ¯ OBJETIVO     : FormulÃ¡rio completo criar/editar viagem com campos viagem (data/hora, motorista, veÃ­culo,
+ *                   origem, destino, KM), ficha vistoria (imagem preview), descriÃ§Ã£o viagem (Kendo Editor),
+ *                   mÃºltiplos modais (ocorrÃªncias, anexos), validaÃ§Ãµes Syncfusion, integraÃ§Ã£o com DocumentEditor
+ * ðŸ“¥ ENTRADAS     : @page /Viagens/Upsert, @model UpsertModel, route parameter id para ediÃ§Ã£o (opcional),
  *                   campos viagem (DateTime DataViagem, MotoristaId, VeiculoId, Origem, Destino, KmPercorrido, etc),
- *                   upload ficha vistoria (imagem jpeg base64), input Kendo Editor descrição viagem (sfdt format)
- * 📤 SAÍDAS       : POST /api/Viagem/Insere ou Edita (JSON), redirect /Viagens/Index, AppToast feedback,
- *                   modal confirmação finalização com IA validação Z-Score, preview ficha vistoria, campo descrição
- *                   texto rico (Kendo DocumentEditor), ações CRUD (salvar, cancelar, deletar)
- * 🔗 CHAMADA POR  : Viagens/Index (botão "Nova Viagem", editar linha viagem), menu principal "Cadastros > Viagens > Upsert"
- * 🔄 CHAMA        : /api/Viagem/Insere, /api/Viagem/Edita, /api/Viagem/Detalhes, ~/js/cadastros/viagem_upsert.js
- *                   (JavaScript ~500 linhas - validações, upload ficha, descrição SFDT), Kendo Editor (online),
+ *                   upload ficha vistoria (imagem jpeg base64), input Kendo Editor descriÃ§Ã£o viagem (sfdt format)
+ * ðŸ“¤ SAÃDAS       : POST /api/Viagem/Insere ou Edita (JSON), redirect /Viagens/Index, AppToast feedback,
+ *                   modal confirmaÃ§Ã£o finalizaÃ§Ã£o com IA validaÃ§Ã£o Z-Score, preview ficha vistoria, campo descriÃ§Ã£o
+ *                   texto rico (Kendo DocumentEditor), aÃ§Ãµes CRUD (salvar, cancelar, deletar)
+ * ðŸ”— CHAMADA POR  : Viagens/Index (botÃ£o "Nova Viagem", editar linha viagem), menu principal "Cadastros > Viagens > Upsert"
+ * ðŸ”„ CHAMA        : /api/Viagem/Insere, /api/Viagem/Edita, /api/Viagem/Detalhes, ~/js/cadastros/viagem_upsert.js
+ *                   (JavaScript ~500 linhas - validaÃ§Ãµes, upload ficha, descriÃ§Ã£o SFDT), Kendo Editor (online),
  *                   Syncfusion DropDowns (MotoristaId, VeiculoId, etc), FileUpload (fichaVistoria),
  *                   AppToast feedback (sucesso/erro), FrotiX helpers
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, UpsertModel (code-behind), Syncfusion EJ2 (DropDowns, DatePicker),
+ * ðŸ“¦ DEPENDÃŠNCIAS : ASP.NET Core Razor Pages, UpsertModel (code-behind), Syncfusion EJ2 (DropDowns, DatePicker),
  *                   Kendo Mvc (Editor DocumentEditor SFDT editor), Bootstrap 5, jQuery, viagem_upsert.js,
- *                   AppToast.js (notificações), Alerta.js (tratamento erros), FtxSpin (loading),
- *                   Font Awesome Duotone (fa-route, fa-upload-cloud), CSS inline (card padrão FrotiX, ~400 linhas)
- * 📝 OBSERVAÇÕES  : Total: ~1100 linhas. ISSUES: CSS inline ~400 linhas (extrair em futuro), JavaScript inline ~100 linhas
+ *                   AppToast.js (notificaÃ§Ãµes), Alerta.js (tratamento erros), FtxSpin (loading),
+ *                   Font Awesome Duotone (fa-route, fa-upload-cloud), CSS inline (card padrÃ£o FrotiX, ~400 linhas)
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : Total: ~1100 linhas. ISSUES: CSS inline ~400 linhas (extrair em futuro), JavaScript inline ~100 linhas
  *                   (mover para viagem_upsert.js), Kendo Editor SFDT formato Word Document (complexo, UTF8 encoding),
- *                   preview ficha vistoria dinamicamente (base64 ou default image cache-busting), validações múltiplas,
- *                   IA inteligente Z-Score finalização (integração AI), sem lazy loading descrição SFDT editor.
+ *                   preview ficha vistoria dinamicamente (base64 ou default image cache-busting), validaÃ§Ãµes mÃºltiplas,
+ *                   IA inteligente Z-Score finalizaÃ§Ã£o (integraÃ§Ã£o AI), sem lazy loading descriÃ§Ã£o SFDT editor.
  *                   ViewData: Title "Viagens", PageName "viagens_upsert", Category1 "Cadastros", PageIcon "fa-route"
  *@
 
@@ -38,13 +38,13 @@
 @model FrotiX.Pages.Viagens.UpsertModel
 
 @{
-// Declaração das variáveis que você vai usar no preview
+// DeclaraÃ§Ã£o das variÃ¡veis que vocÃª vai usar no preview
 bool hasBytes = Model.ViagemObj.Viagem.FichaVistoria != null;
-// Garante que o browser não fique carregando uma versão em cache
+// Garante que o browser nÃ£o fique carregando uma versÃ£o em cache
 string defaultImg = Url.Content("~/Images/FichaAmarelaNova.JPG")
                     + "?t=" + DateTime.Now.Ticks;
 
-// Pré-calcula src da imagem
+// PrÃ©-calcula src da imagem
 string imgSrc;
 
 if (hasBytes)
@@ -94,7 +94,7 @@ ViewData["valueTemplate"] = @"
 
 @section HeadBlock {
 	<style>
-/* ======== OUTLINE BRANCO NO BOTÃO DO HEADER (Padrão FrotiX) ======== */
+/* ======== OUTLINE BRANCO NO BOTÃƒO DO HEADER (PadrÃ£o FrotiX) ======== */
 		.ftx-card-header .btn-fundo-laranja {
 			outline: 2px solid rgba(255, 255, 255, 0.5) !important;
 			outline-offset: 1px;
@@ -138,9 +138,9 @@ ViewData["valueTemplate"] = @"
 }
 
 <script>
-    //============================== FUNÇÕES (JS) ===========================================
+    //============================== FUNÃ‡Ã•ES (JS) ===========================================
 
-    // Evita submissão de formulários ao pressionar Enter em certos elementos
+    // Evita submissÃ£o de formulÃ¡rios ao pressionar Enter em certos elementos
     function stopEnterSubmitting(e) {
         try {
             const evt = e || window.event;
@@ -267,7 +267,7 @@ ViewData["valueTemplate"] = @"
         }
     }
 
-    // Controla habilitação/desabilitação da seção de ocorrências
+    // Controla habilitaÃ§Ã£o/desabilitaÃ§Ã£o da seÃ§Ã£o de ocorrÃªncias
     function controlarSecaoOcorrencias(veiculoId) {
         try {
             const secao = document.getElementById('secaoOcorrenciasUpsert');
@@ -276,7 +276,7 @@ ViewData["valueTemplate"] = @"
             
             if (!secao) return;
             
-            // Se viagem finalizada, manter botão desabilitado sempre
+            // Se viagem finalizada, manter botÃ£o desabilitado sempre
             if (window.viagemFinalizada === true) {
                 if (btnAdicionar) btnAdicionar.disabled = true;
                 return;
@@ -290,12 +290,12 @@ ViewData["valueTemplate"] = @"
                                veiculoId !== undefined;
             
             if (temVeiculo) {
-                // Veículo selecionado - habilitar seção
+                // VeÃ­culo selecionado - habilitar seÃ§Ã£o
                 secao.classList.remove('ftx-section-disabled');
                 if (btnAdicionar) btnAdicionar.disabled = false;
                 if (aviso) aviso.style.display = 'none';
             } else {
-                // Sem veículo - desabilitar seção
+                // Sem veÃ­culo - desabilitar seÃ§Ã£o
                 secao.classList.add('ftx-section-disabled');
                 if (btnAdicionar) btnAdicionar.disabled = true;
                 if (aviso) aviso.style.display = '';
@@ -305,7 +305,7 @@ ViewData["valueTemplate"] = @"
         }
     }
 
-    // Gatilho ao trocar veículo - chamado pelo change do combo
+    // Gatilho ao trocar veÃ­culo - chamado pelo change do combo
     function VeiculoValueChange() {
         try {
             const cmbVeiculo = document.getElementById('cmbVeiculo');
@@ -316,7 +316,7 @@ ViewData["valueTemplate"] = @"
                 veiculoId = veiculoId[0];
             }
             
-            // Controlar seção de ocorrências
+            // Controlar seÃ§Ã£o de ocorrÃªncias
             controlarSecaoOcorrencias(veiculoId);
         } catch (error) {
             Alerta.TratamentoErroComLinha("Upsert.cshtml", "VeiculoValueChange", error);
@@ -329,7 +329,7 @@ ViewData["valueTemplate"] = @"
             try {
                 const requisitanteId = document.getElementById('cmbRequisitante').ej2_instances[0]?.value;
                 if (!requisitanteId) return;
-                // Placeholder para lógica futura
+                // Placeholder para lÃ³gica futura
             } catch (error) {
                 TratamentoErroComLinha("Viagem_050", "RequisitanteValueChange", error);
             }
@@ -344,7 +344,7 @@ ViewData["valueTemplate"] = @"
             try {
                 const requisitanteId = document.getElementById('lstRequisitanteEvento').ej2_instances[0]?.value;
                 if (!requisitanteId) return;
-                // Placeholder para lógica futura
+                // Placeholder para lÃ³gica futura
             } catch (error) {
                 TratamentoErroComLinha("Viagem_050", "RequisitanteEventoValueChange", error);
             }
@@ -418,7 +418,7 @@ ViewData["valueTemplate"] = @"
         }
     }
 
-	// Função para atualizar imagem no modal
+	// FunÃ§Ã£o para atualizar imagem no modal
 	function atualizarImagemModal()
 	{
 		const imgSrc = document.getElementById('imgViewerItem').src;
@@ -431,7 +431,7 @@ ViewData["valueTemplate"] = @"
 
 </script>
 <script>
-    // ---------------- Normalização e Similaridade ----------------
+    // ---------------- NormalizaÃ§Ã£o e Similaridade ----------------
     function normalize(str) {
         try {
             if (!str) return "";
@@ -559,7 +559,7 @@ ViewData["valueTemplate"] = @"
         }
     }
 
-    // ---------------- Validação contra a LISTA (usa master) ----------------
+    // ---------------- ValidaÃ§Ã£o contra a LISTA (usa master) ----------------
     function validarDuplicadoNaLista(combo, opts) {
         try {
             const {
@@ -570,7 +570,7 @@ ViewData["valueTemplate"] = @"
                 autoCanonizar = true
             } = opts || {};
 
-            // Se usuário selecionou opção da lista, não alerta
+            // Se usuÃ¡rio selecionou opÃ§Ã£o da lista, nÃ£o alerta
             if (Number.isInteger(combo.index) && combo.index >= 0) return;
 
             const digitado = combo.inputElement ? combo.inputElement.value : combo.value;
@@ -612,19 +612,19 @@ ViewData["valueTemplate"] = @"
             const pct = (best.score * 100).toFixed(0);
             const id = combo.element?.id || "";
             const tituloBase = id === "cmbOrigem" ? "Origem" : id === "cmbDestino" ? "Destino" : "Item";
-            const sugestao = incluirSugestao ? `\nSugestão: “${best.item}” (similaridade ${pct}%).` : "";
+            const sugestao = incluirSugestao ? `\nSugestÃ£o: â€œ${best.item}â€ (similaridade ${pct}%).` : "";
 
             if (best.score >= warnThreshold) {
-                alertWarn(`Provável duplicado • ${tituloBase}`, `É muito provável que já exista na lista.${sugestao}`, confirmarTexto);
+                alertWarn(`ProvÃ¡vel duplicado â€¢ ${tituloBase}`, `Ã‰ muito provÃ¡vel que jÃ¡ exista na lista.${sugestao}`, confirmarTexto);
             } else if (best.score >= infoThreshold) {
-                alertInfo(`Semelhança alta • ${tituloBase}`, `Pode já existir algo parecido na lista.${sugestao}`, confirmarTexto);
+                alertInfo(`SemelhanÃ§a alta â€¢ ${tituloBase}`, `Pode jÃ¡ existir algo parecido na lista.${sugestao}`, confirmarTexto);
             }
         } catch (error) {
             Alerta.TratamentoErroComLinha("Upsert.cshtml", "validarDuplicadoNaLista", error);
         }
     }
 
-    // ---------------- Validação CRUZADA (Origem x Destino) ----------------
+    // ---------------- ValidaÃ§Ã£o CRUZADA (Origem x Destino) ----------------
     function validarCruzado(origemCombo, destinoCombo, opts) {
         try {
             const { infoThreshold = 0.85, warnThreshold = 0.92, confirmarTexto = "OK" } = opts || {};
@@ -642,7 +642,7 @@ ViewData["valueTemplate"] = @"
             if (score >= warnThreshold) {
                 alertWarn("Origem e destino muito parecidos", `Os campos parecem referir-se ao mesmo lugar (similaridade ${pct}%).`, confirmarTexto);
             } else if (score >= infoThreshold) {
-                alertInfo("Origem e destino semelhantes", `Verifique se são realmente distintos (similaridade ${pct}%).`, confirmarTexto);
+                alertInfo("Origem e destino semelhantes", `Verifique se sÃ£o realmente distintos (similaridade ${pct}%).`, confirmarTexto);
             }
         } catch (error) {
             Alerta.TratamentoErroComLinha("Upsert.cshtml", "validarCruzado", error);
@@ -678,7 +678,7 @@ ViewData["valueTemplate"] = @"
         }
     })();
 
-    // Fallback opcional se Alerta não estiver carregado
+    // Fallback opcional se Alerta nÃ£o estiver carregado
     window.Alerta = window.Alerta || {
         Info: (t, x) => alert(`${t}\n\n${x}`),
         Warning: (t, x) => alert(`${t}\n\n${x}`)
@@ -702,9 +702,9 @@ ViewData["valueTemplate"] = @"
 </script>
 
 <style>
-    /* Header usa padrão global .ftx-card-header do frotix.css */
+    /* Header usa padrÃ£o global .ftx-card-header do frotix.css */
 
-    /* ======== SEÇÕES TEMÁTICAS ======== */
+    /* ======== SEÃ‡Ã•ES TEMÃTICAS ======== */
     .ftx-section {
         background: linear-gradient(135deg, #fafbfc 0%, #f5f6f7 100%);
         border-radius: 10px;
@@ -733,7 +733,7 @@ ViewData["valueTemplate"] = @"
         opacity: 0.85;
     }
 
-    /* Cores das seções */
+    /* Cores das seÃ§Ãµes */
     .ftx-section-periodo { border-left-color: #325d88; }
     .ftx-section-periodo .ftx-section-title { color: #325d88; }
 
@@ -779,7 +779,7 @@ ViewData["valueTemplate"] = @"
         font-size: 0.9rem !important;
     }
 
-    /* Correção das bordas dos controles Syncfusion */
+    /* CorreÃ§Ã£o das bordas dos controles Syncfusion */
     .e-input-group,
     .e-input-group.e-control-wrapper,
     .e-ddl.e-input-group,
@@ -789,7 +789,7 @@ ViewData["valueTemplate"] = @"
         border-radius: 0.25rem !important;
     }
 
-    /* Força a linha de borda dos controles Syncfusion */
+    /* ForÃ§a a linha de borda dos controles Syncfusion */
     .e-float-line::before,
     .e-float-line::after {
         background: #ced4da !important;
@@ -821,7 +821,7 @@ ViewData["valueTemplate"] = @"
         box-shadow: 0 0 0 0.2rem rgba(50, 93, 136, 0.15);
     }
 
-    /* Valor calculado em destaque - cor sólida intermediária */
+    /* Valor calculado em destaque - cor sÃ³lida intermediÃ¡ria */
     .ftx-calculated {
         background-color: #c9e0f5 !important;
         border: 1px solid #90caf9;
@@ -829,7 +829,7 @@ ViewData["valueTemplate"] = @"
         color: #1565c0;
     }
 
-    /* Form group com espaçamento adequado */
+    /* Form group com espaÃ§amento adequado */
     .ftx-section .form-group {
         margin-bottom: 0.75rem;
     }
@@ -856,7 +856,7 @@ ViewData["valueTemplate"] = @"
     }
 
     .label i {
-        display: none; /* Esconde ícones individuais das labels */
+        display: none; /* Esconde Ã­cones individuais das labels */
     }
 
     input[type=checkbox] {
@@ -890,7 +890,7 @@ ViewData["valueTemplate"] = @"
         margin: 0.5rem 0;
     }
 
-    /* ======== Botões customizados ======== */
+    /* ======== BotÃµes customizados ======== */
     .btn-vinho {
         background-color: #c82333 !important;
         color: #fff !important;
@@ -932,7 +932,7 @@ ViewData["valueTemplate"] = @"
             box-shadow: none !important;
         }
 
-    /* Botão primário usado nos modais desta página */
+    /* BotÃ£o primÃ¡rio usado nos modais desta pÃ¡gina */
     .custom-primary-btn {
         background-color: #0d6efd !important;
         color: #fff !important;
@@ -986,7 +986,7 @@ ViewData["valueTemplate"] = @"
             border-radius: 50%;
             margin-right: 8px;
         }
-            /* Balão laranja bonitão */
+            /* BalÃ£o laranja bonitÃ£o */
     .e-tooltip-wrap,
     .e-tooltip-wrap.custom-orange-tooltip,
     .e-tooltip-wrap.tooltip-laranja {
@@ -1045,7 +1045,7 @@ ViewData["valueTemplate"] = @"
             outline: none !important;
         }
 
-    /* ======== ZOOM – botão na imagem ======== */
+    /* ======== ZOOM â€“ botÃ£o na imagem ======== */
     .img-zoom-wrapper {
         position: relative;
         display: inline-block;
@@ -1111,7 +1111,7 @@ ViewData["valueTemplate"] = @"
         filter: drop-shadow(0 1px 3px rgba(0,0,0,.35));
     }
 
-    /* Validação sutil */
+    /* ValidaÃ§Ã£o sutil */
     :root {
         --ftx-invalid: #dc3545;
         --ftx-glow: rgba(220,53,69,.18);
@@ -1157,7 +1157,7 @@ ViewData["valueTemplate"] = @"
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    /* ===== BADGES DE OCORRÊNCIA ===== */
+    /* ===== BADGES DE OCORRÃŠNCIA ===== */
     .ftx-ocorrencia-badge {
         display: inline-flex;
         align-items: center;
@@ -1195,7 +1195,7 @@ ViewData["valueTemplate"] = @"
 
 <!-- FORM PRINCIPAL (MVC) -->
 <form method="post" asp-action="Upsert" onkeypress="stopEnterSubmitting(event)" enctype="multipart/form-data">
-    <!-- Utiliza container-fluid para maior largura e alinhamento à esquerda -->
+    <!-- Utiliza container-fluid para maior largura e alinhamento Ã  esquerda -->
     <div class="container-fluid" style="padding-left: 0; margin-left: 0;">
         <div class="row">
             <div class="col-xl-12">
@@ -1208,7 +1208,7 @@ ViewData["valueTemplate"] = @"
                             {
                                 <h2 class="titulo-paginas">
                                     <i class="fa-duotone fa-suitcase-rolling"></i>
-                                    Viagem Realizada/Cancelada - Edição não permitida
+                                    Viagem Realizada/Cancelada - EdiÃ§Ã£o nÃ£o permitida
                                 </h2>
                             }
                             else
@@ -1221,20 +1221,20 @@ ViewData["valueTemplate"] = @"
                             <div class="ftx-card-actions">
                                 <a href="javascript:void(0)" class="btn btn-fundo-laranja" id="btnVoltarLista" data-ftx-loading>
                                     <i class="fa-duotone fa-rotate-left icon-space icon-rotate-left"></i>
-                                    Voltar à Lista
+                                    Voltar Ã  Lista
                                 </a>
                             </div>
                         </div>
 
                         <div id="divPainel" class="panel-content">
                             @{
-                                // Verificar se viagem está finalizada (Realizada ou Cancelada)
+                                // Verificar se viagem estÃ¡ finalizada (Realizada ou Cancelada)
                                 bool viagemFinalizada = Model.ViagemObj?.Viagem?.Status == "Realizada" || 
                                                        Model.ViagemObj?.Viagem?.Status == "Cancelada";
                             }
                             <input type="hidden" asp-for="@Model.ViagemObj.Viagem.ViagemId" id="txtViagemId" />
 
-                            <!-- Campo hidden para manter a imagem existente caso não haja novo upload -->
+                            <!-- Campo hidden para manter a imagem existente caso nÃ£o haja novo upload -->
                             @if (Model.ViagemObj?.Viagem?.FichaVistoria != null)
                             {
                             <input type="hidden"
@@ -1244,30 +1244,30 @@ ViewData["valueTemplate"] = @"
 
                             <div class="p-3">
 
-                                <!-- ═══════════════════════════════════════════════════════════
-                                     SEÇÃO 1: PERÍODO DA VIAGEM
-                                     ═══════════════════════════════════════════════════════════ -->
+                                <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                                     SEÃ‡ÃƒO 1: PERÃODO DA VIAGEM
+                                     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
                                 <div class="ftx-section ftx-section-periodo">
                                     <div class="ftx-section-title">
                                         <i class="fa-duotone fa-calendar-range"></i>
-                                        Período da Viagem
+                                        PerÃ­odo da Viagem
                                     </div>
                                     <div class="row g-3">
                                         <div class="col-12 col-md-2">
                                             <label class="ftx-label" asp-for="ViagemObj.Viagem.NoFichaVistoria">
-                                                Nº Ficha Vistoria
+                                                NÂº Ficha Vistoria
                                             </label>
                                             <span class="text-danger font-weight-light" asp-validation-for="ViagemObj.Viagem.NoFichaVistoria"></span>
-                                            @* Container para alternar entre campo numérico e texto mobile*@
+                                            @* Container para alternar entre campo numÃ©rico e texto mobile*@
                                             @{
-                                                // Determinar se é nova viagem ou edição
+                                                // Determinar se Ã© nova viagem ou ediÃ§Ã£o
                                                 bool isNovaViagem = Model.ViagemObj?.Viagem?.ViagemId == null || 
                                                                     Model.ViagemObj.Viagem.ViagemId == Guid.Empty;
-                                                // Se é edição, verificar se é viagem mobile (NoFichaVistoria = 0 ou null)
+                                                // Se Ã© ediÃ§Ã£o, verificar se Ã© viagem mobile (NoFichaVistoria = 0 ou null)
                                                 bool isViagemMobile = !isNovaViagem && 
                                                                       (Model.ViagemObj?.Viagem?.NoFichaVistoria == null || 
                                                                        Model.ViagemObj.Viagem.NoFichaVistoria == 0);
-                                                // Mostrar campo numérico se: nova viagem OU edição de viagem web
+                                                // Mostrar campo numÃ©rico se: nova viagem OU ediÃ§Ã£o de viagem web
                                                 bool mostrarCampoNumerico = isNovaViagem || !isViagemMobile;
                                             }
                                             <div id="containerNoFichaVistoria">
@@ -1292,7 +1292,7 @@ ViewData["valueTemplate"] = @"
                                         </div>
                                         <div class="col-6 col-md-2">
                                             <label class="ftx-label ftx-required" asp-for="ViagemObj.Viagem.HoraInicio">
-                                                Hora Início
+                                                Hora InÃ­cio
                                             </label>
                                             <span class="text-danger font-weight-light" asp-validation-for="ViagemObj.Viagem.HoraInicio"></span>
                                             <input id="txtHoraInicial" class="form-control" asp-for="ViagemObj.Viagem.HoraInicio" type="time" />
@@ -1312,16 +1312,16 @@ ViewData["valueTemplate"] = @"
                                             <input id="txtHoraFinal" class="form-control" asp-for="ViagemObj.Viagem.HoraFim" type="time" />
                                         </div>
                                         <div class="col-6 col-md-2">
-                                            <label class="ftx-label">Duração</label>
+                                            <label class="ftx-label">DuraÃ§Ã£o</label>
                                             <input id="txtDuracao" class="form-control ftx-calculated" disabled 
-                                                   data-ejtip="Se a <span style='color: #A0522D; font-weight: bold;'>Duração</span> estiver alta, revise o horário e datas" />
+                                                   data-ejtip="Se a <span style='color: #A0522D; font-weight: bold;'>DuraÃ§Ã£o</span> estiver alta, revise o horÃ¡rio e datas" />
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- ═══════════════════════════════════════════════════════════
-                                     SEÇÃO 2: TRAJETO
-                                     ═══════════════════════════════════════════════════════════ -->
+                                <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                                     SEÃ‡ÃƒO 2: TRAJETO
+                                     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
                                 <div class="ftx-section ftx-section-trajeto">
                                     <div class="ftx-section-title">
                                         <i class="fa-duotone fa-route"></i>
@@ -1367,9 +1367,9 @@ ViewData["valueTemplate"] = @"
                                     </div>
                                 </div>
 
-                                <!-- ═══════════════════════════════════════════════════════════
-                                     SEÇÃO EVENTO (ESCONDIDA - aparece quando finalidade = Evento)
-                                     ═══════════════════════════════════════════════════════════ -->
+                                <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                                     SEÃ‡ÃƒO EVENTO (ESCONDIDA - aparece quando finalidade = Evento)
+                                     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
                                 <div id="divEvento" class="ftx-section ftx-section-evento esconde-diveventos">
                                     <div class="ftx-section-title">
                                         <i class="fa-duotone fa-calendar-star"></i>
@@ -1401,13 +1401,13 @@ ViewData["valueTemplate"] = @"
                                     </div>
                                 </div>
 
-                                <!-- ═══════════════════════════════════════════════════════════
-                                     SEÇÃO 3: MOTORISTA E VEÍCULO
-                                     ═══════════════════════════════════════════════════════════ -->
+                                <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                                     SEÃ‡ÃƒO 3: MOTORISTA E VEÃCULO
+                                     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
                                 <div class="ftx-section ftx-section-veiculo">
                                     <div class="ftx-section-title">
                                         <i class="fa-duotone fa-car-side"></i>
-                                        Motorista e Veículo
+                                        Motorista e VeÃ­culo
                                     </div>
                                     <div class="row g-3 mb-3">
                                         <div class="col-12 col-md-5">
@@ -1427,10 +1427,10 @@ ViewData["valueTemplate"] = @"
                                             </ejs-combobox>
                                         </div>
                                         <div class="col-12 col-md-5">
-                                            <label class="ftx-label ftx-required">Veículo</label>
+                                            <label class="ftx-label ftx-required">VeÃ­culo</label>
                                             <div class="d-flex align-items-center gap-2">
                                                 <div class="flex-grow-1">
-                                                    <ejs-combobox id="cmbVeiculo" placeholder="Selecione um Veículo"
+                                                    <ejs-combobox id="cmbVeiculo" placeholder="Selecione um VeÃ­culo"
                                                                   allowFiltering="true" filterType="Contains"
                                                                   dataSource="@ViewData["dataVeiculo"]" popupHeight="200px"
                                                                   width="100%" showClearButton="true"
@@ -1439,12 +1439,12 @@ ViewData["valueTemplate"] = @"
                                                         <e-combobox-fields text="Descricao" value="VeiculoId"></e-combobox-fields>
                                                     </ejs-combobox>
                                                 </div>
-                                                <!-- Botão Ocorrências - QUADRADO 42x42 -->
+                                                <!-- BotÃ£o OcorrÃªncias - QUADRADO 42x42 -->
                                                 <button type="button"
                                                         id="btnOcorrenciasVeiculo"
                                                         class="btn btn-ocorrencias-viagem text-white disabled"
                                                         disabled
-                                                        title="Nenhuma ocorrência em aberto"
+                                                        title="Nenhuma ocorrÃªncia em aberto"
                                                         style="position: relative; flex-shrink: 0; width: 42px; height: 42px; padding: 0; display: flex; align-items: center; justify-content: center;">
                                                     <i class="fa-duotone fa-car-burst" style="font-size: 1.2rem;"></i>
                                                     <span id="badgeOcorrenciasVeiculo"
@@ -1455,7 +1455,7 @@ ViewData["valueTemplate"] = @"
                                                 </button>
                                             </div>
                                         </div>
-                                        <!-- Km Atual - MENOR (col-4 ao invés de col-6) -->
+                                        <!-- Km Atual - MENOR (col-4 ao invÃ©s de col-6) -->
                                         <div class="col-4 col-md-2">
                                             <label class="ftx-label" asp-for="ViagemObj.Viagem.KmAtual">Km Atual</label>
                                             <span class="text-danger font-weight-light" asp-validation-for="ViagemObj.Viagem.KmAtual"></span>
@@ -1483,17 +1483,17 @@ ViewData["valueTemplate"] = @"
                                         </div>
                                     </div>
                                 </div>
-                                <!-- ═══════════════════════════════════════════════════════════
-                                     SEÇÃO 4: COMBUSTÍVEL
-                                     ═══════════════════════════════════════════════════════════ -->
+                                <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                                     SEÃ‡ÃƒO 4: COMBUSTÃVEL
+                                     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
                                 <div class="ftx-section ftx-section-combustivel">
                                     <div class="ftx-section-title">
                                         <i class="fa-duotone fa-gas-pump"></i>
-                                        Combustível
+                                        CombustÃ­vel
                                     </div>
                                     <div class="row g-3">
                                         <div class="col-6 col-md-3">
-                                            <label class="ftx-label ftx-required">Combustível Inicial</label>
+                                            <label class="ftx-label ftx-required">CombustÃ­vel Inicial</label>
                                             <span class="text-danger font-weight-light" asp-validation-for="ViagemObj.Viagem.CombustivelInicial"></span>
                                             @(Html.Kendo().DropDownList()
                                                 .Name("ddtCombustivelInicial")
@@ -1516,7 +1516,7 @@ ViewData["valueTemplate"] = @"
                                             <input type="hidden" asp-for="ViagemObj.Viagem.CombustivelInicial" id="hiddenCombustivelInicial" />
                                         </div>
                                         <div class="col-6 col-md-3">
-                                            <label class="ftx-label">Combustível Final</label>
+                                            <label class="ftx-label">CombustÃ­vel Final</label>
                                             <span class="text-danger font-weight-light" asp-validation-for="ViagemObj.Viagem.CombustivelFinal"></span>
                                             @(Html.Kendo().DropDownList()
                                                 .Name("ddtCombustivelFinal")
@@ -1541,9 +1541,9 @@ ViewData["valueTemplate"] = @"
                                     </div>
                                 </div>
 
-                                <!-- ═══════════════════════════════════════════════════════════
-                                     SEÇÃO 4B: DOCUMENTOS E ITENS ENTREGUES
-                                     ═══════════════════════════════════════════════════════════ -->
+                                <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                                     SEÃ‡ÃƒO 4B: DOCUMENTOS E ITENS ENTREGUES
+                                     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
                                 <div class="ftx-section ftx-section-documentos">
                                     <div class="ftx-section-title">
                                         <i class="fa-duotone fa-box-check"></i>
@@ -1574,7 +1574,7 @@ ViewData["valueTemplate"] = @"
                                                        onchange="document.getElementById('hidStatusCartaoAbastecimento').value = this.checked ? 'Entregue' : '';">
                                                 <label class="form-check-label fw-semibold" for="chkStatusCartaoAbastecimento">
                                                     <i class="fa-duotone fa-credit-card me-1 text-success"></i>
-                                                    Cartão Entregue
+                                                    CartÃ£o Entregue
                                                 </label>
                                             </div>
                                         </div>
@@ -1637,10 +1637,10 @@ ViewData["valueTemplate"] = @"
                                     </div>
                                 </div>
 
-                                <!-- ═══════════════════════════════════════════════════════════
-                                     SEÇÃO 4C: OCORRÊNCIAS DA VIAGEM
-                                     Só habilitada quando um veículo for selecionado
-                                     ═══════════════════════════════════════════════════════════ -->
+                                <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                                     SEÃ‡ÃƒO 4C: OCORRÃŠNCIAS DA VIAGEM
+                                     SÃ³ habilitada quando um veÃ­culo for selecionado
+                                     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
                                 @{
                                     bool temVeiculoSelecionado = Model.ViagemObj?.Viagem?.VeiculoId != null && 
                                                                   Model.ViagemObj.Viagem.VeiculoId != Guid.Empty;
@@ -1648,41 +1648,41 @@ ViewData["valueTemplate"] = @"
                                 <div id="secaoOcorrenciasUpsert" class="ftx-section ftx-section-ocorrencias @(temVeiculoSelecionado ? "" : "ftx-section-disabled")">
                                     <div class="ftx-section-title">
                                         <i class="fa-duotone fa-triangle-exclamation"></i>
-                                        Ocorrências da Viagem
+                                        OcorrÃªncias da Viagem
                                         <span id="badgeOcorrenciasUpsert" class="badge bg-danger ms-2" style="display: none;">0</span>
                                     </div>
                                     
-                                    <!-- Aviso para selecionar veículo -->
+                                    <!-- Aviso para selecionar veÃ­culo -->
                                     <div id="avisoSelecionarVeiculo" class="alert alert-warning py-2 mb-3" style="@(temVeiculoSelecionado ? "display: none;" : "")">
                                         <i class="fa-duotone fa-info-circle me-1"></i>
-                                        Selecione um <strong>veículo</strong> para registrar ocorrências.
+                                        Selecione um <strong>veÃ­culo</strong> para registrar ocorrÃªncias.
                                     </div>
                                     
-                                    <!-- Botão Adicionar Ocorrência -->
+                                    <!-- BotÃ£o Adicionar OcorrÃªncia -->
                                     <div class="row mb-3">
                                         <div class="col-12">
                                             <button type="button" class="btn btn-fundo-laranja" id="btnAdicionarOcorrenciaUpsert" @(temVeiculoSelecionado && !viagemFinalizada ? "" : "disabled")>
                                                 <i class="fa-duotone fa-plus me-1"></i>
-                                                Registrar Ocorrência
+                                                Registrar OcorrÃªncia
                                             </button>
                                         </div>
                                     </div>
                                     
-                                    <!-- Lista de Ocorrências -->
+                                    <!-- Lista de OcorrÃªncias -->
                                     <div id="listaOcorrenciasUpsert" class="ocorrencias-lista">
                                         <div id="semOcorrenciasUpsert" class="text-center text-muted py-4">
                                             <i class="fa-duotone fa-circle-check fa-2x mb-2 text-success"></i>
-                                            <p class="mb-0">Nenhuma ocorrência registrada</p>
+                                            <p class="mb-0">Nenhuma ocorrÃªncia registrada</p>
                                         </div>
                                     </div>
                                     
-                                    <!-- Campo hidden para armazenar ocorrências em JSON -->
+                                    <!-- Campo hidden para armazenar ocorrÃªncias em JSON -->
                                     <input type="hidden" id="hiddenOcorrenciasJson" name="OcorrenciasJson" />
                                 </div>
 
-                                <!-- ═══════════════════════════════════════════════════════════
-                                     SEÇÃO 5: SOLICITANTE
-                                     ═══════════════════════════════════════════════════════════ -->
+                                <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                                     SEÃ‡ÃƒO 5: SOLICITANTE
+                                     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
                                 <div class="ftx-section ftx-section-solicitante">
                                     <div class="ftx-section-title">
                                         <i class="fa-duotone fa-building-user"></i>
@@ -1739,13 +1739,13 @@ ViewData["valueTemplate"] = @"
                                     </div>
                                 </div>
 
-                                <!-- ═══════════════════════════════════════════════════════════
-                                     SEÇÃO 6: DESCRIÇÃO DA VIAGEM
-                                     ═══════════════════════════════════════════════════════════ -->
+                                <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                                     SEÃ‡ÃƒO 6: DESCRIÃ‡ÃƒO DA VIAGEM
+                                     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
                                 <div class="ftx-section ftx-section-descricao">
                                     <div class="ftx-section-title">
                                         <i class="fa-duotone fa-file-lines"></i>
-                                        Descrição da Viagem
+                                        DescriÃ§Ã£o da Viagem
                                     </div>
                                     <div class="row">
                                         <div class="col-12">
@@ -1760,15 +1760,15 @@ ViewData["valueTemplate"] = @"
                                     </div>
                                 </div>
 
-                                <!-- ═══════════════════════════════════════════════════════════
-                                     SEÇÃO 7B: DOCUMENTOS E ITENS DEVOLVIDOS
-                                     Para viagens que já serão fechadas na criação
-                                     ═══════════════════════════════════════════════════════════ -->
+                                <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                                     SEÃ‡ÃƒO 7B: DOCUMENTOS E ITENS DEVOLVIDOS
+                                     Para viagens que jÃ¡ serÃ£o fechadas na criaÃ§Ã£o
+                                     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
                                 <div class="ftx-section ftx-section-devolvidos">
                                     <div class="ftx-section-title">
                                         <i class="fa-duotone fa-box-archive"></i>
                                         Documentos e Itens Devolvidos
-                                        <small class="text-muted fw-normal ms-2">(preencher se a viagem já foi finalizada)</small>
+                                        <small class="text-muted fw-normal ms-2">(preencher se a viagem jÃ¡ foi finalizada)</small>
                                     </div>
                                     <div class="row g-3">
                                         <div class="col-6 col-md-3">
@@ -1795,7 +1795,7 @@ ViewData["valueTemplate"] = @"
                                                        onchange="document.getElementById('hidStatusCartaoAbastecimentoFinal').value = this.checked ? 'Devolvido' : '';">
                                                 <label class="form-check-label fw-semibold" for="chkStatusCartaoAbastecimentoFinal">
                                                     <i class="fa-duotone fa-credit-card me-1 text-info"></i>
-                                                    Cartão Devolvido
+                                                    CartÃ£o Devolvido
                                                 </label>
                                             </div>
                                         </div>
@@ -1873,12 +1873,12 @@ ViewData["valueTemplate"] = @"
                                 </div>
 
 
-                                <!-- ═══════════════════════════════════════════════════════════════════════════
-                                     SEÇÃO MOBILE: RUBRICAS E OCORRÊNCIAS (FrotiX Mobile)
-                                     Só aparece em edição de viagens criadas pelo app mobile (NoFichaVistoria = 0)
-                                     ═══════════════════════════════════════════════════════════════════════════ -->
+                                <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                                     SEÃ‡ÃƒO MOBILE: RUBRICAS E OCORRÃŠNCIAS (FrotiX Mobile)
+                                     SÃ³ aparece em ediÃ§Ã£o de viagens criadas pelo app mobile (NoFichaVistoria = 0)
+                                     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
                                 @{
-                                    // Verificar se é edição de viagem mobile
+                                    // Verificar se Ã© ediÃ§Ã£o de viagem mobile
                                     bool isEdicaoViagemMobile = Model.ViagemObj?.Viagem?.ViagemId != null && 
                                                                 Model.ViagemObj.Viagem.ViagemId != Guid.Empty &&
                                                                 (Model.ViagemObj?.Viagem?.NoFichaVistoria == null || 
@@ -1927,9 +1927,9 @@ ViewData["valueTemplate"] = @"
                                     </div>
                                 </div>
 
-                                <!-- ═══════════════════════════════════════════════════════════
-                                     INFORMAÇÕES DE AUDITORIA
-                                     ═══════════════════════════════════════════════════════════ -->
+                                <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                                     INFORMAÃ‡Ã•ES DE AUDITORIA
+                                     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
                                 <div class="row mb-3">
                                     <div class="col-12">
                                         <div class="d-flex flex-wrap gap-3 text-muted small">
@@ -1981,11 +1981,11 @@ ViewData["valueTemplate"] = @"
                                     </div>
                                 </div>
 
-                                <!-- Botão de Submit -->
+                                <!-- BotÃ£o de Submit -->
                             <div class="form-group row">
                                 <div class="col-12">
                                     <div class="row justify-content-start">
-                                        <!-- Botão visível: Cria/Edita Viagem -->
+                                        <!-- BotÃ£o visÃ­vel: Cria/Edita Viagem -->
                                         <div id="divSubmit" class="col-12 col-md-4 col-lg-3 pb-2" style="@(viagemFinalizada ? "display:none;" : "")">
                                             @if (Model.ViagemObj.Viagem.ViagemId != Guid.Empty)
                                             {
@@ -2014,17 +2014,17 @@ ViewData["valueTemplate"] = @"
                                             }
                                         </div>
 
-                                        <!-- Botão Cancelar Operação -->
+                                        <!-- BotÃ£o Cancelar OperaÃ§Ã£o -->
                                         <div class="col-12 col-md-4 col-lg-3 pb-2">
                                             <a href="javascript:void(0)" class="btn btn-vinho w-100 btn-voltar-lista" data-ftx-loading>
                                                 <span class="d-flex justify-content-center align-items-center">
                                                     <i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i>
-                                                    <span class="ms-2">Cancelar Operação</span>
+                                                    <span class="ms-2">Cancelar OperaÃ§Ã£o</span>
                                                 </span>
                                             </a>
                                         </div>
 
-                                        <!-- Botão oculto para submit via JavaScript -->
+                                        <!-- BotÃ£o oculto para submit via JavaScript -->
                                         <div class="col-12" hidden>
                                             @if (Model.ViagemObj.Viagem.ViagemId != Guid.Empty)
                                             {
@@ -2062,17 +2062,17 @@ ViewData["valueTemplate"] = @"
 <!-- FIM DO FORM PRINCIPAL -->
 
 @{
-    // Reutilizar variáveis de decisão (nova viagem vs edição mobile)
+    // Reutilizar variÃ¡veis de decisÃ£o (nova viagem vs ediÃ§Ã£o mobile)
     bool isNovaViagemFicha = Model.ViagemObj?.Viagem?.ViagemId == null || 
                              Model.ViagemObj.Viagem.ViagemId == Guid.Empty;
     bool isViagemMobileFicha = !isNovaViagemFicha && 
                                (Model.ViagemObj?.Viagem?.NoFichaVistoria == null || 
                                 Model.ViagemObj.Viagem.NoFichaVistoria == 0);
-    // Mostrar ficha de vistoria se: nova viagem OU edição de viagem web
+    // Mostrar ficha de vistoria se: nova viagem OU ediÃ§Ã£o de viagem web
     bool mostrarFichaVistoria = isNovaViagemFicha || !isViagemMobileFicha;
 }
 
-<!-- INÍCIO: FORM DEDICADO À FICHA DE VISTORIA (RAZOR PAGES HANDLER) -->
+<!-- INÃCIO: FORM DEDICADO Ã€ FICHA DE VISTORIA (RAZOR PAGES HANDLER) -->
 <form method="post" asp-page-handler="InsereFicha" enctype="multipart/form-data" id="formFichaVistoria">
     <div class="container-fluid" id="secaoFichaVistoria" style="padding-left: 0; margin-left: 0; @(mostrarFichaVistoria ? "" : "display: none;")">
         <div class="row bottom-space" style="margin-top: 2rem;">
@@ -2090,7 +2090,7 @@ ViewData["valueTemplate"] = @"
                 <!-- Campo hidden para o Base64 da nova imagem -->
                 <input type="hidden" id="hiddenFoto" name="FotoBase64" value="" />
 
-                <!-- Campo hidden para preservar imagem existente (caso não haja novo upload) -->
+                <!-- Campo hidden para preservar imagem existente (caso nÃ£o haja novo upload) -->
                 @if (Model.ViagemObj?.Viagem?.FichaVistoria != null && Model.ViagemObj.Viagem.FichaVistoria.Length > 0)
                 {
                 <input type="hidden"
@@ -2100,11 +2100,11 @@ ViewData["valueTemplate"] = @"
                 }
             </div>
 
-            <!-- coluna do preview + botão -->
+            <!-- coluna do preview + botÃ£o -->
             <div class="col-md-6 col-lg-7 d-flex flex-column align-items-start">
                 <div class="img-zoom-wrapper">
                     @{
-                    string imageSrc = "/images/FichaAmarelaNova.jpg"; // Imagem padrío/fallback
+                    string imageSrc = "/images/FichaAmarelaNova.jpg"; // Imagem padrÃ­o/fallback
                     if (Model.ViagemObj?.Viagem?.FichaVistoria != null && Model.ViagemObj.Viagem.FichaVistoria.Length > 0)
                     {
                     imageSrc = $"data:image/jpeg;base64,{Convert.ToBase64String(Model.ViagemObj.Viagem.FichaVistoria)}";
@@ -2169,7 +2169,7 @@ ViewData["valueTemplate"] = @"
                         </div>
                         <div class="col-8">
                             <div class="form-group">
-                                <label class="label font-weight-bold">Descrição do Evento</label>
+                                <label class="label font-weight-bold">DescriÃ§Ã£o do Evento</label>
                                 <input id="txtDescricaoEvento" class="form-control form-control-xs" />
                             </div>
                         </div>
@@ -2250,7 +2250,7 @@ ViewData["valueTemplate"] = @"
 <div class="modal fade" id="modalRequisitante">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <!-- Cabeçalho -->
+            <!-- CabeÃ§alho -->
             <div class="modal-header modal-header-azul">
                 <h4 class="modal-title">
                     <i class="fa-duotone fa-user-plus"></i>
@@ -2303,7 +2303,7 @@ ViewData["valueTemplate"] = @"
                     <div class="modal-divider"></div>
 
                     <div class="modal-footer justify-content-between">
-                        <!-- Corrigido o texto do botão -->
+                        <!-- Corrigido o texto do botÃ£o -->
                         <button id="btnInserirRequisitante"
                                 class="btn btn-azul"
                                 type="submit"
@@ -2333,7 +2333,7 @@ ViewData["valueTemplate"] = @"
 <div class="modal fade" id="modalSetor">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <!-- Cabeçalho -->
+            <!-- CabeÃ§alho -->
             <div class="modal-header modal-header-azul">
                 <h4 class="modal-title">Inserir um novo Setor Solicitante</h4>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
@@ -2406,7 +2406,7 @@ ViewData["valueTemplate"] = @"
 <div id="syncfusion-toast"></div>
 
 @* ===============================================================================
-   MODAL OCORRÊNCIAS DO VEÍCULO (UPSERT)
+   MODAL OCORRÃŠNCIAS DO VEÃCULO (UPSERT)
    ===============================================================================*@
 <div class="modal fade" id="modalOcorrenciasVeiculoUpsert" tabindex="-1" aria-labelledby="modalOcorrenciasVeiculoUpsertLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
@@ -2414,23 +2414,23 @@ ViewData["valueTemplate"] = @"
             <div class="modal-header modal-header-terracota">
                 <h4 class="modal-title d-flex align-items-center gap-2" id="modalOcorrenciasVeiculoUpsertLabel">
                     <i class="fa-duotone fa-car-burst" aria-hidden="true"></i>
-                    <span>Ocorrências em Aberto do Veículo</span>
+                    <span>OcorrÃªncias em Aberto do VeÃ­culo</span>
                 </h4>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
 
             <div class="modal-body">
-                <!-- Tabela de Ocorrências -->
+                <!-- Tabela de OcorrÃªncias -->
                 <div class="table-responsive">
                     <table id="tblOcorrenciasVeiculoUpsert" class="table table-bordered table-striped table-hover">
                         <thead class="table-dark">
                             <tr>
                                 <th class="text-center" style="width: 50px;">#</th>
                                 <th style="width: 28%;">Resumo</th>
-                                <th style="width: 30%;">Descrição</th>
+                                <th style="width: 30%;">DescriÃ§Ã£o</th>
                                 <th class="text-center" style="width: 90px;">Data</th>
                                 <th class="text-center" style="width: 90px;">Status</th>
-                                <th class="text-center" style="width: 120px;">Ações</th>
+                                <th class="text-center" style="width: 120px;">AÃ§Ãµes</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -2450,7 +2450,7 @@ ViewData["valueTemplate"] = @"
 </div>
 
 @* ===============================================================================
-   MODAL IMAGEM DA OCORRÊNCIA (UPSERT)
+   MODAL IMAGEM DA OCORRÃŠNCIA (UPSERT)
    ===============================================================================*@
 <div class="modal fade" id="modalImagemOcorrenciaUpsert" tabindex="-1" aria-labelledby="modalImagemOcorrenciaUpsertLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -2458,7 +2458,7 @@ ViewData["valueTemplate"] = @"
             <div class="modal-header modal-header-terracota">
                 <h5 class="modal-title d-flex align-items-center gap-2" id="modalImagemOcorrenciaUpsertLabel">
                     <i class="fa-duotone fa-image" aria-hidden="true"></i>
-                    <span>Imagem da Ocorrência</span>
+                    <span>Imagem da OcorrÃªncia</span>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
@@ -2467,10 +2467,10 @@ ViewData["valueTemplate"] = @"
                 <img id="imgOcorrenciaViewerUpsert"
                      class="img-fluid rounded shadow"
                      style="max-height: 500px; display: none;"
-                     alt="Imagem da Ocorrência" />
+                     alt="Imagem da OcorrÃªncia" />
                 <div id="noImageOcorrenciaUpsert" class="p-4 bg-light rounded" style="display: none;">
                     <i class="fa-duotone fa-image fa-4x text-muted mb-3"></i>
-                    <p class="text-muted">Nenhuma imagem disponível</p>
+                    <p class="text-muted">Nenhuma imagem disponÃ­vel</p>
                 </div>
             </div>
 
@@ -2484,7 +2484,7 @@ ViewData["valueTemplate"] = @"
 </div>
 
 @*=========================================================================
-   MODAL SOLUÇÃO DA OCORRÊNCIA (PARA BAIXA) - UPSERT
+   MODAL SOLUÃ‡ÃƒO DA OCORRÃŠNCIA (PARA BAIXA) - UPSERT
    =========================================================================*@
 <div class="modal fade" id="modalSolucaoOcorrenciaUpsert" tabindex="-1" aria-labelledby="modalSolucaoOcorrenciaUpsertLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -2492,7 +2492,7 @@ ViewData["valueTemplate"] = @"
             <div class="modal-header modal-header-verde">
                 <h5 class="modal-title d-flex align-items-center gap-2" id="modalSolucaoOcorrenciaUpsertLabel">
                     <i class="fa-duotone fa-circle-check" aria-hidden="true"></i>
-                    <span>Informar Solução da Ocorrência</span>
+                    <span>Informar SoluÃ§Ã£o da OcorrÃªncia</span>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
@@ -2502,10 +2502,10 @@ ViewData["valueTemplate"] = @"
                 <div class="form-group">
                     <label class="form-label fw-bold">
                         <i class="fa-duotone fa-message-lines me-1"></i>
-                        Solução aplicada (opcional)
+                        SoluÃ§Ã£o aplicada (opcional)
                     </label>
                     <textarea id="txtSolucaoOcorrenciaUpsert" class="form-control" rows="4" 
-                              placeholder="Descreva a solução aplicada para resolver esta ocorrência..."></textarea>
+                              placeholder="Descreva a soluÃ§Ã£o aplicada para resolver esta ocorrÃªncia..."></textarea>
                 </div>
             </div>
 
@@ -2522,7 +2522,7 @@ ViewData["valueTemplate"] = @"
 </div>
 
 @* ===============================================================================
-   OVERLAY LOADING - GRAVANDO VIAGEM (PADRÃO FROTIX)
+   OVERLAY LOADING - GRAVANDO VIAGEM (PADRÃƒO FROTIX)
    ===============================================================================*@
 <div id="loadingOverlaySalvando" class="ftx-spin-overlay" style="z-index: 999999; cursor: wait; display: none;">
     <div class="ftx-spin-box" style="text-align: center; min-width: 300px;">
@@ -2534,7 +2534,7 @@ ViewData["valueTemplate"] = @"
 </div>
 
 @* ===============================================================================
-   MODAL VISUALIZAR OCORRÊNCIA DA VIAGEM (MOBILE)
+   MODAL VISUALIZAR OCORRÃŠNCIA DA VIAGEM (MOBILE)
    ===============================================================================*@
 <div class="modal fade" id="modalVerOcorrenciaViagem" tabindex="-1" aria-labelledby="modalVerOcorrenciaViagemLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -2542,7 +2542,7 @@ ViewData["valueTemplate"] = @"
             <div class="modal-header modal-header-terracota">
                 <h5 class="modal-title d-flex align-items-center gap-2" id="modalVerOcorrenciaViagemLabel">
                     <i class="fa-duotone fa-triangle-exclamation" aria-hidden="true"></i>
-                    <span>Detalhes da Ocorrência</span>
+                    <span>Detalhes da OcorrÃªncia</span>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
@@ -2562,11 +2562,11 @@ ViewData["valueTemplate"] = @"
                         <div id="divOcorrenciaStatus"></div>
                     </div>
                     <div class="col-12">
-                        <label class="fw-bold text-muted small">Descrição</label>
+                        <label class="fw-bold text-muted small">DescriÃ§Ã£o</label>
                         <div id="txtOcorrenciaDescricao" class="form-control-plaintext border-bottom" style="min-height: 60px;"></div>
                     </div>
                     <div class="col-12" id="divSolucaoOcorrencia" style="display: none;">
-                        <label class="fw-bold text-muted small">Solução Aplicada</label>
+                        <label class="fw-bold text-muted small">SoluÃ§Ã£o Aplicada</label>
                         <div id="txtOcorrenciaSolucao" class="form-control-plaintext border-bottom bg-light p-2 rounded"></div>
                     </div>
                     <div class="col-12">
@@ -2575,10 +2575,10 @@ ViewData["valueTemplate"] = @"
                             <img id="imgOcorrenciaViagem" 
                                  class="img-fluid rounded shadow" 
                                  style="max-height: 400px; display: none;" 
-                                 alt="Imagem da Ocorrência" />
+                                 alt="Imagem da OcorrÃªncia" />
                             <div id="semImagemOcorrenciaViagem" class="p-4">
                                 <i class="fa-duotone fa-image fa-3x text-muted mb-2"></i>
-                                <p class="text-muted mb-0">Nenhuma imagem disponível</p>
+                                <p class="text-muted mb-0">Nenhuma imagem disponÃ­vel</p>
                             </div>
                         </div>
                     </div>
@@ -2595,7 +2595,7 @@ ViewData["valueTemplate"] = @"
 </div>
 
 @*=========================================================================
-   MODAL INSERIR OCORRÊNCIA (UPSERT)
+   MODAL INSERIR OCORRÃŠNCIA (UPSERT)
    =========================================================================*@
 <div class="modal fade" id="modalInserirOcorrenciaUpsert" tabindex="-1" aria-labelledby="modalInserirOcorrenciaUpsertLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -2603,7 +2603,7 @@ ViewData["valueTemplate"] = @"
             <div class="modal-header modal-header-terracota">
                 <h5 class="modal-title d-flex align-items-center gap-2" id="modalInserirOcorrenciaUpsertLabel">
                     <i class="fa-duotone fa-triangle-exclamation" aria-hidden="true"></i>
-                    <span>Registrar Nova Ocorrência</span>
+                    <span>Registrar Nova OcorrÃªncia</span>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
@@ -2614,31 +2614,31 @@ ViewData["valueTemplate"] = @"
                     <div class="mb-3">
                         <label for="txtResumoOcorrenciaUpsert" class="form-label fw-semibold">
                             <i class="fa-duotone fa-file-signature me-1 text-warning"></i>
-                            Resumo da Ocorrência <span class="text-danger">*</span>
+                            Resumo da OcorrÃªncia <span class="text-danger">*</span>
                         </label>
                         <input type="text" id="txtResumoOcorrenciaUpsert" 
                                class="form-control" 
-                               placeholder="Ex: Arranhão na lateral, Pneu furado, Vidro trincado..."
+                               placeholder="Ex: ArranhÃ£o na lateral, Pneu furado, Vidro trincado..."
                                maxlength="100" />
                     </div>
                     
-                    <!-- Descrição -->
+                    <!-- DescriÃ§Ã£o -->
                     <div class="mb-3">
                         <label for="txtDescricaoOcorrenciaUpsert" class="form-label fw-semibold">
                             <i class="fa-duotone fa-message-lines me-1 text-info"></i>
-                            Descrição Detalhada
+                            DescriÃ§Ã£o Detalhada
                         </label>
                         <textarea id="txtDescricaoOcorrenciaUpsert" 
                                   class="form-control" 
                                   rows="3" 
-                                  placeholder="Descreva os detalhes da ocorrência..."></textarea>
+                                  placeholder="Descreva os detalhes da ocorrÃªncia..."></textarea>
                     </div>
                     
                     <!-- Imagem -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">
                             <i class="fa-duotone fa-camera me-1 text-success"></i>
-                            Foto da Ocorrência (opcional)
+                            Foto da OcorrÃªncia (opcional)
                         </label>
                         <div class="input-group">
                             <input type="file" id="fileImagemOcorrenciaUpsert"
@@ -2663,7 +2663,7 @@ ViewData["valueTemplate"] = @"
                     <i class="fa-duotone fa-xmark me-1"></i> Cancelar
                 </button>
                 <button type="button" id="btnConfirmarOcorrenciaUpsert" class="btn btn-fundo-laranja">
-                    <i class="fa-duotone fa-plus me-1"></i> Adicionar Ocorrência
+                    <i class="fa-duotone fa-plus me-1"></i> Adicionar OcorrÃªncia
                 </button>
             </div>
         </div>
@@ -2671,7 +2671,7 @@ ViewData["valueTemplate"] = @"
 </div>
 
 @*=========================================================================
-   MODAL VER IMAGEM OCORRÊNCIA (UPSERT)
+   MODAL VER IMAGEM OCORRÃŠNCIA (UPSERT)
    =========================================================================*@
 <div class="modal fade" id="modalVerImagemOcorrenciaUpsert" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -2679,7 +2679,7 @@ ViewData["valueTemplate"] = @"
             <div class="modal-header modal-header-azul">
                 <h5 class="modal-title d-flex align-items-center gap-2">
                     <i class="fa-duotone fa-image" aria-hidden="true"></i>
-                    <span>Imagem da Ocorrência</span>
+                    <span>Imagem da OcorrÃªncia</span>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
@@ -2687,7 +2687,7 @@ ViewData["valueTemplate"] = @"
                 <img id="imgViewerOcorrenciaUpsert" 
                      class="img-fluid rounded shadow" 
                      style="max-height: 500px;" 
-                     alt="Imagem da Ocorrência" />
+                     alt="Imagem da OcorrÃªncia" />
             </div>
             <div class="modal-footer justify-content-end">
                 <button type="button" class="btn btn-vinho" data-bs-dismiss="modal">
@@ -2699,7 +2699,7 @@ ViewData["valueTemplate"] = @"
 </div>
 
 <style>
-    /* ===== SEÇÃO DOCUMENTOS ===== */
+    /* ===== SEÃ‡ÃƒO DOCUMENTOS ===== */
     .ftx-section-documentos {
         border-left: 4px solid #198754;
         background: linear-gradient(135deg, #f0fff4 0%, #e6ffed 100%);
@@ -2710,7 +2710,7 @@ ViewData["valueTemplate"] = @"
         border-color: #198754;
     }
 
-    /* ===== SEÇÃO DOCUMENTOS DEVOLVIDOS ===== */
+    /* ===== SEÃ‡ÃƒO DOCUMENTOS DEVOLVIDOS ===== */
     .ftx-section-devolvidos {
         border-left: 4px solid #0dcaf0;
         background: linear-gradient(135deg, #f0faff 0%, #e6f7ff 100%);
@@ -2725,14 +2725,14 @@ ViewData["valueTemplate"] = @"
         border-color: #0dcaf0;
     }
 
-    /* ===== SEÇÃO OCORRÊNCIAS ===== */
+    /* ===== SEÃ‡ÃƒO OCORRÃŠNCIAS ===== */
     .ftx-section-ocorrencias {
         border-left: 4px solid #fd7e14;
         background: linear-gradient(135deg, #fff8f0 0%, #fff3e6 100%);
         transition: opacity 0.3s, filter 0.3s;
     }
 
-    /* Estado desabilitado da seção de ocorrências */
+    /* Estado desabilitado da seÃ§Ã£o de ocorrÃªncias */
     .ftx-section-ocorrencias.ftx-section-disabled {
         opacity: 0.6;
         pointer-events: none;
@@ -2747,7 +2747,7 @@ ViewData["valueTemplate"] = @"
         background: #f8f9fa;
     }
 
-    /* Permitir interação com o aviso mesmo desabilitado */
+    /* Permitir interaÃ§Ã£o com o aviso mesmo desabilitado */
     .ftx-section-ocorrencias.ftx-section-disabled .alert {
         pointer-events: auto;
         opacity: 1;
@@ -2813,7 +2813,7 @@ ViewData["valueTemplate"] = @"
         color: #fff;
     }
 
-    /* ===== SEÇÃO MOBILE ===== */
+    /* ===== SEÃ‡ÃƒO MOBILE ===== */
     .ftx-section-mobile {
         border-left: 4px solid #9c27b0;
         background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
@@ -2842,7 +2842,7 @@ ViewData["valueTemplate"] = @"
         border-radius: 4px;
     }
 
-    /* Badges de status das ocorrências */
+    /* Badges de status das ocorrÃªncias */
     .ftx-status-badge {
         display: inline-flex;
         align-items: center;
@@ -2872,7 +2872,7 @@ ViewData["valueTemplate"] = @"
         box-shadow: 0 2px 6px rgba(243, 156, 18, 0.35);
     }
 
-    /* Botões de ação da tabela de ocorrências */
+    /* BotÃµes de aÃ§Ã£o da tabela de ocorrÃªncias */
     .btn-ver-ocorrencia {
         background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
         color: #fff;
@@ -2922,19 +2922,19 @@ ViewData["valueTemplate"] = @"
 
 	<script>
 
-		// Passando Parâmetros pro Javascript
+		// Passando ParÃ¢metros pro Javascript
 		const ViagemId = "@(Model.ViagemObj.Viagem?.ViagemId.ToString() ?? "")";
 		window.viagemId = ViagemId;
 
-		// Status da viagem para controle de desabilitação
+		// Status da viagem para controle de desabilitaÃ§Ã£o
 		window.viagemStatus = "@(Model.ViagemObj?.Viagem?.Status ?? "")";
 		window.viagemFinalizada = @Json.Serialize(Model.ViagemObj?.Viagem?.Status == "Realizada" || Model.ViagemObj?.Viagem?.Status == "Cancelada");
 
-		// Configuração dos eventos change para atualizar campos hidden dos controles Kendo
-		// Aguarda Kendo estar disponível antes de inicializar widgets
+		// ConfiguraÃ§Ã£o dos eventos change para atualizar campos hidden dos controles Kendo
+		// Aguarda Kendo estar disponÃ­vel antes de inicializar widgets
 		function initKendoWidgets() {
 			try {
-				// Combustível Inicial
+				// CombustÃ­vel Inicial
 				var combInicialWidget = $("#ddtCombustivelInicial").data("kendoDropDownList");
 				if (combInicialWidget) {
 					combInicialWidget.bind("change", function() {
@@ -2942,7 +2942,7 @@ ViewData["valueTemplate"] = @"
 					});
 				}
 
-				// Combustível Final
+				// CombustÃ­vel Final
 				var combFinalWidget = $("#ddtCombustivelFinal").data("kendoDropDownList");
 				if (combFinalWidget) {
 					combFinalWidget.bind("change", function() {
@@ -2950,9 +2950,9 @@ ViewData["valueTemplate"] = @"
 					});
 				}
 
-				// Inicializar Kendo DropDownTree para Setor (hierárquico)
+				// Inicializar Kendo DropDownTree para Setor (hierÃ¡rquico)
 				if (typeof setorData !== 'undefined' && typeof kendo !== 'undefined') {
-					// Construir estrutura hierárquica
+					// Construir estrutura hierÃ¡rquica
 					var hierarchicalData = buildHierarchy(setorData);
 
 					$("#ddtSetor").kendoDropDownTree({
@@ -2985,7 +2985,7 @@ ViewData["valueTemplate"] = @"
 			}
 		}
 
-		// Função auxiliar para construir hierarquia
+		// FunÃ§Ã£o auxiliar para construir hierarquia
 		function buildHierarchy(flatData) {
 			try {
 				var roots = [];
@@ -2996,7 +2996,7 @@ ViewData["valueTemplate"] = @"
 					lookup[item.SetorSolicitanteId] = { ...item, items: [] };
 				});
 
-				// Construir árvore
+				// Construir Ã¡rvore
 				flatData.forEach(function(item) {
 					if (item.SetorPaiId && item.SetorPaiId !== "00000000-0000-0000-0000-000000000000") {
 						var parent = lookup[item.SetorPaiId];
@@ -3023,13 +3023,13 @@ ViewData["valueTemplate"] = @"
 
 	</script>
 
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
 	<!-- Kendo UI - Scripts e estilos servidos localmente via NuGet (Kendo.Mvc) -->
 	@(Html.Kendo().DeferredScripts())
 
-	<!-- Inicialização dos widgets Kendo APÓS o DeferredScripts -->
+	<!-- InicializaÃ§Ã£o dos widgets Kendo APÃ“S o DeferredScripts -->
 	<script>
 		$(document).ready(function() {
 			// Aguarda um tick para garantir que os widgets Kendo estejam inicializados
@@ -3041,23 +3041,23 @@ ViewData["valueTemplate"] = @"
 		});
 	</script>
 
-	<!-- Kendo Editor Helper - Inicialização do editor -->
+	<!-- Kendo Editor Helper - InicializaÃ§Ã£o do editor -->
 	<script src="~/js/viagens/kendo-editor-upsert.js" asp-append-version="true"></script>
 
-	<!-- Validação IA - Validador Evolutivo de Finalização -->
+	<!-- ValidaÃ§Ã£o IA - Validador Evolutivo de FinalizaÃ§Ã£o -->
 	<script src="~/js/validacao/ValidadorFinalizacaoIA.js" asp-append-version="true"></script>
 
 	<script src="~/js/cadastros/ViagemUpsert.js" asp-append-version="true"></script>
 
 	<script>
-		// ===== DETECÇÃO DE MUDANÇAS E CONFIRMAÇÃO AO SAIR =====
+		// ===== DETECÃ‡ÃƒO DE MUDANÃ‡AS E CONFIRMAÃ‡ÃƒO AO SAIR =====
 		$(document).ready(function () {
 			try {
-				// Salva o estado inicial do formulário para detectar mudanças
+				// Salva o estado inicial do formulÃ¡rio para detectar mudanÃ§as
 				var estadoInicial = $('form').serialize();
 				var formularioAlterado = false;
 
-				// Detecta mudanças no formulário
+				// Detecta mudanÃ§as no formulÃ¡rio
 				$('form').on('change input', 'input, select, textarea', function () {
 					try {
 						formularioAlterado = ($('form').serialize() !== estadoInicial);
@@ -3066,13 +3066,13 @@ ViewData["valueTemplate"] = @"
 					}
 				});
 
-				// Função para verificar e redirecionar
+				// FunÃ§Ã£o para verificar e redirecionar
 				function verificarEVoltar() {
 					try {
 						if (formularioAlterado) {
 							Alerta.Confirmar(
-								"Descartar Alterações?",
-								"Você fez alterações no formulário que ainda não foram salvas. Deseja realmente descartar essas mudanças?",
+								"Descartar AlteraÃ§Ãµes?",
+								"VocÃª fez alteraÃ§Ãµes no formulÃ¡rio que ainda nÃ£o foram salvas. Deseja realmente descartar essas mudanÃ§as?",
 								"Sim, descartar",
 								"Cancelar"
 							).then(function (confirmado) {
@@ -3092,7 +3092,7 @@ ViewData["valueTemplate"] = @"
 					}
 				}
 
-				// Intercepta clique no botão Voltar à Lista (header)
+				// Intercepta clique no botÃ£o Voltar Ã  Lista (header)
 				$('#btnVoltarLista').on('click', function (e) {
 					try {
 						e.preventDefault();
@@ -3102,7 +3102,7 @@ ViewData["valueTemplate"] = @"
 					}
 				});
 
-				// Intercepta clique no botão Voltar à Lista (rodapé)
+				// Intercepta clique no botÃ£o Voltar Ã  Lista (rodapÃ©)
 				$('.btn-voltar-lista').on('click', function (e) {
 					try {
 						e.preventDefault();
@@ -3119,3 +3119,4 @@ ViewData["valueTemplate"] = @"
 	</script>
 
 }
+

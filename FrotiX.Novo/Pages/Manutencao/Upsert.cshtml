@@ -1,13 +1,13 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Manutencao/Upsert.cshtml (Manutenção)
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/Manutencao/Upsert.cshtml (ManutenÃ§Ã£o)
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Formulário complexo OS com tabelas dinâmicas (Ocorrências, Pendências, Itens), modais, RichTextEditor, upload foto, Kendo + Syncfusion + PDF.js
- * 📥 ENTRADAS     : @page, @model UpsertModel, campos OS (número, data, veículo, motorista), grids (ocorrências, pendências, itens), uploads, RTE observações
- * 📤 SAÍDAS       : POST /api/Manutencao/Insere ou Edita (JSON), redirect /Manutencao/ListaManutencao, modais (ocorrências, pendências, itens, fotos), AppToast feedback
- * 🔗 CHAMADA POR  : ListaManutencao (botão "Adicionar OS", editar linha)
- * 🔄 CHAMA        : /api/Manutencao/Insere, /api/Manutencao/Edita, /api/Manutencao/SalvarOcorrencia, /api/Manutencao/SalvarPendencia, /api/Manutencao/SalvarItem, /api/Manutencao/UploadFoto
- * 📦 DEPENDÊNCIAS : Syncfusion EJ2 (DatePicker, ComboBox, RichTextEditor, Grid), Kendo UI, Bootstrap 5, jQuery, DataTables, PDF.js, moeda() inline
- * 📝 OBSERVAÇÕES  : Total: ~881 linhas. ARQUIVO GIGANTE com 4 modais, 3 DataTables, CSS inline ~400 linhas (extrair urgente), JavaScript inline ~400 linhas (extrair urgente), função moeda() duplicada, validações fracas, double-submit possível, sem lazy loading modais
+ * ðŸŽ¯ OBJETIVO     : FormulÃ¡rio complexo OS com tabelas dinÃ¢micas (OcorrÃªncias, PendÃªncias, Itens), modais, RichTextEditor, upload foto, Kendo + Syncfusion + PDF.js
+ * ðŸ“¥ ENTRADAS     : @page, @model UpsertModel, campos OS (nÃºmero, data, veÃ­culo, motorista), grids (ocorrÃªncias, pendÃªncias, itens), uploads, RTE observaÃ§Ãµes
+ * ðŸ“¤ SAÃDAS       : POST /api/Manutencao/Insere ou Edita (JSON), redirect /Manutencao/ListaManutencao, modais (ocorrÃªncias, pendÃªncias, itens, fotos), AppToast feedback
+ * ðŸ”— CHAMADA POR  : ListaManutencao (botÃ£o "Adicionar OS", editar linha)
+ * ðŸ”„ CHAMA        : /api/Manutencao/Insere, /api/Manutencao/Edita, /api/Manutencao/SalvarOcorrencia, /api/Manutencao/SalvarPendencia, /api/Manutencao/SalvarItem, /api/Manutencao/UploadFoto
+ * ðŸ“¦ DEPENDÃŠNCIAS : Syncfusion EJ2 (DatePicker, ComboBox, RichTextEditor, Grid), Kendo UI, Bootstrap 5, jQuery, DataTables, PDF.js, moeda() inline
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : Total: ~881 linhas. ARQUIVO GIGANTE com 4 modais, 3 DataTables, CSS inline ~400 linhas (extrair urgente), JavaScript inline ~400 linhas (extrair urgente), funÃ§Ã£o moeda() duplicada, validaÃ§Ãµes fracas, double-submit possÃ­vel, sem lazy loading modais
  **************************************************************************************** *@
 @page
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -18,16 +18,16 @@
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
 
 @{
-    ViewData["Title"] = "Manutenção";
+    ViewData["Title"] = "ManutenÃ§Ã£o";
     ViewData["PageName"] = "manutencao_upsert";
-    ViewData["Heading"] = "<i class='fa-duotone fa-users-gear'></i> Manutenção: <span class='fw-300'>Registro de Ordens de Serviço</span>";
-    ViewData["Category1"] = "Manutenção";
+    ViewData["Heading"] = "<i class='fa-duotone fa-users-gear'></i> ManutenÃ§Ã£o: <span class='fw-300'>Registro de Ordens de ServiÃ§o</span>";
+    ViewData["Category1"] = "ManutenÃ§Ã£o";
     ViewData["PageIcon"] = "fa-duotone fa-users-gear";
 }
 
 @section HeadBlock {
 	<style>
-/* ======== OUTLINE BRANCO NO BOTÃO DO HEADER (Padrão FrotiX) ======== */
+/* ======== OUTLINE BRANCO NO BOTÃƒO DO HEADER (PadrÃ£o FrotiX) ======== */
 		.ftx-card-header .btn-fundo-laranja {
 			outline: 2px solid rgba(255, 255, 255, 0.5) !important;
 			outline-offset: 1px;
@@ -58,7 +58,7 @@
             --fa-secondary-color: rgba(255,255,255,0.7) !important;
         }
 
-        /* Botão laranja usa padrão global do frotix.css */
+        /* BotÃ£o laranja usa padrÃ£o global do frotix.css */
     </style>
 }
 
@@ -170,7 +170,7 @@
         padding-bottom: 8px;
     }
 
-    /* ====== PADRONIZAÇÃO ALTURA DOS CONTROLES SYNCFUSION ====== */
+    /* ====== PADRONIZAÃ‡ÃƒO ALTURA DOS CONTROLES SYNCFUSION ====== */
     .e-input-group,
     .e-control-wrapper,
     .e-ddl.e-input-group,
@@ -191,7 +191,7 @@
         min-height: 36px !important;
     }
 
-    /* Rich Text Editor - altura mínima */
+    /* Rich Text Editor - altura mÃ­nima */
     .e-richtexteditor .e-rte-content {
         min-height: 180px !important;
     }
@@ -387,27 +387,27 @@
             <div id="panel-1" class="panel ftx-card-styled">
                 <div class="panel-container show">
 
-                    <!-- Header Padrão FrotiX -->
+                    <!-- Header PadrÃ£o FrotiX -->
                     <div class="ftx-card-header">
                         <h2 id="headerTituloOS" class="ftx-card-title">
                             <i class="fa-duotone fa-screwdriver-wrench"></i>
                             @if (Model.ManutencaoObj.Manutencao.StatusOS == "Fechada")
                             {
-                                <span>Registro de Manutenção - Fechado/Baixado <span style="font-size: 0.85em; font-weight: 400;">(edição não permitida)</span></span>
+                                <span>Registro de ManutenÃ§Ã£o - Fechado/Baixado <span style="font-size: 0.85em; font-weight: 400;">(ediÃ§Ã£o nÃ£o permitida)</span></span>
                             }
                             else if (Model.ManutencaoObj.Manutencao.StatusOS == "Cancelada")
                             {
-                                <span>Registro de Manutenção - Cancelado <span style="font-size: 0.85em; font-weight: 400;">(edição não permitida)</span></span>
+                                <span>Registro de ManutenÃ§Ã£o - Cancelado <span style="font-size: 0.85em; font-weight: 400;">(ediÃ§Ã£o nÃ£o permitida)</span></span>
                             }
                             else
                             {
-                                @(Model.ManutencaoObj.Manutencao.ManutencaoId != Guid.Empty ? "Atualizar " : "Criar ")<span>Registro de Manutenção</span>
+                                @(Model.ManutencaoObj.Manutencao.ManutencaoId != Guid.Empty ? "Atualizar " : "Criar ")<span>Registro de ManutenÃ§Ã£o</span>
                             }
                         </h2>
                         <div class="ftx-card-actions">
                             <a asp-page="./ListaManutencao" class="btn btn-header-orange" data-ftx-loading>
                                 <i class="fa-duotone fa-rotate-left icon-space icon-rotate-left"></i>
-                                Voltar à Lista
+                                Voltar Ã  Lista
                             </a>
                         </div>
                     </div>
@@ -479,7 +479,7 @@
                                         <span class="text-danger" asp-validation-for="ManutencaoObj.Manutencao.ReservaEnviado"></span>
                                         <select id="lstReserva" class="form-control form-control-xs" asp-for="ManutencaoObj.Manutencao.ReservaEnviado" onchange="fnExibeReserva()">
                                             <option value="1">Enviado</option>
-                                            <option value="0" selected>Não Enviado</option>
+                                            <option value="0" selected>NÃ£o Enviado</option>
                                         </select>
                                     </div>
                                 </div>
@@ -488,9 +488,9 @@
                                     <div id="divReserva" style="display:none">
                                         <div class="row g-4">
                                             <div class="col-12 col-md-6 col-xl-4">
-                                                <label class="fw-bold">Veículo Reserva</label>
+                                                <label class="fw-bold">VeÃ­culo Reserva</label>
                                                 <ejs-combobox id="lstVeiculoReserva"
-                                                              placeholder="Selecione um Veículo"
+                                                              placeholder="Selecione um VeÃ­culo"
                                                               allowFiltering="true"
                                                               filterType="Contains"
                                                               dataSource="@ViewData["dataVeiculoReserva"]"
@@ -534,9 +534,9 @@
 
                             <div class="row g-4" id="LinhaVeiculo">
                                 <div class="col-12 col-md-6 col-xl-4">
-                                    <label class="fw-bold">Veículo</label>
+                                    <label class="fw-bold">VeÃ­culo</label>
                                     <ejs-combobox id="lstVeiculo"
-                                                  placeholder="Selecione um Veículo"
+                                                  placeholder="Selecione um VeÃ­culo"
                                                   allowFiltering="true"
                                                   filterType="Contains"
                                                   dataSource="@ViewData["dataVeiculo"]"
@@ -555,19 +555,19 @@
                             <div class="row">
                                 <div class="col-12">
                                     <div id="divOcorrencias" style="display:none">
-                                        <h4>Ocorrências Disponíveis para o Veículo</h4>
+                                        <h4>OcorrÃªncias DisponÃ­veis para o VeÃ­culo</h4>
                                         <table id="tblOcorrencia" class="table table-bordered table-striped tblManutencao" width="100%">
                                             <thead>
                                                 <tr>
                                                     <th>Ficha</th>
                                                     <th>Data</th>
                                                     <th>Motorista</th>
-                                                    <th>Resumo Ocorrência</th>
-                                                    <th class="col-acao">Ação</th>
+                                                    <th>Resumo OcorrÃªncia</th>
+                                                    <th class="col-acao">AÃ§Ã£o</th>
                                                     <th>Descricao</th>
                                                     <th>MotoristaId</th>
                                                     <th>CaminhoImagem</th>
-                                                    <th>ItemManutençãoId</th>
+                                                    <th>ItemManutenÃ§Ã£oId</th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>
@@ -581,19 +581,19 @@
                             <div class="row">
                                 <div class="col-12">
                                     <div id="divPendencias" style="display:none">
-                                        <h4>Pendências em aberto para o Veículo</h4>
+                                        <h4>PendÃªncias em aberto para o VeÃ­culo</h4>
                                         <table id="tblPendencia" class="table table-bordered table-striped tblManutencao" width="100%">
                                             <thead>
                                                 <tr>
                                                     <th>Ficha</th>
                                                     <th>Data</th>
                                                     <th>Motorista</th>
-                                                    <th>Resumo Ocorrência</th>
-                                                    <th class="col-acao">Ação</th>
+                                                    <th>Resumo OcorrÃªncia</th>
+                                                    <th class="col-acao">AÃ§Ã£o</th>
                                                     <th>Descricao</th>
                                                     <th>MotoristaId</th>
                                                     <th>CaminhoImagem</th>
-                                                    <th>ItemManutençãoId</th>
+                                                    <th>ItemManutenÃ§Ã£oId</th>
                                                     <th>ViagemId</th>
                                                 </tr>
                                             </thead>
@@ -610,18 +610,18 @@
                                     <div id="divItens" style="display:none">
                                         @if (Model.ManutencaoObj.Manutencao.StatusOS == "Fechada" || Model.ManutencaoObj.Manutencao.StatusOS == "Cancelada")
                                         {
-                                            <h4 id="lblItensSelecionados"><i class="fa-duotone fa-solid fa-wrench me-2"></i>Manutenções efetuadas no veículo</h4>
+                                            <h4 id="lblItensSelecionados"><i class="fa-duotone fa-solid fa-wrench me-2"></i>ManutenÃ§Ãµes efetuadas no veÃ­culo</h4>
                                         }
                                         else
                                         {
-                                            <h4 id="lblItensSelecionados"><i class="fa-duotone fa-solid fa-list-check me-2"></i>Itens selecionados para manutenção no veículo</h4>
+                                            <h4 id="lblItensSelecionados"><i class="fa-duotone fa-solid fa-list-check me-2"></i>Itens selecionados para manutenÃ§Ã£o no veÃ­culo</h4>
 
                                             <button id="btnAdicionaItem"
                                                     type="button"
                                                     class="btn btn-sm fundo-chocolate btn-add-item"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#modalManutencao"
-                                                    data-ejtip="Adicionar Novo Item de Manutenção">
+                                                    data-ejtip="Adicionar Novo Item de ManutenÃ§Ã£o">
                                                 <i class="fa-duotone fa-circle-plus"></i>&nbsp;Adicionar Item
                                             </button>
                                         }
@@ -633,10 +633,10 @@
                                                     <th>Ficha</th>
                                                     <th>Data</th>
                                                     <th>Motorista</th>
-                                                    <th>Resumo Ocorrência</th>
-                                                    <th class="col-acao">Ação</th>
-                                                    <th>ItemManutençãoID</th>
-                                                    <th>Descrição</th>
+                                                    <th>Resumo OcorrÃªncia</th>
+                                                    <th class="col-acao">AÃ§Ã£o</th>
+                                                    <th>ItemManutenÃ§Ã£oID</th>
+                                                    <th>DescriÃ§Ã£o</th>
                                                     <th>Resumo Limpo</th>
                                                     <th>MotoristaId</th>
                                                     <th>CaminhoImagem</th>
@@ -687,20 +687,20 @@
                                             @if (Model.ManutencaoObj.Manutencao.ManutencaoId != Guid.Empty)
                                             {
                                                 <button id="btnEdita" method="post" asp-page-handler="Edit" asp-route-id="@Model.ManutencaoObj.Manutencao.ManutencaoId" class="btn btn-azul btn-submit-spin form-control">
-                                                    <i class="fa-duotone fa-floppy-disk icon-space icon-pulse"></i> Atualizar Manutenção
+                                                    <i class="fa-duotone fa-floppy-disk icon-space icon-pulse"></i> Atualizar ManutenÃ§Ã£o
                                                 </button>
                                             }
                                             else
                                             {
                                                 <button id="btnAdiciona" type="submit" value="Submit" asp-page-handler="Submit" class="btn btn-azul btn-submit-spin form-control">
-                                                    <i class="fa-duotone fa-floppy-disk icon-space icon-pulse"></i> Criar Manutenção
+                                                    <i class="fa-duotone fa-floppy-disk icon-space icon-pulse"></i> Criar ManutenÃ§Ã£o
                                                 </button>
                                             }
                                         </div>
 
                                         <div class="col-12 col-md-4 text-end">
                                             <a id="btnVoltar" asp-page="./ListaManutencao" class="btn btn-ftx-fechar form-control" data-ftx-loading>
-                                                <i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i> Cancelar Operação
+                                                <i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i> Cancelar OperaÃ§Ã£o
                                             </a>
                                         </div>
                                     </div>
@@ -719,7 +719,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header modal-header-azul">
-                <h3 class="modal-title" id="exampleModalLabel">Novo Item de Manutenção</h3>
+                <h3 class="modal-title" id="exampleModalLabel">Novo Item de ManutenÃ§Ã£o</h3>
             </div>
             <div class="modal-body">
                 <div id="frmManutencao">
@@ -739,7 +739,7 @@
                         </div>
                     </div>
 
-                    <label class="fw-bold">Descrição do Item</label>
+                    <label class="fw-bold">DescriÃ§Ã£o do Item</label>
                     <ejs-richtexteditor id="rteManutencao" created="onCreate" locale="pt-BR" height="200px">
                         <e-richtexteditor-insertimagesettings saveUrl="api/Viagem/SaveImage" path="./DadosEditaveis/ImagensOcorrencias/"></e-richtexteditor-insertimagesettings>
                     </ejs-richtexteditor>
@@ -788,7 +788,7 @@
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header modal-header-terracota">
-                <h4 class="modal-title" id="DynamicModalLabel">Foto da Ocorrência</h4>
+                <h4 class="modal-title" id="DynamicModalLabel">Foto da OcorrÃªncia</h4>
                 <button id="btnFecharModal" type="button" class="btn btn-vinho" data-bs-dismiss="modal">
                     <i class="fa-duotone fa-rotate-left icon-space icon-rotate-left"></i> Fechar
                 </button>
@@ -805,7 +805,7 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header modal-header-terracota">
-                <h4 class="modal-title">Foto da Pendência</h4>
+                <h4 class="modal-title">Foto da PendÃªncia</h4>
                 <button type="button" class="btn btn-vinho" data-bs-dismiss="modal">
                     <i class="fa-duotone fa-rotate-left icon-space icon-rotate-left"></i> Fechar
                 </button>
@@ -827,7 +827,7 @@
                 }
                 else
                 {
-                    <h4 class="modal-title mb-0">Foto do Item de Manutenção</h4>
+                    <h4 class="modal-title mb-0">Foto do Item de ManutenÃ§Ã£o</h4>
                 }
                 <div class="d-flex gap-2">
                     @if (Model.ManutencaoObj.Manutencao.StatusOS != "Fechada" && Model.ManutencaoObj.Manutencao.StatusOS != "Cancelada")
@@ -878,15 +878,10 @@
 
 @section ScriptsBlock {
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    
+    
 
-    <link href="https://kendo.cdn.telerik.com/themes/12.0.1/bootstrap/bootstrap-main.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://kendo.cdn.telerik.com/2025.4.1321/js/kendo.all.min.js"></script>
-    <script src="https://kendo.cdn.telerik.com/2025.4.1321/js/kendo.aspnetmvc.min.js"></script>
-    <script src="https://kendo.cdn.telerik.com/2025.4.1321/js/cultures/kendo.culture.pt-BR.min.js"></script>
-    <script src="https://kendo.cdn.telerik.com/2025.4.1321/js/messages/kendo.messages.pt-BR.min.js"></script>
+    @* Kendo/JSZip carregados globalmente em _Head/_ScriptsBasePlugins *@
     <script>
         try {
             if (window.kendo && kendo.culture) {
@@ -935,3 +930,4 @@
 
     <script src="~/js/cadastros/manutencao.js" asp-append-version="true"></script>
 }
+

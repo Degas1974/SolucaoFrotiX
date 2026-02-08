@@ -1,62 +1,62 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Unidade/Index.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/Unidade/Index.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Página de listagem de Unidades Usuárias (departamentos/setores demandantes
- *                   de frota) com DataTable #tblUnidade (7 colunas: Sigla/Nome/Contato/Ponto/Ramal/Status/Ação),
- *                   botão adicionar data-ejtip tooltip, unidade.js (AJAX list).
- * 📥 ENTRADAS     : @page route /Unidade/Index, @model Unidade (MODEL DIRETO não PageModel! INCONSISTENTE!),
- *                   clique botão link /Unidade/Upsert, unidade.js (AJAX GET /api/Unidade loadList)
- * 📤 SAÍDAS       : Panel ftx-card-header (titulo-paginas fa-car-building "Listagem de Unidades Usuárias" +
- *                   btn-fundo-laranja data-ftx-loading data-ejtip fa-clone-plus "Adicionar Unidade Usuária"
+ * ðŸŽ¯ OBJETIVO     : PÃ¡gina de listagem de Unidades UsuÃ¡rias (departamentos/setores demandantes
+ *                   de frota) com DataTable #tblUnidade (7 colunas: Sigla/Nome/Contato/Ponto/Ramal/Status/AÃ§Ã£o),
+ *                   botÃ£o adicionar data-ejtip tooltip, unidade.js (AJAX list).
+ * ðŸ“¥ ENTRADAS     : @page route /Unidade/Index, @model Unidade (MODEL DIRETO nÃ£o PageModel! INCONSISTENTE!),
+ *                   clique botÃ£o link /Unidade/Upsert, unidade.js (AJAX GET /api/Unidade loadList)
+ * ðŸ“¤ SAÃDAS       : Panel ftx-card-header (titulo-paginas fa-car-building "Listagem de Unidades UsuÃ¡rias" +
+ *                   btn-fundo-laranja data-ftx-loading data-ejtip fa-clone-plus "Adicionar Unidade UsuÃ¡ria"
  *                   outline white hover), DataTable #tblUnidade (7 colunas tbody vazio), Bootstrap 5 CDN
  *                   (REDUNDANTE!), unidade.js cache busting
- * 🔗 CHAMADA POR  : Menu "Cadastros > Unidades Usuárias", route /Unidade/Index, sidebar navigation
- * 🔄 CHAMA        : @model Unidade (MODEL DIRETO - ERRADO! falta PageModel UnidadeIndexModel), /Unidade/Upsert
+ * ðŸ”— CHAMADA POR  : Menu "Cadastros > Unidades UsuÃ¡rias", route /Unidade/Index, sidebar navigation
+ * ðŸ”„ CHAMA        : @model Unidade (MODEL DIRETO - ERRADO! falta PageModel UnidadeIndexModel), /Unidade/Upsert
  *                   (link adicionar), ~/js/cadastros/unidade.js (AJAX GET /api/Unidade loadList DataTable),
  *                   Bootstrap 5 CDN (jsdelivr.net v5.3.8 CSS + JS bundle), ViewData (breadcrumb/heading
  *                   fa-chalkboard-user), Font Awesome Duotone (fa-chalkboard-user heading, fa-car-building title,
- *                   fa-clone-plus botão), CSS inline (outline white @section HeadBlock + .fundo-cinza .label
- *                   NÃO usados!), DataTables API, data-ejtip (Syncfusion tooltip attribute - "Adicionar nova
- *                   unidade usuária ao sistema")
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, Unidade model (NÃO PageModel! falta UnidadeIndexModel.cs),
+ *                   fa-clone-plus botÃ£o), CSS inline (outline white @section HeadBlock + .fundo-cinza .label
+ *                   NÃƒO usados!), DataTables API, data-ejtip (Syncfusion tooltip attribute - "Adicionar nova
+ *                   unidade usuÃ¡ria ao sistema")
+ * ðŸ“¦ DEPENDÃŠNCIAS : ASP.NET Core Razor Pages, Unidade model (NÃƒO PageModel! falta UnidadeIndexModel.cs),
  *                   Bootstrap 5 CDN (REDUNDANTE), unidade.js (AJAX list/delete/toggle), DataTables jQuery plugin,
  *                   Font Awesome 6 Duotone, Syncfusion EJ2 Tooltip (data-ejtip), CSS classes custom (ftx-card-header,
  *                   ftx-card-actions, titulo-paginas, btn-fundo-laranja outline hover), data-ftx-loading,
  *                   asp-append-version (cache busting)
- * 📝 OBSERVAÇÕES  : 95 linhas. Página cadastro Unidades Usuárias (departamentos/setores que demandam veículos).
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : 95 linhas. PÃ¡gina cadastro Unidades UsuÃ¡rias (departamentos/setores que demandam veÃ­culos).
  *                   ViewData config:
  *                   - Title: "Unidades"
  *                   - PageName: "unidade_index"
- *                   - Heading: "<i class='fa-duotone fa-chalkboard-user'></i> Cadastros: <span class='fw-300'>Unidades Usuárias</span>"
+ *                   - Heading: "<i class='fa-duotone fa-chalkboard-user'></i> Cadastros: <span class='fw-300'>Unidades UsuÃ¡rias</span>"
  *                   - Category1: "Cadastros"
  *                   - PageIcon: "fa-duotone fa-chalkboard-user"
- *                   @section HeadBlock: CSS inline **OUTLINE BRANCO PADRÃO FROTIX** (comentário explícito):
+ *                   @section HeadBlock: CSS inline **OUTLINE BRANCO PADRÃƒO FROTIX** (comentÃ¡rio explÃ­cito):
  *                   .ftx-card-header .btn-fundo-laranja outline 2px solid rgba(255,255,255,0.5) outline-offset 1px,
- *                   hover 0.8 opacity offset 2px. CSS inline adicional (NÃO usado): .fundo-cinza {background:#2F4F4F;
+ *                   hover 0.8 opacity offset 2px. CSS inline adicional (NÃƒO usado): .fundo-cinza {background:#2F4F4F;
  *                   color:aliceblue;}, .label {color:white;} (remover - sobras). Estrutura ftx-card-header:
- *                   - h2 titulo-paginas fa-car-building "Listagem de Unidades Usuárias"
+ *                   - h2 titulo-paginas fa-car-building "Listagem de Unidades UsuÃ¡rias"
  *                   - div ftx-card-actions: link /Unidade/Upsert btn-fundo-laranja data-ftx-loading
- *                     **data-ejtip="Adicionar nova unidade usuária ao sistema"** (Syncfusion tooltip),
- *                     fa-clone-plus icon-pulse me-1 "Adicionar Unidade Usuária"
- *                   Panel-content: <br/><br/> (espaçamento desnecessário - remover) + table #tblUnidade width 100%
+ *                     **data-ejtip="Adicionar nova unidade usuÃ¡ria ao sistema"** (Syncfusion tooltip),
+ *                     fa-clone-plus icon-pulse me-1 "Adicionar Unidade UsuÃ¡ria"
+ *                   Panel-content: <br/><br/> (espaÃ§amento desnecessÃ¡rio - remover) + table #tblUnidade width 100%
  *                   table-bordered table-striped. DataTable 7 colunas thead:
- *                   1. Sigla (ex: GAB, DETRAN, SEINFRA - abreviação unidade)
+ *                   1. Sigla (ex: GAB, DETRAN, SEINFRA - abreviaÃ§Ã£o unidade)
  *                   2. Nome da Unidade (nome completo departamento)
- *                   3. Contato (nome responsável ou telefone)
- *                   4. Ponto (username servidor responsável - ex: p_joaosilva)
+ *                   3. Contato (nome responsÃ¡vel ou telefone)
+ *                   4. Ponto (username servidor responsÃ¡vel - ex: p_joaosilva)
  *                   5. Ramal (telefone corporativo interno)
  *                   6. Status (Ativo/Inativo)
- *                   7. Ação (botões edit/delete/toggle)
+ *                   7. AÃ§Ã£o (botÃµes edit/delete/toggle)
  *                   Tbody vazio (preenchido via unidade.js AJAX). @section ScriptsBlock:
- *                   **Bootstrap 5 CDN REDUNDANTE** (v5.3.8 CSS + JS bundle - JÁ incluído _Layout!).
+ *                   **Bootstrap 5 CDN REDUNDANTE** (v5.3.8 CSS + JS bundle - JÃ incluÃ­do _Layout!).
  *                   unidade.js asp-append-version="true" cache busting. **PROBLEMAS**:
- *                   1. @model Unidade (MODEL direto não PageModel - criar UnidadeIndexModel.cs)
+ *                   1. @model Unidade (MODEL direto nÃ£o PageModel - criar UnidadeIndexModel.cs)
  *                   2. Bootstrap CDN redundante (remover)
- *                   3. CSS .fundo-cinza .label não usado (remover)
- *                   4. <br/><br/> espaçamento manual (usar mt-3)
- *                   unidade.js deve: loadList() GET /api/Unidade, botões ação edit/delete/toggle, DataTable config.
- *                   Unidades CRÍTICAS para logística FrotiX - relacionamento: Unidade (1) → Viagens (N),
- *                   Motorista (N) → Unidade (N) (lotação).
+ *                   3. CSS .fundo-cinza .label nÃ£o usado (remover)
+ *                   4. <br/><br/> espaÃ§amento manual (usar mt-3)
+ *                   unidade.js deve: loadList() GET /api/Unidade, botÃµes aÃ§Ã£o edit/delete/toggle, DataTable config.
+ *                   Unidades CRÃTICAS para logÃ­stica FrotiX - relacionamento: Unidade (1) â†’ Viagens (N),
+ *                   Motorista (N) â†’ Unidade (N) (lotaÃ§Ã£o).
  **************************************************************************************** *@
 @page
 @model FrotiX.Models.Unidade
@@ -64,14 +64,14 @@
 @{
 	ViewData["Title"] = "Unidades";
 	ViewData["PageName"] = "unidade_index";
-	ViewData["Heading"] = "<i class='fa-duotone fa-chalkboard-user'></i> Cadastros: <span class='fw-300'>Unidades Usuárias</span>";
+	ViewData["Heading"] = "<i class='fa-duotone fa-chalkboard-user'></i> Cadastros: <span class='fw-300'>Unidades UsuÃ¡rias</span>";
 	ViewData["Category1"] = "Cadastros";
 	ViewData["PageIcon"] = "fa-duotone fa-chalkboard-user";
 }
 
 @section HeadBlock {
 	<style>
-/* ======== OUTLINE BRANCO NO BOTÃO DO HEADER (Padrão FrotiX) ======== */
+/* ======== OUTLINE BRANCO NO BOTÃƒO DO HEADER (PadrÃ£o FrotiX) ======== */
 		.ftx-card-header .btn-fundo-laranja {
 			outline: 2px solid rgba(255, 255, 255, 0.5) !important;
 			outline-offset: 1px;
@@ -106,15 +106,15 @@
 				<div class="ftx-card-header">
 					<h2 class="titulo-paginas">
 						<i class="fa-duotone fa-car-building"></i>
-						Listagem de Unidades Usuárias
+						Listagem de Unidades UsuÃ¡rias
 					</h2>
 					<div class="ftx-card-actions">
 						<a href="/Unidade/Upsert"
 						   class="btn btn-fundo-laranja"
 						   data-ftx-loading
-						   data-ejtip="Adicionar nova unidade usuária ao sistema">
+						   data-ejtip="Adicionar nova unidade usuÃ¡ria ao sistema">
 							<i class="fa-duotone fa-clone-plus icon-pulse me-1"></i>
-							Adicionar Unidade Usuária
+							Adicionar Unidade UsuÃ¡ria
 						</a>
 					</div>
 				</div>
@@ -131,7 +131,7 @@
 									<th>Ponto</th>
 									<th>Ramal</th>
 									<th>Status</th>
-									<th>Ação</th>
+									<th>AÃ§Ã£o</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -147,9 +147,10 @@
 
 @section ScriptsBlock {
 
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
 	<script src="~/js/cadastros/unidade.js" asp-append-version="true"></script>
 
 }
+

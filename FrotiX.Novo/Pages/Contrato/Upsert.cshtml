@@ -1,13 +1,13 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Contrato/Upsert.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/Contrato/Upsert.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Formulário completo criar/editar contrato com dados, itens, empenhos, anexos, repactuações
- * 📥 ENTRADAS     : @page, @model UpsertModel, campos contrato (número, objeto, vigência, valores), grids (itens, empenhos), uploads anexos
- * 📤 SAÍDAS       : POST /api/Contrato/Insere ou Edita (JSON), redirect /Contrato, modais (itens, empenhos, anexos), AppToast feedback
- * 🔗 CHAMADA POR  : Contrato/Index (botão "Adicionar Contrato", editar linha)
- * 🔄 CHAMA        : /api/Contrato/Insere, /api/Contrato/Edita, /api/Contrato/SalvarItem, /api/Contrato/SalvarEmpenho, /api/Contrato/UploadAnexo
- * 📦 DEPENDÊNCIAS : Syncfusion EJ2 (DatePicker, ComboBox, Grid, Upload), Bootstrap 5, jQuery, DataTables, moeda() inline
- * 📝 OBSERVAÇÕES  : Total: 1595 linhas. PROBLEMAS: Arquivo MASSIVO, CSS inline ~400 linhas, JavaScript inline ~600 linhas, múltiplos grids e modais, função moeda() duplicada, validações fracas, sem lazy loading modais, double-submit possível
+ * ðŸŽ¯ OBJETIVO     : FormulÃ¡rio completo criar/editar contrato com dados, itens, empenhos, anexos, repactuaÃ§Ãµes
+ * ðŸ“¥ ENTRADAS     : @page, @model UpsertModel, campos contrato (nÃºmero, objeto, vigÃªncia, valores), grids (itens, empenhos), uploads anexos
+ * ðŸ“¤ SAÃDAS       : POST /api/Contrato/Insere ou Edita (JSON), redirect /Contrato, modais (itens, empenhos, anexos), AppToast feedback
+ * ðŸ”— CHAMADA POR  : Contrato/Index (botÃ£o "Adicionar Contrato", editar linha)
+ * ðŸ”„ CHAMA        : /api/Contrato/Insere, /api/Contrato/Edita, /api/Contrato/SalvarItem, /api/Contrato/SalvarEmpenho, /api/Contrato/UploadAnexo
+ * ðŸ“¦ DEPENDÃŠNCIAS : Syncfusion EJ2 (DatePicker, ComboBox, Grid, Upload), Bootstrap 5, jQuery, DataTables, moeda() inline
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : Total: 1595 linhas. PROBLEMAS: Arquivo MASSIVO, CSS inline ~400 linhas, JavaScript inline ~600 linhas, mÃºltiplos grids e modais, funÃ§Ã£o moeda() duplicada, validaÃ§Ãµes fracas, sem lazy loading modais, double-submit possÃ­vel
  **************************************************************************************** *@
 @page
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -27,7 +27,7 @@
 
 <style>
     /* ===== CARD FROTIX - CONTRATOS ===== */
-    /* Header usa o padrão global .ftx-card-header do frotix.css */
+    /* Header usa o padrÃ£o global .ftx-card-header do frotix.css */
 
     .ftx-card-contrato {
         border: none;
@@ -43,7 +43,7 @@
         background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
     }
 
-    /* ===== SEÇÕES DO FORMULÁRIO ===== */
+    /* ===== SEÃ‡Ã•ES DO FORMULÃRIO ===== */
     .ftx-form-section {
         background: #fff;
         border-radius: 10px;
@@ -105,7 +105,7 @@
         accent-color: #325d88;
     }
 
-    /* ===== BOTÕES DE AÇÃO ===== */
+    /* ===== BOTÃ•ES DE AÃ‡ÃƒO ===== */
     .ftx-btn-action {
         border-radius: 8px;
         padding: 0.65rem 1.5rem;
@@ -154,7 +154,7 @@
         gap: 0.75rem !important;
     }
 
-    /* Seção de Ações (última seção) */
+    /* SeÃ§Ã£o de AÃ§Ãµes (Ãºltima seÃ§Ã£o) */
     .ftx-form-section:last-of-type {
         background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);
         border: 1px solid rgba(50, 93, 136, 0.15);
@@ -175,7 +175,7 @@
         cursor: not-allowed;
     }
 
-    /* Grid dentro das seções */
+    /* Grid dentro das seÃ§Ãµes */
     .ftx-form-section .e-grid {
         border-radius: 8px;
         overflow: hidden;
@@ -187,20 +187,20 @@
         border-bottom: 1px solid #e2e8f0;
     }
 
-    /* Seção de Veículos quando visível */
+    /* SeÃ§Ã£o de VeÃ­culos quando visÃ­vel */
     #divVeiculosAdd.ftx-form-section,
     #divVeiculosEdit.ftx-form-section {
         margin-top: 0;
     }
 
-    /* Linha do Total e botão Atualizar */
+    /* Linha do Total e botÃ£o Atualizar */
     #divVeiculosAdd .row.mt-3,
     #divVeiculosEdit .row.mt-3 {
         align-items: flex-end;
         margin-top: 1rem !important;
     }
 
-    /* ===== TERCEIRIZAÇÃO SECTION ===== */
+    /* ===== TERCEIRIZAÃ‡ÃƒO SECTION ===== */
     .ftx-terceirizacao-card {
         background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
         border-radius: 10px;
@@ -224,7 +224,7 @@
 
 @section HeadBlock {
     <style>
-        /* ======== OUTLINE BRANCO NO BOTÃO DO HEADER (Padrão FrotiX) ======== */
+        /* ======== OUTLINE BRANCO NO BOTÃƒO DO HEADER (PadrÃ£o FrotiX) ======== */
         .ftx-card-header .btn-fundo-laranja {
             outline: 2px solid rgba(255, 255, 255, 0.5) !important;
             outline-offset: 1px;
@@ -243,7 +243,7 @@
         <div class="col-xl-12">
             <!-- Card FrotiX -->
             <div class="ftx-card-contrato">
-                <!-- Header do Card - Usa padrão global ftx-card-header -->
+                <!-- Header do Card - Usa padrÃ£o global ftx-card-header -->
                 <div class="ftx-card-header">
                     <h2 class="titulo-paginas">
                         <i class="fa-duotone fa-file-contract"></i>
@@ -252,7 +252,7 @@
                     <div class="ftx-card-actions">
                         <a asp-page="./Index" class="btn btn-fundo-laranja" data-ftx-loading>
                             <i class="fa-duotone fa-rotate-left icon-space icon-rotate-left"></i>
-                            Voltar à Lista
+                            Voltar Ã  Lista
                         </a>
                     </div>
                 </div>
@@ -265,11 +265,11 @@
                         <input type="hidden" asp-for="ContratoObj.Contrato.ContratoId" />
                     }
 
-                    <!-- Seção: Identificação do Contrato -->
+                    <!-- SeÃ§Ã£o: IdentificaÃ§Ã£o do Contrato -->
                     <div class="ftx-form-section">
                         <div class="ftx-form-section-title">
                             <i class="fa-duotone fa-id-card"></i>
-                            Identificação do Contrato
+                            IdentificaÃ§Ã£o do Contrato
                         </div>
                         <div class="row">
                             <div class="col-md-2 col-sm-6">
@@ -350,7 +350,7 @@
                         </div>
                     </div>
 
-                    <!-- Seção: Fornecedor e Objeto -->
+                    <!-- SeÃ§Ã£o: Fornecedor e Objeto -->
                     <div class="ftx-form-section">
                         <div class="ftx-form-section-title">
                             <i class="fa-duotone fa-building"></i>
@@ -375,13 +375,13 @@
                                     <span class="text-danger" asp-validation-for="ContratoObj.Contrato.Objeto"></span>
                                     <input id="lstObjeto" class="form-control form-control-xs"
                                         asp-for="ContratoObj.Contrato.Objeto"
-                                        placeholder="Descrição do objeto do contrato" />
+                                        placeholder="DescriÃ§Ã£o do objeto do contrato" />
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Seção: Detalhes do Contrato -->
+                    <!-- SeÃ§Ã£o: Detalhes do Contrato -->
                     <div class="ftx-form-section">
                         <div class="ftx-form-section-title">
                             <i class="fa-duotone fa-calendar-lines-pen"></i>
@@ -397,9 +397,9 @@
                                     <select id="lstTipoContrato" class="form-control form-control-xs"
                                         asp-for="ContratoObj.Contrato.TipoContrato">
                                         <option value="">-- Tipo Contrato --</option>
-                                        <option value="Serviços">Serviços</option>
-                                        <option value="Terceirização">Terceirização</option>
-                                        <option value="Locação">Locação</option>
+                                        <option value="ServiÃ§os">ServiÃ§os</option>
+                                        <option value="TerceirizaÃ§Ã£o">TerceirizaÃ§Ã£o</option>
+                                        <option value="LocaÃ§Ã£o">LocaÃ§Ã£o</option>
                                     </select>
                                 </div>
                             </div>
@@ -433,22 +433,22 @@
                             </div>
                         </div>
 
-                        <!-- Lista de Repactuações (exibido apenas em edição) -->
+                        <!-- Lista de RepactuaÃ§Ãµes (exibido apenas em ediÃ§Ã£o) -->
                         <div id="divListaRepactuacoes" class="row mt-3" style="display:none">
                             <div class="col-md-6">
-                                <label class="label">Selecione uma Repactuação para ver os Itens</label>
+                                <label class="label">Selecione uma RepactuaÃ§Ã£o para ver os Itens</label>
                                 <select id="lstRepactuacao" name="lstRepactuacao" class="form-control form-control-xs">
-                                    <option value="">-- Selecione uma Repactuação --</option>
+                                    <option value="">-- Selecione uma RepactuaÃ§Ã£o --</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Seção: Terceirização (condicional) -->
+                    <!-- SeÃ§Ã£o: TerceirizaÃ§Ã£o (condicional) -->
                     <div id="divTerceirizacao" class="ftx-form-section" style="display:none">
                         <div class="ftx-form-section-title">
                             <i class="fa-duotone fa-users-gear"></i>
-                            Configuração de Terceirização
+                            ConfiguraÃ§Ã£o de TerceirizaÃ§Ã£o
                         </div>
                         <div class="row">
                             <!-- Encarregados -->
@@ -481,7 +481,7 @@
                                             </div>
                                         </label>
                                     }
-                                    else if (Model.ContratoObj.Contrato.TipoContrato == "Terceirização")
+                                    else if (Model.ContratoObj.Contrato.TipoContrato == "TerceirizaÃ§Ã£o")
                                     {
                                         <label id="lblencarregados" class="label">
                                             <div>
@@ -538,7 +538,7 @@
                                             </div>
                                         </label>
                                     }
-                                    else if (Model.ContratoObj.Contrato.TipoContrato == "Terceirização")
+                                    else if (Model.ContratoObj.Contrato.TipoContrato == "TerceirizaÃ§Ã£o")
                                     {
                                         <label id="lbloperadores" class="label">
                                             <div>
@@ -595,7 +595,7 @@
                                             </div>
                                         </label>
                                     }
-                                    else if (Model.ContratoObj.Contrato.TipoContrato == "Terceirização")
+                                    else if (Model.ContratoObj.Contrato.TipoContrato == "TerceirizaÃ§Ã£o")
                                     {
                                         <label id="lblmotoristas" class="label">
                                             <div>
@@ -652,7 +652,7 @@
                                             </div>
                                         </label>
                                     }
-                                    else if (Model.ContratoObj.Contrato.TipoContrato == "Terceirização")
+                                    else if (Model.ContratoObj.Contrato.TipoContrato == "TerceirizaÃ§Ã£o")
                                     {
                                         <label id="lbllavadores" class="label">
                                             <div>
@@ -681,11 +681,11 @@
                         </div>
                     </div>
 
-                    <!-- Seção: Veículos (Locação - Novo) -->
+                    <!-- SeÃ§Ã£o: VeÃ­culos (LocaÃ§Ã£o - Novo) -->
                     <div id="divVeiculosAdd" class="ftx-form-section" style="display:none">
                         <div class="ftx-form-section-title">
                             <i class="fa-duotone fa-cars"></i>
-                            Veículos do Contrato
+                            VeÃ­culos do Contrato
                         </div>
                         @{
                             List<object> cols = new List<object>();
@@ -700,11 +700,11 @@
                             <e-grid-columns>
                                 <e-grid-column field="numitem" headerText="Item" textAlign="Center" width="20"
                                     allowEditing="true"></e-grid-column>
-                                <e-grid-column field="descricao" headerText="Descrição do Veículo" textAlign="Left"
+                                <e-grid-column field="descricao" headerText="DescriÃ§Ã£o do VeÃ­culo" textAlign="Left"
                                     width="150" allowEditing="true"></e-grid-column>
                                 <e-grid-column field="quantidade" headerText="Quantidade" textAlign="Center" width="30"
                                     allowEditing="true"></e-grid-column>
-                                <e-grid-column field="valorunitario" headerText="Valor Unitário" textAlign="Right"
+                                <e-grid-column field="valorunitario" headerText="Valor UnitÃ¡rio" textAlign="Right"
                                     width="30" allowEditing="true" format="N2"></e-grid-column>
                                 <e-grid-column field="valortotal" headerText="Valor Total" width="30" textAlign="Right"
                                     allowEditing="false" format="N2"></e-grid-column>
@@ -724,21 +724,21 @@
                         </div>
                     </div>
 
-                    <!-- Seção: Veículos (Locação - Edição) -->
+                    <!-- SeÃ§Ã£o: VeÃ­culos (LocaÃ§Ã£o - EdiÃ§Ã£o) -->
                     <div id="divVeiculosEdit" class="ftx-form-section" style="display:none">
                         <div class="ftx-form-section-title">
                             <i class="fa-duotone fa-cars"></i>
-                            Veículos do Contrato
+                            VeÃ­culos do Contrato
                         </div>
                         <ejs-grid id="grdVeiculos2" allowPaging="false" GridLines="Both">
                             <e-grid-columns>
                                 <e-grid-column field="numitem" headerText="Item" textAlign="Center"
                                     width="20"></e-grid-column>
-                                <e-grid-column field="descricao" headerText="Descrição do Veículo" textAlign="Left"
+                                <e-grid-column field="descricao" headerText="DescriÃ§Ã£o do VeÃ­culo" textAlign="Left"
                                     width="150"></e-grid-column>
                                 <e-grid-column field="quantidade" headerText="Quantidade" textAlign="Center" width="30"
                                     format="N0"></e-grid-column>
-                                <e-grid-column field="valorunitario" headerText="Valor Unitário" textAlign="Right"
+                                <e-grid-column field="valorunitario" headerText="Valor UnitÃ¡rio" textAlign="Right"
                                     width="30" format="N2"></e-grid-column>
                                 <e-grid-column field="valortotal" headerText="Valor Total" width="30" textAlign="Right"
                                     format="N2"></e-grid-column>
@@ -753,7 +753,7 @@
                         </div>
                     </div>
 
-                    <!-- Seção: Status e Ações -->
+                    <!-- SeÃ§Ã£o: Status e AÃ§Ãµes -->
                     <div class="ftx-form-section">
                         <div class="row align-items-center">
                             <div class="col-md-6 col-sm-12 mb-2 mb-md-0">
@@ -784,7 +784,7 @@
                                     }
                                     <a asp-page="./Index" class="btn btn-ftx-fechar" data-ftx-loading>
                                         <i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i> Cancelar
-                                        Operação
+                                        OperaÃ§Ã£o
                                     </a>
                                 </div>
                             </div>
@@ -841,10 +841,8 @@
 
 @section ScriptsBlock {
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-        crossorigin="anonymous" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        crossorigin="anonymous"></script>
+    
+    
 
     <script>
         Number.prototype.format = function (n, x, s, c) {
@@ -913,7 +911,7 @@
                         data: { id: CONTRATO_ID },
                         success: function (res) {
                             try {
-                                var option = '<option>-- Selecione uma Repactuação --</option>';
+                                var option = '<option>-- Selecione uma RepactuaÃ§Ã£o --</option>';
                                 if (res != null && res.data && res.data.length) {
                                     res.data.forEach(function (obj) {
                                         option += '<option value="' + obj.repactuacaoContratoId + '">';
@@ -932,12 +930,12 @@
                     });
 
                     var tipo = '@Model.ContratoObj.Contrato.TipoContrato';
-                    if (tipo === 'Locação' || tipo === 'Loca&#xE7;&#xE3;o') {
+                    if (tipo === 'LocaÃ§Ã£o' || tipo === 'Loca&#xE7;&#xE3;o') {
                         document.getElementById("divVeiculosEdit").style.display = "block";
                         var gridObj = document.getElementById('grdVeiculos').ej2_instances[0];
                         gridObj.element.classList.add('disable-element');
                     }
-                    if (tipo === 'Terceirização' || tipo === 'Terceiriza&#xE7;&#xE3;o') {
+                    if (tipo === 'TerceirizaÃ§Ã£o' || tipo === 'Terceiriza&#xE7;&#xE3;o') {
                     }
                 } else {
                     document.getElementById("chkAtivo").checked = true;
@@ -953,7 +951,7 @@
                         document.getElementById("divVeiculosEdit").style.display = "none";
                         document.getElementById("divTerceirizacao").style.display = "none";
 
-                        if (this.value === 'Terceirização') {
+                        if (this.value === 'TerceirizaÃ§Ã£o') {
                             document.getElementById("divTerceirizacao").style.display = "block";
                             document.getElementById("chkoperadores").checked = false;
                             document.getElementById("chkmotoristas").checked = false;
@@ -962,7 +960,7 @@
                             document.getElementById("chkmotoristas").disabled = false;
                         }
 
-                        if (this.value === 'Locação') {
+                        if (this.value === 'LocaÃ§Ã£o') {
                             if (isEdit) {
                                 document.getElementById("divVeiculosEdit").style.display = "block";
                             } else {
@@ -1071,112 +1069,112 @@
         function InsereRegistro() {
             try {
                 if (document.getElementById("txtAno").value === "") {
-                    Alerta.Erro("Informação Ausente", "O ano do contrato é obrigatório");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "O ano do contrato Ã© obrigatÃ³rio");
                     return;
                 }
 
                 if (document.getElementById("txtNumeroContrato").value === "") {
-                    Alerta.Erro("Informação Ausente", "O número do contrato é obrigatório");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "O nÃºmero do contrato Ã© obrigatÃ³rio");
                     return;
                 }
 
                 if (document.getElementById("txtNumeroProcesso").value === "") {
-                    Alerta.Erro("Informação Ausente", "O número do processo é obrigatório");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "O nÃºmero do processo Ã© obrigatÃ³rio");
                     return;
                 }
 
                 if (document.getElementById("txtAnoProcesso").value === "") {
-                    Alerta.Erro("Informação Ausente", "O ano do processo é obrigatório");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "O ano do processo Ã© obrigatÃ³rio");
                     return;
                 }
 
                 if (document.getElementById("lstVigencia").value === "") {
-                    Alerta.Erro("Informação Ausente", "A vigência do contrato é obrigatória");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "A vigÃªncia do contrato Ã© obrigatÃ³ria");
                     return;
                 }
 
                 if (document.getElementById("lstProrrogacao").value === "") {
-                    Alerta.Erro("Informação Ausente", "A prorrogação do contrato é obrigatória");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "A prorrogaÃ§Ã£o do contrato Ã© obrigatÃ³ria");
                     return;
                 }
 
                 if (document.getElementById("ContratoObj_Contrato_FornecedorId").value === "") {
-                    Alerta.Erro("Informação Ausente", "O fornecedor do contrato é obrigatório");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "O fornecedor do contrato Ã© obrigatÃ³rio");
                     return;
                 }
 
                 if (document.getElementById("lstObjeto").value === "") {
-                    Alerta.Erro("Informação Ausente", "O objeto do contrato é obrigatório");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "O objeto do contrato Ã© obrigatÃ³rio");
                     return;
                 }
 
                 if (document.getElementById("lstTipoContrato").value === "") {
-                    Alerta.Erro("Informação Ausente", "O tipo do contrato é obrigatório");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "O tipo do contrato Ã© obrigatÃ³rio");
                     return;
                 }
 
                 if (document.getElementById("txtDataInicio").value === "") {
-                    Alerta.Erro("Informação Ausente", "A data de início do contrato é obrigatória");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "A data de inÃ­cio do contrato Ã© obrigatÃ³ria");
                     return;
                 }
 
                 if (document.getElementById("txtDataFim").value === "") {
-                    Alerta.Erro("Informação Ausente", "A data de fim do contrato é obrigatória");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "A data de fim do contrato Ã© obrigatÃ³ria");
                     return;
                 }
 
                 if (document.getElementById("valor").value === "") {
-                    Alerta.Erro("Informação Ausente", "O valor do contrato é obrigatório");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "O valor do contrato Ã© obrigatÃ³rio");
                     return;
                 }
 
-                if (document.getElementById("lstTipoContrato").value === "Terceirização" && document.getElementById("chkencarregados").checked === false) {
-                    Alerta.Erro("Informação Ausente", "Para um contrato de terceirização, você deve informar ao menos 01 encarregado.");
+                if (document.getElementById("lstTipoContrato").value === "TerceirizaÃ§Ã£o" && document.getElementById("chkencarregados").checked === false) {
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "Para um contrato de terceirizaÃ§Ã£o, vocÃª deve informar ao menos 01 encarregado.");
                     return;
                 }
 
-                if (document.getElementById("lstTipoContrato").value === "Terceirização"
+                if (document.getElementById("lstTipoContrato").value === "TerceirizaÃ§Ã£o"
                     && document.getElementById("chkoperadores").checked === false
                     && document.getElementById("chkmotoristas").checked === false
                     && document.getElementById("chklavadores").checked === false) {
-                    Alerta.Erro("Informação Ausente", "Para um contrato de terceirização, você deve escolher ao menos uma opção dentre Operadores/Motoristas/Lavadores.");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "Para um contrato de terceirizaÃ§Ã£o, vocÃª deve escolher ao menos uma opÃ§Ã£o dentre Operadores/Motoristas/Lavadores.");
                     return;
                 }
 
-                if (document.getElementById("lstTipoContrato").value === "Terceirização"
+                if (document.getElementById("lstTipoContrato").value === "TerceirizaÃ§Ã£o"
                     && document.getElementById("chkencarregados").checked === true
                     && (document.getElementById("CustoMensalEncarregados").value === '' || document.getElementById("txtQtdEncarregados").value === '')) {
-                    Alerta.Erro("Informação Ausente", "Você deve informar a quantidade e o custo unitário mensal dos Encarregados.");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "VocÃª deve informar a quantidade e o custo unitÃ¡rio mensal dos Encarregados.");
                     return;
                 }
 
-                if (document.getElementById("lstTipoContrato").value === "Terceirização"
+                if (document.getElementById("lstTipoContrato").value === "TerceirizaÃ§Ã£o"
                     && document.getElementById("chkoperadores").checked === true
                     && (document.getElementById("CustoMensalOperadores").value === '' || document.getElementById("txtQtdOperadores").value === '')) {
-                    Alerta.Erro("Informação Ausente", "Você deve informar a quantidade e o custo unitário mensal dos Operadores.");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "VocÃª deve informar a quantidade e o custo unitÃ¡rio mensal dos Operadores.");
                     return;
                 }
 
-                if (document.getElementById("lstTipoContrato").value === "Terceirização"
+                if (document.getElementById("lstTipoContrato").value === "TerceirizaÃ§Ã£o"
                     && document.getElementById("chkmotoristas").checked === true
                     && (document.getElementById("CustoMensalMotoristas").value === '' || document.getElementById("txtQtdMotoristas").value === '')) {
-                    Alerta.Erro("Informação Ausente", "Você deve informar a quantidade e o custo unitário mensal dos Motoristas.");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "VocÃª deve informar a quantidade e o custo unitÃ¡rio mensal dos Motoristas.");
                     return;
                 }
 
-                if (document.getElementById("lstTipoContrato").value === "Terceirização"
+                if (document.getElementById("lstTipoContrato").value === "TerceirizaÃ§Ã£o"
                     && document.getElementById("chklavadores").checked === true
                     && (document.getElementById("CustoMensalLavadores").value === '' || document.getElementById("txtQtdLavadores").value === '')) {
-                    Alerta.Erro("Informação Ausente", "Você deve informar a quantidade e o custo unitário mensal dos Lavadores.");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "VocÃª deve informar a quantidade e o custo unitÃ¡rio mensal dos Lavadores.");
                     return;
                 }
 
                 var gridObj = document.getElementById('grdVeiculos').ej2_instances[0];
                 var getRows = gridObj.getRows();
 
-                if (document.getElementById("lstTipoContrato").value === "Locação" && getRows.length === 0 &&
+                if (document.getElementById("lstTipoContrato").value === "LocaÃ§Ã£o" && getRows.length === 0 &&
                     ('@Model.ContratoObj.Contrato.ContratoId' === null || '@Model.ContratoObj.Contrato.ContratoId' === '00000000-0000-0000-0000-000000000000')) {
-                    Alerta.Erro("Informação Ausente", "Para um contrato de locação, você deve informar ao menos um veículo.");
+                    Alerta.Erro("InformaÃ§Ã£o Ausente", "Para um contrato de locaÃ§Ã£o, vocÃª deve informar ao menos um veÃ­culo.");
                     return;
                 }
 
@@ -1186,7 +1184,7 @@
 
                     var valorencarregado = 0, valoroperador = 0, valormotorista = 0, valorlavador = 0;
 
-                    if (document.getElementById("lstTipoContrato").value === "Terceirização") {
+                    if (document.getElementById("lstTipoContrato").value === "TerceirizaÃ§Ã£o") {
                         valorencarregado = brToFloat($('#CustoMensalEncarregados').val());
                         valoroperador = brToFloat($('#CustoMensalOperadores').val());
                         valormotorista = brToFloat($('#CustoMensalMotoristas').val());
@@ -1231,7 +1229,7 @@
                             try {
                                 var RepactuacaoId = data.data;
 
-                                if (document.getElementById("lstTipoContrato").value === "Locação") {
+                                if (document.getElementById("lstTipoContrato").value === "LocaÃ§Ã£o") {
                                     var gridObj = document.getElementById('grdVeiculos').ej2_instances[0];
                                     var getRows = gridObj.getRows();
 
@@ -1256,7 +1254,7 @@
                                     }
                                 }
 
-                                if (document.getElementById("lstTipoContrato").value === "Terceirização") {
+                                if (document.getElementById("lstTipoContrato").value === "TerceirizaÃ§Ã£o") {
                                     var objRepactuacaoTerceirizacao = JSON.stringify({
                                         "RepactuacaoContratoId": RepactuacaoId,
                                         "DataRepactuacao": $('#txtDataInicio').val(),
@@ -1279,7 +1277,7 @@
                                     });
                                 }
 
-                                if (document.getElementById("lstTipoContrato").value === "Serviços") {
+                                if (document.getElementById("lstTipoContrato").value === "ServiÃ§os") {
                                     var objRepactuacaoServicos = JSON.stringify({
                                         "RepactuacaoContratoId": RepactuacaoId,
                                         "DataRepactuacao": $('#txtDataInicio').val(),
@@ -1315,7 +1313,7 @@
 
                     var valorencarregado = 0, valoroperador = 0, valormotorista = 0, valorlavador = 0;
 
-                    if (document.getElementById("lstTipoContrato").value === "Terceirização") {
+                    if (document.getElementById("lstTipoContrato").value === "TerceirizaÃ§Ã£o") {
                         valorencarregado = brToFloat($('#CustoMensalEncarregados').val());
                         valoroperador = brToFloat($('#CustoMensalOperadores').val());
                         valormotorista = brToFloat($('#CustoMensalMotoristas').val());
@@ -1424,9 +1422,9 @@
                     try {
                         let RepactuacaoContratoId = document.getElementById("lstRepactuacao").value;
 
-                        if (document.getElementById("lstTipoContrato").value === "Locação") {
+                        if (document.getElementById("lstTipoContrato").value === "LocaÃ§Ã£o") {
 
-                            if (RepactuacaoContratoId === "-- Selecione uma Repactuação --" || RepactuacaoContratoId === "") {
+                            if (RepactuacaoContratoId === "-- Selecione uma RepactuaÃ§Ã£o --" || RepactuacaoContratoId === "") {
                                 document.getElementById("divVeiculosEdit").style.display = "none";
                                 return;
                             } else {
@@ -1462,11 +1460,11 @@
                             });
                         }
 
-                        if (document.getElementById("lstTipoContrato").value === "Terceirização") {
+                        if (document.getElementById("lstTipoContrato").value === "TerceirizaÃ§Ã£o") {
 
                             document.getElementById("divTerceirizacao").style.display = "block";
 
-                            if (RepactuacaoContratoId === "-- Selecione uma Repactuação --" || RepactuacaoContratoId === "") {
+                            if (RepactuacaoContratoId === "-- Selecione uma RepactuaÃ§Ã£o --" || RepactuacaoContratoId === "") {
                                 document.getElementById("divTerceirizacao").style.display = "none";
                                 return;
                             }
@@ -1533,9 +1531,9 @@
 
                         }
 
-                        if (document.getElementById("lstTipoContrato").value === "Serviços") {
+                        if (document.getElementById("lstTipoContrato").value === "ServiÃ§os") {
 
-                            if (RepactuacaoContratoId === "-- Selecione uma Repactuação --" || RepactuacaoContratoId === "") {
+                            if (RepactuacaoContratoId === "-- Selecione uma RepactuaÃ§Ã£o --" || RepactuacaoContratoId === "") {
                                 document.getElementById("valor").value = floatToBR(0);
                                 return;
                             }

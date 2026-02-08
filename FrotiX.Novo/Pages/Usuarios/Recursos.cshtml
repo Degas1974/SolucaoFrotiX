@@ -1,50 +1,50 @@
-@page
+﻿@page
 @*
  ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Usuarios/Recursos.cshtml
+ * âš¡ ARQUIVO: Pages/Usuarios/Recursos.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Gerenciamento de permissões granulares por usuário com Syncfusion
- *                   TreeGrid hierárquico (2 níveis: Categorias > Recursos), inline checkbox
- *                   toggle, batch mode, sistema CRÍTICO controle de acesso granular FrotiX
+ * ðŸŽ¯ OBJETIVO     : Gerenciamento de permissÃµes granulares por usuÃ¡rio com Syncfusion
+ *                   TreeGrid hierÃ¡rquico (2 nÃ­veis: Categorias > Recursos), inline checkbox
+ *                   toggle, batch mode, sistema CRÃTICO controle de acesso granular FrotiX
  *
- * 📥 ENTRADAS     : @page, @model IndexModel (reutiliza Unidade - BUG modelo incorreto),
- *                   route /Usuarios/Recursos?id=123 (id obrigatório), query parameter id
+ * ðŸ“¥ ENTRADAS     : @page, @model IndexModel (reutiliza Unidade - BUG modelo incorreto),
+ *                   route /Usuarios/Recursos?id=123 (id obrigatÃ³rio), query parameter id
  *                   se ausente redireciona /Usuarios/Index
  *
- * 📤 SAÍDAS       : Page renderizada com: Card header (Gerenciar Recursos do Usuário: [Nome],
- *                   ícone fa-key), Alert info topo (Usuário: [Nome] - Email - Perfil badge),
- *                   Syncfusion TreeGrid 2 níveis (Categorias nível 1: Cadastros/Relatórios/
- *                   Frota/Admin; Recursos nível 2 filhos), inline Checkbox Permitido toggle,
+ * ðŸ“¤ SAÃDAS       : Page renderizada com: Card header (Gerenciar Recursos do UsuÃ¡rio: [Nome],
+ *                   Ã­cone fa-key), Alert info topo (UsuÃ¡rio: [Nome] - Email - Perfil badge),
+ *                   Syncfusion TreeGrid 2 nÃ­veis (Categorias nÃ­vel 1: Cadastros/RelatÃ³rios/
+ *                   Frota/Admin; Recursos nÃ­vel 2 filhos), inline Checkbox Permitido toggle,
  *                   toolbar [ExpandAll, CollapseAll, Search], altura 600px scrollable,
- *                   botão Salvar Permissões (disabled se sem alterações batch)
+ *                   botÃ£o Salvar PermissÃµes (disabled se sem alteraÃ§Ãµes batch)
  *
- * 🔗 CHAMADA POR  : /Usuarios/Index coluna Ações botão Recursos key verde (link
- *                   /Usuarios/Recursos?id=123), usuários role Admin, página CRÍTICA
+ * ðŸ”— CHAMADA POR  : /Usuarios/Index coluna AÃ§Ãµes botÃ£o Recursos key verde (link
+ *                   /Usuarios/Recursos?id=123), usuÃ¡rios role Admin, pÃ¡gina CRÃTICA
  *
- * 🔄 CHAMA        : GET /api/Usuarios/GetRecursosUsuario?usuarioId=123 (carrega hierarquia),
- *                   POST /api/Usuarios/SaveRecursosUsuario (salva batch alterações),
+ * ðŸ”„ CHAMA        : GET /api/Usuarios/GetRecursosUsuario?usuarioId=123 (carrega hierarquia),
+ *                   POST /api/Usuarios/SaveRecursosUsuario (salva batch alteraÃ§Ãµes),
  *                   TreeGrid.getBatchChanges() (coleta changedRecords), AppToast.show()
  *
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, Syncfusion EJ2 TreeGrid 2023.4.2, Bootstrap
+ * ðŸ“¦ DEPENDÃŠNCIAS : ASP.NET Core Razor Pages, Syncfusion EJ2 TreeGrid 2023.4.2, Bootstrap
  *                   5.3.8, Font Awesome 6 Duotone, jQuery 3.7.1, AppToast.js, Alerta.js,
- *                   EF Core 8.0, SQL transações (BeginTransaction, CommitTransaction)
+ *                   EF Core 8.0, SQL transaÃ§Ãµes (BeginTransaction, CommitTransaction)
  *
- * 📝 OBSERVAÇÕES  : Total ~567 linhas. **PÁGINA CRÍTICA** - controle acesso granular.
- *                   **TreeGrid hierárquico 2 níveis:** Categorias nível 1 agrupam recursos
- *                   (Cadastros agrupa Veículos/Motoristas/Fornecedores, Relatórios agrupa
- *                   vários), Recursos nível 2 são telas/funcionalidades (Veículos.Index,
- *                   Veículos.Create, etc). **Checkbox Permitido inline:** admin expande
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : Total ~567 linhas. **PÃGINA CRÃTICA** - controle acesso granular.
+ *                   **TreeGrid hierÃ¡rquico 2 nÃ­veis:** Categorias nÃ­vel 1 agrupam recursos
+ *                   (Cadastros agrupa VeÃ­culos/Motoristas/Fornecedores, RelatÃ³rios agrupa
+ *                   vÃ¡rios), Recursos nÃ­vel 2 sÃ£o telas/funcionalidades (VeÃ­culos.Index,
+ *                   VeÃ­culos.Create, etc). **Checkbox Permitido inline:** admin expande
  *                   Categoria, marca checkboxes para conceder acesso, desmarca nega acesso.
- *                   **Batch mode:** acumula alterações até clicar Salvar (otimiza UX, evita
+ *                   **Batch mode:** acumula alteraÃ§Ãµes atÃ© clicar Salvar (otimiza UX, evita
  *                   salvar cada click individual). **Backend validate duplicatas:** INSERT
  *                   verifica EXISTS (evita duplicate key constraint), DELETE WHERE garante
- *                   existe. **Transação:** BeginTransaction garante atomicidade batch (erro
- *                   em algum INSERT/DELETE → RollbackTransaction desfaz tudo, all-or-nothing).
+ *                   existe. **TransaÃ§Ã£o:** BeginTransaction garante atomicidade batch (erro
+ *                   em algum INSERT/DELETE â†’ RollbackTransaction desfaz tudo, all-or-nothing).
  *
- * ⚠️  ISSUES      : **BUG CRÍTICO** - @model usa Unidade quando deveria ser UsuarioRecursoModel
- *                   custom (não afeta funcionalidade pois model não é usado renderização HTML,
- *                   mas cria confusão código). Refatorar. Sem validação se usuario existe antes
- *                   editar (permissive, causa erro se id inválido).
+ * âš ï¸  ISSUES      : **BUG CRÃTICO** - @model usa Unidade quando deveria ser UsuarioRecursoModel
+ *                   custom (nÃ£o afeta funcionalidade pois model nÃ£o Ã© usado renderizaÃ§Ã£o HTML,
+ *                   mas cria confusÃ£o cÃ³digo). Refatorar. Sem validaÃ§Ã£o se usuario existe antes
+ *                   editar (permissive, causa erro se id invÃ¡lido).
  ****************************************************************************************
  *              consistencia). Performance: query GET /api/Usuarios/GetRecursosUsuario
  *              pode ser lento se muitos recursos (100+ recursos * LEFT Join UsuarioRecursos),
@@ -86,7 +86,7 @@
 		/* ====== FONTE OUTFIT ====== */
 		@@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
 
-		/* ====== ANIMAÇÃO GLOW FROTIX ====== */
+		/* ====== ANIMAÃ‡ÃƒO GLOW FROTIX ====== */
 		@@keyframes buttonWiggle {
 			0% { transform: translateY(0) rotate(0deg); }
 			25% { transform: translateY(-2px) rotate(-1deg); }
@@ -95,13 +95,13 @@
 			100% { transform: translateY(0) rotate(0deg); }
 		}
 
-		/* ====== VARIÁVEIS LOCAIS ====== */
+		/* ====== VARIÃVEIS LOCAIS ====== */
 		:root {
 			--ftx-recurso-azul: #3D5771;
 			--ftx-recurso-azul-hover: #2d4559;
 		}
 
-		/* ======== OUTLINE BRANCO NO BOTÃO DO HEADER (Padrão FrotiX) ======== */
+		/* ======== OUTLINE BRANCO NO BOTÃƒO DO HEADER (PadrÃ£o FrotiX) ======== */
 		.ftx-card-header .btn-fundo-laranja {
 			outline: 2px solid rgba(255, 255, 255, 0.5) !important;
 			outline-offset: 1px;
@@ -161,7 +161,7 @@
 			border-color: rgba(0,0,0,0.05) !important;
 		}
 
-		/* ====== BOTÕES DE AÇÃO NA TABELA - COM GLOW FROTIX ====== */
+		/* ====== BOTÃ•ES DE AÃ‡ÃƒO NA TABELA - COM GLOW FROTIX ====== */
 		.ftx-btn-icon {
 			width: 28px;
 			height: 28px;
@@ -273,7 +273,7 @@
 		<div id="panel-1" class="panel ftx-card-styled">
 			<div class="panel-container show">
 
-				<!-- Header Padrão FrotiX -->
+				<!-- Header PadrÃ£o FrotiX -->
 				<div class="ftx-card-header">
 					<h2 class="titulo-paginas">
 						<i class="fa-duotone fa-book-journal-whills"></i>
@@ -296,7 +296,7 @@
 									<th>Nome</th>
 									<th>Nome Menu</th>
 									<th>Ordem</th>
-									<th>Ação</th>
+									<th>AÃ§Ã£o</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -310,13 +310,13 @@
 	</div>
 </div>
 
-@*----------------- MODAL de Usuários  ------------------------*@
+@*----------------- MODAL de UsuÃ¡rios  ------------------------*@
 @*=============================================================*@
 <div class="modal fade" id="modalControleAcesso" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-xl">
 		<div class="modal-content">
 			<div class="modal-header modal-header-azul">
-				<h3 class="modal-title" id="h3Titulo">Exibe os Usuários e seu acesso ao recurso</h3>
+				<h3 class="modal-title" id="h3Titulo">Exibe os UsuÃ¡rios e seu acesso ao recurso</h3>
 				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
 			</div>
 			<div class="modal-body">
@@ -328,7 +328,7 @@
 							<table id="tblRecursos" class="table table-bordered table-striped" width="100%">
 								<thead>
 									<tr>
-										<th>Nome Completo do Usuário</th>
+										<th>Nome Completo do UsuÃ¡rio</th>
 										<th>Status de Acesso</th>
 									</tr>
 								</thead>
@@ -351,8 +351,8 @@
 
 @section ScriptsBlock {
 
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
 	<script>
 		(function() {
@@ -372,8 +372,8 @@
 							var $btn = $(this);
 
 							Alerta.Confirmar(
-								"Confirmar Exclusão",
-								"Você tem certeza que deseja apagar este Recurso? Não será possível recuperar os dados eliminados!",
+								"Confirmar ExclusÃ£o",
+								"VocÃª tem certeza que deseja apagar este Recurso? NÃ£o serÃ¡ possÃ­vel recuperar os dados eliminados!",
 								"Sim, excluir",
 								"Cancelar"
 							).then(function (confirmed) {
@@ -392,7 +392,7 @@
 										success: function (data) {
 											try {
 												if (data && data.success) {
-													AppToast.show('Verde', data.message || "Recurso excluído com sucesso.", 2000);
+													AppToast.show('Verde', data.message || "Recurso excluÃ­do com sucesso.", 2000);
 													if (dataTable) {
 														dataTable.ajax.reload(null, false);
 													}
@@ -446,14 +446,14 @@
 										}
 										$el.text(text);
 									} else {
-										AppToast.show('Vermelho', "Não foi possível alterar o status.", 2000);
+										AppToast.show('Vermelho', "NÃ£o foi possÃ­vel alterar o status.", 2000);
 									}
 								} catch (inner) {
 									Alerta.TratamentoErroComLinha("Recursos.cshtml", "updateStatusRecurso.get.success", inner);
 								}
 							}).fail(function () {
 								try {
-									AppToast.show('Vermelho', "Não foi possível alterar o status.", 2000);
+									AppToast.show('Vermelho', "NÃ£o foi possÃ­vel alterar o status.", 2000);
 								} catch (inner) {
 									Alerta.TratamentoErroComLinha("Recursos.cshtml", "updateStatusRecurso.get.fail", inner);
 								}
@@ -463,7 +463,7 @@
 						}
 					});
 
-					// Toggle de acesso do usuário ao recurso (Com Acesso / Sem Acesso)
+					// Toggle de acesso do usuÃ¡rio ao recurso (Com Acesso / Sem Acesso)
 					$(document).on('click', '.updateStatusAcesso', function () {
 						try {
 							var url = $(this).data('url');
@@ -481,14 +481,14 @@
 										}
 										$el.text(texto);
 									} else {
-										AppToast.show('Vermelho', "Não foi possível alterar o status de acesso.", 2000);
+										AppToast.show('Vermelho', "NÃ£o foi possÃ­vel alterar o status de acesso.", 2000);
 									}
 								} catch (inner) {
 									Alerta.TratamentoErroComLinha("Recursos.cshtml", "updateStatusAcesso.get.success", inner);
 								}
 							}).fail(function () {
 								try {
-									AppToast.show('Vermelho', "Não foi possível alterar o status de acesso.", 2000);
+									AppToast.show('Vermelho', "NÃ£o foi possÃ­vel alterar o status de acesso.", 2000);
 								} catch (inner) {
 									Alerta.TratamentoErroComLinha("Recursos.cshtml", "updateStatusAcesso.get.fail", inner);
 								}
@@ -498,7 +498,7 @@
 						}
 					});
 
-					// Abrir modal de Controle de Acesso (elementos dinâmicos)
+					// Abrir modal de Controle de Acesso (elementos dinÃ¢micos)
 					$(document).on('click', '.ftx-btn-acesso', function (e) {
 						try {
 							e.preventDefault();
@@ -560,7 +560,7 @@
 						],
 						language: {
 							url: "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Portuguese-Brasil.json",
-							emptyTable: "Sem Dados para Exibição"
+							emptyTable: "Sem Dados para ExibiÃ§Ã£o"
 						},
 						width: "100%"
 					});
@@ -570,13 +570,13 @@
 				}
 			}
 
-			// MODAL: lista de usuários x acesso ao recurso
+			// MODAL: lista de usuÃ¡rios x acesso ao recurso
 			const modalControleAcesso = document.getElementById('modalControleAcesso');
 
 			if (modalControleAcesso) {
 				modalControleAcesso.addEventListener('shown.bs.modal', function (event) {
 					try {
-						// Pega o recursoId do campo hidden (já definido antes de abrir o modal)
+						// Pega o recursoId do campo hidden (jÃ¡ definido antes de abrir o modal)
 						var recursoId = document.getElementById('txtRecursoId').value;
 
 						if ($.fn.DataTable.isDataTable('#tblRecursos')) {
@@ -609,7 +609,7 @@
 							],
 							language: {
 								url: "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Portuguese-Brasil.json",
-								emptyTable: "Sem Dados para Exibição"
+								emptyTable: "Sem Dados para ExibiÃ§Ã£o"
 							},
 							width: "100%"
 						});
@@ -634,3 +634,4 @@
 		})();
 	</script>
 }
+

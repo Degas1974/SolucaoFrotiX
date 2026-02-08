@@ -1,13 +1,13 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/MovimentacaoPatrimonio/Upsert.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/MovimentacaoPatrimonio/Upsert.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Formulário criar/editar movimentação de patrimônio (origem readonly, destino editável)
- * 📥 ENTRADAS     : @page, @model UpsertModel, campos: cmbPatrimonio, dataMov, StatusCheckbox, SetorOrigem (readonly), cmbSetorDestino, cmbSecoesDestino
- * 📤 SAÍDAS       : POST /api/Patrimonio/CreateMovimentacao ou UpdateMovimentacao, redirect para Index, AppToast feedback
- * 🔗 CHAMADA POR  : Index.cshtml (botão "Inserir Movimentação", edição via API), menu navegação
- * 🔄 CHAMA        : /api/Patrimonio/GetMovimentacao (edição), /api/Patrimonio/CreateMovimentacao, /api/Patrimonio/UpdateMovimentacao, ~/js/cadastros/movimentacaopatrimonio.js
- * 📦 DEPENDÊNCIAS : Syncfusion.EJ2 (ComboBox, DatePicker, Checkbox), Bootstrap 5.3.8 (CDN redundante), Font Awesome Duotone
- * 📝 OBSERVAÇÕES  : Total: 532 linhas. PROBLEMA: Bootstrap CDN redundante (já no layout), CSS inline grande (142 linhas) - pode ser extraído, JavaScript inline extenso (300+ linhas) - deveria estar no movimentacaopatrimonio.js, DUPLICAÇÃO: Funções carregarDadosMovimentacao e salvarMovimentacao inline quando deveriam estar no JS externo, BUG POTENCIAL: Validação "seção destino == seção origem" não considera setor (linha 456), Hidden fields: MovimentacaoPatrimonioId, SetorOrigemId, SecaoOrigemId, PatrimonioId - correto
+ * ðŸŽ¯ OBJETIVO     : FormulÃ¡rio criar/editar movimentaÃ§Ã£o de patrimÃ´nio (origem readonly, destino editÃ¡vel)
+ * ðŸ“¥ ENTRADAS     : @page, @model UpsertModel, campos: cmbPatrimonio, dataMov, StatusCheckbox, SetorOrigem (readonly), cmbSetorDestino, cmbSecoesDestino
+ * ðŸ“¤ SAÃDAS       : POST /api/Patrimonio/CreateMovimentacao ou UpdateMovimentacao, redirect para Index, AppToast feedback
+ * ðŸ”— CHAMADA POR  : Index.cshtml (botÃ£o "Inserir MovimentaÃ§Ã£o", ediÃ§Ã£o via API), menu navegaÃ§Ã£o
+ * ðŸ”„ CHAMA        : /api/Patrimonio/GetMovimentacao (ediÃ§Ã£o), /api/Patrimonio/CreateMovimentacao, /api/Patrimonio/UpdateMovimentacao, ~/js/cadastros/movimentacaopatrimonio.js
+ * ðŸ“¦ DEPENDÃŠNCIAS : Syncfusion.EJ2 (ComboBox, DatePicker, Checkbox), Bootstrap 5.3.8 (CDN redundante), Font Awesome Duotone
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : Total: 532 linhas. PROBLEMA: Bootstrap CDN redundante (jÃ¡ no layout), CSS inline grande (142 linhas) - pode ser extraÃ­do, JavaScript inline extenso (300+ linhas) - deveria estar no movimentacaopatrimonio.js, DUPLICAÃ‡ÃƒO: FunÃ§Ãµes carregarDadosMovimentacao e salvarMovimentacao inline quando deveriam estar no JS externo, BUG POTENCIAL: ValidaÃ§Ã£o "seÃ§Ã£o destino == seÃ§Ã£o origem" nÃ£o considera setor (linha 456), Hidden fields: MovimentacaoPatrimonioId, SetorOrigemId, SecaoOrigemId, PatrimonioId - correto
  **************************************************************************************** *@
 @page
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -16,10 +16,10 @@
 @model FrotiX.Pages.MovimentacaoPatrimonio.UpsertModel
 
 @{
-    ViewData["Title"] = "Movimentação de Patrimônio";
+    ViewData["Title"] = "MovimentaÃ§Ã£o de PatrimÃ´nio";
     ViewData["PageName"] = "movimentacaopatrimonio_upsert";
-    ViewData["Heading"] = "<i class='fa-duotone fa-conveyor-belt-boxes'></i> Cadastros: <span class='fw-300'>Movimentação de Patrimônio</span>";
-    ViewData["Category1"] = "Movimentações";
+    ViewData["Heading"] = "<i class='fa-duotone fa-conveyor-belt-boxes'></i> Cadastros: <span class='fw-300'>MovimentaÃ§Ã£o de PatrimÃ´nio</span>";
+    ViewData["Category1"] = "MovimentaÃ§Ãµes";
     ViewData["PageIcon"] = "fa-conveyor-belt-boxes";
 }
 
@@ -145,22 +145,22 @@
                         <input type="hidden" id="SecaoOrigemId" value="" />
                         <input type="hidden" id="PatrimonioId" value="" />
 
-                        <!-- Cabeçalho -->
+                        <!-- CabeÃ§alho -->
                         <div class="col-12 px-3 page-header">
                             <h2 class="titulo-pagina my-2">
                                 <i class="fa-duotone fa-exchange"></i>
-                                &nbsp;<span id="tituloFormulario">Nova Movimentação de Patrimônio</span>
+                                &nbsp;<span id="tituloFormulario">Nova MovimentaÃ§Ã£o de PatrimÃ´nio</span>
                             </h2>
                         </div>
 
                         <div class="col-12 pt-3">
-                            <!-- Linha 1: Patrimônio, Data e Status -->
+                            <!-- Linha 1: PatrimÃ´nio, Data e Status -->
                             <div class="row mb-3">
                                 <div class="col-12 col-md-6">
                                     <div class="form-group">
-                                        <label class="label" for="cmbPatrimonio">Patrimônio *</label>
+                                        <label class="label" for="cmbPatrimonio">PatrimÃ´nio *</label>
                                         <ejs-combobox id="cmbPatrimonio"
-                                                      placeholder="Selecione o Patrimônio"
+                                                      placeholder="Selecione o PatrimÃ´nio"
                                                       allowFiltering="true"
                                                       filterType="Contains"
                                                       popupHeight="200px"
@@ -173,7 +173,7 @@
 
                                 <div class="col-12 col-md-4">
                                     <div class="form-group">
-                                        <label class="label" for="dataMov">Data da Movimentação *</label>
+                                        <label class="label" for="dataMov">Data da MovimentaÃ§Ã£o *</label>
                                         <ejs-datepicker id="dataMov"
                                                         format="dd/MM/yyyy"
                                                         floatLabelType="Never"
@@ -201,7 +201,7 @@
                             <fieldset class="mb-3">
                                 <legend class="section-legend text-orange-dark">
                                     <i class="fa-duotone fa-location-dot"></i>
-                                    Origem <span class="legend-note">onde está</span>
+                                    Origem <span class="legend-note">onde estÃ¡</span>
                                 </legend>
                                 <div class="row">
                                     <div class="col-12 col-md-6">
@@ -216,7 +216,7 @@
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="form-group">
-                                            <label class="label" for="SecaoOrigem">Seção (Origem)</label>
+                                            <label class="label" for="SecaoOrigem">SeÃ§Ã£o (Origem)</label>
                                             <input id="SecaoOrigem"
                                                    type="text"
                                                    class="form-control control-height"
@@ -251,7 +251,7 @@
 
                                     <div class="col-12 col-md-6" id="divSecaoDestino">
                                         <div class="form-group">
-                                            <label class="label" for="cmbSecoesDestino">Seção (Destino) *</label>
+                                            <label class="label" for="cmbSecoesDestino">SeÃ§Ã£o (Destino) *</label>
                                             <ejs-combobox id="cmbSecoesDestino"
                                                           placeholder="Primeiro selecione o Setor de Destino"
                                                           allowFiltering="true"
@@ -266,7 +266,7 @@
                                 </div>
                             </fieldset>
 
-                            <!-- Botões de Ação -->
+                            <!-- BotÃµes de AÃ§Ã£o -->
                             <div class="form-group row">
                                 <div class="col-12">
                                     <div class="row">
@@ -275,16 +275,16 @@
                                                     id="btnSalvar"
                                                     class="btn btn-azul btn-submit-spin form-control me-4"
                                                     style="max-width:300px; display:inline-block"
-                                                    data-ejtip="Salvar a movimentação de patrimônio">
+                                                    data-ejtip="Salvar a movimentaÃ§Ã£o de patrimÃ´nio">
                                                 <i class="fa-duotone fa-floppy-disk icon-space icon-pulse"></i>&nbsp;&nbsp;
-                                                <span id="textoBotaoSalvar">Criar Movimentação</span>
+                                                <span id="textoBotaoSalvar">Criar MovimentaÃ§Ã£o</span>
                                             </button>
 
                                             <a asp-page="./Index"
                                                class="btn btn-ftx-fechar form-control"
                                                style="max-width:300px; display:inline-block"
                                                data-ftx-loading>
-                                                <i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i> Cancelar Operação
+                                                <i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i> Cancelar OperaÃ§Ã£o
                                             </a>
                                         </div>
                                     </div>
@@ -300,25 +300,25 @@
 
 @section ScriptsBlock {
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    
+    
 
     <script src="~/js/cadastros/movimentacaopatrimonio.js" asp-append-version="true"></script>
 
     <script>
         $(document).ready(function () {
             try {
-                // Verificar se é edição
+                // Verificar se Ã© ediÃ§Ã£o
                 var movimentacaoId = $('#MovimentacaoPatrimonioId').val();
                 var isEdicao = movimentacaoId && movimentacaoId !== '00000000-0000-0000-0000-000000000000';
 
                 if (isEdicao) {
-                    $('#tituloFormulario').text('Atualizar Movimentação');
-                    $('#textoBotaoSalvar').text('Atualizar Movimentação');
+                    $('#tituloFormulario').text('Atualizar MovimentaÃ§Ã£o');
+                    $('#textoBotaoSalvar').text('Atualizar MovimentaÃ§Ã£o');
                     carregarDadosMovimentacao(movimentacaoId);
                 }
 
-                // Handler do botão salvar
+                // Handler do botÃ£o salvar
                 $('#btnSalvar').on('click', function (e) {
                     try {
                         e.preventDefault();
@@ -399,8 +399,8 @@
                     },
                     error: function (err) {
                         try {
-                            console.error('Erro ao carregar movimentação:', err);
-                            AppToast.show("Vermelho", "Erro ao carregar dados da movimentação", 2000);
+                            console.error('Erro ao carregar movimentaÃ§Ã£o:', err);
+                            AppToast.show("Vermelho", "Erro ao carregar dados da movimentaÃ§Ã£o", 2000);
                         }
                         catch (error) {
                             Alerta.TratamentoErroComLinha("Upsert.cshtml", "carregarDadosMovimentacao.error", error);
@@ -434,43 +434,43 @@
                     statusPatrimonio: statusCheckbox?.checked || false
                 };
 
-                // Validações
+                // ValidaÃ§Ãµes
                 var erros = [];
 
                 if (!dados.patrimonioId || dados.patrimonioId === '') {
-                    erros.push('O Patrimônio não pode estar em branco!');
+                    erros.push('O PatrimÃ´nio nÃ£o pode estar em branco!');
                 }
 
                 if (!dados.dataMovimentacao) {
-                    erros.push('A data não pode estar em branco!');
+                    erros.push('A data nÃ£o pode estar em branco!');
                 }
 
                 if (!dados.setorOrigemId || dados.setorOrigemId === '') {
-                    erros.push('O setor de origem não pode estar em branco!');
+                    erros.push('O setor de origem nÃ£o pode estar em branco!');
                 }
 
                 if (!dados.secaoOrigemId || dados.secaoOrigemId === '') {
-                    erros.push('A seção de origem não pode estar em branco!');
+                    erros.push('A seÃ§Ã£o de origem nÃ£o pode estar em branco!');
                 }
 
                 if (!dados.setorDestinoId || dados.setorDestinoId === '') {
-                    erros.push('O setor de destino não pode estar em branco!');
+                    erros.push('O setor de destino nÃ£o pode estar em branco!');
                 }
 
                 if (!dados.secaoDestinoId || dados.secaoDestinoId === '') {
-                    erros.push('A seção de destino não pode estar em branco!');
+                    erros.push('A seÃ§Ã£o de destino nÃ£o pode estar em branco!');
                 }
 
                 if (dados.secaoDestinoId && dados.secaoOrigemId && dados.secaoDestinoId === dados.secaoOrigemId) {
-                    erros.push('A seção de destino não pode ser a mesma que a seção de origem!');
+                    erros.push('A seÃ§Ã£o de destino nÃ£o pode ser a mesma que a seÃ§Ã£o de origem!');
                 }
 
                 if (erros.length > 0) {
-                    Alerta.Erro('Erro no formulário', erros.join('\n'), 'OK');
+                    Alerta.Erro('Erro no formulÃ¡rio', erros.join('\n'), 'OK');
                     return;
                 }
 
-                // Determinar URL e método
+                // Determinar URL e mÃ©todo
                 var isEdicao = dados.movimentacaoPatrimonioId &&
                     dados.movimentacaoPatrimonioId !== '00000000-0000-0000-0000-000000000000';
 
@@ -486,7 +486,7 @@
                     success: function (res) {
                         try {
                             if (res.success) {
-                                AppToast.show("Verde", res.message || (isEdicao ? 'Movimentação atualizada com sucesso!' : 'Movimentação registrada com sucesso!'), 3000);
+                                AppToast.show("Verde", res.message || (isEdicao ? 'MovimentaÃ§Ã£o atualizada com sucesso!' : 'MovimentaÃ§Ã£o registrada com sucesso!'), 3000);
                                 setTimeout(function () {
                                     try {
                                         window.location.href = '/MovimentacaoPatrimonio/Index';
@@ -496,7 +496,7 @@
                                     }
                                 }, 1500);
                             } else {
-                                AppToast.show("Vermelho", res.message || 'Erro ao salvar movimentação', 5000);
+                                AppToast.show("Vermelho", res.message || 'Erro ao salvar movimentaÃ§Ã£o', 5000);
                             }
                         }
                         catch (error) {
@@ -506,7 +506,7 @@
                     error: function (xhr, status, error) {
                         try {
                             console.error('Erro ao salvar:', error);
-                            AppToast.show("Vermelho", "Erro ao salvar movimentação. Verifique os dados e tente novamente.", 5000);
+                            AppToast.show("Vermelho", "Erro ao salvar movimentaÃ§Ã£o. Verifique os dados e tente novamente.", 5000);
                         }
                         catch (error) {
                             Alerta.TratamentoErroComLinha("Upsert.cshtml", "salvarMovimentacao.error", error);
@@ -521,3 +521,4 @@
     </script>
 
 }
+

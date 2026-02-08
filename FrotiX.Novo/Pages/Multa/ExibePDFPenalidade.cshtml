@@ -1,57 +1,57 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Multa/ExibePDFPenalidade.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/Multa/ExibePDFPenalidade.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Página visualização PDF comprovante pagamento penalidade - **QUASE IDÊNCTICO** a
- *                   ExibePDFComprovante.cshtml (DUPLICAÇÃO! mesmo código, mesmo campo ComprovantePDF, mesmo
+ * ðŸŽ¯ OBJETIVO     : PÃ¡gina visualizaÃ§Ã£o PDF comprovante pagamento penalidade - **QUASE IDÃŠNCTICO** a
+ *                   ExibePDFComprovante.cshtml (DUPLICAÃ‡ÃƒO! mesmo cÃ³digo, mesmo campo ComprovantePDF, mesmo
  *                   link ListaPenalidade). Syncfusion EJ2 PDFViewer, /DadosEditaveis/Multas/{ComprovantePDF}.
- * 📥 ENTRADAS     : @page route /Multa/ExibePDFPenalidade, @model ExibePDFPenalidadeModel (code-behind),
+ * ðŸ“¥ ENTRADAS     : @page route /Multa/ExibePDFPenalidade, @model ExibePDFPenalidadeModel (code-behind),
  *                   Model.MultaObj.Multa.NumInfracao, Model.MultaObj.Multa.ComprovantePDF (filename PDF)
- * 📤 SAÍDAS       : Panel botão center absolute btn-voltar ./ListaPenalidade, h2 "Registro de Pagamento da
- *                   Infração nº: {NumInfracao}", <ejs-pdfviewer id="pdfViewer" serviceUrl="/api/PdfViewer" height:100%>,
- *                   JavaScript pdfViewer.load(caminho) ou alert danger "PDF não disponível", Bootstrap 5 CDN
- * 🔗 CHAMADA POR  : Link "Ver Penalidade/Comprovante" ListaPenalidade, route /Multa/ExibePDFPenalidade,
+ * ðŸ“¤ SAÃDAS       : Panel botÃ£o center absolute btn-voltar ./ListaPenalidade, h2 "Registro de Pagamento da
+ *                   InfraÃ§Ã£o nÂº: {NumInfracao}", <ejs-pdfviewer id="pdfViewer" serviceUrl="/api/PdfViewer" height:100%>,
+ *                   JavaScript pdfViewer.load(caminho) ou alert danger "PDF nÃ£o disponÃ­vel", Bootstrap 5 CDN
+ * ðŸ”— CHAMADA POR  : Link "Ver Penalidade/Comprovante" ListaPenalidade, route /Multa/ExibePDFPenalidade,
  *                   ExibePDFPenalidadeModel.OnGet(id) (code-behind)
- * 🔄 CHAMA        : ExibePDFPenalidadeModel (code-behind), Model.MultaObj.Multa (NumInfracao, ComprovantePDF),
+ * ðŸ”„ CHAMA        : ExibePDFPenalidadeModel (code-behind), Model.MultaObj.Multa (NumInfracao, ComprovantePDF),
  *                   ./ListaPenalidade (link voltar), /api/PdfViewer (Syncfusion service), /DadosEditaveis/Multas/
  *                   {filename}.pdf, ejs-pdfviewer TagHelper, ej2_instances[0], pdfViewer.load(), AppToast.show,
  *                   Alerta.TratamentoErroComLinha, ViewData, Font Awesome, Bootstrap 5 CDN, AntiForgeryToken,
- *                   stopEnterSubmitting, form enctype multipart/form-data (NÃO usado!), data-ftx-loading
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, ExibePDFPenalidadeModel, Syncfusion EJ2 PDFViewer (ejs-pdfviewer,
+ *                   stopEnterSubmitting, form enctype multipart/form-data (NÃƒO usado!), data-ftx-loading
+ * ðŸ“¦ DEPENDÃŠNCIAS : ASP.NET Core Razor Pages, ExibePDFPenalidadeModel, Syncfusion EJ2 PDFViewer (ejs-pdfviewer,
  *                   /api/PdfViewer, ej2_instances), Bootstrap 5 CDN (REDUNDANTE), Font Awesome Duotone, CSS inline
  *                   (.center absolute), JavaScript DOMContentLoaded, AppToast, Alerta, AntiForgeryToken, data-ftx-loading
- * 📝 OBSERVAÇÕES  : 108 linhas. **DUPLICAÇÃO PROBLEMÁTICA**: ExibePDFPenalidade.cshtml é QUASE IDÊNCTICO a
- *                   ExibePDFComprovante.cshtml. **ÚNICAS DIFERENÇAS** (só 3 posições diferentes!):
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : 108 linhas. **DUPLICAÃ‡ÃƒO PROBLEMÃTICA**: ExibePDFPenalidade.cshtml Ã© QUASE IDÃŠNCTICO a
+ *                   ExibePDFComprovante.cshtml. **ÃšNICAS DIFERENÃ‡AS** (sÃ³ 3 posiÃ§Ãµes diferentes!):
  *                   1. **Nome arquivo**: ExibePDFPenalidade vs ExibePDFComprovante
  *                   2. **Model**: ExibePDFPenalidadeModel vs ExibePDFComprovanteModel
- *                   3. **AntiForgeryToken posição**: linha 23 (DENTRO form) vs linha 2 (FORA form)
- *                   **TODO O RESTO É IDÊNCTICO** (linhas 1-108):
+ *                   3. **AntiForgeryToken posiÃ§Ã£o**: linha 23 (DENTRO form) vs linha 2 (FORA form)
+ *                   **TODO O RESTO Ã‰ IDÃŠNCTICO** (linhas 1-108):
  *                   - ViewData: MESMA (Title, PageName, Heading, Category1, PageIcon)
  *                   - CSS inline: MESMA (.center absolute)
  *                   - Form: MESMA (asp-action="Upsert", onkeypress, enctype)
- *                   - Botão voltar: MESMO (./ListaPenalidade)
- *                   - H2 text: MESMO ("Registro de Pagamento da Infração nº")
+ *                   - BotÃ£o voltar: MESMO (./ListaPenalidade)
+ *                   - H2 text: MESMO ("Registro de Pagamento da InfraÃ§Ã£o nÂº")
  *                   - ejs-pdfviewer: MESMO (id, serviceUrl, documentPath)
  *                   - JavaScript: MESMO (stopEnterSubmitting, DOMContentLoaded, arquivoPdf, caminho, ej2_instances,
  *                     pdfViewer.load, AppToast, Alerta) **exceto string error handlers "ExibePDFPenalidade.cshtml"**
  *                   - Bootstrap CDN: MESMO (redundante)
- *                   - **Campo PDF CARREGADO**: MESMO Model.MultaObj?.Multa?.ComprovantePDF!! (NÃO diferente!)
- *                   **ANÁLISE**: Provavelmente copypaste error. ExibePDFComprovante e ExibePDFPenalidade deveriam
- *                   carregar MESMOS PDFs (comprovantes pagamento), então duplicação é desnecessária. OU um dos arquivos
- *                   deveria carregar campo DIFERENTE (ex: PenalidadePDF, NotificacaoPenalidade, etc) mas está
- *                   usando ComprovantePDF nos 2. **AÇÃO RECOMENDADA**: DELETE um dos arquivos (provavelmente
- *                   ExibePDFPenalidade), consolidar em um só ExibePDFComprovante, ou corrigir campo carregado
- *                   se devem ser PDFs diferentes. ViewData config (IDÊNCTICA ExibePDFComprovante):
+ *                   - **Campo PDF CARREGADO**: MESMO Model.MultaObj?.Multa?.ComprovantePDF!! (NÃƒO diferente!)
+ *                   **ANÃLISE**: Provavelmente copypaste error. ExibePDFComprovante e ExibePDFPenalidade deveriam
+ *                   carregar MESMOS PDFs (comprovantes pagamento), entÃ£o duplicaÃ§Ã£o Ã© desnecessÃ¡ria. OU um dos arquivos
+ *                   deveria carregar campo DIFERENTE (ex: PenalidadePDF, NotificacaoPenalidade, etc) mas estÃ¡
+ *                   usando ComprovantePDF nos 2. **AÃ‡ÃƒO RECOMENDADA**: DELETE um dos arquivos (provavelmente
+ *                   ExibePDFPenalidade), consolidar em um sÃ³ ExibePDFComprovante, ou corrigir campo carregado
+ *                   se devem ser PDFs diferentes. ViewData config (IDÃŠNCTICA ExibePDFComprovante):
  *                   - Title: "Pagamento da Penalidade"
  *                   - PageName: "notificacao_index" (ERRADO! deve ser "multa_exibepdfpenalidade")
- *                   - Heading: "<i class='fa-duotone fa-cash-register'></i> Infrações: <span class='fw-300'>Registro de Pagamento da Penalidade - PDF</span>"
- *                   - Category1: "Infrações"
+ *                   - Heading: "<i class='fa-duotone fa-cash-register'></i> InfraÃ§Ãµes: <span class='fw-300'>Registro de Pagamento da Penalidade - PDF</span>"
+ *                   - Category1: "InfraÃ§Ãµes"
  *                   - PageIcon: "fa-duotone fa-cash-register"
- *                   Estrutura IDÊNCTICA ExibePDFComprovante (ver documentação completa lá). **PROBLEMAS IDÊNCTICOS**:
+ *                   Estrutura IDÃŠNCTICA ExibePDFComprovante (ver documentaÃ§Ã£o completa lÃ¡). **PROBLEMAS IDÃŠNCTICOS**:
  *                   1. PageName "notificacao_index" ERRADO
- *                   2. Form asp-action="Upsert" NÃO faz sentido (só visualiza)
- *                   3. Enctype multipart/form-data NÃO usado
+ *                   2. Form asp-action="Upsert" NÃƒO faz sentido (sÃ³ visualiza)
+ *                   3. Enctype multipart/form-data NÃƒO usado
  *                   4. Bootstrap CDN redundante
- *                   5. **DUPLICAÇÃO TOTAL ExibePDFComprovante** (DELETE ou diferenciar)
+ *                   5. **DUPLICAÃ‡ÃƒO TOTAL ExibePDFComprovante** (DELETE ou diferenciar)
  **************************************************************************************** *@
 @page
 @model FrotiX.Pages.Multa.ExibePDFPenalidadeModel
@@ -59,8 +59,8 @@
 @{
 	ViewData["Title"] = "Pagamento da Penalidade";
 	ViewData["PageName"] = "notificacao_index";
-	ViewData["Heading"] = "<i class='fa-duotone fa-cash-register'></i> Infrações: <span class='fw-300'>Registro de Pagamento da Penalidade - PDF</span>";
-	ViewData["Category1"] = "Infrações";
+	ViewData["Heading"] = "<i class='fa-duotone fa-cash-register'></i> InfraÃ§Ãµes: <span class='fw-300'>Registro de Pagamento da Penalidade - PDF</span>";
+	ViewData["Category1"] = "InfraÃ§Ãµes";
 	ViewData["PageIcon"] = "fa-duotone fa-cash-register";
 }
 
@@ -87,14 +87,14 @@
 					<div class="col-12 col-md-4 center">
 						<a asp-page="./ListaPenalidade" class="btn btn-voltar form-control" data-ftx-loading>
 							<i class="fa-duotone fa-rotate-left icon-space icon-rotate-left"></i>
-							Voltar à Lista
+							Voltar Ã  Lista
 						</a>
 					</div>
 
 					<br />
 					<div class="col-12 px-3" style="border-bottom:1px solid #325d88">
 						<h2 class="text-primary">
-							@($"Registro de Pagamento da Infração nº: {Model.MultaObj?.Multa?.NumInfracao}")
+							@($"Registro de Pagamento da InfraÃ§Ã£o nÂº: {Model.MultaObj?.Multa?.NumInfracao}")
 						</h2>
 					</div>
 
@@ -114,8 +114,8 @@
 </form>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
 	<script>
 		// Evita submit ao pressionar ENTER em inputs
@@ -140,8 +140,8 @@
 				var arquivoPdf = '@(Model.MultaObj?.Multa?.ComprovantePDF ?? "")';
 
 				if (!arquivoPdf) {
-					AppToast.show('Arquivo de comprovante não encontrado para esta infração.', 'Vermelho', 3000);
-					document.getElementById('pdfContainer').innerHTML = "<div class='alert alert-danger text-center mt-5'>PDF não disponível.</div>";
+					AppToast.show('Arquivo de comprovante nÃ£o encontrado para esta infraÃ§Ã£o.', 'Vermelho', 3000);
+					document.getElementById('pdfContainer').innerHTML = "<div class='alert alert-danger text-center mt-5'>PDF nÃ£o disponÃ­vel.</div>";
 					return;
 				}
 
@@ -161,3 +161,4 @@
 		});
 	</script>
 }
+

@@ -1,91 +1,91 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/MarcaVeiculo/Index.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/MarcaVeiculo/Index.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Página de listagem de Marcas de Veículos (cadastro auxiliar - Fiat/VW/Renault/Toyota/etc)
- *                   com DataTable #tblMarcaVeiculo (3 colunas: Marca/Status/Ação), botão adicionar, marcaveiculo.js.
- *                   **JÁ POSSUI DOCUMENTAÇÃO EXTERNA** em comentário topo (📍 Documentacao/Pages/MarcaVeiculo - Index.md).
- * 📥 ENTRADAS     : @page route /MarcaVeiculo/Index, @model MarcaVeiculo (MODEL DIRETO não PageModel!
- *                   INCONSISTENTE!), clique botão link /MarcaVeiculo/Upsert, marcaveiculo.js (AJAX loadList)
- * 📤 SAÍDAS       : Panel ftx-card-header (titulo-paginas fa-car-bus "Listagem de Marcas de Veículos" +
+ * ðŸŽ¯ OBJETIVO     : PÃ¡gina de listagem de Marcas de VeÃ­culos (cadastro auxiliar - Fiat/VW/Renault/Toyota/etc)
+ *                   com DataTable #tblMarcaVeiculo (3 colunas: Marca/Status/AÃ§Ã£o), botÃ£o adicionar, marcaveiculo.js.
+ *                   **JÃ POSSUI DOCUMENTAÃ‡ÃƒO EXTERNA** em comentÃ¡rio topo (ðŸ“ Documentacao/Pages/MarcaVeiculo - Index.md).
+ * ðŸ“¥ ENTRADAS     : @page route /MarcaVeiculo/Index, @model MarcaVeiculo (MODEL DIRETO nÃ£o PageModel!
+ *                   INCONSISTENTE!), clique botÃ£o link /MarcaVeiculo/Upsert, marcaveiculo.js (AJAX loadList)
+ * ðŸ“¤ SAÃDAS       : Panel ftx-card-header (titulo-paginas fa-car-bus "Listagem de Marcas de VeÃ­culos" +
  *                   btn-fundo-laranja data-ftx-loading fa-clone-plus "Adicionar Nova Marca" outline white hover),
  *                   DataTable #tblMarcaVeiculo (3 colunas tbody vazio), Bootstrap 5 CDN (REDUNDANTE!),
  *                   marcaveiculo.js cache busting
- * 🔗 CHAMADA POR  : Menu "Cadastros > Marcas de Veículos", route /MarcaVeiculo/Index, sidebar navigation
- * 🔄 CHAMA        : @model MarcaVeiculo (MODEL DIRETO - ERRADO! falta PageModel MarcaVeiculoIndexModel),
+ * ðŸ”— CHAMADA POR  : Menu "Cadastros > Marcas de VeÃ­culos", route /MarcaVeiculo/Index, sidebar navigation
+ * ðŸ”„ CHAMA        : @model MarcaVeiculo (MODEL DIRETO - ERRADO! falta PageModel MarcaVeiculoIndexModel),
  *                   /MarcaVeiculo/Upsert (link adicionar), ~/js/cadastros/marcaveiculo.js (AJAX GET /api/MarcaVeiculo
  *                   loadList DataTable), Bootstrap 5 CDN (jsdelivr.net v5.3.8 CSS + JS bundle), ViewData
  *                   (breadcrumb/heading fa-car-garage), Font Awesome Duotone (fa-car-garage heading, fa-car-bus
- *                   title, fa-clone-plus botão), CSS inline (outline white @section HeadBlock + .fundo-cinza
- *                   .label NÃO usados!), DataTables API
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, MarcaVeiculo model (NÃO PageModel! falta MarcaVeiculoIndexModel.cs),
- *                   Bootstrap 5 CDN (REDUNDANTE - já _Layout), marcaveiculo.js (AJAX list/delete/toggle),
+ *                   title, fa-clone-plus botÃ£o), CSS inline (outline white @section HeadBlock + .fundo-cinza
+ *                   .label NÃƒO usados!), DataTables API
+ * ðŸ“¦ DEPENDÃŠNCIAS : ASP.NET Core Razor Pages, MarcaVeiculo model (NÃƒO PageModel! falta MarcaVeiculoIndexModel.cs),
+ *                   Bootstrap 5 CDN (REDUNDANTE - jÃ¡ _Layout), marcaveiculo.js (AJAX list/delete/toggle),
  *                   DataTables jQuery plugin, Font Awesome 6 Duotone, CSS classes custom (ftx-card-header,
  *                   ftx-card-actions, titulo-paginas, btn-fundo-laranja outline hover), data-ftx-loading,
  *                   asp-append-version (cache busting)
- * 📝 OBSERVAÇÕES  : 101 linhas. Página cadastro auxiliar Marcas Veículos (relaciona MarcaVeiculo → ModeloVeiculo → Veiculo).
- *                   **NOTA**: Arquivo JÁ TEM documentação externa (comentário topo linhas 1-9):
- *                   - 📍 Localização: Documentacao/Pages/MarcaVeiculo - Index.md
- *                   - 📅 Última Atualização: 08/01/2026
- *                   - 📋 Versão: 2.0 (Padrão FrotiX Simplificado)
- *                   Documentação interna AGORA adiciona ⚡ ARQUIVO format para consistência com demais arquivos.
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : 101 linhas. PÃ¡gina cadastro auxiliar Marcas VeÃ­culos (relaciona MarcaVeiculo â†’ ModeloVeiculo â†’ Veiculo).
+ *                   **NOTA**: Arquivo JÃ TEM documentaÃ§Ã£o externa (comentÃ¡rio topo linhas 1-9):
+ *                   - ðŸ“ LocalizaÃ§Ã£o: Documentacao/Pages/MarcaVeiculo - Index.md
+ *                   - ðŸ“… Ãšltima AtualizaÃ§Ã£o: 08/01/2026
+ *                   - ðŸ“‹ VersÃ£o: 2.0 (PadrÃ£o FrotiX Simplificado)
+ *                   DocumentaÃ§Ã£o interna AGORA adiciona âš¡ ARQUIVO format para consistÃªncia com demais arquivos.
  *                   ViewData config:
- *                   - Title: "Marcas de Veículos"
+ *                   - Title: "Marcas de VeÃ­culos"
  *                   - PageName: "marcaveiculo_index"
- *                   - Heading: "<i class='fa-duotone fa-car-garage'></i> Cadastros: <span class='fw-300'>Marcas de Veículos</span>"
+ *                   - Heading: "<i class='fa-duotone fa-car-garage'></i> Cadastros: <span class='fw-300'>Marcas de VeÃ­culos</span>"
  *                   - Category1: "Cadastros"
  *                   - PageIcon: "fa-duotone fa-car-garage"
- *                   @section HeadBlock: CSS inline **OUTLINE BRANCO PADRÃO FROTIX** (comentário expl ícito):
+ *                   @section HeadBlock: CSS inline **OUTLINE BRANCO PADRÃƒO FROTIX** (comentÃ¡rio expl Ã­cito):
  *                   .ftx-card-header .btn-fundo-laranja outline 2px solid rgba(255,255,255,0.5) outline-offset 1px,
- *                   hover 0.8 opacity offset 2px. CSS inline adicional (NÃO usado): .fundo-cinza {background:#2F4F4F;
+ *                   hover 0.8 opacity offset 2px. CSS inline adicional (NÃƒO usado): .fundo-cinza {background:#2F4F4F;
  *                   color:aliceblue;}, .label {color:white;} (remover - sobras). Estrutura ftx-card-header:
- *                   - h2 titulo-paginas fa-car-bus "Listagem de Marcas de Veículos"
+ *                   - h2 titulo-paginas fa-car-bus "Listagem de Marcas de VeÃ­culos"
  *                   - div ftx-card-actions: link /MarcaVeiculo/Upsert btn-fundo-laranja data-ftx-loading
  *                     fa-clone-plus icon-pulse me-1 "Adicionar Nova Marca"
- *                   Panel-content: <br/><br/> (espaçamento desnecessário - remover) + table #tblMarcaVeiculo
+ *                   Panel-content: <br/><br/> (espaÃ§amento desnecessÃ¡rio - remover) + table #tblMarcaVeiculo
  *                   width 100% table-bordered table-striped. DataTable 3 colunas thead:
- *                   1. Marca do Veículo (ex: Fiat, Volkswagen, Renault, Toyota, Ford, GM, Honda, Hyundai,
- *                      Nissan, Peugeot, Citroën, Chevrolet, Jeep, etc.)
+ *                   1. Marca do VeÃ­culo (ex: Fiat, Volkswagen, Renault, Toyota, Ford, GM, Honda, Hyundai,
+ *                      Nissan, Peugeot, CitroÃ«n, Chevrolet, Jeep, etc.)
  *                   2. Status (Ativo/Inativo)
- *                   3. Ação (botões edit/delete/toggle)
+ *                   3. AÃ§Ã£o (botÃµes edit/delete/toggle)
  *                   Tbody vazio (preenchido via marcaveiculo.js AJAX). @section ScriptsBlock:
- *                   **Bootstrap 5 CDN REDUNDANTE** (v5.3.8 CSS + JS bundle - JÁ incluído _Layout!).
+ *                   **Bootstrap 5 CDN REDUNDANTE** (v5.3.8 CSS + JS bundle - JÃ incluÃ­do _Layout!).
  *                   marcaveiculo.js asp-append-version="true" cache busting. **PROBLEMAS**:
- *                   1. @model MarcaVeiculo (MODEL direto não PageModel - criar MarcaVeiculoIndexModel.cs)
+ *                   1. @model MarcaVeiculo (MODEL direto nÃ£o PageModel - criar MarcaVeiculoIndexModel.cs)
  *                   2. Bootstrap CDN redundante (remover)
- *                   3. CSS .fundo-cinza .label não usado (remover)
- *                   4. <br/><br/> espaçamento manual (usar mt-3)
- *                   marcaveiculo.js deve: loadList() GET /api/MarcaVeiculo, botões ação edit/delete/toggle,
- *                   DataTable config. Relacionamento: MarcaVeiculo (1) → ModeloVeiculo (N) → Veiculo (N).
+ *                   3. CSS .fundo-cinza .label nÃ£o usado (remover)
+ *                   4. <br/><br/> espaÃ§amento manual (usar mt-3)
+ *                   marcaveiculo.js deve: loadList() GET /api/MarcaVeiculo, botÃµes aÃ§Ã£o edit/delete/toggle,
+ *                   DataTable config. Relacionamento: MarcaVeiculo (1) â†’ ModeloVeiculo (N) â†’ Veiculo (N).
  **************************************************************************************** *@
 @page
 
 /*
-    ═══════════════════════════════════════════════════════════════════════════════
-    📄 DOCUMENTAÇÃO COMPLETA DISPONÍVEL
-    ═══════════════════════════════════════════════════════════════════════════════
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    ðŸ“„ DOCUMENTAÃ‡ÃƒO COMPLETA DISPONÃVEL
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     
-    📍 Localização: Documentacao/Pages/MarcaVeiculo - Index.md
-    📅 Última Atualização: 08/01/2026
-    📋 Versão: 2.0 (Padrão FrotiX Simplificado)
+    ðŸ“ LocalizaÃ§Ã£o: Documentacao/Pages/MarcaVeiculo - Index.md
+    ðŸ“… Ãšltima AtualizaÃ§Ã£o: 08/01/2026
+    ðŸ“‹ VersÃ£o: 2.0 (PadrÃ£o FrotiX Simplificado)
     
-    Este arquivo contém a View Razor da página de listagem de Marcas de Veículos.
-    Para entender completamente a funcionalidade, consulte a documentação acima.
-    ═══════════════════════════════════════════════════════════════════════════════
+    Este arquivo contÃ©m a View Razor da pÃ¡gina de listagem de Marcas de VeÃ­culos.
+    Para entender completamente a funcionalidade, consulte a documentaÃ§Ã£o acima.
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 */
 
 @model FrotiX.Models.MarcaVeiculo
 
 @{
-	ViewData["Title"] = "Marcas de Veículos";
+	ViewData["Title"] = "Marcas de VeÃ­culos";
 	ViewData["PageName"] = "marcaveiculo_index";
-	ViewData["Heading"] = "<i class='fa-duotone fa-car-garage'></i> Cadastros: <span class='fw-300'>Marcas de Veículos</span>";
+	ViewData["Heading"] = "<i class='fa-duotone fa-car-garage'></i> Cadastros: <span class='fw-300'>Marcas de VeÃ­culos</span>";
 	ViewData["Category1"] = "Cadastros";
 	ViewData["PageIcon"] = "fa-duotone fa-car-garage";
 }
 
 @section HeadBlock {
 	<style>
-/* ======== OUTLINE BRANCO NO BOTÃO DO HEADER (Padrão FrotiX) ======== */
+/* ======== OUTLINE BRANCO NO BOTÃƒO DO HEADER (PadrÃ£o FrotiX) ======== */
 		.ftx-card-header .btn-fundo-laranja {
 			outline: 2px solid rgba(255, 255, 255, 0.5) !important;
 			outline-offset: 1px;
@@ -119,7 +119,7 @@
 				<div class="ftx-card-header">
 					<h2 class="titulo-paginas">
 						<i class="fa-duotone fa-car-bus"></i>
-						Listagem de Marcas de Veículos
+						Listagem de Marcas de VeÃ­culos
 					</h2>
 					<div class="ftx-card-actions">
 						<a href="/MarcaVeiculo/Upsert"
@@ -137,9 +137,9 @@
 						<table id="tblMarcaVeiculo" class="table table-bordered table-striped" width="100%">
 							<thead>
 								<tr>
-									<th>Marca do Veículo</th>
+									<th>Marca do VeÃ­culo</th>
 									<th>Status</th>
-									<th>Ação</th>
+									<th>AÃ§Ã£o</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -153,8 +153,9 @@
 </div>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
 	<script src="~/js/cadastros/marcaveiculo.js" asp-append-version="true"></script>
 }
+

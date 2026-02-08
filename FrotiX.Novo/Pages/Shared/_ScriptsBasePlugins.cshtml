@@ -1,4 +1,4 @@
-@* ========================================================================================
+﻿@* ========================================================================================
  * ARQUIVO: Pages/Shared/_ScriptsBasePlugins.cshtml
  * OBJETIVO: Partial CRITICO carregando TODOS os scripts base e plugins JavaScript do FrotiX na
  *           ordem correta dependencias (jQuery, Bootstrap, Syncfusion, Kendo, DataTables, Moment,
@@ -116,13 +116,13 @@
  * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
  ======================================================================================== *@
 <!-- ARQUIVO COMPLETO: _ScriptsBasePlugins.cshtml -->
-<!-- COPIE TODO O CONTEÚDO ABAIXO E SUBSTITUA O ARQUIVO EXISTENTE -->
-<!-- ⚠️ ORDEM CRÍTICA - NÃO ALTERE SEM NECESSIDADE ⚠️ -->
+<!-- COPIE TODO O CONTEÃšDO ABAIXO E SUBSTITUA O ARQUIVO EXISTENTE -->
+<!-- âš ï¸ ORDEM CRÃTICA - NÃƒO ALTERE SEM NECESSIDADE âš ï¸ -->
 
 <script src="~/js/kendo-error-suppressor.js" asp-append-version="true"></script>
 
 <!-- ============================================ -->
-<!-- GRUPO 1: DEPENDÊNCIAS BASE (ORDEM EXATA!) -->
+<!-- GRUPO 1: DEPENDÃŠNCIAS BASE (ORDEM EXATA!) -->
 <!-- ============================================ -->
 <!-- 1. jQuery PRIMEIRO (antes de qualquer plugin que use $) -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"
@@ -135,63 +135,63 @@
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr" crossorigin="anonymous"></script>
 
-<!-- Script de inicialização do SignalR com prevenção de dupla inicialização -->
+<!-- Script de inicializaÃ§Ã£o do SignalR com prevenÃ§Ã£o de dupla inicializaÃ§Ã£o -->
 <script>
-	// Configuração para inicialização ÚNICA do SignalR
+	// ConfiguraÃ§Ã£o para inicializaÃ§Ã£o ÃšNICA do SignalR
 	(function() {
-		// Flag global para evitar múltiplas inicializações
+		// Flag global para evitar mÃºltiplas inicializaÃ§Ãµes
 		if (window._signalRAlertasIniciado) {
-			console.log('⚠️ Sistema de alertas já foi iniciado, pulando...');
+			console.log('âš ï¸ Sistema de alertas jÃ¡ foi iniciado, pulando...');
 			return;
 		}
 		window._signalRAlertasIniciado = true;
 
 		document.addEventListener('DOMContentLoaded', function() {
 
-			// Verificar se o SignalR está disponível
+			// Verificar se o SignalR estÃ¡ disponÃ­vel
 			function verificarSignalR() {
 				if (typeof signalR === 'undefined') {
-					console.error('SignalR não está carregado ainda');
+					console.error('SignalR nÃ£o estÃ¡ carregado ainda');
 					setTimeout(verificarSignalR, 500);
 					return;
 				}
 
-				// Adicionar delay extra para garantir que tudo está pronto
+				// Adicionar delay extra para garantir que tudo estÃ¡ pronto
 				setTimeout(function() {
 					inicializarSistemaAlertas();
 				}, 2000); // 2 segundos de delay total
 			}
 
 			function inicializarSistemaAlertas() {
-				// Verificar novamente para evitar dupla inicialização
+				// Verificar novamente para evitar dupla inicializaÃ§Ã£o
 				if (window._alertasJaInicializados) {
-					console.log('✅ Alertas já inicializados');
+					console.log('âœ… Alertas jÃ¡ inicializados');
 					return;
 				}
 				window._alertasJaInicializados = true;
 
 				console.log('Inicializando sistema de alertas do sino...');
 
-				// Função melhorada para o sino
+				// FunÃ§Ã£o melhorada para o sino
 				function inicializarSignalR() {
 					console.log('Sino: Conectando ao SignalR Manager...');
 
 					if (!window.SignalRManager) {
-						console.error('SignalRManager não está disponível');
+						console.error('SignalRManager nÃ£o estÃ¡ disponÃ­vel');
 						setTimeout(inicializarSignalR, 1000);
 						return;
 					}
 
-					// Obter conexão com tratamento de erro melhorado
+					// Obter conexÃ£o com tratamento de erro melhorado
 					window.SignalRManager.getConnection()
 						.then(function(connection) {
 							console.log('Sino conectado ao SignalRManager');
 
-							// Verificar informações de debug
+							// Verificar informaÃ§Ãµes de debug
 							var debugInfo = window.SignalRManager.getDebugInfo();
-							console.log('Informações de conexão:', debugInfo);
+							console.log('InformaÃ§Ãµes de conexÃ£o:', debugInfo);
 
-							// Configurar eventos do sino (verificar se funções existem)
+							// Configurar eventos do sino (verificar se funÃ§Ãµes existem)
 							connection.on('NovoAlerta', function(alerta) {
 								console.log('Novo alerta recebido:', alerta);
 								if (typeof exibirNovoAlerta === 'function') {
@@ -215,7 +215,7 @@
 								}
 							});
 
-							// Registrar callbacks para reconexão
+							// Registrar callbacks para reconexÃ£o
 							window.SignalRManager.registerCallback({
 								onReconnecting: function(error) {
 									console.log('Sino: SignalR reconectando...');
@@ -249,13 +249,13 @@
 				inicializarSignalR();
 			}
 
-			// Começar verificação
+			// ComeÃ§ar verificaÃ§Ã£o
 			verificarSignalR();
 		});
 	})();
 </script>
 
-<!-- 3. SignalR Manager - Gerenciador Global (NOSSO - após SignalR CDN) -->
+<!-- 3. SignalR Manager - Gerenciador Global (NOSSO - apÃ³s SignalR CDN) -->
 <script src="~/js/signalr_manager.js" asp-append-version="true"></script>
 
 <!-- ============================================ -->
@@ -277,14 +277,14 @@
 <!-- Syncfusion EJ2 (usando unpkg como alternativa - CDN oficial com problemas de CORS) -->
 <script src="https://unpkg.com/@@syncfusion/ej2@@32.1.23/dist/ej2.min.js" crossorigin="anonymous"></script>
 <!-- ============================================ -->
-<!-- SYNCFUSION LOCALIZAÇÃO PT-BR COMPLETA      -->
-<!-- CLDR + L10n para versão 32.1.23            -->
+<!-- SYNCFUSION LOCALIZAÃ‡ÃƒO PT-BR COMPLETA      -->
+<!-- CLDR + L10n para versÃ£o 32.1.23            -->
 <!-- ============================================ -->
 <script>
 (function() {
     'use strict';
 
-    // URLs dos arquivos CLDR necessários (versão 44 - mais recente estável)
+    // URLs dos arquivos CLDR necessÃ¡rios (versÃ£o 44 - mais recente estÃ¡vel)
     const CLDR_BASE = 'https://cdn.jsdelivr.net/npm/cldr-data@36.0.1';
     const cldrUrls = [
         `${CLDR_BASE}/main/pt/numbers.json`,
@@ -295,20 +295,20 @@
         `${CLDR_BASE}/supplemental/currencyData.json`
     ];
 
-    // Traduções L10n customizadas para pt-BR (Syncfusion 32.x)
+    // TraduÃ§Ãµes L10n customizadas para pt-BR (Syncfusion 32.x)
     const ptBRLocale = {
         'pt': {
             // Grid
             'grid': {
                 'EmptyRecord': 'Nenhum registro encontrado',
                 'True': 'Sim',
-                'False': 'Não',
-                'InvalidFilterMessage': 'Dados de filtro inválidos',
-                'GroupDropArea': 'Arraste um cabeçalho de coluna aqui para agrupar',
+                'False': 'NÃ£o',
+                'InvalidFilterMessage': 'Dados de filtro invÃ¡lidos',
+                'GroupDropArea': 'Arraste um cabeÃ§alho de coluna aqui para agrupar',
                 'UnGroup': 'Clique aqui para desagrupar',
                 'GroupDisable': 'Agrupamento desabilitado para esta coluna',
-                'FilterbarTitle': 'Célula de filtro',
-                'EmptyDataSourceError': 'DataSource não pode estar vazio no carregamento inicial',
+                'FilterbarTitle': 'CÃ©lula de filtro',
+                'EmptyDataSourceError': 'DataSource nÃ£o pode estar vazio no carregamento inicial',
                 'Add': 'Adicionar',
                 'Edit': 'Editar',
                 'Cancel': 'Cancelar',
@@ -324,25 +324,25 @@
                 'Save': 'Salvar',
                 'Item': 'Item',
                 'Items': 'Itens',
-                'EditOperationAlert': 'Nenhum registro selecionado para edição',
-                'DeleteOperationAlert': 'Nenhum registro selecionado para exclusão',
+                'EditOperationAlert': 'Nenhum registro selecionado para ediÃ§Ã£o',
+                'DeleteOperationAlert': 'Nenhum registro selecionado para exclusÃ£o',
                 'SaveButton': 'Salvar',
                 'OKButton': 'OK',
                 'CancelButton': 'Cancelar',
                 'EditFormTitle': 'Detalhes de ',
                 'AddFormTitle': 'Adicionar Novo Registro',
-                'BatchSaveConfirm': 'Deseja salvar as alterações?',
-                'BatchSaveLostChanges': 'Alterações não salvas serão perdidas. Deseja continuar?',
+                'BatchSaveConfirm': 'Deseja salvar as alteraÃ§Ãµes?',
+                'BatchSaveLostChanges': 'AlteraÃ§Ãµes nÃ£o salvas serÃ£o perdidas. Deseja continuar?',
                 'ConfirmDelete': 'Tem certeza que deseja excluir o registro?',
-                'CancelEdit': 'Tem certeza que deseja cancelar as alterações?',
+                'CancelEdit': 'Tem certeza que deseja cancelar as alteraÃ§Ãµes?',
                 'ChooseColumns': 'Escolher Colunas',
                 'SearchColumns': 'Buscar Colunas',
-                'Matchs': 'Nenhuma correspondência encontrada',
+                'Matchs': 'Nenhuma correspondÃªncia encontrada',
                 'FilterButton': 'Filtrar',
                 'ClearButton': 'Limpar',
-                'StartsWith': 'Começa com',
+                'StartsWith': 'ComeÃ§a com',
                 'EndsWith': 'Termina com',
-                'Contains': 'Contém',
+                'Contains': 'ContÃ©m',
                 'Equal': 'Igual',
                 'NotEqual': 'Diferente',
                 'LessThan': 'Menor que',
@@ -357,10 +357,10 @@
                 'autoFitAll': 'Ajustar todas as colunas',
                 'autoFit': 'Ajustar esta coluna',
                 'Export': 'Exportar',
-                'FirstPage': 'Primeira Página',
-                'LastPage': 'Última Página',
-                'PreviousPage': 'Página Anterior',
-                'NextPage': 'Próxima Página',
+                'FirstPage': 'Primeira PÃ¡gina',
+                'LastPage': 'Ãšltima PÃ¡gina',
+                'PreviousPage': 'PÃ¡gina Anterior',
+                'NextPage': 'PrÃ³xima PÃ¡gina',
                 'SortAscending': 'Ordenar Crescente',
                 'SortDescending': 'Ordenar Decrescente',
                 'EditRecord': 'Editar Registro',
@@ -369,14 +369,14 @@
                 'SelectAll': 'Selecionar Todos',
                 'Blanks': '(Vazios)',
                 'FilterTrue': 'Sim',
-                'FilterFalse': 'Não',
+                'FilterFalse': 'NÃ£o',
                 'NoResult': 'Nenhum resultado encontrado',
                 'ClearFilter': 'Limpar Filtro',
-                'NumberFilter': 'Filtros Numéricos',
+                'NumberFilter': 'Filtros NumÃ©ricos',
                 'TextFilter': 'Filtros de Texto',
                 'DateFilter': 'Filtros de Data',
                 'DateTimeFilter': 'Filtros de Data/Hora',
-                'MatchCase': 'Diferenciar maiúsculas',
+                'MatchCase': 'Diferenciar maiÃºsculas',
                 'Between': 'Entre',
                 'CustomFilter': 'Filtro Personalizado',
                 'CustomFilterPlaceHolder': 'Digite o valor',
@@ -384,29 +384,29 @@
                 'AND': 'E',
                 'OR': 'OU',
                 'ShowRowsWhere': 'Mostrar linhas onde:',
-                'currentPageInfo': '{0} de {1} páginas',
+                'currentPageInfo': '{0} de {1} pÃ¡ginas',
                 'totalItemsInfo': '({0} itens)',
-                'firstPageTooltip': 'Ir para primeira página',
-                'lastPageTooltip': 'Ir para última página',
-                'nextPageTooltip': 'Ir para próxima página',
-                'previousPageTooltip': 'Ir para página anterior',
-                'nextPagerTooltip': 'Ir para próximos itens',
+                'firstPageTooltip': 'Ir para primeira pÃ¡gina',
+                'lastPageTooltip': 'Ir para Ãºltima pÃ¡gina',
+                'nextPageTooltip': 'Ir para prÃ³xima pÃ¡gina',
+                'previousPageTooltip': 'Ir para pÃ¡gina anterior',
+                'nextPagerTooltip': 'Ir para prÃ³ximos itens',
                 'previousPagerTooltip': 'Ir para itens anteriores',
-                'pagerDropDown': 'Itens por página',
+                'pagerDropDown': 'Itens por pÃ¡gina',
                 'pagerAllDropDown': 'Itens',
                 'All': 'Todos'
             },
             // Pager
             'pager': {
-                'currentPageInfo': '{0} de {1} páginas',
+                'currentPageInfo': '{0} de {1} pÃ¡ginas',
                 'totalItemsInfo': '({0} itens)',
-                'firstPageTooltip': 'Ir para primeira página',
-                'lastPageTooltip': 'Ir para última página',
-                'nextPageTooltip': 'Ir para próxima página',
-                'previousPageTooltip': 'Ir para página anterior',
-                'nextPagerTooltip': 'Ir para próximos itens',
+                'firstPageTooltip': 'Ir para primeira pÃ¡gina',
+                'lastPageTooltip': 'Ir para Ãºltima pÃ¡gina',
+                'nextPageTooltip': 'Ir para prÃ³xima pÃ¡gina',
+                'previousPageTooltip': 'Ir para pÃ¡gina anterior',
+                'nextPagerTooltip': 'Ir para prÃ³ximos itens',
                 'previousPagerTooltip': 'Ir para itens anteriores',
-                'pagerDropDown': 'Itens por página',
+                'pagerDropDown': 'Itens por pÃ¡gina',
                 'pagerAllDropDown': 'Itens',
                 'All': 'Todos'
             },
@@ -422,7 +422,7 @@
             },
             // TimePicker
             'timepicker': {
-                'placeholder': 'Selecione o horário'
+                'placeholder': 'Selecione o horÃ¡rio'
             },
             // Calendar
             'calendar': {
@@ -430,34 +430,34 @@
             },
             // DateRangePicker
             'daterangepicker': {
-                'placeholder': 'Selecione um período',
+                'placeholder': 'Selecione um perÃ­odo',
                 'startLabel': 'Data Inicial',
                 'endLabel': 'Data Final',
                 'applyText': 'Aplicar',
                 'cancelText': 'Cancelar',
                 'selectedDays': 'Dias Selecionados',
                 'days': 'Dias',
-                'customRange': 'Período Personalizado'
+                'customRange': 'PerÃ­odo Personalizado'
             },
             // DropDownList
             'dropdownlist': {
                 'noRecordsTemplate': 'Nenhum registro encontrado',
-                'actionFailureTemplate': 'Falha na requisição'
+                'actionFailureTemplate': 'Falha na requisiÃ§Ã£o'
             },
             // ComboBox
             'combobox': {
                 'noRecordsTemplate': 'Nenhum registro encontrado',
-                'actionFailureTemplate': 'Falha na requisição'
+                'actionFailureTemplate': 'Falha na requisiÃ§Ã£o'
             },
             // AutoComplete
             'autocomplete': {
                 'noRecordsTemplate': 'Nenhum registro encontrado',
-                'actionFailureTemplate': 'Falha na requisição'
+                'actionFailureTemplate': 'Falha na requisiÃ§Ã£o'
             },
             // MultiSelect
             'multiselect': {
                 'noRecordsTemplate': 'Nenhum registro encontrado',
-                'actionFailureTemplate': 'Falha na requisição',
+                'actionFailureTemplate': 'Falha na requisiÃ§Ã£o',
                 'selectAllText': 'Selecionar Todos',
                 'unSelectAllText': 'Desmarcar Todos',
                 'overflowCountTemplate': '+${count} mais...'
@@ -474,9 +474,9 @@
                 'dropFilesHint': 'Ou solte arquivos aqui',
                 'invalidMinFileSize': 'Arquivo muito pequeno',
                 'invalidMaxFileSize': 'Arquivo muito grande',
-                'invalidFileType': 'Tipo de arquivo não permitido',
+                'invalidFileType': 'Tipo de arquivo nÃ£o permitido',
                 'uploadFailedMessage': 'Falha no upload',
-                'uploadSuccessMessage': 'Upload concluído',
+                'uploadSuccessMessage': 'Upload concluÃ­do',
                 'removedSuccessMessage': 'Arquivo removido',
                 'removedFailedMessage': 'Falha ao remover arquivo',
                 'inProgress': 'Enviando',
@@ -497,19 +497,19 @@
             // RichTextEditor
             'richtexteditor': {
                 'alignments': 'Alinhamentos',
-                'justifyLeft': 'Alinhar à Esquerda',
+                'justifyLeft': 'Alinhar Ã  Esquerda',
                 'justifyCenter': 'Centralizar',
-                'justifyRight': 'Alinhar à Direita',
+                'justifyRight': 'Alinhar Ã  Direita',
                 'justifyFull': 'Justificar',
                 'fontName': 'Fonte',
                 'fontSize': 'Tamanho',
                 'fontColor': 'Cor da Fonte',
                 'backgroundColor': 'Cor de Fundo',
                 'bold': 'Negrito',
-                'italic': 'Itálico',
+                'italic': 'ItÃ¡lico',
                 'underline': 'Sublinhado',
                 'strikethrough': 'Tachado',
-                'clearFormat': 'Limpar Formatação',
+                'clearFormat': 'Limpar FormataÃ§Ã£o',
                 'clearAll': 'Limpar Tudo',
                 'cut': 'Cortar',
                 'copy': 'Copiar',
@@ -524,7 +524,7 @@
                 'image': 'Inserir Imagem',
                 'createTable': 'Criar Tabela',
                 'removeTable': 'Remover Tabela',
-                'sourcecode': 'Código Fonte',
+                'sourcecode': 'CÃ³digo Fonte',
                 'preview': 'Visualizar',
                 'maximize': 'Maximizar',
                 'minimize': 'Minimizar'
@@ -534,77 +534,77 @@
                 'day': 'Dia',
                 'week': 'Semana',
                 'workWeek': 'Semana de Trabalho',
-                'month': 'Mês',
+                'month': 'MÃªs',
                 'agenda': 'Agenda',
                 'weekAgenda': 'Agenda Semanal',
                 'workWeekAgenda': 'Agenda da Semana de Trabalho',
                 'monthAgenda': 'Agenda Mensal',
                 'today': 'Hoje',
                 'noEvents': 'Sem eventos',
-                'emptyContainer': 'Não há eventos agendados para este dia.',
+                'emptyContainer': 'NÃ£o hÃ¡ eventos agendados para este dia.',
                 'allDay': 'Dia inteiro',
-                'start': 'Início',
+                'start': 'InÃ­cio',
                 'end': 'Fim',
                 'more': 'mais',
                 'close': 'Fechar',
                 'cancel': 'Cancelar',
-                'noTitle': '(Sem título)',
+                'noTitle': '(Sem tÃ­tulo)',
                 'delete': 'Excluir',
                 'deleteEvent': 'Excluir Evento',
-                'deleteMultipleEvent': 'Excluir Múltiplos Eventos',
+                'deleteMultipleEvent': 'Excluir MÃºltiplos Eventos',
                 'selectedItems': 'Itens selecionados',
-                'deleteSeries': 'Excluir Série',
+                'deleteSeries': 'Excluir SÃ©rie',
                 'edit': 'Editar',
-                'editSeries': 'Editar Série',
+                'editSeries': 'Editar SÃ©rie',
                 'editEvent': 'Editar Evento',
                 'createEvent': 'Criar',
                 'subject': 'Assunto',
-                'addTitle': 'Adicionar título',
+                'addTitle': 'Adicionar tÃ­tulo',
                 'moreDetails': 'Mais Detalhes',
                 'save': 'Salvar',
-                'editContent': 'Deseja editar apenas este evento ou toda a série?',
-                'deleteRecurrenceContent': 'Deseja excluir apenas este evento ou toda a série?',
+                'editContent': 'Deseja editar apenas este evento ou toda a sÃ©rie?',
+                'deleteRecurrenceContent': 'Deseja excluir apenas este evento ou toda a sÃ©rie?',
                 'deleteContent': 'Tem certeza que deseja excluir este evento?',
                 'deleteMultipleContent': 'Tem certeza que deseja excluir os eventos selecionados?',
                 'newEvent': 'Novo Evento',
-                'title': 'Título',
+                'title': 'TÃ­tulo',
                 'location': 'Local',
-                'description': 'Descrição',
-                'timezone': 'Fuso Horário',
-                'startTimezone': 'Fuso Horário Inicial',
-                'endTimezone': 'Fuso Horário Final',
+                'description': 'DescriÃ§Ã£o',
+                'timezone': 'Fuso HorÃ¡rio',
+                'startTimezone': 'Fuso HorÃ¡rio Inicial',
+                'endTimezone': 'Fuso HorÃ¡rio Final',
                 'repeat': 'Repetir',
                 'saveButton': 'Salvar',
                 'cancelButton': 'Cancelar',
                 'deleteButton': 'Excluir',
-                'recurrence': 'Recorrência',
-                'wrongPattern': 'O padrão de recorrência é inválido.',
-                'seriesChangeAlert': 'As alterações feitas em instâncias específicas desta série serão canceladas e esses eventos corresponderão à série novamente.',
-                'createError': 'A duração do evento deve ser menor que a frequência com que ele ocorre.',
-                'recurrenceDateValidation': 'Alguns meses têm menos dias do que a data selecionada. Para esses meses, a ocorrência cairá no último dia do mês.',
-                'sameDayAlert': 'Duas ocorrências do mesmo evento não podem ocorrer no mesmo dia.',
-                'editRecurrence': 'Editar Recorrência',
+                'recurrence': 'RecorrÃªncia',
+                'wrongPattern': 'O padrÃ£o de recorrÃªncia Ã© invÃ¡lido.',
+                'seriesChangeAlert': 'As alteraÃ§Ãµes feitas em instÃ¢ncias especÃ­ficas desta sÃ©rie serÃ£o canceladas e esses eventos corresponderÃ£o Ã  sÃ©rie novamente.',
+                'createError': 'A duraÃ§Ã£o do evento deve ser menor que a frequÃªncia com que ele ocorre.',
+                'recurrenceDateValidation': 'Alguns meses tÃªm menos dias do que a data selecionada. Para esses meses, a ocorrÃªncia cairÃ¡ no Ãºltimo dia do mÃªs.',
+                'sameDayAlert': 'Duas ocorrÃªncias do mesmo evento nÃ£o podem ocorrer no mesmo dia.',
+                'editRecurrence': 'Editar RecorrÃªncia',
                 'repeats': 'Repete',
                 'alert': 'Alerta',
-                'startEndError': 'A data de término selecionada ocorre antes da data de início.',
-                'invalidDateError': 'O valor de data inserido é inválido.',
+                'startEndError': 'A data de tÃ©rmino selecionada ocorre antes da data de inÃ­cio.',
+                'invalidDateError': 'O valor de data inserido Ã© invÃ¡lido.',
                 'ok': 'OK',
-                'occurrence': 'Ocorrência',
-                'series': 'Série',
+                'occurrence': 'OcorrÃªncia',
+                'series': 'SÃ©rie',
                 'previous': 'Anterior',
-                'next': 'Próximo',
+                'next': 'PrÃ³ximo',
                 'timelineDay': 'Linha do Tempo - Dia',
                 'timelineWeek': 'Linha do Tempo - Semana',
                 'timelineWorkWeek': 'Linha do Tempo - Semana de Trabalho',
-                'timelineMonth': 'Linha do Tempo - Mês'
+                'timelineMonth': 'Linha do Tempo - MÃªs'
             }
         }
     };
 
-    // Função para carregar CLDR de forma assíncrona
+    // FunÃ§Ã£o para carregar CLDR de forma assÃ­ncrona
     async function loadCldrData() {
         try {
-            console.log('🌍 Carregando dados CLDR para pt-BR...');
+            console.log('ðŸŒ Carregando dados CLDR para pt-BR...');
 
             const responses = await Promise.all(
                 cldrUrls.map(url =>
@@ -614,51 +614,51 @@
                             return res.json();
                         })
                         .catch(err => {
-                            console.warn(`⚠️ Não foi possível carregar: ${url}`, err.message);
+                            console.warn(`âš ï¸ NÃ£o foi possÃ­vel carregar: ${url}`, err.message);
                             return null;
                         })
                 )
             );
 
-            // Filtrar respostas válidas
+            // Filtrar respostas vÃ¡lidas
             const validData = responses.filter(data => data !== null);
 
             if (validData.length > 0 && typeof ej !== 'undefined' && ej.base && ej.base.loadCldr) {
                 ej.base.loadCldr(...validData);
-                console.log(`✅ CLDR carregado (${validData.length}/${cldrUrls.length} arquivos)`);
+                console.log(`âœ… CLDR carregado (${validData.length}/${cldrUrls.length} arquivos)`);
             }
 
             return true;
         } catch (error) {
-            console.error('❌ Erro ao carregar CLDR:', error);
+            console.error('âŒ Erro ao carregar CLDR:', error);
             return false;
         }
     }
 
-    // Função para aplicar localizações
+    // FunÃ§Ã£o para aplicar localizaÃ§Ãµes
     function applyLocalization() {
         try {
             if (typeof ej === 'undefined' || !ej.base) {
-                console.warn('⚠️ Syncfusion não carregado ainda');
+                console.warn('âš ï¸ Syncfusion nÃ£o carregado ainda');
                 return false;
             }
 
-            // Carregar traduções L10n
+            // Carregar traduÃ§Ãµes L10n
             if (ej.base.L10n && ej.base.L10n.load) {
                 ej.base.L10n.load(ptBRLocale);
-                console.log('✅ Traduções L10n pt-BR carregadas');
+                console.log('âœ… TraduÃ§Ãµes L10n pt-BR carregadas');
             }
 
             // Definir cultura
             if (ej.base.setCulture) {
                 ej.base.setCulture('pt');
-                console.log('✅ Cultura definida: pt');
+                console.log('âœ… Cultura definida: pt');
             }
 
-            // Definir código da moeda
+            // Definir cÃ³digo da moeda
             if (ej.base.setCurrencyCode) {
                 ej.base.setCurrencyCode('BRL');
-                console.log('✅ Moeda definida: BRL');
+                console.log('âœ… Moeda definida: BRL');
             }
 
             window.__syncfusionLocaleReady = true;
@@ -666,50 +666,45 @@
 
             return true;
         } catch (error) {
-            console.error('❌ Erro ao aplicar localização:', error);
+            console.error('âŒ Erro ao aplicar localizaÃ§Ã£o:', error);
             return false;
         }
     }
 
-    // Inicialização
+    // InicializaÃ§Ã£o
     async function init() {
         try {
-            // Primeiro aplicar traduções L10n (não depende do CLDR)
+            // Primeiro aplicar traduÃ§Ãµes L10n (nÃ£o depende do CLDR)
             applyLocalization();
 
-            // Depois carregar CLDR em background (para formatação de números/datas)
+            // Depois carregar CLDR em background (para formataÃ§Ã£o de nÃºmeros/datas)
             await loadCldrData();
 
-            console.log('🎉 Localização Syncfusion pt-BR configurada com sucesso!');
+            console.log('ðŸŽ‰ LocalizaÃ§Ã£o Syncfusion pt-BR configurada com sucesso!');
             window.__cldrLoaded = true;
 
         } catch (error) {
-            console.error('❌ Erro na inicialização da localização:', error);
+            console.error('âŒ Erro na inicializaÃ§Ã£o da localizaÃ§Ã£o:', error);
             window.__cldrLoaded = false;
         }
     }
 
-    // Executar inicialização
+    // Executar inicializaÃ§Ã£o
     init();
 
 })();
 </script>
-<!-- Registro de licença Syncfusion -->
+<!-- Registro de licenÃ§a Syncfusion -->
 <script>
 	ej.base.registerLicense("Ngo9BigBOggjHTQxAR8/V1JGaF5cXGpCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdlWX1ecXRVRmRcUkFxWEtWYEs=");
-	// Flag e evento para indicar que licença foi registrada
+	// Flag e evento para indicar que licenÃ§a foi registrada
 	window.syncfusionLicenseReady = true;
 	document.dispatchEvent(new CustomEvent('syncfusion-license-ready'));
 </script>
 
 <!-- Bootstrap 5 -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-	  rel="stylesheet"
-	  integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-	  crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-		integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-		crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 <!-- Shim para expor $.fn.tooltip usando Bootstrap 5 (evita logs \"bs.tooltip is not loaded\") -->
 <script>
 	(function ($, bootstrap) {
@@ -733,9 +728,9 @@
 <script src="https://kit.fontawesome.com/afeb78ad1f.js" crossorigin="anonymous"></script>
 
 <!-- ============================================ -->
-<!-- GRUPO 2: FUNÇÕES GLOBAIS DO PROJETO -->
+<!-- GRUPO 2: FUNÃ‡Ã•ES GLOBAIS DO PROJETO -->
 <!-- ============================================ -->
-<!-- Funções Globais do FrotiX (usa $, deixe depois do jQuery) -->
+<!-- FunÃ§Ãµes Globais do FrotiX (usa $, deixe depois do jQuery) -->
 <script src="~/js/dt-better-errors.js" asp-append-version="true"></script>
 <script src="~/js/frotix.js" asp-append-version="true"></script>
 
@@ -809,14 +804,14 @@
       });
     });
 
-    // Tooltips (se você usa)
+    // Tooltips (se vocÃª usa)
     document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
       new bootstrap.Tooltip(el, {
         popperConfig: { modifiers: [{ name: 'computeStyles', options: { gpuAcceleration: false } }] }
       });
     });
 
-    // Popovers (se você usa)
+    // Popovers (se vocÃª usa)
     document.querySelectorAll('[data-bs-toggle="popover"]').forEach(function (el) {
       new bootstrap.Popover(el, {
         popperConfig: { modifiers: [{ name: 'computeStyles', options: { gpuAcceleration: false } }] }
@@ -844,7 +839,7 @@
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/plug-ins/1.13.8/sorting/datetime-moment.js" crossorigin="anonymous"></script>
 
-<!-- PDFMake (JSZip já carregado no bloco Kendo) -->
+<!-- PDFMake (JSZip jÃ¡ carregado no bloco Kendo) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/pdfmake.min.js" integrity="sha512-axXaF5grZBaYl7qiM6OMHgsgVXdSLxqq0w7F4CQxuFyrcPmn0JfnqsOtYHUun80g6mRRdvJDrTCyL8LQqBOt/Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/vfs_fonts.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
@@ -864,7 +859,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" crossorigin="anonymous"></script>
 
-<!-- SweetAlert2 (versão fixada) -->
+<!-- SweetAlert2 (versÃ£o fixada) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.min.css" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.all.min.js" crossorigin="anonymous"></script>
 
@@ -872,7 +867,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" crossorigin="anonymous"></script>
 
-<!-- TinyMCE (com API Key válida) -->
+<!-- TinyMCE (com API Key vÃ¡lida) -->
 <script src="https://cdn.tiny.cloud/1/kl9497zd17qjx1o2xzsybc9rf2dikkylq4ou0riihjjo7wbg/tinymce/8/tinymce.min.js"
 		referrerpolicy="origin"
 		crossorigin="anonymous"></script>
@@ -880,32 +875,32 @@
 <!-- ============================================ -->
 <!-- GRUPO 7: HELPERS E WRAPPERS DO PROJETO -->
 <!-- ============================================ -->
-<!-- Helpers próprios (DEPOIS de carregar swal/Swal) -->
+<!-- Helpers prÃ³prios (DEPOIS de carregar swal/Swal) -->
 <script src="js/toastHelper_006.js"></script>
 <script src="js/sweetalert_interop.js" asp-append-version="true"></script>
 <script src="js/alerta.js" asp-append-version="true"></script>
 <script src="js/error_handler.js" asp-append-version="true"></script>
 
-<!-- Configurações Syncfusion -->
+<!-- ConfiguraÃ§Ãµes Syncfusion -->
 <script src="~/js/global-toast.js" asp-append-version="true"></script>
 <script src="~/js/syncfusion_tooltips.js" asp-append-version="true"></script>
 
-<!-- 4. Alertas Navbar (NOSSO - após SignalR Manager) -->
+<!-- 4. Alertas Navbar (NOSSO - apÃ³s SignalR Manager) -->
 <script src="~/js/alertasfrotix/alertas_navbar.js" asp-append-version="true"></script>
 <script src="~/js/alertasfrotix/alertas_gestao.js" asp-append-version="true"></script>
 
 <!-- ============================================ -->
-<!-- GRUPO 8: FUNÇÕES UTILITÁRIAS -->
+<!-- GRUPO 8: FUNÃ‡Ã•ES UTILITÃRIAS -->
 <!-- ============================================ -->
-<!-- Função moeda (mantida) -->
+<!-- FunÃ§Ã£o moeda (mantida) -->
 <script>
 	function moeda(a,e,r,t){let n="",h=j=0,u=tamanho2=0,l=ajd2="",o=window.Event?t.which:t.keyCode;if(13==o||8==o)return!0;if(n=String.fromCharCode(o),-1=="0123456789".indexOf(n))return!1;for(u=a.value.length,h=0;h<u&&("0"==a.value.charAt(h)||a.value.charAt(h)==r);h++);for(l="";h<u;h++)-1!="0123456789".indexOf(a.value.charAt(h))&&(l+=a.value.charAt(h));if(l+=n,0==(u=l.length)&&(a.value=""),1==u&&(a.value="0"+r+"0"+l),2==u&&(a.value="0"+r+l),u>2){for(ajd2="",j=0,h=u-3;h>=0;h--)3==j&&(ajd2+=e,j=0),ajd2+=l.charAt(h),j++;for(a.value="",tamanho2=ajd2.length,h=tamanho2-1;h>=0;h--)a.value+=ajd2.charAt(h);a.value+=r+l.substr(u-2,u)}return!1}
 </script>
 
 <!-- ============================================ -->
-<!-- GRUPO 9: CONFIGURAÇÕES ESPECÍFICAS -->
+<!-- GRUPO 9: CONFIGURAÃ‡Ã•ES ESPECÃFICAS -->
 <!-- ============================================ -->
-<!-- Configuração do Rich Text Editor (EJ2) -->
+<!-- ConfiguraÃ§Ã£o do Rich Text Editor (EJ2) -->
 <script>
 	var defaultRTE;
 	function onCreate(){ defaultRTE = this; }
@@ -919,45 +914,45 @@
 	}
 	ej.base.L10n.load({
 	  "pt-BR": { "richtexteditor": {
-		"alignments":"Alinhamentos","justifyLeft":"Alinhar à Esquerda","justifyCenter":"Centralizar","justifyRight":"Alinhar à Direita","justifyFull":"Justificar",
-		"fontName":"Nome da Fonte","fontSize":"Tamanho da Fonte","fontColor":"Cor da Fonte","backgroundColor":"Cor de Fundo","bold":"Negrito","italic":"Itálico",
-		"underline":"Sublinhado","strikethrough":"Tachado","clearFormat":"Limpa Formatação","clearAll":"Limpa Tudo","cut":"Cortar","copy":"Copiar","paste":"Colar",
-		"unorderedList":"Lista com Marcadores","orderedList":"Lista Numerada","indent":"Aumentar Identação","outdent":"Diminuir Identação","undo":"Desfazer",
+		"alignments":"Alinhamentos","justifyLeft":"Alinhar Ã  Esquerda","justifyCenter":"Centralizar","justifyRight":"Alinhar Ã  Direita","justifyFull":"Justificar",
+		"fontName":"Nome da Fonte","fontSize":"Tamanho da Fonte","fontColor":"Cor da Fonte","backgroundColor":"Cor de Fundo","bold":"Negrito","italic":"ItÃ¡lico",
+		"underline":"Sublinhado","strikethrough":"Tachado","clearFormat":"Limpa FormataÃ§Ã£o","clearAll":"Limpa Tudo","cut":"Cortar","copy":"Copiar","paste":"Colar",
+		"unorderedList":"Lista com Marcadores","orderedList":"Lista Numerada","indent":"Aumentar IdentaÃ§Ã£o","outdent":"Diminuir IdentaÃ§Ã£o","undo":"Desfazer",
 		"redo":"Refazer","superscript":"Sobrescrito","subscript":"Subscrito","createLink":"Inserir Link","openLink":"Abrir Link","editLink":"Editar Link",
-		"removeLink":"Remover Link","image":"Inserir Imagem","replace":"Substituir","align":"Alinhar","caption":"Título da Imagem","remove":"Remover",
+		"removeLink":"Remover Link","image":"Inserir Imagem","replace":"Substituir","align":"Alinhar","caption":"TÃ­tulo da Imagem","remove":"Remover",
 		"insertLink":"Inserir Link","display":"Exibir","altText":"Texto Alternativo","dimension":"Mudar Tamanho","fullscreen":"Maximizar","maximize":"Maximizar",
-		"minimize":"Minimizar","lowerCase":"Caixa Baixa","upperCase":"Caixa Alta","print":"Imprimir","formats":"Formatos","sourcecode":"Visualizar Código",
-		"preview":"Exibir","viewside":"ViewSide","insertCode":"Inserir Código","linkText":"Exibir Texto","linkTooltipLabel":"Título","linkWebUrl":"Endereço Web",
-		"linkTitle":"Entre com um título","linkurl":"http://exemplo.com","linkOpenInNewWindow":"Abrir Link em Nova Janela","linkHeader":"Inserir Link",
+		"minimize":"Minimizar","lowerCase":"Caixa Baixa","upperCase":"Caixa Alta","print":"Imprimir","formats":"Formatos","sourcecode":"Visualizar CÃ³digo",
+		"preview":"Exibir","viewside":"ViewSide","insertCode":"Inserir CÃ³digo","linkText":"Exibir Texto","linkTooltipLabel":"TÃ­tulo","linkWebUrl":"EndereÃ§o Web",
+		"linkTitle":"Entre com um tÃ­tulo","linkurl":"http://exemplo.com","linkOpenInNewWindow":"Abrir Link em Nova Janela","linkHeader":"Inserir Link",
 		"dialogInsert":"Inserir","dialogCancel":"Cancelar","dialogUpdate":"Atualizar","imageHeader":"Inserir Imagem",
-		"imageLinkHeader":"Você pode proporcionar um link da web","mdimageLink":"Favor proporcionar uma URL para sua imagem",
+		"imageLinkHeader":"VocÃª pode proporcionar um link da web","mdimageLink":"Favor proporcionar uma URL para sua imagem",
 		"imageUploadMessage":"Solte a imagem aqui ou busque para o upload","imageDeviceUploadMessage":"Clique aqui para o upload",
-		"imageAlternateText":"Texto Alternativo","alternateHeader":"Texto Alternativo","browse":"Procurar","imageUrl":"http://exemplo.com/imagem.png","imageCaption":"Título",
+		"imageAlternateText":"Texto Alternativo","alternateHeader":"Texto Alternativo","browse":"Procurar","imageUrl":"http://exemplo.com/imagem.png","imageCaption":"TÃ­tulo",
 		"imageSizeHeader":"Tamanho da Imagem","imageHeight":"Altura","imageWidth":"Largura","textPlaceholder":"Entre com um Texto","inserttablebtn":"Inserir Tabela",
-		"tabledialogHeader":"Inserir Tabela","tableWidth":"Largura","cellpadding":"Espaçamento de célula","cellspacing":"Espaçamento de célula",
-		"columns":"Número de colunas","rows":"Número de linhas","tableRows":"Linhas da Tabela","tableColumns":"Colunas da Tabela",
-		"tableCellHorizontalAlign":"Alinhamento Horizontal da Célular","tableCellVerticalAlign":"Alinhamento Vertical da Célular",
-		"createTable":"Criar Tabela","removeTable":"Remover Tabela","tableHeader":"Cabeçalho da Tabela","tableRemove":"Remover Tabela",
-		"tableCellBackground":"Fundo da Célula","tableEditProperties":"Editar Propriedades da Tabela","styles":"Estilos",
-		"insertColumnLeft":"Inserir Coluna à Esquerda","insertColumnRight":"Inserir Coluna à Direita","deleteColumn":"Apagar Coluna",
+		"tabledialogHeader":"Inserir Tabela","tableWidth":"Largura","cellpadding":"EspaÃ§amento de cÃ©lula","cellspacing":"EspaÃ§amento de cÃ©lula",
+		"columns":"NÃºmero de colunas","rows":"NÃºmero de linhas","tableRows":"Linhas da Tabela","tableColumns":"Colunas da Tabela",
+		"tableCellHorizontalAlign":"Alinhamento Horizontal da CÃ©lular","tableCellVerticalAlign":"Alinhamento Vertical da CÃ©lular",
+		"createTable":"Criar Tabela","removeTable":"Remover Tabela","tableHeader":"CabeÃ§alho da Tabela","tableRemove":"Remover Tabela",
+		"tableCellBackground":"Fundo da CÃ©lula","tableEditProperties":"Editar Propriedades da Tabela","styles":"Estilos",
+		"insertColumnLeft":"Inserir Coluna Ã  Esquerda","insertColumnRight":"Inserir Coluna Ã  Direita","deleteColumn":"Apagar Coluna",
 		"insertRowBefore":"Inserir Linha Antes","insertRowAfter":"Inserir Linha Depois","deleteRow":"Apagar Linha","tableEditHeader":"Edita Tabela",
-		"TableHeadingText":"Cabeçalho","TableColText":"Col","imageInsertLinkHeader":"Inserir Link","editImageHeader":"Edita Imagem",
-		"alignmentsDropDownLeft":"Alinhar à Esquerda","alignmentsDropDownCenter":"Centralizar","alignmentsDropDownRight":"Alinhar à Direita",
+		"TableHeadingText":"CabeÃ§alho","TableColText":"Col","imageInsertLinkHeader":"Inserir Link","editImageHeader":"Edita Imagem",
+		"alignmentsDropDownLeft":"Alinhar Ã  Esquerda","alignmentsDropDownCenter":"Centralizar","alignmentsDropDownRight":"Alinhar Ã  Direita",
 		"alignmentsDropDownJustify":"Justificar","imageDisplayDropDownInline":"Inline","imageDisplayDropDownBreak":"Break",
 		"tableInsertRowDropDownBefore":"Inserir linha antes","tableInsertRowDropDownAfter":"Inserir linha depois","tableInsertRowDropDownDelete":"Apagar linha",
-		"tableInsertColumnDropDownLeft":"Inserir coluna à esquerda","tableInsertColumnDropDownRight":"Inserir coluna à direita",
+		"tableInsertColumnDropDownLeft":"Inserir coluna Ã  esquerda","tableInsertColumnDropDownRight":"Inserir coluna Ã  direita",
 		"tableInsertColumnDropDownDelete":"Apagar Coluna","tableVerticalAlignDropDownTop":"Alinhar no Topo","tableVerticalAlignDropDownMiddle":"Alinhar no Meio",
 		"tableVerticalAlignDropDownBottom":"Alinhar no Fundo","tableStylesDropDownDashedBorder":"Bordas Pontilhadas","tableStylesDropDownAlternateRows":"Linhas Alternadas",
-		"pasteFormat":"Colar Formato","pasteFormatContent":"Escolha a ação de formatação","plainText":"Texto Simples","cleanFormat":"Limpar","keepFormat":"Manter",
-		"formatsDropDownParagraph":"Parágrafo","formatsDropDownCode":"Código","formatsDropDownQuotation":"Citação","formatsDropDownHeading1":"Cabeçalho 1",
-		"formatsDropDownHeading2":"Cabeçalho 2","formatsDropDownHeading3":"Cabeçalho 3","formatsDropDownHeading4":"Cabeçalho 4",
+		"pasteFormat":"Colar Formato","pasteFormatContent":"Escolha a aÃ§Ã£o de formataÃ§Ã£o","plainText":"Texto Simples","cleanFormat":"Limpar","keepFormat":"Manter",
+		"formatsDropDownParagraph":"ParÃ¡grafo","formatsDropDownCode":"CÃ³digo","formatsDropDownQuotation":"CitaÃ§Ã£o","formatsDropDownHeading1":"CabeÃ§alho 1",
+		"formatsDropDownHeading2":"CabeÃ§alho 2","formatsDropDownHeading3":"CabeÃ§alho 3","formatsDropDownHeading4":"CabeÃ§alho 4",
 		"fontNameSegoeUI":"SegoeUI","fontNameArial":"Arial","fontNameGeorgia":"Georgia","fontNameImpact":"Impact","fontNameTahoma":"Tahoma",
 		"fontNameTimesNewRoman":"Times New Roman","fontNameVerdana":"Verdana"
 	  }}});
 </script>
 
 <!-- ============================================ -->
-<!-- GRUPO 10: UTILITÁRIOS DE LIMPEZA -->
+<!-- GRUPO 10: UTILITÃRIOS DE LIMPEZA -->
 <!-- ============================================ -->
 <!-- Limpa a tela depois de fechar modais/overlays -->
 <script>
@@ -979,4 +974,5 @@
 	}
 </script>
 
-<!-- NOTA: Traduções L10n completas já carregadas no início do arquivo (SYNCFUSION LOCALIZAÇÃO PT-BR COMPLETA) -->
+<!-- NOTA: TraduÃ§Ãµes L10n completas jÃ¡ carregadas no inÃ­cio do arquivo (SYNCFUSION LOCALIZAÃ‡ÃƒO PT-BR COMPLETA) -->
+

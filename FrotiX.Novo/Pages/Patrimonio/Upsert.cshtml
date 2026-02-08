@@ -1,4 +1,4 @@
-@page
+﻿@page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @* ========================================================================================
@@ -32,9 +32,9 @@
 @using Syncfusion.Blazor.Inputs
 
 @{
-	ViewData["Title"] = "Patrimônio";
+	ViewData["Title"] = "PatrimÃ´nio";
 	ViewData["PageName"] = "patrimonio_upsert";
-	ViewData["Heading"] = "<i class='fa-sharp-duotone fa-duotone fa-arrows-turn-to-dots'></i> Cadastros: <span class='fw-300'>Patrimônio</span>";
+	ViewData["Heading"] = "<i class='fa-sharp-duotone fa-duotone fa-arrows-turn-to-dots'></i> Cadastros: <span class='fw-300'>PatrimÃ´nio</span>";
 	ViewData["Category1"] = "Cadastros";
 	ViewData["PageIcon"] = "fa-duotone fa-arrows-turn-to-dots";
 }
@@ -121,7 +121,7 @@
 							<h2 class="titulo-pagina">
 								<i class="fa-duotone fa-shelves"></i>
 								&nbsp;@(Model.PatrimonioObj.Patrimonio.PatrimonioId != Guid.Empty ? "Atualizar" :
-																"Criar")&nbsp;Patrimônio
+																"Criar")&nbsp;PatrimÃ´nio
 							</h2>
 						</div>
 
@@ -192,8 +192,8 @@
 								</div>
 
 								<div class="col-4 form-group" id="divSecao">
-									<label class="label font-weight-bold label-required">Seção</label>
-									<ejs-combobox id="cmbSecoes" placeholder="Selecione uma Seção" allowFiltering="true"
+									<label class="label font-weight-bold label-required">SeÃ§Ã£o</label>
+									<ejs-combobox id="cmbSecoes" placeholder="Selecione uma SeÃ§Ã£o" allowFiltering="true"
 										filterType="Contains" popupHeight="200px" width="100%" showClearButton="true"
 										ejs-for="PatrimonioObj.Patrimonio.SecaoId">
 										<e-combobox-fields text="text" value="value"></e-combobox-fields>
@@ -221,7 +221,7 @@
 								<div class="col-4">
 									<div class="form-group">
 										<label class="label font-weight-bold label-required"
-											asp-for="PatrimonioObj.Patrimonio.Descricao">Descrição</label>
+											asp-for="PatrimonioObj.Patrimonio.Descricao">DescriÃ§Ã£o</label>
 										<span class="text-danger font-weight-light"
 											asp-validation-for="PatrimonioObj.Patrimonio.Descricao"></span>
 										<input class="form-control form-control-sm"
@@ -231,7 +231,7 @@
 								<div class="col-4">
 									<div class="form-group">
 										<label class="label font-weight-bold"
-											asp-for="PatrimonioObj.Patrimonio.NumeroSerie">Numero de Série</label>
+											asp-for="PatrimonioObj.Patrimonio.NumeroSerie">Numero de SÃ©rie</label>
 										<span class="text-danger font-weight-light"
 											asp-validation-for="PatrimonioObj.Patrimonio.NumeroSerie"></span>
 										<input class="form-control form-control-sm"
@@ -241,10 +241,10 @@
 								<div class="col-4">
 									<div class="form-group">
 										<label class="label font-weight-bold label-required"
-											asp-for="PatrimonioObj.Patrimonio.Situacao">Situação</label>
+											asp-for="PatrimonioObj.Patrimonio.Situacao">SituaÃ§Ã£o</label>
 										<span class="text-danger font-weight-light"
 											asp-validation-for="PatrimonioObj.Patrimonio.Situacao"></span>
-										<ejs-dropdownlist id="cmbSituacao" placeholder="Selecione a Situação"
+										<ejs-dropdownlist id="cmbSituacao" placeholder="Selecione a SituaÃ§Ã£o"
 											popupHeight="200px" width="100%" showClearButton="true"
 											ejs-for="PatrimonioObj.Patrimonio.Situacao">
 											<e-dropdownlist-fields text="text" value="value"></e-dropdownlist-fields>
@@ -257,13 +257,13 @@
 								<div class="col-12">
 									<div class="form-group">
 										<label class="label font-weight-bold label-required"
-											asp-for="PatrimonioObj.Patrimonio.LocalizacaoAtual">Localização
+											asp-for="PatrimonioObj.Patrimonio.LocalizacaoAtual">LocalizaÃ§Ã£o
 											Atual</label>
 										<span class="text-danger font-weight-light"
 											asp-validation-for="PatrimonioObj.Patrimonio.LocalizacaoAtual"></span>
 										<ejs-textbox id="localizacaoAtual" cssClass="my-syncfusion-input--small"
 											ejs-for="@Model.PatrimonioObj.Patrimonio.LocalizacaoAtual"
-											placeholder="Digite a Localização Atual do Patrimônio">
+											placeholder="Digite a LocalizaÃ§Ã£o Atual do PatrimÃ´nio">
 										</ejs-textbox>
 									</div>
 								</div>
@@ -289,7 +289,7 @@
 
 							<div class="row">
 								<div class="col-lg-8 control-section">
-									<label class="label font-weight-bold">Imagem (foto) do Patrimônio</label>
+									<label class="label font-weight-bold">Imagem (foto) do PatrimÃ´nio</label>
 									<div id="dropArea" style="height: auto; width:400px; overflow: auto;">
 										<ejs-uploader id="fileUpload" allowedExtensions=".jpg,.jpeg,.png"
 											selected="onFileSelect" removing="onFileRemove" name="UploadedFile">
@@ -315,7 +315,7 @@
 													asp-route-npratual="@Model.PatrimonioObj.Patrimonio.NPR"
 													class="btn btn-azul btn-submit-spin form-control" style="width:300px">
 													<i class="fa-duotone fa-floppy-disk icon-space icon-pulse"></i>
-													Atualizar Patrimônio
+													Atualizar PatrimÃ´nio
 												</button>
 											}
 											else
@@ -323,7 +323,7 @@
 												<button type="submit" value="Submit" asp-page-handler="Submit"
 													class="btn btn-azul btn-submit-spin form-control" style="width:300px">
 													<i class="fa-duotone fa-floppy-disk icon-space icon-pulse"></i>
-													Criar Patrimônio
+													Criar PatrimÃ´nio
 												</button>
 											}
 										</div>
@@ -331,7 +331,7 @@
 											<a asp-page="./Index" class="btn btn-ftx-fechar form-control"
 												style="width:300px" data-ftx-loading>
 												<i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i>
-												Cancelar Operação
+												Cancelar OperaÃ§Ã£o
 											</a>
 										</div>
 									</div>
@@ -360,7 +360,7 @@
 						<label for="inputNovaMarca" class="font-weight-bold">Nome da Marca:</label>
 						<input type="text" class="form-control" id="inputNovaMarca"
 							placeholder="Digite o nome da nova marca" maxlength="30">
-						<small class="form-text text-muted">Máximo 30 caracteres</small>
+						<small class="form-text text-muted">MÃ¡ximo 30 caracteres</small>
 						<div class="invalid-feedback" id="marcaErrorMsg"></div>
 					</div>
 				</div>
@@ -399,7 +399,7 @@
 						<label for="inputNovoModelo" class="font-weight-bold">Nome do Modelo:</label>
 						<input type="text" class="form-control" id="inputNovoModelo"
 							placeholder="Digite o nome do novo modelo" maxlength="30">
-						<small class="form-text text-muted">Máximo 30 caracteres</small>
+						<small class="form-text text-muted">MÃ¡ximo 30 caracteres</small>
 						<div class="invalid-feedback" id="modeloErrorMsg"></div>
 					</div>
 				</div>
@@ -419,10 +419,8 @@
 </form>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-		crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-		crossorigin="anonymous"></script>
+	
+	
 
 	<script src="~/js/dropify.min.js"></script>
 	<script src="~/js/cadastros/patrimonio.js" asp-append-version="true"></script>

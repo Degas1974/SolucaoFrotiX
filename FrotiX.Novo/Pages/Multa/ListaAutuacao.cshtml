@@ -1,13 +1,13 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Multa/ListaAutuacao.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/Multa/ListaAutuacao.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Listagem de autuações de multas com filtros (órgão, infração, veículo, motorista, status), visualização/upload PDF, transformação em penalidade
- * 📥 ENTRADAS     : @page, @model Multa, filtros: lstOrgao, lstTiposMulta, lstVeiculos, lstMotorista, lstStatus, clique botões ação (editar, status, penalidade, apagar, PDF)
- * 📤 SAÍDAS       : DataTable #tblMulta (JSON /api/multa/listamultas), modais (PDF vistoria, PDF autuação, alterar status, transformar penalidade), AppToast feedback
- * 🔗 CHAMADA POR  : Menu Multas, botão "Adicionar Autuação", navegação direta
- * 🔄 CHAMA        : /api/multa/listamultas, /api/Multa/PegaStatus, /api/Multa/AlteraStatus, /api/Multa/PegaObservacao, /api/Multa/TransformaPenalidade, /api/Multa/Delete, /api/MultaPdfViewer, /api/MultaUpload/save|remove, ~/js/cadastros/listaautuacao.js, ./UpsertAutuacao
- * 📦 DEPENDÊNCIAS : Syncfusion.EJ2 (ComboBox, PDFViewer, RichTextEditor, Uploader), Bootstrap 5.3.8 (CDN redundante), DataTables, Font Awesome Duotone, Stimulsoft.Report.Mvc
- * 📝 OBSERVAÇÕES  : Total: 1307 linhas (MUITO EXTENSO). PROBLEMA CRÍTICO: Bootstrap CDN redundante, CSS inline GIGANTE (569 linhas) - DEVE ser extraído, JavaScript inline ENORME (738+ linhas) - DEVE ser extraído, DUPLICAÇÃO: Múltiplas funções inline (moeda, toolbarClick, handlers modais, event listeners) quando deveriam estar no listaautuacao.js, BUG POTENCIAL: Uploader "uploaderPenalidade" eventos vinculados inline E no document.ready (duplicação), CSS: Badges status customizados com gradientes e shadows (bonito mas pode ser componentizado), Modal transform penalidade: RTE + uploader + PDF viewer (complexo) - considerar partial view
+ * ðŸŽ¯ OBJETIVO     : Listagem de autuaÃ§Ãµes de multas com filtros (Ã³rgÃ£o, infraÃ§Ã£o, veÃ­culo, motorista, status), visualizaÃ§Ã£o/upload PDF, transformaÃ§Ã£o em penalidade
+ * ðŸ“¥ ENTRADAS     : @page, @model Multa, filtros: lstOrgao, lstTiposMulta, lstVeiculos, lstMotorista, lstStatus, clique botÃµes aÃ§Ã£o (editar, status, penalidade, apagar, PDF)
+ * ðŸ“¤ SAÃDAS       : DataTable #tblMulta (JSON /api/multa/listamultas), modais (PDF vistoria, PDF autuaÃ§Ã£o, alterar status, transformar penalidade), AppToast feedback
+ * ðŸ”— CHAMADA POR  : Menu Multas, botÃ£o "Adicionar AutuaÃ§Ã£o", navegaÃ§Ã£o direta
+ * ðŸ”„ CHAMA        : /api/multa/listamultas, /api/Multa/PegaStatus, /api/Multa/AlteraStatus, /api/Multa/PegaObservacao, /api/Multa/TransformaPenalidade, /api/Multa/Delete, /api/MultaPdfViewer, /api/MultaUpload/save|remove, ~/js/cadastros/listaautuacao.js, ./UpsertAutuacao
+ * ðŸ“¦ DEPENDÃŠNCIAS : Syncfusion.EJ2 (ComboBox, PDFViewer, RichTextEditor, Uploader), Bootstrap 5.3.8 (CDN redundante), DataTables, Font Awesome Duotone, Stimulsoft.Report.Mvc
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : Total: 1307 linhas (MUITO EXTENSO). PROBLEMA CRÃTICO: Bootstrap CDN redundante, CSS inline GIGANTE (569 linhas) - DEVE ser extraÃ­do, JavaScript inline ENORME (738+ linhas) - DEVE ser extraÃ­do, DUPLICAÃ‡ÃƒO: MÃºltiplas funÃ§Ãµes inline (moeda, toolbarClick, handlers modais, event listeners) quando deveriam estar no listaautuacao.js, BUG POTENCIAL: Uploader "uploaderPenalidade" eventos vinculados inline E no document.ready (duplicaÃ§Ã£o), CSS: Badges status customizados com gradientes e shadows (bonito mas pode ser componentizado), Modal transform penalidade: RTE + uploader + PDF viewer (complexo) - considerar partial view
  **************************************************************************************** *@
 @page
 @using FrotiX.Repository.IRepository
@@ -35,8 +35,8 @@
 
 	ViewData["Title"] = "Multas";
 	ViewData["PageName"] = "multa_listaautuacao";
-	ViewData["Heading"] = "<i class='fa-duotone fa-pen-to-square'></i> Multas: <span class='fw-300'>Autuações</span>";
-	ViewData["Category1"] = "Autuações";
+	ViewData["Heading"] = "<i class='fa-duotone fa-pen-to-square'></i> Multas: <span class='fw-300'>AutuaÃ§Ãµes</span>";
+	ViewData["Category1"] = "AutuaÃ§Ãµes";
 	ViewData["PageIcon"] = "fa-duotone fa-pen-to-square";
 }
 
@@ -47,7 +47,7 @@
 		/* ====== FONTE OUTFIT ====== */
 		@@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
 
-		/* ====== VARIÁVEIS LOCAIS ====== */
+		/* ====== VARIÃVEIS LOCAIS ====== */
 		:root {
 			--ftx-autuacao-laranja: #D2691E;
 			--ftx-autuacao-laranja-hover: #E07020;
@@ -79,7 +79,7 @@
 			color: #fff !important;
 		}
 
-		/* ====== ÁREA DE FILTROS ====== */
+		/* ====== ÃREA DE FILTROS ====== */
 		.ftx-autuacao-filters {
 			padding: 1.25rem 1.5rem;
 			background: linear-gradient(180deg, #fafbfc 0%, #fff 100%);
@@ -121,8 +121,8 @@
 			margin-bottom: 0.35rem;
 		}
 
-		/* Botão de Filtrar */
-		/* Botão Filtrar - COM GLOW AZUL */
+		/* BotÃ£o de Filtrar */
+		/* BotÃ£o Filtrar - COM GLOW AZUL */
 		.btn-filtrar-autuacao {
 			background-color: #3D5771 !important;
 			color: #fff !important;
@@ -245,7 +245,7 @@
 			box-shadow: 0 2px 4px rgba(107, 114, 128, 0.3);
 		}
 
-		/* ====== ANIMAÇÃO GLOW FROTIX ====== */
+		/* ====== ANIMAÃ‡ÃƒO GLOW FROTIX ====== */
 		@@keyframes buttonWiggle {
 			0% { transform: translateY(0) rotate(0deg); }
 			25% { transform: translateY(-2px) rotate(-1deg); }
@@ -254,7 +254,7 @@
 			100% { transform: translateY(0) rotate(0deg); }
 		}
 
-		/* ====== BOTÕES DE AÇÃO NA TABELA - COM GLOW FROTIX ====== */
+		/* ====== BOTÃ•ES DE AÃ‡ÃƒO NA TABELA - COM GLOW FROTIX ====== */
 		.ftx-btn-icon {
 			width: 28px;
 			height: 28px;
@@ -309,7 +309,7 @@
 			box-shadow: 0 0 0 0.2rem rgba(61, 87, 113, 0.35) !important;
 		}
 
-		/* Status - Amarelo/Âmbar com GLOW */
+		/* Status - Amarelo/Ã‚mbar com GLOW */
 		.ftx-btn-status {
 			background-color: #d97706 !important;
 			box-shadow: 0 0 8px rgba(217, 119, 6, 0.5), 0 2px 4px rgba(217, 119, 6, 0.3) !important;
@@ -422,7 +422,7 @@
 			color: #fff !important;
 		}
 
-		/* Modal Exibe PDF Autuação */
+		/* Modal Exibe PDF AutuaÃ§Ã£o */
 		#modalExibePDF .modal-dialog {
 			max-width: 900px;
 		}
@@ -565,7 +565,7 @@
 }
 
 <script>
-	// URL padrão da API (pode ser mudada pelos filtros)
+	// URL padrÃ£o da API (pode ser mudada pelos filtros)
 	let URLapi = "/api/multa/listamultas";
 </script>
 
@@ -575,19 +575,19 @@
 			<div id="panel-1" class="panel ftx-card-styled">
 				<div class="panel-container show">
 
-					<!-- Header Padrão FrotiX -->
+					<!-- Header PadrÃ£o FrotiX -->
 					<div class="ftx-card-header">
 						<h2 class="titulo-paginas">
 							<i class="fa-duotone fa-file-pen"></i>
-							Multas: Lista de Autuações
+							Multas: Lista de AutuaÃ§Ãµes
 						</h2>
 						<a href="/Multa/UpsertAutuacao" class="btn btn-fundo-laranja" data-ftx-loading>
 							<i class="fa-duotone fa-clone-plus icon-pulse me-1"></i>
-							Adicionar Autuação
+							Adicionar AutuaÃ§Ã£o
 						</a>
 					</div>
 
-					<!-- Área de Filtros -->
+					<!-- Ãrea de Filtros -->
 					<div class="ftx-autuacao-filters">
 						<div class="ftx-autuacao-filters-title">
 							<i class="fa-duotone fa-filter"></i>
@@ -595,9 +595,9 @@
 						</div>
 
 						<div class="ftx-autuacao-filters-grid">
-							<!-- Órgão -->
+							<!-- Ã“rgÃ£o -->
 							<div class="ftx-autuacao-filter-group">
-								<label>Órgão Autuante</label>
+								<label>Ã“rgÃ£o Autuante</label>
 								<ejs-combobox id="lstOrgao"
 											  placeholder="Selecione..."
 											  allowFiltering="true" filterType="Contains"
@@ -607,9 +607,9 @@
 								</ejs-combobox>
 							</div>
 
-							<!-- Infração -->
+							<!-- InfraÃ§Ã£o -->
 							<div class="ftx-autuacao-filter-group">
-								<label>Infração</label>
+								<label>InfraÃ§Ã£o</label>
 								<ejs-combobox id="lstTiposMulta"
 											  placeholder="Selecione..."
 											  allowFiltering="true" filterType="Contains"
@@ -619,9 +619,9 @@
 								</ejs-combobox>
 							</div>
 
-							<!-- Veículo -->
+							<!-- VeÃ­culo -->
 							<div class="ftx-autuacao-filter-group">
-								<label>Veículo</label>
+								<label>VeÃ­culo</label>
 								<ejs-combobox id="lstVeiculos"
 											  placeholder="Selecione..."
 											  allowFiltering="true" filterType="Contains"
@@ -655,10 +655,10 @@
 								</ejs-combobox>
 							</div>
 
-							<!-- Botão Filtrar -->
+							<!-- BotÃ£o Filtrar -->
 							<div class="ftx-autuacao-filter-group">
 								<label>&nbsp;</label>
-								<a class="btn-filtrar-autuacao" id="btnFiltro" role="button" data-ejtip="Filtrar Autuações" onclick="ListaTodasNotificacoes()">
+								<a class="btn-filtrar-autuacao" id="btnFiltro" role="button" data-ejtip="Filtrar AutuaÃ§Ãµes" onclick="ListaTodasNotificacoes()">
 									<i class="fa-duotone fa-magnifying-glass-waveform"></i>
 									Filtrar
 								</a>
@@ -672,19 +672,19 @@
 							<table id="tblMulta" class="table table-bordered table-striped" width="100%">
 								<thead>
 									<tr>
-										<th>Nº Infração</th>
+										<th>NÂº InfraÃ§Ã£o</th>
 										<th>Data</th>
 										<th>Hora</th>
 										<th>Motorista</th>
-										<th>Veículo</th>
-										<th>Órgão</th>
-										<th>Infração</th>
+										<th>VeÃ­culo</th>
+										<th>Ã“rgÃ£o</th>
+										<th>InfraÃ§Ã£o</th>
 										<th>Local</th>
 										<th>Dt.Reconhecimento</th>
-										<th>Até Vencimento</th>
-										<th>Pós Vencimento</th>
+										<th>AtÃ© Vencimento</th>
+										<th>PÃ³s Vencimento</th>
 										<th>Status</th>
-										<th>Ação</th>
+										<th>AÃ§Ã£o</th>
 									</tr>
 								</thead>
 								<tbody></tbody>
@@ -729,14 +729,14 @@
 	</div>
 </form>
 
-@* ================ Modal: Exibir Notificação de Autuação (PDF) ================ *@
+@* ================ Modal: Exibir NotificaÃ§Ã£o de AutuaÃ§Ã£o (PDF) ================ *@
 <div class="modal fade" id="modalExibePDF" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h4 class="modal-title">
 					<i class="fa-duotone fa-file-pdf"></i>
-					Notificação de Autuação
+					NotificaÃ§Ã£o de AutuaÃ§Ã£o
 				</h4>
 				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
 			</div>
@@ -770,7 +770,7 @@
 			<div class="modal-header">
 				<h4 class="modal-title">
 					<i class="fa-duotone fa-bolt"></i>
-					Alterar Status da Autuação
+					Alterar Status da AutuaÃ§Ã£o
 				</h4>
 				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
 			</div>
@@ -780,12 +780,12 @@
 
 					<div class="card mb-3">
 						<div class="card-header bg-light">
-							<strong><i class="fa-duotone fa-info-circle me-2"></i> Informações da Autuação</strong>
+							<strong><i class="fa-duotone fa-info-circle me-2"></i> InformaÃ§Ãµes da AutuaÃ§Ã£o</strong>
 						</div>
 						<div class="card-body">
 							<div class="row mb-2">
 								<div class="col-6">
-									<label class="text-muted mb-1"><small>Nº da Infração:</small></label>
+									<label class="text-muted mb-1"><small>NÂº da InfraÃ§Ã£o:</small></label>
 									<div class="font-weight-bold" id="txtNumInfracaoStatus">-</div>
 								</div>
 								<div class="col-3">
@@ -814,7 +814,7 @@
 
 					<div class="form-group">
 						<label class="label font-weight-bold">
-							<i class="fa-duotone fa-flag me-1"></i> Novo Status da Autuação
+							<i class="fa-duotone fa-flag me-1"></i> Novo Status da AutuaÃ§Ã£o
 						</label>
 						<ejs-combobox id="lstStatusAlterado"
 									  placeholder="Selecione o novo status..."
@@ -848,7 +848,7 @@
 			<div class="modal-header">
 				<h3 class="modal-title" id="h3Titulo">
 					<i class="fa-duotone fa-money-bill-transfer"></i>
-					Transforma Autuação em Penalidade/Boleto
+					Transforma AutuaÃ§Ã£o em Penalidade/Boleto
 				</h3>
 				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
 			</div>
@@ -884,7 +884,7 @@
 					<div class="row">
 						<div class="col-12">
 							<div class="form-group">
-								<label class="label font-weight-bold">Observações a respeito da Multa</label>
+								<label class="label font-weight-bold">ObservaÃ§Ãµes a respeito da Multa</label>
 								<ejs-richtexteditor id="rte" toolbarClick="toolbarClick" locale="pt-BR" height="150px" created="onCreate">
 									<e-richtexteditor-insertimagesettings saveUrl="api/Viagem/SaveImage" path="./DadosEditaveis/ImagensViagens/"></e-richtexteditor-insertimagesettings>
 								</ejs-richtexteditor>
@@ -924,7 +924,7 @@
 					<i class="fa-duotone fa-xmark icon-space"></i>
 					Fechar
 				</button>
-				<button id="btnTransformaPenalidade" class="btn btn-verde" type="submit" value="SUBMIT" data-ejtip="Confirmar transformação">
+				<button id="btnTransformaPenalidade" class="btn btn-verde" type="submit" value="SUBMIT" data-ejtip="Confirmar transformaÃ§Ã£o">
 					<span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
 					<i class="fa-duotone fa-money-bill-transfer icon-space"></i>
 					<span class="btn-text">Transformar em Penalidade</span>
@@ -934,19 +934,19 @@
 	</div>
 </div>
 
-<!-- OVERLAY DE LOADING - PADRÃO FROTIX -->
+<!-- OVERLAY DE LOADING - PADRÃƒO FROTIX -->
 <div id="loadingOverlayAutuacao" class="ftx-spin-overlay" style="z-index: 999999; cursor: wait; display: none;">
     <div class="ftx-spin-box" style="text-align: center; min-width: 300px;">
         <img src="/images/logo_gota_frotix_transparente.png" alt="FrotiX" class="ftx-loading-logo" style="display: block;" />
         <div class="ftx-loading-bar"></div>
-        <div class="ftx-loading-text">Carregando Autuações...</div>
+        <div class="ftx-loading-text">Carregando AutuaÃ§Ãµes...</div>
         <div class="ftx-loading-subtext">Aguarde, por favor</div>
     </div>
 </div>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
 	<script src="~/js/cadastros/tiraacento_001.js"></script>
 	<script src="~/js/cadastros/listaautuacao.js" asp-append-version="true"></script>
@@ -964,7 +964,7 @@
 			}
 		}
 
-		// Necessário para upload com antiforgery no RTE
+		// NecessÃ¡rio para upload com antiforgery no RTE
 		function toolbarClick(e) {
 			try {
 				if (e.item.id === "rte_toolbar_Image") {
@@ -981,42 +981,42 @@
 	</script>
 
 	<script>
-		// Localização do RTE (pt-BR)
+		// LocalizaÃ§Ã£o do RTE (pt-BR)
 		ej.base.L10n.load({
 			"pt-BR": {
 				"richtexteditor": {
-					"alignments": "Alinhamentos", "justifyLeft": "Alinhar à Esquerda", "justifyCenter": "Centralizar", "justifyRight": "Alinhar à Direita", "justifyFull": "Justificar",
+					"alignments": "Alinhamentos", "justifyLeft": "Alinhar Ã  Esquerda", "justifyCenter": "Centralizar", "justifyRight": "Alinhar Ã  Direita", "justifyFull": "Justificar",
 					"fontName": "Nome da Fonte", "fontSize": "Tamanho da Fonte", "fontColor": "Cor da Fonte", "backgroundColor": "Cor de Fundo",
-					"bold": "Negrito", "italic": "Itálico", "underline": "Sublinhado", "strikethrough": "Tachado", "clearFormat": "Limpa Formatação", "clearAll": "Limpa Tudo",
+					"bold": "Negrito", "italic": "ItÃ¡lico", "underline": "Sublinhado", "strikethrough": "Tachado", "clearFormat": "Limpa FormataÃ§Ã£o", "clearAll": "Limpa Tudo",
 					"cut": "Cortar", "copy": "Copiar", "paste": "Colar", "unorderedList": "Lista com Marcadores", "orderedList": "Lista Numerada",
-					"indent": "Aumentar Identação", "outdent": "Diminuir Identação", "undo": "Desfazer", "redo": "Refazer",
+					"indent": "Aumentar IdentaÃ§Ã£o", "outdent": "Diminuir IdentaÃ§Ã£o", "undo": "Desfazer", "redo": "Refazer",
 					"superscript": "Sobrescrito", "subscript": "Subscrito", "createLink": "Inserir Link", "openLink": "Abrir Link", "editLink": "Editar Link", "removeLink": "Remover Link",
-					"image": "Inserir Imagem", "replace": "Substituir", "align": "Alinhar", "caption": "Título da Imagem", "remove": "Remover",
+					"image": "Inserir Imagem", "replace": "Substituir", "align": "Alinhar", "caption": "TÃ­tulo da Imagem", "remove": "Remover",
 					"display": "Exibir", "altText": "Texto Alternativo", "dimension": "Mudar Tamanho", "fullscreen": "Maximizar", "maximize": "Maximizar", "minimize": "Minimizar",
-					"lowerCase": "Caixa Baixa", "upperCase": "Caixa Alta", "print": "Imprimir", "formats": "Formatos", "sourcecode": "Visualizar Código", "preview": "Exibir",
-					"viewside": "ViewSide", "insertCode": "Inserir Código", "linkText": "Exibir Texto", "linkTooltipLabel": "Título", "linkWebUrl": "Endereço Web",
-					"linkTitle": "Entre com um título", "linkurl": "http://exemplo.com", "linkOpenInNewWindow": "Abrir Link em Nova Janela", "linkHeader": "Inserir Link",
+					"lowerCase": "Caixa Baixa", "upperCase": "Caixa Alta", "print": "Imprimir", "formats": "Formatos", "sourcecode": "Visualizar CÃ³digo", "preview": "Exibir",
+					"viewside": "ViewSide", "insertCode": "Inserir CÃ³digo", "linkText": "Exibir Texto", "linkTooltipLabel": "TÃ­tulo", "linkWebUrl": "EndereÃ§o Web",
+					"linkTitle": "Entre com um tÃ­tulo", "linkurl": "http://exemplo.com", "linkOpenInNewWindow": "Abrir Link em Nova Janela", "linkHeader": "Inserir Link",
 					"dialogInsert": "Inserir", "dialogCancel": "Cancelar", "dialogUpdate": "Atualizar", "imageHeader": "Inserir Imagem",
-					"imageLinkHeader": "Você pode proporcionar um link da web", "mdimageLink": "Favor proporcionar uma URL para sua imagem",
+					"imageLinkHeader": "VocÃª pode proporcionar um link da web", "mdimageLink": "Favor proporcionar uma URL para sua imagem",
 					"imageUploadMessage": "Solte a imagem aqui ou busque para o upload", "imageDeviceUploadMessage": "Clique aqui para o upload",
 					"imageAlternateText": "Texto Alternativo", "alternateHeader": "Texto Alternativo", "browse": "Procurar",
-					"imageUrl": "http://exemplo.com/imagem.png", "imageCaption": "Título", "imageSizeHeader": "Tamanho da Imagem", "imageHeight": "Altura", "imageWidth": "Largura",
+					"imageUrl": "http://exemplo.com/imagem.png", "imageCaption": "TÃ­tulo", "imageSizeHeader": "Tamanho da Imagem", "imageHeight": "Altura", "imageWidth": "Largura",
 					"textPlaceholder": "Entre com um Texto", "inserttablebtn": "Inserir Tabela", "tabledialogHeader": "Inserir Tabela", "tableWidth": "Largura",
-					"cellpadding": "Espaçamento de célula", "cellspacing": "Espaçamento de célula", "columns": "Número de colunas", "rows": "Número de linhas",
-					"tableRows": "Linhas da Tabela", "tableColumns": "Colunas da Tabela", "tableCellHorizontalAlign": "Alinhamento Horizontal da Célula",
-					"tableCellVerticalAlign": "Alinhamento Vertical da Célula", "createTable": "Criar Tabela", "removeTable": "Remover Tabela", "tableHeader": "Cabeçalho da Tabela",
-					"tableRemove": "Remover Tabela", "tableCellBackground": "Fundo da Célula", "tableEditProperties": "Editar Propriedades da Tabela",
-					"styles": "Estilos", "insertColumnLeft": "Inserir Coluna à Esquerda", "insertColumnRight": "Inserir Coluna à Direita", "deleteColumn": "Apagar Coluna",
+					"cellpadding": "EspaÃ§amento de cÃ©lula", "cellspacing": "EspaÃ§amento de cÃ©lula", "columns": "NÃºmero de colunas", "rows": "NÃºmero de linhas",
+					"tableRows": "Linhas da Tabela", "tableColumns": "Colunas da Tabela", "tableCellHorizontalAlign": "Alinhamento Horizontal da CÃ©lula",
+					"tableCellVerticalAlign": "Alinhamento Vertical da CÃ©lula", "createTable": "Criar Tabela", "removeTable": "Remover Tabela", "tableHeader": "CabeÃ§alho da Tabela",
+					"tableRemove": "Remover Tabela", "tableCellBackground": "Fundo da CÃ©lula", "tableEditProperties": "Editar Propriedades da Tabela",
+					"styles": "Estilos", "insertColumnLeft": "Inserir Coluna Ã  Esquerda", "insertColumnRight": "Inserir Coluna Ã  Direita", "deleteColumn": "Apagar Coluna",
 					"insertRowBefore": "Inserir Linha Antes", "insertRowAfter": "Inserir Linha Depois", "deleteRow": "Apagar Linha", "tableEditHeader": "Editar Tabela",
-					"TableHeadingText": "Cabeçalho", "TableColText": "Col", "imageInsertLinkHeader": "Inserir Link", "editImageHeader": "Editar Imagem",
-					"alignmentsDropDownLeft": "Alinhar à Esquerda", "alignmentsDropDownCenter": "Centralizar", "alignmentsDropDownRight": "Alinhar à Direita", "alignmentsDropDownJustify": "Justificar",
+					"TableHeadingText": "CabeÃ§alho", "TableColText": "Col", "imageInsertLinkHeader": "Inserir Link", "editImageHeader": "Editar Imagem",
+					"alignmentsDropDownLeft": "Alinhar Ã  Esquerda", "alignmentsDropDownCenter": "Centralizar", "alignmentsDropDownRight": "Alinhar Ã  Direita", "alignmentsDropDownJustify": "Justificar",
 					"imageDisplayDropDownInline": "Inline", "imageDisplayDropDownBreak": "Break", "tableInsertRowDropDownBefore": "Inserir linha antes", "tableInsertRowDropDownAfter": "Inserir linha depois",
-					"tableInsertRowDropDownDelete": "Apagar linha", "tableInsertColumnDropDownLeft": "Inserir coluna à esquerda", "tableInsertColumnDropDownRight": "Inserir coluna à direita",
+					"tableInsertRowDropDownDelete": "Apagar linha", "tableInsertColumnDropDownLeft": "Inserir coluna Ã  esquerda", "tableInsertColumnDropDownRight": "Inserir coluna Ã  direita",
 					"tableInsertColumnDropDownDelete": "Apagar Coluna", "tableVerticalAlignDropDownTop": "Alinhar no Topo", "tableVerticalAlignDropDownMiddle": "Alinhar no Meio", "tableVerticalAlignDropDownBottom": "Alinhar no Fundo",
 					"tableStylesDropDownDashedBorder": "Bordas Pontilhadas", "tableStylesDropDownAlternateRows": "Linhas Alternadas", "pasteFormat": "Colar Formato",
-					"pasteFormatContent": "Escolha a ação de formatação", "plainText": "Texto Simples", "cleanFormat": "Limpar", "keepFormat": "Manter",
-					"formatsDropDownParagraph": "Parágrafo", "formatsDropDownCode": "Código", "formatsDropDownQuotation": "Citação", "formatsDropDownHeading1": "Cabeçalho 1",
-					"formatsDropDownHeading2": "Cabeçalho 2", "formatsDropDownHeading3": "Cabeçalho 3", "formatsDropDownHeading4": "Cabeçalho 4",
+					"pasteFormatContent": "Escolha a aÃ§Ã£o de formataÃ§Ã£o", "plainText": "Texto Simples", "cleanFormat": "Limpar", "keepFormat": "Manter",
+					"formatsDropDownParagraph": "ParÃ¡grafo", "formatsDropDownCode": "CÃ³digo", "formatsDropDownQuotation": "CitaÃ§Ã£o", "formatsDropDownHeading1": "CabeÃ§alho 1",
+					"formatsDropDownHeading2": "CabeÃ§alho 2", "formatsDropDownHeading3": "CabeÃ§alho 3", "formatsDropDownHeading4": "CabeÃ§alho 4",
 					"fontNameSegoeUI": "SegoeUI", "fontNameArial": "Arial", "fontNameGeorgia": "Georgia", "fontNameImpact": "Impact", "fontNameTahoma": "Tahoma", "fontNameTimesNewRoman": "Times New Roman", "fontNameVerdana": "Verdana"
 				}
 			}
@@ -1024,14 +1024,14 @@
 	</script>
 
 	<script>
-		// --------- Apagar Autuação ----------
+		// --------- Apagar AutuaÃ§Ã£o ----------
 		$(document).on('click', '.btn-apagar', function () {
 			try {
 				const id = $(this).data('id');
 
 				Alerta.Confirmar(
-					"Você tem certeza que deseja apagar esta Autuação?",
-					"Não será possível recuperar os dados eliminados!",
+					"VocÃª tem certeza que deseja apagar esta AutuaÃ§Ã£o?",
+					"NÃ£o serÃ¡ possÃ­vel recuperar os dados eliminados!",
 					"Excluir",
 					"Cancelar"
 				).then(function (confirmed) {
@@ -1098,7 +1098,7 @@
 						success: function (data) {
 							try {
 								const { numInfracao, nome, status } = data;
-								$("#h3Titulo").html(`Alterar o status da Autuação nº ${numInfracao} de ${nome}`);
+								$("#h3Titulo").html(`Alterar o status da AutuaÃ§Ã£o nÂº ${numInfracao} de ${nome}`);
 								const lstStatus = document.getElementById('lstStatusAlterado').ej2_instances[0];
 								lstStatus.value = [status];
 							}
@@ -1126,7 +1126,7 @@
 				}
 			});
 
-		// Botão Alterar Status - COM SPINNER
+		// BotÃ£o Alterar Status - COM SPINNER
 		$("#btnAlteraStatus").click(function (e) {
 			try {
 				e.preventDefault();
@@ -1138,7 +1138,7 @@
 
 				const status = document.getElementById('lstStatusAlterado').ej2_instances[0];
 				if (!status.value) {
-					Alerta.Erro('Atenção', 'O status é obrigatório!', 'Fechar');
+					Alerta.Erro('AtenÃ§Ã£o', 'O status Ã© obrigatÃ³rio!', 'Fechar');
 					return;
 				}
 
@@ -1171,7 +1171,7 @@
 							Alerta.TratamentoErroComLinha("ListaAutuacao.cshtml", "btnAlteraStatus.success", error);
 						}
 						finally {
-							// Restaura botão
+							// Restaura botÃ£o
 							spinner.addClass('d-none');
 							icon.removeClass('d-none');
 							btnText.text('Alterar Status');
@@ -1181,7 +1181,7 @@
 					error: function (data) {
 						Alerta.Erro('Erro', 'Erro ao alterar status', 'OK');
 						console.log(data);
-						// Restaura botão
+						// Restaura botÃ£o
 						spinner.addClass('d-none');
 						icon.removeClass('d-none');
 						btnText.text('Alterar Status');
@@ -1197,7 +1197,7 @@
 	</script>
 
 	<script>
-		// Máscara simples de moeda (pt-BR)
+		// MÃ¡scara simples de moeda (pt-BR)
 		function moeda(a, e, r, t) {
 			try {
 				let n = "", h = 0, j = 0, u = 0, tamanho2 = 0, ajd2 = "", l = "";
@@ -1244,7 +1244,7 @@
 					const multaId = $('#txtId').val();
 
 					if (!multaId || multaId === '' || multaId === 'undefined') {
-						Alerta.Erro("Erro", "ID da multa não encontrado. Por favor, tente novamente.", "Ok");
+						Alerta.Erro("Erro", "ID da multa nÃ£o encontrado. Por favor, tente novamente.", "Ok");
 						$('#modalTransformaPenalidade').modal('hide');
 						return;
 					}
@@ -1264,14 +1264,14 @@
 								};
 								const rte = document.getElementById('rte').ej2_instances[0];
 								rte.value = observacao || "";
-								$("#h3Titulo").html(`<i class="fa-duotone fa-money-bill-transfer me-2"></i>Transformar em Penalidade a Autuação nº ${numInfracao} de ${nomeMotorista}`);
+								$("#h3Titulo").html(`<i class="fa-duotone fa-money-bill-transfer me-2"></i>Transformar em Penalidade a AutuaÃ§Ã£o nÂº ${numInfracao} de ${nomeMotorista}`);
 							}
 							catch (error) {
 								Alerta.TratamentoErroComLinha("ListaAutuacao.cshtml", "modalTransformaPenalidade.success", error);
 							}
 						},
 						error: function (data) {
-							Alerta.Erro('Erro', 'Erro ao carregar observação', 'OK');
+							Alerta.Erro('Erro', 'Erro ao carregar observaÃ§Ã£o', 'OK');
 							console.log(data);
 						}
 					});
@@ -1318,16 +1318,16 @@
 				const multaId = $("#txtId").val();
 
 				if (!multaId || multaId === '' || multaId === 'undefined') {
-					Alerta.Erro("Erro", "ID da multa não encontrado. Por favor, feche e abra o modal novamente.", "Ok");
+					Alerta.Erro("Erro", "ID da multa nÃ£o encontrado. Por favor, feche e abra o modal novamente.", "Ok");
 					return;
 				}
 
 				if (!$("#txtDataVencimento").val()) {
-					Alerta.Erro("Informação Ausente", "A Data de Vencimento é obrigatória", "Ok");
+					Alerta.Erro("InformaÃ§Ã£o Ausente", "A Data de Vencimento Ã© obrigatÃ³ria", "Ok");
 					return;
 				}
 				if (!$("#txtValorPenalidade").val() || $("#txtValorPenalidade").val() === "0") {
-					Alerta.Erro("Informação Ausente", "O Valor a Pagar é obrigatório", "Ok");
+					Alerta.Erro("InformaÃ§Ã£o Ausente", "O Valor a Pagar Ã© obrigatÃ³rio", "Ok");
 					return;
 				}
 
@@ -1386,12 +1386,12 @@
 	</script>
 
 	<script>
-		// EVENT HANDLER: BOTÃO FECHAR - MODAL TRANSFORMAR PENALIDADE
+		// EVENT HANDLER: BOTÃƒO FECHAR - MODAL TRANSFORMAR PENALIDADE
 		$(document).on('click', '#btnFecharTransformaPenalidade', function (e) {
 			try {
 				e.preventDefault();
 				$('#modalTransformaPenalidade').modal('hide');
-				console.log('✅ Modal Transformar Penalidade fechado');
+				console.log('âœ… Modal Transformar Penalidade fechado');
 			}
 			catch (error) {
 				Alerta.TratamentoErroComLinha("ListaAutuacao.cshtml", "#btnFecharTransformaPenalidade.click", error);
@@ -1401,7 +1401,7 @@
 
 	<script>
 		// ====================================================================
-		// FUNÇÕES AUXILIARES PARA O UPLOADER PENALIDADE
+		// FUNÃ‡Ã•ES AUXILIARES PARA O UPLOADER PENALIDADE
 		// ====================================================================
 
 		function getPenalidadeViewer() {
@@ -1417,13 +1417,13 @@
 		function loadPdfInPenalidadeViewer(fileName) {
 			try {
 				if (!fileName || fileName === '' || fileName === 'null') {
-					console.warn("Nome de arquivo inválido para carregar no viewer");
+					console.warn("Nome de arquivo invÃ¡lido para carregar no viewer");
 					return;
 				}
 
 				const viewer = getPenalidadeViewer();
 				if (!viewer) {
-					console.error("Viewer de penalidade não encontrado");
+					console.error("Viewer de penalidade nÃ£o encontrado");
 					return;
 				}
 
@@ -1447,9 +1447,9 @@
 					args.cancel = true;
 
 					if (window.AppToast?.show) {
-						AppToast.show('Vermelho', 'Apenas arquivos PDF são permitidos', 3000);
+						AppToast.show('Vermelho', 'Apenas arquivos PDF sÃ£o permitidos', 3000);
 					} else {
-						Alerta.Warning('Arquivo Inválido', 'Apenas arquivos PDF são permitidos');
+						Alerta.Warning('Arquivo InvÃ¡lido', 'Apenas arquivos PDF sÃ£o permitidos');
 					}
 				}
 			} catch (error) {
@@ -1461,7 +1461,7 @@
 			try {
 				if (!args || !args.e) return;
 
-				console.log('✅ Upload success args:', args);
+				console.log('âœ… Upload success args:', args);
 
 				let serverResponse;
 				try {
@@ -1473,10 +1473,10 @@
 					return;
 				}
 
-				console.log('📦 Server response:', serverResponse);
+				console.log('ðŸ“¦ Server response:', serverResponse);
 
 				if (serverResponse.error) {
-					console.error('❌ Erro do servidor:', serverResponse.error);
+					console.error('âŒ Erro do servidor:', serverResponse.error);
 					if (window.AppToast?.show) {
 						AppToast.show('Vermelho', serverResponse.error.message || 'Erro ao enviar arquivo', 3000);
 					}
@@ -1485,17 +1485,17 @@
 
 				const uploadedFiles = serverResponse.files || [];
 				if (uploadedFiles.length === 0) {
-					console.error('❌ Nenhum arquivo retornado pelo servidor');
+					console.error('âŒ Nenhum arquivo retornado pelo servidor');
 					return;
 				}
 
 				const firstFile = uploadedFiles[0];
 				const fileName = firstFile.name;
 
-				console.log('📄 Nome do arquivo recebido:', fileName);
+				console.log('ðŸ“„ Nome do arquivo recebido:', fileName);
 
 				$('#txtPenalidadePDF').val(fileName);
-				console.log('✅ Campo txtPenalidadePDF atualizado:', fileName);
+				console.log('âœ… Campo txtPenalidadePDF atualizado:', fileName);
 
 				loadPdfInPenalidadeViewer(fileName);
 
@@ -1514,7 +1514,7 @@
 				if (window.AppToast?.show) {
 					AppToast.show('Vermelho', 'Erro ao enviar arquivo PDF', 3000);
 				} else {
-					Alerta.Erro('Erro no Upload', 'Não foi possível enviar o arquivo PDF');
+					Alerta.Erro('Erro no Upload', 'NÃ£o foi possÃ­vel enviar o arquivo PDF');
 				}
 			} catch (error) {
 				Alerta.TratamentoErroComLinha("ListaAutuacao.cshtml", "onPenalidadeUploadFailure", error);
@@ -1528,7 +1528,7 @@
 					uploaderPenalidade.selected = onPenalidadeUploadSelected;
 					uploaderPenalidade.success = onPenalidadeUploadSuccess;
 					uploaderPenalidade.failure = onPenalidadeUploadFailure;
-					console.log('✅ Event handlers do uploader de penalidade configurados');
+					console.log('âœ… Event handlers do uploader de penalidade configurados');
 				}
 
 			} catch (error) {
@@ -1537,3 +1537,4 @@
 		});
 	</script>
 }
+

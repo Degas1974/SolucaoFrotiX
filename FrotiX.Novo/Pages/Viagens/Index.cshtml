@@ -1,49 +1,49 @@
-@page
+﻿@page
 
 @* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Viagens/Index.cshtml
+ * âš¡ ARQUIVO: Pages/Viagens/Index.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Página COMPLEXA de listagem e gestão de viagens com DataTable avançado,
- *                   sistema de lazy loading de fotos de motoristas (cache + fila + concorrência),
- *                   filtros múltiplos (período, veículo, motorista, setor, status), modais de
- *                   finalização, ocorrências, anexos, e overlay de loading customizado FrotiX.
- * 📥 ENTRADAS     : @Model FrotiX.Models.ViewViagens, ViewData com 7+ listas (dataCombustivel,
+ * ðŸŽ¯ OBJETIVO     : PÃ¡gina COMPLEXA de listagem e gestÃ£o de viagens com DataTable avanÃ§ado,
+ *                   sistema de lazy loading de fotos de motoristas (cache + fila + concorrÃªncia),
+ *                   filtros mÃºltiplos (perÃ­odo, veÃ­culo, motorista, setor, status), modais de
+ *                   finalizaÃ§Ã£o, ocorrÃªncias, anexos, e overlay de loading customizado FrotiX.
+ * ðŸ“¥ ENTRADAS     : @Model FrotiX.Models.ViewViagens, ViewData com 7+ listas (dataCombustivel,
  *                   lstMotorista, lstVeiculos, lstSetor, lstStatus, lstEventos), filtros via
  *                   Syncfusion DropDowns e DatePicker, modal #modalFinalizarViagem, modal
- *                   #modalOcorrencias, modal #modalAnexos, botões CRUD delegados
- * 📤 SAÍDAS       : DataTable #tblViagem com 15+ colunas (Data, Hora Inicial, Motorista com FOTO,
- *                   Veículo, Origem, Destino, KM, Setor, Status, Ações), fotos lazy loaded via
+ *                   #modalOcorrencias, modal #modalAnexos, botÃµes CRUD delegados
+ * ðŸ“¤ SAÃDAS       : DataTable #tblViagem com 15+ colunas (Data, Hora Inicial, Motorista com FOTO,
+ *                   VeÃ­culo, Origem, Destino, KM, Setor, Status, AÃ§Ãµes), fotos lazy loaded via
  *                   IntersectionObserver (cachea por 5min), overlay #loadingOverlayViagens,
  *                   modais Bootstrap 5, POST /api/Viagem/* endpoints (Finalizar, Ocorrencias,
- *                   Anexos), exportações Excel/PDF, Stimulsoft Reports para relatórios avançados
- * 🔗 CHAMADA POR  : Route /Viagens, navegação sidebar (Cadastros > Viagens), @functions OnGet()
- *                   inicializa ViewData com listas via IUnitOfWork, OnPost() processa ações do formulário
- * 🔄 CHAMA        : FrotiX.Pages.Viagens.IndexModel.Initialize (backend C#), ListaNivelCombustivel,
+ *                   Anexos), exportaÃ§Ãµes Excel/PDF, Stimulsoft Reports para relatÃ³rios avanÃ§ados
+ * ðŸ”— CHAMADA POR  : Route /Viagens, navegaÃ§Ã£o sidebar (Cadastros > Viagens), @functions OnGet()
+ *                   inicializa ViewData com listas via IUnitOfWork, OnPost() processa aÃ§Ãµes do formulÃ¡rio
+ * ðŸ”„ CHAMA        : FrotiX.Pages.Viagens.IndexModel.Initialize (backend C#), ListaNivelCombustivel,
  *                   ListaMotorista, ListaVeiculos, ListaSetores, ListaStatus, ListaEvento (helpers),
  *                   ViagemIndex.js (3604 LINHAS - arquivo GIGANTE com lazy loading, cache, modais),
  *                   /api/Viagem/* endpoints (GetList, FotoMotorista, EstatisticasVeiculo, Finalizar,
  *                   Ocorrencias, Anexos), Stimulsoft MVC Viewer, ValidadorFinalizacaoIA.js (788 linhas
- *                   - validação inteligente com Z-Scores), viagemindex.css (estilos externos)
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, jQuery, DataTables (Excel/PDF export), Bootstrap 5,
+ *                   - validaÃ§Ã£o inteligente com Z-Scores), viagemindex.css (estilos externos)
+ * ðŸ“¦ DEPENDÃŠNCIAS : ASP.NET Core Razor Pages, jQuery, DataTables (Excel/PDF export), Bootstrap 5,
  *                   Syncfusion EJ2 (DropDown, DatePicker, Grid, tooltips), ViagemIndex.js (arquivo
- *                   JavaScript externo complexo), ValidadorFinalizacaoIA.js (IA validação),
+ *                   JavaScript externo complexo), ValidadorFinalizacaoIA.js (IA validaÃ§Ã£o),
  *                   Alerta.js, AppToast.js, Stimulsoft Reports, IUnitOfWork (EF Core), FrotiX helpers,
  *                   IntersectionObserver API (nativa), fetch API (nativa), Map (cache ES6)
- * 📝 OBSERVAÇÕES  : 1306 LINHAS - página MUITO COMPLEXA, sistema crítico do FrotiX. LAZY LOADING:
- *                   fotos de motoristas carregadas apenas quando visíveis (IntersectionObserver
- *                   threshold: 0.1), cache em memória (FtxFotoCache Map), fila com limite de 4
- *                   requisições simultâneas (FTX_MAX_CONCURRENT), promises em voo (FtxFotoInflight).
- *                   OVERLAY LOADING: módulo FtxViagens IIFE com mostrarLoading(mensagem)/esconderLoading(),
- *                   mensagens dinâmicas, esconde spinners globais (FTXSpinner, FtxSpin) antes de exibir.
- *                   FILTROS: Período (data inicial/final), Veículo, Motorista, Setor, Status - todos
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : 1306 LINHAS - pÃ¡gina MUITO COMPLEXA, sistema crÃ­tico do FrotiX. LAZY LOADING:
+ *                   fotos de motoristas carregadas apenas quando visÃ­veis (IntersectionObserver
+ *                   threshold: 0.1), cache em memÃ³ria (FtxFotoCache Map), fila com limite de 4
+ *                   requisiÃ§Ãµes simultÃ¢neas (FTX_MAX_CONCURRENT), promises em voo (FtxFotoInflight).
+ *                   OVERLAY LOADING: mÃ³dulo FtxViagens IIFE com mostrarLoading(mensagem)/esconderLoading(),
+ *                   mensagens dinÃ¢micas, esconde spinners globais (FTXSpinner, FtxSpin) antes de exibir.
+ *                   FILTROS: PerÃ­odo (data inicial/final), VeÃ­culo, Motorista, Setor, Status - todos
  *                   via Syncfusion DropDowns com placeholder, aplicam dataTable.ajax.reload() ao mudar.
- *                   MODAIS: Finalização (validação IA com Z-Scores), Ocorrências (descrição + fotos),
- *                   Anexos (upload múltiplo). DataTable com 15+ colunas, configuração avançada
+ *                   MODAIS: FinalizaÃ§Ã£o (validaÃ§Ã£o IA com Z-Scores), OcorrÃªncias (descriÃ§Ã£o + fotos),
+ *                   Anexos (upload mÃºltiplo). DataTable com 15+ colunas, configuraÃ§Ã£o avanÃ§ada
  *                   (columnDefs, lengthMenu, buttons). @section HeadBlock externo (viagemindex.css),
  *                   @section ScriptBlock inline (500+ linhas) + ViagemIndex.js referenciado.
- *                   Stimulsoft Reports integrado para relatórios avançados (parâmetros dinâmicos).
- *                   Sistema de performance otimizado: cache 5min, lazy loading, fila de requisições.
- *                   ViewData inicializado via @functions OnGet() com injeção IUnitOfWork.
+ *                   Stimulsoft Reports integrado para relatÃ³rios avanÃ§ados (parÃ¢metros dinÃ¢micos).
+ *                   Sistema de performance otimizado: cache 5min, lazy loading, fila de requisiÃ§Ãµes.
+ *                   ViewData inicializado via @functions OnGet() com injeÃ§Ã£o IUnitOfWork.
  * **************************************************************************************** *@
 
 @using FrotiX.Repository.IRepository
@@ -88,10 +88,10 @@
 
 <style>
 	/* ============================================================
-	   Estilos específicos da página Viagens - MODERNIZADO
+	   Estilos especÃ­ficos da pÃ¡gina Viagens - MODERNIZADO
 	   ============================================================ */
 
-	/* ======== ANIMAÇÃO SUAVE DO HEADER ======== */
+	/* ======== ANIMAÃ‡ÃƒO SUAVE DO HEADER ======== */
 	@@keyframes headerGradientShift {
 		0% {
 			background-position: 0% 50%;
@@ -104,14 +104,14 @@
 		}
 	}
 
-	/* ======== CORREÇÃO DO HEADER DO CARD ======== */
+	/* ======== CORREÃ‡ÃƒO DO HEADER DO CARD ======== */
 	.ftx-card-header {
 		background: linear-gradient(135deg, #325d88 0%, #2a4d73 25%, #3d6f9e 50%, #2a4d73 75%, #325d88 100%);
 		background-size: 400% 400%;
 		animation: headerGradientShift 8s ease infinite;
 	}
 
-	/* ======== CORREÇÃO DA FONTE DO TÍTULO ======== */
+	/* ======== CORREÃ‡ÃƒO DA FONTE DO TÃTULO ======== */
 	.ftx-card-header .titulo-paginas {
 		font-family: 'Outfit', sans-serif !important;
 		font-weight: 900 !important;
@@ -120,7 +120,7 @@
 		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25) !important;
 	}
 
-	/* ======== OUTLINE BRANCO NO BOTÃO DO HEADER ======== */
+	/* ======== OUTLINE BRANCO NO BOTÃƒO DO HEADER ======== */
 	.ftx-card-header .btn-fundo-laranja {
 		outline: 2px solid rgba(255, 255, 255, 0.5) !important;
 		outline-offset: 1px;
@@ -132,7 +132,7 @@
 		outline-offset: 2px;
 	}
 
-	/* Micro botão para grid de Ação */
+	/* Micro botÃ£o para grid de AÃ§Ã£o */
 	.btn-xxs {
 		--bs-btn-padding-y: .15rem;
 		--bs-btn-padding-x: .35rem;
@@ -155,7 +155,7 @@
 		vertical-align: middle !important;
 	}
 
-	/* Botões de ação na coluna 9 */
+	/* BotÃµes de aÃ§Ã£o na coluna 9 */
 	#tblViagem td:nth-child(9) .btn {
 		width: 32px;
 		height: 30px;
@@ -214,7 +214,7 @@
 		line-height: 1;
 	}
 
-	/* ===== BADGES DE STATUS VIAGEM - COM ÍCONES (Padrão Manutenção) ===== */
+	/* ===== BADGES DE STATUS VIAGEM - COM ÃCONES (PadrÃ£o ManutenÃ§Ã£o) ===== */
 	.ftx-viagem-badge {
 		display: inline-flex;
 		align-items: center;
@@ -275,7 +275,7 @@
 		box-shadow: 0 4px 8px rgba(86, 29, 45, 0.4);
 	}
 
-	/* ===== BADGES DE OCORRÊNCIA ===== */
+	/* ===== BADGES DE OCORRÃŠNCIA ===== */
 	.ftx-ocorrencia-badge {
 		display: inline-flex;
 		align-items: center;
@@ -310,7 +310,7 @@
 		box-shadow: 0 2px 6px rgba(52, 152, 219, 0.35);
 	}
 
-	/* ===== BOTÕES DA TABELA - COM GLOW E ANIMAÇÃO ===== */
+	/* ===== BOTÃ•ES DA TABELA - COM GLOW E ANIMAÃ‡ÃƒO ===== */
 	#tblViagem .btn-imprimir {
 		background-color: #4B0082 !important;
 		border: none !important;
@@ -350,7 +350,7 @@
 		box-shadow: 0 0 25px rgba(114,47,55,.8), 0 6px 15px rgba(114,47,55,.5) !important;
 	}
 
-	/* ===== BOTÃO ADICIONAR OCORRÊNCIA (LARANJA) ===== */
+	/* ===== BOTÃƒO ADICIONAR OCORRÃŠNCIA (LARANJA) ===== */
 	#modalFinalizaViagem .btn-outline-secondary,
 	#modalFinalizaViagem [id*="btnAdd"],
 	#modalFinalizaViagem [id*="Adicionar"],
@@ -374,7 +374,7 @@
 		color: #fff !important;
 	}
 
-	/* ===== UNIFORMIZA ALTURA DOS DROPDOWNS DE COMBUSTÍVEL ===== */
+	/* ===== UNIFORMIZA ALTURA DOS DROPDOWNS DE COMBUSTÃVEL ===== */
 	#modalFinalizaViagem .e-ddt,
 	#modalFinalizaViagem .e-dropdowntree {
 		height: 38px !important;
@@ -394,7 +394,7 @@
 		padding-bottom: 0 !important;
 	}
 
-	/* LARGURA dos modais específicos */
+	/* LARGURA dos modais especÃ­ficos */
 	#modalFicha .modal-dialog {
 		--bs-modal-width: 700px;
 	}
@@ -407,7 +407,7 @@
 		padding: 1rem;
 	}
 
-	/* Área do relatório */
+	/* Ãrea do relatÃ³rio */
 	#ReportContainer {
 		min-height: 700px;
 	}
@@ -418,7 +418,7 @@
 		min-height: 640px;
 	}
 
-	/* Estados de validação */
+	/* Estados de validaÃ§Ã£o */
 	:root {
 		--ftx-invalid: #dc3545;
 		--ftx-glow: rgba(220,53,69,.18);
@@ -460,7 +460,7 @@
 		border-radius: .25rem;
 	}
 
-	/* Loading spinner específico do ModalFicha */
+	/* Loading spinner especÃ­fico do ModalFicha */
 	#modalFicha #loadingSpinner {
 		position: absolute;
 		top: 50%;
@@ -476,7 +476,7 @@
 		transition: opacity .3s ease;
 	}
 
-	/* Botão alterar ficha */
+	/* BotÃ£o alterar ficha */
 	#btnAlterarFicha {
 		transition: all .3s ease;
 		border: 1px solid transparent;
@@ -489,7 +489,7 @@
 		box-shadow: 0 0 4px rgba(51,51,51,.6);
 	}
 
-	/* Espaços do DataTables desta página */
+	/* EspaÃ§os do DataTables desta pÃ¡gina */
 	#tblViagem_wrapper .row {
 		margin-top: .25rem;
 		margin-bottom: .5rem;
@@ -550,7 +550,7 @@
 		padding-bottom: 0 !important;
 	}
 
-	/* Loading - Usa padrão FrotiX global (ftx-spin-overlay) */
+	/* Loading - Usa padrÃ£o FrotiX global (ftx-spin-overlay) */
 
 	/* ================================================================
 	   AVISO DE FILTRO DO DATATABLE
@@ -595,11 +595,11 @@
 	}
 
 	/* ================================================================
-	   CORREÇÃO PAGINAÇÃO - Especificidade máxima para esta página
-	   Garante que os caracteres fiquem BRANCOS em todos os botões
+	   CORREÃ‡ÃƒO PAGINAÃ‡ÃƒO - Especificidade mÃ¡xima para esta pÃ¡gina
+	   Garante que os caracteres fiquem BRANCOS em todos os botÃµes
 	   ================================================================ */
 
-	/* Botão atual/ativo - FORÇA texto branco */
+	/* BotÃ£o atual/ativo - FORÃ‡A texto branco */
 	#tblViagem_wrapper .dataTables_paginate .paginate_button.current,
 	#tblViagem_wrapper .dataTables_paginate .paginate_button.current *,
 	#tblViagem_wrapper .dataTables_paginate .paginate_button.current a,
@@ -611,7 +611,7 @@
 		color: #ffffff !important;
 	}
 
-	/* Todos os botões não desabilitados - FORÇA texto branco */
+	/* Todos os botÃµes nÃ£o desabilitados - FORÃ‡A texto branco */
 	#tblViagem_wrapper .dataTables_paginate .paginate_button:not(.disabled),
 	#tblViagem_wrapper .dataTables_paginate .paginate_button:not(.disabled) *,
 	#tblViagem_wrapper .dataTables_paginate .paginate_button:not(.disabled) a,
@@ -623,7 +623,7 @@
 		color: #ffffff !important;
 	}
 
-	/* Botões desabilitados também ficam brancos */
+	/* BotÃµes desabilitados tambÃ©m ficam brancos */
 	#tblViagem_wrapper .dataTables_paginate .paginate_button.disabled,
 	#tblViagem_wrapper .dataTables_paginate .paginate_button.disabled *,
 	#tblViagem_wrapper .dataTables_paginate .paginate_button.disabled a,
@@ -654,7 +654,7 @@
 </script>
 
 @*=========================================================================
-   OVERLAY DE LOADING - PADRÃO FROTIX (usa classes globais de frotix.css)
+   OVERLAY DE LOADING - PADRÃƒO FROTIX (usa classes globais de frotix.css)
    =========================================================================*@
 <div id="loadingOverlayViagens" class="ftx-spin-overlay" style="z-index: 999999; cursor: wait;">
     <div class="ftx-spin-box" style="text-align: center; min-width: 300px;">
@@ -690,7 +690,7 @@
 
 					<div class="panel-content">
 						<div class="box-body">
-							<!-- ===== ÁREA DE FILTROS ===== -->
+							<!-- ===== ÃREA DE FILTROS ===== -->
 							<div class="ftx-filtros">
 								<div class="row g-3">
 									<!-- Data -->
@@ -702,14 +702,14 @@
 										<input id="txtData" class="form-control" type="date" />
 									</div>
 
-									<!-- Veículo -->
+									<!-- VeÃ­culo -->
 									<div class="col-md-2">
 										<label class="ftx-label">
 											<i class="fa-duotone fa-car"></i>
-											Veículo
+											VeÃ­culo
 										</label>
 										<ejs-combobox id="lstVeiculos"
-													  placeholder="Todos os Veículos"
+													  placeholder="Todos os VeÃ­culos"
 													  allowFiltering="true"
 													  filterType="Contains"
 													  dataSource="@ViewData["lstVeiculos"]"
@@ -775,7 +775,7 @@
 									</div>
 								</div>
 
-								<!-- Botão Filtrar -->
+								<!-- BotÃ£o Filtrar -->
 								<div class="row mt-3">
 									<div class="col-md-4">
 										<button type="button"
@@ -798,23 +798,23 @@
 										<tr>
 											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Vistoria</th>
 											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Data</th>
-											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Início</th>
+											<th style="background-color: #4a6fa5 !important; color: #fff !important;">InÃ­cio</th>
 											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Requisitante</th>
 											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Setor</th>
 											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Motorista</th>
-											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Veículo</th>
+											<th style="background-color: #4a6fa5 !important; color: #fff !important;">VeÃ­culo</th>
 											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Status</th>
-											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Ação</th>
+											<th style="background-color: #4a6fa5 !important; color: #fff !important;">AÃ§Ã£o</th>
 											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Km Inicial</th>
 											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Combustivel Inicial</th>
 											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Data Final</th>
 											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Hora Final</th>
 											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Km Final</th>
 											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Combustivel Final</th>
-											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Resumo Ocorrência</th>
-											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Descrição Ocorrência</th>
+											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Resumo OcorrÃªncia</th>
+											<th style="background-color: #4a6fa5 !important; color: #fff !important;">DescriÃ§Ã£o OcorrÃªncia</th>
 											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Status Documento</th>
-											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Status Cartão Abastecimento</th>
+											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Status CartÃ£o Abastecimento</th>
 											<th style="background-color: #4a6fa5 !important; color: #fff !important;">Descricao</th>
 										</tr>
 									</thead>
@@ -874,7 +874,7 @@
 						<div class="col-md-3">
 							<label class="ftx-label">
 								<i class="fa-duotone fa-gas-pump"></i>
-								Combustível Inicial
+								CombustÃ­vel Inicial
 							</label>
 							<ejs-dropdowntree id="ddtCombustivelInicial" 
 											  popupHeight="200px" 
@@ -919,7 +919,7 @@
 						<div class="col-md-3">
 							<label class="ftx-label">
 								<i class="fa-duotone fa-gas-pump"></i>
-								Combustível Final <span class="text-danger">*</span>
+								CombustÃ­vel Final <span class="text-danger">*</span>
 							</label>
 							<ejs-dropdowntree id="ddtCombustivelFinal" 
 											  popupHeight="200px" 
@@ -934,7 +934,7 @@
 						</div>
 					</div>
 
-					<!-- Linha 3: Km Percorrido + Duração -->
+					<!-- Linha 3: Km Percorrido + DuraÃ§Ã£o -->
 					<div class="row g-3 mb-4">
 						<div class="col-md-3">
 							<label class="ftx-label">
@@ -946,7 +946,7 @@
 						<div class="col-md-3">
 							<label class="ftx-label">
 								<i class="fa-duotone fa-stopwatch"></i>
-								Duração
+								DuraÃ§Ã£o
 							</label>
 							<input readonly id="txtDuracao" class="form-control" />
 						</div>
@@ -963,7 +963,7 @@
 						<div class="col-md-3">
 							<label class="ftx-label">
 								<i class="fa-duotone fa-credit-card"></i>
-								Cartão Abastecimento
+								CartÃ£o Abastecimento
 							</label>
 							<div class="form-check form-switch mt-2">
 								<input class="form-check-input" type="checkbox" id="chkStatusCartaoAbastecimento" checked />
@@ -972,34 +972,34 @@
 						</div>
 					</div>
 
-					<!-- Descrição -->
+					<!-- DescriÃ§Ã£o -->
 					<div class="row g-3 mb-3">
 						<div class="col-12">
 							<label class="ftx-label">
 								<i class="fa-duotone fa-align-left"></i>
-								Descrição / Observações
+								DescriÃ§Ã£o / ObservaÃ§Ãµes
 							</label>
 							<ejs-richtexteditor id="rteDescricao" 
-												placeholder="Digite observações sobre a viagem..." 
+												placeholder="Digite observaÃ§Ãµes sobre a viagem..." 
 												height="150px"
 												created="onCreateDescricao">
 							</ejs-richtexteditor>
 						</div>
 					</div>
 
-					<!-- Seção de Ocorrências -->
+					<!-- SeÃ§Ã£o de OcorrÃªncias -->
 					<div class="secao-ocorrencias mt-4">
 						<div class="d-flex justify-content-between align-items-center mb-3">
 							<h5 class="mb-0">
 								<i class="fa-duotone fa-car-burst me-2 text-danger"></i>
-								Ocorrências da Viagem
+								OcorrÃªncias da Viagem
 							</h5>
 							<button type="button" class="btn btn-adicionar-ocorrencia btn-sm" id="btnAdicionarOcorrencia">
-								<i class="fa-duotone fa-circle-plus me-1"></i> Adicionar Ocorrência
+								<i class="fa-duotone fa-circle-plus me-1"></i> Adicionar OcorrÃªncia
 							</button>
 						</div>
 						<div id="listaOcorrencias">
-							<!-- Ocorrências serão inseridas aqui dinamicamente -->
+							<!-- OcorrÃªncias serÃ£o inseridas aqui dinamicamente -->
 						</div>
 					</div>
 				</form>
@@ -1035,24 +1035,24 @@
                 <!-- Hidden para armazenar o ID da viagem -->
                 <input type="hidden" id="hiddenCustosViagemId" />
 
-                <!-- Informações da Viagem -->
+                <!-- InformaÃ§Ãµes da Viagem -->
                 <div class="row mb-3">
                     <div class="col-12">
                         <h6 class="text-muted mb-2">
                             <i class="fa-duotone fa-route me-1"></i>
-                            Viagem Nº <strong id="spanNumeroViagem">-</strong>
+                            Viagem NÂº <strong id="spanNumeroViagem">-</strong>
                         </h6>
                         <small class="text-muted" id="spanInfoViagem">Carregando...</small>
                     </div>
                 </div>
 
-                <!-- Estatísticas da Viagem -->
+                <!-- EstatÃ­sticas da Viagem -->
                 <div class="row g-3 mb-4">
-                    <!-- Duração -->
+                    <!-- DuraÃ§Ã£o -->
                     <div class="col-md-3 col-6">
                         <div class="stat-card">
                             <i class="fa-duotone fa-clock stat-icon icon-duracao"></i>
-                            <div class="stat-label">Duração</div>
+                            <div class="stat-label">DuraÃ§Ã£o</div>
                             <div class="stat-valor" id="spanDuracao">-</div>
                         </div>
                     </div>
@@ -1082,17 +1082,17 @@
                     </div>
                 </div>
 
-                <!-- Tipo de Combustível -->
+                <!-- Tipo de CombustÃ­vel -->
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="alert alert-info d-flex align-items-center py-2 mb-0" role="alert">
                             <i class="fa-duotone fa-gas-pump-slash me-2" style="font-size: 1.25rem;"></i>
-                            <span>Combustível: <strong id="spanTipoCombustivel">-</strong></span>
+                            <span>CombustÃ­vel: <strong id="spanTipoCombustivel">-</strong></span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Seção de Custos Detalhados -->
+                <!-- SeÃ§Ã£o de Custos Detalhados -->
                 <div class="custos-section">
                     <div class="section-title">
                         <i class="fa-duotone fa-coins"></i>
@@ -1108,19 +1108,19 @@
                                 <div class="custo-valor" id="spanCustoMotorista">R$ 0,00</div>
                             </div>
                         </div>
-                        <!-- Custo Veículo -->
+                        <!-- Custo VeÃ­culo -->
                         <div class="col-md-4 col-6">
                             <div class="custo-card">
                                 <i class="fa-duotone fa-car-bus custo-icon icon-veiculo"></i>
-                                <div class="custo-label">Veículo</div>
+                                <div class="custo-label">VeÃ­culo</div>
                                 <div class="custo-valor" id="spanCustoVeiculo">R$ 0,00</div>
                             </div>
                         </div>
-                        <!-- Custo Combustível -->
+                        <!-- Custo CombustÃ­vel -->
                         <div class="col-md-4 col-6">
                             <div class="custo-card">
                                 <i class="fa-duotone fa-gas-pump custo-icon icon-combustivel"></i>
-                                <div class="custo-label">Combustível</div>
+                                <div class="custo-label">CombustÃ­vel</div>
                                 <div class="custo-valor" id="spanCustoCombustivel">R$ 0,00</div>
                             </div>
                         </div>
@@ -1167,7 +1167,7 @@
 </div>
 
 @*=========================================================================
-   MODAL SOLUÇÃO DA OCORRÊNCIA (PARA BAIXA)
+   MODAL SOLUÃ‡ÃƒO DA OCORRÃŠNCIA (PARA BAIXA)
    =========================================================================*@
 <div class="modal fade" id="modalSolucaoOcorrencia" tabindex="-1" aria-labelledby="modalSolucaoOcorrenciaLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered" role="document">
@@ -1175,7 +1175,7 @@
 			<div class="modal-header modal-header-verde">
 				<h5 class="modal-title d-flex align-items-center gap-2" id="modalSolucaoOcorrenciaLabel">
 					<i class="fa-duotone fa-clipboard-check" aria-hidden="true"></i>
-					<span>Informar Solução</span>
+					<span>Informar SoluÃ§Ã£o</span>
 				</h5>
 				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
 			</div>
@@ -1186,12 +1186,12 @@
 				<div class="mb-3">
 					<label for="txtSolucaoBaixa" class="form-label fw-semibold">
 						<i class="fa-duotone fa-message-lines me-1 text-success"></i>
-						Descreva a solução aplicada
+						Descreva a soluÃ§Ã£o aplicada
 					</label>
 					<textarea id="txtSolucaoBaixa" 
 							  class="form-control" 
 							  rows="4" 
-							  placeholder="Informe como a ocorrência foi resolvida..."></textarea>
+							  placeholder="Informe como a ocorrÃªncia foi resolvida..."></textarea>
 				</div>
 			</div>
 
@@ -1239,7 +1239,7 @@
 							<i class="fa-duotone fa-upload me-1"></i> Selecionar Ficha de Vistoria
 						</label>
 						<input type="file" class="form-control" id="txtFile" accept="image/*" />
-						<small class="form-text text-muted">Formatos aceitos: JPG, PNG, GIF (máx. 5MB)</small>
+						<small class="form-text text-muted">Formatos aceitos: JPG, PNG, GIF (mÃ¡x. 5MB)</small>
 					</div>
 					<button type="button" class="btn btn-success w-100" id="btnSalvarFicha" onclick="salvarFichaVistoria()" style="display: none;">
 						<i class="fa-duotone fa-save me-1"></i> Salvar Ficha
@@ -1253,7 +1253,7 @@
 					<div id="noImageContainer" style="display: none; text-align: center; padding: 3rem 1rem;">
 						<i class="fa-duotone fa-file-slash fa-4x text-muted mb-3"></i>
 						<p class="text-muted mb-0">Nenhuma ficha de vistoria cadastrada</p>
-						<small class="text-muted">Faça upload de uma imagem para registrar a ficha</small>
+						<small class="text-muted">FaÃ§a upload de uma imagem para registrar a ficha</small>
 					</div>
 				</div>
 			</div>
@@ -1271,7 +1271,7 @@
 </div>
 
 @*=========================================================================
-   MODAL IMPRESSÃO DA FICHA DA VIAGEM
+   MODAL IMPRESSÃƒO DA FICHA DA VIAGEM
    =========================================================================*@
 <div class="modal fade" id="modalPrint" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="true" aria-hidden="true">
 	<div class="modal-dialog modal-xl modal-dialog-centered" role="document">
@@ -1279,7 +1279,7 @@
 			<div class="modal-header modal-header-roxo">
 				<h5 class="modal-title d-flex align-items-center gap-2">
 					<i class="fa-duotone fa-print" aria-hidden="true"></i>
-					<span>Ficha da Viagem - Impressão</span>
+					<span>Ficha da Viagem - ImpressÃ£o</span>
 				</h5>
 				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
 			</div>
@@ -1301,14 +1301,10 @@
 </div>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
-	<!-- Kendo UI 2025.4.1321 -->
-	<link href="https://kendo.cdn.telerik.com/themes/12.0.1/bootstrap/bootstrap-main.css" rel="stylesheet" />
-	<script src="https://kendo.cdn.telerik.com/2025.4.1321/js/kendo.all.min.js"></script>
-	<script src="https://kendo.cdn.telerik.com/2025.4.1321/js/cultures/kendo.culture.pt-BR.min.js"></script>
-	<script src="https://kendo.cdn.telerik.com/2025.4.1321/js/messages/kendo.messages.pt-BR.min.js"></script>
+	<!-- Kendo carregado globalmente em _Head/_ScriptsBasePlugins -->
 	<script>
 		try {
 			if (window.kendo && kendo.culture) {
@@ -1328,13 +1324,14 @@
 	<!-- Telerik Report Viewer -->
 	<script src="/api/reports/resources/js/telerikReportViewer"></script>
 
-	<!-- Sistema de Ocorrências Múltiplas -->
+	<!-- Sistema de OcorrÃªncias MÃºltiplas -->
 	<link href="~/css/viagens/ocorrencia-viagem.css" rel="stylesheet" asp-append-version="true" />
 	<script src="~/js/viagens/ocorrencia-viagem.js" asp-append-version="true"></script>
 	<script src="~/js/viagens/ocorrencia-viagem-popup.js" asp-append-version="true"></script>
 
-	<!-- Validador Inteligente de Finalização (IA Evolutiva) -->
+	<!-- Validador Inteligente de FinalizaÃ§Ã£o (IA Evolutiva) -->
 	<script src="~/js/validacao/ValidadorFinalizacaoIA.js" asp-append-version="true"></script>
 
 	<script src="~/js/cadastros/ViagemIndex.js" asp-append-version="true"></script>
 }
+

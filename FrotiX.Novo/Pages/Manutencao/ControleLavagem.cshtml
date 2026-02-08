@@ -1,13 +1,13 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Manutencao/ControleLavagem.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/Manutencao/ControleLavagem.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Controle de lavagens com filtros, inserção via modal Kendo MultiSelect, DataTable, 3 seções (Inserir, Filtros, Tabela)
- * 📥 ENTRADAS     : @page, @model ControleLavagemModel, filtros (período, status, veículo), modal inserção (Kendo MultiSelect veículos, data, hora), cliques ações
- * 📤 SAÍDAS       : DataTable #tblLavagem (JSON /api/Manutencao/ListaLavagens), modal inserção, POST /api/Manutencao/InsereLavagem, AppToast feedback
- * 🔗 CHAMADA POR  : Menu Manutenção → Controle de Lavagem
- * 🔄 CHAMA        : /api/Manutencao/ListaLavagens, /api/Manutencao/InsereLavagem, /api/Manutencao/ExcluirLavagem, ~/js/cadastros/controlelavagem.js
- * 📦 DEPENDÊNCIAS : Syncfusion ComboBox + Kendo UI (MultiSelect, DatePicker, TimePicker), DataTables, Bootstrap 5, jQuery
- * 📝 OBSERVAÇÕES  : Total: ~629 linhas. PROBLEMA: Mix de frameworks (Syncfusion + Kendo), CSS inline massivo (~480 linhas) extrair urgente, JavaScript inline ~150 linhas, modal inserção sem validações robustas, DataTable sem paginação server-side, filtros sem debounce
+ * ðŸŽ¯ OBJETIVO     : Controle de lavagens com filtros, inserÃ§Ã£o via modal Kendo MultiSelect, DataTable, 3 seÃ§Ãµes (Inserir, Filtros, Tabela)
+ * ðŸ“¥ ENTRADAS     : @page, @model ControleLavagemModel, filtros (perÃ­odo, status, veÃ­culo), modal inserÃ§Ã£o (Kendo MultiSelect veÃ­culos, data, hora), cliques aÃ§Ãµes
+ * ðŸ“¤ SAÃDAS       : DataTable #tblLavagem (JSON /api/Manutencao/ListaLavagens), modal inserÃ§Ã£o, POST /api/Manutencao/InsereLavagem, AppToast feedback
+ * ðŸ”— CHAMADA POR  : Menu ManutenÃ§Ã£o â†’ Controle de Lavagem
+ * ðŸ”„ CHAMA        : /api/Manutencao/ListaLavagens, /api/Manutencao/InsereLavagem, /api/Manutencao/ExcluirLavagem, ~/js/cadastros/controlelavagem.js
+ * ðŸ“¦ DEPENDÃŠNCIAS : Syncfusion ComboBox + Kendo UI (MultiSelect, DatePicker, TimePicker), DataTables, Bootstrap 5, jQuery
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : Total: ~629 linhas. PROBLEMA: Mix de frameworks (Syncfusion + Kendo), CSS inline massivo (~480 linhas) extrair urgente, JavaScript inline ~150 linhas, modal inserÃ§Ã£o sem validaÃ§Ãµes robustas, DataTable sem paginaÃ§Ã£o server-side, filtros sem debounce
  **************************************************************************************** *@
 @page
 
@@ -18,7 +18,7 @@
 @inject IUnitOfWork _unitOfWork
 
 @{
-    // Inicializações que estavam em @functions/OnGet
+    // InicializaÃ§Ãµes que estavam em @functions/OnGet
     FrotiX.Pages.Manutencao.ControleLavagemModel.Initialize(_unitOfWork);
     ViewData["dataCombustivel"] = new ListaNivelCombustivel(_unitOfWork).NivelCombustivelList();
     ViewData["lstMotorista"] = new ListaMotorista(_unitOfWork).MotoristaList();
@@ -29,17 +29,16 @@
 @model FrotiX.Models.ViewViagens
 
 @{
-    ViewData["Title"] = "Manutenção";
+    ViewData["Title"] = "ManutenÃ§Ã£o";
     ViewData["PageName"] = "manutencao_controlelavagem";
-    ViewData["Heading"] = "<i class='fa-duotone fa-car-wash'></i> Manutenção: <span class='fw-300'>Controle de Lavagens</span>";
-    ViewData["Category1"] = "Manutenção";
+    ViewData["Heading"] = "<i class='fa-duotone fa-car-wash'></i> ManutenÃ§Ã£o: <span class='fw-300'>Controle de Lavagens</span>";
+    ViewData["Category1"] = "ManutenÃ§Ã£o";
     ViewData["PageIcon"] = "fa-duotone fa-car-wash";
 }
 
 @section HeadBlock {
 
-    <!-- Kendo (somente para o MultiSelect dos lavadores) -->
-    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/themes/12.0.1/bootstrap/bootstrap-main.css" />
+    <!-- Kendo carregado globalmente em _Head -->
     <!-- Google Fonts - Outfit -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet" />
 
@@ -68,13 +67,13 @@
             font-size: 1.5rem;
         }
 
-        /* Ícone do header: cores definidas no frotix.css global */
+        /* Ãcone do header: cores definidas no frotix.css global */
         .ftx-card-header .titulo-paginas i.fa-duotone {
             font-size: 1.8rem;
             filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
         }
 
-        /* ===== BOTÃO HEADER LARANJA ===== */
+        /* ===== BOTÃƒO HEADER LARANJA ===== */
         .btn-fundo-laranja {
             background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
             color: #fff !important;
@@ -105,7 +104,7 @@
             transform: scale(1.15);
         }
 
-        /* ===== CARDS INTERNOS DAS SEÇÕES ===== */
+        /* ===== CARDS INTERNOS DAS SEÃ‡Ã•ES ===== */
         .ftx-section-card {
             background: #fff;
             border-radius: 10px;
@@ -178,7 +177,7 @@
             padding: 1.25rem;
         }
 
-        /* ===== BOTÕES DE FORMULÁRIO ===== */
+        /* ===== BOTÃ•ES DE FORMULÃRIO ===== */
         .btn-inserir-ftx {
             background: linear-gradient(135deg, #0D98BA 0%, #0a7a96 100%);
             color: #fff !important;
@@ -221,7 +220,7 @@
             color: #fff !important;
         }
 
-        /* ===== BOTÃO APAGAR NA TABELA ===== */
+        /* ===== BOTÃƒO APAGAR NA TABELA ===== */
         .btn-apagar-ftx {
             width: 28px;
             height: 28px;
@@ -311,7 +310,7 @@
     var escolhendoData = false;
     var escolhendoLavador = false;
 
-    // ==================== FLAGS: quem está filtrando ====================
+    // ==================== FLAGS: quem estÃ¡ filtrando ====================
     function DefineEscolhaVeiculo() {
         try {
             escolhendoVeiculo = true;
@@ -382,7 +381,7 @@
         }
     }
 
-    // ==================== CHANGE: VEÍCULOS ====================
+    // ==================== CHANGE: VEÃCULOS ====================
     function VeiculosValueChange() {
         try {
             if (!escolhendoVeiculo) return;
@@ -479,9 +478,9 @@
                                             <input id="txtHoraLavagem" class="form-control" type="time" />
                                         </div>
                                         <div class="col-md-4">
-                                            <label class="ftx-label">Veículo Lavado</label>
+                                            <label class="ftx-label">VeÃ­culo Lavado</label>
                                             <ejs-combobox id="lstVeiculoLavagem"
-                                                          placeholder="Selecione um Veículo"
+                                                          placeholder="Selecione um VeÃ­culo"
                                                           allowFiltering="true"
                                                           filterType="Contains"
                                                           dataSource="@ViewData["lstVeiculos"]"
@@ -492,7 +491,7 @@
                                             </ejs-combobox>
                                         </div>
                                         <div class="col-md-4">
-                                            <label class="ftx-label">Condutor do Veículo</label>
+                                            <label class="ftx-label">Condutor do VeÃ­culo</label>
                                             <ejs-combobox id="lstMotoristaLavagem"
                                                           placeholder="Selecione um Motorista"
                                                           allowFiltering="true"
@@ -537,9 +536,9 @@
                                             <input id="txtData" class="form-control" type="date" />
                                         </div>
                                         <div class="col-md-3">
-                                            <label class="ftx-label">Veículo</label>
+                                            <label class="ftx-label">VeÃ­culo</label>
                                             <ejs-combobox id="lstVeiculos"
-                                                          placeholder="Selecione um Veículo"
+                                                          placeholder="Selecione um VeÃ­culo"
                                                           allowFiltering="true"
                                                           filterType="Contains"
                                                           dataSource="@ViewData["lstVeiculos"]"
@@ -591,11 +590,11 @@
                                     <thead>
                                         <tr>
                                             <th>Data</th>
-                                            <th>Horário</th>
-                                            <th>Veículo</th>
+                                            <th>HorÃ¡rio</th>
+                                            <th>VeÃ­culo</th>
                                             <th>Motorista</th>
                                             <th>Lavadores</th>
-                                            <th>Ação</th>
+                                            <th>AÃ§Ã£o</th>
                                             <th>#</th>
                                         </tr>
                                     </thead>
@@ -613,15 +612,10 @@
 
 @section ScriptsBlock {
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    
+    
 
-    <!-- Kendo (MultiSelect) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://kendo.cdn.telerik.com/2025.4.1321/js/kendo.all.min.js"></script>
-    <script src="https://kendo.cdn.telerik.com/2025.4.1321/js/kendo.aspnetmvc.min.js"></script>
-    <script src="https://kendo.cdn.telerik.com/2025.4.1321/js/cultures/kendo.culture.pt-BR.min.js"></script>
-    <script src="https://kendo.cdn.telerik.com/2025.4.1321/js/messages/kendo.messages.pt-BR.min.js"></script>
+    <!-- Kendo/JSZip carregados globalmente em _ScriptsBasePlugins -->
     <script>
         try {
             if (window.kendo && kendo.culture) {
@@ -647,7 +641,7 @@
         // ==================== DOCUMENT READY (principal) ====================
         $(document).ready(function () {
             try {
-                // Habilita ordenação de datas dd/MM/yyyy no DataTables
+                // Habilita ordenaÃ§Ã£o de datas dd/MM/yyyy no DataTables
                 if ($.fn.dataTable.moment) {
                     $.fn.dataTable.moment('DD/MM/YYYY');
                 }
@@ -662,7 +656,7 @@
                 // Lista inicial com Modal de Espera
                 ListaTodasLavagens();
 
-                // Mudança de data (filtro)
+                // MudanÃ§a de data (filtro)
                 $("#txtData").change(function () {
                     DefineEscolhaData();
                     FtxSpin.show("Carregando Lavagens");
@@ -715,7 +709,7 @@
             }
         });
 
-        // ==================== BOtão LIMPAR ====================
+        // ==================== BOtÃ£o LIMPAR ====================
         $("#btnLimpar").click(function () {
             try {
                 LimpaControles();
@@ -749,11 +743,11 @@
                     order: [[0, 'desc']],
                     columnDefs: [
                         { targets: 0, className: "text-center", width: "6%" },  // Data
-                        { targets: 1, className: "text-center", width: "6%" },  // Horário
-                        { targets: 2, className: "text-left", width: "14%" }, // Veículo
+                        { targets: 1, className: "text-center", width: "6%" },  // HorÃ¡rio
+                        { targets: 2, className: "text-left", width: "14%" }, // VeÃ­culo
                         { targets: 3, className: "text-left", width: "14%" }, // Motorista
                         { targets: 4, className: "text-left", width: "42%" }, // Lavadores
-                        { targets: 5, className: "text-center", width: "6%" }, // Ação
+                        { targets: 5, className: "text-center", width: "6%" }, // AÃ§Ã£o
                         { targets: 6, className: "text-center", width: "2%" }  // #
                     ],
                     responsive: true,
@@ -797,20 +791,20 @@
                     ],
                     language: {
                         emptyTable: "Nenhum registro encontrado",
-                        info: "Mostrando de _START_ até _END_ de _TOTAL_ registros",
-                        infoEmpty: "Mostrando 0 até 0 de 0 registros",
+                        info: "Mostrando de _START_ atÃ© _END_ de _TOTAL_ registros",
+                        infoEmpty: "Mostrando 0 atÃ© 0 de 0 registros",
                         infoFiltered: "(Filtrados de _MAX_ registros)",
                         loadingRecords: "Carregando...",
                         processing: "Processando...",
                         zeroRecords: "Nenhum registro encontrado",
                         search: "Pesquisar",
                         paginate: {
-                            next: "Próximo",
+                            next: "PrÃ³ximo",
                             previous: "Anterior",
                             first: "Primeiro",
-                            last: "Último"
+                            last: "Ãšltimo"
                         },
-                        lengthMenu: "Exibir _MENU_ resultados por página",
+                        lengthMenu: "Exibir _MENU_ resultados por pÃ¡gina",
                         buttons: {
                             pageLength: { "-1": "Mostrar todos os registros", "_": "Mostrar %d registros" },
                             excel: "Excel",
@@ -836,31 +830,31 @@
 
                 var DataLavagem = $("#txtDataLavagem").val();
                 if (!DataLavagem) {
-                    Alerta.Erro("Erro na Data", "A data de lavagem é obrigatória!");
+                    Alerta.Erro("Erro na Data", "A data de lavagem Ã© obrigatÃ³ria!");
                     return;
                 }
 
                 var HoraLavagem = $("#txtHoraLavagem").val();
                 if (!HoraLavagem) {
-                    Alerta.Erro("Erro na Hora", "A hora da lavagem é obrigatória!");
+                    Alerta.Erro("Erro na Hora", "A hora da lavagem Ã© obrigatÃ³ria!");
                     return;
                 }
 
                 var veiculo = document.getElementById('lstVeiculoLavagem').ej2_instances[0];
                 if (veiculo.value === null) {
-                    Alerta.Erro("Atenção", "O veículo lavado é obrigatório!");
+                    Alerta.Erro("AtenÃ§Ã£o", "O veÃ­culo lavado Ã© obrigatÃ³rio!");
                     return;
                 }
 
                 var motorista = document.getElementById('lstMotoristaLavagem').ej2_instances[0];
                 if (motorista.value === null) {
-                    Alerta.Erro("Atenção", "O condutor do veículo é obrigatório!");
+                    Alerta.Erro("AtenÃ§Ã£o", "O condutor do veÃ­culo Ã© obrigatÃ³rio!");
                     return;
                 }
 
                 var multi = $("#lstLavadores").data("kendoMultiSelect");
                 if (!multi || multi.value().length === 0) {
-                    Alerta.Erro("Atenção", "Ao menos um Lavador é obrigatório!");
+                    Alerta.Erro("AtenÃ§Ã£o", "Ao menos um Lavador Ã© obrigatÃ³rio!");
                     return;
                 }
 
@@ -944,8 +938,8 @@
                 var id = $(this).data('id');
 
                 Alerta.Confirmar(
-                    "Confirmar Exclusão",
-                    "Você tem certeza que deseja apagar esta Lavagem? Não será possível recuperar os dados eliminados!",
+                    "Confirmar ExclusÃ£o",
+                    "VocÃª tem certeza que deseja apagar esta Lavagem? NÃ£o serÃ¡ possÃ­vel recuperar os dados eliminados!",
                     "Sim, excluir",
                     "Cancelar"
                 ).then(function (confirmed) {
@@ -991,3 +985,4 @@
         });
     </script>
 }
+

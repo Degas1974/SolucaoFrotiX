@@ -1,13 +1,13 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/MarcaVeiculo/Upsert.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/MarcaVeiculo/Upsert.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Form simples (DescricaoMarca + Status)
- * 📥 ENTRADAS     : @page, @model UpsertModel, campos (DescricaoMarca, Status checkbox)
- * 📤 SAÍDAS       : POST asp-page-handler="Submit|Edit", redirect /MarcaVeiculo
- * 🔗 CHAMADA POR  : MarcaVeiculo/Index (botão "Adicionar Marca", editar)
- * 🔄 CHAMA        : asp-page-handler="Submit" (POST create), asp-page-handler="Edit" (POST update), /MarcaVeiculo (redirect)
- * 📦 DEPENDÊNCIAS : ASP.NET TagHelpers, Bootstrap 5, jQuery, Google Fonts Outfit
- * 📝 OBSERVAÇÕES  : Total: ~84 linhas. Form simples (DescricaoMarca + Status). CSS inline com controles 20% maiores (~30 linhas).
+ * ðŸŽ¯ OBJETIVO     : Form simples (DescricaoMarca + Status)
+ * ðŸ“¥ ENTRADAS     : @page, @model UpsertModel, campos (DescricaoMarca, Status checkbox)
+ * ðŸ“¤ SAÃDAS       : POST asp-page-handler="Submit|Edit", redirect /MarcaVeiculo
+ * ðŸ”— CHAMADA POR  : MarcaVeiculo/Index (botÃ£o "Adicionar Marca", editar)
+ * ðŸ”„ CHAMA        : asp-page-handler="Submit" (POST create), asp-page-handler="Edit" (POST update), /MarcaVeiculo (redirect)
+ * ðŸ“¦ DEPENDÃŠNCIAS : ASP.NET TagHelpers, Bootstrap 5, jQuery, Google Fonts Outfit
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : Total: ~84 linhas. Form simples (DescricaoMarca + Status). CSS inline com controles 20% maiores (~30 linhas).
  **************************************************************************************** *@
 @page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -15,9 +15,9 @@
 @model FrotiX.Pages.MarcaVeiculo.UpsertModel
 
 @{
-	ViewData["Title"] = "Marcas de Veículos";
+	ViewData["Title"] = "Marcas de VeÃ­culos";
 	ViewData["PageName"] = "marcaveiculo_index";
-	ViewData["Heading"] = "<i class='fa-duotone fa-car-garage'></i> Cadastros: <span class='fw-300'>Marcas de Veículos</span>";
+	ViewData["Heading"] = "<i class='fa-duotone fa-car-garage'></i> Cadastros: <span class='fw-300'>Marcas de VeÃ­culos</span>";
 	ViewData["Category1"] = "Cadastros";
 	ViewData["PageIcon"] = "fa-duotone fa-car-garage";
 }
@@ -54,7 +54,7 @@
 		margin-right: 8px !important;
 	}
 
-	/* Botões maiores */
+	/* BotÃµes maiores */
 	.btn.form-control {
 		height: 50px !important;
 		font-size: 1.1rem !important;
@@ -75,7 +75,7 @@
 					<div class="ftx-card-header">
 						<h2 class="titulo-paginas">
 							<i class="fa-duotone fa-car-bus"></i>
-							@(Model.MarcaVeiculoObj.MarcaId != Guid.Empty ? "Atualizar " : "Criar ") Marca de Veículo
+							@(Model.MarcaVeiculoObj.MarcaId != Guid.Empty ? "Atualizar " : "Criar ") Marca de VeÃ­culo
 						</h2>
 					</div>
 
@@ -93,7 +93,7 @@
 									<div class="form-group">
 										<label class="label font-weight-bold" asp-for="MarcaVeiculoObj.DescricaoMarca"></label>
 										<span class="text-danger font-weight-light" asp-validation-for="MarcaVeiculoObj.DescricaoMarca"></span>
-										<input class="form-control form-control-xs" asp-for="MarcaVeiculoObj.DescricaoMarca" placeholder="Insira a descrição da marca" />
+										<input class="form-control form-control-xs" asp-for="MarcaVeiculoObj.DescricaoMarca" placeholder="Insira a descriÃ§Ã£o da marca" />
 									</div>
 								</div>
 							</div>
@@ -112,7 +112,7 @@
 								</div>
 							</div>
 
-							<!-- BOTÕES -->
+							<!-- BOTÃ•ES -->
 							<div class="form-group row">
 								<div class="col-9">
 									<div class="row">
@@ -123,7 +123,7 @@
 										</div>
 										<div class="col-6">
 											<a asp-page="./Index" class="btn btn-ftx-fechar form-control" data-ftx-loading>
-												<i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i> Cancelar Operação
+												<i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i> Cancelar OperaÃ§Ã£o
 											</a>
 										</div>
 									</div>
@@ -138,6 +138,7 @@
 </form>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 }
+

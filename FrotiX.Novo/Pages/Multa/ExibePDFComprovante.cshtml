@@ -1,20 +1,20 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Multa/ExibePDFComprovante.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/Multa/ExibePDFComprovante.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Página de visualização PDF do comprovante de pagamento de multa/penalidade com
- *                   Syncfusion EJ2 PDFViewer, carrega /DadosEditaveis/Multas/{ComprovantePDF}, botão voltar
+ * ðŸŽ¯ OBJETIVO     : PÃ¡gina de visualizaÃ§Ã£o PDF do comprovante de pagamento de multa/penalidade com
+ *                   Syncfusion EJ2 PDFViewer, carrega /DadosEditaveis/Multas/{ComprovantePDF}, botÃ£o voltar
  *                   ./ListaPenalidade, stopEnterSubmitting prevention, error handling AppToast/Alerta.
- * 📥 ENTRADAS     : @page route /Multa/ExibePDFComprovante, @model ExibePDFComprovanteModel (code-behind),
- *                   Model.MultaObj.Multa.NumInfracao (int número infração), Model.MultaObj.Multa.ComprovantePDF
+ * ðŸ“¥ ENTRADAS     : @page route /Multa/ExibePDFComprovante, @model ExibePDFComprovanteModel (code-behind),
+ *                   Model.MultaObj.Multa.NumInfracao (int nÃºmero infraÃ§Ã£o), Model.MultaObj.Multa.ComprovantePDF
  *                   (string filename PDF), form onkeypress stopEnterSubmitting
- * 📤 SAÍDAS       : Panel com botão center absolute btn-voltar "Voltar à Lista" link ./ListaPenalidade,
- *                   h2 text-primary "Registro de Pagamento da Infração nº: {NumInfracao}", div #pdfContainer
+ * ðŸ“¤ SAÃDAS       : Panel com botÃ£o center absolute btn-voltar "Voltar Ã  Lista" link ./ListaPenalidade,
+ *                   h2 text-primary "Registro de Pagamento da InfraÃ§Ã£o nÂº: {NumInfracao}", div #pdfContainer
  *                   height 800px, <ejs-pdfviewer id="pdfViewer" serviceUrl="/api/PdfViewer" documentPath=""
- *                   height:100%>, JavaScript DOMContentLoaded pdfViewer.load(caminho) ou alert danger "PDF não
- *                   disponível", Bootstrap 5 CDN (REDUNDANTE!)
- * 🔗 CHAMADA POR  : Link "Ver Comprovante" em ListaPenalidade DataTable, route /Multa/ExibePDFComprovante,
- *                   ExibePDFComprovanteModel.OnGet(id) (code-behind), botões ação multa pages
- * 🔄 CHAMA        : ExibePDFComprovanteModel (code-behind Multa/ExibePDFComprovante.cshtml.cs),
+ *                   height:100%>, JavaScript DOMContentLoaded pdfViewer.load(caminho) ou alert danger "PDF nÃ£o
+ *                   disponÃ­vel", Bootstrap 5 CDN (REDUNDANTE!)
+ * ðŸ”— CHAMADA POR  : Link "Ver Comprovante" em ListaPenalidade DataTable, route /Multa/ExibePDFComprovante,
+ *                   ExibePDFComprovanteModel.OnGet(id) (code-behind), botÃµes aÃ§Ã£o multa pages
+ * ðŸ”„ CHAMA        : ExibePDFComprovanteModel (code-behind Multa/ExibePDFComprovante.cshtml.cs),
  *                   Model.MultaObj.Multa (properties NumInfracao, ComprovantePDF), ./ListaPenalidade (link voltar),
  *                   /api/PdfViewer (Syncfusion PDF service API backend), /DadosEditaveis/Multas/{filename}.pdf
  *                   (PDF static files), Syncfusion EJ2 PDFViewer component (ejs-pdfviewer TagHelper),
@@ -22,36 +22,36 @@
  *                   (FrotiX toast), Alerta.TratamentoErroComLinha (error handler), ViewData (Title/PageName/Heading/
  *                   Category1/PageIcon), Font Awesome Duotone (fa-cash-register, fa-rotate-left), Bootstrap 5 CDN
  *                   (jsdelivr.net v5.3.8), AntiForgeryToken, stopEnterSubmitting(window.event), form enctype
- *                   multipart/form-data (NÃO usado! sem file input), data-ftx-loading
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, ExibePDFComprovanteModel (code-behind), Syncfusion EJ2 ASP.NET Core
+ *                   multipart/form-data (NÃƒO usado! sem file input), data-ftx-loading
+ * ðŸ“¦ DEPENDÃŠNCIAS : ASP.NET Core Razor Pages, ExibePDFComprovanteModel (code-behind), Syncfusion EJ2 ASP.NET Core
  *                   PDFViewer component (ejs-pdfviewer TagHelper, /api/PdfViewer service, ej2_instances accessor),
  *                   Bootstrap 5 CDN (REDUNDANTE), Font Awesome Duotone, CSS inline (.center absolute transform),
  *                   JavaScript DOMContentLoaded, AppToast.show (FrotiX custom), Alerta.TratamentoErroComLinha
  *                   (error handler FrotiX), AntiForgeryToken, data-ftx-loading, asp-page link TagHelper
- * 📝 OBSERVAÇÕES  : 107 linhas. Página visualização PDF comprovante pagamento multa. ViewData config:
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : 107 linhas. PÃ¡gina visualizaÃ§Ã£o PDF comprovante pagamento multa. ViewData config:
  *                   - Title: "Pagamento da Penalidade"
  *                   - PageName: "notificacao_index" (ERRADO! deve ser "multa_exibepdfcomprovante")
- *                   - Heading: "<i class='fa-duotone fa-cash-register'></i> Infrações: <span class='fw-300'>Registro de Pagamento da Penalidade - PDF</span>"
- *                   - Category1: "Infrações"
+ *                   - Heading: "<i class='fa-duotone fa-cash-register'></i> InfraÃ§Ãµes: <span class='fw-300'>Registro de Pagamento da Penalidade - PDF</span>"
+ *                   - Category1: "InfraÃ§Ãµes"
  *                   - PageIcon: "fa-duotone fa-cash-register"
  *                   @Html.AntiForgeryToken() linha 2 (FORA do form! deve mover dentro <form> ou remover).
  *                   @section HeadBlock: CSS inline .center {position:absolute; left:50%; top:30px;
- *                   transform:translate(-50%,-50%); padding:10px;} (botão voltar posicionado absolute topo centro).
- *                   Form method POST asp-action="Upsert" (NÃO faz sentido! página só visualiza PDF, sem inputs, sem submit)
- *                   enctype multipart/form-data (NÃO usado! sem file input) onkeypress stopEnterSubmitting.
- *                   Botão voltar: col-12 col-md-4 center (absolute) asp-page="./ListaPenalidade" btn-voltar
- *                   data-ftx-loading fa-rotate-left icon-space icon-rotate-left "Voltar à Lista". H2 border-bottom
- *                   #325d88 text-primary "Registro de Pagamento da Infração nº: {Model.MultaObj?.Multa?.NumInfracao}".
+ *                   transform:translate(-50%,-50%); padding:10px;} (botÃ£o voltar posicionado absolute topo centro).
+ *                   Form method POST asp-action="Upsert" (NÃƒO faz sentido! pÃ¡gina sÃ³ visualiza PDF, sem inputs, sem submit)
+ *                   enctype multipart/form-data (NÃƒO usado! sem file input) onkeypress stopEnterSubmitting.
+ *                   BotÃ£o voltar: col-12 col-md-4 center (absolute) asp-page="./ListaPenalidade" btn-voltar
+ *                   data-ftx-loading fa-rotate-left icon-space icon-rotate-left "Voltar Ã  Lista". H2 border-bottom
+ *                   #325d88 text-primary "Registro de Pagamento da InfraÃ§Ã£o nÂº: {Model.MultaObj?.Multa?.NumInfracao}".
  *                   Div #pdfContainer height 800px: <ejs-pdfviewer id="pdfViewer" style="height:100%"
- *                   serviceUrl="/api/PdfViewer" documentPath=""/> (documentPath vazio - será preenchido JavaScript).
+ *                   serviceUrl="/api/PdfViewer" documentPath=""/> (documentPath vazio - serÃ¡ preenchido JavaScript).
  *                   @section ScriptsBlock: **Bootstrap 5 CDN REDUNDANTE** (v5.3.8 CSS + JS bundle).
  *                   JavaScript:
  *                   1. **stopEnterSubmitting(e)**: previne Enter submit, try-catch Alerta.TratamentoErroComLinha
  *                      ("ExibePDFComprovante.cshtml", "stopEnterSubmitting", error)
  *                   2. **DOMContentLoaded**: var arquivoPdf = '@(Model.MultaObj?.Multa?.ComprovantePDF ?? "")';
  *                      string Razor interpolation (se ComprovantePDF null usa ""), verifica !arquivoPdf (se vazio
- *                      AppToast.show "Arquivo de comprovante não encontrado para esta infração" Vermelho 3000ms,
- *                      innerHTML pdfContainer alert-danger "PDF não disponível", return), caminho =
+ *                      AppToast.show "Arquivo de comprovante nÃ£o encontrado para esta infraÃ§Ã£o" Vermelho 3000ms,
+ *                      innerHTML pdfContainer alert-danger "PDF nÃ£o disponÃ­vel", return), caminho =
  *                      "/DadosEditaveis/Multas/" + arquivoPdf (path static file), pdfViewer =
  *                      document.getElementById('pdfViewer').ej2_instances[0] (Syncfusion instance accessor),
  *                      if pdfViewer exists: pdfViewer.load(caminho, null) (carrega PDF), else AppToast.show
@@ -60,11 +60,11 @@
  *                   **PROBLEMAS**:
  *                   1. PageName "notificacao_index" ERRADO (deve ser "multa_exibepdfcomprovante")
  *                   2. AntiForgeryToken fora do form (mover dentro ou remover)
- *                   3. Form asp-action="Upsert" method POST (NÃO faz sentido - só visualiza, remover form tag)
- *                   4. Enctype multipart/form-data NÃO usado (sem file input)
+ *                   3. Form asp-action="Upsert" method POST (NÃƒO faz sentido - sÃ³ visualiza, remover form tag)
+ *                   4. Enctype multipart/form-data NÃƒO usado (sem file input)
  *                   5. Bootstrap CDN redundante (remover)
- *                   **ARQUIVO RELACIONADO**: ExibePDFPenalidade.cshtml (QUASE IDÊNCTICO - mesmo código, mesmo
- *                   campo ComprovantePDF - DUPLICAÇÃO?), ExibePDFAutuacao.cshtml (variante campo AutuacaoPDF).
+ *                   **ARQUIVO RELACIONADO**: ExibePDFPenalidade.cshtml (QUASE IDÃŠNCTICO - mesmo cÃ³digo, mesmo
+ *                   campo ComprovantePDF - DUPLICAÃ‡ÃƒO?), ExibePDFAutuacao.cshtml (variante campo AutuacaoPDF).
  **************************************************************************************** *@
 @page
 @Html.AntiForgeryToken()
@@ -73,8 +73,8 @@
 @{
 	ViewData["Title"] = "Pagamento da Penalidade";
 	ViewData["PageName"] = "notificacao_index";
-	ViewData["Heading"] = "<i class='fa-duotone fa-cash-register'></i> Infrações: <span class='fw-300'>Registro de Pagamento da Penalidade - PDF</span>";
-	ViewData["Category1"] = "Infrações";
+	ViewData["Heading"] = "<i class='fa-duotone fa-cash-register'></i> InfraÃ§Ãµes: <span class='fw-300'>Registro de Pagamento da Penalidade - PDF</span>";
+	ViewData["Category1"] = "InfraÃ§Ãµes";
 	ViewData["PageIcon"] = "fa-duotone fa-cash-register";
 }
 
@@ -99,14 +99,14 @@
 					<div class="col-12 col-md-4 center">
 						<a asp-page="./ListaPenalidade" class="btn btn-voltar form-control" data-ftx-loading>
 							<i class="fa-duotone fa-rotate-left icon-space icon-rotate-left"></i>
-							Voltar à Lista
+							Voltar Ã  Lista
 						</a>
 					</div>
 
 					<br />
 					<div class="col-12 px-3" style="border-bottom:1px solid #325d88">
 						<h2 class="text-primary">
-							@($"Registro de Pagamento da Infração nº: {Model.MultaObj?.Multa?.NumInfracao}")
+							@($"Registro de Pagamento da InfraÃ§Ã£o nÂº: {Model.MultaObj?.Multa?.NumInfracao}")
 						</h2>
 					</div>
 
@@ -126,11 +126,11 @@
 </form>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
 	<script>
-		// Evita submit com ENTER em campos de formulário
+		// Evita submit com ENTER em campos de formulÃ¡rio
 		function stopEnterSubmitting(e) {
 			try {
 				e = e || window.event;
@@ -152,8 +152,8 @@
 				var arquivoPdf = '@(Model.MultaObj?.Multa?.ComprovantePDF ?? "")';
 
 				if (!arquivoPdf) {
-					AppToast.show('Arquivo de comprovante não encontrado para esta infração.', 'Vermelho', 3000);
-					document.getElementById('pdfContainer').innerHTML = "<div class='alert alert-danger text-center mt-5'>PDF não disponível.</div>";
+					AppToast.show('Arquivo de comprovante nÃ£o encontrado para esta infraÃ§Ã£o.', 'Vermelho', 3000);
+					document.getElementById('pdfContainer').innerHTML = "<div class='alert alert-danger text-center mt-5'>PDF nÃ£o disponÃ­vel.</div>";
 					return;
 				}
 
@@ -173,3 +173,4 @@
 		});
 	</script>
 }
+

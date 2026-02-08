@@ -1,45 +1,45 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/AtaRegistroPrecos/Index.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/AtaRegistroPrecos/Index.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Página de listagem de Atas de Registro de Preços com DataTable customizado,
- *                   badges de status estilizados (Verde Militar/Cinza Chumbo) e botões de ação.
- * 📥 ENTRADAS     : @Model FrotiX.Models.AtaRegistroPrecos, route /AtaRegistroPrecos,
- *                   botões delegados no DataTable (.btn-editar, .btn-delete, .updateStatus),
+ * ðŸŽ¯ OBJETIVO     : PÃ¡gina de listagem de Atas de Registro de PreÃ§os com DataTable customizado,
+ *                   badges de status estilizados (Verde Militar/Cinza Chumbo) e botÃµes de aÃ§Ã£o.
+ * ðŸ“¥ ENTRADAS     : @Model FrotiX.Models.AtaRegistroPrecos, route /AtaRegistroPrecos,
+ *                   botÃµes delegados no DataTable (.btn-editar, .btn-delete, .updateStatus),
  *                   OnGet() do IndexModel
- * 📤 SAÍDAS       : DataTable #tblAtaRegistroPrecos renderizado, badges ftx-badge-status
- *                   (btn-verde #4A5D23 / fundo-cinza #4A4A4A), botões ícone 28x28px (ftx-actions),
- *                   link para /AtaRegistroPrecos/Upsert, exportações Excel/PDF, AJAX calls ata.js
- * 🔗 CHAMADA POR  : Route /AtaRegistroPrecos, navegação sidebar (Cadastros > Atas),
+ * ðŸ“¤ SAÃDAS       : DataTable #tblAtaRegistroPrecos renderizado, badges ftx-badge-status
+ *                   (btn-verde #4A5D23 / fundo-cinza #4A4A4A), botÃµes Ã­cone 28x28px (ftx-actions),
+ *                   link para /AtaRegistroPrecos/Upsert, exportaÃ§Ãµes Excel/PDF, AJAX calls ata.js
+ * ðŸ”— CHAMADA POR  : Route /AtaRegistroPrecos, navegaÃ§Ã£o sidebar (Cadastros > Atas),
  *                   IndexModel.OnGet() (code-behind)
- * 🔄 CHAMA        : ata.js (211 linhas - loadList, delete handlers com verificação de dependências,
- *                   status toggle), /AtaRegistroPrecos/Upsert (criação/edição), /api/AtaRegistroPrecos/*
+ * ðŸ”„ CHAMA        : ata.js (211 linhas - loadList, delete handlers com verificaÃ§Ã£o de dependÃªncias,
+ *                   status toggle), /AtaRegistroPrecos/Upsert (criaÃ§Ã£o/ediÃ§Ã£o), /api/AtaRegistroPrecos/*
  *                   endpoints, data-ftx-loading attribute, DataTables API
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, jQuery, DataTables, ata.js (arquivo externo),
+ * ðŸ“¦ DEPENDÃŠNCIAS : ASP.NET Core Razor Pages, jQuery, DataTables, ata.js (arquivo externo),
  *                   Bootstrap 5, Font Awesome 6 Duotone (fa-folders), ftx-card-header (layout)
- * 📝 OBSERVAÇÕES  : 200 linhas. **CSS AVANÇADO**: ftx-badge-status com cores customizadas (Verde
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : 200 linhas. **CSS AVANÃ‡ADO**: ftx-badge-status com cores customizadas (Verde
  *                   Militar #4A5D23 para Ativo, Cinza Chumbo #4A4A4A para Inativo), min-width 85px,
- *                   uppercase, letter-spacing 0.3px, hover translateY(-1px). Botões de ação
+ *                   uppercase, letter-spacing 0.3px, hover translateY(-1px). BotÃµes de aÃ§Ã£o
  *                   ftx-actions (flexbox gap 4px), btn-icon-28 (28x28px), border-radius 6px, hover
- *                   translateY(-2px). Header ftx-card-header azul #3D5771 com botão laranja
+ *                   translateY(-2px). Header ftx-card-header azul #3D5771 com botÃ£o laranja
  *                   (outline branco hover). ViewData icon fa-folders. DataTable ftx-table
  *                   (table-bordered table-striped). Layout moderno FrotiX completo. @section
  *                   ScriptsBlock referencia ata.js. CSS inline extenso (~100 linhas). Sistema
- *                   crítico para gestão contratual. Badges com texto branco (#fff color).
+ *                   crÃ­tico para gestÃ£o contratual. Badges com texto branco (#fff color).
  **************************************************************************************** *@
 @page
 @model FrotiX.Models.AtaRegistroPrecos
 
 @{
-	ViewData["Title"] = "Atas de Registro de Preços";
+	ViewData["Title"] = "Atas de Registro de PreÃ§os";
     ViewData["PageName"] = "ataregistroprecos_index";
-	ViewData["Heading"] = "<i class='fa-duotone fa-folders'></i> Cadastros: <span class='fw-300'>Atas de Registro de Preços</span>";
+	ViewData["Heading"] = "<i class='fa-duotone fa-folders'></i> Cadastros: <span class='fw-300'>Atas de Registro de PreÃ§os</span>";
 	ViewData["Category1"] = "Cadastros";
 	ViewData["PageIcon"] = "fa-duotone fa-folders";
 }
 
 @section HeadBlock {
 	<style>
-		/* ======== OUTLINE BRANCO NO BOTÃO DO HEADER (Padrão FrotiX) ======== */
+		/* ======== OUTLINE BRANCO NO BOTÃƒO DO HEADER (PadrÃ£o FrotiX) ======== */
 		.ftx-card-header .btn-fundo-laranja {
 			outline: 2px solid rgba(255, 255, 255, 0.5) !important;
 			outline-offset: 1px;
@@ -51,7 +51,7 @@
 			outline-offset: 2px;
 		}
 
-		/* ===== BADGE DE STATUS (sem degradê - Padrão FrotiX) ===== */
+		/* ===== BADGE DE STATUS (sem degradÃª - PadrÃ£o FrotiX) ===== */
 		.ftx-badge-status {
 			font-size: 0.75rem;
 			padding: 0.35rem 0.75rem;
@@ -99,7 +99,7 @@
 			background-color: #3a3a3a !important;
 		}
 
-		/* ===== BOTÕES DE AÇÃO NA TABELA ===== */
+		/* ===== BOTÃ•ES DE AÃ‡ÃƒO NA TABELA ===== */
 		.ftx-actions {
 			display: flex;
 			justify-content: center;
@@ -128,7 +128,7 @@
 			transform: translateY(-2px);
 		}
 
-		/* Glow por cor de botão */
+		/* Glow por cor de botÃ£o */
 		.ftx-actions .btn-azul {
 			box-shadow: 0 2px 6px rgba(50, 93, 136, 0.35);
 		}
@@ -145,8 +145,8 @@
 			box-shadow: 0 4px 10px rgba(114, 47, 55, 0.5);
 		}
 
-		/* ===== BOTÕES DESABILITADOS (quando ata inativa ou com dependências) ===== */
-        /* IMPORTANTE: Forçar pointer-events:auto para permitir tooltips */
+		/* ===== BOTÃ•ES DESABILITADOS (quando ata inativa ou com dependÃªncias) ===== */
+        /* IMPORTANTE: ForÃ§ar pointer-events:auto para permitir tooltips */
         .ftx-actions .btn.disabled,
         .ftx-actions .btn.disabled:hover,
         .ftx-actions .btn.disabled:focus {
@@ -184,7 +184,7 @@
 			<div class="ftx-card-header">
 				<h2 class="titulo-paginas">
 					<i class="fa-duotone fa-folders"></i>
-					Atas de Registro de Preços
+					Atas de Registro de PreÃ§os
 				</h2>
 				<div class="ftx-card-actions">
 					<a href="/AtaRegistroPrecos/Upsert" class="btn btn-fundo-laranja" data-ftx-loading>
@@ -203,10 +203,10 @@
 									<th>Processo</th>
 									<th>Objeto</th>
 									<th>Empresa</th>
-									<th>Vigência</th>
+									<th>VigÃªncia</th>
 									<th>Valor</th>
 									<th>Status</th>
-									<th>Ação</th>
+									<th>AÃ§Ã£o</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -221,8 +221,9 @@
 
 @section ScriptsBlock {
 
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
 	<script src="~/js/cadastros/ata.js" asp-append-version="true"></script>
 }
+

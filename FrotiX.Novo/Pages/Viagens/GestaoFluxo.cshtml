@@ -1,4 +1,4 @@
-@* ========================================================================================
+﻿@* ========================================================================================
  * ARQUIVO: Pages/Viagens/GestaoFluxo.cshtml
  * OBJETIVO: Pagina COMPLEXA de gestao operacional fluxo viagens tempo real exibindo Syncfusion
  *           TreeGrid hierarquico rotas + Kanban board status viagens + mapa Google Maps
@@ -77,7 +77,7 @@
  *              tempo real. SignalR push essencial: backend envia atualizacoes status
  *              viagens GPS tracking veiculos automaticamente todos usuarios conectados
  *              Gestao Fluxo veem mesmas informacoes sincronizadas tempo real, coordenador
- *              A altera status viagem coordenador B ve atualização instantanea sem
+ *              A altera status viagem coordenador B ve atualizaÃ§Ã£o instantanea sem
  *              refresh, elimina conflitos concorrencia decisoes desatualizadas. TreeGrid
  *              hierarquico Motoristas>Viagens: visualiza carga trabalho por motorista
  *              (Motorista A 5 viagens dia 8h trabalhadas sobrecarregado, Motorista
@@ -97,10 +97,10 @@
  *              OBD-II/smartphone motorista envia lat/lng hub broadcast UpdateVeiculoPosicao
  *              frontend atualiza marker Maps animacao smooth transition posicao anterior>nova,
  *              polyline azul mostra rota planejada calculada DirectionsService Origem>Destino
- *              via rota otima, polyline verde mostra rota real percorrida histórico
+ *              via rota otima, polyline verde mostra rota real percorrida histÃ³rico
  *              GPS points conectados, compara polylines identifica desvios (veiculo
  *              saiu rota planejada >2km distance calcula alerta coordenador verificar
- *              motivo motorista perdido? acidente forçou desvio? parada nao autorizada?),
+ *              motivo motorista perdido? acidente forÃ§ou desvio? parada nao autorizada?),
  *              traffic layer sobreposicao mostra congestionamentos tempo real cores
  *              (verde livre, amarelo lento, vermelho congestionado intenso), se viagem
  *              rota passa area vermelha sistema calcula atraso ETA adicional alerta
@@ -131,12 +131,12 @@
  *              iniciada motorista Joao click toast abre detalhes viagem modal, Viagem
  *              456 atrasada 45min passageiros notificados click toast liga telefone
  *              motorista verificar status, Veiculo ABC-1234 fora rota 5km desvio
- *              click toast centra Maps marker veiculo zoom localização, acumulacao
+ *              click toast centra Maps marker veiculo zoom localizaÃ§Ã£o, acumulacao
  *              multiplos toasts scroll vertical lista permite revisar alertas recentes),
  *              som alerta beep notificacao importante chama atencao coordenador (configuravel
  *              mute se incomodar). Pagina mantida aberta continuamente: tipicamente
  *              1-2 coordenadores viagens monitora tela grande TV/monitor central
- *              operações escritório, visualiza fluxo completo tempo real toma decisões
+ *              operaÃ§Ãµes escritÃ³rio, visualiza fluxo completo tempo real toma decisÃµes
  *              rapidas imprevistos atrasos/cancelamentos/realocacoes, essencial operacao
  *              diaria transporte interno corporativo empresas grandes 100+ viagens/dia.
  * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
@@ -152,9 +152,9 @@
 @inject IUnitOfWork _unitOfWork
 
 @{
-	ViewData["Title"] = "Gestão das Fichas";
+	ViewData["Title"] = "GestÃ£o das Fichas";
 	ViewData["PageName"] = "viagens_gestaofluxo";
-	ViewData["Heading"] = "<i class='fa-duotone fa-folder-open'></i> Gestão das Fichas: <span class='fw-300'>Passageiros</span>";
+	ViewData["Heading"] = "<i class='fa-duotone fa-folder-open'></i> GestÃ£o das Fichas: <span class='fw-300'>Passageiros</span>";
 	ViewData["Category1"] = "Fluxo de Passageiros";
 	ViewData["PageIcon"] = "fa-duotone fa-folder-open";
 
@@ -165,7 +165,7 @@
 
 @section HeadBlock {
 	<style>
-/* ======== OUTLINE BRANCO NO BOTÃO DO HEADER (Padrão FrotiX) ======== */
+/* ======== OUTLINE BRANCO NO BOTÃƒO DO HEADER (PadrÃ£o FrotiX) ======== */
 		.ftx-card-header .btn-fundo-laranja {
 			outline: 2px solid rgba(255, 255, 255, 0.5) !important;
 			outline-offset: 1px;
@@ -178,12 +178,12 @@
 		}
 
 	</style>
-	<!-- Adicione libs específicas no layout, se necessário -->
+	<!-- Adicione libs especÃ­ficas no layout, se necessÃ¡rio -->
 }
 
 <style>
 	/* ================================================================
-	   ESTILOS DATATABLE - PADRÃO FROTIX
+	   ESTILOS DATATABLE - PADRÃƒO FROTIX
 	   Header azul #4a6fa5 com texto branco uppercase
 	   ================================================================ */
 	#tblFluxo thead {
@@ -201,7 +201,7 @@
 		padding: 12px 10px !important;
 	}
 
-	/* Centralizar colunas: Data (0), Hora Início (4), Hora Fim (5) */
+	/* Centralizar colunas: Data (0), Hora InÃ­cio (4), Hora Fim (5) */
 	#tblFluxo thead th:nth-child(1),
 	#tblFluxo thead th:nth-child(5),
 	#tblFluxo thead th:nth-child(6) {
@@ -214,7 +214,7 @@
 		text-align: center !important;
 	}
 
-	/* Coluna Quantidade (7) à direita */
+	/* Coluna Quantidade (7) Ã  direita */
 	#tblFluxo thead th:nth-child(7) {
 		text-align: right !important;
 	}
@@ -224,12 +224,12 @@
 		font-weight: 600 !important;
 	}
 
-	/* Coluna Ação centralizada */
+	/* Coluna AÃ§Ã£o centralizada */
 	#tblFluxo thead th:nth-child(8) {
 		text-align: center !important;
 	}
 
-	/* Separador de seção */
+	/* Separador de seÃ§Ã£o */
 	.secao-titulo {
 		border-bottom: 2px solid #325d88;
 		padding-bottom: 0.75rem;
@@ -279,12 +279,12 @@
 		line-height: 34px !important;
 	}
 
-	/* Container dos botões */
+	/* Container dos botÃµes */
 	.d-flex.gap-1 {
 		gap: 4px;
 	}
 
-	/* Botões de ação do datatable - padrão FrotiX */
+	/* BotÃµes de aÃ§Ã£o do datatable - padrÃ£o FrotiX */
 	.btn-acao-dt {
 		padding: 4px 8px !important;
 		font-size: 14px !important;
@@ -313,12 +313,12 @@
 		cursor: wait !important;
 	}
 
-	/* Esconder o processing padrão do DataTables */
+	/* Esconder o processing padrÃ£o do DataTables */
 	.dataTables_processing {
 		display: none !important;
 	}
 
-	/* Botão header laranja comprido para texto extenso */
+	/* BotÃ£o header laranja comprido para texto extenso */
 	.btn-fundo-laranja-wide {
 		min-width: 220px !important;
 		padding: 0.65rem 1.5rem !important;
@@ -329,7 +329,7 @@
 <script>
 	let dataTable; // DataTable principal
 
-	// Funções de controle do overlay de loading - Padrão FrotiX
+	// FunÃ§Ãµes de controle do overlay de loading - PadrÃ£o FrotiX
 	function mostrarLoading() {
 		const overlay = document.getElementById('loadingOverlayGestaoFluxo');
 		if (overlay) overlay.style.display = 'flex';
@@ -353,7 +353,7 @@
 
 			// 2) Inicializa DataTable com serverSide e POST
 			dataTable = $('#tblFluxo').DataTable({
-				processing: false, // Desabilita o modal de processing padrão
+				processing: false, // Desabilita o modal de processing padrÃ£o
 				serverSide: true,
 				autoWidth: false,
 				dom: 'Bfrtip',
@@ -420,13 +420,13 @@
 				columns: [
 					{ data: "dataFluxo" },         // Data
 					{ data: "mob" },               // MOB
-					{ data: "descricaoVeiculo" },  // Veículo
+					{ data: "descricaoVeiculo" },  // VeÃ­culo
 					{ data: "nomeMotorista" },     // Motorista
-					{ data: "horaInicio" },        // Hora Início
+					{ data: "horaInicio" },        // Hora InÃ­cio
 					{ data: "horaFim" },           // Hora Fim
 					{ data: "qtdPassageiros" },    // Quantidade
 					{
-						data: "viagemEconomildoId", // Ação
+						data: "viagemEconomildoId", // AÃ§Ã£o
 						orderable: false,
 						searchable: false,
 						render: function (data) {
@@ -452,20 +452,20 @@
 					emptyTable: "Nenhum registro encontrado",
 					processing: "Processando...",
 					search: "Pesquisar",
-					lengthMenu: "Exibir _MENU_ resultados por página",
-					info: "Mostrando de _START_ até _END_ de _TOTAL_ registros",
-					infoEmpty: "Mostrando 0 até 0 de 0 registros",
+					lengthMenu: "Exibir _MENU_ resultados por pÃ¡gina",
+					info: "Mostrando de _START_ atÃ© _END_ de _TOTAL_ registros",
+					infoEmpty: "Mostrando 0 atÃ© 0 de 0 registros",
 					infoFiltered: "(Filtrado de _MAX_ registros)",
 					paginate: {
 						first: "Primeiro",
-						last: "Último",
-						next: "Próximo",
+						last: "Ãšltimo",
+						next: "PrÃ³ximo",
 						previous: "Anterior"
 					}
 				}
 			});
 
-			// 3) Botão editar - abre modal e carrega dados
+			// 3) BotÃ£o editar - abre modal e carrega dados
 			$(document).on('click', '.btn-editar-registro', function (e) {
 				try {
 					e.preventDefault();
@@ -521,14 +521,14 @@
 				}
 			});
 
-			// 4) Botão apagar
+			// 4) BotÃ£o apagar
 			$(document).on('click', '.btn-apagar', function (e) {
 				try {
 					e.preventDefault();
 					const viagemEconomildoId = $(this).data('id');
 
 					Alerta.Confirmar(
-						"Confirmar Exclusão",
+						"Confirmar ExclusÃ£o",
 						"Tem certeza que deseja apagar esta viagem?",
 						"Sim, apagar",
 						"Cancelar"
@@ -583,26 +583,26 @@
 				}
 			});
 
-			// 5) Salvar edição do modal - AJAX real
+			// 5) Salvar ediÃ§Ã£o do modal - AJAX real
 			$('#btnEditarOcorrencia').on('click', function (e) {
 				try {
 					e.preventDefault();
 					
-					// Validações básicas
+					// ValidaÃ§Ãµes bÃ¡sicas
 					const data = $('#txtDataModal').val();
 					const veiculoId = document.getElementById('lstVeiculosEconomildos')?.ej2_instances?.[0]?.value;
 					const motoristaId = document.getElementById('lstMotoristasEconomildo')?.ej2_instances?.[0]?.value;
 					
 					if (!data) {
-						AppToast.show('Vermelho', 'A data é obrigatória', 2000);
+						AppToast.show('Vermelho', 'A data Ã© obrigatÃ³ria', 2000);
 						return;
 					}
 					if (!veiculoId) {
-						AppToast.show('Vermelho', 'O veículo é obrigatório', 2000);
+						AppToast.show('Vermelho', 'O veÃ­culo Ã© obrigatÃ³rio', 2000);
 						return;
 					}
 					if (!motoristaId) {
-						AppToast.show('Vermelho', 'O motorista é obrigatório', 2000);
+						AppToast.show('Vermelho', 'O motorista Ã© obrigatÃ³rio', 2000);
 						return;
 					}
 					
@@ -635,7 +635,7 @@
 						data: JSON.stringify(objViagem),
 						success: function (data) {
 							try {
-								// Restaura botão
+								// Restaura botÃ£o
 								iconOriginal.className = iconClasses;
 								btn.disabled = false;
 
@@ -652,12 +652,12 @@
 						},
 						error: function (xhr, status, error) {
 							try {
-								// Restaura botão em caso de erro
+								// Restaura botÃ£o em caso de erro
 								iconOriginal.className = iconClasses;
 								btn.disabled = false;
 
 								console.error('Erro AJAX:', error);
-								AppToast.show('Vermelho', 'Erro ao salvar alterações.', 3000);
+								AppToast.show('Vermelho', 'Erro ao salvar alteraÃ§Ãµes.', 3000);
 							} catch (err) {
 								Alerta.TratamentoErroComLinha("GestaoFluxo.cshtml", "btnEditarOcorrencia.ajax.error", err);
 							}
@@ -689,7 +689,7 @@
 			const iconOriginal = btn.querySelector('i');
 			const iconClasses = iconOriginal.className;
 
-			// Adiciona spinner no botão e mostra overlay
+			// Adiciona spinner no botÃ£o e mostra overlay
 			iconOriginal.className = 'fa-duotone fa-spinner fa-spin icon-space';
 			btn.disabled = true;
 			mostrarLoading();
@@ -697,7 +697,7 @@
 			if (dataTable) {
 				dataTable.ajax.reload(function() {
 					try {
-						// Restaura ícone após carregar
+						// Restaura Ã­cone apÃ³s carregar
 						iconOriginal.className = iconClasses;
 						btn.disabled = false;
 					} catch (error) {
@@ -731,16 +731,16 @@
 		<div id="panel-1" class="panel">
 			<div class="panel-container show">
 				<div class="panel-content">
-					<!-- Header Padrão FrotiX -->
+					<!-- Header PadrÃ£o FrotiX -->
 					<div class="ftx-card-header">
 						<h2 class="titulo-paginas">
 							<i class="fa-duotone fa-folder-open"></i>
-							Gestão das Fichas de Passageiros
+							GestÃ£o das Fichas de Passageiros
 						</h2>
 						<div class="ftx-card-actions">
 							<a href="/Viagens/FluxoPassageiros" class="btn btn-fundo-laranja" data-ftx-loading>
 								<i class="fa-duotone fa-file-circle-plus ftx-icon-pulse icon-pulse me-1"></i>
-								Inserção de Nova Ficha de Passageiros
+								InserÃ§Ã£o de Nova Ficha de Passageiros
 							</a>
 						</div>
 					</div>
@@ -761,9 +761,9 @@
 								</div>
 
 								<div class="col-3">
-									<label class="label">Veículo (Economildo)</label>
+									<label class="label">VeÃ­culo (Economildo)</label>
 									<ejs-combobox id="lstVeiculos"
-												  placeholder="Selecione um Veículo"
+												  placeholder="Selecione um VeÃ­culo"
 												  allowFiltering="true"
 												  filterType="Contains"
 												  dataSource="@listaVeiculos"
@@ -811,18 +811,18 @@
 										<tr>
 											<th>Data</th>
 											<th>MOB</th>
-											<th>Veículo</th>
+											<th>VeÃ­culo</th>
 											<th>Motorista</th>
-											<th>Hora Início</th>
+											<th>Hora InÃ­cio</th>
 											<th>Hora Fim</th>
 											<th>Quantidade</th>
-											<th>Ação</th>
+											<th>AÃ§Ã£o</th>
 										</tr>
 									</thead>
 									<tbody><!-- DataTables preenche --></tbody>
 								</table>
 							</div> <!-- /divFluxo -->
-						</div> <!-- /col-12 (conteúdo) -->
+						</div> <!-- /col-12 (conteÃºdo) -->
 					</div> <!-- /box-body -->
 				</div> <!-- /panel-content -->
 			</div> <!-- /panel-container -->
@@ -830,7 +830,7 @@
 	</div> <!-- /col-xl-12 -->
 </div> <!-- /row -->
 
-<!-- Modal EditaRegistro - Padrão FrotiX -->
+<!-- Modal EditaRegistro - PadrÃ£o FrotiX -->
 <div class="modal fade" id="modalEditaRegistro" tabindex="-1" aria-labelledby="modalEditaRegistroLabel" aria-hidden="true">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
@@ -853,13 +853,13 @@
 							<label class="label">MOB</label>
 							<select class="form-control form-control-xs" id="txtMOBModal">
 								<option value=""></option>
-								<option value="Rodoviaria">Rodoviária</option>
+								<option value="Rodoviaria">RodoviÃ¡ria</option>
 								<option value="Cefor">Cefor</option>
 								<option value="PGR">PGR</option>
 							</select>
 						</div>
 						<div class="col-3">
-							<label class="label">Responsável</label>
+							<label class="label">ResponsÃ¡vel</label>
 							<select class="form-control form-control-xs" id="txtResponsavelModal">
 								<option value=""></option>
 								<option value="Angela">Angela</option>
@@ -878,7 +878,7 @@
 
 					<div class="form-group row mt-2">
 						<div class="col-6">
-							<label class="label">Economildo (veículo)</label>
+							<label class="label">Economildo (veÃ­culo)</label>
 							<ejs-combobox id="lstVeiculosEconomildos"
 										  allowFiltering="true"
 										  filterType="Contains"
@@ -907,7 +907,7 @@
 
 					<div class="form-group row mt-2">
 						<div class="col-4">
-							<label class="label">Hora Início</label>
+							<label class="label">Hora InÃ­cio</label>
 							<input id="txtHoraInicioModal" class="form-control form-control-xs" type="time" />
 						</div>
 						<div class="col-4">
@@ -923,7 +923,7 @@
 			</div>
 			<div class="modal-footer">
 				<button id="btnEditarOcorrencia" class="btn btn-azul" type="button">
-					<i class="fa-duotone fa-floppy-disk icon-space"></i> Salvar Alterações
+					<i class="fa-duotone fa-floppy-disk icon-space"></i> Salvar AlteraÃ§Ãµes
 				</button>
 				<button id="btnFechar" type="button" class="btn btn-vinho" data-bs-dismiss="modal">
 					<i class="fa-duotone fa-xmark icon-space"></i> Fechar
@@ -933,7 +933,7 @@
 	</div>
 </div>
 
-<!-- OVERLAY DE LOADING - PADRÃO FROTIX -->
+<!-- OVERLAY DE LOADING - PADRÃƒO FROTIX -->
 <div id="loadingOverlayGestaoFluxo" class="ftx-spin-overlay" style="z-index: 999999; cursor: wait; display: none;">
     <div class="ftx-spin-box" style="text-align: center; min-width: 300px;">
         <img src="/images/logo_gota_frotix_transparente.png" alt="FrotiX" class="ftx-loading-logo" style="display: block;" />
@@ -944,6 +944,7 @@
 </div>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 }
+

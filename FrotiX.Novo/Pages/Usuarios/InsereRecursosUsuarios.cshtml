@@ -1,50 +1,50 @@
-@page
+﻿@page
 @*
  ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Usuarios/InsereRecursosUsuarios.cshtml
+ * âš¡ ARQUIVO: Pages/Usuarios/InsereRecursosUsuarios.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Página ADMIN de inserção batch de recursos/permissões para múltiplos
- *                   usuários simultaneamente via Syncfusion MultiSelect, permite atribuir
- *                   mesmas permissões a grupo de usuários de uma vez (ex: liberar Relatórios
- *                   Gerenciais para todos Coordenadores), otimiza gestão permissões em lote
+ * ðŸŽ¯ OBJETIVO     : PÃ¡gina ADMIN de inserÃ§Ã£o batch de recursos/permissÃµes para mÃºltiplos
+ *                   usuÃ¡rios simultaneamente via Syncfusion MultiSelect, permite atribuir
+ *                   mesmas permissÃµes a grupo de usuÃ¡rios de uma vez (ex: liberar RelatÃ³rios
+ *                   Gerenciais para todos Coordenadores), otimiza gestÃ£o permissÃµes em lote
  *
- * 📥 ENTRADAS     : @page, @model InsereRecursosUsuariosModel (BUG: reutiliza Abastecimento
+ * ðŸ“¥ ENTRADAS     : @page, @model InsereRecursosUsuariosModel (BUG: reutiliza Abastecimento
  *                   incorretamente), route /Usuarios/InsereRecursosUsuarios, form fields:
  *                   UsuariosIds MultiSelect ComboBox dataSource /api/Usuarios/GetAtivos,
  *                   RecursosIds MultiSelect ComboBox dataSource /api/Recursos/GetAll
  *
- * 📤 SAÍDAS       : Form com 2 MultiSelect lado a lado (45% width cada): esquerda Usuários
+ * ðŸ“¤ SAÃDAS       : Form com 2 MultiSelect lado a lado (45% width cada): esquerda UsuÃ¡rios
  *                   (Nome+Email, checkbox multi-select, search, showSelectAll), direita
- *                   Recursos (hierárquico Categoria>Recurso, groupBy Categoria), botão
- *                   Atribuir Recursos primary (disabled se nenhuma seleção), resposta JSON
+ *                   Recursos (hierÃ¡rquico Categoria>Recurso, groupBy Categoria), botÃ£o
+ *                   Atribuir Recursos primary (disabled se nenhuma seleÃ§Ã£o), resposta JSON
  *                   {totalInseridos, totalDuplicatas}, AppToast Verde feedback
  *
- * 🔗 CHAMADA POR  : Menu Admin > Usuários > Inserir Recursos em Lote (sidebar),
- *                   usuários role Admin, quando liberar mesmas permissões para grupo
- *                   usuários (ex: 5 Coordenadores + 3 Recursos = 15 inserts de uma vez)
+ * ðŸ”— CHAMADA POR  : Menu Admin > UsuÃ¡rios > Inserir Recursos em Lote (sidebar),
+ *                   usuÃ¡rios role Admin, quando liberar mesmas permissÃµes para grupo
+ *                   usuÃ¡rios (ex: 5 Coordenadores + 3 Recursos = 15 inserts de uma vez)
  *
- * 🔄 CHAMA        : InsereRecursosUsuarios.cshtml.cs OnPost (batch insert UsuarioRecursos),
- *                   GET /api/Usuarios/GetAtivos (dropdown usuários), GET /api/Recursos/GetAll
- *                   (dropdown recursos), AppToast.show() (feedback), verificação duplicatas
+ * ðŸ”„ CHAMA        : InsereRecursosUsuarios.cshtml.cs OnPost (batch insert UsuarioRecursos),
+ *                   GET /api/Usuarios/GetAtivos (dropdown usuÃ¡rios), GET /api/Recursos/GetAll
+ *                   (dropdown recursos), AppToast.show() (feedback), verificaÃ§Ã£o duplicatas
  *                   query Where UsuarioId AND RecursoId EXISTS
  *
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 MultiSelect ComboBox
+ * ðŸ“¦ DEPENDÃŠNCIAS : ASP.NET Core Razor Pages 8.0, Syncfusion EJ2 MultiSelect ComboBox
  *                   2023.4.2, Bootstrap 5.3.8, jQuery 3.7.1, AppToast.js, Alerta.js,
- *                   EF Core 8.0 batch insert, SQL transações
+ *                   EF Core 8.0 batch insert, SQL transaÃ§Ãµes
  *
- * 📝 OBSERVAÇÕES  : Total ~141 linhas. **Loop nested:** UsuariosIds foreach RecursosIds
- *                   verifica duplicata query EXISTS, insere apenas novas combinações (evita
- *                   duplicate key error). **Validação duplicatas essencial:** combinação
- *                   UsuarioId+RecursoId não deve existir em UsuarioRecursos. **Response:**
- *                   retorna {totalInseridos, totalDuplicatas} para feedback (ex: "3 permissões
- *                   atribuidas a 5 usuários, 2 duplicatas ignoradas").
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : Total ~141 linhas. **Loop nested:** UsuariosIds foreach RecursosIds
+ *                   verifica duplicata query EXISTS, insere apenas novas combinaÃ§Ãµes (evita
+ *                   duplicate key error). **ValidaÃ§Ã£o duplicatas essencial:** combinaÃ§Ã£o
+ *                   UsuarioId+RecursoId nÃ£o deve existir em UsuarioRecursos. **Response:**
+ *                   retorna {totalInseridos, totalDuplicatas} para feedback (ex: "3 permissÃµes
+ *                   atribuidas a 5 usuÃ¡rios, 2 duplicatas ignoradas").
  *
- * ⚠️  ISSUES      : **BUG CRÍTICO** - @model usa Abastecimento quando deveria ser
- *                   InsereRecursosUsuariosModel custom (não afeta funcionalidade pois model
- *                   não usado, mas cria confusão). Refatorar criar model correto. **ViewData
+ * âš ï¸  ISSUES      : **BUG CRÃTICO** - @model usa Abastecimento quando deveria ser
+ *                   InsereRecursosUsuariosModel custom (nÃ£o afeta funcionalidade pois model
+ *                   nÃ£o usado, mas cria confusÃ£o). Refatorar criar model correto. **ViewData
  *                   Title incorreto:** exibe "Importa Abastecimentos" quando deveria ser
- *                   "Inserir Recursos em Lote" (corrigir). Sem validação se usuários/recursos
- *                   existem (permissive, causa erro se ids inválidos).
+ *                   "Inserir Recursos em Lote" (corrigir). Sem validaÃ§Ã£o se usuÃ¡rios/recursos
+ *                   existem (permissive, causa erro se ids invÃ¡lidos).
  ****************************************************************************************
  *              key constraint error (unique index em UsuarioId,RecursoId colunas), se duplicata
  *              skipa insert incrementa contador duplicatas informar usuario. Performance:
@@ -66,7 +66,7 @@
 @{
 	ViewData["Title"] = "Importa Abastecimentos";
 	ViewData["PageName"] = "importa_abastecimento_index";
-	ViewData["Heading"] = "<i class='fa-duotone fa-gas-pump'></i> Importação: <span class='fw-300'>Abastecimentos</span>";
+	ViewData["Heading"] = "<i class='fa-duotone fa-gas-pump'></i> ImportaÃ§Ã£o: <span class='fw-300'>Abastecimentos</span>";
 	ViewData["Category1"] = "Cadastros";
 	ViewData["PageIcon"] = "fa-duotone fa-gas-pump";
 }
@@ -92,16 +92,16 @@
 				<div class="panel-content">
 					<div class="row">
 						<div class="col-12 px-3" style="border-bottom:1px solid #325d88">
-							<h2 class="text-primary">Serviços de Inserção dos Recursos nos Usuários</h2>
+							<h2 class="text-primary">ServiÃ§os de InserÃ§Ã£o dos Recursos nos UsuÃ¡rios</h2>
 						</div>
 					</div>
 					<button id="btnInsereRecursos"
 							type="button"
 							class="btn btn-azul form-control"
-							aria-label="Insere Recursos nos Usuários"
+							aria-label="Insere Recursos nos UsuÃ¡rios"
 							aria-busy="false"
-							data-ejtip="Insere todos os recursos disponíveis para todos os usuários">
-						<i class="fa-duotone fa-file-plus icon-space icon-pulse"></i> Insere Recursos nos Usuários
+							data-ejtip="Insere todos os recursos disponÃ­veis para todos os usuÃ¡rios">
+						<i class="fa-duotone fa-file-plus icon-space icon-pulse"></i> Insere Recursos nos UsuÃ¡rios
 					</button>
 				</div>
 			</div>
@@ -120,8 +120,8 @@
 
 @section ScriptsBlock {
 
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
 	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 	<script type="text/javascript" src="~/js/loading_script.js"></script>
@@ -159,7 +159,7 @@
 								url: "/api/Usuario/InsereRecursosUsuario",
 								success: function (data) {
 									try {
-										const msg = (data && data.message) ? data.message : "Operação concluída.";
+										const msg = (data && data.message) ? data.message : "OperaÃ§Ã£o concluÃ­da.";
 										if (data && data.success === false) {
 											AppToast.show('Vermelho', msg, 2000);
 										} else {
@@ -172,7 +172,7 @@
 								error: function (xhr) {
 									try {
 										console.error(xhr);
-										AppToast.show('Vermelho', "Erro ao inserir recursos nos usuários.", 2000);
+										AppToast.show('Vermelho', "Erro ao inserir recursos nos usuÃ¡rios.", 2000);
 									} catch (inner) {
 										Alerta.TratamentoErroComLinha("InsereRecursosUsuarios.cshtml", "ajax.error", inner);
 									}
@@ -199,3 +199,4 @@
 		})();
 	</script>
 }
+

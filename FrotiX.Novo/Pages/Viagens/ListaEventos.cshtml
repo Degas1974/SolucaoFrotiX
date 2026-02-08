@@ -1,27 +1,27 @@
-@*
- * ⚡ ARQUIVO: Pages/Viagens/ListaEventos.cshtml
+﻿@*
+ * âš¡ ARQUIVO: Pages/Viagens/ListaEventos.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Página listagem e gestão de eventos de viagens (ocorrências registradas durante
- *                   viagens) com DataTable avançado, filtros múltiplos (data, viagem, tipo evento, gravidade),
- *                   modals detalhes evento, ações editar/visualizar, integração Stimulsoft Reports
- * 📥 ENTRADAS     : @page /Viagens/ListaEventos, @model ListaEventosModel, ViewData com listas (filtros),
+ * ðŸŽ¯ OBJETIVO     : PÃ¡gina listagem e gestÃ£o de eventos de viagens (ocorrÃªncias registradas durante
+ *                   viagens) com DataTable avanÃ§ado, filtros mÃºltiplos (data, viagem, tipo evento, gravidade),
+ *                   modals detalhes evento, aÃ§Ãµes editar/visualizar, integraÃ§Ã£o Stimulsoft Reports
+ * ðŸ“¥ ENTRADAS     : @page /Viagens/ListaEventos, @model ListaEventosModel, ViewData com listas (filtros),
  *                   DataTable #tblEventos (AJAX GET /api/Viagem/ListaEventos), filtros Syncfusion DropDowns
  *                   (DataInicio/DataFim DatePicker, TipoEvento ComboBox, GravidadeEvento ComboBox),
- *                   botão "Novo Evento"
- * 📤 SAÍDAS       : Panel ftx-card-header com heading (fa-calendar-users "Eventos"), DataTable #tblEventos
- *                   com colunas (Data, Viagem ID, Tipo Evento, Gravidade, Descrição, Motorista, Ações),
- *                   modal detalhes evento (descrição, fotos, anexos), redirects /Viagens/Upsert ou
+ *                   botÃ£o "Novo Evento"
+ * ðŸ“¤ SAÃDAS       : Panel ftx-card-header com heading (fa-calendar-users "Eventos"), DataTable #tblEventos
+ *                   com colunas (Data, Viagem ID, Tipo Evento, Gravidade, DescriÃ§Ã£o, Motorista, AÃ§Ãµes),
+ *                   modal detalhes evento (descriÃ§Ã£o, fotos, anexos), redirects /Viagens/Upsert ou
  *                   /Viagens/UpsertEvento, AppToast feedback, CSS inline ~200 linhas (header gradient animate)
- * 🔗 CHAMADA POR  : Menu "Viagens > Eventos", navegação sidebar, link em Viagens/Index modal ocorrências,
- *                   botão "Novo Evento" criação rápida
- * 🔄 CHAMA        : /api/Viagem/ListaEventos (AJAX GET DataTable), /api/Viagem/DeleteEvento (DELETE confirm),
- *                   ./UpsertEvento (link editar), Stimulsoft MVC Viewer (relatórios eventos),
+ * ðŸ”— CHAMADA POR  : Menu "Viagens > Eventos", navegaÃ§Ã£o sidebar, link em Viagens/Index modal ocorrÃªncias,
+ *                   botÃ£o "Novo Evento" criaÃ§Ã£o rÃ¡pida
+ * ðŸ”„ CHAMA        : /api/Viagem/ListaEventos (AJAX GET DataTable), /api/Viagem/DeleteEvento (DELETE confirm),
+ *                   ./UpsertEvento (link editar), Stimulsoft MVC Viewer (relatÃ³rios eventos),
  *                   CSS .ftx-card-header animate gradient, ViewData (Title, PageName, Heading, Category1, PageIcon)
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, ListaEventosModel (code-behind), DataTables jQuery plugin,
+ * ðŸ“¦ DEPENDÃŠNCIAS : ASP.NET Core Razor Pages, ListaEventosModel (code-behind), DataTables jQuery plugin,
  *                   Syncfusion EJ2 (DropDowns, DatePicker, Grid - importados mas nem todos usados),
  *                   Bootstrap 5, jQuery, AppToast.js, Alerta.js, Font Awesome Duotone, CSS custom
  *                   (ftx-card-header with gradient animation), Stimulsoft Reports viewer
- * 📝 OBSERVAÇÕES  : Total: ~400 linhas. Page intermediária eventos viagens. CSS inline ~150 linhas
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : Total: ~400 linhas. Page intermediÃ¡ria eventos viagens. CSS inline ~150 linhas
  *                   (header gradient animation 8s infinite, titulo-paginas font-family Outfit weight 900).
  *                   ViewData config: Title "Eventos", PageName "viagens_listaeventos", Heading
  *                   "fa-calendar-users Cadastros: Eventos", Category1 "Cadastros", PageIcon "fa-calendar-users".
@@ -49,7 +49,7 @@
 }
 
 <style>
-    /* ======== ANIMAÇÃO SUAVE DO HEADER ======== */
+    /* ======== ANIMAÃ‡ÃƒO SUAVE DO HEADER ======== */
     @@keyframes headerGradientShift {
         0% {
             background-position: 0% 50%;
@@ -62,14 +62,14 @@
         }
     }
 
-    /* ======== CORREÇÃO DO HEADER DO CARD ======== */
+    /* ======== CORREÃ‡ÃƒO DO HEADER DO CARD ======== */
     .ftx-card-header {
         background: linear-gradient(135deg, #325d88 0%, #2a4d73 25%, #3d6f9e 50%, #2a4d73 75%, #325d88 100%);
         background-size: 400% 400%;
         animation: headerGradientShift 8s ease infinite;
     }
 
-    /* ======== CORREÇÃO DA FONTE DO TÍTULO ======== */
+    /* ======== CORREÃ‡ÃƒO DA FONTE DO TÃTULO ======== */
     .ftx-card-header .titulo-paginas {
         font-family: 'Outfit', sans-serif !important;
         font-weight: 900 !important;
@@ -78,11 +78,11 @@
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25) !important;
     }
 
-    /* Ícone do header - padrão FrotiX removido, usa CSS global */
+    /* Ãcone do header - padrÃ£o FrotiX removido, usa CSS global */
 
-    /* ======== OUTLINE BRANCO NO BOTÃO DO HEADER (já definido no frotix.css para) ======== */
+    /* ======== OUTLINE BRANCO NO BOTÃƒO DO HEADER (jÃ¡ definido no frotix.css para) ======== */
 
-    /* ======== BOTÕES DE AÇÃO - ESPAÇAMENTO VERTICAL ======== */
+    /* ======== BOTÃ•ES DE AÃ‡ÃƒO - ESPAÃ‡AMENTO VERTICAL ======== */
     #tblEventos td:last-child .text-center {
         display: flex;
         flex-wrap: wrap;
@@ -91,7 +91,7 @@
         gap: 6px;
     }
 
-    /* ======== BOTÃO EXCLUIR DESABILITADO (evento com viagens) ======== */
+    /* ======== BOTÃƒO EXCLUIR DESABILITADO (evento com viagens) ======== */
     #tblEventos .btn.disabled,
     #tblEventos a.btn.disabled,
     #tblEventos .text-center .btn.disabled {
@@ -166,7 +166,7 @@
         font-size: 2.4em;
     }
 
-    /* ======== BOTÃO DETALHES - 20% MAIS SUAVE ======== */
+    /* ======== BOTÃƒO DETALHES - 20% MAIS SUAVE ======== */
     #tblViagensModal .btn-detalhes-viagem,
     .btn-detalhes-viagem.fundo-roxo {
         background-color: #6B2FA2 !important;
@@ -207,7 +207,7 @@
         background-color: #5a7fb5 !important;
     }
 
-    /* Ícones de ordenação - tblEventos */
+    /* Ãcones de ordenaÃ§Ã£o - tblEventos */
     #tblEventos thead .sorting:before,
     #tblEventos thead .sorting:after,
     #tblEventos thead .sorting_asc:before,
@@ -222,7 +222,7 @@
         color: #fff !important;
     }
 
-    /* Ícones de ordenação - tblViagensModal */
+    /* Ãcones de ordenaÃ§Ã£o - tblViagensModal */
     #tblViagensModal thead .sorting:before,
     #tblViagensModal thead .sorting:after,
     #tblViagensModal thead .sorting_asc:before,
@@ -247,11 +247,11 @@
             <div id="panel-1" class="panel ftx-card-styled">
                 <div class="panel-container show">
                     
-                    <!-- HEADER DO CARD - PADRÃO FrotiX -->
+                    <!-- HEADER DO CARD - PADRÃƒO FrotiX -->
                     <div class="ftx-card-header">
                         <h2 class="titulo-paginas">
                             <i class="fa-duotone fa-calendar-users"></i>
-                            Gestão de Eventos
+                            GestÃ£o de Eventos
                         </h2>
                         <div class="ftx-card-actions">
                             <a href="/Viagens/UpsertEvento" class="btn btn-fundo-laranja" data-ftx-loading>
@@ -269,15 +269,15 @@
                                     <thead>
                                         <tr>
                                             <th>Evento</th>
-                                            @* <th>Descrição</th> *@
-                                            <th>Início</th>
+                                            @* <th>DescriÃ§Ã£o</th> *@
+                                            <th>InÃ­cio</th>
                                             <th>Fim</th>
                                             <th>Participantes</th>
                                             @* <th>Requisitante</th> *@
                                             <th>Setor Requisitante</th>
                                             <th>Custo</th>
                                             <th>Status</th>
-                                            <th>Ação</th>
+                                            <th>AÃ§Ã£o</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -301,7 +301,7 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Título do Evento -->
+                    <!-- TÃ­tulo do Evento -->
                     <div class="row mb-3">
                         <div class="col-12">
                             <h4 id="tituloEventoCusto" class="text-primary mb-0"></h4>
@@ -323,11 +323,11 @@
                                         <tr>
                                             <th>Vistoria</th>
                                             <th>Data</th>
-                                            <th>Início</th>
+                                            <th>InÃ­cio</th>
                                             <th>Requisitante</th>
                                             <th>Setor</th>
                                             <th>Motorista</th>
-                                            <th>Veículo</th>
+                                            <th>VeÃ­culo</th>
                                             <th class="text-end">Custo</th>
                                             <th class="text-center">Detalhes</th>
                                         </tr>
@@ -338,11 +338,11 @@
                         </div>
                     </div>
 
-                    <!-- Seção de Estatísticas das Viagens -->
+                    <!-- SeÃ§Ã£o de EstatÃ­sticas das Viagens -->
                     <div class="row mb-3">
                         <div class="col-12">
                             <h5 class="text-success mb-3">
-                                <i class="fa-duotone fa-chart-bar"></i> Estatísticas das Viagens Realizadas
+                                <i class="fa-duotone fa-chart-bar"></i> EstatÃ­sticas das Viagens Realizadas
                             </h5>
                         </div>
 
@@ -373,7 +373,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="text-warning">
-                                    <i class="fa-duotone fa-chart-line"></i> Custo Médio por Viagem
+                                    <i class="fa-duotone fa-chart-line"></i> Custo MÃ©dio por Viagem
                                 </label>
                                 <input type="text" id="custoMedioViagemModal"
                                        class="form-control text-center font-weight-bold"
@@ -459,23 +459,23 @@
                             </div>
                         </div>
 
-                        <!-- Custo Veículo -->
+                        <!-- Custo VeÃ­culo -->
                         <div class="col-md-4">
                             <div class="card border-success h-100">
                                 <div class="card-body text-center">
                                     <i class="fa-duotone fa-car fa-2x text-success mb-2"></i>
-                                    <h6 class="text-muted mb-2">Custo com Veículo</h6>
+                                    <h6 class="text-muted mb-2">Custo com VeÃ­culo</h6>
                                     <h5 id="custoVeiculoDetalhes" class="mb-0 text-success fw-bold">R$ 0,00</h5>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Custo Combustível -->
+                        <!-- Custo CombustÃ­vel -->
                         <div class="col-md-4">
                             <div class="card border-warning h-100">
                                 <div class="card-body text-center">
                                     <i class="fa-duotone fa-gas-pump fa-2x text-warning mb-2"></i>
-                                    <h6 class="text-muted mb-2">Custo com Combustível</h6>
+                                    <h6 class="text-muted mb-2">Custo com CombustÃ­vel</h6>
                                     <h5 id="custoCombustivelDetalhes" class="mb-0 text-warning fw-bold">R$ 0,00</h5>
                                 </div>
                             </div>
@@ -510,13 +510,13 @@
     <!-- /Modal de Detalhamento de Custos -->
 
     <!-- ============================================
-         OVERLAY DE LOADING - PADRÃO FROTIX
+         OVERLAY DE LOADING - PADRÃƒO FROTIX
          ============================================ -->
     <div id="loadingOverlayEventos" class="ftx-spin-overlay" style="z-index: 999999; cursor: wait; display: flex;">
         <div class="ftx-spin-box" style="text-align: center; min-width: 300px;">
             <img src="/images/logo_gota_frotix_transparente.png" alt="FrotiX" class="ftx-loading-logo" style="display: block;" />
             <div class="ftx-loading-bar"></div>
-            <div class="ftx-loading-text" id="loadingMessage">Carregando Página...</div>
+            <div class="ftx-loading-text" id="loadingMessage">Carregando PÃ¡gina...</div>
             <div class="ftx-loading-subtext">Aguarde, por favor</div>
         </div>
     </div>
@@ -526,7 +526,7 @@
 
 @section ScriptsBlock
 {
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.2/pdf.js"></script>
     <script>
         window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.2/pdf.worker.js';
@@ -537,7 +537,7 @@
     <script>
         $(document).ready(function () {
             try {
-                mostrarLoading('Carregando Página...');
+                mostrarLoading('Carregando PÃ¡gina...');
                 ListaTodosEventos();
 
                 // Apaga evento
@@ -546,8 +546,8 @@
                         const id = $(this).data('id');
 
                         Alerta.Confirmar(
-                            "Confirmar Exclusão",
-                            "Você tem certeza que deseja apagar este evento? Não será possível recuperar os dados eliminados!",
+                            "Confirmar ExclusÃ£o",
+                            "VocÃª tem certeza que deseja apagar este evento? NÃ£o serÃ¡ possÃ­vel recuperar os dados eliminados!",
                             "Sim, excluir",
                             "Cancelar"
                         ).then(function (confirmed) {
@@ -602,12 +602,12 @@
                                     AppToast.show('Verde', "Status alterado com sucesso!", 2000);
 
                                     if (data.type === 1) {
-                                        // Agora está Ativo
+                                        // Agora estÃ¡ Ativo
                                         $btn.removeClass('fundo-cinza').addClass('btn-verde');
                                         $btn.html('<i class="fa-duotone fa-circle-check me-1"></i>Ativo');
                                         $btn.attr('data-ejtip', 'Clique para Inativar');
                                     } else {
-                                        // Agora está Inativo
+                                        // Agora estÃ¡ Inativo
                                         $btn.removeClass('btn-verde').addClass('fundo-cinza');
                                         $btn.html('<i class="fa-duotone fa-circle-xmark me-1"></i>Inativo');
                                         $btn.attr('data-ejtip', 'Clique para Ativar');
@@ -629,11 +629,11 @@
                     try {
                         const eventoId = $(this).data('id');
 
-                        console.log('Clique no botão de custo, ID:', eventoId);
+                        console.log('Clique no botÃ£o de custo, ID:', eventoId);
 
                         if (!eventoId) {
-                            console.error('ID do evento não encontrado');
-                            AppToast.show('Vermelho', 'Erro ao abrir modal: ID não encontrado', 3000);
+                            console.error('ID do evento nÃ£o encontrado');
+                            AppToast.show('Vermelho', 'Erro ao abrir modal: ID nÃ£o encontrado', 3000);
                             return;
                         }
 
@@ -643,7 +643,7 @@
                         // Carrega os dados do evento
                         carregarDadosEvento(eventoId);
 
-                        // Mostra loading padrão FrotiX
+                        // Mostra loading padrÃ£o FrotiX
                         mostrarLoading('Carregando Viagens Associadas...');
 
                         // Inicializa ou recarrega a tabela de viagens
@@ -659,7 +659,7 @@
                             const modal = new bootstrap.Modal(modalElement);
                             modal.show();
                         } else {
-                            console.error('Modal não encontrado no DOM');
+                            console.error('Modal nÃ£o encontrado no DOM');
                         }
 
                     } catch (error) {
@@ -674,7 +674,7 @@
     </script>
 
     <script>
-        // Funções de Loading - Padrão FrotiX (Overlay)
+        // FunÃ§Ãµes de Loading - PadrÃ£o FrotiX (Overlay)
         function mostrarLoading(mensagem = 'Carregando Eventos...') {
             $('#loadingMessage').text(mensagem);
             $('#loadingOverlayEventos').css('display', 'flex');
@@ -689,14 +689,14 @@
                 // Mostra loading IMEDIATAMENTE
                 mostrarLoading('Carregando Eventos...');
 
-                // Reset DataTable se já existir
+                // Reset DataTable se jÃ¡ existir
                 const dtExists = $.fn.DataTable.isDataTable('#tblEventos');
                 if (dtExists) {
                     $('#tblEventos').DataTable().clear().destroy();
                 }
                 $('#tblEventos tbody').empty();
 
-                // Define formato de data (se plugin estiver disponível)
+                // Define formato de data (se plugin estiver disponÃ­vel)
                 if ($.fn.dataTable.moment) {
                     $.fn.dataTable.moment('DD/MM/YYYY');
                 } else if (typeof DataTable !== 'undefined' && DataTable.datetime) {
@@ -704,8 +704,8 @@
                 }
 
                 $('#tblEventos').DataTable({
-                    serverSide: true,  // ⭐ ATIVA PAGINAÇÃO SERVER-SIDE
-                    processing: true,  // ⭐ MOSTRA INDICADOR DE PROCESSAMENTO
+                    serverSide: true,  // â­ ATIVA PAGINAÃ‡ÃƒO SERVER-SIDE
+                    processing: true,  // â­ MOSTRA INDICADOR DE PROCESSAMENTO
                     order: [[1, 'desc']], // Ordenar por Data Inicial decrescente
                     autoWidth: false,
                     dom: 'Bfrtip',
@@ -722,10 +722,10 @@
                             pageSize: 'LEGAL'
                         }
                     ],
-                    pageLength: 25,  // ⭐ TAMANHO PADRÃO DA PÁGINA
+                    pageLength: 25,  // â­ TAMANHO PADRÃƒO DA PÃGINA
                     columnDefs: [
                         { targets: 0, className: "text-left", width: "22%" }, // Evento
-                        { targets: 1, className: "text-center", width: "3%" }, // Início
+                        { targets: 1, className: "text-center", width: "3%" }, // InÃ­cio
                         { targets: 2, className: "text-center", width: "3%" }, // Fim
                         { targets: 3, className: "text-center", width: "3%" }, // Participantes
                         {
@@ -743,7 +743,7 @@
                         },
                         { targets: 5, className: "text-right", width: "7%" }, // Custo
                         { targets: 6, className: "text-center", width: "7%" }, // Status
-                        { targets: 7, className: "text-center", width: "15%" }  // Ação
+                        { targets: 7, className: "text-center", width: "15%" }  // AÃ§Ã£o
                     ],
                     responsive: true,
                     ajax: {
@@ -751,7 +751,7 @@
                         type: "GET",
                         datatype: "json",
                         data: function(d) {
-                            // Envia parâmetros de ordenação para o servidor
+                            // Envia parÃ¢metros de ordenaÃ§Ã£o para o servidor
                             if (d.order && d.order.length > 0) {
                                 return {
                                     draw: d.draw,
@@ -761,13 +761,13 @@
                                     orderDir: d.order[0].dir
                                 };
                             }
-                            // Valores padrão caso não haja ordenação definida
+                            // Valores padrÃ£o caso nÃ£o haja ordenaÃ§Ã£o definida
                             return {
                                 draw: d.draw,
                                 start: d.start,
                                 length: d.length,
-                                orderColumn: 1,  // Padrão: coluna "Início"
-                                orderDir: 'desc' // Padrão: decrescente
+                                orderColumn: 1,  // PadrÃ£o: coluna "InÃ­cio"
+                                orderDir: 'desc' // PadrÃ£o: decrescente
                             };
                         },
                         error: function (xhr, error, thrown) {
@@ -866,13 +866,13 @@
                             searchable: false,
                             render: function (data, type, row) {
                                 try {
-                                    // Verifica se há viagens associadas ao evento
+                                    // Verifica se hÃ¡ viagens associadas ao evento
                                     var temViagens = row.viagensCount > 0;
                                     var btnApagarClasse = temViagens
                                         ? "btn btn-secondary text-white btn-icon-28 disabled"
                                         : "btn btn-vinho text-white btn-icon-28 btn-apagar";
                                     var btnApagarTooltip = temViagens
-                                        ? `Este evento possui ${row.viagensCount} viagem(ns) associada(s) e não pode ser excluído`
+                                        ? `Este evento possui ${row.viagensCount} viagem(ns) associada(s) e nÃ£o pode ser excluÃ­do`
                                         : "Apagar Evento";
                                     var btnApagarDataId = temViagens ? "" : `data-id="${data}"`;
 
@@ -903,8 +903,8 @@
                     ],
                     language: {
                         emptyTable: "Nenhum registro encontrado",
-                        info: "Mostrando de _START_ até _END_ de _TOTAL_ registros",
-                        infoEmpty: "Mostrando 0 até 0 de 0 registros",
+                        info: "Mostrando de _START_ atÃ© _END_ de _TOTAL_ registros",
+                        infoEmpty: "Mostrando 0 atÃ© 0 de 0 registros",
                         infoFiltered: "(Filtrados de _MAX_ registros)",
                         infoThousands: ".",
                         loadingRecords: "Carregando...",
@@ -912,10 +912,10 @@
                         zeroRecords: "Nenhum registro encontrado",
                         search: "Pesquisar",
                         paginate: {
-                            next: "Próximo",
+                            next: "PrÃ³ximo",
                             previous: "Anterior",
                             first: "Primeiro",
-                            last: "Último"
+                            last: "Ãšltimo"
                         },
                         aria: {
                             sortAscending: ": Ordenar colunas de forma ascendente",
@@ -923,17 +923,17 @@
                         },
                         select: {
                             rows: { "_": "Selecionado %d linhas", "1": "Selecionado 1 linha" },
-                            cells: { "1": "1 célula selecionada", "_": "%d células selecionadas" },
+                            cells: { "1": "1 cÃ©lula selecionada", "_": "%d cÃ©lulas selecionadas" },
                             columns: { "1": "1 coluna selecionada", "_": "%d colunas selecionadas" }
                         },
                         buttons: {
                             copySuccess: { "1": "Uma linha copiada com sucesso", "_": "%d linhas copiadas com sucesso" },
-                            collection: "Coleção",
+                            collection: "ColeÃ§Ã£o",
                             colvis: "Visibilidade da Coluna",
                             colvisRestore: "Restaurar Visibilidade",
                             copy: "Copiar",
-                            copyKeys: "Pressione Ctrl ou ⌘ + C para copiar. Esc para cancelar.",
-                            copyTitle: "Copiar para a Área de Transferência",
+                            copyKeys: "Pressione Ctrl ou âŒ˜ + C para copiar. Esc para cancelar.",
+                            copyTitle: "Copiar para a Ãrea de TransferÃªncia",
                             csv: "CSV",
                             excel: "Excel",
                             pageLength: { "-1": "Mostrar todos os registros", "_": "Mostrar %d registros" },
@@ -942,21 +942,21 @@
                         },
                         autoFill: {
                             cancel: "Cancelar",
-                            fill: "Preencher todas as células com",
+                            fill: "Preencher todas as cÃ©lulas com",
                             fillHorizontal: "Preencher horizontalmente",
                             fillVertical: "Preencher verticalmente"
                         },
-                        lengthMenu: "Exibir _MENU_ resultados por página",
+                        lengthMenu: "Exibir _MENU_ resultados por pÃ¡gina",
                         searchBuilder: {
-                            add: "Adicionar Condição",
+                            add: "Adicionar CondiÃ§Ã£o",
                             button: { "0": "Construtor de Pesquisa", "_": "Construtor de Pesquisa (%d)" },
                             clearAll: "Limpar Tudo",
-                            condition: "Condição",
+                            condition: "CondiÃ§Ã£o",
                             conditions: {
-                                date: { after: "Depois", before: "Antes", between: "Entre", empty: "Vazio", equals: "Igual", not: "Não", notBetween: "Não Entre", notEmpty: "Não Vazio" },
-                                number: { between: "Entre", empty: "Vazio", equals: "Igual", gt: "Maior Que", gte: "Maior ou Igual a", lt: "Menor Que", lte: "Menor ou Igual a", not: "Não", notBetween: "Não Entre", notEmpty: "Não Vazio" },
-                                string: { contains: "Contém", empty: "Vazio", endsWith: "Termina Com", equals: "Igual", not: "Não", notEmpty: "Não Vazio", startsWith: "Começa Com" },
-                                array: { contains: "Contém", empty: "Vazio", equals: "Igual à", not: "Não", notEmpty: "Não vazio", without: "Não possui" }
+                                date: { after: "Depois", before: "Antes", between: "Entre", empty: "Vazio", equals: "Igual", not: "NÃ£o", notBetween: "NÃ£o Entre", notEmpty: "NÃ£o Vazio" },
+                                number: { between: "Entre", empty: "Vazio", equals: "Igual", gt: "Maior Que", gte: "Maior ou Igual a", lt: "Menor Que", lte: "Menor ou Igual a", not: "NÃ£o", notBetween: "NÃ£o Entre", notEmpty: "NÃ£o Vazio" },
+                                string: { contains: "ContÃ©m", empty: "Vazio", endsWith: "Termina Com", equals: "Igual", not: "NÃ£o", notEmpty: "NÃ£o Vazio", startsWith: "ComeÃ§a Com" },
+                                array: { contains: "ContÃ©m", empty: "Vazio", equals: "Igual Ã ", not: "NÃ£o", notEmpty: "NÃ£o vazio", without: "NÃ£o possui" }
                             },
                             data: "Data",
                             deleteTitle: "Excluir regra de filtragem",
@@ -964,33 +964,33 @@
                             logicOr: "Ou",
                             title: { "0": "Construtor de Pesquisa", "_": "Construtor de Pesquisa (%d)" },
                             value: "Valor",
-                            leftTitle: "Critérios Externos",
-                            rightTitle: "Critérios Internos"
+                            leftTitle: "CritÃ©rios Externos",
+                            rightTitle: "CritÃ©rios Internos"
                         },
                         searchPanes: {
                             clearMessage: "Limpar Tudo",
-                            collapse: { "0": "Painéis de Pesquisa", "_": "Painéis de Pesquisa (%d)" },
+                            collapse: { "0": "PainÃ©is de Pesquisa", "_": "PainÃ©is de Pesquisa (%d)" },
                             count: "{total}",
                             countFiltered: "{shown} ({total})",
                             emptyPanes: "Nenhum Painel de Pesquisa",
-                            loadMessage: "Carregando Painéis de Pesquisa...",
+                            loadMessage: "Carregando PainÃ©is de Pesquisa...",
                             title: "Filtros Ativos"
                         },
                         thousands: ".",
                         datetime: {
                             previous: "Anterior",
-                            next: "Próximo",
+                            next: "PrÃ³ximo",
                             hours: "Hora",
                             minutes: "Minuto",
                             seconds: "Segundo",
                             amPm: ["am", "pm"],
                             unknown: "-",
                             months: {
-                                "0": "Janeiro", "1": "Fevereiro", "2": "Março", "3": "Abril",
+                                "0": "Janeiro", "1": "Fevereiro", "2": "MarÃ§o", "3": "Abril",
                                 "4": "Maio", "5": "Junho", "6": "Julho", "7": "Agosto",
                                 "8": "Setembro", "9": "Outubro", "10": "Novembro", "11": "Dezembro"
                             },
-                            weekdays: ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinte-feira", "Sexta-feira", "Sábado"]
+                            weekdays: ["Domingo", "Segunda-feira", "TerÃ§a-feira", "Quarta-feira", "Quinte-feira", "Sexta-feira", "SÃ¡bado"]
                         },
                         editor: {
                             close: "Fechar",
@@ -999,9 +999,9 @@
                             error: { system: "Ocorreu um erro no sistema." },
                             multi: {
                                 noMulti: "Essa entrada pode ser editada individualmente",
-                                restore: "Desfazer alterações",
-                                title: "Múltiplos valores",
-                                info: "Itens selecionados contêm valores diferentes para esta entrada."
+                                restore: "Desfazer alteraÃ§Ãµes",
+                                title: "MÃºltiplos valores",
+                                info: "Itens selecionados contÃªm valores diferentes para esta entrada."
                             },
                             remove: {
                                 button: "Remover",
@@ -1029,7 +1029,7 @@
         let tabelaViagensModal = null;
         let eventoIdAtual = null;
 
-        // Limpa dados quando o modal é fechado
+        // Limpa dados quando o modal Ã© fechado
         $('#modalCusto').on('hidden.bs.modal', function () {
             try {
                 eventoIdAtual = null;
@@ -1044,7 +1044,7 @@
             }
         });
 
-        // Função para carregar dados básicos do evento
+        // FunÃ§Ã£o para carregar dados bÃ¡sicos do evento
         function carregarDadosEvento(eventoId) {
             try {
                 $.ajax({
@@ -1056,16 +1056,16 @@
                             if (response.success && response.data) {
                                 const evento = response.data;
 
-                                // Atualiza título (camelCase: nome)
+                                // Atualiza tÃ­tulo (camelCase: nome)
                                 $('#tituloEventoCusto').text(evento.nome || 'Evento sem nome');
 
-                                // Formata e exibe período (camelCase: dataInicial, dataFinal)
+                                // Formata e exibe perÃ­odo (camelCase: dataInicial, dataFinal)
                                 const dataInicio = evento.dataInicial ? formatarData(evento.dataInicial) : '-';
                                 const dataFim = evento.dataFinal ? formatarData(evento.dataFinal) : '-';
-                                $('#periodoEventoCusto').text(`Período: ${dataInicio} a ${dataFim}`);
+                                $('#periodoEventoCusto').text(`PerÃ­odo: ${dataInicio} a ${dataFim}`);
 
                             } else {
-                                console.warn('Dados do evento não encontrados');
+                                console.warn('Dados do evento nÃ£o encontrados');
                             }
                         } catch (error) {
                             Alerta.TratamentoErroComLinha("ListaEventos.cshtml", "carregarDadosEvento.success", error);
@@ -1085,7 +1085,7 @@
             }
         }
 
-        // Função para inicializar a tabela de viagens do modal
+        // FunÃ§Ã£o para inicializar a tabela de viagens do modal
         function inicializarTabelaViagensModal() {
             try {
                 tabelaViagensModal = $('#tblViagensModal').DataTable({
@@ -1107,10 +1107,10 @@
                                 console.log('Viagens carregadas:', data.responseJSON?.data?.length);
                                 carregarEstatisticasViagensModal();
                                 
-                                // Esconde loading padrão FrotiX
+                                // Esconde loading padrÃ£o FrotiX
                                 esconderLoading();
                                 
-                                // Garante que o backdrop do modalCusto permaneça
+                                // Garante que o backdrop do modalCusto permaneÃ§a
                                 setTimeout(function() {
                                     if ($('#modalCusto').hasClass('show') && !$('.modal-backdrop').length) {
                                         $('body').append('<div class="modal-backdrop fade show"></div>');
@@ -1127,7 +1127,7 @@
                                 // Esconde loading mesmo em caso de erro
                                 esconderLoading();
                                 
-                                // Garante que o backdrop do modalCusto permaneça
+                                // Garante que o backdrop do modalCusto permaneÃ§a
                                 setTimeout(function() {
                                     if ($('#modalCusto').hasClass('show') && !$('.modal-backdrop').length) {
                                         $('body').append('<div class="modal-backdrop fade show"></div>');
@@ -1224,7 +1224,7 @@
                             }
                         },
                         {
-                            data: "viagemId",  // ✅ CORRETO!
+                            data: "viagemId",  // âœ… CORRETO!
                             className: "text-center",
                             width: "7%",
                             orderable: false,
@@ -1241,17 +1241,17 @@
                     ],
                     language: {
                         emptyTable: "Nenhuma viagem encontrada para este evento",
-                        info: "Mostrando de _START_ até _END_ de _TOTAL_ viagens",
-                        infoEmpty: "Mostrando 0 até 0 de 0 viagens",
+                        info: "Mostrando de _START_ atÃ© _END_ de _TOTAL_ viagens",
+                        infoEmpty: "Mostrando 0 atÃ© 0 de 0 viagens",
                         infoFiltered: "(Filtradas de _MAX_ viagens)",
                         loadingRecords: "Carregando...",
                         processing: "Processando...",
                         zeroRecords: "Nenhuma viagem encontrada",
                         paginate: {
-                            next: "Próximo",
+                            next: "PrÃ³ximo",
                             previous: "Anterior",
                             first: "Primeiro",
-                            last: "Último"
+                            last: "Ãšltimo"
                         }
                     },
                     pageLength: 6,
@@ -1263,7 +1263,7 @@
             }
         }
 
-        // Função para carregar estatísticas das viagens
+        // FunÃ§Ã£o para carregar estatÃ­sticas das viagens
         function carregarEstatisticasViagensModal() {
             try {
                 $.ajax({
@@ -1273,18 +1273,18 @@
                     success: function (response) {
                         try {
                             if (response.success) {
-                                // Preencher campos de estatísticas
+                                // Preencher campos de estatÃ­sticas
                                 $("#totalViagensModal").val(response.totalViagens || 0);
                                 $("#custoTotalViagensModal").val(response.totalCustoFormatado || "R$ 0,00");
 
-                                // Calcular e preencher média
+                                // Calcular e preencher mÃ©dia
                                 const media = response.custoMedioFormatado ||
                                     formatarMoeda(response.totalViagens > 0 ? response.totalCusto / response.totalViagens : 0);
                                 $("#custoMedioViagemModal").val(media);
 
-                                console.log('Estatísticas carregadas:', response);
+                                console.log('EstatÃ­sticas carregadas:', response);
                             } else {
-                                // Valores padrão em caso de falha
+                                // Valores padrÃ£o em caso de falha
                                 $("#totalViagensModal").val("0");
                                 $("#custoTotalViagensModal").val("R$ 0,00");
                                 $("#custoMedioViagemModal").val("R$ 0,00");
@@ -1295,8 +1295,8 @@
                     },
                     error: function (xhr, status, error) {
                         try {
-                            console.error('Erro ao carregar estatísticas:', error);
-                            // Valores padrão em caso de erro
+                            console.error('Erro ao carregar estatÃ­sticas:', error);
+                            // Valores padrÃ£o em caso de erro
                             $("#totalViagensModal").val("0");
                             $("#custoTotalViagensModal").val("R$ 0,00");
                             $("#custoMedioViagemModal").val("R$ 0,00");
@@ -1310,7 +1310,7 @@
             }
         }
 
-        // Função auxiliar para formatar moeda
+        // FunÃ§Ã£o auxiliar para formatar moeda
         function formatarMoeda(valor) {
             try {
                 if (!valor && valor !== 0) return "R$ 0,00";
@@ -1323,7 +1323,7 @@
             }
         }
 
-        // Função auxiliar para formatar data
+        // FunÃ§Ã£o auxiliar para formatar data
         function formatarData(data) {
             try {
                 if (!data) return '-';
@@ -1349,11 +1349,11 @@
                     try {
                         const viagemId = $(this).data('id');
 
-                        console.log('Clique no botão de detalhamento, Viagem ID:', viagemId);
+                        console.log('Clique no botÃ£o de detalhamento, Viagem ID:', viagemId);
 
                         if (!viagemId) {
-                            console.error('ID da viagem não encontrado');
-                            AppToast.show('Vermelho', 'Erro ao abrir modal: ID não encontrado', 3000);
+                            console.error('ID da viagem nÃ£o encontrado');
+                            AppToast.show('Vermelho', 'Erro ao abrir modal: ID nÃ£o encontrado', 3000);
                             return;
                         }
 
@@ -1366,7 +1366,7 @@
                             const modal = new bootstrap.Modal(modalElement);
                             modal.show();
                         } else {
-                            console.error('Modal não encontrado no DOM');
+                            console.error('Modal nÃ£o encontrado no DOM');
                         }
 
                     } catch (error) {
@@ -1379,3 +1379,4 @@
         });
     </script>
 }
+

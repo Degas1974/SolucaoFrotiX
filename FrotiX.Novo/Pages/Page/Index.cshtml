@@ -1,50 +1,50 @@
-@* ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Page/Index.cshtml
+﻿@* ****************************************************************************************
+ * âš¡ ARQUIVO: Pages/Page/Index.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : **ARQUIVO DUPLICADO** de SecaoPatrimonial/Index.cshtml - página listagem Seções
+ * ðŸŽ¯ OBJETIVO     : **ARQUIVO DUPLICADO** de SecaoPatrimonial/Index.cshtml - pÃ¡gina listagem SeÃ§Ãµes
  *                   Patrimoniais com DataTable #tblSecao (4 colunas). ERRO: arquivo no namespace ERRADO
- *                   (Page/ em vez de SecaoPatrimonial/), MODEL inconsistente, link botão errado.
- * 📥 ENTRADAS     : @page route /Page/Index (CONFUSO! normalmente Home page), @model SecaoPatrimonial
- *                   (MODEL DIRETO não PageModel!), JavaScript secao_patrimonial.js (carrega DataTable)
- * 📤 SAÍDAS       : Panel width 90% centered com header flexbox (título fa-warehouse + botão btn-azul
- *                   "Adicionar Seção" link ERRADO ./SetorPatrimonial/Upsert), border-bottom #325d88,
- *                   DataTable #tblSecao (4 colunas: Seção/Setor/Status/Ação), Bootstrap 5 CDN,
+ *                   (Page/ em vez de SecaoPatrimonial/), MODEL inconsistente, link botÃ£o errado.
+ * ðŸ“¥ ENTRADAS     : @page route /Page/Index (CONFUSO! normalmente Home page), @model SecaoPatrimonial
+ *                   (MODEL DIRETO nÃ£o PageModel!), JavaScript secao_patrimonial.js (carrega DataTable)
+ * ðŸ“¤ SAÃDAS       : Panel width 90% centered com header flexbox (tÃ­tulo fa-warehouse + botÃ£o btn-azul
+ *                   "Adicionar SeÃ§Ã£o" link ERRADO ./SetorPatrimonial/Upsert), border-bottom #325d88,
+ *                   DataTable #tblSecao (4 colunas: SeÃ§Ã£o/Setor/Status/AÃ§Ã£o), Bootstrap 5 CDN,
  *                   secao_patrimonial.js (loadList AJAX populate)
- * 🔗 CHAMADA POR  : **PROVAVELMENTE NÃO USADO** - route /Page/Index confuso (normalmente seria Home),
- *                   duplicação de SecaoPatrimonial/Index.cshtml, possivelmente copy/paste error
- * 🔄 CHAMA        : @model SecaoPatrimonial (MODEL DIRETO - ERRADO!), ViewData (breadcrumb/heading),
+ * ðŸ”— CHAMADA POR  : **PROVAVELMENTE NÃƒO USADO** - route /Page/Index confuso (normalmente seria Home),
+ *                   duplicaÃ§Ã£o de SecaoPatrimonial/Index.cshtml, possivelmente copy/paste error
+ * ðŸ”„ CHAMA        : @model SecaoPatrimonial (MODEL DIRETO - ERRADO!), ViewData (breadcrumb/heading),
  *                   ./SetorPatrimonial/Upsert (link ERRADO! deve ser ./SecaoPatrimonial/Upsert),
  *                   ~/js/cadastros/secao_patrimonial.js (AJAX loadList #tblSecao), Bootstrap 5 CDN
  *                   (jsdelivr.net v5.3.8), CSS inline (.fundo-cinza #2F4F4F, .label white),
  *                   Font Awesome Duotone (fa-shop, fa-warehouse, fa-file-plus icon-pulse)
- * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, SecaoPatrimonial model (NÃO PageModel!), Bootstrap 5 CDN,
+ * ðŸ“¦ DEPENDÃŠNCIAS : ASP.NET Core Razor Pages, SecaoPatrimonial model (NÃƒO PageModel!), Bootstrap 5 CDN,
  *                   secao_patrimonial.js (cadastros folder), DataTables (table-bordered table-striped),
  *                   Font Awesome 6 Duotone, CSS inline + btn-azul (FrotiX), asp-append-version (cache busting)
- * 📝 OBSERVAÇÕES  : 73 linhas. **ARQUIVO PROBLEMÁTICO - DUPLICAÇÃO**:
- *                   1. **DUPLICADO**: IDÊNCTICO a SecaoPatrimonial/Index.cshtml (mesmas 73 linhas)
- *                   2. **NAMESPACE ERRADO**: arquivo em Page/ mas ViewData/Title "Seções Patrimoniais"
- *                   3. **MODEL INCONSISTENTE**: @model SecaoPatrimonial (MODEL direto, não PageModel SecaoPatrimonialIndexModel)
- *                   4. **LINK ERRADO**: botão "Adicionar Seção" aponta ./SetorPatrimonial/Upsert (deve ser SecaoPatrimonial!)
- *                   5. **ROUTE CONFUSO**: /Page/Index normalmente seria Home page, não cadastro Seção
+ * ðŸ“ OBSERVAÃ‡Ã•ES  : 73 linhas. **ARQUIVO PROBLEMÃTICO - DUPLICAÃ‡ÃƒO**:
+ *                   1. **DUPLICADO**: IDÃŠNCTICO a SecaoPatrimonial/Index.cshtml (mesmas 73 linhas)
+ *                   2. **NAMESPACE ERRADO**: arquivo em Page/ mas ViewData/Title "SeÃ§Ãµes Patrimoniais"
+ *                   3. **MODEL INCONSISTENTE**: @model SecaoPatrimonial (MODEL direto, nÃ£o PageModel SecaoPatrimonialIndexModel)
+ *                   4. **LINK ERRADO**: botÃ£o "Adicionar SeÃ§Ã£o" aponta ./SetorPatrimonial/Upsert (deve ser SecaoPatrimonial!)
+ *                   5. **ROUTE CONFUSO**: /Page/Index normalmente seria Home page, nÃ£o cadastro SeÃ§Ã£o
  *                   ViewData config:
- *                   - Title: "Seções Patrimoniais" (incoerente com Page/)
+ *                   - Title: "SeÃ§Ãµes Patrimoniais" (incoerente com Page/)
  *                   - PageName: "secaopatrimonial_index" (correto)
- *                   - Heading: "<i class='fa-duotone fa-shop'></i> Cadastros: Seções Patrimoniais"
+ *                   - Heading: "<i class='fa-duotone fa-shop'></i> Cadastros: SeÃ§Ãµes Patrimoniais"
  *                   - PageIcon: "fa-duotone fa-shop"
- *                   CSS inline: .fundo-cinza #2F4F4F, .label white (não usado na página). Panel width 90%
+ *                   CSS inline: .fundo-cinza #2F4F4F, .label white (nÃ£o usado na pÃ¡gina). Panel width 90%
  *                   margin auto (centralizado). Header d-flex justify-content-between flex-nowrap,
- *                   h2 titulo-pagina fa-warehouse, botão btn-azul fa-file-plus icon-space icon-pulse
- *                   white-space: nowrap. Border-bottom #325d88 (azul petróleo FrotiX). DataTable #tblSecao
+ *                   h2 titulo-pagina fa-warehouse, botÃ£o btn-azul fa-file-plus icon-space icon-pulse
+ *                   white-space: nowrap. Border-bottom #325d88 (azul petrÃ³leo FrotiX). DataTable #tblSecao
  *                   tbody vazio (preenchido via secao_patrimonial.js AJAX). Bootstrap 5 CDN REDUNDANTE
- *                   (já no _Layout). **AÇÃO RECOMENDADA**: DELETE este arquivo, usar SecaoPatrimonial/Index.cshtml,
+ *                   (jÃ¡ no _Layout). **AÃ‡ÃƒO RECOMENDADA**: DELETE este arquivo, usar SecaoPatrimonial/Index.cshtml,
  *                   corrigir links referenciados (se existirem).
  **************************************************************************************** *@
 @page
 @model FrotiX.Models.Cadastros.SecaoPatrimonial
 @{
-	ViewData["Title"] = "Seções Patrimoniais";
+	ViewData["Title"] = "SeÃ§Ãµes Patrimoniais";
 	ViewData["PageName"] = "secaopatrimonial_index";
-	ViewData["Heading"] = "<i class='fa-duotone fa-shop'></i> Cadastros: <span class='fw-300'>Seções Patrimoniais</span>";
+	ViewData["Heading"] = "<i class='fa-duotone fa-shop'></i> Cadastros: <span class='fw-300'>SeÃ§Ãµes Patrimoniais</span>";
 	ViewData["Category1"] = "Cadastros";
 	ViewData["PageIcon"] = "fa-duotone fa-shop";
 }
@@ -67,20 +67,20 @@
 	<div class="col-xl-12">
 		<div id="panel-1" class="panel" style="width: 90%; margin: 0 auto;">
 			<div class="panel-container show">
-				<!-- Adiciona espaçamento superior -->
+				<!-- Adiciona espaÃ§amento superior -->
 				<div class="pt-4">
-					<!-- Container para título e botão -->
+					<!-- Container para tÃ­tulo e botÃ£o -->
 					<div class="d-flex justify-content-between align-items-center px-3 mb-3 flex-nowrap">
 						<h2 class="titulo-pagina mb-0" style="white-space: nowrap;">
 							<i class="fa-duotone fa-warehouse"></i>
-							Listagem de Seções Patrimoniais
+							Listagem de SeÃ§Ãµes Patrimoniais
 						</h2>
 						<a href="./SetorPatrimonial/Upsert" class="btn btn-azul" style="white-space: nowrap;">
 							<i class="fa-duotone fa-file-plus icon-space icon-pulse"></i>
-							&nbsp; Adicionar Seção Patrimonial
+							&nbsp; Adicionar SeÃ§Ã£o Patrimonial
 						</a>
 					</div>
-					<!-- Linha divisória -->
+					<!-- Linha divisÃ³ria -->
 					<div class="col-12" style="border-bottom:1px solid #325d88"></div>
 				</div>
 
@@ -90,10 +90,10 @@
 						<table id="tblSecao" class="table table-bordered table-striped" width="100%">
 							<thead>
 								<tr>
-									<th>Seção</th>
+									<th>SeÃ§Ã£o</th>
 									<th>Setor</th>
 									<th>Status</th>
-									<th>Ação</th>
+									<th>AÃ§Ã£o</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -107,8 +107,9 @@
 </div>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
 	<script src="~/js/cadastros/secao_patrimonial.js" asp-append-version="true"></script>
 }
+

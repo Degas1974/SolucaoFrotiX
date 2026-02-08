@@ -1,28 +1,28 @@
-@*
+﻿@*
  ****************************************************************************************
- * ⚡ ARQUIVO: Pages/Viagens/FluxoPassageiros.cshtml
+ * âš¡ ARQUIVO: Pages/Viagens/FluxoPassageiros.cshtml
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Página de análise de fluxo passageiros por rotas/períodos com
+ * ðŸŽ¯ OBJETIVO     : PÃ¡gina de anÃ¡lise de fluxo passageiros por rotas/perÃ­odos com
  *                   Syncfusion Grid paginado + Stimulsoft Report visualizador, identifica
- *                   rotas mais demandadas para planejamento otimizado viagens, gestão
+ *                   rotas mais demandadas para planejamento otimizado viagens, gestÃ£o
  *                   demanda transporte corporativo
  *
- * 📥 ENTRADAS     : @page, route /Viagens/FluxoPassageiros, filtros toolbar: DatePicker
- *                   DataInicio/DataFim (período), ComboBox Origem/Destino cascading
+ * ðŸ“¥ ENTRADAS     : @page, route /Viagens/FluxoPassageiros, filtros toolbar: DatePicker
+ *                   DataInicio/DataFim (perÃ­odo), ComboBox Origem/Destino cascading
  *                   (cidades), ComboBox SetorSolicitante (departamento), Checkbox
- *                   ApenasViagensRecorrentes, botão Analisar Fluxo trigger GET
+ *                   ApenasViagensRecorrentes, botÃ£o Analisar Fluxo trigger GET
  *                   /api/Viagens/GetFluxoPassageiros
  *
- * 📤 SAÍDAS       : Page com card header (Análise Fluxo de Passageiros, ícone fa-route),
+ * ðŸ“¤ SAÃDAS       : Page com card header (AnÃ¡lise Fluxo de Passageiros, Ã­cone fa-route),
  *                   Toolbar filtros (DatePicker range, 2 ComboBox Origem/Destino,
- *                   ComboBox SetorSolicitante, Checkbox ApenasRecorrentes, botão
+ *                   ComboBox SetorSolicitante, Checkbox ApenasRecorrentes, botÃ£o
  *                   Analisar), Syncfusion Grid (colunas: Origem, Destino, QuantidadeViagens,
- *                   TotalPassageiros, PassageirosPorViagem, DiasAtivos, FrequênciaMedia,
- *                   PrincipaisSetores badges, CustoTotal, CustoMédioPorPassageiro,
- *                   Status Recorrente/Esporádica, Ações), groupBy Origem, server-side
- *                   paging 50/página, botão Gerar Relatório (Stimulsoft MRT report)
+ *                   TotalPassageiros, PassageirosPorViagem, DiasAtivos, FrequÃªnciaMedia,
+ *                   PrincipaisSetores badges, CustoTotal, CustoMÃ©dioPorPassageiro,
+ *                   Status Recorrente/EsporÃ¡dica, AÃ§Ãµes), groupBy Origem, server-side
+ *                   paging 50/pÃ¡gina, botÃ£o Gerar RelatÃ³rio (Stimulsoft MRT report)
  *
- * 🔗 CHAMADA POR  : Menu Viagens > Análises > Fluxo Passageiros (sidebar),
+ * ðŸ”— CHAMADA POR  : Menu Viagens > AnÃ¡lises > Fluxo Passageiros (sidebar),
  *              usuarios com permissao Viagens.AnalisarFluxo (role Admin ou Coordenador),
  *              usado para planejamento viagens identificar rotas demanda alta programar
  *              viagens regulares fixas otimizar recursos
@@ -113,7 +113,7 @@
 		pointer-events: none;
 	}
 
-	/* Título do header */
+	/* TÃ­tulo do header */
 	.header-economildo h1 {
 		font-family: 'Outfit', sans-serif;
 		font-weight: 900;
@@ -138,7 +138,7 @@
 		filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
 	}
 
-	/* Separador de seção */
+	/* Separador de seÃ§Ã£o */
 	.secao-titulo {
 		border-bottom: 2px solid #325d88;
 		padding-bottom: 0.75rem;
@@ -170,7 +170,7 @@
 		font-size: 0.875rem !important;
 	}
 
-	/* Ajustar altura dos Syncfusion para 34px também */
+	/* Ajustar altura dos Syncfusion para 34px tambÃ©m */
 	.e-small.e-input-group.e-control-wrapper,
 	.e-small.e-input-group.e-control-wrapper .e-input,
 	.e-small .e-ddl.e-input-group {
@@ -190,7 +190,7 @@
 		line-height: 34px !important;
 	}
 
-	/* Animação de spinning para o ícone do botão */
+	/* AnimaÃ§Ã£o de spinning para o Ã­cone do botÃ£o */
 	.icon-pulse {
 		animation: pulseIcon 1.5s ease-in-out infinite;
 	}
@@ -213,7 +213,7 @@
 	}
 
 	/* ================================================================
-	   GRIDS SYNCFUSION - HEADER AZUL PADRÃO FROTIX
+	   GRIDS SYNCFUSION - HEADER AZUL PADRÃƒO FROTIX
 	   ================================================================ */
 	#grdIda .e-gridheader,
 	#grdVolta .e-gridheader {
@@ -235,7 +235,7 @@
 		color: #ffffff !important;
 	}
 
-	/* Ícones de ordenação em branco */
+	/* Ãcones de ordenaÃ§Ã£o em branco */
 	#grdIda .e-gridheader .e-sortfilterdiv .e-icons,
 	#grdVolta .e-gridheader .e-sortfilterdiv .e-icons,
 	#grdIda .e-gridheader .e-icon-ascending,
@@ -252,7 +252,7 @@
 	}
 
 	/* ================================================================
-	   BOTÃO INSERIR LINHA - 50% MAIOR
+	   BOTÃƒO INSERIR LINHA - 50% MAIOR
 	   ================================================================ */
 	.btn-insere-linha {
 		width: 51px !important;      /* 34px * 1.5 = 51px */
@@ -298,7 +298,7 @@
 		}
 	}
 
-	//------ Função de Escolha do ComboBox Veículos ------------------
+	//------ FunÃ§Ã£o de Escolha do ComboBox VeÃ­culos ------------------
 	//================================================================
 	function VeiculosValueChange() {
 		try {
@@ -318,7 +318,7 @@
 					<div class="header-economildo">
 						<h1>
 							<i class="fa-duotone fa-clipboard-list-check"></i>
-							Inserção dos Registros dos Economildos
+							InserÃ§Ã£o dos Registros dos Economildos
 						</h1>
 					</div>
 
@@ -390,7 +390,7 @@
 								<div class="col-4">
 									<label class="label font-weight-bold color-black">Placa do Economildo</label>
 									<ejs-combobox id="lstVeiculos"
-												  placeholder="Selecione um Veículo"
+												  placeholder="Selecione um VeÃ­culo"
 												  allowFiltering="true"
 												  filterType="Contains"
 												  dataSource="@ViewData["lstVeiculos"]"
@@ -421,7 +421,7 @@
 									<label class="label font-weight-bold">Indique o MOB</label>
 									<select class="form-control form-control-xs" id="lstMOB">
 										<option value=""></option>
-										<option value="Rodoviaria">Rodoviária</option>
+										<option value="Rodoviaria">RodoviÃ¡ria</option>
 										<option value="Cefor">Cefor</option>
 										<option value="PGR">PGR</option>
 									</select>
@@ -430,7 +430,7 @@
 
 							<div class="form-group row align-items-end mt-3">
 								<div class="col-3">
-									<label class="label font-weight-bold">Responsável pelo Registro</label>
+									<label class="label font-weight-bold">ResponsÃ¡vel pelo Registro</label>
 									<select class="form-control form-control-xs" id="lstResponsavel">
 										<option value=""></option>
 										<option value="Angela">Angela</option>
@@ -472,7 +472,7 @@
 											</div>
 
 											<div class="col-2 col-sm-2">
-												<label class="label font-weight-bold color-black">Hora Início</label>
+												<label class="label font-weight-bold color-black">Hora InÃ­cio</label>
 												<input id="txtHoraInicio" class="form-control form-control-xs" type="time" />
 											</div>
 
@@ -562,7 +562,7 @@
 									</div>
 									<div class="col-6">
 										<button id="btnCancela" type="button" class="btn btn-vinho form-control">
-											<i class="fa-duotone fa-rotate-left icon-space icon-rotate-left"></i> Cancela Inserção
+											<i class="fa-duotone fa-rotate-left icon-space icon-rotate-left"></i> Cancela InserÃ§Ã£o
 										</button>
 									</div>
 								</div>
@@ -585,8 +585,9 @@
 </div>
 
 @section ScriptsBlock {
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	
+	
 
 	<script src="/js/cadastros/fluxopassageiros.js" asp-append-version="true"></script>
 }
+
