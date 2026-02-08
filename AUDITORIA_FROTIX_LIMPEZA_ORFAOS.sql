@@ -40,6 +40,8 @@ PRINT 'Data: ' + CONVERT(VARCHAR(30), GETDATE(), 120);
 PRINT '================================================================';
 PRINT '';
 
+DECLARE @count INT;
+
 -- ==========================================================
 -- PARTE 0 — DESABILITAR TRIGGER trg_Motorista_FillNulls_OnChange
 -- A SP usp_PreencheNulos_Motorista seta GUIDs vazios 
@@ -52,6 +54,37 @@ IF EXISTS (SELECT 1 FROM sys.triggers WHERE name = 'trg_Motorista_FillNulls_OnCh
 BEGIN
     DISABLE TRIGGER dbo.trg_Motorista_FillNulls_OnChange ON dbo.Motorista;
     PRINT '[0.1] trg_Motorista_FillNulls_OnChange DESABILITADA temporariamente.';
+END
+PRINT '';
+
+-- ==========================================================
+-- PARTE 0B — DESABILITAR TRIGGERS DA VIAGEM
+-- Evita loops durante atualizações de limpeza (minutos/custos)
+-- ==========================================================
+IF EXISTS (SELECT 1 FROM sys.triggers WHERE name = 'tr_Viagem_CalculaMinutos')
+BEGIN
+  DISABLE TRIGGER dbo.tr_Viagem_CalculaMinutos ON dbo.Viagem;
+  PRINT '[0.2] tr_Viagem_CalculaMinutos DESABILITADA temporariamente.';
+END
+IF EXISTS (SELECT 1 FROM sys.triggers WHERE name = 'TR_Viagem_NormalizarMinutos')
+BEGIN
+  DISABLE TRIGGER dbo.TR_Viagem_NormalizarMinutos ON dbo.Viagem;
+  PRINT '[0.3] TR_Viagem_NormalizarMinutos DESABILITADA temporariamente.';
+END
+IF EXISTS (SELECT 1 FROM sys.triggers WHERE name = 'tr_Viagem_CalculaCustos')
+BEGIN
+  DISABLE TRIGGER dbo.tr_Viagem_CalculaCustos ON dbo.Viagem;
+  PRINT '[0.4] tr_Viagem_CalculaCustos DESABILITADA temporariamente.';
+END
+IF EXISTS (SELECT 1 FROM sys.triggers WHERE name = 'trg_Viagem_AtualizarEstatisticasMotoristas')
+BEGIN
+  DISABLE TRIGGER dbo.trg_Viagem_AtualizarEstatisticasMotoristas ON dbo.Viagem;
+  PRINT '[0.5] trg_Viagem_AtualizarEstatisticasMotoristas DESABILITADA temporariamente.';
+END
+IF EXISTS (SELECT 1 FROM sys.triggers WHERE name = 'trg_Viagem_AtualizarEstatisticasVeiculo')
+BEGIN
+  DISABLE TRIGGER dbo.trg_Viagem_AtualizarEstatisticasVeiculo ON dbo.Viagem;
+  PRINT '[0.6] trg_Viagem_AtualizarEstatisticasVeiculo DESABILITADA temporariamente.';
 END
 PRINT '';
 
@@ -127,8 +160,6 @@ BEGIN TRY
     PRINT '[1.0] AlertasFrotiX.UsuarioCriadorId: ' + CAST(@count AS VARCHAR) + ' vazios → NULL.';
 
     -- 1.1 Viagem.UsuarioIdCriacao
-    DECLARE @count INT;
-
     UPDATE dbo.Viagem
     SET UsuarioIdCriacao = @UsuarioPadrao
     WHERE UsuarioIdCriacao IS NOT NULL
@@ -336,6 +367,36 @@ BEGIN CATCH
     THROW;
 END CATCH
 GO
+
+-- ============================================================
+-- PARTE 3B — REABILITAR TRIGGERS DA VIAGEM
+-- ============================================================
+IF EXISTS (SELECT 1 FROM sys.triggers WHERE name = 'tr_Viagem_CalculaMinutos')
+BEGIN
+  ENABLE TRIGGER dbo.tr_Viagem_CalculaMinutos ON dbo.Viagem;
+  PRINT '[3B.1] tr_Viagem_CalculaMinutos REABILITADA.';
+END
+IF EXISTS (SELECT 1 FROM sys.triggers WHERE name = 'TR_Viagem_NormalizarMinutos')
+BEGIN
+  ENABLE TRIGGER dbo.TR_Viagem_NormalizarMinutos ON dbo.Viagem;
+  PRINT '[3B.2] TR_Viagem_NormalizarMinutos REABILITADA.';
+END
+IF EXISTS (SELECT 1 FROM sys.triggers WHERE name = 'tr_Viagem_CalculaCustos')
+BEGIN
+  ENABLE TRIGGER dbo.tr_Viagem_CalculaCustos ON dbo.Viagem;
+  PRINT '[3B.3] tr_Viagem_CalculaCustos REABILITADA.';
+END
+IF EXISTS (SELECT 1 FROM sys.triggers WHERE name = 'trg_Viagem_AtualizarEstatisticasMotoristas')
+BEGIN
+  ENABLE TRIGGER dbo.trg_Viagem_AtualizarEstatisticasMotoristas ON dbo.Viagem;
+  PRINT '[3B.4] trg_Viagem_AtualizarEstatisticasMotoristas REABILITADA.';
+END
+IF EXISTS (SELECT 1 FROM sys.triggers WHERE name = 'trg_Viagem_AtualizarEstatisticasVeiculo')
+BEGIN
+  ENABLE TRIGGER dbo.trg_Viagem_AtualizarEstatisticasVeiculo ON dbo.Viagem;
+  PRINT '[3B.5] trg_Viagem_AtualizarEstatisticasVeiculo REABILITADA.';
+END
+PRINT '';
 
 -- ============================================================
 -- PARTE 4 — CORRIGIR SP + TRIGGERS DE PREVENÇÃO
