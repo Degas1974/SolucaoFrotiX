@@ -928,3 +928,10 @@ PRINT 'SP sp_RecalcularEstatisticasMultasMotoristas criada.';
 4. **Entity Framework Core**: Após criar FKs, verificar se o DbContext precisa de atualização nos modelos (navigation properties). As FKs adicionadas com `WITH NOCHECK` não afetam o EF Core imediatamente.
 
 5. **Backup**: SEMPRE fazer backup completo antes de executar qualquer script deste relatório.
+
+---
+
+## ATUALIZAÇÕES PÓS-AUDITORIA (07/02/2026)
+
+1. **Campos de usuário com string vazia**: Foi adicionada a normalização de strings vazias para `NULL` antes da ativação das FKs (`UsuarioIdCriacao`, `IdUsuarioCriacao`, `IdUsuarioFinalizacao`, `IdUsuarioCancelamento`, `UsuarioCriadorId`). Isso evita conflito de FK quando o campo possui `''` em vez de `NULL`.
+2. **Triggers de validação**: Triggers de prevenção foram ajustadas para converter vazio → `NULL` e aplicar usuário padrão apenas quando o valor estiver preenchido e inexistente em `AspNetUsers`.
