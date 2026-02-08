@@ -1,11 +1,11 @@
-# SUPER-PROMPT: Migração FrotiX.Site → FrotiX.Site.Backup
+# SUPER-PROMPT: Migração FrotiX.Site → FrotiX.Telerik
 
 ## 1. CONTEXTO GERAL
 
 Existe um projeto ASP.NET Core Razor Pages chamado **FrotiX** com duas versões:
 
 - **FrotiX.Site** (SOURCE) — Versão mais recente com todo o código atualizado, MAS com licenciamento Telerik/Kendo/Syncfusion QUEBRADO (passou a usar arquivos locais em vez de CDN, trocou chaves de licença, adicionou kendo-error-suppressor.js como paliativo).
-- **FrotiX.Site.Backup** (TARGET) — Versão de janeiro/2026, mais antiga no código, MAS com licenciamento Telerik/Kendo/Syncfusion FUNCIONAL (usa CDN correto, chaves válidas).
+- **FrotiX.Telerik** (TARGET) — Versão de janeiro/2026, mais antiga no código, MAS com licenciamento Telerik/Kendo/Syncfusion FUNCIONAL (usa CDN correto, chaves válidas).
 
 **OBJETIVO**: Atualizar o TARGET (Backup) com as alterações de código do SOURCE (Site), **preservando o modelo de licenciamento funcional do Backup**.
 
@@ -32,7 +32,7 @@ Estas regras são ABSOLUTAS. Ao migrar qualquer arquivo, se encontrar referênci
 | **kendo-error-suppressor.js** | NÃO EXISTE (não incluir!) | Carregado primeiro |
 | **Syncfusion versão no header** | 32.1.19 | 32.1.23 |
 
-**Se o SOURCE adicionar código NOVO que usa Telerik de forma diferente do antigo, REFATORE-o para usar o modelo antigo do TARGET.**
+**Toda página que tiver componentes Kendo/Telerik voccê NÃO vai atualizar o código. Você vai criar um arquivo com o nome PendenciasTelerik.md na raiz do site FrotiX.Telerik e escrever lá o nome do arquivo. Porém, onde couber dentro do referido arquivo, você vai atualizar toda a documentação que está em FrotiX.Site para FrotiX.Telerik. Se houver alguma defasagem de função no arquivo por ele ser um arquivo com componentes Kendo/Telerik você vai deixar ele incompleto
 
 ---
 
@@ -59,7 +59,7 @@ URLs, versões, chaves de licença. **NÃO migrar — manter o modelo do TARGET.
 Para cada arquivo da lista:
 
 1. **Leia o arquivo no SOURCE** (`c:/FrotiX/Solucao FrotiX 2026/FrotiX.Site/{path}`)
-2. **Leia o arquivo no TARGET** (`c:/FrotiX/Solucao FrotiX 2026/FrotiX.Site.Backup/{path}`)
+2. **Leia o arquivo no TARGET** (`c:/FrotiX/Solucao FrotiX 2026/FrotiX.Telerik/{path}`)
 3. **Compare mentalmente** (NÃO imprima os conteúdos inteiros — economize contexto!)
 4. **Se já forem idênticos** → PULE (já foi migrado anteriormente)
 5. **Se diferentes** → Aplique as alterações do SOURCE no TARGET usando a ferramenta Edit
@@ -94,8 +94,8 @@ Para cada arquivo da lista:
 - **Ação**: Migrar tudo normalmente.
 
 ### Exemplo E: Razor Page .cshtml COM Telerik (CRÍTICO!) (ex: Pages/Viagens/Index.cshtml)
-- **Diferença típica**: Header DocGenerator + alterações de código + possíveis mudanças em referências CDN Syncfusion/Kendo.
-- **Ação**: Migrar alterações de código MAS preservar URLs CDN, versões Syncfusion, e referências Kendo do TARGET. Se o SOURCE trocar `cdn.syncfusion.com` por `unpkg.com`, MANTER `cdn.syncfusion.com`.
+- **Diferença típica**: Header DocGenerator + SEM alterações de código + SEM possíveis mudanças em referências CDN Syncfusion/Kendo.
+- **Ação**: NÃO Migrar alterações de código MAS preservar URLs CDN, versões Syncfusion, e referências Kendo do TARGET. Se o SOURCE trocar `cdn.syncfusion.com` por `unpkg.com`, MANTER `cdn.syncfusion.com`.
 
 ### Exemplo F: Code-behind .cshtml.cs (ex: Pages/Viagens/Index.cshtml.cs)
 - **Diferença típica**: Header DocGenerator + possíveis novos métodos/propriedades no PageModel.
@@ -105,7 +105,7 @@ Para cada arquivo da lista:
 - **Diferença**: SOURCE muda CDN Syncfusion de `cdn.syncfusion.com/ej2/32.1.19/` para `unpkg.com/@syncfusion/ej2@32.1.23/`
 - **Ação**: Migrar melhorias de código MAS MANTER as URLs CDN `cdn.syncfusion.com/ej2/32.1.19/` do TARGET.
 
-### Exemplo H: _ScriptsBasePlugins.cshtml (ARQUIVO MAIS CRÍTICO!)
+### Exemplo H: _ScriptsBasePlugins.cshtml (ARQUIVO MAIS CRÍTICO!) ======>> NÀO TRAZER NENHUMA DESTAS LINHAS QUE MENCIONA KENDO/TELERIK
 - **Diferença**: SOURCE adiciona `kendo-error-suppressor.js`, muda de CDN para local em Kendo, muda versão Syncfusion.
 - **Ação**: Migrar melhorias de lógica MAS:
   - NÃO incluir `kendo-error-suppressor.js`
@@ -125,7 +125,7 @@ Para cada arquivo da lista:
 
 ## 6. ARQUIVOS COM REFERÊNCIAS TELERIK (ATENÇÃO ESPECIAL!)
 
-Estes 41 arquivos contêm referências Telerik/Kendo/Syncfusion e requerem cuidado extra:
+Estes 41 arquivos contêm referências Telerik/Kendo/Syncfusion e requerem cuidado extra: ==> SERÃO MIGRADOS MANUALMENTE A PARTE DE CÓDIGO, VOCÊ ATUALIZA APENAS A DOCUMENTAÇÃO
 
 ```
 Controllers/ReportsController.cs

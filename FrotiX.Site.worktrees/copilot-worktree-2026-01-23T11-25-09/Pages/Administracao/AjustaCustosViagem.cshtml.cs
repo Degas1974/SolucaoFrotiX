@@ -1,4 +1,0 @@
-namespace FrotiX.Pages.Administracao
-{
-}
-

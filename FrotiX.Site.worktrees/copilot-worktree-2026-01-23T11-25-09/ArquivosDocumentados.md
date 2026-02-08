@@ -1,6 +1,0 @@
-ViagemController.DashboardEconomildo.cs
-ViagemController.DesassociarEvento.cs
-ViagemController.HeatmapEconomildo.cs
-ViagemController.HeatmapEconomildoPassageiros.cs
-ViagemController.ListaEventos.cs
-ViagemController.MetodosEstatisticas.cs

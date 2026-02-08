@@ -1,6 +1,0 @@
-<Project>
-  <!-- Desativa o resolver de workloads para evitar importações automáticas (ex.: MAUI) quando o projeto não usa workloads. -->
-  <PropertyGroup>
-    <MSBuildEnableWorkloadResolver>false</MSBuildEnableWorkloadResolver>
-  </PropertyGroup>
-</Project>

@@ -1,21 +1,17 @@
-/* ****************************************************************************************
- * ⚡ ARQUIVO: GlosaController.cs
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Gestão de glosas de notas fiscais com grid server-side e exportação
- *                   de relatórios em Excel.
- *
- * 📥 ENTRADAS     : DataManagerRequest, filtros (contratoId, ano, mês).
- *
- * 📤 SAÍDAS       : JSON (DataResult) e arquivos Excel (.xlsx).
- *
- * 🔗 CHAMADA POR  : Frontend de glosas (Syncfusion Grid).
- *
- * 🔄 CHAMA        : IGlosaService, ClosedXML e DataOperations (Syncfusion).
- *
- * 📦 DEPENDÊNCIAS : ASP.NET Core, Syncfusion EJ2, ClosedXML.
- *
- * 📝 OBSERVAÇÕES  : Endpoints para resumo, detalhes e exportação.
- **************************************************************************************** */
+using FrotiX.Helpers;
+
+/*
+ *  _________________________________________________________________________________________________________
+ * |                                                                                                         |
+ * |                                   FROTIX - SOLUÇÃO GESTÃO DE FROTAS                                     |
+ * |_________________________________________________________________________________________________________|
+ * |                                                                                                         |
+ * | (IA) CAMADA: CONTROLLERS                                                                                |
+ * | (IA) IDENTIDADE: GlosaController.cs                                                                     |
+ * | (IA) DESCRIÇÃO: Gestão de glosas de notas fiscais com exportação em Excel.                              |
+ * | (IA) PADRÃO: FrotiX 2026 Core (ASCII Hero Banner + XML Documentation)                                   |
+ * |_________________________________________________________________________________________________________|
+ */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: GlosaController

@@ -1,21 +1,17 @@
-/* ****************************************************************************************
- * ⚡ ARQUIVO: DashboardViagensController_ExportacaoPDF.cs
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Exportar o dashboard de viagens para PDF, incluindo tabelas,
- *                   gráficos e KPIs do período.
- *
- * 📥 ENTRADAS     : Filtros de data e parâmetros do relatório.
- *
- * 📤 SAÍDAS       : Arquivo PDF para download.
- *
- * 🔗 CHAMADA POR  : Frontend (botão exportar PDF no dashboard).
- *
- * 🔄 CHAMA        : Syncfusion.Pdf e métodos privados de montagem do documento.
- *
- * 📦 DEPENDÊNCIAS : Syncfusion.Pdf, Syncfusion.Drawing, FrotiXDbContext.
- *
- * 📝 OBSERVAÇÕES  : Classe parcial dedicada à exportação PDF de viagens.
- **************************************************************************************** */
+using FrotiX.Helpers;
+
+/*
+ *  _________________________________________________________________________________________________________
+ * |                                                                                                         |
+ * |                                   FROTIX - SOLUÇÃO GESTÃO DE FROTAS                                     |
+ * |_________________________________________________________________________________________________________|
+ * |                                                                                                         |
+ * | (IA) CAMADA: CONTROLLERS (API)                                                                          |
+ * | (IA) IDENTIDADE: DashboardViagensController_ExportacaoPDF.cs                                            |
+ * | (IA) DESCRIÇÃO: Fragmento da Controller para geração de relatórios de viagens em PDF.                   |
+ * | (IA) PADRÃO: FrotiX 2026 Core (ASCII Hero Banner + XML Documentation)                                   |
+ * |_________________________________________________________________________________________________________|
+ */
 
 using FrotiX.Data;
 using FrotiX.Models;

@@ -1,21 +1,3 @@
-/* ****************************************************************************************
- * ⚡ ARQUIVO: DashboardEventosController_ExportacaoPDF.cs
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Exportar o dashboard de eventos para PDF utilizando Syncfusion.
- *
- * 📥 ENTRADAS     : Filtros de data (dataInicio/dataFim) e parâmetros de relatório.
- *
- * 📤 SAÍDAS       : Arquivo PDF para download.
- *
- * 🔗 CHAMADA POR  : Frontend (botão de exportação PDF).
- *
- * 🔄 CHAMA        : Syncfusion.Pdf, criação de páginas e grids.
- *
- * 📦 DEPENDÊNCIAS : Syncfusion.Pdf, Syncfusion.Drawing, FrotiXDbContext.
- *
- * 📝 OBSERVAÇÕES  : Classe parcial dedicada à exportação PDF do Dashboard de Eventos.
- **************************************************************************************** */
-
 using FrotiX.Data;
 using FrotiX.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -31,70 +13,95 @@ using Syncfusion.Drawing;
 using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
 using Syncfusion.Pdf.Grid;
+using FrotiX.Helpers;
+
+/*
+ *  _________________________________________________________________________________________________________
+ * |                                                                                                         |
+ * |                                   FROTIX - SOLUÇÃO GESTÃO DE FROTAS                                     |
+ * |_________________________________________________________________________________________________________|
+ * |                                                                                                         |
+ * | (IA) CAMADA: CONTROLLERS (API)                                                                          |
+ * | (IA) IDENTIDADE: DashboardEventosController_ExportacaoPDF.cs                                            |
+ * | (IA) DESCRIÇÃO: Fragmento da Controller para geração de relatórios gerenciais em PDF.                   |
+ * | (IA) PADRÃO: FrotiX 2026 Core (ASCII Hero Banner + XML Documentation)                                   |
+ * |_________________________________________________________________________________________________________|
+ */
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ PARTIAL CLASS: DashboardEventosController (ExportacaoPDF)
-     * --------------------------------------------------------------------------------------
-     * 🎯 OBJETIVO     : Exportar Dashboard de Eventos para PDF com múltiplas páginas
-     * 📥 ENTRADAS     : Filtros de data (dataInicio, dataFim)
-     * 📤 SAÍDAS       : Arquivo PDF para download
-     * 🔗 CHAMADA POR  : Frontend (botão Exportar PDF)
-     * 🔄 CHAMA        : Syncfusion PDF, métodos privados de criação de páginas
-     * 📦 DEPENDÊNCIAS : Syncfusion.Pdf, Syncfusion.Drawing, Entity Framework
-     * --------------------------------------------------------------------------------------
-     * [DOC] Classe parcial dedicada à exportação PDF do Dashboard de Eventos
-     * [DOC] Gera PDF com 3+ páginas: Estatísticas Gerais, Setores/Requisitantes, Top 10
-     * [DOC] Usa Syncfusion.Pdf para criação de documento A4 com margens de 40px
-     ****************************************************************************************/
     [Authorize]
     public partial class DashboardEventosController : Controller
     {
         #region Exportação PDF
 
+        /// ╔══════════════════════════════════════════════════════════════════════════════╗
+        /// ║ 📌 NOME: ExportarParaPDF                                                    ║
+        /// ╠══════════════════════════════════════════════════════════════════════════════╣
+        /// ║ 📝 DESCRIÇÃO:                                                                ║
+        /// ║    Gera e exporta relatório gerencial de eventos em PDF via Syncfusion.      ║
+        /// ║                                                                              ║
+        /// ║ 🎯 IMPORTÂNCIA PARA A SOLUÇÃO:                                              ║
+        /// ║    Permite auditoria e distribuição de KPIs do dashboard.                    ║
+        /// ╠══════════════════════════════════════════════════════════════════════════════╣
+        /// ║ 📥 PARÂMETROS:                                                               ║
+        /// ║    • dataInicio (DateTime?): início do filtro.                               ║
+        /// ║    • dataFim (DateTime?): fim do filtro.                                     ║
+        /// ║                                                                              ║
+        /// ║ 📤 RETORNO:                                                                  ║
+        /// ║    • IActionResult: arquivo PDF para download.                               ║
+        /// ║    • Consumidor: UI de Dashboard de Eventos.                                 ║
+        /// ╠══════════════════════════════════════════════════════════════════════════════╣
+        /// ║ 📞 FUNÇÕES QUE CHAMA:                                                        ║
+        /// ║    • CriarPagina1Estatisticas()                                               ║
+        /// ║    • CriarPagina2SetoresRequisitantes()                                       ║
+        /// ║    • CriarPagina3Top10Eventos()                                               ║
+        /// ║    • _log.Error() / Alerta.TratamentoErroComLinha() → erros.                  ║
+        /// ╠══════════════════════════════════════════════════════════════════════════════╣
+        /// ║ 📲 CHAMADA POR:                                                              ║
+        /// ║    • GET /ExportarParaPDF                                                    ║
+        /// ╠══════════════════════════════════════════════════════════════════════════════╣
+        /// ║ 🔗 ESCOPO: EXTERNA - Dashboard                                               ║
+        /// ║    • Arquivos relacionados: Pages/Eventos/DashboardEventos.cshtml             ║
+        /// ╚══════════════════════════════════════════════════════════════════════════════╝
         [HttpGet]
         [Route("ExportarParaPDF")]
-        public async Task<IActionResult> ExportarParaPDF(DateTime? dataInicio , DateTime? dataFim)
+        public async Task<IActionResult> ExportarParaPDF(DateTime? dataInicio, DateTime? dataFim)
         {
             try
             {
-                // Define período padrão (últimos 30 dias)
+                // [REGRA] Fallback para período de 30 dias se datas não forem informadas
                 if (!dataInicio.HasValue || !dataFim.HasValue)
                 {
                     dataFim = DateTime.Now.Date.AddDays(1).AddSeconds(-1);
                     dataInicio = dataFim.Value.AddDays(-30);
                 }
 
-                // Cria o documento PDF
                 using (PdfDocument document = new PdfDocument())
                 {
-                    // Configuração da página A4
+                    // [DADOS] Configuração do documento
                     document.PageSettings.Size = PdfPageSize.A4;
                     document.PageSettings.Margins.All = 40;
 
-                    // Página 1: Estatísticas Gerais e Status
-                    await CriarPagina1Estatisticas(document , dataInicio.Value , dataFim.Value);
+                    // [LOGICA] Geração modular por páginas
+                    await CriarPagina1Estatisticas(document, dataInicio.Value, dataFim.Value);
+                    await CriarPagina2SetoresRequisitantes(document, dataInicio.Value, dataFim.Value);
+                    await CriarPagina3Top10Eventos(document, dataInicio.Value, dataFim.Value);
 
-                    // Página 2: Setores e Requisitantes
-                    await CriarPagina2SetoresRequisitantes(document , dataInicio.Value , dataFim.Value);
-
-                    // Página 3: Top 10 Maiores Eventos
-                    await CriarPagina3Top10Eventos(document , dataInicio.Value , dataFim.Value);
-
-                    // Salva o PDF em MemoryStream
+                    // [DADOS] Salva PDF em memória
                     MemoryStream stream = new MemoryStream();
                     document.Save(stream);
                     stream.Position = 0;
 
-                    // Retorna o arquivo para download
+                    // [DADOS] Nome do arquivo
                     string fileName = $"Dashboard_Eventos_{dataInicio.Value:dd-MM-yyyy}_a_{dataFim.Value:dd-MM-yyyy}.pdf";
-                    return File(stream , "application/pdf" , fileName);
+                    return File(stream, "application/pdf", fileName);
                 }
             }
             catch (Exception ex)
             {
-                return Json(new { success = false , message = $"Erro ao gerar PDF: {ex.Message}" });
+                _log.Error(ex.Message, ex, "DashboardEventosController_ExportacaoPDF.cs", "ExportarParaPDF");
+                return Json(new { success = false, message = $"Erro ao gerar PDF: {ex.Message}" });
             }
         }
 

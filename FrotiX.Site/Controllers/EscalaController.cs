@@ -1,21 +1,17 @@
-/* ****************************************************************************************
- * ⚡ ARQUIVO: EscalaController.cs
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Gerenciar escalas diárias de motoristas com atualização em tempo real
- *                   e controle de conflitos.
- *
- * 📥 ENTRADAS     : ViewModels de escala, datas, IDs e ações de CRUD.
- *
- * 📤 SAÍDAS       : Views (Index/Create/Edit) e notificações SignalR.
- *
- * 🔗 CHAMADA POR  : Frontend de Escalas e chamadas AJAX.
- *
- * 🔄 CHAMA        : IUnitOfWork, IHubContext, EscalaController_Api.
- *
- * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, SignalR, Entity Framework.
- *
- * 📝 OBSERVAÇÕES  : Classe parcial complementada por EscalaController_Api.cs.
- **************************************************************************************** */
+using FrotiX.Helpers;
+
+/*
+ *  _________________________________________________________________________________________________________
+ * |                                                                                                         |
+ * |                                   FROTIX - SOLUÇÃO GESTÃO DE FROTAS                                     |
+ * |_________________________________________________________________________________________________________|
+ * |                                                                                                         |
+ * | (IA) CAMADA: CONTROLLERS                                                                                |
+ * | (IA) IDENTIDADE: EscalaController.cs                                                                    |
+ * | (IA) DESCRIÇÃO: Gestão de escalas diárias de motoristas com SignalR real-time.                          |
+ * | (IA) PADRÃO: FrotiX 2026 Core (ASCII Hero Banner + XML Documentation)                                   |
+ * |_________________________________________________________________________________________________________|
+ */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: EscalaController (Partial Class)

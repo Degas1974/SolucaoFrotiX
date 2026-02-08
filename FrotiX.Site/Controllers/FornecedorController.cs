@@ -1,21 +1,17 @@
-/* ****************************************************************************************
- * ⚡ ARQUIVO: FornecedorController.cs
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Gestão de fornecedores (empresas contratadas), com validação de
- *                   integridade antes de exclusão.
- *
- * 📥 ENTRADAS     : FornecedorViewModel, parâmetros de rota e IDs.
- *
- * 📤 SAÍDAS       : JSON com fornecedores e status das operações.
- *
- * 🔗 CHAMADA POR  : Frontend de fornecedores e contratos.
- *
- * 🔄 CHAMA        : IUnitOfWork (Fornecedor, Contrato) e Alerta.TratamentoErroComLinha.
- *
- * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, IUnitOfWork, Entity Framework.
- *
- * 📝 OBSERVAÇÕES  : Bloqueia exclusão quando existem contratos vinculados.
- **************************************************************************************** */
+using FrotiX.Helpers;
+
+/*
+ *  _________________________________________________________________________________________________________
+ * |                                                                                                         |
+ * |                                   FROTIX - SOLUÇÃO GESTÃO DE FROTAS                                     |
+ * |_________________________________________________________________________________________________________|
+ * |                                                                                                         |
+ * | (IA) CAMADA: CONTROLLERS                                                                                |
+ * | (IA) IDENTIDADE: FornecedorController.cs                                                                |
+ * | (IA) DESCRIÇÃO: Gestão de fornecedores com validação de integridade.                                    |
+ * | (IA) PADRÃO: FrotiX 2026 Core (ASCII Hero Banner + XML Documentation)                                   |
+ * |_________________________________________________________________________________________________________|
+ */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: FornecedorController

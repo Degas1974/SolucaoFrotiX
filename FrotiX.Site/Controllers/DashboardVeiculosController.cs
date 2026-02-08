@@ -1,51 +1,26 @@
-/* ****************************************************************************************
- * ⚡ ARQUIVO: DashboardVeiculosController.cs
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Estatísticas e análises da frota de veículos (idade média, status,
- *                   tipos e indicadores gerais).
- *
- * 📥 ENTRADAS     : Nenhuma (dados gerais sem filtro de data).
- *
- * 📤 SAÍDAS       : JSON com estatísticas agregadas de veículos.
- *
- * 🔗 CHAMADA POR  : Frontend do Dashboard de Veículos.
- *
- * 🔄 CHAMA        : ViewVeiculos e repositórios de veículos via IUnitOfWork.
- *
- * 📦 DEPENDÊNCIAS : IUnitOfWork, Repository Pattern.
- *
- * 📝 OBSERVAÇÕES  : Métricas incluem veículos ativos, locados e idade média.
- **************************************************************************************** */
-
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FrotiX.Helpers;
+
+/*
+ *  _________________________________________________________________________________________________________
+ * |                                                                                                         |
+ * |                                   FROTIX - SOLUÇÃO GESTÃO DE FROTAS                                     |
+ * |_________________________________________________________________________________________________________|
+ * |                                                                                                         |
+ * | (IA) CAMADA: CONTROLLERS (DASHBOARD)                                                                    |
+ * | (IA) IDENTIDADE: DashboardVeiculosController.cs                                                         |
+ * | (IA) DESCRIÇÃO: API para análises e estatísticas da frota de veículos.                                  |
+ * | (IA) PADRÃO: FrotiX 2026 Core (ASCII Hero Banner + XML Documentation)                                   |
+ * |_________________________________________________________________________________________________________|
+ */
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ CONTROLLER: DashboardVeiculosController
-     * --------------------------------------------------------------------------------------
-     * 🎯 OBJETIVO     : Fornecer estatísticas e análises da frota de veículos
-     * 📥 ENTRADAS     : Nenhuma (dados gerais da frota, sem filtro de data)
-     * 📤 SAÍDAS       : JSON com estatísticas agregadas de veículos
-     * 🔗 CHAMADA POR  : Frontend do Dashboard de Veículos
-     * 🔄 CHAMA        : ViewVeiculos, Veiculo (via UnitOfWork)
-     * 📦 DEPENDÊNCIAS : IUnitOfWork, Repository Pattern
-     * --------------------------------------------------------------------------------------
-     * [DOC] Dashboard específico para análise da frota de veículos
-     * [DOC] Estatísticas: total, ativos/inativos, próprios/locados, reserva/efetivos
-     * [DOC] Calcula idade média da frota (baseado em AnoFabricacao)
-     * [DOC] Tema visual: Verde Sage/Oliva
-     * [DOC] Usa ViewVeiculos para dados agregados otimizados
-     ****************************************************************************************/
-    /// <summary>
-    /// Controller com endpoints da API para o Dashboard de Veículos
-    /// Tema: Verde Sage/Oliva
-    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class DashboardVeiculosController : ControllerBase

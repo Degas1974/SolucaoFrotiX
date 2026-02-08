@@ -1,21 +1,17 @@
-/* ****************************************************************************************
- * ⚡ ARQUIVO: EscalaController_Api.cs
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Endpoints API para DataTables Server-Side das escalas, com paginação
- *                   e filtros baseados em ViewEscalasCompletas.
- *
- * 📥 ENTRADAS     : DataManagerRequest, filtros de data e status.
- *
- * 📤 SAÍDAS       : JSON paginado para DataTables/Syncfusion.
- *
- * 🔗 CHAMADA POR  : JavaScript da página de Escalas (AJAX).
- *
- * 🔄 CHAMA        : ViewEscalasCompletas e IUnitOfWork.
- *
- * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, ViewEscalasCompletas, DataManagerRequest.
- *
- * 📝 OBSERVAÇÕES  : Classe parcial complementar ao EscalaController principal.
- **************************************************************************************** */
+using FrotiX.Helpers;
+
+/*
+ *  _________________________________________________________________________________________________________
+ * |                                                                                                         |
+ * |                                   FROTIX - SOLUÇÃO GESTÃO DE FROTAS                                     |
+ * |_________________________________________________________________________________________________________|
+ * |                                                                                                         |
+ * | (IA) CAMADA: CONTROLLERS (API)                                                                          |
+ * | (IA) IDENTIDADE: EscalaController_Api.cs                                                                |
+ * | (IA) DESCRIÇÃO: Endpoints API para DataTables Server-Side de escalas.                                   |
+ * | (IA) PADRÃO: FrotiX 2026 Core (ASCII Hero Banner + XML Documentation)                                   |
+ * |_________________________________________________________________________________________________________|
+ */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: EscalaController_Api (Partial Class)

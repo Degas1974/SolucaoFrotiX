@@ -1,21 +1,17 @@
-/* ****************************************************************************************
- * ⚡ ARQUIVO: EditorController.cs
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Operações do editor de texto (Syncfusion), convertendo DOCX em
- *                   imagens PNG para preview.
- *
- * 📥 ENTRADAS     : Arquivo DOCX via upload (IFormFile).
- *
- * 📤 SAÍDAS       : PNG gerado no servidor e resposta HTTP ao cliente.
- *
- * 🔗 CHAMADA POR  : Frontend que utiliza o editor Syncfusion.
- *
- * 🔄 CHAMA        : SfdtHelper.SalvarImagemDeDocx().
- *
- * 📦 DEPENDÊNCIAS : Syncfusion.DocIO, System.Drawing, ASP.NET Core MVC.
- *
- * 📝 OBSERVAÇÕES  : Endpoint trabalha com arquivos temporários no servidor.
- **************************************************************************************** */
+using FrotiX.Helpers;
+
+/*
+ *  _________________________________________________________________________________________________________
+ * |                                                                                                         |
+ * |                                   FROTIX - SOLUÇÃO GESTÃO DE FROTAS                                     |
+ * |_________________________________________________________________________________________________________|
+ * |                                                                                                         |
+ * | (IA) CAMADA: CONTROLLERS (API)                                                                          |
+ * | (IA) IDENTIDADE: EditorController.cs                                                                    |
+ * | (IA) DESCRIÇÃO: API para operações de editor Syncfusion (conversão DOCX para PNG).                      |
+ * | (IA) PADRÃO: FrotiX 2026 Core (ASCII Hero Banner + XML Documentation)                                   |
+ * |_________________________________________________________________________________________________________|
+ */
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

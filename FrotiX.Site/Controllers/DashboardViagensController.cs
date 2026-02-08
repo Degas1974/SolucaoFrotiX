@@ -1,22 +1,3 @@
-/* ****************************************************************************************
- * ⚡ ARQUIVO: DashboardViagensController.cs
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Dashboard de viagens com estatísticas por status, setor, motorista
- *                   e métricas agregadas do período.
- *
- * 📥 ENTRADAS     : Filtros de data e parâmetros de consulta.
- *
- * 📤 SAÍDAS       : JSON com indicadores, rankings e séries para gráficos.
- *
- * 🔗 CHAMADA POR  : Frontend do Dashboard de Viagens.
- *
- * 🔄 CHAMA        : FrotiXDbContext, UserManager e consultas EF Core.
- *
- * 📦 DEPENDÊNCIAS : EF Core, UserManager, Syncfusion (PDF).
- *
- * 📝 OBSERVAÇÕES  : Possui classe parcial _ExportacaoPDF.cs para relatório.
- **************************************************************************************** */
-
 using FrotiX.Data;
 using FrotiX.Models;
 using FrotiX.ViewModels;
@@ -34,6 +15,20 @@ using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
 using Syncfusion.Pdf.Grid;
 using System.Text.Json;
+using FrotiX.Helpers;
+
+/*
+ *  _________________________________________________________________________________________________________
+ * |                                                                                                         |
+ * |                                   FROTIX - SOLUÇÃO GESTÃO DE FROTAS                                     |
+ * |_________________________________________________________________________________________________________|
+ * |                                                                                                         |
+ * | (IA) CAMADA: CONTROLLERS (DASHBOARD)                                                                    |
+ * | (IA) IDENTIDADE: DashboardViagensController.cs                                                          |
+ * | (IA) DESCRIÇÃO: API para análises e estatísticas de viagens (todas as viagens).                         |
+ * | (IA) PADRÃO: FrotiX 2026 Core (ASCII Hero Banner + XML Documentation)                                   |
+ * |_________________________________________________________________________________________________________|
+ */
 
 namespace FrotiX.Controllers
 {

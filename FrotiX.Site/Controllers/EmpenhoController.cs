@@ -1,21 +1,17 @@
-/* ****************************************************************************************
- * ⚡ ARQUIVO: EmpenhoController.cs
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Gestão de empenhos orçamentários, saldos e movimentações (aportes/
- *                   anulações) vinculadas a contratos e atas.
- *
- * 📥 ENTRADAS     : Dados de empenho, movimentações e filtros de busca.
- *
- * 📤 SAÍDAS       : JSON com empenhos, movimentações e saldos formatados.
- *
- * 🔗 CHAMADA POR  : Frontend de Empenhos, Contratos e Atas.
- *
- * 🔄 CHAMA        : IUnitOfWork e Alerta.TratamentoErroComLinha.
- *
- * 📦 DEPENDÊNCIAS : ASP.NET Core MVC, Entity Framework, IUnitOfWork.
- *
- * 📝 OBSERVAÇÕES  : Possui endpoints para aporte e glosa de valores.
- **************************************************************************************** */
+using FrotiX.Helpers;
+
+/*
+ *  _________________________________________________________________________________________________________
+ * |                                                                                                         |
+ * |                                   FROTIX - SOLUÇÃO GESTÃO DE FROTAS                                     |
+ * |_________________________________________________________________________________________________________|
+ * |                                                                                                         |
+ * | (IA) CAMADA: CONTROLLERS                                                                                |
+ * | (IA) IDENTIDADE: EmpenhoController.cs                                                                   |
+ * | (IA) DESCRIÇÃO: Gestão de empenhos orçamentários e movimentações de valores.                            |
+ * | (IA) PADRÃO: FrotiX 2026 Core (ASCII Hero Banner + XML Documentation)                                   |
+ * |_________________________________________________________________________________________________________|
+ */
 
 /****************************************************************************************
  * ⚡ CONTROLLER: EmpenhoController

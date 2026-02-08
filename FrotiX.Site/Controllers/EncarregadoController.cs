@@ -1,21 +1,17 @@
-/* ****************************************************************************************
- * ⚡ ARQUIVO: EncarregadoController.cs
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : CRUD de encarregados (supervisores de serviços terceirizados),
- *                   incluindo upload de foto e vínculos com contratos.
- *
- * 📥 ENTRADAS     : Model Encarregado, parâmetros de rota e uploads de imagem.
- *
- * 📤 SAÍDAS       : JSON com dados do encarregado e status das operações.
- *
- * 🔗 CHAMADA POR  : Frontend de cadastros de encarregados.
- *
- * 🔄 CHAMA        : Repositórios via IUnitOfWork (Encarregado, EncarregadoContrato).
- *
- * 📦 DEPENDÊNCIAS : IUnitOfWork, Controller, armazenamento de arquivos.
- *
- * 📝 OBSERVAÇÕES  : Upload de foto usa multipart/form-data.
- **************************************************************************************** */
+using FrotiX.Helpers;
+
+/*
+ *  _________________________________________________________________________________________________________
+ * |                                                                                                         |
+ * |                                   FROTIX - SOLUÇÃO GESTÃO DE FROTAS                                     |
+ * |_________________________________________________________________________________________________________|
+ * |                                                                                                         |
+ * | (IA) CAMADA: CONTROLLERS                                                                                |
+ * | (IA) IDENTIDADE: EncarregadoController.cs                                                               |
+ * | (IA) DESCRIÇÃO: CRUD de encarregados (supervisores) com upload de foto.                                 |
+ * | (IA) PADRÃO: FrotiX 2026 Core (ASCII Hero Banner + XML Documentation)                                   |
+ * |_________________________________________________________________________________________________________|
+ */
 
 using FrotiX.Models;
 using FrotiX.Repository.IRepository;

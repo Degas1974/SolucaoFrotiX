@@ -1,22 +1,3 @@
-/* ****************************************************************************************
- * ⚡ ARQUIVO: DashboardLavagemController.cs
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Estatísticas e análises de lavagens de veículos, com filtros por
- *                   lavador, veículo e motorista.
- *
- * 📥 ENTRADAS     : Filtros de data e parâmetros de consulta.
- *
- * 📤 SAÍDAS       : JSON com estatísticas agregadas de lavagens.
- *
- * 🔗 CHAMADA POR  : Frontend do Dashboard de Lavagem.
- *
- * 🔄 CHAMA        : FrotiXDbContext, UserManager e Includes EF Core.
- *
- * 📦 DEPENDÊNCIAS : EF Core, FrotiXDbContext, UserManager.
- *
- * 📝 OBSERVAÇÕES  : Usa Include com LavadoresLavagem para enriquecer dados.
- **************************************************************************************** */
-
 using FrotiX.Data;
 using FrotiX.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -27,24 +8,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FrotiX.Helpers;
+
+/*
+ *  _________________________________________________________________________________________________________
+ * |                                                                                                         |
+ * |                                   FROTIX - SOLUÇÃO GESTÃO DE FROTAS                                     |
+ * |_________________________________________________________________________________________________________|
+ * |                                                                                                         |
+ * | (IA) CAMADA: CONTROLLERS (DASHBOARD)                                                                    |
+ * | (IA) IDENTIDADE: DashboardLavagemController.cs                                                          |
+ * | (IA) DESCRIÇÃO: API para análises e estatísticas de lavagens de veículos.                               |
+ * | (IA) PADRÃO: FrotiX 2026 Core (ASCII Hero Banner + XML Documentation)                                   |
+ * |_________________________________________________________________________________________________________|
+ */
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ CONTROLLER: DashboardLavagemController
-     * --------------------------------------------------------------------------------------
-     * 🎯 OBJETIVO     : Fornecer estatísticas e análises de lavagens de veículos
-     * 📥 ENTRADAS     : Filtros de data (dataInicio, dataFim)
-     * 📤 SAÍDAS       : JSON com estatísticas agregadas de lavagens
-     * 🔗 CHAMADA POR  : Frontend do Dashboard de Lavagem
-     * 🔄 CHAMA        : Lavagem, LavadoresLavagem, Veiculo, Motorista, Lavador (EF Include)
-     * 📦 DEPENDÊNCIAS : Entity Framework Core (Include/ThenInclude), UserManager
-     * --------------------------------------------------------------------------------------
-     * [DOC] Dashboard específico para análise de lavagens de veículos
-     * [DOC] Estatísticas: total de lavagens, custos, lavadores, veículos mais lavados
-     * [DOC] Período padrão: últimos 30 dias se não especificado
-     * [DOC] Usa Include/ThenInclude para eager loading de relacionamentos
-     ****************************************************************************************/
     [Authorize]
     public class DashboardLavagemController : Controller
     {

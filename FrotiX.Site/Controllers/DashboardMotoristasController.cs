@@ -1,22 +1,3 @@
-/* ****************************************************************************************
- * ⚡ ARQUIVO: DashboardMotoristasController.cs
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Estatísticas e análises de desempenho de motoristas (ranking, KM,
- *                   viagens e médias por período).
- *
- * 📥 ENTRADAS     : Filtros de data, ano/mês e parâmetros de ranking.
- *
- * 📤 SAÍDAS       : JSON com métricas agregadas e rankings.
- *
- * 🔗 CHAMADA POR  : Frontend do Dashboard de Motoristas.
- *
- * 🔄 CHAMA        : FrotiXDbContext e consultas EF Core (Motorista/Viagem).
- *
- * 📦 DEPENDÊNCIAS : EF Core, FrotiXDbContext.
- *
- * 📝 OBSERVAÇÕES  : Endpoints focados em performance com agregações por período.
- **************************************************************************************** */
-
 using FrotiX.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,24 +6,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FrotiX.Helpers;
+
+/*
+ *  _________________________________________________________________________________________________________
+ * |                                                                                                         |
+ * |                                   FROTIX - SOLUÇÃO GESTÃO DE FROTAS                                     |
+ * |_________________________________________________________________________________________________________|
+ * |                                                                                                         |
+ * | (IA) CAMADA: CONTROLLERS (DASHBOARD)                                                                    |
+ * | (IA) IDENTIDADE: DashboardMotoristasController.cs                                                       |
+ * | (IA) DESCRIÇÃO: API para análises e estatísticas de desempenho de motoristas.                           |
+ * | (IA) PADRÃO: FrotiX 2026 Core (ASCII Hero Banner + XML Documentation)                                   |
+ * |_________________________________________________________________________________________________________|
+ */
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ CONTROLLER: DashboardMotoristasController
-     * --------------------------------------------------------------------------------------
-     * 🎯 OBJETIVO     : Fornecer estatísticas e análises de desempenho de motoristas
-     * 📥 ENTRADAS     : Filtros de data (dataInicio, dataFim) ou ano/mês
-     * 📤 SAÍDAS       : JSON com estatísticas agregadas de motoristas
-     * 🔗 CHAMADA POR  : Frontend do Dashboard de Motoristas
-     * 🔄 CHAMA        : Motorista, Viagem (via DbContext async)
-     * 📦 DEPENDÊNCIAS : Entity Framework Core, FrotiXDbContext
-     * --------------------------------------------------------------------------------------
-     * [DOC] Dashboard específico para análise de desempenho de motoristas
-     * [DOC] Estatísticas: viagens realizadas, KM rodado, custos, ranking de eficiência
-     * [DOC] Método helper ObterPeriodo: converte ano/mês OU datas em período de busca
-     * [DOC] Fallback: últimos 30 dias se não houver filtro especificado
-     ****************************************************************************************/
     [Authorize]
     public class DashboardMotoristasController : Controller
     {

@@ -1,22 +1,3 @@
-/* ****************************************************************************************
- * ⚡ ARQUIVO: DashboardEventosController.cs
- * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Estatísticas e análises de eventos (viagens corporativas), com filtros
- *                   por período, status, setor e requisitante.
- *
- * 📥 ENTRADAS     : Filtros de data e parâmetros de consulta do dashboard.
- *
- * 📤 SAÍDAS       : JSON com estatísticas agregadas e séries para gráficos.
- *
- * 🔗 CHAMADA POR  : Frontend do Dashboard de Eventos.
- *
- * 🔄 CHAMA        : FrotiXDbContext, UserManager e consultas EF Core.
- *
- * 📦 DEPENDÊNCIAS : EF Core, UserManager, FrotiXDbContext.
- *
- * 📝 OBSERVAÇÕES  : Possui classe parcial _ExportacaoPDF.cs para geração de relatório PDF.
- **************************************************************************************** */
-
 using FrotiX.Data;
 using FrotiX.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -28,24 +9,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using FrotiX.Helpers;
+
+/*
+ *  _________________________________________________________________________________________________________
+ * |                                                                                                         |
+ * |                                   FROTIX - SOLUÇÃO GESTÃO DE FROTAS                                     |
+ * |_________________________________________________________________________________________________________|
+ * |                                                                                                         |
+ * | (IA) CAMADA: CONTROLLERS (DASHBOARD)                                                                    |
+ * | (IA) IDENTIDADE: DashboardEventosController.cs                                                          |
+ * | (IA) DESCRIÇÃO: API para análises e estatísticas de eventos (viagens corporativas).                     |
+ * | (IA) PADRÃO: FrotiX 2026 Core (ASCII Hero Banner + XML Documentation)                                   |
+ * |_________________________________________________________________________________________________________|
+ */
 
 namespace FrotiX.Controllers
 {
-    /****************************************************************************************
-     * ⚡ PARTIAL CLASS: DashboardEventosController (Principal)
-     * --------------------------------------------------------------------------------------
-     * 🎯 OBJETIVO     : Fornecer estatísticas e análises de eventos (viagens corporativas)
-     * 📥 ENTRADAS     : Filtros de data (DataInicial, dataFim)
-     * 📤 SAÍDAS       : JSON com estatísticas agregadas de eventos
-     * 🔗 CHAMADA POR  : Frontend do Dashboard de Eventos
-     * 🔄 CHAMA        : Viagem, Motorista, Veiculo, SetorSolicitante (via DbContext async)
-     * 📦 DEPENDÊNCIAS : Entity Framework Core, UserManager, FrotiXDbContext
-     * --------------------------------------------------------------------------------------
-     * [DOC] Dashboard específico para análise de eventos (viagens corporativas)
-     * [DOC] Estatísticas: total de eventos, KM rodado, custos, setores requisitantes
-     * [DOC] Período padrão: últimos 30 dias se não especificado
-     * [DOC] Possui classe parcial _ExportacaoPDF.cs para geração de relatórios PDF
-     ****************************************************************************************/
     [Authorize]
     public partial class DashboardEventosController : Controller
     {
