@@ -523,7 +523,7 @@ namespace FrotiX
 
                 // Register Syncfusion license
                 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(
-                    "Ngo9BigBOggjHTQxAR8/V1JFaF5cXGRCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWXZfeHRSR2NYV0x2XUNWYEg="
+                    "Ngo9BigBOggjHTQxAR8/V1JGaF5cXGpCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdlWX1eeHRURmNYWEByXUVWYEs="
                 );
 
                 // === Expor dependências para o Alerta (para gravar TempData e acessar HttpContext) ===

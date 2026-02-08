@@ -46,6 +46,13 @@ BEGIN TRY
     -- ----------------------------------------------------------
     PRINT '[1.1] Verificando Fornecedor.FornecedorId...';
 
+    -- Se PK já existe, pular todo o bloco 1.1
+    IF EXISTS (SELECT 1 FROM sys.key_constraints WHERE name = 'PK_Fornecedor_FornecedorId' AND parent_object_id = OBJECT_ID('dbo.Fornecedor'))
+    BEGIN
+        PRINT '[1.1] SKIP - PK_Fornecedor_FornecedorId já existe. Pulando Script 1.1.';
+        GOTO Script_1_2;
+    END
+
     -- Verificar se há registros com FornecedorId NULL
     IF EXISTS (SELECT 1 FROM dbo.Fornecedor WHERE FornecedorId IS NULL)
     BEGIN
@@ -137,8 +144,10 @@ BEGIN TRY
 
     -- PASSO 5: Adicionar PRIMARY KEY + DEFAULT (via EXEC para runtime compilation)
     PRINT '[1.1] PASSO 5: Criando PRIMARY KEY + DEFAULT...';
-    EXEC sp_executesql N'ALTER TABLE dbo.Fornecedor ADD CONSTRAINT PK_Fornecedor_FornecedorId PRIMARY KEY CLUSTERED (FornecedorId)';
-    EXEC sp_executesql N'ALTER TABLE dbo.Fornecedor ADD CONSTRAINT DF_Fornecedor_FornecedorId DEFAULT (newid()) FOR FornecedorId';
+    IF NOT EXISTS (SELECT 1 FROM sys.key_constraints WHERE name = 'PK_Fornecedor_FornecedorId' AND parent_object_id = OBJECT_ID('dbo.Fornecedor'))
+        EXEC sp_executesql N'ALTER TABLE dbo.Fornecedor ADD CONSTRAINT PK_Fornecedor_FornecedorId PRIMARY KEY CLUSTERED (FornecedorId)';
+    IF NOT EXISTS (SELECT 1 FROM sys.default_constraints WHERE name = 'DF_Fornecedor_FornecedorId' AND parent_object_id = OBJECT_ID('dbo.Fornecedor'))
+        EXEC sp_executesql N'ALTER TABLE dbo.Fornecedor ADD CONSTRAINT DF_Fornecedor_FornecedorId DEFAULT (newid()) FOR FornecedorId';
     PRINT '[1.1] PASSO 5: OK';
 
     -- PASSO 6: Recriar as FKs removidas
@@ -150,6 +159,8 @@ BEGIN TRY
     END
 
     PRINT '[1.1] OK - Fornecedor: PRIMARY KEY criada com sucesso.';
+    
+    Script_1_2: -- Label para GOTO quando PK já existe
     PRINT '';
 
     -- ----------------------------------------------------------
@@ -233,11 +244,15 @@ BEGIN TRY
     -- ----------------------------------------------------------
     PRINT '[2.1] Convertendo Viagem.UsuarioIdCriacao para nvarchar(450) e criando FK...';
 
-    EXEC sp_executesql N'ALTER TABLE dbo.Viagem ALTER COLUMN UsuarioIdCriacao nvarchar(450) NULL';
+    -- Só converte se ainda for varchar(100)
+    IF EXISTS (SELECT 1 FROM sys.columns c JOIN sys.types t ON c.system_type_id = t.system_type_id
+              WHERE c.object_id = OBJECT_ID('dbo.Viagem') AND c.name = 'UsuarioIdCriacao' AND t.name = 'varchar')
+        EXEC sp_executesql N'ALTER TABLE dbo.Viagem ALTER COLUMN UsuarioIdCriacao nvarchar(450) NULL';
 
-    ALTER TABLE dbo.Viagem WITH NOCHECK
-      ADD CONSTRAINT FK_Viagem_UsuarioIdCriacao
-      FOREIGN KEY (UsuarioIdCriacao) REFERENCES dbo.AspNetUsers (Id);
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Viagem_UsuarioIdCriacao')
+        ALTER TABLE dbo.Viagem WITH NOCHECK
+          ADD CONSTRAINT FK_Viagem_UsuarioIdCriacao
+          FOREIGN KEY (UsuarioIdCriacao) REFERENCES dbo.AspNetUsers (Id);
 
     PRINT '[2.1] OK - Viagem.UsuarioIdCriacao: convertida para nvarchar(450) + FK criada.';
     PRINT '';
@@ -248,9 +263,10 @@ BEGIN TRY
     -- ----------------------------------------------------------
     PRINT '[2.2] Criando FK Lavador.ContratoId...';
 
-    ALTER TABLE dbo.Lavador WITH NOCHECK
-      ADD CONSTRAINT FK_Lavador_ContratoId
-      FOREIGN KEY (ContratoId) REFERENCES dbo.Contrato (ContratoId);
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Lavador_ContratoId')
+        ALTER TABLE dbo.Lavador WITH NOCHECK
+          ADD CONSTRAINT FK_Lavador_ContratoId
+          FOREIGN KEY (ContratoId) REFERENCES dbo.Contrato (ContratoId);
 
     PRINT '[2.2] OK - Lavador: FK ContratoId criada.';
     PRINT '';
@@ -260,9 +276,10 @@ BEGIN TRY
     -- ----------------------------------------------------------
     PRINT '[2.3] Criando FK MovimentacaoEmpenhoMulta.EmpenhoMultaId...';
 
-    ALTER TABLE dbo.MovimentacaoEmpenhoMulta WITH NOCHECK
-      ADD CONSTRAINT FK_MovimentacaoEmpenhoMulta_EmpenhoMultaId
-      FOREIGN KEY (EmpenhoMultaId) REFERENCES dbo.EmpenhoMulta (EmpenhoMultaId);
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_MovimentacaoEmpenhoMulta_EmpenhoMultaId')
+        ALTER TABLE dbo.MovimentacaoEmpenhoMulta WITH NOCHECK
+          ADD CONSTRAINT FK_MovimentacaoEmpenhoMulta_EmpenhoMultaId
+          FOREIGN KEY (EmpenhoMultaId) REFERENCES dbo.EmpenhoMulta (EmpenhoMultaId);
 
     PRINT '[2.3] OK - MovimentacaoEmpenhoMulta: FK EmpenhoMultaId criada.';
     PRINT '';
@@ -272,9 +289,10 @@ BEGIN TRY
     -- ----------------------------------------------------------
     PRINT '[2.4] Criando FK AlertasFrotiX.UsuarioCriadorId...';
 
-    ALTER TABLE dbo.AlertasFrotiX WITH NOCHECK
-      ADD CONSTRAINT FK_AlertasFrotiX_UsuarioCriadorId
-      FOREIGN KEY (UsuarioCriadorId) REFERENCES dbo.AspNetUsers (Id);
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_AlertasFrotiX_UsuarioCriadorId')
+        ALTER TABLE dbo.AlertasFrotiX WITH NOCHECK
+          ADD CONSTRAINT FK_AlertasFrotiX_UsuarioCriadorId
+          FOREIGN KEY (UsuarioCriadorId) REFERENCES dbo.AspNetUsers (Id);
 
     PRINT '[2.4] OK - AlertasFrotiX: FK UsuarioCriadorId criada.';
     PRINT '';
@@ -285,19 +303,22 @@ BEGIN TRY
     PRINT '[2.5] Criando 3 FKs em Motorista...';
 
     -- 2.5a: Motorista.UnidadeId → Unidade
-    ALTER TABLE dbo.Motorista WITH NOCHECK
-      ADD CONSTRAINT FK_Motorista_UnidadeId
-      FOREIGN KEY (UnidadeId) REFERENCES dbo.Unidade (UnidadeId);
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Motorista_UnidadeId')
+        ALTER TABLE dbo.Motorista WITH NOCHECK
+          ADD CONSTRAINT FK_Motorista_UnidadeId
+          FOREIGN KEY (UnidadeId) REFERENCES dbo.Unidade (UnidadeId);
 
     -- 2.5b: Motorista.ContratoId → Contrato
-    ALTER TABLE dbo.Motorista WITH NOCHECK
-      ADD CONSTRAINT FK_Motorista_ContratoId
-      FOREIGN KEY (ContratoId) REFERENCES dbo.Contrato (ContratoId);
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Motorista_ContratoId')
+        ALTER TABLE dbo.Motorista WITH NOCHECK
+          ADD CONSTRAINT FK_Motorista_ContratoId
+          FOREIGN KEY (ContratoId) REFERENCES dbo.Contrato (ContratoId);
 
     -- 2.5c: Motorista.CondutorId → CondutorApoio
-    ALTER TABLE dbo.Motorista WITH NOCHECK
-      ADD CONSTRAINT FK_Motorista_CondutorId
-      FOREIGN KEY (CondutorId) REFERENCES dbo.CondutorApoio (CondutorId);
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Motorista_CondutorId')
+        ALTER TABLE dbo.Motorista WITH NOCHECK
+          ADD CONSTRAINT FK_Motorista_CondutorId
+          FOREIGN KEY (CondutorId) REFERENCES dbo.CondutorApoio (CondutorId);
 
     PRINT '[2.5] OK - Motorista: 3 FKs criadas (UnidadeId, ContratoId, CondutorId).';
     PRINT '';
@@ -310,21 +331,29 @@ BEGIN TRY
     -- ----------------------------------------------------------
     PRINT '[2.6] Convertendo 3 colunas de usuario em Manutencao para nvarchar(450) e criando FKs...';
 
-    EXEC sp_executesql N'ALTER TABLE dbo.Manutencao ALTER COLUMN IdUsuarioCriacao nvarchar(450) NULL';
-    EXEC sp_executesql N'ALTER TABLE dbo.Manutencao ALTER COLUMN IdUsuarioFinalizacao nvarchar(450) NULL';
-    EXEC sp_executesql N'ALTER TABLE dbo.Manutencao ALTER COLUMN IdUsuarioCancelamento nvarchar(450) NULL';
+    -- Só converte se ainda forem varchar(100)
+    IF EXISTS (SELECT 1 FROM sys.columns c JOIN sys.types t ON c.system_type_id = t.system_type_id
+              WHERE c.object_id = OBJECT_ID('dbo.Manutencao') AND c.name = 'IdUsuarioCriacao' AND t.name = 'varchar')
+    BEGIN
+        EXEC sp_executesql N'ALTER TABLE dbo.Manutencao ALTER COLUMN IdUsuarioCriacao nvarchar(450) NULL';
+        EXEC sp_executesql N'ALTER TABLE dbo.Manutencao ALTER COLUMN IdUsuarioFinalizacao nvarchar(450) NULL';
+        EXEC sp_executesql N'ALTER TABLE dbo.Manutencao ALTER COLUMN IdUsuarioCancelamento nvarchar(450) NULL';
+    END
 
-    ALTER TABLE dbo.Manutencao WITH NOCHECK
-      ADD CONSTRAINT FK_Manutencao_IdUsuarioCriacao
-      FOREIGN KEY (IdUsuarioCriacao) REFERENCES dbo.AspNetUsers (Id);
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Manutencao_IdUsuarioCriacao')
+        ALTER TABLE dbo.Manutencao WITH NOCHECK
+          ADD CONSTRAINT FK_Manutencao_IdUsuarioCriacao
+          FOREIGN KEY (IdUsuarioCriacao) REFERENCES dbo.AspNetUsers (Id);
 
-    ALTER TABLE dbo.Manutencao WITH NOCHECK
-      ADD CONSTRAINT FK_Manutencao_IdUsuarioFinalizacao
-      FOREIGN KEY (IdUsuarioFinalizacao) REFERENCES dbo.AspNetUsers (Id);
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Manutencao_IdUsuarioFinalizacao')
+        ALTER TABLE dbo.Manutencao WITH NOCHECK
+          ADD CONSTRAINT FK_Manutencao_IdUsuarioFinalizacao
+          FOREIGN KEY (IdUsuarioFinalizacao) REFERENCES dbo.AspNetUsers (Id);
 
-    ALTER TABLE dbo.Manutencao WITH NOCHECK
-      ADD CONSTRAINT FK_Manutencao_IdUsuarioCancelamento
-      FOREIGN KEY (IdUsuarioCancelamento) REFERENCES dbo.AspNetUsers (Id);
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Manutencao_IdUsuarioCancelamento')
+        ALTER TABLE dbo.Manutencao WITH NOCHECK
+          ADD CONSTRAINT FK_Manutencao_IdUsuarioCancelamento
+          FOREIGN KEY (IdUsuarioCancelamento) REFERENCES dbo.AspNetUsers (Id);
 
     PRINT '[2.6] OK - Manutencao: 3 colunas convertidas para nvarchar(450) + 3 FKs criadas.';
     PRINT '';
@@ -334,9 +363,10 @@ BEGIN TRY
     -- ----------------------------------------------------------
     PRINT '[2.7] Criando FK ItensManutencao.ViagemId...';
 
-    ALTER TABLE dbo.ItensManutencao WITH NOCHECK
-      ADD CONSTRAINT FK_ItensManutencao_ViagemId
-      FOREIGN KEY (ViagemId) REFERENCES dbo.Viagem (ViagemId);
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_ItensManutencao_ViagemId')
+        ALTER TABLE dbo.ItensManutencao WITH NOCHECK
+          ADD CONSTRAINT FK_ItensManutencao_ViagemId
+          FOREIGN KEY (ViagemId) REFERENCES dbo.Viagem (ViagemId);
 
     PRINT '[2.7] OK - ItensManutencao: FK ViagemId criada.';
     PRINT '';
@@ -354,11 +384,12 @@ BEGIN TRY
     -- ----------------------------------------------------------
     PRINT '[3.1] Criando índice Abastecimento Dashboard...';
 
-    CREATE NONCLUSTERED INDEX IX_Abastecimento_DataHora_Cobertura
-    ON dbo.Abastecimento (DataHora DESC)
-    INCLUDE (VeiculoId, MotoristaId, CombustivelId, ValorUnitario, Litros)
-    WITH (FILLFACTOR = 90)
-    ON [PRIMARY];
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Abastecimento_DataHora_Cobertura' AND object_id = OBJECT_ID('dbo.Abastecimento'))
+        CREATE NONCLUSTERED INDEX IX_Abastecimento_DataHora_Cobertura
+        ON dbo.Abastecimento (DataHora DESC)
+        INCLUDE (VeiculoId, MotoristaId, CombustivelId, ValorUnitario, Litros)
+        WITH (FILLFACTOR = 90)
+        ON [PRIMARY];
 
     PRINT '[3.1] OK - Abastecimento: Índice de cobertura Dashboard criado.';
     PRINT '';
@@ -369,12 +400,13 @@ BEGIN TRY
     -- ----------------------------------------------------------
     PRINT '[3.2] Criando índice Abastecimento MotoristaId + DataHora...';
 
-    CREATE NONCLUSTERED INDEX IX_Abastecimento_MotoristaId_DataHora
-    ON dbo.Abastecimento (MotoristaId, DataHora DESC)
-    INCLUDE (ValorUnitario, Litros, CombustivelId)
-    WHERE (MotoristaId IS NOT NULL)
-    WITH (FILLFACTOR = 90)
-    ON [PRIMARY];
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Abastecimento_MotoristaId_DataHora' AND object_id = OBJECT_ID('dbo.Abastecimento'))
+        CREATE NONCLUSTERED INDEX IX_Abastecimento_MotoristaId_DataHora
+        ON dbo.Abastecimento (MotoristaId, DataHora DESC)
+        INCLUDE (ValorUnitario, Litros, CombustivelId)
+        WHERE (MotoristaId IS NOT NULL)
+        WITH (FILLFACTOR = 90)
+        ON [PRIMARY];
 
     PRINT '[3.2] OK - Abastecimento: Índice MotoristaId + DataHora criado.';
     PRINT '';
@@ -385,11 +417,12 @@ BEGIN TRY
     -- ----------------------------------------------------------
     PRINT '[3.3] Criando índice CorridasTaxiLeg...';
 
-    CREATE NONCLUSTERED INDEX IX_CorridasTaxiLeg_DataAgenda
-    ON dbo.CorridasTaxiLeg (DataAgenda DESC)
-    INCLUDE (CorridaId, Setor, Unidade, Valor, KmReal, QtdPassageiros)
-    WITH (FILLFACTOR = 90)
-    ON [PRIMARY];
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_CorridasTaxiLeg_DataAgenda' AND object_id = OBJECT_ID('dbo.CorridasTaxiLeg'))
+        CREATE NONCLUSTERED INDEX IX_CorridasTaxiLeg_DataAgenda
+        ON dbo.CorridasTaxiLeg (DataAgenda DESC)
+        INCLUDE (CorridaId, Setor, Unidade, Valor, KmReal, QtdPassageiros)
+        WITH (FILLFACTOR = 90)
+        ON [PRIMARY];
 
     PRINT '[3.3] OK - CorridasTaxiLeg: Índice DataAgenda criado.';
     PRINT '';
@@ -400,11 +433,12 @@ BEGIN TRY
     -- ----------------------------------------------------------
     PRINT '[3.4] Criando índice CorridasCanceladasTaxiLeg...';
 
-    CREATE NONCLUSTERED INDEX IX_CorridasCanceladasTaxiLeg_DataAgenda
-    ON dbo.CorridasCanceladasTaxiLeg (DataAgenda DESC)
-    INCLUDE (TipoCancelamento, MotivoCancelamento, TempoEspera)
-    WITH (FILLFACTOR = 90)
-    ON [PRIMARY];
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_CorridasCanceladasTaxiLeg_DataAgenda' AND object_id = OBJECT_ID('dbo.CorridasCanceladasTaxiLeg'))
+        CREATE NONCLUSTERED INDEX IX_CorridasCanceladasTaxiLeg_DataAgenda
+        ON dbo.CorridasCanceladasTaxiLeg (DataAgenda DESC)
+        INCLUDE (TipoCancelamento, MotivoCancelamento, TempoEspera)
+        WITH (FILLFACTOR = 90)
+        ON [PRIMARY];
 
     PRINT '[3.4] OK - CorridasCanceladasTaxiLeg: Índice DataAgenda criado.';
     PRINT '';
@@ -415,15 +449,17 @@ BEGIN TRY
     -- ----------------------------------------------------------
     PRINT '[3.5] Criando 2 índices MovimentacaoEmpenhoMulta...';
 
-    CREATE NONCLUSTERED INDEX IX_MovimentacaoEmpenhoMulta_MultaId
-    ON dbo.MovimentacaoEmpenhoMulta (MultaId)
-    INCLUDE (EmpenhoMultaId, DataMovimentacao, Valor)
-    ON [PRIMARY];
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_MovimentacaoEmpenhoMulta_MultaId' AND object_id = OBJECT_ID('dbo.MovimentacaoEmpenhoMulta'))
+        CREATE NONCLUSTERED INDEX IX_MovimentacaoEmpenhoMulta_MultaId
+        ON dbo.MovimentacaoEmpenhoMulta (MultaId)
+        INCLUDE (EmpenhoMultaId, DataMovimentacao, Valor)
+        ON [PRIMARY];
 
-    CREATE NONCLUSTERED INDEX IX_MovimentacaoEmpenhoMulta_EmpenhoMultaId
-    ON dbo.MovimentacaoEmpenhoMulta (EmpenhoMultaId)
-    INCLUDE (MultaId, DataMovimentacao, Valor)
-    ON [PRIMARY];
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_MovimentacaoEmpenhoMulta_EmpenhoMultaId' AND object_id = OBJECT_ID('dbo.MovimentacaoEmpenhoMulta'))
+        CREATE NONCLUSTERED INDEX IX_MovimentacaoEmpenhoMulta_EmpenhoMultaId
+        ON dbo.MovimentacaoEmpenhoMulta (EmpenhoMultaId)
+        INCLUDE (MultaId, DataMovimentacao, Valor)
+        ON [PRIMARY];
 
     PRINT '[3.5] OK - MovimentacaoEmpenhoMulta: 2 índices criados.';
     PRINT '';
@@ -434,19 +470,21 @@ BEGIN TRY
     -- ----------------------------------------------------------
     PRINT '[3.6] Criando 2 índices NotaFiscal...';
 
-    CREATE NONCLUSTERED INDEX IX_NotaFiscal_EmpenhoId
-    ON dbo.NotaFiscal (EmpenhoId)
-    INCLUDE (NotaFiscalId, ValorNF, ValorGlosa, DataEmissao, ContratoId)
-    WHERE (EmpenhoId IS NOT NULL)
-    WITH (FILLFACTOR = 90)
-    ON [PRIMARY];
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_NotaFiscal_EmpenhoId' AND object_id = OBJECT_ID('dbo.NotaFiscal'))
+        CREATE NONCLUSTERED INDEX IX_NotaFiscal_EmpenhoId
+        ON dbo.NotaFiscal (EmpenhoId)
+        INCLUDE (NotaFiscalId, ValorNF, ValorGlosa, DataEmissao, ContratoId)
+        WHERE (EmpenhoId IS NOT NULL)
+        WITH (FILLFACTOR = 90)
+        ON [PRIMARY];
 
-    CREATE NONCLUSTERED INDEX IX_NotaFiscal_ContratoId_AnoMes
-    ON dbo.NotaFiscal (ContratoId, AnoReferencia DESC, MesReferencia DESC)
-    INCLUDE (NotaFiscalId, NumeroNF, ValorNF, EmpenhoId)
-    WHERE (ContratoId IS NOT NULL)
-    WITH (FILLFACTOR = 90)
-    ON [PRIMARY];
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_NotaFiscal_ContratoId_AnoMes' AND object_id = OBJECT_ID('dbo.NotaFiscal'))
+        CREATE NONCLUSTERED INDEX IX_NotaFiscal_ContratoId_AnoMes
+        ON dbo.NotaFiscal (ContratoId, AnoReferencia DESC, MesReferencia DESC)
+        INCLUDE (NotaFiscalId, NumeroNF, ValorNF, EmpenhoId)
+        WHERE (ContratoId IS NOT NULL)
+        WITH (FILLFACTOR = 90)
+        ON [PRIMARY];
 
     PRINT '[3.6] OK - NotaFiscal: 2 índices criados.';
     PRINT '';
@@ -456,10 +494,11 @@ BEGIN TRY
     -- ----------------------------------------------------------
     PRINT '[3.7] Criando índice DocumentoContrato...';
 
-    CREATE NONCLUSTERED INDEX IX_DocumentoContrato_ContratoId
-    ON dbo.DocumentoContrato (ContratoId)
-    INCLUDE (DocumentoContratoId, TipoDocumento, Descricao)
-    ON [PRIMARY];
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_DocumentoContrato_ContratoId' AND object_id = OBJECT_ID('dbo.DocumentoContrato'))
+        CREATE NONCLUSTERED INDEX IX_DocumentoContrato_ContratoId
+        ON dbo.DocumentoContrato (ContratoId)
+        INCLUDE (DocumentoContratoId, TipoDocumento, Descricao)
+        ON [PRIMARY];
 
     PRINT '[3.7] OK - DocumentoContrato: Índice ContratoId criado.';
     PRINT '';
@@ -469,11 +508,12 @@ BEGIN TRY
     -- ----------------------------------------------------------
     PRINT '[3.8] Criando índice Contatos.Nome...';
 
-    CREATE NONCLUSTERED INDEX IX_Contatos_Nome
-    ON dbo.Contatos (Nome)
-    INCLUDE (Celular, Email, Ativo)
-    WHERE (Ativo = 1)
-    ON [PRIMARY];
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Contatos_Nome' AND object_id = OBJECT_ID('dbo.Contatos'))
+        CREATE NONCLUSTERED INDEX IX_Contatos_Nome
+        ON dbo.Contatos (Nome)
+        INCLUDE (Celular, Email, Ativo)
+        WHERE (Ativo = 1)
+        ON [PRIMARY];
 
     PRINT '[3.8] OK - Contatos: Índice Nome criado.';
     PRINT '';
@@ -641,6 +681,48 @@ BEGIN TRY
     PRINT '';
 
     -- ==========================================================
+    -- RESUMO DE ALTERAÇÕES
+    -- ==========================================================
+    PRINT '';
+    PRINT '================================================================';
+    PRINT 'RESUMO DO QUE FOI APLICADO:';
+    PRINT '================================================================';
+
+    -- Contar FKs criadas pelo script
+    DECLARE @fksNovas INT = 0;
+    SELECT @fksNovas = COUNT(*) FROM sys.foreign_keys
+    WHERE name IN (
+        'FK_Viagem_UsuarioIdCriacao',
+        'FK_Lavador_ContratoId',
+        'FK_MovimentacaoEmpenhoMulta_EmpenhoMultaId',
+        'FK_AlertasFrotiX_UsuarioCriadorId',
+        'FK_Motorista_UnidadeId', 'FK_Motorista_ContratoId', 'FK_Motorista_CondutorId',
+        'FK_Manutencao_IdUsuarioCriacao', 'FK_Manutencao_IdUsuarioFinalizacao', 'FK_Manutencao_IdUsuarioCancelamento',
+        'FK_ItensManutencao_ViagemId'
+    );
+    PRINT 'FKs novas criadas: ' + CAST(@fksNovas AS VARCHAR) + ' de 11';
+
+    -- Contar índices criados pelo script
+    DECLARE @idxNovos INT = 0;
+    SELECT @idxNovos = COUNT(*) FROM sys.indexes
+    WHERE name IN (
+        'IX_Abastecimento_DataHora_Cobertura', 'IX_Abastecimento_MotoristaId_DataHora',
+        'IX_CorridasTaxiLeg_DataAgenda', 'IX_CorridasCanceladasTaxiLeg_DataAgenda',
+        'IX_MovimentacaoEmpenhoMulta_MultaId', 'IX_MovimentacaoEmpenhoMulta_EmpenhoMultaId',
+        'IX_NotaFiscal_EmpenhoId', 'IX_NotaFiscal_ContratoId_AnoMes',
+        'IX_DocumentoContrato_ContratoId', 'IX_Contatos_Nome'
+    );
+    PRINT 'Índices novos criados: ' + CAST(@idxNovos AS VARCHAR) + ' de 10';
+
+    -- Verificar PK Fornecedor
+    IF EXISTS (SELECT 1 FROM sys.key_constraints WHERE name = 'PK_Fornecedor_FornecedorId')
+        PRINT 'PK Fornecedor: OK';
+    ELSE
+        PRINT 'PK Fornecedor: FALHA';
+
+    PRINT '';
+
+    -- ==========================================================
     -- COMMIT — Todas as alterações aplicadas com sucesso
     -- ==========================================================
     COMMIT TRANSACTION AuditoriaFrotix;
@@ -683,21 +765,123 @@ GO
 -- Executar SEPARADAMENTE após confirmar que os dados estão OK
 -- Isso faz o SQL Server validar TODOS os registros existentes
 -- contra as novas FKs (pode demorar dependendo do volume)
+--
+-- DIAGNÓSTICO: Antes de ativar, veja os órfãos com as queries abaixo.
+-- Se houver dados órfãos, limpe-os primeiro ou deixe a FK como NOCHECK.
 -- ============================================================
+
+-- 1) Diagnóstico: ver registros órfãos por FK
+PRINT '=== DIAGNÓSTICO: Registros órfãos por FK ===';
+PRINT '';
+
+SELECT 'Viagem.UsuarioIdCriacao' AS FK, COUNT(*) AS Orfaos
+FROM dbo.Viagem v
+WHERE v.UsuarioIdCriacao IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.AspNetUsers u WHERE u.Id = v.UsuarioIdCriacao);
+
+SELECT 'Lavador.ContratoId' AS FK, COUNT(*) AS Orfaos
+FROM dbo.Lavador l
+WHERE l.ContratoId IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.Contrato c WHERE c.ContratoId = l.ContratoId);
+
+SELECT 'MovimentacaoEmpenhoMulta.EmpenhoMultaId' AS FK, COUNT(*) AS Orfaos
+FROM dbo.MovimentacaoEmpenhoMulta m
+WHERE m.EmpenhoMultaId IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.EmpenhoMulta e WHERE e.EmpenhoMultaId = m.EmpenhoMultaId);
+
+SELECT 'AlertasFrotiX.UsuarioCriadorId' AS FK, COUNT(*) AS Orfaos
+FROM dbo.AlertasFrotiX a
+WHERE a.UsuarioCriadorId IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.AspNetUsers u WHERE u.Id = a.UsuarioCriadorId);
+
+SELECT 'Motorista.UnidadeId' AS FK, COUNT(*) AS Orfaos
+FROM dbo.Motorista m
+WHERE m.UnidadeId IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.Unidade u WHERE u.UnidadeId = m.UnidadeId);
+
+SELECT 'Motorista.ContratoId' AS FK, COUNT(*) AS Orfaos
+FROM dbo.Motorista m
+WHERE m.ContratoId IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.Contrato c WHERE c.ContratoId = m.ContratoId);
+
+SELECT 'Motorista.CondutorId' AS FK, COUNT(*) AS Orfaos
+FROM dbo.Motorista m
+WHERE m.CondutorId IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.CondutorApoio c WHERE c.CondutorId = m.CondutorId);
+
+SELECT 'Manutencao.IdUsuarioCriacao' AS FK, COUNT(*) AS Orfaos
+FROM dbo.Manutencao m
+WHERE m.IdUsuarioCriacao IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.AspNetUsers u WHERE u.Id = m.IdUsuarioCriacao);
+
+SELECT 'Manutencao.IdUsuarioFinalizacao' AS FK, COUNT(*) AS Orfaos
+FROM dbo.Manutencao m
+WHERE m.IdUsuarioFinalizacao IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.AspNetUsers u WHERE u.Id = m.IdUsuarioFinalizacao);
+
+SELECT 'Manutencao.IdUsuarioCancelamento' AS FK, COUNT(*) AS Orfaos
+FROM dbo.Manutencao m
+WHERE m.IdUsuarioCancelamento IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.AspNetUsers u WHERE u.Id = m.IdUsuarioCancelamento);
+
+SELECT 'ItensManutencao.ViagemId' AS FK, COUNT(*) AS Orfaos
+FROM dbo.ItensManutencao i
+WHERE i.ViagemId IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.Viagem v WHERE v.ViagemId = i.ViagemId);
+
+PRINT '';
+PRINT '=== FIM DIAGNÓSTICO ===';
+PRINT 'Se todos os Orfaos = 0, pode rodar o bloco WITH CHECK abaixo.';
+PRINT 'Se algum > 0, limpe os dados órfãos primeiro (SET NULL ou DELETE).';
+GO
+
+-- 2) Ativar validação (rodar DEPOIS de limpar órfãos)
 /*
-PRINT 'Ativando validação completa das FKs...';
+SET XACT_ABORT ON;
+BEGIN TRY
+    BEGIN TRANSACTION ValidarFKs;
 
-ALTER TABLE dbo.Viagem WITH CHECK CHECK CONSTRAINT FK_Viagem_UsuarioIdCriacao;
-ALTER TABLE dbo.Lavador WITH CHECK CHECK CONSTRAINT FK_Lavador_ContratoId;
-ALTER TABLE dbo.MovimentacaoEmpenhoMulta WITH CHECK CHECK CONSTRAINT FK_MovimentacaoEmpenhoMulta_EmpenhoMultaId;
-ALTER TABLE dbo.AlertasFrotiX WITH CHECK CHECK CONSTRAINT FK_AlertasFrotiX_UsuarioCriadorId;
-ALTER TABLE dbo.Motorista WITH CHECK CHECK CONSTRAINT FK_Motorista_UnidadeId;
-ALTER TABLE dbo.Motorista WITH CHECK CHECK CONSTRAINT FK_Motorista_ContratoId;
-ALTER TABLE dbo.Motorista WITH CHECK CHECK CONSTRAINT FK_Motorista_CondutorId;
-ALTER TABLE dbo.Manutencao WITH CHECK CHECK CONSTRAINT FK_Manutencao_IdUsuarioCriacao;
-ALTER TABLE dbo.Manutencao WITH CHECK CHECK CONSTRAINT FK_Manutencao_IdUsuarioFinalizacao;
-ALTER TABLE dbo.Manutencao WITH CHECK CHECK CONSTRAINT FK_Manutencao_IdUsuarioCancelamento;
-ALTER TABLE dbo.ItensManutencao WITH CHECK CHECK CONSTRAINT FK_ItensManutencao_ViagemId;
+    ALTER TABLE dbo.Viagem WITH CHECK CHECK CONSTRAINT FK_Viagem_UsuarioIdCriacao;
+    PRINT 'OK - FK_Viagem_UsuarioIdCriacao';
 
-PRINT 'Todas as FKs agora validam dados existentes (trusted).';
+    ALTER TABLE dbo.Lavador WITH CHECK CHECK CONSTRAINT FK_Lavador_ContratoId;
+    PRINT 'OK - FK_Lavador_ContratoId';
+
+    ALTER TABLE dbo.MovimentacaoEmpenhoMulta WITH CHECK CHECK CONSTRAINT FK_MovimentacaoEmpenhoMulta_EmpenhoMultaId;
+    PRINT 'OK - FK_MovimentacaoEmpenhoMulta_EmpenhoMultaId';
+
+    ALTER TABLE dbo.AlertasFrotiX WITH CHECK CHECK CONSTRAINT FK_AlertasFrotiX_UsuarioCriadorId;
+    PRINT 'OK - FK_AlertasFrotiX_UsuarioCriadorId';
+
+    ALTER TABLE dbo.Motorista WITH CHECK CHECK CONSTRAINT FK_Motorista_UnidadeId;
+    PRINT 'OK - FK_Motorista_UnidadeId';
+
+    ALTER TABLE dbo.Motorista WITH CHECK CHECK CONSTRAINT FK_Motorista_ContratoId;
+    PRINT 'OK - FK_Motorista_ContratoId';
+
+    ALTER TABLE dbo.Motorista WITH CHECK CHECK CONSTRAINT FK_Motorista_CondutorId;
+    PRINT 'OK - FK_Motorista_CondutorId';
+
+    ALTER TABLE dbo.Manutencao WITH CHECK CHECK CONSTRAINT FK_Manutencao_IdUsuarioCriacao;
+    PRINT 'OK - FK_Manutencao_IdUsuarioCriacao';
+
+    ALTER TABLE dbo.Manutencao WITH CHECK CHECK CONSTRAINT FK_Manutencao_IdUsuarioFinalizacao;
+    PRINT 'OK - FK_Manutencao_IdUsuarioFinalizacao';
+
+    ALTER TABLE dbo.Manutencao WITH CHECK CHECK CONSTRAINT FK_Manutencao_IdUsuarioCancelamento;
+    PRINT 'OK - FK_Manutencao_IdUsuarioCancelamento';
+
+    ALTER TABLE dbo.ItensManutencao WITH CHECK CHECK CONSTRAINT FK_ItensManutencao_ViagemId;
+    PRINT 'OK - FK_ItensManutencao_ViagemId';
+
+    COMMIT TRANSACTION ValidarFKs;
+    PRINT 'SUCESSO - Todas as FKs agora validam dados existentes (trusted).';
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION ValidarFKs;
+    PRINT 'ERRO! ROLLBACK - Nenhuma FK foi ativada.';
+    PRINT 'Mensagem: ' + ERROR_MESSAGE();
+    PRINT 'Limpe os dados órfãos e tente novamente.';
+    THROW;
+END CATCH
 */
