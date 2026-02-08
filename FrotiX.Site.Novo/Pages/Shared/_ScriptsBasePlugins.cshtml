@@ -274,28 +274,120 @@
 
  <script src="/api/reports/resources/js/telerikReportViewer-19.1.25.521.min.js"></script>
 
-<!-- Syncfusion EJ2 (usando unpkg como alternativa - CDN oficial com problemas de CORS) -->
-<script src="https://unpkg.com/@@syncfusion/ej2@@32.1.23/dist/ej2.min.js" crossorigin="anonymous"></script>
+<!-- Syncfusion EJ2 -->
+<script src="https://cdn.syncfusion.com/ej2/32.1.19/dist/ej2.min.js"></script>
 <!-- ============================================ -->
 <!-- SYNCFUSION LOCALIZAÇÃO PT-BR COMPLETA      -->
-<!-- CLDR + L10n para versão 32.1.23            -->
+<!-- CLDR + L10n para versão 32.1.19            -->
 <!-- ============================================ -->
+<!-- PATCH: Fallback de símbolos de formatação para evitar erro percentSign -->
+<script>
+	(function () {
+		'use strict';
+		// Garante que símbolos básicos existam ANTES do CLDR carregar
+		if (window.ej && ej.base && ej.base.cldrData) {
+			// Fallback mínimo para números pt-BR
+			var fallbackSymbols = {
+				'main': {
+					'pt-BR': {
+						'numbers': {
+							'symbols-numberSystem-latn': {
+								'decimal': ',',
+								'group': '.',
+								'percentSign': '%',
+								'plusSign': '+',
+								'minusSign': '-',
+								'exponential': 'E',
+								'perMille': '‰',
+								'infinity': '∞',
+								'nan': 'NaN',
+								'currencyDecimal': ',',
+								'currencyGroup': '.'
+							}
+						}
+					}
+				}
+			};
+			try {
+				ej.base.loadCldr(fallbackSymbols);
+				console.log('[Syncfusion] ✅ Fallback de símbolos de formatação carregado');
+			} catch (e) {
+				console.warn('[Syncfusion] Aviso ao carregar fallback:', e);
+			}
+		}
+	})();
+</script>
+<!-- Syncfusion CLDR + locale (pt-BR) -->
+<script>
+	(function () {
+		'use strict';
+
+		try {
+			if (!(window.ej && ej.base && ej.base.loadCldr)) {
+				return;
+			}
+
+			function loadJsonSync(url) {
+				try {
+					var ajax = new ej.base.Ajax(url, 'GET', false);
+					var data = null;
+					ajax.onSuccess = function (value) {
+						try {
+							data = JSON.parse(value);
+						} catch (e) {
+							data = null;
+						}
+					};
+					ajax.onFailure = function () {
+						data = null;
+					};
+					ajax.send();
+					return data;
+				} catch (error) {
+					if (window.Alerta && Alerta.TratamentoErroComLinha) {
+						Alerta.TratamentoErroComLinha("Pages/Shared/_ScriptsBasePlugins.cshtml", "loadJsonSync", error);
+					} else {
+						console.error('Erro em loadJsonSync:', error);
+					}
+					return null;
+				}
+			}
+
+			var cldr = [
+				loadJsonSync('https://cdn.syncfusion.com/ej2/32.1.19/dist/cldr-data/supplemental/numberingSystems.json'),
+				loadJsonSync('https://cdn.syncfusion.com/ej2/32.1.19/dist/cldr-data/supplemental/weekData.json'),
+				loadJsonSync('https://cdn.syncfusion.com/ej2/32.1.19/dist/cldr-data/main/pt-BR/numbers.json'),
+				loadJsonSync('https://cdn.syncfusion.com/ej2/32.1.19/dist/cldr-data/main/pt-BR/ca-gregorian.json'),
+				loadJsonSync('https://cdn.syncfusion.com/ej2/32.1.19/dist/cldr-data/main/pt-BR/timeZoneNames.json'),
+				loadJsonSync('https://cdn.syncfusion.com/ej2/32.1.19/dist/cldr-data/main/pt-BR/currencies.json')
+			].filter(Boolean);
+
+			if (cldr.length) {
+				ej.base.loadCldr.apply(ej.base, cldr);
+			}
+
+			var locale = loadJsonSync('https://cdn.syncfusion.com/ej2/32.1.19/dist/ej2-locale/pt-BR.json');
+			if (locale) {
+				ej.base.L10n.load(locale);
+			}
+
+			ej.base.setCulture('pt-BR');
+			window.__cldrLoaded = true;
+		} catch (error) {
+			if (window.Alerta && Alerta.TratamentoErroComLinha) {
+				Alerta.TratamentoErroComLinha("Pages/Shared/_ScriptsBasePlugins.cshtml", "SyncfusionCLDR", error);
+			} else {
+				console.error('Erro ao carregar CLDR pt-BR:', error);
+			}
+			window.__cldrLoaded = false;
+		}
+	})();
+</script>
 <script>
 (function() {
     'use strict';
 
-    // URLs dos arquivos CLDR necessários (versão 44 - mais recente estável)
-    const CLDR_BASE = 'https://cdn.jsdelivr.net/npm/cldr-data@36.0.1';
-    const cldrUrls = [
-        `${CLDR_BASE}/main/pt/numbers.json`,
-        `${CLDR_BASE}/main/pt/ca-gregorian.json`,
-        `${CLDR_BASE}/main/pt/timeZoneNames.json`,
-        `${CLDR_BASE}/main/pt/currencies.json`,
-        `${CLDR_BASE}/supplemental/numberingSystems.json`,
-        `${CLDR_BASE}/supplemental/currencyData.json`
-    ];
-
-    // Traduções L10n customizadas para pt-BR (Syncfusion 32.x)
+    // Traduções L10n customizadas adicionais para pt-BR (Syncfusion 32.x)
     const ptBRLocale = {
         'pt': {
             // Grid
@@ -601,102 +693,21 @@
         }
     };
 
-    // Função para carregar CLDR de forma assíncrona
-    async function loadCldrData() {
-        try {
-            console.log('🌍 Carregando dados CLDR para pt-BR...');
-
-            const responses = await Promise.all(
-                cldrUrls.map(url =>
-                    fetch(url)
-                        .then(res => {
-                            if (!res.ok) throw new Error(`Falha ao carregar ${url}`);
-                            return res.json();
-                        })
-                        .catch(err => {
-                            console.warn(`⚠️ Não foi possível carregar: ${url}`, err.message);
-                            return null;
-                        })
-                )
-            );
-
-            // Filtrar respostas válidas
-            const validData = responses.filter(data => data !== null);
-
-            if (validData.length > 0 && typeof ej !== 'undefined' && ej.base && ej.base.loadCldr) {
-                ej.base.loadCldr(...validData);
-                console.log(`✅ CLDR carregado (${validData.length}/${cldrUrls.length} arquivos)`);
-            }
-
-            return true;
-        } catch (error) {
-            console.error('❌ Erro ao carregar CLDR:', error);
-            return false;
+    // Aplicar traduções L10n adicionais (CLDR já carregado sincronamente acima)
+    try {
+        if (typeof ej !== 'undefined' && ej.base && ej.base.L10n && ej.base.L10n.load) {
+            ej.base.L10n.load(ptBRLocale);
+            console.log('✅ Traduções L10n pt-BR adicionais carregadas');
         }
+    } catch (error) {
+        console.error('Erro ao carregar traduções L10n:', error);
     }
-
-    // Função para aplicar localizações
-    function applyLocalization() {
-        try {
-            if (typeof ej === 'undefined' || !ej.base) {
-                console.warn('⚠️ Syncfusion não carregado ainda');
-                return false;
-            }
-
-            // Carregar traduções L10n
-            if (ej.base.L10n && ej.base.L10n.load) {
-                ej.base.L10n.load(ptBRLocale);
-                console.log('✅ Traduções L10n pt-BR carregadas');
-            }
-
-            // Definir cultura
-            if (ej.base.setCulture) {
-                ej.base.setCulture('pt');
-                console.log('✅ Cultura definida: pt');
-            }
-
-            // Definir código da moeda
-            if (ej.base.setCurrencyCode) {
-                ej.base.setCurrencyCode('BRL');
-                console.log('✅ Moeda definida: BRL');
-            }
-
-            window.__syncfusionLocaleReady = true;
-            document.dispatchEvent(new CustomEvent('syncfusion-locale-ready'));
-
-            return true;
-        } catch (error) {
-            console.error('❌ Erro ao aplicar localização:', error);
-            return false;
-        }
-    }
-
-    // Inicialização
-    async function init() {
-        try {
-            // Primeiro aplicar traduções L10n (não depende do CLDR)
-            applyLocalization();
-
-            // Depois carregar CLDR em background (para formatação de números/datas)
-            await loadCldrData();
-
-            console.log('🎉 Localização Syncfusion pt-BR configurada com sucesso!');
-            window.__cldrLoaded = true;
-
-        } catch (error) {
-            console.error('❌ Erro na inicialização da localização:', error);
-            window.__cldrLoaded = false;
-        }
-    }
-
-    // Executar inicialização
-    init();
 
 })();
 </script>
 <!-- Registro de licença Syncfusion -->
 <script>
-	ej.base.registerLicense("Ngo9BigBOggjHTQxAR8/V1JGaF5cXGpCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdlWX1ecXRVRmRcUkFxWEtWYEs=");
+	ej.base.registerLicense("Ngo9BigBOggjHTQxAR8/V1JGaF5cXGRCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWXZfeHRSR2NYV0x2XUNWYEg=");
 	// Flag e evento para indicar que licença foi registrada
 	window.syncfusionLicenseReady = true;
 	document.dispatchEvent(new CustomEvent('syncfusion-license-ready'));
@@ -744,51 +755,27 @@
 <!-- ============================================ -->
 
 <script src="~/js/vendors.bundle.js"></script>
-<!-- Kendo UI - Arquivos locais (wwwroot/lib/kendo/2025.2.520) -->
+
+<!-- ⚠️ KENDO UI - CDN Oficial Telerik (DEVE ser carregado APOS vendors.bundle.js) -->
+<script src="https://kendo.cdn.telerik.com/2023.1.117/js/jszip.min.js"></script>
+<!-- Usar distribuição clássica (non-module) para evitar SyntaxError em browsers -->
+<script src="https://kendo.cdn.telerik.com/2025.4.1321/js/kendo.all.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2025.4.1321/js/kendo.aspnetmvc.min.js"></script>
+<!-- Cultura pt-BR para Kendo UI (DatePickers, etc.) -->
+<script src="https://kendo.cdn.telerik.com/2025.4.1321/js/cultures/kendo.culture.pt-BR.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2025.4.1321/js/messages/kendo.messages.pt-BR.min.js"></script>
 <script>
-	(function () {
-		try {
-			window.__ftxAmdDefine = window.define;
-			window.__ftxAmdDefineAmd = window.define && window.define.amd;
-			if (window.define && window.define.amd) {
-				window.define = undefined;
-			}
-		} catch (error) {
-			if (window.Alerta && typeof Alerta.TratamentoErroComLinha === "function") {
-				Alerta.TratamentoErroComLinha("_ScriptsBasePlugins.cshtml", "kendo.amd.disable", error);
-			}
-		}
-	})();
-</script>
-<script src="~/Neon/js/datatables/JSZip-2.5.0/jszip.min.js" asp-append-version="true"></script>
-@* Kendo scripts movidos para _Head.cshtml (carregados via CDN antes dos TagHelpers)
-<script src="~/lib/kendo/2025.2.520/js/kendo.all.min.js" asp-append-version="true"></script>
-<script src="~/lib/kendo/2025.2.520/js/kendo.aspnetmvc.min.js" asp-append-version="true"></script>
-<script src="~/lib/kendo/2025.2.520/js/cultures/kendo.culture.pt-BR.min.js" asp-append-version="true"></script>
-<script src="~/lib/kendo/2025.2.520/js/messages/kendo.messages.pt-BR.min.js" asp-append-version="true"></script>
-*@
-<script>
-	(function () {
-		try {
-			if (window.__ftxAmdDefine) {
-				window.define = window.__ftxAmdDefine;
-				window.define.amd = window.__ftxAmdDefineAmd;
-			}
-		} catch (error) {
-			if (window.Alerta && typeof Alerta.TratamentoErroComLinha === "function") {
-				Alerta.TratamentoErroComLinha("_ScriptsBasePlugins.cshtml", "kendo.amd.restore", error);
-			}
-		}
-	})();
-</script>
-<script>
+	// Definir cultura padrão do Kendo UI para pt-BR
 	try {
-		if (window.kendo && kendo.culture) {
+		if (typeof kendo !== 'undefined') {
 			kendo.culture("pt-BR");
+			console.log('✅ Kendo UI cultura pt-BR configurada');
 		}
 	} catch (error) {
-		if (window.Alerta && typeof Alerta.TratamentoErroComLinha === "function") {
-			Alerta.TratamentoErroComLinha("_ScriptsBasePlugins.cshtml", "kendo.culture", error);
+		if (window.Alerta && Alerta.TratamentoErroComLinha) {
+			Alerta.TratamentoErroComLinha("Pages/Shared/_ScriptsBasePlugins.cshtml", "kendo.culture", error);
+		} else {
+			console.error('Erro ao definir cultura do Kendo UI:', error);
 		}
 	}
 </script>
