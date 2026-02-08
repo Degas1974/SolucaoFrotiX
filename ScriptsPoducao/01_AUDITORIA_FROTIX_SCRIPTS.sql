@@ -1,0 +1,887 @@
+-- ============================================================
+-- AUDITORIA FROTIX - SCRIPT CONSOLIDADO DE EXECUÇÃO
+-- ============================================================
+-- Data da auditoria: 06/02/2026
+-- Banco de dados: Frotix (SQL Server 2022)
+-- Total de ações: 26 scripts em 6 fases
+--
+-- IMPORTANTE:
+--   - FAZER BACKUP COMPLETO ANTES DE EXECUTAR
+--   - Se QUALQUER instrução falhar, ALL changes são revertidas (ROLLBACK)
+--   - Scripts 5.1/5.2 (limpeza) estão COMENTADOS por segurança
+--   - ONLINE = ON removido pois não é compatível com transação única
+--   - Após sucesso, execute WITH CHECK CHECK CONSTRAINT para ativar
+--     validação completa das FKs (ver final do arquivo)
+-- ============================================================
+
+USE Frotix;
+GO
+
+SET NOCOUNT ON;
+SET XACT_ABORT ON; -- Garante rollback automático em qualquer erro
+SET DEADLOCK_PRIORITY HIGH; -- Evita que este script seja vítima de deadlock
+GO
+
+BEGIN TRY
+    BEGIN TRANSACTION AuditoriaFrotix;
+
+    PRINT '================================================================';
+    PRINT 'AUDITORIA FROTIX - EXECUÇÃO CONSOLIDADA';
+    PRINT 'Início: ' + CONVERT(VARCHAR(30), GETDATE(), 120);
+    PRINT '================================================================';
+    PRINT '';
+
+    -- ==========================================================
+    -- FASE 1 — CORREÇÕES ESTRUTURAIS CRÍTICAS
+    -- ==========================================================
+    PRINT '--- FASE 1: Correções Estruturais Críticas ---';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 1.1: Corrigir Fornecedor - Adicionar PRIMARY KEY
+    -- Converte FornecedorId de NULL + UNIQUE INDEX para
+    -- NOT NULL + PRIMARY KEY.
+    -- Usa EXEC para cada DDL, forçando compilação em runtime
+    -- (evita erro 8111 por pré-validação do batch)
+    -- ----------------------------------------------------------
+    PRINT '[1.1] Verificando Fornecedor.FornecedorId...';
+
+    -- Se PK já existe, pular todo o bloco 1.1
+    IF EXISTS (SELECT 1 FROM sys.key_constraints WHERE name = 'PK_Fornecedor_FornecedorId' AND parent_object_id = OBJECT_ID('dbo.Fornecedor'))
+    BEGIN
+        PRINT '[1.1] SKIP - PK_Fornecedor_FornecedorId já existe. Pulando Script 1.1.';
+        GOTO Script_1_2;
+    END
+
+    -- Verificar se há registros com FornecedorId NULL
+    IF EXISTS (SELECT 1 FROM dbo.Fornecedor WHERE FornecedorId IS NULL)
+    BEGIN
+        RAISERROR('[1.1] BLOQUEIO: Existem registros com FornecedorId NULL na tabela Fornecedor. Corrija antes de continuar.', 16, 1);
+    END
+
+    -- PASSO 1: Remover FKs que referenciam Fornecedor.FornecedorId
+    DECLARE @fkDrop NVARCHAR(MAX) = N'';
+    DECLARE @fkRecreate NVARCHAR(MAX) = N'';
+
+    SELECT
+        @fkDrop = @fkDrop + 'ALTER TABLE ' + QUOTENAME(SCHEMA_NAME(fk.schema_id)) + '.' + QUOTENAME(OBJECT_NAME(fk.parent_object_id))
+            + ' DROP CONSTRAINT ' + QUOTENAME(fk.name) + '; ',
+        @fkRecreate = @fkRecreate + 'ALTER TABLE ' + QUOTENAME(SCHEMA_NAME(fk.schema_id)) + '.' + QUOTENAME(OBJECT_NAME(fk.parent_object_id))
+            + ' WITH NOCHECK ADD CONSTRAINT ' + QUOTENAME(fk.name) + ' FOREIGN KEY ('
+            + COL_NAME(fkc.parent_object_id, fkc.parent_column_id) + ') REFERENCES '
+            + QUOTENAME(SCHEMA_NAME(fk.schema_id)) + '.' + QUOTENAME(OBJECT_NAME(fk.referenced_object_id))
+            + '(' + COL_NAME(fkc.referenced_object_id, fkc.referenced_column_id) + '); '
+    FROM sys.foreign_keys fk
+    JOIN sys.foreign_key_columns fkc ON fk.object_id = fkc.constraint_object_id
+    WHERE fk.referenced_object_id = OBJECT_ID('dbo.Fornecedor');
+
+    IF LEN(@fkDrop) > 0
+    BEGIN
+        PRINT '[1.1] PASSO 1: Removendo FKs que referenciam Fornecedor...';
+        EXEC sp_executesql @fkDrop;
+        PRINT '[1.1] PASSO 1: OK';
+    END
+    ELSE
+        PRINT '[1.1] PASSO 1: Nenhuma FK externa encontrada.';
+
+    -- PASSO 2: Remover DEFAULT constraint em FornecedorId
+    DECLARE @defName NVARCHAR(256);
+    SELECT @defName = dc.name
+    FROM sys.default_constraints dc
+    JOIN sys.columns c ON dc.parent_object_id = c.object_id AND dc.parent_column_id = c.column_id
+    WHERE dc.parent_object_id = OBJECT_ID('dbo.Fornecedor')
+      AND c.name = 'FornecedorId';
+
+    IF @defName IS NOT NULL
+    BEGIN
+        PRINT '[1.1] PASSO 2: Removendo DEFAULT [' + @defName + ']...';
+        DECLARE @dropDef NVARCHAR(500) = N'ALTER TABLE dbo.Fornecedor DROP CONSTRAINT [' + @defName + N']';
+        EXEC sp_executesql @dropDef;
+        PRINT '[1.1] PASSO 2: OK';
+    END
+    ELSE
+        PRINT '[1.1] PASSO 2: AVISO - Nenhum DEFAULT encontrado para FornecedorId!';
+
+    -- PASSO 3: Remover TODAS as constraints e índices na coluna FornecedorId
+    -- (abordagem agressiva: busca tudo via sys.indexes)
+    DECLARE @dropAll NVARCHAR(MAX) = N'';
+
+    -- 3a: Key constraints (PK, UNIQUE)
+    SELECT @dropAll = @dropAll + 'ALTER TABLE dbo.Fornecedor DROP CONSTRAINT ' + QUOTENAME(kc.name) + '; '
+    FROM sys.key_constraints kc
+    WHERE kc.parent_object_id = OBJECT_ID('dbo.Fornecedor');
+
+    -- 3b: Índices não-constraint
+    SELECT @dropAll = @dropAll + 'DROP INDEX ' + QUOTENAME(i.name) + ' ON dbo.Fornecedor; '
+    FROM sys.indexes i
+    WHERE i.object_id = OBJECT_ID('dbo.Fornecedor')
+      AND i.name IS NOT NULL
+      AND i.is_primary_key = 0
+      AND i.is_unique_constraint = 0
+      AND i.type > 0; -- Não é HEAP
+
+    IF LEN(@dropAll) > 0
+    BEGIN
+        PRINT '[1.1] PASSO 3: Removendo constraints/índices: ' + @dropAll;
+        EXEC sp_executesql @dropAll;
+        PRINT '[1.1] PASSO 3: OK';
+    END
+    ELSE
+        PRINT '[1.1] PASSO 3: Nenhuma constraint/índice encontrado.';
+
+    -- PASSO 4: Alterar coluna para NOT NULL (via EXEC para runtime compilation)
+    PRINT '[1.1] PASSO 4: ALTER COLUMN FornecedorId NOT NULL...';
+    EXEC sp_executesql N'ALTER TABLE dbo.Fornecedor ALTER COLUMN FornecedorId uniqueidentifier NOT NULL';
+
+    -- Verificar se funcionou
+    DECLARE @isNullable BIT;
+    SELECT @isNullable = c.is_nullable FROM sys.columns c
+    WHERE c.object_id = OBJECT_ID('dbo.Fornecedor') AND c.name = 'FornecedorId';
+    PRINT '[1.1] PASSO 4: is_nullable = ' + CAST(@isNullable AS VARCHAR);
+    IF @isNullable = 1
+        RAISERROR('[1.1] FALHA: ALTER COLUMN não alterou a nullability! Coluna ainda é nullable.', 16, 1);
+    PRINT '[1.1] PASSO 4: OK';
+
+    -- PASSO 5: Adicionar PRIMARY KEY + DEFAULT (via EXEC para runtime compilation)
+    PRINT '[1.1] PASSO 5: Criando PRIMARY KEY + DEFAULT...';
+    IF NOT EXISTS (SELECT 1 FROM sys.key_constraints WHERE name = 'PK_Fornecedor_FornecedorId' AND parent_object_id = OBJECT_ID('dbo.Fornecedor'))
+        EXEC sp_executesql N'ALTER TABLE dbo.Fornecedor ADD CONSTRAINT PK_Fornecedor_FornecedorId PRIMARY KEY CLUSTERED (FornecedorId)';
+    IF NOT EXISTS (SELECT 1 FROM sys.default_constraints WHERE name = 'DF_Fornecedor_FornecedorId' AND parent_object_id = OBJECT_ID('dbo.Fornecedor'))
+        EXEC sp_executesql N'ALTER TABLE dbo.Fornecedor ADD CONSTRAINT DF_Fornecedor_FornecedorId DEFAULT (newid()) FOR FornecedorId';
+    PRINT '[1.1] PASSO 5: OK';
+
+    -- PASSO 6: Recriar as FKs removidas
+    IF LEN(@fkRecreate) > 0
+    BEGIN
+        PRINT '[1.1] PASSO 6: Recriando FKs...';
+        EXEC sp_executesql @fkRecreate;
+        PRINT '[1.1] PASSO 6: OK';
+    END
+
+    PRINT '[1.1] OK - Fornecedor: PRIMARY KEY criada com sucesso.';
+    
+    Script_1_2: -- Label para GOTO quando PK já existe
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 1.2: Remover FKs duplicadas (WhatsApp)
+    -- Remove FKs anônimas duplicadas que causam overhead
+    -- de validação dupla em INSERT/UPDATE
+    -- ----------------------------------------------------------
+    PRINT '[1.2] Removendo FKs duplicadas WhatsApp...';
+
+    -- WhatsAppMensagens: remover FK anônima para InstanciaId
+    -- (manter a nomeada FK_WhatsAppMensagens_InstanciaId)
+    DECLARE @fkName NVARCHAR(256);
+    DECLARE @sql NVARCHAR(MAX);
+
+    SELECT @fkName = fk.name
+    FROM sys.foreign_keys fk
+    JOIN sys.foreign_key_columns fkc ON fk.object_id = fkc.constraint_object_id
+    WHERE fk.parent_object_id = OBJECT_ID('dbo.WhatsAppMensagens')
+      AND COL_NAME(fkc.parent_object_id, fkc.parent_column_id) = 'InstanciaId'
+      AND fk.name LIKE 'FK__WhatsApp%'  -- FK anônima (gerada pelo SQL Server)
+      AND fk.name <> 'FK_WhatsAppMensagens_InstanciaId'; -- Não é a nomeada
+
+    IF @fkName IS NOT NULL
+    BEGIN
+        SET @sql = 'ALTER TABLE dbo.WhatsAppMensagens DROP CONSTRAINT [' + @fkName + ']';
+        EXEC sp_executesql @sql;
+        PRINT '[1.2] OK - WhatsAppMensagens: FK anônima [' + @fkName + '] removida.';
+    END
+    ELSE
+        PRINT '[1.2] INFO - WhatsAppMensagens: FK anônima para InstanciaId não encontrada (já removida?).';
+
+    -- WhatsAppFilaMensagens: remover FK anônima para MensagemId
+    -- (manter a nomeada FK_WhatsAppFilaMensagens_MensagemId)
+    SET @fkName = NULL;
+    SET @sql = NULL;
+
+    SELECT @fkName = fk.name
+    FROM sys.foreign_keys fk
+    JOIN sys.foreign_key_columns fkc ON fk.object_id = fkc.constraint_object_id
+    WHERE fk.parent_object_id = OBJECT_ID('dbo.WhatsAppFilaMensagens')
+      AND COL_NAME(fkc.parent_object_id, fkc.parent_column_id) = 'MensagemId'
+      AND fk.name LIKE 'FK__WhatsApp%'
+      AND fk.name <> 'FK_WhatsAppFilaMensagens_MensagemId';
+
+    IF @fkName IS NOT NULL
+    BEGIN
+        SET @sql = 'ALTER TABLE dbo.WhatsAppFilaMensagens DROP CONSTRAINT [' + @fkName + ']';
+        EXEC sp_executesql @sql;
+        PRINT '[1.2] OK - WhatsAppFilaMensagens: FK anônima [' + @fkName + '] removida.';
+    END
+    ELSE
+        PRINT '[1.2] INFO - WhatsAppFilaMensagens: FK anônima para MensagemId não encontrada (já removida?).';
+
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 1.3: Remover FKs duplicadas em MotoristaItensPendentes
+    -- Mantém as versões com sufixo _Id, remove as genéricas
+    -- ----------------------------------------------------------
+    PRINT '[1.3] Removendo FKs duplicadas MotoristaItensPendentes...';
+
+    IF EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_MotoristaItensPendentes_Motorista')
+        ALTER TABLE dbo.MotoristaItensPendentes DROP CONSTRAINT FK_MotoristaItensPendentes_Motorista;
+
+    IF EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_MotoristaItensPendentes_Viagem')
+        ALTER TABLE dbo.MotoristaItensPendentes DROP CONSTRAINT FK_MotoristaItensPendentes_Viagem;
+
+    PRINT '[1.3] OK - MotoristaItensPendentes: FKs duplicadas removidas.';
+    PRINT '';
+
+    -- ==========================================================
+    -- FASE 2 — FOREIGN KEYS FALTANTES
+    -- ==========================================================
+    PRINT '--- FASE 2: Foreign Keys Faltantes ---';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 2.1: FK Viagem.UsuarioIdCriacao → AspNetUsers
+    -- Primeiro converte a coluna de varchar(100) para nvarchar(450)
+    -- para compatibilidade com AspNetUsers.Id, depois cria a FK.
+    -- ----------------------------------------------------------
+    PRINT '[2.1] Convertendo Viagem.UsuarioIdCriacao para nvarchar(450) e criando FK...';
+
+    -- Só converte se ainda for varchar(100)
+    IF EXISTS (SELECT 1 FROM sys.columns c JOIN sys.types t ON c.system_type_id = t.system_type_id
+              WHERE c.object_id = OBJECT_ID('dbo.Viagem') AND c.name = 'UsuarioIdCriacao' AND t.name = 'varchar')
+        EXEC sp_executesql N'ALTER TABLE dbo.Viagem ALTER COLUMN UsuarioIdCriacao nvarchar(450) NULL';
+
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Viagem_UsuarioIdCriacao')
+        ALTER TABLE dbo.Viagem WITH NOCHECK
+          ADD CONSTRAINT FK_Viagem_UsuarioIdCriacao
+          FOREIGN KEY (UsuarioIdCriacao) REFERENCES dbo.AspNetUsers (Id);
+
+    PRINT '[2.1] OK - Viagem.UsuarioIdCriacao: convertida para nvarchar(450) + FK criada.';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 2.2: FK Lavador.ContratoId → Contrato
+    -- Manter consistência com Operador e Encarregado
+    -- ----------------------------------------------------------
+    PRINT '[2.2] Criando FK Lavador.ContratoId...';
+
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Lavador_ContratoId')
+        ALTER TABLE dbo.Lavador WITH NOCHECK
+          ADD CONSTRAINT FK_Lavador_ContratoId
+          FOREIGN KEY (ContratoId) REFERENCES dbo.Contrato (ContratoId);
+
+    PRINT '[2.2] OK - Lavador: FK ContratoId criada.';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 2.3: FK MovimentacaoEmpenhoMulta.EmpenhoMultaId
+    -- ----------------------------------------------------------
+    PRINT '[2.3] Criando FK MovimentacaoEmpenhoMulta.EmpenhoMultaId...';
+
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_MovimentacaoEmpenhoMulta_EmpenhoMultaId')
+        ALTER TABLE dbo.MovimentacaoEmpenhoMulta WITH NOCHECK
+          ADD CONSTRAINT FK_MovimentacaoEmpenhoMulta_EmpenhoMultaId
+          FOREIGN KEY (EmpenhoMultaId) REFERENCES dbo.EmpenhoMulta (EmpenhoMultaId);
+
+    PRINT '[2.3] OK - MovimentacaoEmpenhoMulta: FK EmpenhoMultaId criada.';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 2.4: FK AlertasFrotiX.UsuarioCriadorId → AspNetUsers
+    -- ----------------------------------------------------------
+    PRINT '[2.4] Criando FK AlertasFrotiX.UsuarioCriadorId...';
+
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_AlertasFrotiX_UsuarioCriadorId')
+        ALTER TABLE dbo.AlertasFrotiX WITH NOCHECK
+          ADD CONSTRAINT FK_AlertasFrotiX_UsuarioCriadorId
+          FOREIGN KEY (UsuarioCriadorId) REFERENCES dbo.AspNetUsers (Id);
+
+    PRINT '[2.4] OK - AlertasFrotiX: FK UsuarioCriadorId criada.';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 2.5: FKs Motorista → Unidade, Contrato, CondutorApoio
+    -- ----------------------------------------------------------
+    PRINT '[2.5] Criando 3 FKs em Motorista...';
+
+    -- 2.5a: Motorista.UnidadeId → Unidade
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Motorista_UnidadeId')
+        ALTER TABLE dbo.Motorista WITH NOCHECK
+          ADD CONSTRAINT FK_Motorista_UnidadeId
+          FOREIGN KEY (UnidadeId) REFERENCES dbo.Unidade (UnidadeId);
+
+    -- 2.5b: Motorista.ContratoId → Contrato
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Motorista_ContratoId')
+        ALTER TABLE dbo.Motorista WITH NOCHECK
+          ADD CONSTRAINT FK_Motorista_ContratoId
+          FOREIGN KEY (ContratoId) REFERENCES dbo.Contrato (ContratoId);
+
+    -- 2.5c: Motorista.CondutorId → CondutorApoio
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Motorista_CondutorId')
+        ALTER TABLE dbo.Motorista WITH NOCHECK
+          ADD CONSTRAINT FK_Motorista_CondutorId
+          FOREIGN KEY (CondutorId) REFERENCES dbo.CondutorApoio (CondutorId);
+
+    PRINT '[2.5] OK - Motorista: 3 FKs criadas (UnidadeId, ContratoId, CondutorId).';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 2.6: FKs Manutencao → AspNetUsers (3 colunas de usuário)
+    -- Converte IdUsuarioCriacao, IdUsuarioFinalizacao e
+    -- IdUsuarioCancelamento de varchar(100) para nvarchar(450)
+    -- (IdUsuarioAlteracao já é nvarchar(450) com FK existente)
+    -- ----------------------------------------------------------
+    PRINT '[2.6] Convertendo 3 colunas de usuario em Manutencao para nvarchar(450) e criando FKs...';
+
+    -- Só converte se ainda forem varchar(100)
+    IF EXISTS (SELECT 1 FROM sys.columns c JOIN sys.types t ON c.system_type_id = t.system_type_id
+              WHERE c.object_id = OBJECT_ID('dbo.Manutencao') AND c.name = 'IdUsuarioCriacao' AND t.name = 'varchar')
+    BEGIN
+        EXEC sp_executesql N'ALTER TABLE dbo.Manutencao ALTER COLUMN IdUsuarioCriacao nvarchar(450) NULL';
+        EXEC sp_executesql N'ALTER TABLE dbo.Manutencao ALTER COLUMN IdUsuarioFinalizacao nvarchar(450) NULL';
+        EXEC sp_executesql N'ALTER TABLE dbo.Manutencao ALTER COLUMN IdUsuarioCancelamento nvarchar(450) NULL';
+    END
+
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Manutencao_IdUsuarioCriacao')
+        ALTER TABLE dbo.Manutencao WITH NOCHECK
+          ADD CONSTRAINT FK_Manutencao_IdUsuarioCriacao
+          FOREIGN KEY (IdUsuarioCriacao) REFERENCES dbo.AspNetUsers (Id);
+
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Manutencao_IdUsuarioFinalizacao')
+        ALTER TABLE dbo.Manutencao WITH NOCHECK
+          ADD CONSTRAINT FK_Manutencao_IdUsuarioFinalizacao
+          FOREIGN KEY (IdUsuarioFinalizacao) REFERENCES dbo.AspNetUsers (Id);
+
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Manutencao_IdUsuarioCancelamento')
+        ALTER TABLE dbo.Manutencao WITH NOCHECK
+          ADD CONSTRAINT FK_Manutencao_IdUsuarioCancelamento
+          FOREIGN KEY (IdUsuarioCancelamento) REFERENCES dbo.AspNetUsers (Id);
+
+    PRINT '[2.6] OK - Manutencao: 3 colunas convertidas para nvarchar(450) + 3 FKs criadas.';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 2.7: FK ItensManutencao.ViagemId → Viagem
+    -- ----------------------------------------------------------
+    PRINT '[2.7] Criando FK ItensManutencao.ViagemId...';
+
+    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_ItensManutencao_ViagemId')
+        ALTER TABLE dbo.ItensManutencao WITH NOCHECK
+          ADD CONSTRAINT FK_ItensManutencao_ViagemId
+          FOREIGN KEY (ViagemId) REFERENCES dbo.Viagem (ViagemId);
+
+    PRINT '[2.7] OK - ItensManutencao: FK ViagemId criada.';
+    PRINT '';
+
+    -- ==========================================================
+    -- FASE 3 — NOVOS ÍNDICES
+    -- (ONLINE = ON removido pois não é compatível com transação)
+    -- ==========================================================
+    PRINT '--- FASE 3: Novos Índices ---';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 3.1: Índice cobrindo para Abastecimento Dashboard
+    -- Cobre DataHora + agrupamento VeiculoId/MotoristaId/Tipo
+    -- ----------------------------------------------------------
+    PRINT '[3.1] Criando índice Abastecimento Dashboard...';
+
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Abastecimento_DataHora_Cobertura' AND object_id = OBJECT_ID('dbo.Abastecimento'))
+        CREATE NONCLUSTERED INDEX IX_Abastecimento_DataHora_Cobertura
+        ON dbo.Abastecimento (DataHora DESC)
+        INCLUDE (VeiculoId, MotoristaId, CombustivelId, ValorUnitario, Litros)
+        WITH (FILLFACTOR = 90)
+        ON [PRIMARY];
+
+    PRINT '[3.1] OK - Abastecimento: Índice de cobertura Dashboard criado.';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 3.2: Índice Abastecimento MotoristaId + DataHora
+    -- Para queries do DashboardMotoristas
+    -- ----------------------------------------------------------
+    PRINT '[3.2] Criando índice Abastecimento MotoristaId + DataHora...';
+
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Abastecimento_MotoristaId_DataHora' AND object_id = OBJECT_ID('dbo.Abastecimento'))
+        CREATE NONCLUSTERED INDEX IX_Abastecimento_MotoristaId_DataHora
+        ON dbo.Abastecimento (MotoristaId, DataHora DESC)
+        INCLUDE (ValorUnitario, Litros, CombustivelId)
+        WHERE (MotoristaId IS NOT NULL)
+        WITH (FILLFACTOR = 90)
+        ON [PRIMARY];
+
+    PRINT '[3.2] OK - Abastecimento: Índice MotoristaId + DataHora criado.';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 3.3: Índice CorridasTaxiLeg.DataAgenda
+    -- Tabela sem NENHUM índice além da PK
+    -- ----------------------------------------------------------
+    PRINT '[3.3] Criando índice CorridasTaxiLeg...';
+
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_CorridasTaxiLeg_DataAgenda' AND object_id = OBJECT_ID('dbo.CorridasTaxiLeg'))
+        CREATE NONCLUSTERED INDEX IX_CorridasTaxiLeg_DataAgenda
+        ON dbo.CorridasTaxiLeg (DataAgenda DESC)
+        INCLUDE (CorridaId, Setor, Unidade, Valor, KmReal, QtdPassageiros)
+        WITH (FILLFACTOR = 90)
+        ON [PRIMARY];
+
+    PRINT '[3.3] OK - CorridasTaxiLeg: Índice DataAgenda criado.';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 3.4: Índice CorridasCanceladasTaxiLeg.DataAgenda
+    -- Idem — zero índices além da PK
+    -- ----------------------------------------------------------
+    PRINT '[3.4] Criando índice CorridasCanceladasTaxiLeg...';
+
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_CorridasCanceladasTaxiLeg_DataAgenda' AND object_id = OBJECT_ID('dbo.CorridasCanceladasTaxiLeg'))
+        CREATE NONCLUSTERED INDEX IX_CorridasCanceladasTaxiLeg_DataAgenda
+        ON dbo.CorridasCanceladasTaxiLeg (DataAgenda DESC)
+        INCLUDE (TipoCancelamento, MotivoCancelamento, TempoEspera)
+        WITH (FILLFACTOR = 90)
+        ON [PRIMARY];
+
+    PRINT '[3.4] OK - CorridasCanceladasTaxiLeg: Índice DataAgenda criado.';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 3.5: Índices MovimentacaoEmpenhoMulta
+    -- Tabela sem índices — JOINs com Multa e EmpenhoMulta
+    -- ----------------------------------------------------------
+    PRINT '[3.5] Criando 2 índices MovimentacaoEmpenhoMulta...';
+
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_MovimentacaoEmpenhoMulta_MultaId' AND object_id = OBJECT_ID('dbo.MovimentacaoEmpenhoMulta'))
+        CREATE NONCLUSTERED INDEX IX_MovimentacaoEmpenhoMulta_MultaId
+        ON dbo.MovimentacaoEmpenhoMulta (MultaId)
+        INCLUDE (EmpenhoMultaId, DataMovimentacao, Valor)
+        ON [PRIMARY];
+
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_MovimentacaoEmpenhoMulta_EmpenhoMultaId' AND object_id = OBJECT_ID('dbo.MovimentacaoEmpenhoMulta'))
+        CREATE NONCLUSTERED INDEX IX_MovimentacaoEmpenhoMulta_EmpenhoMultaId
+        ON dbo.MovimentacaoEmpenhoMulta (EmpenhoMultaId)
+        INCLUDE (MultaId, DataMovimentacao, Valor)
+        ON [PRIMARY];
+
+    PRINT '[3.5] OK - MovimentacaoEmpenhoMulta: 2 índices criados.';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 3.6: Índices NotaFiscal (EmpenhoId e ContratoId)
+    -- ViewEmpenhos faz LEFT JOIN sem índice dedicado
+    -- ----------------------------------------------------------
+    PRINT '[3.6] Criando 2 índices NotaFiscal...';
+
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_NotaFiscal_EmpenhoId' AND object_id = OBJECT_ID('dbo.NotaFiscal'))
+        CREATE NONCLUSTERED INDEX IX_NotaFiscal_EmpenhoId
+        ON dbo.NotaFiscal (EmpenhoId)
+        INCLUDE (NotaFiscalId, ValorNF, ValorGlosa, DataEmissao, ContratoId)
+        WHERE (EmpenhoId IS NOT NULL)
+        WITH (FILLFACTOR = 90)
+        ON [PRIMARY];
+
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_NotaFiscal_ContratoId_AnoMes' AND object_id = OBJECT_ID('dbo.NotaFiscal'))
+        CREATE NONCLUSTERED INDEX IX_NotaFiscal_ContratoId_AnoMes
+        ON dbo.NotaFiscal (ContratoId, AnoReferencia DESC, MesReferencia DESC)
+        INCLUDE (NotaFiscalId, NumeroNF, ValorNF, EmpenhoId)
+        WHERE (ContratoId IS NOT NULL)
+        WITH (FILLFACTOR = 90)
+        ON [PRIMARY];
+
+    PRINT '[3.6] OK - NotaFiscal: 2 índices criados.';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 3.7: Índice DocumentoContrato.ContratoId
+    -- ----------------------------------------------------------
+    PRINT '[3.7] Criando índice DocumentoContrato...';
+
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_DocumentoContrato_ContratoId' AND object_id = OBJECT_ID('dbo.DocumentoContrato'))
+        CREATE NONCLUSTERED INDEX IX_DocumentoContrato_ContratoId
+        ON dbo.DocumentoContrato (ContratoId)
+        INCLUDE (DocumentoContratoId, TipoDocumento, Descricao)
+        ON [PRIMARY];
+
+    PRINT '[3.7] OK - DocumentoContrato: Índice ContratoId criado.';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 3.8: Índice Contatos.Nome (busca textual WhatsApp)
+    -- ----------------------------------------------------------
+    PRINT '[3.8] Criando índice Contatos.Nome...';
+
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Contatos_Nome' AND object_id = OBJECT_ID('dbo.Contatos'))
+        CREATE NONCLUSTERED INDEX IX_Contatos_Nome
+        ON dbo.Contatos (Nome)
+        INCLUDE (Celular, Email, Ativo)
+        WHERE (Ativo = 1)
+        ON [PRIMARY];
+
+    PRINT '[3.8] OK - Contatos: Índice Nome criado.';
+    PRINT '';
+
+    -- ==========================================================
+    -- FASE 4 — REMOÇÃO DE ÍNDICES REDUNDANTES/SOBREPOSTOS
+    -- ==========================================================
+    PRINT '--- FASE 4: Remoção de Índices Redundantes ---';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 4.1: Remover índice duplicado em Viagem.EventoId
+    -- IX_Viagem_EventoId_Custos e IX_Viagem_EventoId_Include_Custos
+    -- são idênticos — mesmo chave, mesmos INCLUDEs, mesmo filtro
+    -- ----------------------------------------------------------
+    PRINT '[4.1] Removendo índice duplicado EventoId...';
+
+    IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Viagem_EventoId_Include_Custos' AND object_id = OBJECT_ID('dbo.Viagem'))
+        DROP INDEX IX_Viagem_EventoId_Include_Custos ON dbo.Viagem;
+
+    PRINT '[4.1] OK - Viagem: Índice duplicado EventoId removido.';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 4.2: Remover índice duplicado em NoFichaVistoria
+    -- IDX_Ficha e IDX_NoFichaVistoria indexam a mesma coluna
+    -- ----------------------------------------------------------
+    PRINT '[4.2] Removendo índice duplicado NoFichaVistoria...';
+
+    IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IDX_Ficha' AND object_id = OBJECT_ID('dbo.Viagem'))
+        DROP INDEX IDX_Ficha ON dbo.Viagem;
+
+    PRINT '[4.2] OK - Viagem: IDX_Ficha removido (mantido IDX_NoFichaVistoria).';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 4.3: Remover índices redundantes em MotoristaId
+    -- IDX_MotoristaId e IX_Viagem_MotoristaId_DataInicial são
+    -- cobertos por IX_Viagem_MotoristaId
+    -- ----------------------------------------------------------
+    PRINT '[4.3] Removendo 2 índices redundantes MotoristaId...';
+
+    IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IDX_MotoristaId' AND object_id = OBJECT_ID('dbo.Viagem'))
+        DROP INDEX IDX_MotoristaId ON dbo.Viagem;
+
+    IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Viagem_MotoristaId_DataInicial' AND object_id = OBJECT_ID('dbo.Viagem'))
+        DROP INDEX IX_Viagem_MotoristaId_DataInicial ON dbo.Viagem;
+
+    PRINT '[4.3] OK - Viagem: 2 índices redundantes MotoristaId removidos.';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 4.4: Remover índice redundante em VeiculoId
+    -- IDX_VeiculoId é coberto por IX_Viagem_VeiculoId
+    -- ----------------------------------------------------------
+    PRINT '[4.4] Removendo índice redundante VeiculoId...';
+
+    IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IDX_VeiculoId' AND object_id = OBJECT_ID('dbo.Viagem'))
+        DROP INDEX IDX_VeiculoId ON dbo.Viagem;
+
+    PRINT '[4.4] OK - Viagem: IDX_VeiculoId removido.';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 4.5: Remover índices simples SetorId e RequisitanteId
+    -- Cobertos pelos compostos IX_Viagem_SetorSolicitanteId
+    -- e IX_Viagem_RequisitanteId
+    -- ----------------------------------------------------------
+    PRINT '[4.5] Removendo índices simples SetorId e RequisitanteId...';
+
+    IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IDX_SetorId' AND object_id = OBJECT_ID('dbo.Viagem'))
+        DROP INDEX IDX_SetorId ON dbo.Viagem;
+
+    IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IDX_Requistante' AND object_id = OBJECT_ID('dbo.Viagem'))
+        DROP INDEX IDX_Requistante ON dbo.Viagem;
+
+    PRINT '[4.5] OK - Viagem: Índices simples SetorId e RequisitanteId removidos.';
+    PRINT '';
+
+    -- ==========================================================
+    -- FASE 5 — STORED PROCEDURE
+    -- ==========================================================
+    PRINT '--- FASE 5: Stored Procedure ---';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 6.1: SP para recálculo de estatísticas de multas
+    -- CREATE OR ALTER PROCEDURE precisa de EXEC pois deve ser
+    -- a primeira instrução em um batch
+    -- ----------------------------------------------------------
+    PRINT '[6.1] Criando SP sp_RecalcularEstatisticasMultasMotoristas...';
+
+    EXEC sp_executesql N'
+    CREATE OR ALTER PROCEDURE dbo.sp_RecalcularEstatisticasMultasMotoristas
+        @Ano INT = NULL,
+        @Mes INT = NULL
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+
+        IF @Ano IS NULL SET @Ano = YEAR(GETDATE());
+        IF @Mes IS NULL SET @Mes = MONTH(GETDATE());
+
+        BEGIN TRY
+            BEGIN TRANSACTION;
+
+            UPDATE em
+            SET
+                em.TotalMultas = ISNULL(m.TotalMultas, 0),
+                em.ValorTotalMultas = ISNULL(m.ValorTotal, 0),
+                em.DataAtualizacao = GETDATE()
+            FROM dbo.EstatisticaMotoristasMensal em
+            LEFT JOIN (
+                SELECT
+                    MotoristaId,
+                    YEAR(Data) AS Ano,
+                    MONTH(Data) AS Mes,
+                    COUNT(*) AS TotalMultas,
+                    SUM(ISNULL(ValorAteVencimento, 0)) AS ValorTotal
+                FROM dbo.Multa
+                WHERE MotoristaId IS NOT NULL
+                  AND YEAR(Data) = @Ano AND MONTH(Data) = @Mes
+                GROUP BY MotoristaId, YEAR(Data), MONTH(Data)
+            ) m ON em.MotoristaId = m.MotoristaId
+               AND em.Ano = m.Ano AND em.Mes = m.Mes
+            WHERE em.Ano = @Ano AND em.Mes = @Mes;
+
+            COMMIT TRANSACTION;
+            PRINT ''Estatísticas de multas recalculadas para '' + CAST(@Ano AS VARCHAR) + ''/'' + CAST(@Mes AS VARCHAR);
+        END TRY
+        BEGIN CATCH
+            ROLLBACK TRANSACTION;
+            THROW;
+        END CATCH
+    END;';
+
+    PRINT '[6.1] OK - SP sp_RecalcularEstatisticasMultasMotoristas criada.';
+    PRINT '';
+
+    -- ==========================================================
+    -- FASE 6 — LIMPEZA (COMENTADO POR SEGURANÇA)
+    -- Descomentar SOMENTE após verificação manual
+    -- ==========================================================
+    PRINT '--- FASE 6: Limpeza (comentado) ---';
+    PRINT '';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 5.1: Remover tabelas de backup
+    -- DESCOMENTE após verificar que não contêm dados úteis:
+    --   SELECT * FROM dbo.Recurso_BACKUP;
+    --   SELECT * FROM dbo.ControleAcesso_BACKUP;
+    -- ----------------------------------------------------------
+    -- DROP TABLE dbo.Recurso_BACKUP;
+    -- DROP TABLE dbo.ControleAcesso_BACKUP;
+    PRINT '[5.1] IGNORADO - Tabelas backup (comentado por segurança).';
+
+    -- ----------------------------------------------------------
+    -- SCRIPT 5.2: Remover views obsoletas
+    -- DESCOMENTE após verificar que nenhum código referencia:
+    --   "ViewMotoristas_original", "ViewCalculaMediana"
+    -- ----------------------------------------------------------
+    -- DROP VIEW dbo.ViewMotoristas_original;
+    -- DROP VIEW dbo.[ViewCalculaMediana (backup)];
+    PRINT '[5.2] IGNORADO - Views obsoletas (comentado por segurança).';
+    PRINT '';
+
+    -- ==========================================================
+    -- RESUMO DE ALTERAÇÕES
+    -- ==========================================================
+    PRINT '';
+    PRINT '================================================================';
+    PRINT 'RESUMO DO QUE FOI APLICADO:';
+    PRINT '================================================================';
+
+    -- Contar FKs criadas pelo script
+    DECLARE @fksNovas INT = 0;
+    SELECT @fksNovas = COUNT(*) FROM sys.foreign_keys
+    WHERE name IN (
+        'FK_Viagem_UsuarioIdCriacao',
+        'FK_Lavador_ContratoId',
+        'FK_MovimentacaoEmpenhoMulta_EmpenhoMultaId',
+        'FK_AlertasFrotiX_UsuarioCriadorId',
+        'FK_Motorista_UnidadeId', 'FK_Motorista_ContratoId', 'FK_Motorista_CondutorId',
+        'FK_Manutencao_IdUsuarioCriacao', 'FK_Manutencao_IdUsuarioFinalizacao', 'FK_Manutencao_IdUsuarioCancelamento',
+        'FK_ItensManutencao_ViagemId'
+    );
+    PRINT 'FKs novas criadas: ' + CAST(@fksNovas AS VARCHAR) + ' de 11';
+
+    -- Contar índices criados pelo script
+    DECLARE @idxNovos INT = 0;
+    SELECT @idxNovos = COUNT(*) FROM sys.indexes
+    WHERE name IN (
+        'IX_Abastecimento_DataHora_Cobertura', 'IX_Abastecimento_MotoristaId_DataHora',
+        'IX_CorridasTaxiLeg_DataAgenda', 'IX_CorridasCanceladasTaxiLeg_DataAgenda',
+        'IX_MovimentacaoEmpenhoMulta_MultaId', 'IX_MovimentacaoEmpenhoMulta_EmpenhoMultaId',
+        'IX_NotaFiscal_EmpenhoId', 'IX_NotaFiscal_ContratoId_AnoMes',
+        'IX_DocumentoContrato_ContratoId', 'IX_Contatos_Nome'
+    );
+    PRINT 'Índices novos criados: ' + CAST(@idxNovos AS VARCHAR) + ' de 10';
+
+    -- Verificar PK Fornecedor
+    IF EXISTS (SELECT 1 FROM sys.key_constraints WHERE name = 'PK_Fornecedor_FornecedorId')
+        PRINT 'PK Fornecedor: OK';
+    ELSE
+        PRINT 'PK Fornecedor: FALHA';
+
+    PRINT '';
+
+    -- ==========================================================
+    -- COMMIT — Todas as alterações aplicadas com sucesso
+    -- ==========================================================
+    COMMIT TRANSACTION AuditoriaFrotix;
+
+    PRINT '================================================================';
+    PRINT 'SUCESSO! Todas as alterações foram aplicadas.';
+    PRINT 'Fim: ' + CONVERT(VARCHAR(30), GETDATE(), 120);
+    PRINT '================================================================';
+    PRINT '';
+    PRINT 'PRÓXIMOS PASSOS:';
+    PRINT '1. Verificar integridade: DBCC CHECKDB(Frotix) WITH NO_INFOMSGS';
+    PRINT '2. Atualizar estatísticas: EXEC sp_updatestats';
+    PRINT '3. Para ativar validação completa das FKs (opcional):';
+    PRINT '   Execute o bloco WITH CHECK CHECK abaixo separadamente.';
+
+END TRY
+BEGIN CATCH
+    -- ROLLBACK TOTAL — Nenhuma alteração é mantida
+    IF @@TRANCOUNT > 0
+        ROLLBACK TRANSACTION AuditoriaFrotix;
+
+    PRINT '';
+    PRINT '================================================================';
+    PRINT 'ERRO! ROLLBACK COMPLETO REALIZADO — NENHUMA ALTERAÇÃO FOI MANTIDA';
+    PRINT '================================================================';
+    PRINT 'Mensagem: ' + ERROR_MESSAGE();
+    PRINT 'Severidade: ' + CAST(ERROR_SEVERITY() AS VARCHAR);
+    PRINT 'Estado: ' + CAST(ERROR_STATE() AS VARCHAR);
+    PRINT 'Linha: ' + CAST(ERROR_LINE() AS VARCHAR);
+    PRINT 'Procedimento: ' + ISNULL(ERROR_PROCEDURE(), 'Script principal');
+    PRINT '================================================================';
+
+    -- Re-lançar o erro para que o SSMS/aplicação também capture
+    THROW;
+END CATCH
+GO
+
+-- ============================================================
+-- BLOCO OPCIONAL: Ativar validação completa das FKs
+-- Executar SEPARADAMENTE após confirmar que os dados estão OK
+-- Isso faz o SQL Server validar TODOS os registros existentes
+-- contra as novas FKs (pode demorar dependendo do volume)
+--
+-- DIAGNÓSTICO: Antes de ativar, veja os órfãos com as queries abaixo.
+-- Se houver dados órfãos, limpe-os primeiro ou deixe a FK como NOCHECK.
+-- ============================================================
+
+-- 1) Diagnóstico: ver registros órfãos por FK
+PRINT '=== DIAGNÓSTICO: Registros órfãos por FK ===';
+PRINT '';
+
+SELECT 'Viagem.UsuarioIdCriacao' AS FK, COUNT(*) AS Orfaos
+FROM dbo.Viagem v
+WHERE v.UsuarioIdCriacao IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.AspNetUsers u WHERE u.Id = v.UsuarioIdCriacao);
+
+SELECT 'Lavador.ContratoId' AS FK, COUNT(*) AS Orfaos
+FROM dbo.Lavador l
+WHERE l.ContratoId IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.Contrato c WHERE c.ContratoId = l.ContratoId);
+
+SELECT 'MovimentacaoEmpenhoMulta.EmpenhoMultaId' AS FK, COUNT(*) AS Orfaos
+FROM dbo.MovimentacaoEmpenhoMulta m
+WHERE m.EmpenhoMultaId IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.EmpenhoMulta e WHERE e.EmpenhoMultaId = m.EmpenhoMultaId);
+
+SELECT 'AlertasFrotiX.UsuarioCriadorId' AS FK, COUNT(*) AS Orfaos
+FROM dbo.AlertasFrotiX a
+WHERE a.UsuarioCriadorId IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.AspNetUsers u WHERE u.Id = a.UsuarioCriadorId);
+
+SELECT 'Motorista.UnidadeId' AS FK, COUNT(*) AS Orfaos
+FROM dbo.Motorista m
+WHERE m.UnidadeId IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.Unidade u WHERE u.UnidadeId = m.UnidadeId);
+
+SELECT 'Motorista.ContratoId' AS FK, COUNT(*) AS Orfaos
+FROM dbo.Motorista m
+WHERE m.ContratoId IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.Contrato c WHERE c.ContratoId = m.ContratoId);
+
+SELECT 'Motorista.CondutorId' AS FK, COUNT(*) AS Orfaos
+FROM dbo.Motorista m
+WHERE m.CondutorId IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.CondutorApoio c WHERE c.CondutorId = m.CondutorId);
+
+SELECT 'Manutencao.IdUsuarioCriacao' AS FK, COUNT(*) AS Orfaos
+FROM dbo.Manutencao m
+WHERE m.IdUsuarioCriacao IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.AspNetUsers u WHERE u.Id = m.IdUsuarioCriacao);
+
+SELECT 'Manutencao.IdUsuarioFinalizacao' AS FK, COUNT(*) AS Orfaos
+FROM dbo.Manutencao m
+WHERE m.IdUsuarioFinalizacao IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.AspNetUsers u WHERE u.Id = m.IdUsuarioFinalizacao);
+
+SELECT 'Manutencao.IdUsuarioCancelamento' AS FK, COUNT(*) AS Orfaos
+FROM dbo.Manutencao m
+WHERE m.IdUsuarioCancelamento IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.AspNetUsers u WHERE u.Id = m.IdUsuarioCancelamento);
+
+SELECT 'ItensManutencao.ViagemId' AS FK, COUNT(*) AS Orfaos
+FROM dbo.ItensManutencao i
+WHERE i.ViagemId IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM dbo.Viagem v WHERE v.ViagemId = i.ViagemId);
+
+PRINT '';
+PRINT '=== FIM DIAGNÓSTICO ===';
+PRINT 'Se todos os Orfaos = 0, pode rodar o bloco WITH CHECK abaixo.';
+PRINT 'Se algum > 0, limpe os dados órfãos primeiro (SET NULL ou DELETE).';
+GO
+
+-- 2) Ativar validação (rodar DEPOIS de limpar órfãos)
+/*
+SET XACT_ABORT ON;
+BEGIN TRY
+    BEGIN TRANSACTION ValidarFKs;
+
+    ALTER TABLE dbo.Viagem WITH CHECK CHECK CONSTRAINT FK_Viagem_UsuarioIdCriacao;
+    PRINT 'OK - FK_Viagem_UsuarioIdCriacao';
+
+    ALTER TABLE dbo.Lavador WITH CHECK CHECK CONSTRAINT FK_Lavador_ContratoId;
+    PRINT 'OK - FK_Lavador_ContratoId';
+
+    ALTER TABLE dbo.MovimentacaoEmpenhoMulta WITH CHECK CHECK CONSTRAINT FK_MovimentacaoEmpenhoMulta_EmpenhoMultaId;
+    PRINT 'OK - FK_MovimentacaoEmpenhoMulta_EmpenhoMultaId';
+
+    ALTER TABLE dbo.AlertasFrotiX WITH CHECK CHECK CONSTRAINT FK_AlertasFrotiX_UsuarioCriadorId;
+    PRINT 'OK - FK_AlertasFrotiX_UsuarioCriadorId';
+
+    ALTER TABLE dbo.Motorista WITH CHECK CHECK CONSTRAINT FK_Motorista_UnidadeId;
+    PRINT 'OK - FK_Motorista_UnidadeId';
+
+    ALTER TABLE dbo.Motorista WITH CHECK CHECK CONSTRAINT FK_Motorista_ContratoId;
+    PRINT 'OK - FK_Motorista_ContratoId';
+
+    ALTER TABLE dbo.Motorista WITH CHECK CHECK CONSTRAINT FK_Motorista_CondutorId;
+    PRINT 'OK - FK_Motorista_CondutorId';
+
+    ALTER TABLE dbo.Manutencao WITH CHECK CHECK CONSTRAINT FK_Manutencao_IdUsuarioCriacao;
+    PRINT 'OK - FK_Manutencao_IdUsuarioCriacao';
+
+    ALTER TABLE dbo.Manutencao WITH CHECK CHECK CONSTRAINT FK_Manutencao_IdUsuarioFinalizacao;
+    PRINT 'OK - FK_Manutencao_IdUsuarioFinalizacao';
+
+    ALTER TABLE dbo.Manutencao WITH CHECK CHECK CONSTRAINT FK_Manutencao_IdUsuarioCancelamento;
+    PRINT 'OK - FK_Manutencao_IdUsuarioCancelamento';
+
+    ALTER TABLE dbo.ItensManutencao WITH CHECK CHECK CONSTRAINT FK_ItensManutencao_ViagemId;
+    PRINT 'OK - FK_ItensManutencao_ViagemId';
+
+    COMMIT TRANSACTION ValidarFKs;
+    PRINT 'SUCESSO - Todas as FKs agora validam dados existentes (trusted).';
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION ValidarFKs;
+    PRINT 'ERRO! ROLLBACK - Nenhuma FK foi ativada.';
+    PRINT 'Mensagem: ' + ERROR_MESSAGE();
+    PRINT 'Limpe os dados órfãos e tente novamente.';
+    THROW;
+END CATCH
+*/

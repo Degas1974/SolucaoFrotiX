@@ -586,13 +586,13 @@ BEGIN
 
     DECLARE @UsuarioPadrao NVARCHAR(450) = N''0687751d-ba4d-498b-bd81-3c726f7296d2'';
 
-    -- Normaliza vazios → NULL
-    UPDATE m
-    SET m.IdUsuarioCriacao = NULL
-    FROM dbo.Manutencao m
-    INNER JOIN inserted i ON m.ManutencaoId = i.ManutencaoId
-    WHERE m.IdUsuarioCriacao IS NOT NULL
-      AND LTRIM(RTRIM(m.IdUsuarioCriacao)) = '''';
+    -- Normaliza vazio → usuário padrão (coluna NOT NULL)
+    UPDATE a
+    SET a.UsuarioCriadorId = @UsuarioPadrao
+    FROM dbo.AlertasFrotiX a
+    INNER JOIN inserted i ON a.AlertasFrotiXId = i.AlertasFrotiXId
+    WHERE a.UsuarioCriadorId IS NOT NULL
+      AND LTRIM(RTRIM(a.UsuarioCriadorId)) = '';
 
     UPDATE m
     SET m.IdUsuarioFinalizacao = NULL
@@ -655,9 +655,9 @@ BEGIN
 
     DECLARE @UsuarioPadrao NVARCHAR(450) = N''0687751d-ba4d-498b-bd81-3c726f7296d2'';
 
-  -- Normaliza vazio → usuário padrão (coluna NOT NULL)
+  -- Normaliza vazio → NULL
   UPDATE a
-  SET a.UsuarioCriadorId = @UsuarioPadrao
+  SET a.UsuarioCriadorId = NULL
   FROM dbo.AlertasFrotiX a
   INNER JOIN inserted i ON a.AlertasFrotiXId = i.AlertasFrotiXId
   WHERE a.UsuarioCriadorId IS NOT NULL
