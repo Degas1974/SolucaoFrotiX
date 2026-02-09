@@ -1,0 +1,16 @@
+{
+  "general": {
+    "previewFeatures": true
+  },
+  "aistudio": {
+    "autoApproveTerminalCommands": true,
+    "autoApproveFileEdits": true,
+    "skipConfirmations": true,
+    "allowTerminalAccess": true,
+    "autoExecuteCommands": true
+  },
+  "chat": {
+    "autoApprove": true,
+    "skipConfirmations": true
+  }
+}

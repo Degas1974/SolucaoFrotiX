@@ -108,8 +108,8 @@ namespace FrotiX.Controllers
 
                 // Horário de pico
                 var horarioPico = lavagens
-                    .Where(l => l.HorarioLavagem.HasValue)
-                    .GroupBy(l => l.HorarioLavagem.Value.Hour)
+                    .Where(l => l.Horario.HasValue)
+                    .GroupBy(l => l.Horario.Value.Hour)
                     .Select(g => new { Hora = $"{g.Key:D2}:00", Quantidade = g.Count() })
                     .OrderByDescending(x => x.Quantidade)
                     .FirstOrDefault();
@@ -196,14 +196,14 @@ namespace FrotiX.Controllers
                 }
 
                 var lavagens = await _context.Lavagem
-                    .Where(l => l.Data >= dataInicio && l.Data <= dataFim && l.HorarioLavagem.HasValue)
+                    .Where(l => l.Data >= dataInicio && l.Data <= dataFim && l.Horario.HasValue)
                     .ToListAsync();
 
                 var resultado = Enumerable.Range(0, 24)
                     .Select(h => new
                     {
                         hora = $"{h:D2}:00",
-                        quantidade = lavagens.Count(l => l.HorarioLavagem.Value.Hour == h)
+                        quantidade = lavagens.Count(l => l.Horario.Value.Hour == h)
                     })
                     .ToList();
 
@@ -385,11 +385,11 @@ namespace FrotiX.Controllers
                 }
 
                 var lavagens = await _context.Lavagem
-                    .Where(l => l.Data >= dataInicio && l.Data <= dataFim && l.Data.HasValue && l.HorarioLavagem.HasValue)
+                    .Where(l => l.Data >= dataInicio && l.Data <= dataFim && l.Data.HasValue && l.Horario.HasValue)
                     .ToListAsync();
 
                 var resultado = lavagens
-                    .GroupBy(l => new { Dia = (int)l.Data.Value.DayOfWeek, Hora = l.HorarioLavagem.Value.Hour })
+                    .GroupBy(l => new { Dia = (int)l.Data.Value.DayOfWeek, Hora = l.Horario.Value.Hour })
                     .Select(g => new
                     {
                         dia = g.Key.Dia,

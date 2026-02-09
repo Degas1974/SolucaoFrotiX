@@ -527,16 +527,29 @@ $(document).ready(function()
 {
     try
     {
-        // Pequeno delay para garantir que o DOM está pronto
-        setTimeout(function()
-        {
-            initKendoEditorUpsert();
-            
-            // Se viagem finalizada, desabilitar editor
-            if (window.viagemFinalizada === true) {
-                disableEditorUpsert();
+        // Aguardar que Kendo UI esteja completamente carregado
+        function aguardarKendoCarregar(tentativas) {
+            if (typeof kendo !== 'undefined' && typeof $.fn.kendoEditor === 'function') {
+                // Kendo carregado, inicializar editor
+                initKendoEditorUpsert();
+                
+                // Se viagem finalizada, desabilitar editor
+                if (window.viagemFinalizada === true) {
+                    disableEditorUpsert();
+                }
+            } else if (tentativas > 0) {
+                // Kendo ainda não carregou, tentar novamente
+                setTimeout(function() {
+                    aguardarKendoCarregar(tentativas - 1);
+                }, 100);
+            } else {
+                // Timeout - Kendo não carregou
+                console.error('Kendo UI não foi carregado após 3 segundos');
             }
-        }, 300);
+        }
+        
+        // Tentar carregar com até 30 tentativas (3 segundos total)
+        aguardarKendoCarregar(30);
     }
     catch (error)
     {

@@ -685,13 +685,85 @@ drawCallback: function() {
 }
 ```
 
-### 3.3 CSS
+### 3.3 Controles de Interface (DatePicker, TimePicker, etc.)
+
+**REGRA FUNDAMENTAL:** Usar **SEMPRE** controles Telerik Kendo UI ASP.NET Core
+
+**NUNCA** usar:
+- ❌ Controles HTML5 nativos (`<input type="date">`, `<input type="time">`)
+- ❌ Plugins jQuery genéricos
+- ❌ Syncfusion DatePicker/TimePicker
+
+**✅ Padrão obrigatório - Telerik Kendo UI:**
+
+```csharp
+@using Kendo.Mvc.UI
+
+// DatePicker
+@(Html.Kendo().DatePicker()
+    .Name("txtDataInicial")
+    .HtmlAttributes(new { @class = "form-control", style = "width: 100%;" })
+    .Min(DateTime.Today)  // Bloqueio de datas passadas
+    .Value(Model.DataInicial)
+)
+
+// TimePicker
+@(Html.Kendo().TimePicker()
+    .Name("txtHoraInicial")
+    .HtmlAttributes(new { @class = "form-control", style = "width: 100%; height: 38px;" })
+    .Value(Model.HoraInicial)
+)
+
+// DateTimePicker
+@(Html.Kendo().DateTimePicker()
+    .Name("txtDataHora")
+    .HtmlAttributes(new { @class = "form-control", style = "width: 100%;" })
+    .Min(DateTime.Now)
+    .Value(Model.DataHora)
+)
+```
+
+**Manipulação em JavaScript:**
+
+```javascript
+// Obter valor
+const dataInicial = $("#txtDataInicial").data("kendoDatePicker").value();
+const horaInicial = $("#txtHoraInicial").data("kendoTimePicker").value();
+
+// Definir valor
+$("#txtDataInicial").data("kendoDatePicker").value(new Date("2026-02-09"));
+$("#txtHoraInicial").data("kendoTimePicker").value(new Date(0,0,0,14,30));
+
+// Limpar valor
+$("#txtDataInicial").data("kendoDatePicker").value(null);
+```
+
+**Helpers recomendados (criar em arquivo separado):**
+
+```javascript
+function getKendoDateValue(id) {
+    const picker = $(`#${id}`).data("kendoDatePicker");
+    const value = picker?.value();
+    if (!value) return "";
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, '0');
+    const day = String(value.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function setKendoDateValue(id, value) {
+    const picker = $(`#${id}`).data("kendoDatePicker");
+    picker?.value(value ? new Date(value) : null);
+}
+```
+
+### 3.4 CSS
 
 - **Global:** `wwwroot/css/frotix.css`
 - **Local:** `<style>` no `.cshtml`
 - **Keyframes em Razor:** usar `@@keyframes` (escapar @)
 
-### 3.4 Labels de Rodapé do Modal (Agendamento/Viagem)
+### 3.5 Labels de Rodapé do Modal (Agendamento/Viagem)
 
 **Contexto:** O modal de viagens/agendamentos exibe labels no rodapé indicando quem criou/agendou o registro.
 

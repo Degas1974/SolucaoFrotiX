@@ -1,0 +1,226 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/PlacaBronze/Upsert.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Formulário de criação/edição de Placas de Bronze com JavaScript inline
+ *                   para carregar lista de veículos via AJAX (opcional) e pré-selecionar valor.
+ * 📥 ENTRADAS     : @Model FrotiX.Pages.PlacaBronze.UpsertModel, POST form submission,
+ *                   PlacaBronzeObj properties (PlacaBronzeId, DescricaoPlaca, VeiculoId - dropdown,
+ *                   Status), GET /PlacaBronze/Upsert?handler=VeiculoData (AJAX JSON response)
+ * 📤 SAÍDAS       : POST para OnPostSubmit (UpsertModel code-behind), #VeiculoLista populado
+ *                   dinamicamente via JavaScript (option elements com value/text), redirect
+ *                   para ./Index após sucesso, validação asp-validation-*, AppToast/toastr
+ * 🔗 CHAMADA POR  : Pages/PlacaBronze/Index.cshtml (botão + Adicionar Placa de Bronze),
+ *                   DataTable edit links, UpsertModel.OnGet()
+ * 🔄 CHAMA        : UpsertModel.OnPostSubmit (code-behind), UpsertModel.OnGetVeiculoData
+ *                   (PageHandler AJAX), $.ajax() GET VeiculoData, ./Index (cancelamento),
+ *                   ASP.NET validation system, toastr (notificações)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, jQuery, Bootstrap 5, Font Awesome 6 Duotone,
+ *                   toastr.js (CDN), Tag Helpers (asp-for, asp-validation-*, asp-page-handler),
+ *                   JavaScript nativo ($.ajax, for loops, string concatenation)
+ * 📝 OBSERVAÇÕES  : 151 linhas. **JAVASCRIPT INLINE IMPORTANTE** (~line 138-151): $.ajax() carrega
+ *                   veículos via GET /PlacaBronze/Upsert?handler=VeiculoData, constrói <option>
+ *                   tags dinamicamente (for loop data[i]["value"]/data[i]["text"]), insere no
+ *                   #VeiculoLista. Verifica @veiculo_id (Razor): se Guid.Empty seleciona placeholder
+ *                   "-- Selecione um Veículo (opcional) --", senão pré-seleciona veículo existente.
+ *                   Error handler fallback (mostra só placeholder se AJAX falhar). Form com 3 campos:
+ *                   DescricaoPlaca (texto), VeiculoId (dropdown dinâmico), Status (checkbox mt-4).
+ *                   Header dinâmico (Criar/Atualizar baseado PlacaBronzeId != Empty). Input hidden
+ *                   para PlacaBronzeId em edição. Layout col-8 (66%). Icon fa-rectangle-history-circle-plus
+ *                   no header. Botão azul com spinner (btn-submit-spin). CSS inline minimalista.
+ *                   Toastr CDN no @section ScriptsBlock. Veículo associado é OPCIONAL.
+ **************************************************************************************** *@
+@page
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@model FrotiX.Pages.PlacaBronze.UpsertModel
+
+@{
+	ViewData["Title"] = "Placas de Bronze";
+	ViewData["PageName"] = "placabronze_index";
+	ViewData["Heading"] = "<i class='fa-duotone fa-file-certificate'></i> Cadastros: <span class='fw-300'>Placas de Bronze</span>";
+	ViewData["Category1"] = "Cadastros";
+	ViewData["PageIcon"] = "fa-duotone fa-file-certificate";
+}
+
+@{
+	Guid veiculo_id = Model.PlacaBronzeObj.VeiculoId;
+}
+
+<style>
+	.form-control-xs {
+		height: calc(1em + .775rem + 2px) !important;
+		padding: .125rem .25rem !important;
+		font-size: .75rem !important;
+		line-height: 1.5;
+		border-radius: .2rem;
+	}
+
+	.label {
+		margin-bottom: -5px;
+		margin-top: 10px;
+	}
+</style>
+
+@section HeadBlock {
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+}
+
+<form method="post" asp-action="Upsert">
+	<div class="row">
+		<div class="col-xl-12">
+			<div id="panel-1" class="panel">
+				<div class="panel-container show">
+					<!-- HEADER DO CARD -->
+					<div class="ftx-card-header">
+						<h2 class="titulo-paginas">
+							<i class="fa-duotone fa-rectangle-history-circle-plus"></i>
+							@(Model.PlacaBronzeObj.PlacaBronze.PlacaBronzeId != Guid.Empty ? "Atualizar " : "Criar ") Placa de Bronze
+						</h2>
+					</div>
+
+					<div class="panel-content">
+						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+						@if (Model.PlacaBronzeObj.PlacaBronze.PlacaBronzeId != Guid.Empty)
+						{
+							<input type="hidden" asp-for="PlacaBronzeObj.PlacaBronze.PlacaBronzeId" />
+							veiculo_id = Model.PlacaBronzeObj.VeiculoId;
+						}
+
+						<div class="col-8 pt-3">
+							<!-- Descrição da Placa -->
+							<div class="row">
+								<div class="col-12">
+									<div class="form-group">
+										<label class="label font-weight-bold" asp-for="PlacaBronzeObj.PlacaBronze.DescricaoPlaca"></label>
+										<span class="text-danger font-weight-light" asp-validation-for="PlacaBronzeObj.PlacaBronze.DescricaoPlaca"></span>
+										<input class="form-control form-control-xs" asp-for="PlacaBronzeObj.PlacaBronze.DescricaoPlaca" />
+									</div>
+								</div>
+							</div>
+
+							<!-- Veículo Associado -->
+							<div class="row">
+								<div class="col-12">
+									<div class="form-group">
+										<label class="label font-weight-bold" asp-for="PlacaBronzeObj.VeiculoId"></label>
+										<span class="text-danger font-weight-light" asp-validation-for="PlacaBronzeObj.VeiculoId"></span>
+										<select id="VeiculoLista" class="form-control form-control-xs" asp-for="PlacaBronzeObj.VeiculoId">
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<!-- Status (com espaçamento aumentado) -->
+							<div class="row mt-4">
+								<div class="col-12">
+									<div class="form-group">
+										<span class="text-danger font-weight-light" asp-validation-for="PlacaBronzeObj.PlacaBronze.Status"></span>
+										<div class="form-check">
+											<input type="checkbox" class="form-check-input" asp-for="PlacaBronzeObj.PlacaBronze.Status" id="statusCheckbox" />
+											<label class="form-check-label font-weight-bold" for="statusCheckbox" asp-for="PlacaBronzeObj.PlacaBronze.Status"></label>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- Botões -->
+							<div class="form-group row mt-4">
+								<div class="col-9">
+									<div class="row">
+										<div class="col-6">
+											<button type="submit" value="Submit" asp-page-handler="Submit" class="btn btn-azul btn-submit-spin form-control">
+												<i class="fa-duotone fa-floppy-disk icon-space icon-pulse"></i>
+												@(Model.PlacaBronzeObj.PlacaBronze.PlacaBronzeId != Guid.Empty ? "Atualizar Placa" : "Criar Placa")
+											</button>
+										</div>
+										<div class="col-6">
+											<a asp-page="./Index" class="btn btn-ftx-fechar form-control" data-ftx-loading>
+												<i class="fa-duotone fa-circle-xmark icon-space icon-pulse"></i>
+												Cancelar Operação
+											</a>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+@section ScriptsBlock
+{
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+	<script>
+		/***
+		 * ⚡ FUNÇÃO: Carregamento de Lista de Veículos (AJAX)
+		 * ============================================================================
+		 * 🎯 OBJETIVO     : Buscar lista de veículos do servidor e popular dropdown
+		 *                   #VeiculoLista dinamicamente, com pré-seleção se em edição
+		 *
+		 * 📥 ENTRADAS     : GET /PlacaBronze/Upsert?handler=VeiculoData (server response)
+		 *
+		 * 📤 SAÍDAS       : #VeiculoLista populado com <option> tags (value + text),
+		 *                   seleção pré-preenchida se veiculo_id != Guid.Empty
+		 *
+		 * 🎯 MOTIVO       : Veículos são carregados dinamicamente do banco para permitir
+		 *                   seleção da associação da Placa de Bronze
+		 *
+		 * 📝 OBSERVAÇÕES  : [AJAX] Veículo é OPCIONAL na Placa de Bronze.
+		 *                   Se falhar, exibe só placeholder.
+		 ***/
+		try {
+			/***
+			 * [AJAX] Endpoint: GET /PlacaBronze/Upsert?handler=VeiculoData
+			 * ============================================================================
+			 * 📥 ENVIA        : Nenhum parâmetro
+			 * 📤 RECEBE       : Array<{ value: Guid, text: string }> - Lista de veículos
+			 * 🎯 MOTIVO       : Popular dropdown de seleção de veículo associado
+			 ***/
+			$.ajax({
+				type: "GET",
+				url: "/PlacaBronze/Upsert?handler=VeiculoData",
+				data: {},
+				success: function (data) {
+					try {
+						// [DADOS] Construir HTML das options começando com placeholder
+						var s = '<option value="">-- Selecione um Veículo (opcional) --</option>';
+
+						// [LOGICA] Loop através dos veículos retornados
+						for (var i = 0; i < data.length; i++) {
+							s += '<option value="' + data[i]["value"] + '">' + data[i]["text"] + '</option>';
+						}
+
+						// [UI] Inserir options no select
+						$("#VeiculoLista").html(s);
+
+						// [LOGICA] Se editando (veiculo_id != Empty), pré-selecionar
+						if ("@veiculo_id" == "00000000-0000-0000-0000-000000000000") {
+							$("#VeiculoLista").val("");
+						} else {
+							$("#VeiculoLista").val("@veiculo_id");
+						}
+					} catch (error) {
+						Alerta.TratamentoErroComLinha("PlacaBronze/Upsert.cshtml", "ajax.success", error);
+					}
+				},
+				error: function (data) {
+					try {
+						// [UI] Se falhar, exibir só placeholder
+						var s = '<option value="">-- Selecione um Veículo (opcional) --</option>';
+						$("#VeiculoLista").html(s);
+						console.warn("Erro ao carregar veículos via AJAX");
+					} catch (error) {
+						Alerta.TratamentoErroComLinha("PlacaBronze/Upsert.cshtml", "ajax.error", error);
+					}
+				}
+			});
+		} catch (error) {
+			Alerta.TratamentoErroComLinha("PlacaBronze/Upsert.cshtml", "script.setup", error);
+		}
+	</script>
+}

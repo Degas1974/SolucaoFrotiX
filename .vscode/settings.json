@@ -1,4 +1,8 @@
 {
+    // === DIRETÓRIO PADRÃO DE TRABALHO ===
+    "copilot.defaultWorkingDirectory": "FrotiX.Site.2026.01",
+    "chat.defaultWorkingDirectory": "FrotiX.Site.2026.01",
+    
     "genieai.enableConversationHistory": true,
   
   // Ordem das views na sidebar

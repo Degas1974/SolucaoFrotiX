@@ -1,0 +1,38 @@
+# 🤖 Contexto para Agentes de IA
+
+## 📍 Diretório de Trabalho
+Este é o **diretório principal ativo** do projeto FrotiX.
+
+**Caminho:** `FrotiX.Site.2026.01/`
+
+## 🎯 Instruções para IAs
+
+- ✅ **SEMPRE** considere este diretório como raiz ao trabalhar no projeto
+- ✅ **PRIORIZE** arquivos deste diretório ao buscar código
+- ✅ **USE** caminhos relativos a partir deste diretório
+- ❌ **NÃO** sugira modificações em FrotiX.Site, FrotiX.Site.Novo, FrotiX.Site.Q4 ou FrotiX.Site.Backup
+- ❌ Esses são projetos **LEGADOS** - apenas para referência
+
+## 📁 Estrutura Importante
+
+```
+FrotiX.Site.2026.01/
+├── Controllers/        # Controllers MVC
+├── Models/            # Modelos de dados
+├── Views/             # Views Razor
+├── wwwroot/           # Arquivos estáticos
+├── Services/          # Serviços da aplicação
+├── Helpers/           # Classes auxiliares
+└── Data/              # Contexto e configuração do EF Core
+```
+
+## ⚙️ Configuração Técnica
+
+- **Framework:** ASP.NET Core 10.0
+- **Servidor:** Kestrel (porta 7100)
+- **Banco:** SQL Server
+- **Template:** SmartAdmin + Kendo UI
+
+## 📖 Regras de Desenvolvimento
+
+Leia: `../FrotiX.Site/RegrasDesenvolvimentoFrotiX.md` para todas as regras detalhadas.

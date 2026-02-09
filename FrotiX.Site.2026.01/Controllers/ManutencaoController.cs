@@ -1013,7 +1013,7 @@ namespace FrotiX.Controllers
                 //===============
                 var objLavagem = new Lavagem();
                 objLavagem.Data = lavagem.Data;
-                objLavagem.HorarioLavagem = lavagem.HorarioLavagem;
+                objLavagem.Horario = lavagem.Horario;
                 objLavagem.VeiculoId = lavagem.VeiculoId;
                 objLavagem.MotoristaId = lavagem.MotoristaId;
 

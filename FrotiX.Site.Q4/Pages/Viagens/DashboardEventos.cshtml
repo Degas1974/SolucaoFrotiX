@@ -1,0 +1,471 @@
+@*
+ ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Viagens/DashboardEventos.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Dashboard gerencial de eventos de viagens com Syncfusion Charts
+ *                   (pie/bar/line), KPIs de métricas (abastecimentos, manutenções,
+ *                   multas, acidentes), filtros período e categorias, análises gerenciais
+ *                   identificar padrões eventos frota
+ *
+ * 📥 ENTRADAS     : @page, @model DashboardEventosModel, route /Viagens/DashboardEventos,
+ *                   filtros toolbar: DatePicker DataInicio/DataFim (default mês atual),
+ *                   ComboBox TipoEvento multi-select (Abastecimento/Manutenção/Multa/
+ *                   Acidente), ComboBox Veículos multi-select, ComboBox CentroCusto,
+ *                   botão Atualizar trigger GET /api/Dashboard/GetEventosData
+ *
+ * 📤 SAÍDAS       : Page renderizada com: Grid 2x4 cards KPIs (Total Eventos, Abastecimentos,
+ *                   Manutenções, Multas, Acidentes, Custo Total, Frequência Média,
+ *                   Top 3 Veículos), Grid 2x3 charts Syncfusion: Pie Eventos por Tipo,
+ *                   Bar Eventos últimos 12 meses (empilhado), Line Evolução Custos,
+ *                   Bar Top 10 Veículos, Pie por Centro Custo, Bar por Dia Semana,
+ *                   todos interativos com tooltips, legends, export PNG/PDF
+ *
+ * 🔗 CHAMADA POR  : Menu Dashboard > Eventos Viagens (sidebar), usuários role Admin/
+ *                   Coordenador Frota, análises gerenciais identificar padrões
+ *
+ * 🔄 CHAMA        : GET /api/Dashboard/GetEventosData (EF Core Join múltiplas tabelas
+ *                   eventos, agregações COUNT/SUM/AVG por Tipo/Mês/Veículo/DiaSemana),
+ *                   jQuery AJAX reload, Moment.js formatação datas
+ *
+ * 📦 DEPENDÊNCIAS : Syncfusion EJ2 Charts 2023.4.2, Syncfusion DatePicker/ComboBox,
+ *                   Bootstrap 5.3.8, Font Awesome 6 Duotone, jQuery 3.7.1, Moment.js,
+ *                   EF Core 8.0, AppToast.js, FtxSpin.js
+ *
+ * 📝 OBSERVAÇÕES  : Total ~425 linhas. **Chart Eventos por Dia Semana:** identifica
+ *                   padrões temporais úteis (Segundas mais abastecimentos = motoristas
+ *                   abastecem início semana). **Top 10 Veículos:** identifica veículos
+ *                   problemáticos (50 eventos vs 10 dos outros = problemas recorrentes,
+ *                   considerar venda). **Custos Eventos:** totaliza gastos extraordinários
+ *                   (EXCLUI custos fixos combustível normal, INCLUI apenas manutenções
+ *                   corretivas/multas/acidentes). **Query backend pesada:** múltiplas
+ *                   JOINs, considerar **cache 5min** ou **pré-cálculo noturno**.
+ *
+ * ⚠️  ISSUES      : Query JOIN múltiplas tabelas pode ter performance ruim com muitos dados
+ *                   (consideraraddicionar índices banco). Sem cache implementado. Sem
+ *                   validação se período é válido (DataFim > DataInicio).
+ ****************************************************************************************
+ *@
+@page
+@model FrotiX.Pages.Eventos.DashboardEventosModel
+@{
+    ViewData["Title"] = "Dashboard de Eventos";
+    ViewData["PageName"] = "viagens_dashboardeventos";
+}
+
+<style>
+    /* ===== CARDS DE ESTATÍSTICAS ===== */
+    .card-estatistica-dash {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        border-left: 4px solid;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        min-height: 140px;
+        height: 100%;
+    }
+    
+    .card-estatistica-dash:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        transform: translateY(-2px);
+    }
+    
+    .card-borda-azul { border-left-color: #0D6EFD; }
+    .card-borda-verde { border-left-color: #16a34a; }
+    .card-borda-ciano { border-left-color: #22d3ee; }
+    .card-borda-vermelho { border-left-color: #dc2626; }
+    .card-borda-roxo { border-left-color: #667eea; }
+    .card-borda-laranja { border-left-color: #d97706; }
+    
+    .icone-card-dash {
+        font-size: 32px;
+        margin-bottom: 12px;
+        opacity: 0.85;
+    }
+    
+    .icone-azul { color: #0D6EFD; }
+    .icone-verde { color: #16a34a; }
+    .icone-ciano { color: #22d3ee; }
+    .icone-vermelho { color: #dc2626; }
+    .icone-roxo { color: #667eea; }
+    .icone-laranja { color: #d97706; }
+    
+    .texto-metrica {
+        font-size: 0.75rem;
+        color: #6B7280;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: block;
+        margin-bottom: 8px;
+    }
+    
+    .valor-metrica {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #111827;
+        line-height: 1.2;
+    }
+    
+    .variacao-metrica {
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-top: 8px;
+    }
+    
+    .variacao-positiva { color: #16a34a; }
+    .variacao-negativa { color: #dc2626; }
+    .variacao-neutra { color: #6B7280; }
+    
+    /* ===== CARDS DASHBOARD ===== */
+    .card-dashboard {
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .card-dashboard:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        transform: translateY(-2px);
+    }
+    
+    /* ===== CONTAINER DE FILTROS ===== */
+    .filter-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 30px;
+    }
+    
+    .filter-card .form-label {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    
+    .filter-card .form-control {
+        border-radius: 8px;
+        border: 2px solid rgba(255,255,255,0.3);
+        background: rgba(255,255,255,0.15);
+        color: white;
+        font-weight: 500;
+    }
+    
+    .filter-card .form-control:focus {
+        background: rgba(255,255,255,0.25);
+        border-color: white;
+        color: white;
+        box-shadow: 0 0 0 0.2rem rgba(255,255,255,0.25);
+    }
+    
+    /* ===== BOTÕES DE PERÍODO RÁPIDO ===== */
+    .btn-period {
+        padding: 8px 16px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        border: 2px solid rgba(255,255,255,0.3);
+        background: #f8f9fa;
+        color: #667eea;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-period:hover {
+        background: #e9ecef;
+        border-color: rgba(255,255,255,0.5);
+        transform: translateY(-1px);
+    }
+    
+    .btn-period.active {
+        background: #667eea;
+        border-color: #667eea;
+        color: white;
+    }
+    
+    /* ===== LOADING ===== */
+    #loadingDashboard {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        border-radius: 12px;
+        min-height: 300px;
+    }
+    
+    #loadingDashboard .spinner-border {
+        width: 3rem;
+        height: 3rem;
+        border-width: 0.3rem;
+        color: #667eea;
+    }
+    
+    #loadingDashboard p {
+        margin-top: 20px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #667eea;
+    }
+    
+    /* ===== GRÁFICOS ===== */
+    .grafico-container {
+        min-height: 350px;
+        padding: 20px;
+    }
+    
+    /* ===== TABELAS ===== */
+    .table-dashboard {
+        font-size: 0.9rem;
+    }
+    
+    .table-dashboard thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .table-dashboard thead th {
+        font-weight: 600;
+        border: none;
+        padding: 12px;
+    }
+    
+    .table-dashboard tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+
+<!-- CONTAINER PRINCIPAL -->
+<div class="container-fluid px-4 py-4">
+
+    <!-- FILTROS -->
+    <div class="filter-card">
+        <div class="row align-items-end">
+            <div class="col-md-3">
+                <label for="dataInicio" class="form-label">
+                    <i class="fa-duotone fa-calendar-alt me-2"></i>Data Inicial
+                </label>
+                <input type="date" class="form-control" id="dataInicio" />
+            </div>
+            <div class="col-md-3">
+                <label for="dataFim" class="form-label">
+                    <i class="fa-duotone fa-calendar-alt me-2"></i>Data Final
+                </label>
+                <input type="date" class="form-control" id="dataFim" />
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex justify-content-end flex-wrap">
+                    <button type="button" class="btn btn-period" id="btn7Dias">7 dias</button>
+                    <button type="button" class="btn btn-period" id="btn15Dias">15 dias</button>
+                    <button type="button" class="btn btn-period active" id="btn30Dias">30 dias</button>
+                    <button type="button" class="btn btn-period" id="btn90Dias">90 dias</button>
+                    <button type="button" class="btn btn-period" id="btn180Dias">6 meses</button>
+                    <button type="button" class="btn btn-period" id="btn1Ano">1 ano</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-3">
+            <div class="col-12">
+                <button type="button" class="btn btn-light me-2" id="btnAtualizarDashboard">
+                    <i class="fa-duotone fa-sync-alt me-2"></i>Atualizar Dashboard
+                </button>
+                <button type="button" class="btn btn-vinho" id="btnExportarPDF">
+                    <i class="fa-duotone fa-file-pdf me-2"></i>Exportar PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADING -->
+    <div id="loadingDashboard" class="d-none">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+        <p>Processando dados do dashboard...</p>
+    </div>
+
+    <!-- CARDS DE ESTATÍSTICAS PRINCIPAIS -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="card-estatistica-dash card-borda-azul">
+                <i class="fa-duotone fa-calendar-check icone-card-dash icone-azul"></i>
+                <span class="texto-metrica">Total de Eventos</span>
+                <div class="valor-metrica" id="statTotalEventos">0</div>
+                <div class="variacao-metrica variacao-neutra" id="variacaoTotalEventos">—</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card-estatistica-dash card-borda-verde">
+                <i class="fa-duotone fa-circle-play icone-card-dash icone-verde"></i>
+                <span class="texto-metrica">Eventos Ativos</span>
+                <div class="valor-metrica" id="statEventosAtivos">0</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card-estatistica-dash card-borda-ciano">
+                <i class="fa-duotone fa-circle-check icone-card-dash icone-ciano"></i>
+                <span class="texto-metrica">Concluídos</span>
+                <div class="valor-metrica" id="statEventosConcluidos">0</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card-estatistica-dash card-borda-vermelho">
+                <i class="fa-duotone fa-circle-xmark icone-card-dash icone-vermelho"></i>
+                <span class="texto-metrica">Cancelados</span>
+                <div class="valor-metrica" id="statEventosCancelados">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARDS SECUNDÁRIOS -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-6 col-md-6">
+            <div class="card-estatistica-dash card-borda-roxo">
+                <i class="fa-duotone fa-users icone-card-dash icone-roxo"></i>
+                <span class="texto-metrica">Total de Participantes</span>
+                <div class="valor-metrica" id="statTotalParticipantes">0</div>
+                <div class="variacao-metrica variacao-neutra" id="variacaoTotalParticipantes">—</div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6">
+            <div class="card-estatistica-dash card-borda-laranja">
+                <i class="fa-duotone fa-chart-line icone-card-dash icone-laranja"></i>
+                <span class="texto-metrica">Média de Participantes</span>
+                <div class="valor-metrica" id="statMediaParticipantes">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GRÁFICOS LINHA 1 -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-6">
+            <div class="card card-dashboard">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">
+                        <i class="fa-duotone fa-chart-pie text-primary me-2"></i>
+                        Distribuição por Status
+                    </h6>
+                </div>
+                <div class="card-body grafico-container">
+                    <div id="chartEventosPorStatus"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card card-dashboard">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">
+                        <i class="fa-duotone fa-chart-bar text-primary me-2"></i>
+                        Top 10 Setores Solicitantes
+                    </h6>
+                </div>
+                <div class="card-body grafico-container">
+                    <div id="chartEventosPorSetor"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GRÁFICOS LINHA 2 -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-12">
+            <div class="card card-dashboard">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">
+                        <i class="fa-duotone fa-chart-line text-primary me-2"></i>
+                        Evolução Mensal de Eventos
+                    </h6>
+                </div>
+                <div class="card-body grafico-container">
+                    <div id="chartEventosPorMes"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- TABELAS -->
+    <div class="row g-3 mb-4">
+        <!-- TABELA: SETORES -->
+        <div class="col-lg-6">
+            <div class="card card-dashboard">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">
+                        <i class="fa-duotone fa-building text-info me-2"></i>
+                        Estatísticas por Setor
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dashboard table-hover table-sm" id="tabelaSetores">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px">#</th>
+                                    <th>Setor</th>
+                                    <th class="text-end" style="width: 80px">Eventos</th>
+                                    <th class="text-end" style="width: 100px">Partic.</th>
+                                    <th class="text-end" style="width: 80px">Concl.</th>
+                                    <th class="text-end" style="width: 80px">Taxa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Preenchido via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABELA: REQUISITANTES -->
+        <div class="col-lg-6">
+            <div class="card card-dashboard">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">
+                        <i class="fa-duotone fa-user-tie text-success me-2"></i>
+                        Top 10 Requisitantes
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dashboard table-hover table-sm" id="tabelaRequisitantes">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px">#</th>
+                                    <th>Requisitante</th>
+                                    <th class="text-end" style="width: 80px">Eventos</th>
+                                    <th class="text-end" style="width: 100px">Partic.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Preenchido via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- FIM DO CONTAINER PRINCIPAL -->
+
+@section ScriptsBlock {
+    <!-- Syncfusion Scripts Individuais (NECESSÁRIO para evitar erros de inicialização) -->
+    <script src="https://cdn.syncfusion.com/ej2/26.2.14/dist/ej2-base.min.js" asp-append-version="true"></script>
+    <script src="https://cdn.syncfusion.com/ej2/26.2.14/dist/ej2-data.min.js" asp-append-version="true"></script>
+    <script src="https://cdn.syncfusion.com/ej2/26.2.14/dist/ej2-svg-base.min.js" asp-append-version="true"></script>
+    <script src="https://cdn.syncfusion.com/ej2/26.2.14/dist/ej2-charts.min.js" asp-append-version="true"></script>
+    
+    <!-- Dashboard de Eventos -->
+    <script src="~/js/dashboards/dashboard-eventos.js" asp-append-version="true"></script>
+}
+

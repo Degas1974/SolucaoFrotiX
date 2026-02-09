@@ -585,8 +585,8 @@ $('#txtKmFinal').focusout(async function () {
 
 $('#txtDataInicial').focusout(function () {
     try {
-        const rawDataFinal = document.getElementById('txtDataFinal')?.value;
-        const rawDataInicial = document.getElementById('txtDataInicial')?.value;
+        const rawDataFinal = getKendoDateValue('txtDataFinal');
+        const rawDataInicial = getKendoDateValue('txtDataInicial');
         const data = new Date(rawDataInicial);
         const anoAtual = new Date().getFullYear();
         const anoInformado = data.getFullYear();
@@ -602,8 +602,8 @@ $('#txtDataInicial').focusout(function () {
                 'Erro na Data',
                 'A data deve ser válida e o ano deve estar entre o ano anterior e o próximo!',
             );
-            document.getElementById('txtDataFinal').value = '';
-            document.getElementById('txtDataFinal').focus();
+            setKendoDateValue('txtDataFinal', null);
+            $('#txtDataFinal').focus();
             return;
         }
 
@@ -616,7 +616,7 @@ $('#txtDataInicial').focusout(function () {
         if (!inicio.isValid() || !fim.isValid()) return;
 
         if (dataFinal < dataInicial) {
-            $('#txtDataInicial').val('');
+            setKendoDateValue('txtDataInicial', null);
             $('#txtDuracao').val('');
             Alerta.Erro(
                 'Erro na Data',
@@ -628,8 +628,8 @@ $('#txtDataInicial').focusout(function () {
         validarDatasInicialFinal(dataInicial, dataFinal);
 
         if (dataFinal === dataInicial) {
-            const horaInicial = $('#txtHoraInicial').val();
-            const horaFinal = $('#txtHoraFinal').val();
+            const horaInicial = getKendoTimeValue('txtHoraInicial');
+            const horaFinal = getKendoTimeValue('txtHoraFinal');
 
             if (!horaInicial || !horaFinal) return;
 
@@ -639,7 +639,7 @@ $('#txtDataInicial').focusout(function () {
             const minFin = hF * 60 + mF;
 
             if (minFin <= minIni) {
-                $('#txtHoraFinal').val('');
+                setKendoTimeValue('txtHoraFinal', null);
                 $('#txtDuracao').val('');
                 Alerta.Erro(
                     'Erro na Hora',
@@ -667,9 +667,8 @@ $('#txtDataFinal').focusout(async function () {
         if (evitandoLoop) return;
 
         try {
-            const rawDataFinal = document.getElementById('txtDataFinal')?.value;
-            const rawDataInicial =
-                document.getElementById('txtDataInicial')?.value;
+            const rawDataFinal = getKendoDateValue('txtDataFinal');
+            const rawDataInicial = getKendoDateValue('txtDataInicial');
             const data = new Date(rawDataFinal);
             const anoAtual = new Date().getFullYear();
             const anoInformado = data.getFullYear();
@@ -694,8 +693,8 @@ $('#txtDataFinal').focusout(async function () {
 
                 setTimeout(() => {
                     try {
-                        document.getElementById('txtDataFinal').value = '';
-                        document.getElementById('txtDataFinal').focus();
+                        setKendoDateValue('txtDataFinal', null);
+                        $('#txtDataFinal').focus();
                         evitandoLoop = false;
                     } catch (error) {
                         Alerta.TratamentoErroComLinha(
@@ -719,7 +718,7 @@ $('#txtDataFinal').focusout(async function () {
                         resultadoDataFutura.titulo,
                         resultadoDataFutura.mensagem,
                     );
-                    document.getElementById('txtDataFinal').value = '';
+                    setKendoDateValue('txtDataFinal', null);
                     return;
                 }
             } else {
@@ -727,8 +726,8 @@ $('#txtDataFinal').focusout(async function () {
                 const hoje = new Date();
                 hoje.setHours(0, 0, 0, 0);
                 if (data > hoje) {
-                    document.getElementById('txtDataFinal').value = '';
-                    document.getElementById('txtDataFinal').focus();
+                    setKendoDateValue('txtDataFinal', null);
+                    $('#txtDataFinal').focus();
                     AppToast.show(
                         'Amarelo',
                         'A Data Final não pode ser superior à data atual.',
@@ -747,7 +746,7 @@ $('#txtDataFinal').focusout(async function () {
             if (!inicio.isValid() || !fim.isValid()) return;
 
             if (dataFinal < dataInicial) {
-                $('#txtDataInicial').val('');
+                setKendoDateValue('txtDataInicial', null);
                 $('#txtDuracao').val('');
                 Alerta.Erro(
                     'Erro na Data',
@@ -759,8 +758,8 @@ $('#txtDataFinal').focusout(async function () {
             validarDatasInicialFinal(dataInicial, dataFinal);
 
             if (dataFinal === dataInicial) {
-                const horaInicial = $('#txtHoraInicial').val();
-                const horaFinal = $('#txtHoraFinal').val();
+                const horaInicial = getKendoTimeValue('txtHoraInicial');
+                const horaFinal = getKendoTimeValue('txtHoraFinal');
 
                 if (!horaInicial || !horaFinal) return;
 
@@ -770,7 +769,7 @@ $('#txtDataFinal').focusout(async function () {
                 const minFin = hF * 60 + mF;
 
                 if (minFin <= minIni) {
-                    $('#txtHoraFinal').val('');
+                    setKendoTimeValue('txtHoraFinal', null);
                     $('#txtDuracao').val('');
                     Alerta.Erro(
                         'Erro na Hora',
@@ -784,8 +783,8 @@ $('#txtDataFinal').focusout(async function () {
 
             // VALIDAÇÃO IA: Análise de duração (se disponível)
             if (typeof ValidadorFinalizacaoIA !== 'undefined') {
-                const horaInicial = $('#txtHoraInicial').val();
-                const horaFinal = $('#txtHoraFinal').val();
+                const horaInicial = getKendoTimeValue('txtHoraInicial');
+                const horaFinal = getKendoTimeValue('txtHoraFinal');
 
                 if (rawDataInicial && horaInicial && horaFinal) {
                     const validador = ValidadorFinalizacaoIA.obterInstancia();
@@ -809,7 +808,7 @@ $('#txtDataFinal').focusout(async function () {
                             'Corrigir',
                         );
                         if (!confirma) {
-                            document.getElementById('txtDataFinal').value = '';
+                            setKendoDateValue('txtDataFinal', null);
                             return;
                         }
                     }
@@ -836,20 +835,20 @@ $('#txtDataFinal').focusout(async function () {
 // txtHoraFinal - VALIDAÇÃO IA
 $('#txtHoraFinal').focusout(async function () {
     try {
-        if ($('#txtDataFinal').val() === '' && $('#txtHoraFinal').val() != '') {
+        if (getKendoDateValue('txtDataFinal') === '' && getKendoTimeValue('txtHoraFinal') != '') {
             Alerta.Erro(
                 'Erro na Hora',
                 'A hora final só pode ser preenchida depois de Data Final!',
             );
-            $('#txtHoraFinal').val('');
+            setKendoTimeValue('txtHoraFinal', null);
             $('#txtDuracao').val('');
             return;
         }
 
-        const dataInicialStr = $('#txtDataInicial').val();
-        const dataFinalStr = $('#txtDataFinal').val();
-        const horaInicial = $('#txtHoraInicial').val();
-        const horaFinal = $('#txtHoraFinal').val();
+        const dataInicialStr = getKendoDateValue('txtDataInicial');
+        const dataFinalStr = getKendoDateValue('txtDataFinal');
+        const horaInicial = getKendoTimeValue('txtHoraInicial');
+        const horaFinal = getKendoTimeValue('txtHoraFinal');
 
         if (!dataInicialStr || !dataFinalStr || !horaInicial || !horaFinal)
             return;
@@ -864,7 +863,7 @@ $('#txtHoraFinal').focusout(async function () {
             const minFin = hF * 60 + mF;
 
             if (minFin <= minIni) {
-                $('#txtHoraFinal').val('');
+                setKendoTimeValue('txtHoraFinal', null);
                 $('#txtDuracao').val('');
                 Alerta.Erro(
                     'Erro na Hora',
@@ -896,7 +895,7 @@ $('#txtHoraFinal').focusout(async function () {
                     'Corrigir',
                 );
                 if (!confirma) {
-                    $('#txtHoraFinal').val('');
+                    setKendoTimeValue('txtHoraFinal', null);
                     $('#txtDuracao').val('');
                     return;
                 }
@@ -1172,18 +1171,11 @@ async function validarDatasInicialFinal(DataInicial, DataFinal) {
 // ========================= Duração: calcularDuracaoViagem ===================
 function calcularDuracaoViagem() {
     try {
-        var rawDataInicial =
-            document.getElementById('txtDataInicial') &&
-            document.getElementById('txtDataInicial').value;
-        var horaInicial =
-            document.getElementById('txtHoraInicial') &&
-            document.getElementById('txtHoraInicial').value;
-        var rawDataFinal =
-            document.getElementById('txtDataFinal') &&
-            document.getElementById('txtDataFinal').value;
-        var horaFinal =
-            document.getElementById('txtHoraFinal') &&
-            document.getElementById('txtHoraFinal').value;
+        // Usar helpers do Kendo para obter valores
+        var rawDataInicial = getKendoDateValue('txtDataInicial');
+        var horaInicial = getKendoTimeValue('txtHoraInicial');
+        var rawDataFinal = getKendoDateValue('txtDataFinal');
+        var horaFinal = getKendoTimeValue('txtHoraFinal');
         var elDuracao = document.getElementById('txtDuracao');
 
         console.log(
@@ -1361,8 +1353,9 @@ $(document).ready(function () {
                 .slice(0, 2)
                 .join(':');
 
-            $('#txtDataInicial').val(dataAtual);
-            $('#txtHoraInicial').val(horaAtual);
+            // Usar helpers do Kendo para definir valores
+            setKendoDateValue('txtDataInicial', dataAtual);
+            setKendoTimeValue('txtHoraInicial', horaAtual);
         }
     } catch (error) {
         TratamentoErroComLinha('ViagemUpsert.js', 'document.ready', error);

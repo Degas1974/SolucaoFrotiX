@@ -186,14 +186,14 @@
 
 <!-- ⚠️ ADICIONE O KENDO UI AQUI, ANTES DO VENDORS.BUNDLE.JS -->
 <!-- Kendo UI - CDN Oficial Telerik -->
-@* <link href="https://kendo.cdn.telerik.com/2023.1.117/styles/kendo.default-main.min.css" rel="stylesheet" /> *@
-<script src="https://kendo.cdn.telerik.com/2023.1.117/js/jszip.min.js"></script>
+@* <link href="~/lib/kendo/styles/kendo.default-main.min.css" asp-append-version="true" rel="stylesheet" /> *@
+<script src="~/lib/kendo/js/jszip.min.js" asp-append-version="true"></script>
 <!-- Usar distribuição clássica (non-module) para evitar SyntaxError em browsers -->
-<script src="https://kendo.cdn.telerik.com/2025.2.520/js/kendo.all.min.js"></script>
-<script src="https://kendo.cdn.telerik.com/2025.2.520/js/kendo.aspnetmvc.min.js"></script>
+<script src="~/lib/kendo/js/kendo.all.min.js" asp-append-version="true"></script>
+<script src="~/lib/kendo/js/kendo.aspnetmvc.min.js" asp-append-version="true"></script>
 <!-- Cultura pt-BR para Kendo UI (DatePickers, etc.) -->
-<script src="https://kendo.cdn.telerik.com/2025.2.520/js/cultures/kendo.culture.pt-BR.min.js"></script>
-<script src="https://kendo.cdn.telerik.com/2025.2.520/js/messages/kendo.messages.pt-BR.min.js"></script>
+<script src="~/lib/kendo/js/cultures/kendo.culture.pt-BR.min.js" asp-append-version="true"></script>
+<script src="~/lib/kendo/js/messages/kendo.messages.pt-BR.min.js" asp-append-version="true"></script>
 <script>
 	// Definir cultura padrão do Kendo UI para pt-BR
 	try {

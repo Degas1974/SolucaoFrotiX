@@ -18,6 +18,16 @@
 */
 
 -- ========================================================
+-- 0. CONFIGURAR OPÇÕES NECESSÁRIAS
+-- ========================================================
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+
+-- ========================================================
 -- 1. VERIFICAR SE TABELA JÁ EXISTE
 -- ========================================================
 IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[LogErros]') AND type in (N'U'))

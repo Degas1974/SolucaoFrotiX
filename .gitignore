@@ -17,3 +17,7 @@ Kendo.Mvc.Examples/
 
 # Worktrees do Git
 FrotiX.Site.worktrees/
+
+# Arquivos grandes
+*.tar
+FrotiX.Site.Novo.tar

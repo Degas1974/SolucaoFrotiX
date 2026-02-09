@@ -1,0 +1,160 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Intel/Introduction.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página About/Introduction SmartAdmin template ("Hi Everyone" survey results,
+ *                   team profiles Sunny A./Jos K./Jovanni L./Roberto R.), NÃO customizado FrotiX.
+ * 📥 ENTRADAS     : @page route /Intel/Introduction, @model IntroductionModel (code-behind), Settings
+ *                   (App, AppName, Theme.IconPrefix), nenhum form input (page informacional estática)
+ * 📤 SAÍDAS       : Div fs-lg fw-300 p-5 bg-white border-faded rounded com paragraphs "Hi Everyone" texto
+ *                   template (survey results 72% design refresh, 50% vue.js, 90% plugins), h3 "SmartAdmin Team",
+ *                   4 profiles rounded-pill shadow-sm (profile pics png + h5 name role + Twitter @/envelope links),
+ *                   footer paragraph "Ready to join our dedicated team?" partnership link, @section ScriptsBlock
+ *                   VAZIO, @section HeadBlock VAZIO
+ * 🔗 CHAMADA POR  : Menu "Application Intel > Introduction", route /Intel/Introduction, IntroductionModel.OnGet()
+ *                   (code-behind), sidebar navigation SmartAdmin demo
+ * 🔄 CHAMA        : IntroductionModel (code-behind Intel/Introduction.cshtml.cs), Settings (App, AppName,
+ *                   Theme.IconPrefix), avatar images (~/img/demo/authors/sunny.png, josh.png, jovanni.png,
+ *                   roberto.png - img-thumbnail rounded-circle 5rem), Twitter links (@myplaneticket, @atlantez,
+ *                   @lodev09, @sildur), WrapBootstrap user links (myorange, Walapa, lodev09, sildur profiles),
+ *                   ViewData (Title "Introduction", PageName "intel_introduction", Heading fa-info-circle,
+ *                   Category1 "Application Intel", PageDescription "A brief introduction to this WebApp"),
+ *                   Font Awesome Duotone (fa-info-circle heading, fa-envelope profiles), CSS classes custom
+ *                   (fs-lg fw-300, rounded-pill, shadow-sm, border-faded, d-flex flex-row flex-shrink-0,
+ *                   img-responsive rounded-circle, fs-sm, demo demo-h-spacing)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, IntroductionModel (code-behind), SmartSettings injection (@Settings),
+ *                   Bootstrap 5 (container, d-flex flex-wrap, rounded-pill, shadow-sm, border-faded, mb-g),
+ *                   Font Awesome 6 Duotone, CSS classes custom (fs-lg fw-300, demo demo-h-spacing, img-responsive)
+ * 📝 OBSERVAÇÕES  : 100 linhas. Página ABOUT SmartAdmin template - NÃO customizado FrotiX (manteve original).
+ *                   ViewData config:
+ *                   - Title: "Introduction"
+ *                   - PageName: "intel_introduction"
+ *                   - Heading: "<i class='fa-duotone fa-info-circle'></i> Introduction"
+ *                   - Category1: "Application Intel"
+ *                   - PageDescription: "A brief introduction to this WebApp"
+ *                   @section HeadBlock: VAZIO {}. Conteúdo:
+ *                   1. **Div texto principal** (fs-lg fw-300 p-5 bg-white border-faded rounded mb-g):
+ *                      - h3 "Hi Everyone,"
+ *                      - Parágrafo 1: "Some time ago we asked for your input... WOW, did you deliver!"
+ *                      - Survey results: 72% design refresh, 50% vue.js support, 90% plugins/updates
+ *                      - Parágrafo 2: SmartAdmin plugin support explanation
+ *                      - Parágrafo 3: Bootstrap 4.0 rewrite from ground-up
+ *                      - Parágrafo 4: HTML update free-of-charge
+ *                      - Parágrafo 5: "Thank you loyal customers!"
+ *                      - Assinatura: "Sincerely, The @Settings.App Team"
+ *                   2. **h3 SmartAdmin Team** (small "We build cool things...")
+ *                   3. **4 profiles** (d-flex flex-wrap demo demo-h-spacing mt-3 mb-3):
+ *                      Cada profile: rounded-pill bg-white shadow-sm p-2 border-faded mr-3 d-flex flex-row:
+ *                      - Avatar circular (img-thumbnail rounded-circle 5rem x 5rem)
+ *                      - h5 name + role (small m-0 fw-300)
+ *                      - Twitter link (text-info fs-sm @username target _blank)
+ *                      - WrapBootstrap envelope link (fa-envelope)
+ *                      **Profiles hardcoded**:
+ *                      1. Sunny A. (UI/UX Expert) - Lead Author - @myplaneticket - myorange
+ *                      2. Jos K. (ASP.NET Developer) - Partner & Contributor - @atlantez - Walapa
+ *                      3. Jovanni L. (PHP Developer) - Partner & Contributor - @lodev09 - lodev09
+ *                      4. Roberto R. (Rails Developer) - Partner & Contributor - @sildur - sildur
+ *                   4. **Footer paragraph** (fs-lg): "Ready to join our dedicated team?" partnership link
+ *                   @section ScriptsBlock: VAZIO {}. Para FrotiX: substituir por About real ("Sobre o FrotiX",
+ *                   equipe Câmara dos Deputados, histórico sistema, contato DETRAN/Coordenação Transportes,
+ *                   créditos/agradecimentos), remover demo content SmartAdmin.
+ **************************************************************************************** *@
+@page
+@model IntroductionModel
+@{ 
+	ViewData["Title"] = "Introduction";
+	ViewData["PageName"] = "intel_introduction";
+	ViewData["Heading"] = "<i class='fa-duotone fa-info-circle'></i> Introduction";
+	ViewData["Category1"] = "Application Intel";
+	ViewData["PageDescription"] = "A brief introduction to this WebApp";
+}
+@section HeadBlock {}
+<div class="fs-lg fw-300 p-5 bg-white border-faded rounded mb-g">
+	<h3 class="mb-g">
+	Hi Everyone,
+	</h3>
+	<p>	
+	Some time ago we asked for your input, whether you were a seasoned @Settings.App user or just peeking around the corner, and WOW, did you deliver! After reading each and everyone of your replies on the survey, we have taken each piece of praise and criticism to heart to scope out our plans for @Settings.App. All feedback will be used to make your favorite theme that much better, but these were some of the highlights.
+	</p>
+	<p>
+	A whopping 72% of you said you were ready for a fresh new design, while @Settings.App is and a revolutionary view on what a good bootstrap based template should be, having something new to look at can make anyone feel invigorated. And let's be honest, who doesn't like a modern update of your favorite theme! While most you are still happy with the current variations, around 50% of you have asked for vue.js support. With this framework rapidly gaining popularity it is surely one to include in the family of frameworks! And, last, but certainly not least, a very large majority of a staggering 90% wanted more plugins and regular updates.
+	</p>
+	<p>
+	SmartAdmin takes great care to ensure that valuable and popular plugins are supported as much as possible on a drop-in basis, meaning without doing heavy modifications to extend the look and feel of your favorite admin template :) . And if the plugin is in demand enough, we won't hesitate to put in the hours to support the look and feel of @Settings.App.
+	</p>
+	<p>
+	But how you ask? Well in order to make the next version of @Settings.App the best ever and to re-deliver on our promise of continued support and quality, we wrote the theme from the ground-up using the latest Bootstrap practises. As a result we are better able to support new frameworks as they come up and ensure that plugin support is quick and reliable. In addition we have partnered up with some of the communities best developers to ensure that our tailor made variations are of top-notch quality and follow the principles that we at @Settings.App take to heart.
+	</p>
+	<p>
+	We're really confident that @Settings.App 4.0 will bring back that first theme experience while still keeping the familiarity that you have grown used to. It's a brand new theme, but with all the things you love and then some. And to ensure that you our loyal customers get this experience first-hand, we will be publishing the HTML update free-of-charge as an update to your current @Settings.App license! 
+	</p>
+	<p>
+	Last but not least, we would like to thank each and everyone of you, our loyal customers, for your patience and continued support in @Settings.App. Without you this would not have been possible!
+	</p>
+	<p>
+	Sincerely,<br>
+	The @Settings.App Team<br>
+	</p>
+</div>
+<h3>
+	SmartAdmin Team
+	<small class="mb-0">We build cool things...</small>
+</h3>
+<div class="d-flex flex-wrap demo demo-h-spacing mt-3 mb-3">
+	<div class="rounded-pill bg-white shadow-sm p-2 border-faded mr-3 d-flex flex-row align-items-center justify-content-center flex-shrink-0">
+		<img src="~/img/demo/authors/sunny.png" alt="Sunny A." class="img-thumbnail img-responsive rounded-circle" style="width:5rem; height: 5rem;">
+		<div class="ml-2 mr-3">
+			<h5 class="m-0">
+				Sunny A. (UI/UX Expert)
+				<small class="m-0 fw-300">
+					Lead Author
+				</small>
+			</h5>
+			<a href="https://twitter.com/@@myplaneticket" class="text-info fs-sm" target="_blank">@@myplaneticket</a> - 
+			<a href="https://wrapbootstrap.com/user/myorange" class="text-info fs-sm" target="_blank" title="Contact Sunny"><i class="@(Settings.Theme.IconPrefix) fa-envelope"></i></a>
+		</div>
+	</div>
+	<div class="rounded-pill bg-white shadow-sm p-2 border-faded mr-3 d-flex flex-row align-items-center justify-content-center flex-shrink-0">
+		<img src="~/img/demo/authors/josh.png" alt="Jos K." class="img-thumbnail img-responsive rounded-circle" style="width:5rem; height: 5rem;">
+		<div class="ml-2 mr-3">
+			<h5 class="m-0">
+				Jos K. (ASP.NET Developer)
+				<small class="m-0 fw-300">
+					Partner &amp; Contributor 
+				</small>
+			</h5>
+			<a href="https://twitter.com/@@atlantez" class="text-info fs-sm" target="_blank">@@atlantez</a> - 
+			<a href="https://wrapbootstrap.com/user/Walapa" class="text-info fs-sm" target="_blank" title="Contact Jos"><i class="@(Settings.Theme.IconPrefix) fa-envelope"></i></a>
+		</div>
+	</div>
+	<div class="rounded-pill bg-white shadow-sm p-2 border-faded mr-3 d-flex flex-row align-items-center justify-content-center flex-shrink-0">
+		<img src="~/img/demo/authors/jovanni.png" alt="Jovanni Lo" class="img-thumbnail img-responsive rounded-circle" style="width:5rem; height: 5rem;">
+		<div class="ml-2 mr-3">
+			<h5 class="m-0">
+				Jovanni L. (PHP Developer)
+				<small class="m-0 fw-300">
+					Partner &amp; Contributor 
+				</small>
+			</h5>
+			<a href="https://twitter.com/@@lodev09" class="text-info fs-sm" target="_blank">@@lodev09</a> - 
+			<a href="https://wrapbootstrap.com/user/lodev09" class="text-info fs-sm" target="_blank" title="Contact Jovanni"><i class="@(Settings.Theme.IconPrefix) fa-envelope"></i></a>
+		</div>
+	</div>
+	<div class="rounded-pill bg-white shadow-sm p-2 border-faded mr-3 d-flex flex-row align-items-center justify-content-center flex-shrink-0">
+		<img src="~/img/demo/authors/roberto.png" alt="Jovanni Lo" class="img-thumbnail img-responsive rounded-circle" style="width:5rem; height: 5rem;">
+		<div class="ml-2 mr-3">
+			<h5 class="m-0">
+				Roberto R. (Rails Developer)
+				<small class="m-0 fw-300">
+					Partner &amp; Contributor 
+				</small>
+			</h5>
+			<a href="https://twitter.com/@@sildur" class="text-info fs-sm" target="_blank">@@sildur</a> - 
+			<a href="https://wrapbootstrap.com/user/sildur" class="text-info fs-sm" target="_blank" title="Contact Roberto"><i class="@(Settings.Theme.IconPrefix) fa-envelope"></i></a>
+		</div>
+	</div>
+</div>
+<p class="fs-lg">
+<a href="#" class="fw-500 fs-xl">> Ready to join our dedicated team?</a><br>
+We are always on the lookout to expand and add unique app flavors to SmartAdmin. If you think you can contribute and create your very own flavors, get in touch with us or <a href="#" target="_blank">click here to learn more</a> about our partnership program.
+</p>
+@section ScriptsBlock {}

@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <!-- PRE-BUILD: Limpa processos órfãos que travam arquivos -->
+  <!-- PRE-BUILD DESABILITADO: Não é mais necessário com Kestrel (sem IIS Express) -->
+  <!-- Economiza ~2-3 segundos por build -->
+  <!--
   <Target Name="LimparProcessosAntesBuild" BeforeTargets="Build">
     <Exec Command="taskkill /F /IM iisexpress.exe 2&gt;nul" IgnoreExitCode="true" />
     <Exec Command="taskkill /F /IM iisexpresstray.exe 2&gt;nul" IgnoreExitCode="true" />
@@ -8,12 +10,13 @@
     <Exec Command="taskkill /F /IM ServiceHub.Host.dotnet.x64.exe 2&gt;nul" IgnoreExitCode="true" />
     <Exec Command="timeout /t 2 /nobreak &gt;nul" IgnoreExitCode="true" />
   </Target>
+  -->
 
     <ItemGroup>
     <PackageReference Include="Azure.AI.TextAnalytics" Version="5.3.0" />
     <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="OpenAI" Version="2.8.0" />
-    <PackageReference Include="QuestPDF" Version="2025.12.3" />
+    <PackageReference Include="QuestPDF" Version="2025.12.4" />
     <PackageReference Include="SharpZipLib" Version="1.4.2" />
     <PackageReference Include="Dapper" Version="2.1.66" />
   </ItemGroup>
@@ -1474,35 +1477,35 @@
     <PackageReference Include="AspNetCoreHero.ToastNotification" Version="1.1.0" />
     <PackageReference Include="CsvHelper" Version="33.1.0" />
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
-    <PackageReference Include="EPPlus" Version="8.4.1" />
-    <PackageReference Include="Hangfire.Core" Version="1.8.22" />
+    <PackageReference Include="EPPlus" Version="8.4.2" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.23" />
     <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
     <PackageReference Include="MailKit" Version="4.14.1" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="3.0.0" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.9.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="MimeKit" Version="4.14.0" />
     <PackageReference Include="Otp.NET" Version="1.4.1" />
-    <PackageReference Include="SkiaSharp" Version="3.119.1" />
-    <PackageReference Include="Stimulsoft.Reports.Web.NetCore" Version="2026.1.2" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
-    <PackageReference Include="Syncfusion.Blazor.Buttons" Version="32.1.24" />
-    <PackageReference Include="Syncfusion.Blazor.Cards" Version="32.1.24" />
-    <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="32.1.24" />
-    <PackageReference Include="Syncfusion.Blazor.Inputs" Version="32.1.24" />
-    <PackageReference Include="Syncfusion.Blazor.Layouts" Version="32.1.24" />
-    <PackageReference Include="Syncfusion.Blazor.Lists" Version="32.1.24" />
-    <PackageReference Include="Syncfusion.Blazor.Popups" Version="32.1.24" />
-    <PackageReference Include="Syncfusion.DocIO.Net.Core" Version="32.1.24" />
-    <PackageReference Include="Syncfusion.DocIORenderer.Net.Core" Version="32.1.24" />
-    <PackageReference Include="Syncfusion.EJ2.AspNet.Core" Version="32.1.24" />
-    <PackageReference Include="Syncfusion.EJ2.JavaScript" Version="32.1.24" />
-    <PackageReference Include="Syncfusion.EJ2.PdfViewer.AspNet.Core" Version="32.1.24" />
-    <PackageReference Include="Syncfusion.EJ2.SpellChecker.AspNet.Core" Version="32.1.24" />
-    <PackageReference Include="Syncfusion.EJ2.WordEditor.AspNet.Core" Version="32.1.24" />
-    <PackageReference Include="Syncfusion.Pdf.Net.Core" Version="32.1.24" />
+    <PackageReference Include="SkiaSharp" Version="3.119.2" />
+    <PackageReference Include="Stimulsoft.Reports.Web.NetCore" Version="2026.1.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.2" />
+    <PackageReference Include="Syncfusion.Blazor.Buttons" Version="32.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Cards" Version="32.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="32.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Inputs" Version="32.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Layouts" Version="32.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Lists" Version="32.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Popups" Version="32.2.3" />
+    <PackageReference Include="Syncfusion.DocIO.Net.Core" Version="32.2.3" />
+    <PackageReference Include="Syncfusion.DocIORenderer.Net.Core" Version="32.2.3" />
+    <PackageReference Include="Syncfusion.EJ2.AspNet.Core" Version="32.2.3" />
+    <PackageReference Include="Syncfusion.EJ2.JavaScript" Version="32.2.3" />
+    <PackageReference Include="Syncfusion.EJ2.PdfViewer.AspNet.Core" Version="32.2.3" />
+    <PackageReference Include="Syncfusion.EJ2.SpellChecker.AspNet.Core" Version="32.2.3" />
+    <PackageReference Include="Syncfusion.EJ2.WordEditor.AspNet.Core" Version="32.2.3" />
+    <PackageReference Include="Syncfusion.Pdf.Net.Core" Version="32.2.3" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.2" />
@@ -1520,12 +1523,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Telerik.Reporting" Version="18.1.24.514" />
-    <PackageReference Include="Telerik.Reporting.Services.AspNetCore" Version="18.1.24.514" />
-    <PackageReference Include="Telerik.Reporting.Services.HttpClient" Version="18.1.24.514" />
-    <PackageReference Include="Telerik.UI.for.AspNet.Core" Version="2025.2.520" />
-    <PackageReference Include="Telerik.Web.PDF" Version="2025.2.520" />
-    <PackageReference Include="Telerik.WebReportDesigner.Services" Version="18.1.24.514" />
+    <PackageReference Include="Telerik.Reporting" Version="19.1.25.521" />
+    <PackageReference Include="Telerik.Reporting.Services.AspNetCore" Version="19.1.25.521" />
+    <PackageReference Include="Telerik.Reporting.Services.HttpClient" Version="19.1.25.521" />
+    <PackageReference Include="Telerik.UI.for.AspNet.Core" Version="2025.4.1321" />
+    <PackageReference Include="Telerik.Web.PDF" Version="2025.4.1321" />
+    <PackageReference Include="Telerik.WebReportDesigner.Services" Version="19.1.25.521" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="wwwroot\js\ej2\ej2.d.ts" />

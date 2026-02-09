@@ -121,12 +121,12 @@
 
     <link rel="stylesheet" type="text/css" href="~/css/spinkit.css">
 
-    <!-- Kendo UI (padronizado 2024.3.806) -->
-    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/themes/8.2.1/default/default-main.css" />
+    <!-- Kendo UI 2025 Q4 -->
+    <link rel="stylesheet" href="~/lib/kendo/styles/default-main.css" asp-append-version="true" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://kendo.cdn.telerik.com/2024.3.806/js/jszip.min.js"></script>
-    <script src="https://kendo.cdn.telerik.com/2024.3.806/js/kendo.all.min.js"></script>
-    <script src="https://kendo.cdn.telerik.com/2024.3.806/js/kendo.aspnetmvc.min.js"></script>
+    <script src="~/lib/kendo/js/jszip.min.js" asp-append-version="true"></script>
+    <script src="~/lib/kendo/js/kendo.all.min.js" asp-append-version="true"></script>
+    <script src="~/lib/kendo/js/kendo.aspnetmvc.min.js" asp-append-version="true"></script>
 
     <!-- PDF.js - Usado pelo Telerik Report Viewer -->
     <!-- Carregado de forma assíncrona com defer para evitar bloqueio e erros de inicialização -->
@@ -2098,11 +2098,11 @@
     @* ============================================
        DEPENDÚNCIAS EXTERNAS
        ============================================ *@
-            <link href="https://cdn.kendostatic.com/2022.1.412/styles/kendo.default-main.min.css" rel="stylesheet"
+            <link href="~/lib/kendo/styles/kendo.default-main.min.css" asp-append-version="true" rel="stylesheet"
         type="text/css" />
-    <script src="https://cdn.kendostatic.com/2022.1.412/js/jszip.min.js"></script>
-    <script src="https://cdn.kendostatic.com/2022.1.412/js/kendo.all.min.js"></script>
-    <script src="https://cdn.kendostatic.com/2022.1.412/js/kendo.aspnetmvc.min.js"></script>
+    <script src="~/lib/kendo/js/jszip.min.js" asp-append-version="true"></script>
+    <script src="~/lib/kendo/js/kendo.all.min.js" asp-append-version="true"></script>
+    <script src="~/lib/kendo/js/kendo.aspnetmvc.min.js" asp-append-version="true"></script>
     @* PDF.js removido daqui - já carregado no <head> (linha 127-130) para evitar duplicação e erros *@
             <script src="/api/reports/resources/js/telerikReportViewer"></script>
     <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>

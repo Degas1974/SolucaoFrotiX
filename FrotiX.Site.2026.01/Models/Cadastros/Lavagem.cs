@@ -51,7 +51,7 @@ namespace FrotiX.Models
 
         // Horário da lavagem.
         [Display(Name = "Horário da Lavagem")]
-        public DateTime? HorarioLavagem { get; set; }
+        public DateTime? Horario { get; set; }
 
         // Veículo lavado.
         [Display(Name = "Veículo Lavado")]
