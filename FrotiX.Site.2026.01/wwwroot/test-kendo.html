@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FrotiX - Teste de Controles Kendo/Telerik</title>
+    
+    <!-- Bootstrap 5 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+    
+    <!-- Kendo UI CSS -->
+    <link rel="stylesheet" href="/lib/kendo/styles/bootstrap-main.css">
+    
+    <style>
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+        .status-ok { color: #28a745; }
+        .status-error { color: #dc3545; }
+        .status-warning { color: #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">🔧 FrotiX - Teste de Controles Kendo/Telerik</h1>
+        
+        <div class="alert alert-info">
+            <strong>ℹ️ Instruções:</strong> Esta página testa se os controles Kendo UI estão carregando corretamente.
+            Abra o Console do Browser (F12) para ver os resultados detalhados.
+        </div>
+
+        <!-- Seção 1: Verificação de Recursos -->
+        <div class="test-section">
+            <h3>1️⃣ Verificação de Recursos Carregados</h3>
+            <ul id="resource-checks" class="list-unstyled">
+                <li>⏳ Verificando jQuery...</li>
+                <li>⏳ Verificando Kendo UI...</li>
+                <li>⏳ Verificando CSS do Kendo...</li>
+                <li>⏳ Verificando Cultura pt-BR...</li>
+            </ul>
+        </div>
+
+        <!-- Seção 2: Teste de Controles -->
+        <div class="test-section">
+            <h3>2️⃣ Testes de Controles Kendo UI</h3>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">DatePicker:</label>
+                    <input id="testDatePicker" class="form-control" />
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">DropDownList:</label>
+                    <input id="testDropDown" class="form-control" />
+                </div>
+            </div>
+            
+            <div id="control-status" class="alert alert-secondary">
+                ⏳ Inicializando controles...
+            </div>
+        </div>
+
+        <!-- Seção 3: Informações do Sistema -->
+        <div class="test-section">
+            <h3>3️⃣ Informações do Sistema</h3>
+            <div id="system-info">
+                <ul id="info-list" class="list-unstyled"></ul>
+            </div>
+        </div>
+
+        <!-- Seção 4: Resultado Final -->
+        <div class="test-section">
+            <h3>4️⃣ Resultado Final</h3>
+            <div id="final-result" class="alert">
+                ⏳ Executando testes...
+            </div>
+        </div>
+
+        <div class="alert alert-warning">
+            <strong>⚠️ Atenção:</strong> Se algum teste falhar, consulte o arquivo 
+            <code>KENDO_TELERIK_TROUBLESHOOTING.md</code> para soluções.
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- Kendo UI -->
+    <script src="/lib/kendo/js/jszip.min.js"></script>
+    <script src="/lib/kendo/js/kendo.all.min.js"></script>
+    <script src="/lib/kendo/js/cultures/kendo.culture.pt-BR.min.js"></script>
+    <script src="/lib/kendo/js/messages/kendo.messages.pt-BR.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            console.log('🔧 Iniciando testes de Kendo UI...');
+            
+            let allTestsPassed = true;
+            let results = [];
+            
+            // Teste 1: Verificar jQuery
+            const jqueryOk = typeof $ !== 'undefined' && typeof jQuery !== 'undefined';
+            results.push({
+                name: 'jQuery',
+                passed: jqueryOk,
+                message: jqueryOk ? `jQuery ${$.fn.jquery} carregado` : 'jQuery não encontrado'
+            });
+            
+            // Teste 2: Verificar Kendo UI
+            const kendoOk = typeof kendo !== 'undefined';
+            results.push({
+                name: 'Kendo UI',
+                passed: kendoOk,
+                message: kendoOk ? `Kendo UI ${kendo.version} carregado` : 'Kendo UI não encontrado'
+            });
+            
+            // Teste 3: Verificar Cultura
+            let cultureOk = false;
+            let cultureName = 'não configurada';
+            if (kendoOk) {
+                try {
+                    kendo.culture("pt-BR");
+                    cultureName = kendo.culture().name;
+                    cultureOk = cultureName === 'pt-BR';
+                } catch(e) {
+                    console.error('Erro ao configurar cultura:', e);
+                }
+            }
+            results.push({
+                name: 'Cultura pt-BR',
+                passed: cultureOk,
+                message: `Cultura: ${cultureName}`
+            });
+            
+            // Teste 4: Verificar CSS
+            const cssLoaded = checkCSSLoaded();
+            results.push({
+                name: 'CSS do Kendo',
+                passed: cssLoaded,
+                message: cssLoaded ? 'CSS carregado corretamente' : 'CSS pode não estar carregado'
+            });
+            
+            // Atualizar lista de recursos
+            const resourceList = $('#resource-checks');
+            resourceList.empty();
+            results.forEach(result => {
+                const icon = result.passed ? '✅' : '❌';
+                const className = result.passed ? 'status-ok' : 'status-error';
+                resourceList.append(
+                    `<li class="${className}">${icon} ${result.name}: ${result.message}</li>`
+                );
+                if (!result.passed) allTestsPassed = false;
+            });
+            
+            // Teste 5: Inicializar Controles
+            if (kendoOk && cultureOk) {
+                try {
+                    // DatePicker
+                    $('#testDatePicker').kendoDatePicker({
+                        format: "dd/MM/yyyy",
+                        value: new Date(),
+                        culture: "pt-BR"
+                    });
+                    
+                    // DropDownList
+                    $('#testDropDown').kendoDropDownList({
+                        dataSource: [
+                            { text: "Opção 1", value: "1" },
+                            { text: "Opção 2", value: "2" },
+                            { text: "Opção 3", value: "3" }
+                        ],
+                        dataTextField: "text",
+                        dataValueField: "value",
+                        index: 0
+                    });
+                    
+                    $('#control-status')
+                        .removeClass('alert-secondary')
+                        .addClass('alert-success')
+                        .html('✅ Controles inicializados com sucesso! Teste interagir com eles acima.');
+                    
+                    console.log('✅ Controles Kendo inicializados com sucesso');
+                } catch(e) {
+                    allTestsPassed = false;
+                    $('#control-status')
+                        .removeClass('alert-secondary')
+                        .addClass('alert-danger')
+                        .html('❌ Erro ao inicializar controles: ' + e.message);
+                    
+                    console.error('❌ Erro ao inicializar controles:', e);
+                }
+            } else {
+                allTestsPassed = false;
+                $('#control-status')
+                    .removeClass('alert-secondary')
+                    .addClass('alert-warning')
+                    .html('⚠️ Não foi possível inicializar controles. Verifique se Kendo UI e cultura estão carregados.');
+            }
+            
+            // Informações do Sistema
+            const infoList = $('#info-list');
+            infoList.append(`<li><strong>User Agent:</strong> ${navigator.userAgent}</li>`);
+            infoList.append(`<li><strong>jQuery Version:</strong> ${$.fn.jquery || 'N/A'}</li>`);
+            if (kendoOk) {
+                infoList.append(`<li><strong>Kendo Version:</strong> ${kendo.version}</li>`);
+                infoList.append(`<li><strong>Cultura Ativa:</strong> ${kendo.culture().name}</li>`);
+            }
+            
+            // Resultado Final
+            const finalResult = $('#final-result');
+            if (allTestsPassed) {
+                finalResult
+                    .removeClass('alert-secondary')
+                    .addClass('alert-success')
+                    .html('✅ <strong>TODOS OS TESTES PASSARAM!</strong><br>' +
+                          'Os controles Kendo UI estão funcionando corretamente. ' +
+                          'Você pode usar esta configuração com segurança.');
+                console.log('✅ TODOS OS TESTES PASSARAM!');
+            } else {
+                finalResult
+                    .removeClass('alert-secondary')
+                    .addClass('alert-danger')
+                    .html('❌ <strong>ALGUNS TESTES FALHARAM</strong><br>' +
+                          'Verifique os erros acima e consulte o arquivo ' +
+                          '<code>KENDO_TELERIK_TROUBLESHOOTING.md</code> para soluções.');
+                console.error('❌ ALGUNS TESTES FALHARAM');
+            }
+            
+            // Função auxiliar para verificar CSS
+            function checkCSSLoaded() {
+                // Verifica se alguma regra CSS do Kendo está carregada
+                const testElement = $('<div class="k-widget"></div>').appendTo('body');
+                const hasStyles = testElement.css('display') !== 'inline' || 
+                                testElement.css('box-sizing') !== 'content-box';
+                testElement.remove();
+                return hasStyles;
+            }
+        });
+    </script>
+</body>
+</html>
