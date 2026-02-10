@@ -890,7 +890,7 @@ $("#txtDataFinal").focusout(async function ()
             }
 
             // [VALIDACAO IA] Análise adicional via ValidadorFinalizacaoIA (se disponível)
-            if (typeof ValidadorFinalizacaoIA !== 'undefined')
+            if (typeof ValidadorFinalizacaoIA !== 'undefined' && typeof ValidadorFinalizacaoIA.obterInstancia === "function")
             {
                 const validador = ValidadorFinalizacaoIA.obterInstancia();
                 const strDataFinal = moment(dataFinal).format("YYYY-MM-DD");
@@ -900,6 +900,13 @@ $("#txtDataFinal").focusout(async function ()
                     await Alerta.Erro(resultadoDataFutura.titulo, resultadoDataFutura.mensagem);
                     window.setKendoDateValue("txtDataFinal", null);
                     return;
+                }
+            }
+            else if (typeof ValidadorFinalizacaoIA !== 'undefined')
+            {
+                if (window.console && typeof console.warn === "function")
+                {
+                    console.warn("ValidadorFinalizacaoIA.obterInstancia indisponível. Validação IA ignorada.");
                 }
             }
 
