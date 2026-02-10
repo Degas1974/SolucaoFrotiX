@@ -3220,7 +3220,7 @@
                 var dataMaxima = new Date();
 
                 // Data Inicial
-                $("#txtDataInicial").kendoDatePicker({
+                var dpDataInicial = $("#txtDataInicial").kendoDatePicker({
                     format: "dd/MM/yyyy",
                     culture: "pt-BR",
                     min: dataMinima,
@@ -3228,22 +3228,42 @@
                     dateInput: true,
                     value: @Html.Raw(Model.ViagemObj?.Viagem?.DataInicial != null ? 
                         $"new Date({Model.ViagemObj.Viagem.DataInicial.Value.Year}, {Model.ViagemObj.Viagem.DataInicial.Value.Month - 1}, {Model.ViagemObj.Viagem.DataInicial.Value.Day})" : 
-                        "null")
-                });
+                        "null"),
+                    open: function() {
+                        // Armazena valor antes de abrir calendário
+                        this._previousValue = this.value();
+                    },
+                    close: function() {
+                        // Se fechou calendário sem selecionar (valor inválido), restaura valor anterior
+                        var currentValue = this.value();
+                        if (!currentValue || isNaN(currentValue)) {
+                            this.value(this._previousValue || null);
+                        }
+                    }
+                }).data("kendoDatePicker");
 
                 // Hora Inicial
-                $("#txtHoraInicial").kendoTimePicker({
+                var tpHoraInicial = $("#txtHoraInicial").kendoTimePicker({
                     format: "HH:mm",
                     culture: "pt-BR",
                     interval: 15,
                     dateInput: true,
                     value: @Html.Raw(Model.ViagemObj?.Viagem?.HoraInicio != null ? 
                         $"new Date(0,0,0,{Model.ViagemObj.Viagem.HoraInicio.Value.Hour},{Model.ViagemObj.Viagem.HoraInicio.Value.Minute})" : 
-                        "null")
-                });
+                        "null"),
+                    open: function() {
+                        this._previousValue = this.value();
+                    },
+                    close: function() {
+                        var currentValue = this.value();
+                        if (!currentValue || isNaN(currentValue)) {
+                            this.value(this._previousValue || null);
+                        }
+                    }
+                }).data("kendoTimePicker");
 
                 // Data Final
-                $("#txtDataFinal").kendoDatePicker({
+                var dpDataFinal = $("#txtDataFinal").kendoDatePicker({
                     format: "dd/MM/yyyy",
                     culture: "pt-BR",
                     min: dataMinima,
@@ -3251,19 +3271,37 @@
                     dateInput: true,
                     value: @Html.Raw(Model.ViagemObj?.Viagem?.DataFinal != null ? 
                         $"new Date({Model.ViagemObj.Viagem.DataFinal.Value.Year}, {Model.ViagemObj.Viagem.DataFinal.Value.Month - 1}, {Model.ViagemObj.Viagem.DataFinal.Value.Day})" : 
-                        "null")
-                });
+                        "null"),
+                    open: function() {
+                        this._previousValue = this.value();
+                    },
+                    close: function() {
+                        var currentValue = this.value();
+                        if (!currentValue || isNaN(currentValue)) {
+                            this.value(this._previousValue || null);
+                        }
+                    }
+                }).data("kendoDatePicker");
 
                 // Hora Final
-                $("#txtHoraFinal").kendoTimePicker({
+                var tpHoraFinal = $("#txtHoraFinal").kendoTimePicker({
                     format: "HH:mm",
                     culture: "pt-BR",
                     interval: 15,
                     dateInput: true,
                     value: @Html.Raw(Model.ViagemObj?.Viagem?.HoraFim != null ? 
                         $"new Date(0,0,0,{Model.ViagemObj.Viagem.HoraFim.Value.Hour},{Model.ViagemObj.Viagem.HoraFim.Value.Minute})" : 
-                        "null")
-                });
+                        "null"),
+                    open: function() {
+                        this._previousValue = this.value();
+                    },
+                    close: function() {
+                        var currentValue = this.value();
+                        if (!currentValue || isNaN(currentValue)) {
+                            this.value(this._previousValue || null);
+                        }
+                    }
+                }).data("kendoTimePicker");
 
             } catch (error) {
                 Alerta.TratamentoErroComLinha("Upsert.cshtml", "kendoDateTimePicker.init", error);
