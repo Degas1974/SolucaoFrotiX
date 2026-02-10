@@ -941,19 +941,6 @@ async function validarDataFinal()
     }
 }
 
-// txtDataFinal - VALIDAÇÃO IA
-$("#txtDataFinal").focusout(function ()
-{
-    try
-    {
-        validarDataFinal();
-    }
-    catch (error)
-    {
-        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "focusout.txtDataFinal", error);
-    }
-});
-
 // txtDataFinal - VALIDACAO IMEDIATA
 $("#txtDataFinal").change(function ()
 {
@@ -1090,19 +1077,6 @@ async function validarHoraFinal()
         Alerta.TratamentoErroComLinha("ViagemUpsert.js", "validarHoraFinal", error);
     }
 }
-
-// txtHoraFinal - VALIDAÇÃO IA
-$("#txtHoraFinal").focusout(function ()
-{
-    try
-    {
-        validarHoraFinal();
-    }
-    catch (error)
-    {
-        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "focusout.txtHoraFinal", error);
-    }
-});
 
 // txtHoraFinal - CALCULO IMEDIATO
 $("#txtHoraFinal").change(function ()

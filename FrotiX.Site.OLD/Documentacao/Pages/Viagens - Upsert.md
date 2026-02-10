@@ -1,7 +1,7 @@
 # Documentação: Alertas FrotiX (Upsert)
 
-> **Última Atualização**: 10/02/2026 02:00
-> **Versão Atual**: 2.4
+> **Última Atualização**: 10/02/2026 02:10
+> **Versão Atual**: 2.5
 
 ---
 
@@ -223,6 +223,22 @@ Retorna a foto do motorista em Base64 para o template do ComboBox.
 > **FORMATO**: Entradas em ordem **decrescente** (mais recente primeiro)
 
 ---
+
+## [10/02/2026 02:10] - FIX: Validacao somente no change (sem focusout)
+
+**Descricao**: Removidas as validacoes por Lost Focus em Data Final e Hora Final,
+mantendo apenas o disparo no `change`.
+
+**Mudancas**:
+1. **Data Final**: removido handler `focusout`.
+2. **Hora Final**: removido handler `focusout`.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.5
 
 ## [10/02/2026 02:00] - FIX: Validacao imediata sem loop e alerta fora do padrao
 
