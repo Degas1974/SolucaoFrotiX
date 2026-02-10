@@ -460,7 +460,23 @@ $(document).ready(function ()
 
 //Para controlar a exibição de ToolTips
 var CarregandoViagemBloqueada = false;
+const MAX_KM_VALOR = 1000000;
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: focusout.txtKmInicial
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Evitar quilometragem inicial invalida ou acima do limite.
+ *                   [O QUE] Valida KM inicial contra KM atual e limite maximo.
+ *                   [COMO] Converte valores, verifica limites e exibe alertas.
+ *
+ * 📥 ENTRADAS     : #txtKmInicial, #txtKmAtual
+ *
+ * 📤 SAÍDAS       : Ajustes nos campos e alertas de erro.
+ *
+ * ⬅️ CHAMADO POR  : Evento focusout do input #txtKmInicial
+ *
+ * ➡️ CHAMA        : validarKmAtualInicial(), Alerta.Erro()
+ ****************************************************************************************/
 $("#txtKmInicial").focusout(function ()
 {
     try
@@ -490,6 +506,17 @@ $("#txtKmInicial").focusout(function ()
         if (isNaN(kmInicial) || isNaN(kmAtual))
         {
             $("#txtKmPercorrido").val("");
+            return;
+        }
+
+        if (kmInicial > MAX_KM_VALOR)
+        {
+            $("#txtKmInicial").val("");
+            $("#txtKmPercorrido").val("");
+            Alerta.Erro(
+                "Erro na Quilometragem",
+                "A quilometragem <strong>inicial</strong> nao pode ultrapassar <strong>1.000.000</strong>!",
+            );
             return;
         }
 
@@ -525,6 +552,21 @@ $("#txtKmInicial").focusout(function ()
     }
 });
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: focusout.txtKmFinal
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Evitar quilometragem final invalida ou acima do limite.
+ *                   [O QUE] Valida KM final contra KM inicial e limite maximo.
+ *                   [COMO] Converte valores, verifica limites e exibe alertas.
+ *
+ * 📥 ENTRADAS     : #txtKmInicial, #txtKmFinal
+ *
+ * 📤 SAÍDAS       : Ajustes nos campos e alertas de erro.
+ *
+ * ⬅️ CHAMADO POR  : Evento focusout do input #txtKmFinal
+ *
+ * ➡️ CHAMA        : calcularKmPercorrido(), Alerta.Erro()
+ ****************************************************************************************/
 // txtKmFinal - VALIDAÇÃO IA
 $("#txtKmFinal").focusout(async function ()
 {
@@ -560,6 +602,17 @@ $("#txtKmFinal").focusout(async function ()
         if (isNaN(kmInicial) || isNaN(kmFinal))
         {
             $("#txtKmPercorrido").val("");
+            return;
+        }
+
+        if (kmFinal > MAX_KM_VALOR)
+        {
+            $("#txtKmFinal").val("");
+            $("#txtKmPercorrido").val("");
+            Alerta.Erro(
+                "Erro na Quilometragem",
+                "A quilometragem <strong>final</strong> nao pode ultrapassar <strong>1.000.000</strong>!",
+            );
             return;
         }
 

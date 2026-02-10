@@ -890,6 +890,19 @@ namespace FrotiX.Pages.Viagens
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnPostEditAsync
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : [PORQUÊ] Atualizar viagem garantindo regras de negocio essenciais.
+         *                   [O QUE] Valida limites de km e persiste alteracoes.
+         *                   [COMO] Valida modelo e salva via UnitOfWork.
+         *
+         * 📥 ENTRADAS     : Id [Guid] - Identificador da viagem.
+         *
+         * 📤 SAÍDAS       : IActionResult (JSON em AJAX ou redirect).
+         *
+         * 🔗 CHAMADA POR  : Submit do formulario Upsert (edit).
+         ****************************************************************************************/
         public async Task<IActionResult> OnPostEditAsync(Guid Id)
         {
             try
@@ -948,6 +961,37 @@ namespace FrotiX.Pages.Viagens
                             );
                         }
                     }
+                }
+
+                const int maxKm = 1000000;
+                if (ViagemObj?.Viagem?.KmInicial != null && ViagemObj.Viagem.KmInicial > maxKm)
+                {
+                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    {
+                        return new JsonResult(new
+                        {
+                            success = false,
+                            message = "A quilometragem inicial nao pode ultrapassar 1.000.000."
+                        });
+                    }
+
+                    AppToast.show("Vermelho", "A quilometragem inicial nao pode ultrapassar 1.000.000.", 3000);
+                    return Page();
+                }
+
+                if (ViagemObj?.Viagem?.KmFinal != null && ViagemObj.Viagem.KmFinal > maxKm)
+                {
+                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    {
+                        return new JsonResult(new
+                        {
+                            success = false,
+                            message = "A quilometragem final nao pode ultrapassar 1.000.000."
+                        });
+                    }
+
+                    AppToast.show("Vermelho", "A quilometragem final nao pode ultrapassar 1.000.000.", 3000);
+                    return Page();
                 }
 
                 if (ViagemObj.Viagem.HoraFim == null)
@@ -1173,6 +1217,19 @@ namespace FrotiX.Pages.Viagens
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnPostSubmitAsync
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : [PORQUÊ] Criar nova viagem garantindo regras de negocio essenciais.
+         *                   [O QUE] Valida limites de km e persiste novo registro.
+         *                   [COMO] Valida modelo e salva via UnitOfWork.
+         *
+         * 📥 ENTRADAS     : Formulario ViagemObj (POST).
+         *
+         * 📤 SAÍDAS       : IActionResult (JSON em AJAX ou redirect).
+         *
+         * 🔗 CHAMADA POR  : Submit do formulario Upsert (create).
+         ****************************************************************************************/
         public async Task<IActionResult> OnPostSubmitAsync()
         {
             try
@@ -1186,6 +1243,37 @@ namespace FrotiX.Pages.Viagens
                 if (ViagemObj.Viagem.NoFichaVistoria == null || ViagemObj.Viagem.NoFichaVistoria == 0)
                 {
                     ViagemObj.Viagem.NoFichaVistoria = 0;
+                }
+
+                const int maxKm = 1000000;
+                if (ViagemObj?.Viagem?.KmInicial != null && ViagemObj.Viagem.KmInicial > maxKm)
+                {
+                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    {
+                        return new JsonResult(new
+                        {
+                            success = false,
+                            message = "A quilometragem inicial nao pode ultrapassar 1.000.000."
+                        });
+                    }
+
+                    AppToast.show("Vermelho", "A quilometragem inicial nao pode ultrapassar 1.000.000.", 3000);
+                    return Page();
+                }
+
+                if (ViagemObj?.Viagem?.KmFinal != null && ViagemObj.Viagem.KmFinal > maxKm)
+                {
+                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    {
+                        return new JsonResult(new
+                        {
+                            success = false,
+                            message = "A quilometragem final nao pode ultrapassar 1.000.000."
+                        });
+                    }
+
+                    AppToast.show("Vermelho", "A quilometragem final nao pode ultrapassar 1.000.000.", 3000);
+                    return Page();
                 }
 
                 if (Request.Form.ContainsKey("FotoBase64"))
