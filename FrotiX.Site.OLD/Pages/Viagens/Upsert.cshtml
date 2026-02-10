@@ -1086,45 +1086,32 @@
         font-size: 1rem;
     }
 
-    /* ======== Syncfusion ComboBox personalizado (motorista) ======== */
-    .cmbMotorista_popup .e-dropdownbase .e-list-item {
-        min-height: 60px;
+    /* ======== Kendo DropDownList personalizado (motorista) ======== */
+    .motorista-item {
         display: flex;
         align-items: center;
-        padding-left: 10px;
-        transition: background-color 0.3s;
+        gap: 10px;
+        min-height: 40px;
     }
 
-    .cmbMotorista_popup .e-dropdownbase .e-list-item img {
-        height: 45px;
-        width: 45px;
+    .motorista-item img {
+        height: 40px;
+        width: 40px;
         object-fit: cover;
         border-radius: 50%;
-        margin-right: 10px;
-        transition: transform 0.3s ease;
     }
 
-    .cmbMotorista_popup .e-dropdownbase .e-list-item:hover {
-        background-color: #f0f8ff;
-    }
-
-    #cmbMotorista_popup .e-dropdownbase .e-list-item:hover img {
-        transform: scale(1.2);
-    }
-
-    .cmbMotorista .e-input-group .e-input,
-    .cmbMotorista .e-control-wrapper .e-input {
+    .motorista-value {
         display: flex;
         align-items: center;
+        gap: 10px;
     }
 
-    .cmbMotorista .e-input-group .e-input img,
-    .cmbMotorista .e-control-wrapper .e-input img {
+    .motorista-value img {
         height: 30px;
         width: 30px;
         object-fit: cover;
         border-radius: 50%;
-        margin-right: 8px;
     }
 
     /* Balão laranja bonitão */
@@ -1198,41 +1185,6 @@
         width: fit-content;
         inline-size: fit-content;
         width: -moz-fit-content;
-    }
-
-    .zoom-btn {
-        position: absolute;
-        left: -20px;
-        bottom: 16px;
-        width: 44px;
-        height: 44px;
-        border: none;
-        outline: none;
-        cursor: pointer;
-        background: #ff7a00;
-        color: #fff;
-        border-radius: 50%;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease, filter .12s ease;
-        z-index: 2;
-    }
-
-    .zoom-btn:hover {
-        transform: translateY(-1px);
-        background: #ff8f26;
-        box-shadow: 0 0 0 3px rgba(255, 122, 0, .25), 0 8px 18px rgba(0, 0, 0, .3);
-        filter: saturate(1.05);
-    }
-
-    .zoom-btn .fa-duotone {
-        --fa-primary-color: #ffffff;
-        --fa-secondary-color: rgba(255, 255, 255, .75);
-        --fa-secondary-opacity: 1;
-        font-size: 1.15rem;
-        line-height: 1;
     }
 
     .modal-zoom {
@@ -1585,13 +1537,7 @@
                                     <div class="row g-3 mb-3">
                                         <div class="col-12 col-md-5">
                                             <label class="ftx-label ftx-required">Motorista</label>
-                                            <ejs-combobox id="cmbMotorista" placeholder="Selecione um Motorista"
-                                                ejs-for="@Model.ViagemObj.Viagem.MotoristaId" allowFiltering="true"
-                                                filterType="Contains" popupHeight="200px" width="100%"
-                                                showClearButton="true" dataSource="@ViewData["dataMotorista"]"
-                                                created="onCmbMotoristaCreated" change="MotoristaValueChange">
-                                                <e-combobox-fields text="Nome" value="MotoristaId"></e-combobox-fields>
-                                            </ejs-combobox>
+                                            <input id="cmbMotorista" name="ViagemObj.Viagem.MotoristaId" style="width: 100%;" />
                                         </div>
                                         <div class="col-12 col-md-5">
                                             <label class="ftx-label ftx-required">Veículo</label>
@@ -3182,6 +3128,41 @@
                 return '<span>' + (data.descricao || '') + '</span>';
             }
         }
+
+        /**
+         * Template para itens da lista de motoristas (foto + nome)
+         */
+        function motoristaTemplate(data) {
+            try {
+                var imgSrc = (data && data.foto && data.foto.indexOf('data:image') === 0)
+                    ? data.foto
+                    : '/images/barbudo.jpg';
+                return '<span class="motorista-item">' +
+                    '<img src="' + kendo.htmlEncode(imgSrc) + '" alt="Foto" />' +
+                    '<span>' + kendo.htmlEncode(data.nome || '') + '</span>' +
+                    '</span>';
+            } catch (error) {
+                return '<span>' + (data && data.nome ? kendo.htmlEncode(data.nome) : '') + '</span>';
+            }
+        }
+
+        /**
+         * Template para valor selecionado de motorista (foto + nome)
+         */
+        function motoristaValueTemplate(data) {
+            try {
+                if (!data) return '';
+                var imgSrc = (data.foto && data.foto.indexOf('data:image') === 0)
+                    ? data.foto
+                    : '/images/barbudo.jpg';
+                return '<span class="motorista-value">' +
+                    '<img src="' + kendo.htmlEncode(imgSrc) + '" alt="Foto" />' +
+                    '<span>' + kendo.htmlEncode(data.nome || '') + '</span>' +
+                    '</span>';
+            } catch (error) {
+                return '<span>' + (data && data.nome ? kendo.htmlEncode(data.nome) : '') + '</span>';
+            }
+        }
     </script>
 
     <!-- Kendo DropDownList: Inicialização via jQuery (roda APÓS kendo.all.min.js carregado) -->
@@ -3192,6 +3173,7 @@
                 var dataFinalidade = @Html.Raw(Json.Serialize(ViewData["dataFinalidade"]));
                 var dataCombustivel = @Html.Raw(Json.Serialize(ViewData["dataCombustivel"]));
                 var dataEvento = @Html.Raw(Json.Serialize(ViewData["dataEvento"]));
+                var dataMotorista = @Html.Raw(Json.Serialize(ViewData["dataMotorista"]));
 
                 // Finalidade
                 $("#ddlFinalidade").kendoDropDownList({
@@ -3218,6 +3200,23 @@
                     change: function (e) {
                         try { if (typeof onEventoSelecionado === "function") onEventoSelecionado(e); }
                         catch (err) { console.error("onEventoSelecionado:", err); }
+                    }
+                });
+
+                // Motorista
+                $("#cmbMotorista").kendoDropDownList({
+                    dataTextField: "nome",
+                    dataValueField: "motoristaId",
+                    optionLabel: "Selecione um Motorista",
+                    dataSource: dataMotorista,
+                    filter: "contains",
+                    height: 200,
+                    value: "@(Model.ViagemObj?.Viagem?.MotoristaId?.ToString() ?? "")",
+                    template: motoristaTemplate,
+                    valueTemplate: motoristaValueTemplate,
+                    change: function () {
+                        try { if (typeof MotoristaValueChange === "function") MotoristaValueChange(); }
+                        catch (err) { console.error("MotoristaValueChange:", err); }
                     }
                 });
 

@@ -1945,7 +1945,7 @@ function ExibeViagem(viagem)
                 }
             }, 500);
 
-            ["cmbMotorista", "cmbVeiculo", "cmbRequisitante", "cmbOrigem", "cmbDestino"].forEach(
+            ["cmbVeiculo", "cmbRequisitante", "cmbOrigem", "cmbDestino"].forEach(
                 (id) =>
                 {
                     try
@@ -1957,12 +1957,20 @@ function ExibeViagem(viagem)
                     {
                         Alerta.TratamentoErroComLinha(
                             "ViagemUpsert.js",
-                            'callback@["cmbMotorista", "cmbVeiculo", "cmbRequi.forEach#0',
+                            'callback@["cmbVeiculo", "cmbRequisitante", "cmbOrigem", "cmbDestino".forEach#0',
                             error,
                         );
                     }
                 },
             );
+
+            // Kendo: Motorista
+            try {
+                const ddlMotorista = $("#cmbMotorista").data("kendoDropDownList");
+                if (ddlMotorista) ddlMotorista.enable(false);
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("ViagemUpsert.js", "cmbMotorista.disable", error);
+            }
 
             // Syncfusion: ddtSetor
             try {
@@ -2724,12 +2732,10 @@ function MotoristaValueChange()
 {
     try
     {
-        var ddTreeObj = document.getElementById("cmbMotorista").ej2_instances[0];
-        console.log("Objeto Motorista:", ddTreeObj);
+        var ddlMotorista = $("#cmbMotorista").data("kendoDropDownList");
+        if (!ddlMotorista || !ddlMotorista.value()) return;
 
-        if (ddTreeObj.value === null) return;
-
-        var motoristaid = String(ddTreeObj.value);
+        var motoristaid = String(ddlMotorista.value());
 
         $.ajax({
             url: "/Viagens/Upsert?handler=VerificaMotoristaViagem",
@@ -2754,7 +2760,7 @@ function MotoristaValueChange()
                 }
                 catch (error)
                 {
-                    TratamentoErroComLinha(
+                    Alerta.TratamentoErroComLinha(
                         __scriptName,
                         "ajax.UpserthandlerVerificaMotoristaViagem.success",
                         error,
@@ -2765,7 +2771,7 @@ function MotoristaValueChange()
     }
     catch (error)
     {
-        TratamentoErroComLinha("ViagemUpsert.js", "MotoristaValueChange", error);
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "MotoristaValueChange", error);
     }
 }
 
@@ -3147,8 +3153,8 @@ $("#btnSubmit").click(async function (event)
             return;
         }
 
-        const motorista = document.getElementById("cmbMotorista").ej2_instances[0];
-        if (motorista.value === null)
+        const ddlMotorista = $("#cmbMotorista").data("kendoDropDownList");
+        if (!ddlMotorista || !ddlMotorista.value())
         {
             Alerta.Erro("Informação Ausente", "O Motorista é obrigatório");
             return;
