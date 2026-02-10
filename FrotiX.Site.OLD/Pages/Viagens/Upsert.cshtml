@@ -3212,7 +3212,7 @@
 
     <!-- Kendo DatePicker/TimePicker: Inicialização -->
     <script>
-        (function () {
+        $(document).ready(function() {
             try {
                 // Limites de data (hoje - 15 dias até hoje)
                 var dataMinima = new Date();
@@ -3365,7 +3365,7 @@
             } catch (error) {
                 Alerta.TratamentoErroComLinha("Upsert.cshtml", "kendoDateTimePicker.init", error);
             }
-        })();
+        });
     </script>
 
 }
