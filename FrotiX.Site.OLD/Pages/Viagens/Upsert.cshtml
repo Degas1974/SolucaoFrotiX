@@ -3237,15 +3237,18 @@
                     value: @Html.Raw(Model.ViagemObj?.Viagem?.DataInicial != null ? 
                         $"new Date({Model.ViagemObj.Viagem.DataInicial.Value.Year}, {Model.ViagemObj.Viagem.DataInicial.Value.Month - 1}, {Model.ViagemObj.Viagem.DataInicial.Value.Day})" : 
                         "null"),
-                    open: function() {
-                        // Armazena valor antes de abrir calendário
-                        this._previousValue = this.value();
-                    },
-                    close: function() {
-                        // Se fechou calendário sem selecionar (valor inválido), restaura valor anterior
-                        var currentValue = this.value();
-                        if (!currentValue || isNaN(currentValue)) {
-                            this.value(this._previousValue || null);
+                    change: function(e) {
+                        try {
+                            var dataInicial = this.value();
+                            if (!dataInicial) {
+                                // Se limpar Data Inicial, alerta "Data Inicial inválida!"
+                                setTimeout(function() {
+                                    Alerta.Erro("Data Inicial inválida", "Por favor, selecione uma data válida.");
+                                }, 100);
+                                dpDataInicial.value(null);
+                            }
+                        } catch (error) {
+                            Alerta.TratamentoErroComLinha("Upsert.cshtml", "dpDataInicial.change", error);
                         }
                     }
                 }).data("kendoDatePicker");
@@ -3265,17 +3268,27 @@
                     placeholder: "HH:mm",
                     value: @Html.Raw(Model.ViagemObj?.Viagem?.HoraInicio != null ? 
                         $"new Date(0,0,0,{Model.ViagemObj.Viagem.HoraInicio.Value.Hour},{Model.ViagemObj.Viagem.HoraInicio.Value.Minute})" : 
-                        "null"),
-                    open: function() {
-                        this._previousValue = this.value();
-                    },
-                    close: function() {
-                        var currentValue = this.value();
-                        if (!currentValue || isNaN(currentValue)) {
-                            this.value(this._previousValue || null);
-                        }
-                    }
+                        "null")
                 }).data("kendoTimePicker");
+
+                // Função auxiliar para validar Data Final e habilitar/desabilitar Hora Fim
+                function validarDataFinalEControlarHoraFim() {
+                    try {
+                        if (!dpDataFinal || !tpHoraFinal) return;
+                        
+                        var dataFinal = dpDataFinal.value();
+                        
+                        // Habilitar/desabilitar Hora Fim com base na Data Final
+                        if (dataFinal && dataFinal instanceof Date && !isNaN(dataFinal)) {
+                            tpHoraFinal.enable(true);
+                        } else {
+                            tpHoraFinal.enable(false);
+                            tpHoraFinal.value(null); // Limpar hora fim se data final for inválida
+                        }
+                    } catch (error) {
+                        Alerta.TratamentoErroComLinha("Upsert.cshtml", "validarDataFinalEControlarHoraFim", error);
+                    }
+                }
 
                 // Data Final
                 var dpDataFinal = $("#txtDataFinal").kendoDatePicker({
@@ -3295,18 +3308,19 @@
                     value: @Html.Raw(Model.ViagemObj?.Viagem?.DataFinal != null ? 
                         $"new Date({Model.ViagemObj.Viagem.DataFinal.Value.Year}, {Model.ViagemObj.Viagem.DataFinal.Value.Month - 1}, {Model.ViagemObj.Viagem.DataFinal.Value.Day})" : 
                         "null"),
-                    open: function() {
-                        this._previousValue = this.value();
-                    },
-                    close: function() {
-                        var currentValue = this.value();
-                        if (!currentValue || isNaN(currentValue)) {
-                            this.value(this._previousValue || null);
-                        }
+                    change: function(e) {
+                        // Dispara quando usuário seleciona data do calendário
+                        validarDataFinalEControlarHoraFim();
                     }
                 }).data("kendoDatePicker");
 
-                // Hora Final
+                // Adicionar evento blur no input (para quando usuário digitar manualmente)
+                $("#txtDataFinal").on("blur", function() {
+                    // Dispara quando usuário digita manualmente e sai do campo
+                    validarDataFinalEControlarHoraFim();
+                });
+
+                // Hora Final (inicialmente desabilitada até Data Final ser preenchida)
                 var tpHoraFinal = $("#txtHoraFinal").kendoTimePicker({
                     format: "HH:mm",
                     culture: "pt-BR",
@@ -3322,16 +3336,31 @@
                     value: @Html.Raw(Model.ViagemObj?.Viagem?.HoraFim != null ? 
                         $"new Date(0,0,0,{Model.ViagemObj.Viagem.HoraFim.Value.Hour},{Model.ViagemObj.Viagem.HoraFim.Value.Minute})" : 
                         "null"),
-                    open: function() {
-                        this._previousValue = this.value();
-                    },
-                    close: function() {
-                        var currentValue = this.value();
-                        if (!currentValue || isNaN(currentValue)) {
-                            this.value(this._previousValue || null);
+                    open: function(e) {
+                        try {
+                            // Verificar se Data Final está preenchida antes de abrir
+                            var dataFinal = dpDataFinal.value();
+                            if (!dataFinal || !(dataFinal instanceof Date) || isNaN(dataFinal)) {
+                                e.preventDefault(); // Impedir abertura do popup
+                                Alerta.Warning(
+                                    "Data Final Obrigatória",
+                                    "Preencha a <strong>Data Final</strong> antes de selecionar a Hora Fim.",
+                                    "OK"
+                                );
+                            }
+                        } catch (error) {
+                            Alerta.TratamentoErroComLinha("Upsert.cshtml", "tpHoraFinal.open", error);
                         }
                     }
                 }).data("kendoTimePicker");
+
+                // Estado inicial: desabilitar Hora Fim se Data Final não estiver preenchida
+                var dataFinalInicial = dpDataFinal.value();
+                if (!dataFinalInicial || !(dataFinalInicial instanceof Date) || isNaN(dataFinalInicial)) {
+                    tpHoraFinal.enable(false);
+                } else {
+                    tpHoraFinal.enable(true);
+                }
 
             } catch (error) {
                 Alerta.TratamentoErroComLinha("Upsert.cshtml", "kendoDateTimePicker.init", error);
