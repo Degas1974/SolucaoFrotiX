@@ -1,7 +1,7 @@
 # Documentação: Alertas FrotiX (Upsert)
 
-> **Última Atualização**: 10/02/2026 00:15
-> **Versão Atual**: 1.7
+> **Última Atualização**: 10/02/2026 00:25
+> **Versão Atual**: 1.8
 
 ---
 
@@ -150,7 +150,8 @@ $("#txtDataInicialEvento").kendoDatePicker({
 ### Padrao de Data/Hora Inicial e Bloqueio de Data Final
 Quando a viagem e criada sem valores preexistentes, os campos **Data Inicial** e **Hora Inicio**
 sao preenchidos automaticamente com a data de hoje e a hora atual. A **Data Final** passa a
-ter minimo dinamico igual a **Data Inicial**, impedindo selecao ou digitacao de datas anteriores.
+ter minimo dinamico igual a **Data Inicial**, impedindo selecao ou digitacao de datas anteriores,
+sem bloquear datas futuras.
 
 ```javascript
 // Data Inicial: default para hoje quando vazio
@@ -222,6 +223,21 @@ Retorna a foto do motorista em Base64 para o template do ComboBox.
 > **FORMATO**: Entradas em ordem **decrescente** (mais recente primeiro)
 
 ---
+
+## [10/02/2026 00:25] - FIX: Data Final sem bloqueio de datas futuras
+
+**Descricao**: Removido o limite maximo da Data Final, mantendo apenas o minimo
+dinamico igual a Data Inicial.
+
+**Mudancas**:
+1. **Data Final**: agora bloqueia somente datas anteriores a Data Inicial.
+
+**Arquivos Afetados**:
+- `Pages/Viagens/Upsert.cshtml`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 1.8
 
 ## [10/02/2026 00:15] - FIX: Kendo no Modal de Evento e sem alert()
 
