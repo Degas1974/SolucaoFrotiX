@@ -39,11 +39,8 @@
     ViewData["Category1"] = "Cadastros";
     ViewData["PageIcon"] = "fa-duotone fa-route";
 
-    ViewData["fieldsMotorista"] = new ComboBoxFieldSettings
-    {
-        Text = "Nome",
-        Value = "MotoristaId"
-    };
+    // REMOVIDO: Syncfusion ComboBoxFieldSettings não mais necessário após migração para Kendo
+    // ViewData["fieldsMotorista"] = new ComboBoxFieldSettings { Text = "Nome", Value = "MotoristaId" };
 
     ViewData["itemTemplate"] = @"
     <div class='d-flex align-items-center'>
@@ -2969,7 +2966,7 @@
          * ═══════════════════════════════════════════════════════════════════════════
          * INICIALIZAÇÃO KENDO UI - DATEPICKERS E TIMEPICKERS
          * ═══════════════════════════════════════════════════════════════════════════
-         * @description Inicialização jQuery dos controles Kendo conforme ControlesKendo.md
+         * @@description Inicialização jQuery dos controles Kendo conforme ControlesKendo.md
          * IMPORTANTE: NUNCA usar TagHelpers <kendo-*> - sempre jQuery init
          */
         $(document).ready(function () {
@@ -2982,7 +2979,7 @@
                 $("#txtDataInicial").kendoDatePicker({
                     format: "dd/MM/yyyy",
                     culture: "pt-BR",
-                    value: @Html.Raw(Model.ViagemObj?.Viagem?.DataInicial.HasValue
+                    value: @Html.Raw(Model.ViagemObj?.Viagem?.DataInicial != null
                         ? $"new Date('{Model.ViagemObj.Viagem.DataInicial.Value:yyyy-MM-dd}')"
                         : "null"),
                     change: function(e) {
@@ -3002,8 +2999,8 @@
                     format: "HH:mm",
                     culture: "pt-BR",
                     interval: 30,
-                    value: @Html.Raw(Model.ViagemObj?.Viagem?.HoraInicio.HasValue
-                        ? $"new Date(2000, 0, 1, {Model.ViagemObj.Viagem.HoraInicio.Value.Hours}, {Model.ViagemObj.Viagem.HoraInicio.Value.Minutes})"
+                    value: @Html.Raw(Model.ViagemObj?.Viagem?.HoraInicio != null
+                        ? $"new Date(2000, 0, 1, {Model.ViagemObj.Viagem.HoraInicio.Value.Hour}, {Model.ViagemObj.Viagem.HoraInicio.Value.Minute})"
                         : "null"),
                     change: function(e) {
                         try {
@@ -3021,7 +3018,7 @@
                 $("#txtDataFinal").kendoDatePicker({
                     format: "dd/MM/yyyy",
                     culture: "pt-BR",
-                    value: @Html.Raw(Model.ViagemObj?.Viagem?.DataFinal.HasValue
+                    value: @Html.Raw(Model.ViagemObj?.Viagem?.DataFinal != null
                         ? $"new Date('{Model.ViagemObj.Viagem.DataFinal.Value:yyyy-MM-dd}')"
                         : "null"),
                     change: function(e) {
@@ -3041,8 +3038,8 @@
                     format: "HH:mm",
                     culture: "pt-BR",
                     interval: 30,
-                    value: @Html.Raw(Model.ViagemObj?.Viagem?.HoraFim.HasValue
-                        ? $"new Date(2000, 0, 1, {Model.ViagemObj.Viagem.HoraFim.Value.Hours}, {Model.ViagemObj.Viagem.HoraFim.Value.Minutes})"
+                    value: @Html.Raw(Model.ViagemObj?.Viagem?.HoraFim != null
+                        ? $"new Date(2000, 0, 1, {Model.ViagemObj.Viagem.HoraFim.Value.Hour}, {Model.ViagemObj.Viagem.HoraFim.Value.Minute})"
                         : "null"),
                     change: function(e) {
                         try {
