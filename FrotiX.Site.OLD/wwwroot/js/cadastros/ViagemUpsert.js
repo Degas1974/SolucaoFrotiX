@@ -874,7 +874,9 @@ async function validarDataFinal()
         // Formatar para moment (compatibilidade com validarDatasInicialFinal)
         const strDataInicial = moment(dataInicial).format("DD/MM/YYYY");
         const strDataFinal = moment(dataFinal).format("DD/MM/YYYY");
+        atualizandoDataFinal = true;
         const confirmouIntervalo = await validarDatasInicialFinal(strDataInicial, strDataFinal);
+        atualizandoDataFinal = false;
         if (!confirmouIntervalo)
         {
             return;
