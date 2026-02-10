@@ -786,147 +786,184 @@ $("#txtHoraInicial").focusout(function ()
 
 let evitandoLoop = false;
 
-// txtDataFinal - VALIDAÇÃO IA
-$("#txtDataFinal").focusout(async function ()
+/****************************************************************************************
+ * ⚡ FUNÇÃO: validarDataFinal
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUE] Garantir coerencia entre Data Inicial e Data Final, com
+ *                   confirmacao quando o intervalo e muito grande.
+ *                   [O QUE] Valida formato, ordem, hora final quando mesma data e
+ *                   aciona validacao IA quando disponivel.
+ *                   [COMO] Obtem valores Kendo, compara datas/horas e dispara alertas.
+ *
+ * 📥 ENTRADAS     : Valores atuais de #txtDataInicial, #txtDataFinal, #txtHoraInicial,
+ *                   #txtHoraFinal
+ *
+ * 📤 SAÍDAS       : Ajustes nos campos, alertas e recálculo de duração
+ *
+ * ⬅️ CHAMADO POR  : Eventos change/focusout de #txtDataFinal
+ *
+ * ➡️ CHAMA        : validarDatasInicialFinal(), calcularDuracaoViagem(),
+ *                   Alerta.*(), ValidadorFinalizacaoIA.* (se disponível)
+ ****************************************************************************************/
+async function validarDataFinal()
 {
     try
     {
         if (evitandoLoop) return;
 
-        try
+        // [KENDO] Obter valores via API Kendo
+        const dataFinal = window.getKendoDateValue("txtDataFinal");
+        const dataInicial = window.getKendoDateValue("txtDataInicial");
+
+        if (!dataFinal)
         {
-            // [KENDO] Obter valores via API Kendo
-            const dataFinal = window.getKendoDateValue("txtDataFinal");
-            const dataInicial = window.getKendoDateValue("txtDataInicial");
+            return;
+        }
 
-            if (!dataFinal)
-            {
-                return;
-            }
+        // [VALIDACAO] Verificar se a data é válida
+        if (isNaN(dataFinal.getTime()))
+        {
+            Alerta.Erro("Erro na Data", "Data Final inválida!");
+            window.setKendoDateValue("txtDataFinal", null);
+            return;
+        }
 
-            // [VALIDACAO] Verificar se a data é válida
-            if (isNaN(dataFinal.getTime()))
+        // [VALIDACAO IA] Análise adicional via ValidadorFinalizacaoIA (se disponível)
+        if (typeof ValidadorFinalizacaoIA !== 'undefined' && typeof ValidadorFinalizacaoIA.obterInstancia === "function")
+        {
+            const validador = ValidadorFinalizacaoIA.obterInstancia();
+            const strDataFinal = moment(dataFinal).format("YYYY-MM-DD");
+            const resultadoDataFutura = await validador.validarDataNaoFutura(strDataFinal);
+            if (!resultadoDataFutura.valido)
             {
-                Alerta.Erro("Erro na Data", "Data Final inválida!");
+                await Alerta.Erro(resultadoDataFutura.titulo, resultadoDataFutura.mensagem);
                 window.setKendoDateValue("txtDataFinal", null);
                 return;
             }
+        }
+        else if (typeof ValidadorFinalizacaoIA !== 'undefined')
+        {
+            if (window.console && typeof console.warn === "function")
+            {
+                console.warn("ValidadorFinalizacaoIA.obterInstancia indisponivel. Validacao IA ignorada.");
+            }
+        }
 
-            // [VALIDACAO IA] Análise adicional via ValidadorFinalizacaoIA (se disponível)
-            if (typeof ValidadorFinalizacaoIA !== 'undefined' && typeof ValidadorFinalizacaoIA.obterInstancia === "function")
+        if (!dataInicial) return;
+
+        if (dataFinal < dataInicial)
+        {
+            window.setKendoDateValue("txtDataFinal", null);
+            $("#txtDuracao").val("");
+            Alerta.Erro("Erro na Data", "A data final deve ser maior ou igual que a inicial!");
+            return;
+        }
+
+        // Formatar para moment (compatibilidade com validarDatasInicialFinal)
+        const strDataInicial = moment(dataInicial).format("DD/MM/YYYY");
+        const strDataFinal = moment(dataFinal).format("DD/MM/YYYY");
+        validarDatasInicialFinal(strDataInicial, strDataFinal);
+
+        const sameDay = dataInicial.getFullYear() === dataFinal.getFullYear() &&
+                       dataInicial.getMonth() === dataFinal.getMonth() &&
+                       dataInicial.getDate() === dataFinal.getDate();
+        
+        if (sameDay)
+        {
+            const horaInicial = window.getKendoTimeValue("txtHoraInicial");
+            const horaFinal = window.getKendoTimeValue("txtHoraFinal");
+
+            if (!horaInicial || !horaFinal) return;
+
+            const [hI, mI] = horaInicial.split(":").map(Number);
+            const [hF, mF] = horaFinal.split(":").map(Number);
+            const minIni = hI * 60 + mI;
+            const minFin = hF * 60 + mF;
+
+            if (minFin <= minIni)
+            {
+                window.setKendoTimeValue("txtHoraFinal", null);
+                $("#txtDuracao").val("");
+                Alerta.Erro(
+                    "Erro na Hora",
+                    "A hora final deve ser maior ou igual que a inicial quando as datas forem iguais!",
+                );
+                return;
+            }
+        }
+
+        calcularDuracaoViagem();
+
+        // VALIDAÇÃO IA: Análise de duração (se disponível)
+        if (typeof ValidadorFinalizacaoIA !== 'undefined' && typeof ValidadorFinalizacaoIA.obterInstancia === "function")
+        {
+            const horaInicial = window.getKendoTimeValue("txtHoraInicial");
+            const horaFinal = window.getKendoTimeValue("txtHoraFinal");
+
+            if (dataInicial && horaInicial && horaFinal)
             {
                 const validador = ValidadorFinalizacaoIA.obterInstancia();
-                const strDataFinal = moment(dataFinal).format("YYYY-MM-DD");
-                const resultadoDataFutura = await validador.validarDataNaoFutura(strDataFinal);
-                if (!resultadoDataFutura.valido)
+                const dadosDatas = {
+                    dataInicial: moment(dataInicial).format("YYYY-MM-DD"),
+                    horaInicial: horaInicial,
+                    dataFinal: moment(dataFinal).format("YYYY-MM-DD"),
+                    horaFinal: horaFinal
+                };
+
+                const resultadoDatas = await validador.analisarDatasHoras(dadosDatas);
+                if (!resultadoDatas.valido && resultadoDatas.nivel === 'aviso')
                 {
-                    await Alerta.Erro(resultadoDataFutura.titulo, resultadoDataFutura.mensagem);
-                    window.setKendoDateValue("txtDataFinal", null);
-                    return;
-                }
-            }
-            else if (typeof ValidadorFinalizacaoIA !== 'undefined')
-            {
-                if (window.console && typeof console.warn === "function")
-                {
-                    console.warn("ValidadorFinalizacaoIA.obterInstancia indisponível. Validação IA ignorada.");
-                }
-            }
-
-            if (!dataInicial) return;
-
-            if (dataFinal < dataInicial)
-            {
-                window.setKendoDateValue("txtDataFinal", null);
-                $("#txtDuracao").val("");
-                Alerta.Erro("Erro na Data", "A data final deve ser maior ou igual que a inicial!");
-                return;
-            }
-
-            // Formatar para moment (compatibilidade com validarDatasInicialFinal)
-            const strDataInicial = moment(dataInicial).format("DD/MM/YYYY");
-            const strDataFinal = moment(dataFinal).format("DD/MM/YYYY");
-            validarDatasInicialFinal(strDataInicial, strDataFinal);
-
-            const sameDay = dataInicial.getFullYear() === dataFinal.getFullYear() &&
-                           dataInicial.getMonth() === dataFinal.getMonth() &&
-                           dataInicial.getDate() === dataFinal.getDate();
-            
-            if (sameDay)
-            {
-                const horaInicial = window.getKendoTimeValue("txtHoraInicial");
-                const horaFinal = window.getKendoTimeValue("txtHoraFinal");
-
-                if (!horaInicial || !horaFinal) return;
-
-                const [hI, mI] = horaInicial.split(":").map(Number);
-                const [hF, mF] = horaFinal.split(":").map(Number);
-                const minIni = hI * 60 + mI;
-                const minFin = hF * 60 + mF;
-
-                if (minFin <= minIni)
-                {
-                    window.setKendoTimeValue("txtHoraFinal", null);
-                    $("#txtDuracao").val("");
-                    Alerta.Erro(
-                        "Erro na Hora",
-                        "A hora final deve ser maior ou igual que a inicial quando as datas forem iguais!",
+                    const confirma = await Alerta.ValidacaoIAConfirmar(
+                        resultadoDatas.titulo,
+                        resultadoDatas.mensagem,
+                        "Manter Data",
+                        "Corrigir"
                     );
-                    return;
-                }
-            }
-
-            calcularDuracaoViagem();
-
-            // VALIDAÇÃO IA: Análise de duração (se disponível)
-            if (typeof ValidadorFinalizacaoIA !== 'undefined' && typeof ValidadorFinalizacaoIA.obterInstancia === "function")
-            {
-                const horaInicial = window.getKendoTimeValue("txtHoraInicial");
-                const horaFinal = window.getKendoTimeValue("txtHoraFinal");
-
-                if (dataInicial && horaInicial && horaFinal)
-                {
-                    const validador = ValidadorFinalizacaoIA.obterInstancia();
-                    const dadosDatas = {
-                        dataInicial: moment(dataInicial).format("YYYY-MM-DD"),
-                        horaInicial: horaInicial,
-                        dataFinal: moment(dataFinal).format("YYYY-MM-DD"),
-                        horaFinal: horaFinal
-                    };
-
-                    const resultadoDatas = await validador.analisarDatasHoras(dadosDatas);
-                    if (!resultadoDatas.valido && resultadoDatas.nivel === 'aviso')
+                    if (!confirma)
                     {
-                        const confirma = await Alerta.ValidacaoIAConfirmar(
-                            resultadoDatas.titulo,
-                            resultadoDatas.mensagem,
-                            "Manter Data",
-                            "Corrigir"
-                        );
-                        if (!confirma)
-                        {
-                            window.setKendoDateValue("txtDataFinal", null);
-                            return;
-                        }
+                        window.setKendoDateValue("txtDataFinal", null);
+                        return;
                     }
                 }
             }
-            else if (typeof ValidadorFinalizacaoIA !== 'undefined')
-            {
-                if (window.console && typeof console.warn === "function")
-                {
-                    console.warn("ValidadorFinalizacaoIA.obterInstancia indisponivel. Validacao IA ignorada.");
-                }
-            }
         }
-        catch (error)
+        else if (typeof ValidadorFinalizacaoIA !== 'undefined')
         {
-            TratamentoErroComLinha("ViagemUpsert.js", "focusout.txtDataFinal", error);
+            if (window.console && typeof console.warn === "function")
+            {
+                console.warn("ValidadorFinalizacaoIA.obterInstancia indisponivel. Validacao IA ignorada.");
+            }
         }
     }
     catch (error)
     {
-        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "callback@$.focusout#0", error);
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "validarDataFinal", error);
+    }
+}
+
+// txtDataFinal - VALIDAÇÃO IA
+$("#txtDataFinal").focusout(function ()
+{
+    try
+    {
+        validarDataFinal();
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "focusout.txtDataFinal", error);
+    }
+});
+
+// txtDataFinal - VALIDACAO IMEDIATA
+$("#txtDataFinal").change(function ()
+{
+    try
+    {
+        validarDataFinal();
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "change.txtDataFinal", error);
     }
 });
 
@@ -945,8 +982,23 @@ $("#txtDataFinal").change(function ()
 
 //================================================
 
-// txtHoraFinal - VALIDAÇÃO IA
-$("#txtHoraFinal").focusout(async function ()
+/****************************************************************************************
+ * ⚡ FUNÇÃO: validarHoraFinal
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUE] Validar Hora Final imediatamente e recalcular duracao.
+ *                   [O QUE] Verifica ordem das horas e roda validacao IA quando disponivel.
+ *                   [COMO] Usa valores Kendo, compara minutos e recalcula duracao.
+ *
+ * 📥 ENTRADAS     : Valores atuais de #txtDataInicial, #txtDataFinal, #txtHoraInicial,
+ *                   #txtHoraFinal
+ *
+ * 📤 SAÍDAS       : Ajustes nos campos, alertas e recálculo de duração
+ *
+ * ⬅️ CHAMADO POR  : Eventos change/focusout de #txtHoraFinal
+ *
+ * ➡️ CHAMA        : calcularDuracaoViagem(), Alerta.*(), ValidadorFinalizacaoIA.*
+ ****************************************************************************************/
+async function validarHoraFinal()
 {
     try
     {
@@ -1035,7 +1087,33 @@ $("#txtHoraFinal").focusout(async function ()
     }
     catch (error)
     {
-        TratamentoErroComLinha("ViagemUpsert.js", "focusout.txtHoraFinal", error);
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "validarHoraFinal", error);
+    }
+}
+
+// txtHoraFinal - VALIDAÇÃO IA
+$("#txtHoraFinal").focusout(function ()
+{
+    try
+    {
+        validarHoraFinal();
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "focusout.txtHoraFinal", error);
+    }
+});
+
+// txtHoraFinal - CALCULO IMEDIATO
+$("#txtHoraFinal").change(function ()
+{
+    try
+    {
+        validarHoraFinal();
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "change.txtHoraFinal", error);
     }
 });
 
