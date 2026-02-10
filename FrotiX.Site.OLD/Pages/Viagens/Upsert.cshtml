@@ -3264,7 +3264,7 @@
                                 dpDataInicial.value(null);
                             }
                             if (dataInicial && dataInicial > dataMaxima) {
-                                Alerta.Erro("Data Inicial inválida", "A Data Inicial não pode ser superior à data atual.");
+                                Alerta.Warning("Data Inicial invalida", "A Data Inicial não pode ser superior à data atual.", "OK");
                                 dpDataInicial.value(null);
                                 aplicarMinimoDataFinal(null);
                                 return;
@@ -3369,7 +3369,7 @@
                         if (dataFinal && dataFinal instanceof Date && !isNaN(dataFinal)) {
                             if (dataFinal > dataMaxima) {
                                 Alerta.Warning(
-                                    "Data Final inválida",
+                                    "Data Final invalida",
                                     "A <strong>Data Final</strong> não pode ser superior à data atual.",
                                     "OK"
                                 );

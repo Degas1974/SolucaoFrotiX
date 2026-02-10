@@ -650,7 +650,7 @@ $("#txtDataInicial").focusout(function ()
         dataInicialNormalizada.setHours(0, 0, 0, 0);
         if (dataInicialNormalizada > hoje)
         {
-            Alerta.Erro("Erro na Data", "A Data Inicial nao pode ser superior a data atual!");
+            Alerta.Warning("Data Inicial invalida", "A Data Inicial nao pode ser superior a data atual!", "OK");
             window.setKendoDateValue("txtDataInicial", null);
             return;
         }
@@ -855,7 +855,7 @@ async function validarDataFinal()
         dataFinalNormalizada.setHours(0, 0, 0, 0);
         if (dataFinalNormalizada > hoje)
         {
-            Alerta.Erro("Erro na Data", "A Data Final nao pode ser superior a data atual!");
+            Alerta.Warning("Data Final invalida", "A Data Final nao pode ser superior a data atual!", "OK");
             atualizandoDataFinal = true;
             window.setKendoDateValue("txtDataFinal", null);
             atualizandoDataFinal = false;
