@@ -3356,6 +3356,14 @@
                     }
                 }).data("kendoTimePicker");
 
+                // Forçar placeholders pt-BR no DateInput (evita fallback inglês quando vazio)
+                if (dpDataFinal && dpDataFinal.dateInput && dpDataFinal.dateInput.element) {
+                    dpDataFinal.dateInput.element.attr("placeholder", "dd/MM/yyyy");
+                }
+                if (tpHoraFinal && tpHoraFinal.dateInput && tpHoraFinal.dateInput.element) {
+                    tpHoraFinal.dateInput.element.attr("placeholder", "HH:mm");
+                }
+
                 // Estado inicial: desabilitar Hora Fim se Data Final não estiver preenchida
                 var dataFinalInicial = dpDataFinal.value();
                 if (!dataFinalInicial || !(dataFinalInicial instanceof Date) || isNaN(dataFinalInicial)) {
