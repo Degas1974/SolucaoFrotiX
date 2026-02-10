@@ -1327,12 +1327,16 @@ function atualizarDetalhesEventoSelecionado(eventoId)
                         }
 
                         const data = response.data || {};
-                        const dataInicio = data.DataInicial ? moment(data.DataInicial).format("DD/MM/YYYY") : "";
-                        const dataFim = data.DataFinal ? moment(data.DataFinal).format("DD/MM/YYYY") : "";
+                        const dataInicialRaw = data.dataInicial ?? data.DataInicial ?? null;
+                        const dataFinalRaw = data.dataFinal ?? data.DataFinal ?? null;
+                        const qtdParticipantes = data.qtdParticipantes ?? data.QtdParticipantes ?? "";
+
+                        const dataInicio = dataInicialRaw ? moment(dataInicialRaw).format("DD/MM/YYYY") : "";
+                        const dataFim = dataFinalRaw ? moment(dataFinalRaw).format("DD/MM/YYYY") : "";
 
                         $("#txtEventoDataInicio").val(dataInicio);
                         $("#txtEventoDataFim").val(dataFim);
-                        $("#txtEventoQtdParticipantes").val(data.QtdParticipantes ?? "");
+                        $("#txtEventoQtdParticipantes").val(qtdParticipantes);
                     }
                     catch (error)
                     {
@@ -1361,12 +1365,16 @@ function atualizarDetalhesEventoSelecionado(eventoId)
                         }
 
                         const data = response.data || {};
-                        const dataInicio = data.DataInicial ? moment(data.DataInicial).format("DD/MM/YYYY") : "";
-                        const dataFim = data.DataFinal ? moment(data.DataFinal).format("DD/MM/YYYY") : "";
+                        const dataInicialRaw = data.dataInicial ?? data.DataInicial ?? null;
+                        const dataFinalRaw = data.dataFinal ?? data.DataFinal ?? null;
+                        const qtdParticipantes = data.qtdParticipantes ?? data.QtdParticipantes ?? "";
+
+                        const dataInicio = dataInicialRaw ? moment(dataInicialRaw).format("DD/MM/YYYY") : "";
+                        const dataFim = dataFinalRaw ? moment(dataFinalRaw).format("DD/MM/YYYY") : "";
 
                         $("#txtEventoDataInicio").val(dataInicio);
                         $("#txtEventoDataFim").val(dataFim);
-                        $("#txtEventoQtdParticipantes").val(data.QtdParticipantes ?? "");
+                        $("#txtEventoQtdParticipantes").val(qtdParticipantes);
                     }
                     catch (error)
                     {
