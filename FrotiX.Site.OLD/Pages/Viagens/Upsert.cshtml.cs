@@ -1389,6 +1389,26 @@ namespace FrotiX.Pages.Viagens
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PreencheListaFinalidade
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : [PORQUÊ] Garantir que a lista de finalidades seja carregada e
+         *                   ordenada alfabeticamente para facilitar a selecao pelo usuario.
+         *                   [O QUE] Monta o dataSource com as finalidades fixas do sistema.
+         *                   [COMO] Cria a lista base e ordena por descricao com comparador natural.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : ViewData["dataFinalidade"] preenchido com lista ordenada.
+         *
+         * ⬅️ CHAMADO POR  : OnGet() [Upsert.cshtml.cs]
+         *                   OnPostEditAsync() [Upsert.cshtml.cs]
+         *                   OnPostSubmitAsync() [Upsert.cshtml.cs]
+         *
+         * ➡️ CHAMA        : FrotiX.Helpers.NaturalStringComparer (ordenacao natural)
+         *
+         * 📝 OBSERVAÇÕES  : Lista fixa de finalidades usada no DropDownList de Viagens.
+         ****************************************************************************************/
         public void PreencheListaFinalidade()
         {
             try
@@ -1550,6 +1570,10 @@ namespace FrotiX.Pages.Viagens
                 FinalidadeDataSource.Add(
                 new FinalidadeData { FinalidadeId = "Cursos Depol" , Descricao = "Cursos Depol" }
                 );
+
+                FinalidadeDataSource = FinalidadeDataSource
+                    .OrderBy(f => (f.Descricao ?? string.Empty).Trim(), new FrotiX.Helpers.NaturalStringComparer())
+                    .ToList();
 
                 ViewData["dataFinalidade"] = FinalidadeDataSource;
             }
