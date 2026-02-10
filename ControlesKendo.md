@@ -1,8 +1,8 @@
 # Controles Kendo/Telerik UI - Guia Oficial FrotiX
 
-> **Projeto:** FrotiX 2026
-> **Versao:** Kendo UI 2025.4.1321 (Q4 2025)
-> **Stack:** ASP.NET Core, Razor Pages, TagHelpers + HtmlHelpers
+> **Projeto:** FrotiX 2026 (FrotiX.Site.OLD)
+> **Versao:** Kendo UI 2025.4.1321 (Q4 2025) - LOCAL, nao CDN
+> **Stack:** ASP.NET Core, Razor Pages, jQuery `.kendoXxx()` init em @section ScriptsBlock
 > **Status:** LEITURA OBRIGATORIA para agentes de IA
 > **Ultima Atualizacao:** 09/02/2026
 
@@ -18,15 +18,28 @@ Antes de criar ou modificar qualquer controle Kendo em paginas CSHTML ou arquivo
 ### Regras Fundamentais
 
 1. **SEMPRE** usar controles Telerik Kendo UI (nunca HTML5 nativo, nunca Syncfusion para novos controles)
-2. **PREFERIR TagHelper** (`<kendo-*>`) sobre HtmlHelper (`@(Html.Kendo()...)`) em Razor Pages
-3. **SEMPRE** acessar widget via `.data("kendo[NomeWidget]")` em JavaScript
-4. **SEMPRE** usar `deferred="true"` quando houver scripts dependentes do widget na pagina
+2. **SEMPRE** inicializar controles via jQuery `$("#id").kendoXxx({...})` dentro de `@section ScriptsBlock`
+3. **NUNCA** usar TagHelpers (`<kendo-*>`) nem `@Html.Kendo().DeferredScripts()` (causa "kendo is not defined")
+4. **SEMPRE** acessar widget via `.data("kendo[NomeWidget]")` em JavaScript
 5. **NUNCA** inicializar o mesmo widget duas vezes no mesmo elemento
+6. **NUNCA** adicionar CDN Kendo 2022 em paginas (conflita com tema bootstrap-main 2025)
+7. **SEMPRE** usar `<input>` simples no HTML e inicializar o controle no ScriptsBlock
+
+### Por que NAO usar TagHelpers no FrotiX?
+
+O layout do FrotiX renderiza nesta ordem:
+1. `@RenderBody()` - onde ficam os TagHelpers (geram scripts inline)
+2. `_ScriptsBasePlugins.cshtml` - onde carrega `kendo.all.min.js`
+3. `@RenderSection("ScriptsBlock")` - onde ficam scripts da pagina
+
+TagHelpers geram scripts inline no passo 1, **ANTES** do kendo.all.min.js carregar no passo 2.
+Resultado: `"kendo is not defined"`. Por isso usamos jQuery init no passo 3 (ScriptsBlock).
 
 ### Referencia de Exemplos
 
 O projeto `Kendo.Mvc.Examples/` na raiz do workspace contem **149 controles** com **2.482 exemplos**
 funcionais. Cada pasta tem variantes HtmlHelper (`.cshtml`) e TagHelper (`*_TagHelper.cshtml`).
+**ATENCAO:** Os exemplos usam TagHelpers, mas no FrotiX usamos jQuery init. Adapte os exemplos.
 
 ---
 
@@ -43,12 +56,31 @@ Diferente do ComboBox, **NAO permite digitacao livre** (apenas filtro).
 - Selecao de Combustivel (Viagens/Upsert)
 - Qualquer campo com opcoes fixas vindas do backend
 
-### Sintaxe TagHelper (PREFERIDA no FrotiX)
+### Sintaxe jQuery Init (USADA NO FROTIX)
+
+**HTML:**
+```html
+<input id="ddlFinalidade" name="ViagemObj.Viagem.Finalidade" style="width: 100%;" />
+```
+
+**JavaScript (em @section ScriptsBlock):**
+```javascript
+var dataFinalidade = @Html.Raw(Json.Serialize(ViewData["dataFinalidade"]));
+$("#ddlFinalidade").kendoDropDownList({
+    dataTextField: "descricao",        // camelCase! (JSON serialization)
+    dataValueField: "finalidadeId",    // camelCase!
+    optionLabel: "Escolha a Finalidade...",
+    dataSource: dataFinalidade,
+    height: 200,
+    value: "@(Model.ViagemObj?.Viagem?.Finalidade ?? "")",
+    change: function (e) { lstFinalidade_Change(e); }
+});
+```
+
+### Sintaxe TagHelper (NAO USAR - apenas referencia)
 
 ```html
-@addTagHelper *, Kendo.Mvc
-
-<!-- DropDownList com dados do ViewData -->
+<!-- NAO USAR no FrotiX! Causa "kendo is not defined" -->
 <kendo-dropdownlist name="ddlFinalidade"
     datatextfield="Descricao"
     datavaluefield="FinalidadeId"
@@ -62,7 +94,7 @@ Diferente do ComboBox, **NAO permite digitacao livre** (apenas filtro).
 </kendo-dropdownlist>
 ```
 
-### Sintaxe HtmlHelper (Alternativa)
+### Sintaxe HtmlHelper (apenas referencia)
 
 ```csharp
 @(Html.Kendo().DropDownList()
@@ -187,33 +219,76 @@ ddl.select(function(item) {          // seleciona por funcao
 
 ### Exemplo Real FrotiX (Viagens/Upsert.cshtml)
 
+**HTML (no corpo da pagina):** usar `<input>` simples, sem TagHelper
+
 ```html
 <!-- Finalidade da Viagem -->
-<kendo-dropdownlist name="ddlFinalidade"
-    datatextfield="Descricao"
-    datavaluefield="FinalidadeId"
-    option-label="Escolha a Finalidade..."
-    bind-to="@((IEnumerable<object>)ViewData["dataFinalidade"])"
-    height="200"
-    value="@(Model.ViagemObj?.Viagem?.Finalidade ?? "")"
-    on-change="lstFinalidade_Change"
-    deferred="true"
-    style="width: 100%;">
-</kendo-dropdownlist>
+<input id="ddlFinalidade" name="ViagemObj.Viagem.Finalidade" style="width: 100%;" />
 
 <!-- Combustivel Inicial -->
-<kendo-dropdownlist name="ddlCombustivelInicial"
-    datatextfield="Descricao"
-    datavaluefield="CombustivelId"
-    option-label="Escolha Combustivel..."
-    bind-to="@((IEnumerable<object>)ViewData["dataCombustivel"])"
-    height="200"
-    style="width: 100%;">
-</kendo-dropdownlist>
+<input id="ddlCombustivelInicial" name="ViagemObj.Viagem.CombustivelInicial" style="width: 100%;" />
+
+<!-- Combustivel Final -->
+<input id="ddlCombustivelFinal" name="ViagemObj.Viagem.CombustivelFinal" style="width: 100%;" />
 ```
 
+**JavaScript (em @section ScriptsBlock):** inicializar com jQuery
+
 ```javascript
-// ViagemUpsert.js - Acesso programatico
+@section ScriptsBlock {
+<script>
+(function () {
+    try {
+        var dataFinalidade = @Html.Raw(Json.Serialize(ViewData["dataFinalidade"]));
+        var dataCombustivel = @Html.Raw(Json.Serialize(ViewData["dataCombustivel"]));
+
+        $("#ddlFinalidade").kendoDropDownList({
+            dataTextField: "descricao",        // camelCase! (JSON serialization)
+            dataValueField: "finalidadeId",    // camelCase!
+            optionLabel: "Escolha a Finalidade...",
+            dataSource: dataFinalidade,
+            height: 200,
+            value: "@(Model.ViagemObj?.Viagem?.Finalidade ?? "")",
+            change: function (e) {
+                try { lstFinalidade_Change(e); }
+                catch (err) { console.error("lstFinalidade_Change:", err); }
+            }
+        });
+
+        $("#ddlCombustivelInicial").kendoDropDownList({
+            dataTextField: "descricao",
+            dataValueField: "nivel",
+            optionLabel: "Selecione...",
+            dataSource: dataCombustivel,
+            height: 200,
+            value: "@(Model.ViagemObj?.Viagem?.CombustivelInicial ?? "")",
+            template: combustivelTemplate,
+            valueTemplate: combustivelValueTemplate
+        });
+
+        $("#ddlCombustivelFinal").kendoDropDownList({
+            dataTextField: "descricao",
+            dataValueField: "nivel",
+            optionLabel: "Selecione...",
+            dataSource: dataCombustivel,
+            height: 200,
+            value: "@(Model.ViagemObj?.Viagem?.CombustivelFinal ?? "")",
+            template: combustivelTemplate,
+            valueTemplate: combustivelValueTemplate
+        });
+    } catch (error) {
+        Alerta.TratamentoErroComLinha("Upsert.cshtml", "kendoDropDownList.init", error);
+    }
+})();
+</script>
+}
+```
+
+**IMPORTANTE - camelCase:** `@Html.Raw(Json.Serialize(...))` gera JSON com camelCase.
+Use `data.descricao` e NAO `data.Descricao`.
+
+```javascript
+// Acesso programatico em outros JS
 var ddlFinalidade = $("#ddlFinalidade").data("kendoDropDownList");
 var ddlCombInicial = $("#ddlCombustivelInicial").data("kendoDropDownList");
 var ddlCombFinal = $("#ddlCombustivelFinal").data("kendoDropDownList");
@@ -249,9 +324,31 @@ Diferente do DropDownList, **permite entrada de texto que nao esta na lista**.
 - Selecao de Requisitante (Agenda/Index) - usuario pode digitar para filtrar
 - Qualquer campo onde filtro por digitacao e essencial
 
-### Sintaxe TagHelper (PREFERIDA no FrotiX)
+### Sintaxe jQuery Init (USADA NO FROTIX)
+
+**HTML:**
+```html
+<input id="lstRequisitante" name="lstRequisitante" class="flex-grow-1" style="width: 100%;"
+    data-ejtip="Se o <strong>Requisitante</strong> nao estiver presente..." />
+```
+
+**JavaScript (em @section ScriptsBlock):**
+```javascript
+var dataRequisitante = @Html.Raw(Json.Serialize(ViewData["dataRequisitante"]));
+$("#lstRequisitante").kendoComboBox({
+    dataTextField: "requisitante",     // camelCase!
+    dataValueField: "requisitanteId",  // camelCase!
+    placeholder: "Selecione um Requisitante...",
+    filter: "contains",                // string, nao enum
+    dataSource: dataRequisitante,
+    height: 200
+});
+```
+
+### Sintaxe TagHelper (NAO USAR - apenas referencia)
 
 ```html
+<!-- NAO USAR no FrotiX! Causa "kendo is not defined" -->
 <kendo-combobox name="lstRequisitante"
     placeholder="Selecione um Requisitante..."
     filter="Kendo.Mvc.UI.FilterType.Contains"
@@ -260,12 +357,11 @@ Diferente do DropDownList, **permite entrada de texto que nao esta na lista**.
     bind-to="@((IEnumerable<object>)ViewData["dataRequisitante"])"
     height="200"
     class="flex-grow-1"
-    style="width: 100%; height: 38px;"
-    data-ejtip="Se o <strong>Requisitante</strong> nao estiver presente...">
+    style="width: 100%; height: 38px;">
 </kendo-combobox>
 ```
 
-### Sintaxe HtmlHelper (Alternativa)
+### Sintaxe HtmlHelper (apenas referencia)
 
 ```csharp
 @(Html.Kendo().ComboBox()
@@ -343,27 +439,45 @@ const todosItems = ds.data();          // array de objetos
 
 ### Exemplo Real FrotiX (Agenda/Index.cshtml)
 
+**HTML (no corpo da pagina):** usar `<input>` simples
+
 ```html
 <!-- Requisitante no modal de agendamento -->
-<kendo-combobox name="lstRequisitante"
-    placeholder="Selecione um Requisitante..."
-    filter="Kendo.Mvc.UI.FilterType.Contains"
-    datatextfield="Requisitante"
-    datavaluefield="RequisitanteId"
-    bind-to="@((IEnumerable<object>)ViewData["dataRequisitante"])"
-    height="200" class="flex-grow-1" style="width: 100%; height: 38px;"
-    data-ejtip="Se o <strong>Requisitante</strong> nao estiver na Lista, verifique se nao esta <strong>Inativo</strong>">
-</kendo-combobox>
+<input id="lstRequisitante" name="lstRequisitante" class="flex-grow-1" style="width: 100%;"
+    data-ejtip="Se o <strong>Requisitante</strong> nao estiver na Lista, verifique se nao esta <strong>Inativo</strong>" />
 
 <!-- Requisitante no modal de evento -->
-<kendo-combobox name="lstRequisitanteEvento"
-    placeholder="Selecione o requisitante..."
-    filter="Kendo.Mvc.UI.FilterType.Contains"
-    datatextfield="Requisitante"
-    datavaluefield="RequisitanteId"
-    bind-to="@((IEnumerable<object>)ViewData["dataRequisitante"])"
-    height="200" style="width: 100%;">
-</kendo-combobox>
+<input id="lstRequisitanteEvento" name="lstRequisitanteEvento" style="width: 100%;" />
+```
+
+**JavaScript (em @section ScriptsBlock):**
+
+```javascript
+(function () {
+    try {
+        var dataRequisitante = @Html.Raw(Json.Serialize(ViewData["dataRequisitante"]));
+
+        $("#lstRequisitante").kendoComboBox({
+            dataTextField: "requisitante",     // camelCase!
+            dataValueField: "requisitanteId",  // camelCase!
+            placeholder: "Selecione um Requisitante...",
+            filter: "contains",
+            dataSource: dataRequisitante,
+            height: 200
+        });
+
+        $("#lstRequisitanteEvento").kendoComboBox({
+            dataTextField: "requisitante",
+            dataValueField: "requisitanteId",
+            placeholder: "Selecione o requisitante...",
+            filter: "contains",
+            dataSource: dataRequisitante,
+            height: 200
+        });
+    } catch (error) {
+        Alerta.TratamentoErroComLinha("Agenda/Index.cshtml", "kendoControls.init", error);
+    }
+})();
 ```
 
 ```javascript
@@ -488,9 +602,25 @@ Seletor de data com calendario popup. Substitui `<input type="date">` HTML5.
 - Campos de data em formularios (Data Inicial, Data Final)
 - Filtros por periodo em dashboards
 
-### Sintaxe TagHelper (PREFERIDA)
+### Sintaxe jQuery Init (USADA NO FROTIX)
+
+**HTML:**
+```html
+<input id="txtDataInicialEvento" name="txtDataInicialEvento" style="width: 100%;" />
+```
+
+**JavaScript (em @section ScriptsBlock):**
+```javascript
+$("#txtDataInicialEvento").kendoDatePicker({
+    format: "dd/MM/yyyy",
+    placeholder: "Data Inicial"
+});
+```
+
+### Sintaxe TagHelper (NAO USAR - apenas referencia)
 
 ```html
+<!-- NAO USAR no FrotiX! Causa "kendo is not defined" -->
 <kendo-datepicker name="txtDataInicialEvento"
     format="dd/MM/yyyy"
     placeholder="Data Inicial"
@@ -498,7 +628,7 @@ Seletor de data com calendario popup. Substitui `<input type="date">` HTML5.
 </kendo-datepicker>
 ```
 
-### Sintaxe HtmlHelper
+### Sintaxe HtmlHelper (apenas referencia)
 
 ```csharp
 @(Html.Kendo().DatePicker()
@@ -1258,40 +1388,35 @@ numeric.max(1000);                     // definir maximo
 
 ---
 
-## 13. DEFERREDSCRIPTS (IMPORTANTE!)
+## 13. DEFERREDSCRIPTS (OBSOLETO - NAO USAR)
 
-### O que e
+### Por que NAO usar no FrotiX
 
-Mecanismo para adiar a renderizacao dos scripts dos widgets Kendo para o final da pagina.
+DeferredScripts e um mecanismo dos TagHelpers Kendo. Como o FrotiX **NAO usa TagHelpers**
+(ver secao 0 - "Por que NAO usar TagHelpers"), DeferredScripts tambem nao deve ser usado.
 
-### Quando Usar
+### Abordagem Correta
 
-Quando a pagina usa `deferred="true"` em TagHelpers Kendo, e **OBRIGATORIO** chamar
-`@Html.Kendo().DeferredScripts()` no final da pagina (antes de `</body>` ou na section scripts).
+Em vez de TagHelper + `deferred="true"` + `@Html.Kendo().DeferredScripts()`, usar:
 
-### Exemplo
+1. `<input>` simples no HTML (corpo da pagina)
+2. jQuery `$("#id").kendoXxx({...})` em `@section ScriptsBlock`
 
 ```html
-<!-- No corpo da pagina -->
+<!-- ERRADO (NAO USAR) -->
 <kendo-dropdownlist name="ddl" deferred="true" ...></kendo-dropdownlist>
-
-<!-- No final da pagina (section scripts ou antes de </body>) -->
-@section scripts {
+@section ScriptsBlock {
     @Html.Kendo().DeferredScripts()
+}
 
-    <script>
-        // Scripts que dependem dos widgets Kendo
-        $(document).ready(function() {
-            var ddl = $("#ddl").data("kendoDropDownList");
-        });
-    </script>
+<!-- CORRETO (USAR ISSO) -->
+<input id="ddl" name="ddl" style="width: 100%;" />
+@section ScriptsBlock {
+<script>
+    $("#ddl").kendoDropDownList({ dataTextField: "descricao", dataValueField: "id", ... });
+</script>
 }
 ```
-
-### Regra FrotiX
-
-Se usar `deferred="true"` em QUALQUER widget Kendo na pagina, adicionar
-`@Html.Kendo().DeferredScripts()` ANTES de qualquer script que acesse os widgets.
 
 ---
 
@@ -1406,34 +1531,82 @@ if (widget) {
 
 ---
 
-## 17. CDN E VERSAO (CONFIGURACAO ATUAL)
+## 17. VERSAO E ARQUIVOS LOCAIS (CONFIGURACAO ATUAL)
+
+### IMPORTANTE: Kendo UI e 100% LOCAL (nao CDN)
+
+Todos os arquivos Kendo estao em `wwwroot/lib/kendo/2025.4.1321/`.
+**NUNCA** adicionar referencias CDN `kendo.cdn.telerik.com` ou `kendostatic.com` nas paginas.
 
 ### Scripts Kendo UI (carregados em _ScriptsBasePlugins.cshtml)
 
 ```
-kendo.cdn.telerik.com/2025.4.1321/js/kendo.all.min.js
-kendo.cdn.telerik.com/2025.4.1321/js/kendo.aspnetmvc.min.js
+~/lib/kendo/2025.4.1321/js/kendo.all.min.js
+~/kendo-lic.js                                    (licenca client-side - OBRIGATORIO)
+~/lib/kendo/2025.4.1321/js/kendo.aspnetmvc.min.js
 ```
 
 ### CSS Kendo UI (carregado em _Head.cshtml)
 
 ```
-kendo.cdn.telerik.com/themes/10.0.0/bootstrap/bootstrap-main.css
-unpkg.com/@progress/kendo-font-icons/dist/index.css
+~/lib/kendo/2025.4.1321/styles/bootstrap-main.css
 ```
+
+### Licenciamento (kendo-lic.js)
+
+O arquivo `kendo-lic.js` contem `KendoLicensing.setScriptKey('...')` e e **OBRIGATORIO**
+para Kendo 2025+. Sem ele, controles exibem erro de licenca no console.
+Fonte original: `Kendo.Mvc.Examples/wwwroot/kendo-lic.js`
 
 ### Ordem de Carga CRITICA
 
 1. jQuery 3.7.1 (GRUPO 1) - **DEVE** vir primeiro
 2. Bootstrap 5.3.8 (GRUPO 3)
-3. Kendo UI JS (GRUPO 3B) - **DEVE** vir APOS jQuery
-4. Scripts FrotiX (GRUPO 7+) - **DEVEM** vir APOS Kendo
+3. Kendo UI JS + kendo-lic.js (GRUPO 3B) - **DEVE** vir APOS jQuery
+4. `@RenderSection("ScriptsBlock")` - onde os controles sao inicializados via jQuery
 
-**NUNCA** carregar jQuery apos Kendo (destroi registros de plugins).
+**NUNCA** carregar jQuery apos Kendo (destroi registros `$.fn` dos plugins).
+**NUNCA** adicionar CDN Kendo 2022 (CSS ocean-blue/classic conflita com bootstrap-main 2025).
 
 ---
 
 ## 18. ERROS COMUNS E SOLUCOES
+
+### Erro: "kendo is not defined" (MAIS COMUM)
+
+**Causa:** TagHelpers (`<kendo-*>`) geram scripts inline em `@RenderBody()`, que executa
+ANTES de `kendo.all.min.js` ser carregado em `_ScriptsBasePlugins.cshtml`.
+**Solucao:** NAO usar TagHelpers. Usar `<input>` simples + jQuery init em `@section ScriptsBlock`.
+
+### Erro: Controles cinza, baixos ou sem estilo
+
+**Causa:** CSS Kendo 2022 (tema ocean-blue/classic) carregado junto com CSS Kendo 2025
+(tema bootstrap-main). As versoes conflitam e sobrescrevem estilos.
+**Solucao:** Remover TODAS as referencias CDN Kendo 2022 (`kendostatic.com`, `kendo.cdn.telerik.com/2022*`).
+O CSS global `bootstrap-main.css` de `_Head.cshtml` e suficiente.
+
+### Erro: Licenca / "License not found" no console
+
+**Causa:** Kendo 2025+ requer licenca client-side via `KendoLicensing.setScriptKey()`.
+**Solucao:** Garantir que `kendo-lic.js` esta carregado APOS `kendo.all.min.js` em `_ScriptsBasePlugins.cshtml`.
+Fonte do arquivo: `Kendo.Mvc.Examples/wwwroot/kendo-lic.js`
+
+### Erro: jQuery plugins destruidos ($.fn.kendoXxx undefined)
+
+**Causa:** Um segundo jQuery carregado APOS os plugins Kendo terem sido registrados.
+Acontecia com `vendors.bundle.js` que continha jQuery 3.5.1 embutido.
+**Solucao:** NUNCA carregar jQuery depois de Kendo. Verificar se nenhum bundle inclui jQuery.
+
+### Erro: `ItemType` ambiguidade de namespace
+
+**Causa:** `@using Kendo.Mvc.UI` no topo da pagina conflita com `FrotiX.Models.ItemType`.
+**Solucao:** NAO usar `@using Kendo.Mvc.UI` (desnecessario com abordagem jQuery init).
+
+### Erro: Propriedades JSON com casing errado
+
+**Causa:** `@Html.Raw(Json.Serialize(...))` gera JSON em camelCase (padrao ASP.NET Core).
+O C# tem `Descricao` mas o JSON gera `descricao`.
+**Solucao:** Usar camelCase no JavaScript: `data.descricao`, NAO `data.Descricao`.
 
 ### Erro: Widget nao inicializa
 
@@ -1443,7 +1616,7 @@ unpkg.com/@progress/kendo-font-icons/dist/index.css
 ### Erro: `.data("kendoXxx")` retorna undefined
 
 **Causa:** Widget ainda nao foi inicializado no momento da chamada.
-**Solucao:** Usar `$(document).on("kendoReady", ...)` ou `$(document).ready(...)`.
+**Solucao:** Garantir que o codigo de acesso roda APOS a inicializacao no ScriptsBlock.
 
 ### Erro: Widget inicializado duas vezes
 
@@ -1476,4 +1649,5 @@ if (existente) existente.destroy();
 
 | Versao | Data | Descricao |
 |--------|------|-----------|
+| 2.0 | 09/02/2026 | Migracao TagHelper→jQuery init, CDN→Local, erros descobertos, licenciamento |
 | 1.0 | 09/02/2026 | Criacao inicial com 13 controles documentados |
