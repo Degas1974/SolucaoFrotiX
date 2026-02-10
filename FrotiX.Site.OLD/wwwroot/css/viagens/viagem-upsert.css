@@ -339,6 +339,26 @@ img[alt="Foto"]:not([src]) {
     border-radius: 50%;
 }
 
+/* Centralizacao no listbox do Kendo (motorista) */
+#cmbMotorista_listbox .k-list-item,
+#cmbMotorista_listbox .k-item {
+    display: flex;
+    justify-content: center;
+}
+
+#cmbMotorista_listbox .motorista-item {
+    margin: 0 auto;
+}
+
+#cmbMotorista_listbox .k-list-item-text {
+    width: 100%;
+}
+
+#cmbMotorista.k-input-inner,
+#cmbMotorista .k-input-inner {
+    justify-content: center;
+}
+
 /* Balao laranja bonitao */
 .e-tooltip-wrap,
 .e-tooltip-wrap.custom-orange-tooltip,
