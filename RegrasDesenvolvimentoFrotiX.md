@@ -4,8 +4,8 @@
 > **Tipo:** Aplicação Web ASP.NET Core MVC – Gestão de Frotas
 > **Stack:** .NET 10, C#, Entity Framework Core, SQL Server, Bootstrap 5.3, jQuery, Syncfusion EJ2, Telerik UI
 > **Status:** ✅ Arquivo ÚNICO e OFICIAL de regras do projeto
-> **Versão:** 1.5
-> **Última Atualização:** 03/02/2026
+> **Versão:** 1.6
+> **Última Atualização:** 10/02/2026
 
 ---
 
@@ -971,6 +971,7 @@ Sem essa colagem, a IA não sabe que a conversa está sendo registrada.
 
 | Versão | Data       | Descrição                                                                        |
 | ------ | ---------- | -------------------------------------------------------------------------------- |
+| 1.6    | 10/02/2026 | Adiciona regra que desativa criação de arquivos .md no diretório Documentacao/   |
 | 1.5    | 03/02/2026 | Adiciona seção 5.13 (Guia de Enriquecimento - Segunda Passada) com checklist detalhado por tipo de arquivo, exemplos de antes/depois, e workflow para agentes Haiku de enriquecimento de documentação |
 | 1.4    | 03/02/2026 | Adiciona seções 5.11 (Mapeamento de Dependências) e 5.12 (Análise de Arquivos Críticos). Atualiza 5.6 (🎯 MOTIVO em AJAX) e 5.9 (símbolos ⬅️ ➡️). Estabelece regra de limpeza do ArquivosCriticos.md |
 | 1.3    | 01/02/2026 | Adiciona seção 4.5 - Tratamento de Erros e APIs (ApiResponse, CORS, FrotiXApi)   |
@@ -1009,6 +1010,15 @@ Cada arquivo de código (C#, JS ou CSHTML) deve ser um artefato auto-explicativo
 - ✅ **APENAS código complexo** precisa de comentários robustos
 - ✅ Comentários DEVEM explicar o **PORQUÊ** (não o "o que", que deve estar claro pelo código)
 - ✅ Use tags semânticas (`[LOGICA]`, `[AJAX]`, `[DB]`, etc) para categorização
+
+### 5.1.2 Documentacao em MD externos (Documentacao/)
+
+**REGRA:** Nao criar nem atualizar arquivos `.md` no diretorio `Documentacao/` como
+documentacao paralela ao arquivo de codigo trabalhado. A documentacao obrigatoria deve
+ser mantida **apenas** via cards e comentarios dentro do proprio arquivo de codigo.
+
+**Excecao:** Somente criar/atualizar `.md` em `Documentacao/` quando houver pedido
+explicito do usuario.
 
 ---
 
