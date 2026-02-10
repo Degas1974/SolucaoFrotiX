@@ -1717,7 +1717,8 @@ function initModalZoomHandler()
         {
             try
             {
-                var src = document.getElementById("imgViewer")?.getAttribute("src") || "";
+                var src = document.getElementById("imgViewerItem")?.getAttribute("src") ||
+                    document.getElementById("imgViewer")?.getAttribute("src") || "";
                 var target = document.getElementById("imgZoomed");
                 if (target) target.setAttribute("src", src);
             }
