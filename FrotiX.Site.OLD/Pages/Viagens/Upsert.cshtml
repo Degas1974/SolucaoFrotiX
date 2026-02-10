@@ -3227,7 +3227,7 @@
                     max: dataMaxima,
                     dateInput: true,
                     value: @Html.Raw(Model.ViagemObj?.Viagem?.DataInicial != null ? 
-                        $"new Date({Model.ViagemObj.Viagem.DataInicial.Year}, {Model.ViagemObj.Viagem.DataInicial.Month - 1}, {Model.ViagemObj.Viagem.DataInicial.Day})" : 
+                        $"new Date({Model.ViagemObj.Viagem.DataInicial.Value.Year}, {Model.ViagemObj.Viagem.DataInicial.Value.Month - 1}, {Model.ViagemObj.Viagem.DataInicial.Value.Day})" : 
                         "null")
                 });
 
@@ -3238,7 +3238,7 @@
                     interval: 15,
                     dateInput: true,
                     value: @Html.Raw(Model.ViagemObj?.Viagem?.HoraInicio != null ? 
-                        $"new Date(0,0,0,{Model.ViagemObj.Viagem.HoraInicio.Hours},{Model.ViagemObj.Viagem.HoraInicio.Minutes})" : 
+                        $"new Date(0,0,0,{Model.ViagemObj.Viagem.HoraInicio.Value.Hour},{Model.ViagemObj.Viagem.HoraInicio.Value.Minute})" : 
                         "null")
                 });
 
@@ -3261,7 +3261,7 @@
                     interval: 15,
                     dateInput: true,
                     value: @Html.Raw(Model.ViagemObj?.Viagem?.HoraFim != null ? 
-                        $"new Date(0,0,0,{Model.ViagemObj.Viagem.HoraFim.Value.Hours},{Model.ViagemObj.Viagem.HoraFim.Value.Minutes})" : 
+                        $"new Date(0,0,0,{Model.ViagemObj.Viagem.HoraFim.Value.Hour},{Model.ViagemObj.Viagem.HoraFim.Value.Minute})" : 
                         "null")
                 });
 
