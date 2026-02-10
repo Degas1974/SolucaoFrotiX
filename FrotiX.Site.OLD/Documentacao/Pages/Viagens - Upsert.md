@@ -1,7 +1,7 @@
 # Documentação: Alertas FrotiX (Upsert)
 
-> **Última Atualização**: 10/02/2026 02:50
-> **Versão Atual**: 2.9
+> **Última Atualização**: 10/02/2026 03:00
+> **Versão Atual**: 3.0
 
 ---
 
@@ -223,6 +223,22 @@ Retorna a foto do motorista em Base64 para o template do ComboBox.
 > **FORMATO**: Entradas em ordem **decrescente** (mais recente primeiro)
 
 ---
+
+## [10/02/2026 03:00] - FIX: Remove trigger focusout no change
+
+**Descricao**: Removidos os handlers que disparavam `focusout` dentro do `change`,
+eliminando recursao e stack overflow.
+
+**Mudancas**:
+1. **Data Final**: removido `change` que fazia `trigger("focusout")`.
+2. **Hora Final**: removido `change` que fazia `trigger("focusout")`.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 3.0
 
 ## [10/02/2026 02:50] - FIX: Flag durante confirmacao de intervalo
 

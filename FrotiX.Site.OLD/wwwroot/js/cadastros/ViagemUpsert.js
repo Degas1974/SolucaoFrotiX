@@ -979,19 +979,6 @@ $("#txtDataFinal").change(function ()
     }
 });
 
-// txtDataFinal - VALIDACAO IMEDIATA
-$("#txtDataFinal").change(function ()
-{
-    try
-    {
-        $("#txtDataFinal").trigger("focusout");
-    }
-    catch (error)
-    {
-        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "change.txtDataFinal", error);
-    }
-});
-
 //================================================
 
 /****************************************************************************************
@@ -1123,18 +1110,6 @@ $("#txtHoraFinal").change(function ()
     }
 });
 
-// txtHoraFinal - CALCULO IMEDIATO
-$("#txtHoraFinal").change(function ()
-{
-    try
-    {
-        $("#txtHoraFinal").trigger("focusout");
-    }
-    catch (error)
-    {
-        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "change.txtHoraFinal", error);
-    }
-});
 
 function PreencheListaEventos()
 {

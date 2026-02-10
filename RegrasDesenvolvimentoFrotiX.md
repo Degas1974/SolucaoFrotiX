@@ -595,8 +595,7 @@ POST /api/LogErros/Client
    - Refatorações significativas
    - Novos componentes/services/controllers
 
-3. **Após atualizar documentação:**
-   - Arquivos em `Documentacao/`
+3. **Após atualizar regras:**
    - Arquivos de regras (`RegrasDesenvolvimentoFrotiX.md`, `CLAUDE.md`, etc.)
 
 **Processo:**
@@ -628,33 +627,6 @@ git push origin main
 **Exceção:** Só NÃO fazer commit automático se o usuário explicitamente pedir "não commite ainda" ou "aguarde para commitar".
 
 **Data de Adição:** 18/01/2026
-
-### 5.2 Documentação (Obrigatória e Detalhada)
-
-📁 **Pastas Alvo:** `Documentacao/` e seus subdiretórios correspondentes a:
-
-- `Controllers/`, `Services/`, `Repository/`
-- `Data/` (Contextos e Configurações de Banco)
-- `Helpers/` (Utilitários e Helpers customizados)
-- `Hubs/` (Comunicação Real-time SignalR)
-- `Middlewares/` (Pipeline de requisição e tratamento de erros)
-- `Models/` (Entidades e DTOs críticos)
-- `Pages/` (Páginas Razor e complementos)
-- `wwwroot/js/` (Scripts globais e lógicas de front-end)
-
-**REGRA DE OURO:** Toda alteração de código exige atualização imediata da documentação ANTES do push para `main`.
-
-**Conteúdo Obrigatório por Arquivo `.md`:**
-
-1. **Explicação em Prosa:** Descrição completa da funcionalidade em estilo de "prosa leve", porém tecnicamente exaustiva. Não apenas listar campos, mas explicar o _porquê_ e o _como_ o módulo interage com o sistema.
-2. **Code Snippets:** Incluir trechos das principais funções/métodos (C#, JS, SQL).
-3. **Detalhamento Técnico:** Cada snippet deve ser acompanhado de uma explicação linha-a-linha ou por blocos lógicos do que está sendo executado.
-4. **Log de Modificações:** Manter sempre o histórico (Versão/Data/Autor/O que mudou).
-
-📌 **Formatos:**
-
-- `.md` (Técnico e exaustivo) - **Prioridade Máxima**
-- `.html` (Visual/Portfólio A4) - Gerado a partir do `.md` quando solicitado.
 
 ### 5.3 Logs de Conversa
 
@@ -690,18 +662,24 @@ git push origin main
 
 #### 5.3.2 Como Iniciar Registro por IA
 
-| IA | Método Principal | Método Alternativo |
-|---|---|---|
-| **Claude Code** | `/rename [YYYY.MM.DD]-[HH.mm] - [Nome] - [Claude Code]` | `Ctrl+Alt+D` → Cola no chat |
-| **Continue** | `/doq Nome da Conversa` | `Ctrl+Alt+D` → Cola no chat |
-| **GitHub Copilot** | `Ctrl+Alt+D` → Cola no chat | Snippet markdown (`logconv` + Tab) |
-| **Gemini Code Assist** | `Ctrl+Alt+D` → Cola no chat | Snippet markdown (`logconv` + Tab) |
-| **Genie AI** | `Ctrl+Alt+D` → Cola no chat | Snippet markdown (`logconv` + Tab) |
+**Método Universal:** Extensão **FrotiX Conversa Manager** (`Ctrl+Alt+C`)
 
-**Atalho Universal:** `Ctrl+Alt+D`
-- Copia template com data/hora automática para clipboard
-- Mostra janela com instruções
-- Cole no chat com `Ctrl+V`
+| Atalho | Ação |
+|--------|------|
+| **Ctrl+Alt+C** | Nova Conversa (Quick Pick → cria arquivo → copia notificação para clipboard) |
+| **Ctrl+Alt+S** | Checkpoint (copia prompt de atualização incremental para clipboard) |
+| **Ctrl+Alt+F** | Finalizar (copia prompt de resumo final para clipboard) |
+
+**Fluxo:**
+1. Pressionar `Ctrl+Alt+C` → escolher "Nova Conversa" → digitar nome → selecionar IA
+2. A extensão cria o arquivo `.md` e copia `🔴 REGISTRO ATIVO` para o clipboard
+3. Colar (`Ctrl+V`) no chat da IA → a IA reconhece e passa a atualizar o arquivo
+
+| IA | Alternativas |
+|---|---|
+| **Claude Code** | `/rename [YYYY.MM.DD]-[HH.mm] - [Nome] - [Claude Code]` |
+| **Continue** | `/doq Nome da Conversa` |
+| **Todas** | Snippet markdown (`logconv` + Tab) em arquivos `.md` |
 - IA cria arquivo automaticamente
 
 **Snippet Markdown (Backup):**
@@ -959,9 +937,8 @@ Sem essa colagem, a IA não sabe que a conversa está sendo registrada.
 
 ### Ao criar/modificar funcionalidade
 
-1. Verificar documentação existente em `Documentacao/`
-2. Atualizar documentação se existir
-3. Criar documentação se não existir
+1. Seguir Cards de Arquivo e Função (Seção 5)
+2. Registrar na conversa ativa (Seção 5.3)
 
 ---
 
@@ -1955,7 +1932,7 @@ Closes #45 (ArquivosCriticos.md)"
  * REFERÊNCIAS:
  * - ArquivosCriticos.md (entrada completa com 6 problemas)
  * - Issue #234: Refatorar modal_agenda.js
- * - Documentação: Documentacao/JavaScript/modal_agenda.md
+ * - Issue #234: Refatorar modal_agenda.js (ver ArquivosCriticos.md)
  **************************************************************************************** */
 ```
 
@@ -2075,7 +2052,7 @@ causando conflitos frequentes de merge e dificuldade para novos desenvolvedores.
 REFERÊNCIAS:
 - ArquivosCriticos.md (entrada completa)
 - Issue #156: Refatorar ListaAutuacao.cshtml
-- Documentação: Documentacao/Pages/Multa/ListaAutuacao.md
+- Issue #156: Refatorar ListaAutuacao.cshtml (ver ArquivosCriticos.md)
 ****************************************************************************************
 *@
 ```
