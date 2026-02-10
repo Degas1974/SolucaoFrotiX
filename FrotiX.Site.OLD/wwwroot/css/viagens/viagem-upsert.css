@@ -343,13 +343,13 @@ img[alt="Foto"]:not([src]) {
 #cmbMotorista_listbox,
 #cmbMotorista_listbox .k-list-content,
 #cmbMotorista_listbox .k-list-ul {
-    text-align: center;
+    text-align: left;
 }
 
 #cmbMotorista_listbox .k-list-item,
 #cmbMotorista_listbox .k-item {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     padding-left: 0;
     padding-right: 0;
@@ -359,7 +359,7 @@ img[alt="Foto"]:not([src]) {
 #cmbMotorista_listbox .k-list-item-text > span {
     width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     padding-left: 0;
     padding-right: 0;
@@ -372,18 +372,18 @@ img[alt="Foto"]:not([src]) {
 /* Centralizacao do valor selecionado */
 .k-dropdownlist[aria-controls="cmbMotorista_listbox"] .k-input-inner {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    text-align: center;
+    text-align: left;
 }
 
 .k-dropdownlist[aria-controls="cmbMotorista_listbox"] .k-input-value-text,
 .k-dropdownlist[aria-controls="cmbMotorista_listbox"] .k-input-inner .k-input-value-text {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     width: 100%;
-    text-align: center;
+    text-align: left;
 }
 
 /* Balao laranja bonitao */
