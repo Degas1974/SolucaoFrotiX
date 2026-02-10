@@ -2085,6 +2085,94 @@ namespace FrotiX.Pages.Viagens
                 get; set;
             }
         }
+
+        /* ****************************************************************************************
+         * 🚨 PROBLEMAS IDENTIFICADOS E MELHORIAS PROPOSTAS
+         * --------------------------------------------------------------------------------------
+         * Data de Identificação: 10/02/2026
+         * Identificado por: GitHub Copilot - GPT-5.2-Codex (Análise Automática)
+         * Status: 🟡 PENDENTE (aguardando refatoração)
+         *
+         * ========================================================================================
+         * PROBLEMA #1: Estado compartilhado com campos static
+         * ----------------------------------------------------------------------------------------
+         * Severidade: 🟡 ALTA
+         *
+         * Descrição:
+         * Campos static armazenam dados de requisições e podem vazar entre usuários,
+         * causando inconsistências em cenários concorrentes.
+         *
+         * Localização:
+         * - Linhas: 49-59 (campos static no topo da classe)
+         *
+         * Impacto:
+         * - Concorrência: risco de dados cruzados entre sessões
+         * - Debugging difícil em ambientes com múltiplos usuários
+         *
+         * Solução Proposta:
+         * Remover static e armazenar estado por request (propriedades de instância,
+         * TempData/Session ou reconsulta controlada).
+         *
+         * ========================================================================================
+         * PROBLEMA #2: Max() sem fallback para sequência vazia
+         * ----------------------------------------------------------------------------------------
+         * Severidade: 🟡 ALTA
+         *
+         * Descrição:
+         * OnGetVerificaFicha usa Max() sem tratar cenário de tabela vazia.
+         *
+         * Localização:
+         * - Linhas: 771-777 (OnGetVerificaFicha)
+         *
+         * Impacto:
+         * - Exceção em ambientes sem registros
+         *
+         * Solução Proposta:
+         * Usar DefaultIfEmpty/FirstOrDefault com valor padrão.
+         *
+         * ========================================================================================
+         * PROBLEMA #3: Possíveis NullReference em endpoints auxiliares
+         * ----------------------------------------------------------------------------------------
+         * Severidade: 🟠 MÉDIA
+         *
+         * Descrição:
+         * Falta validação de null em consultas de veículo e setor.
+         *
+         * Localização:
+         * - Linhas: 677-684 (OnGetPegaKmAtualVeiculo)
+         * - Linhas: 740-749 (OnGetPegaSetor)
+         *
+         * Impacto:
+         * - Exceções quando registros não são encontrados
+         *
+         * Solução Proposta:
+         * Validar retorno antes de acessar propriedades e retornar fallback seguro.
+         *
+         * ========================================================================================
+         * PROBLEMA #4: Strings de lista montadas e não utilizadas
+         * ----------------------------------------------------------------------------------------
+         * Severidade: 🟢 BAIXA
+         *
+         * Descrição:
+         * Variáveis eventosList/requisitantesList são montadas e não usadas.
+         *
+         * Localização:
+         * - Linhas: 419-507 (OnGetAJAXPreencheListaEventos/Requisitantes)
+         *
+         * Impacto:
+         * - Código morto e risco de exceção quando lista vazia
+         *
+         * Solução Proposta:
+         * Remover montagem de string ou proteger com validação.
+         *
+         * ========================================================================================
+         * OBSERVAÇÕES GERAIS:
+         * Este arquivo possui múltiplos endpoints auxiliares e deve manter validações
+         * defensivas para evitar erros intermitentes em produção.
+         *
+         * REFERÊNCIAS:
+         * - ArquivosCriticos.md (entrada completa)
+         **************************************************************************************** */
     }
 }
 

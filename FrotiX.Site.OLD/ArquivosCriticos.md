@@ -3,7 +3,7 @@
 > **Projeto:** FrotiX.Site - Sistema de Gestão de Frotas
 > **Objetivo:** Documentar problemas técnicos identificados durante análise de código para refatoração futura
 > **Versão:** 1.0
-> **Última Atualização:** 03/02/2026
+> **Última Atualização:** 10/02/2026
 
 ---
 
@@ -62,9 +62,11 @@ Este arquivo documenta **problemas técnicos identificados** durante a análise 
 
 **Data de Análise:** 03/02/2026
 **Total de Arquivos Analisados:** 105 CSHTML (arquivos 11-115)
-**Arquivos Críticos Identificados:** 10 arquivos
+**Arquivos Críticos Identificados:** 11 arquivos
 **CSS Inline Total Detectado:** ~6880 linhas
 **JavaScript Inline Total Detectado:** ~8300 linhas
+
+**Observação:** Inclui 1 arquivo code-behind analisado fora do lote CSHTML (Viagens/Upsert.cshtml.cs).
 
 ### Distribuição por Gravidade:
 - 🔴 **CRÍTICA:** 4 arquivos (Agenda, DashboardAbastecimento, Multa, ControleLavagem)
@@ -703,6 +705,74 @@ await Promise.allSettled([
 
 ---
 
+### 11. **Viagens/Upsert.cshtml.cs** - GRAVIDADE: 🟡 ALTA
+
+**Localização:** `FrotiX.Site/Pages/Viagens/Upsert.cshtml.cs`
+**Linhas:** 2067
+**Data Análise:** 10/02/2026
+
+#### Problemas Identificados:
+
+**a) Estado compartilhado em campos `static` (risco de concorrência)**
+```csharp
+public static Guid viagemId;
+private static DateTime dataAgendamento;
+private static DateTime dataCancelamento;
+private static DateTime dataCriacao;
+private static string usuarioCorrenteId;
+private static string usuarioCorrenteNome;
+private static string UsuarioIdCancelamento;
+private static string usuarioIdCriacao;
+private static Guid veiculoAtual;
+```
+- **Impacto:** Dados de um usuário podem vazar para outro em requests simultâneas.
+- **Solução:** Remover `static` e armazenar em propriedades de instância ou em TempData/Session.
+
+**b) `Max()` sem tratamento de sequência vazia**
+```csharp
+var objFicha = _unitOfWork
+   .Viagem.GetAllReduced(selector: f => new { f.NoFichaVistoria })
+   .Max(n => n.NoFichaVistoria);
+```
+- **Impacto:** Exceção se não existir nenhuma viagem cadastrada.
+- **Solução:** Usar `DefaultIfEmpty()`/`Max()` com fallback ou `OrderByDescending().FirstOrDefault()`.
+
+**c) Possível `NullReference` em `OnGetPegaKmAtualVeiculo`**
+```csharp
+var veiculo = _unitOfWork.Veiculo.GetFirstOrDefault(v => v.VeiculoId == veiculoid);
+return new JsonResult(new { data = veiculo.Quilometragem });
+```
+- **Impacto:** Exceção se o veículo não existir.
+- **Solução:** Validar `veiculo != null` e retornar `data = 0`/mensagem.
+
+**d) Possível `NullReference` em `OnGetPegaSetor`**
+```csharp
+var requisitante = _unitOfWork.Requisitante.GetFirstOrDefault(e => e.RequisitanteId == requisitanteid);
+var setorrequisitante = _unitOfWork.SetorSolicitante.GetFirstOrDefault(e => e.SetorSolicitanteId == requisitante.SetorSolicitanteId);
+```
+- **Impacto:** Exceção quando `requisitante` ou `setorrequisitante` não existirem.
+- **Solução:** Validar nulos antes de acessar propriedades.
+
+**e) Strings montadas e não utilizadas (`eventosList`/`requisitantesList`)**
+```csharp
+var eventosList = "";
+// ... concatenação
+eventosList = "[" + eventosList.Remove(eventosList.Length - 1) + "]";
+```
+- **Impacto:** Código morto e risco de exceção quando lista vazia.
+- **Solução:** Remover montagem de string ou proteger com validação.
+
+#### Plano de Refatoração:
+
+```markdown
+1. Remover campos static (evitar estado compartilhado entre usuários)
+2. Proteger Max() com DefaultIfEmpty/FirstOrDefault
+3. Validar null em OnGetPegaKmAtualVeiculo e OnGetPegaSetor
+4. Remover strings de lista não utilizadas
+```
+
+---
+
 ## 📊 Resumo Comparativo - Expandido
 
 | Arquivo | Linhas Atual | Linhas Após Refatoração | Redução | CSS Inline Atual | JS Inline Atual | Gravidade |
@@ -718,6 +788,8 @@ await Promise.allSettled([
 | **Viagens/Index.cshtml** | 1289 | ~450 | **-65%** | 180 linhas | 200 linhas | 🟡 ALTA |
 | **Intel/AnalyticsDashboard.cshtml** | 1856 | ~650 | **-65%** | 300 linhas | 500 linhas | 🟡 ALTA |
 | **TOTAL 10 ARQUIVOS** | **16515** | **~5610** | **-66%** | **3662** | **4888+** | - |
+
+**Nota:** Viagens/Upsert.cshtml.cs (code-behind) analisado fora do lote CSHTML, sem métricas de CSS/JS inline.
 
 ---
 
