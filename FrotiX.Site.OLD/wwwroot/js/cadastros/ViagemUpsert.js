@@ -879,7 +879,7 @@ $("#txtDataFinal").focusout(async function ()
             calcularDuracaoViagem();
 
             // VALIDAÇÃO IA: Análise de duração (se disponível)
-            if (typeof ValidadorFinalizacaoIA !== 'undefined')
+            if (typeof ValidadorFinalizacaoIA !== 'undefined' && typeof ValidadorFinalizacaoIA.obterInstancia === "function")
             {
                 const horaInicial = window.getKendoTimeValue("txtHoraInicial");
                 const horaFinal = window.getKendoTimeValue("txtHoraFinal");
@@ -911,6 +911,13 @@ $("#txtDataFinal").focusout(async function ()
                     }
                 }
             }
+            else if (typeof ValidadorFinalizacaoIA !== 'undefined')
+            {
+                if (window.console && typeof console.warn === "function")
+                {
+                    console.warn("ValidadorFinalizacaoIA.obterInstancia indisponivel. Validacao IA ignorada.");
+                }
+            }
         }
         catch (error)
         {
@@ -920,6 +927,19 @@ $("#txtDataFinal").focusout(async function ()
     catch (error)
     {
         Alerta.TratamentoErroComLinha("ViagemUpsert.js", "callback@$.focusout#0", error);
+    }
+});
+
+// txtDataFinal - VALIDACAO IMEDIATA
+$("#txtDataFinal").change(function ()
+{
+    try
+    {
+        $("#txtDataFinal").trigger("focusout");
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "change.txtDataFinal", error);
     }
 });
 
@@ -1016,6 +1036,19 @@ $("#txtHoraFinal").focusout(async function ()
     catch (error)
     {
         TratamentoErroComLinha("ViagemUpsert.js", "focusout.txtHoraFinal", error);
+    }
+});
+
+// txtHoraFinal - CALCULO IMEDIATO
+$("#txtHoraFinal").change(function ()
+{
+    try
+    {
+        $("#txtHoraFinal").trigger("focusout");
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "change.txtHoraFinal", error);
     }
 });
 

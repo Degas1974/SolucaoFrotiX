@@ -1,7 +1,7 @@
 # Documentação: Alertas FrotiX (Upsert)
 
-> **Última Atualização**: 10/02/2026 01:30
-> **Versão Atual**: 2.2
+> **Última Atualização**: 10/02/2026 01:45
+> **Versão Atual**: 2.3
 
 ---
 
@@ -223,6 +223,23 @@ Retorna a foto do motorista em Base64 para o template do ComboBox.
 > **FORMATO**: Entradas em ordem **decrescente** (mais recente primeiro)
 
 ---
+
+## [10/02/2026 01:45] - FIX: Validacao imediata em Data Final e Hora Final
+
+**Descricao**: Ajustado para validar e calcular na mudanca do controle, sem esperar
+o Lost Focus. Inclui guard para o validador de IA em Data Final.
+
+**Mudancas**:
+1. **Data Final**: validacao disparada no `change`.
+2. **Hora Final**: calculo de duracao disparado no `change`.
+3. **Guard**: protege `ValidadorFinalizacaoIA.obterInstancia` na Data Final.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.3
 
 ## [10/02/2026 01:30] - FIX: Guard na validacao de Hora Final
 
