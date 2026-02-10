@@ -3221,6 +3221,18 @@
                 dataMinima.setDate(dataMinima.getDate() - 15);
                 var dataMaxima = new Date();
 
+                // Garantir mensagens pt-BR no DateInput antes de criar os controles
+                if (window.kendo && kendo.ui && kendo.ui.DateInput) {
+                    kendo.culture("pt-BR");
+                    kendo.ui.DateInput.prototype.options.messages = {
+                        year: "yyyy",
+                        month: "MM",
+                        day: "dd",
+                        hour: "HH",
+                        minute: "mm"
+                    };
+                }
+
                 // Data Inicial
                 var dpDataInicial = $("#txtDataInicial").kendoDatePicker({
                     format: "dd/MM/yyyy",
