@@ -30,6 +30,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Blazor.Data;
 using Syncfusion.EJ2.DropDowns;
@@ -816,13 +817,13 @@ namespace FrotiX.Pages.Viagens
                     });
                 }
 
-                var viagens = _unitOfWork.Viagem.GetFirstOrDefault(e =>
-                    e.MotoristaId == motoristaId && e.HoraFim == null && e.Status == "Aberta"
-                );
+                bool temViagemAberta = _context.Viagem
+                    .AsNoTracking()
+                    .Any(e => e.MotoristaId == motoristaId && e.HoraFim == null && e.Status == "Aberta");
 
                 return new JsonResult(new
                 {
-                    data = viagens != null
+                    data = temViagemAberta
                 });
             }
             catch (Exception error)
@@ -866,13 +867,13 @@ namespace FrotiX.Pages.Viagens
                     });
                 }
 
-                var viagens = _unitOfWork.Viagem.GetFirstOrDefault(e =>
-                    e.VeiculoId == veiculoId && e.HoraFim == null && e.Status == "Aberta"
-                );
+                bool temViagemAberta = _context.Viagem
+                    .AsNoTracking()
+                    .Any(e => e.VeiculoId == veiculoId && e.HoraFim == null && e.Status == "Aberta");
 
                 return new JsonResult(new
                 {
-                    data = viagens != null
+                    data = temViagemAberta
                 });
             }
             catch (Exception error)
