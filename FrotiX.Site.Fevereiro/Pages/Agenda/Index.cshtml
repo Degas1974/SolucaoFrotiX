@@ -1,0 +1,2114 @@
+@page
+
+@* ========================================================================================
+ * ARQUIVO: Pages/Agenda/Index.cshtml
+ * OBJETIVO: Pagina COMPLEXA de agenda de eventos com FullCalendar v6 integrado,
+ *           sistema de recorrencia (diaria/semanal/mensal/customizada), modais Bootstrap 5
+ *           dinamicos (criacao/edicao com Syncfusion EJ2), validacoes frontend/backend
+ *           robustas (duracao minima 5min, distancias, conflitos), calculos automaticos
+ *           (duracao hora inicial/final, distancia via API), expansao de recorrencia no
+ *           backend. Sistema crítico para agendamento de viagens/eventos no FrotiX.
+ * ENTRADAS: Model FrotiX.Models.Agenda, ViewData com 12+ listas (dataMotorista, dataVeiculo,
+ *           dataSetor, dataRequisitante, dataFinalidade, dataEvento, dataSetorEvento,
+ *           dataPeriodo, dataRecorrente, dataCombustivel, listaOrigem, listaDestino),
+ *           RecorrenciaToggleSettings (injecao de dependencia via decorator Inject),
+ *           cliques no calendario FullCalendar (eventClick/dateClick/eventDrop/eventResize),
+ *           modal hash modalEvento com 20+ campos Syncfusion EJ2 (DropDown, DatePicker, TimePicker,
+ *           NumericTextBox), tabs (Dados Basicos/Recorrencia/Participantes), formulario com
+ *           validacao HTML5 + JavaScript customizada antes da submissao
+ * SAIDAS: Calendario FullCalendar v6 renderizado (hash calendar) com locale pt-br, 3 views
+ *         (dayGridMonth/timeGridWeek/listWeek), eventos carregados via GET /api/ViagemAgenda/GetEventos,
+ *         modais Bootstrap 5 (criacao com campos limpos, edicao com dados preenchidos),
+ *         POST /api/ViagemAgenda/Salvar (criacao de evento unico ou recorrente), PUT (edicao),
+ *         DELETE (exclusao), resposta JSON com success/error, recorrencia expandida no backend
+ *         (gera multiplos eventos 'clone' linkados pelo RecorrenciaId original),
+ *         notificacoes SweetAlert2 (erros/avisos) e AppToast (sucesso verde/erro vermelho)
+ * CHAMADA POR: Route /Agenda via diretiva page, navegacao sidebar (Cadastros > Agenda), link direto
+ *              no menu principal, funcao OnGet do IndexModel (backend C# code-behind) executa no
+ *              carregamento da pagina inicializando 12+ ViewData com listas via IUnitOfWork,
+ *              calendario carrega eventos automaticamente via AJAX apos renderizacao do DOM
+ * CHAMA: FrotiX.Pages.Agenda.IndexModel.Initialize (metodo backend C# injetando IUnitOfWork +
+ *        RecorrenciaToggleSettings), helpers de lista (ListaNivelCombustivel, ListaMotorista,
+ *        ListaVeiculos, ListaSetores, ListaRequisitante, ListaFinalidade, ListaEvento,
+ *        ListaSetoresEvento, ListaPeriodos, ListaRecorrente), modal_agenda.js (arquivo JavaScript
+ *        externo 1099 linhas com handler complexo de modal incluindo Syncfusion components,
+ *        validacoes inline, calculo de recorrencia, formatacao de dados), endpoints API REST
+ *        /api/ViagemAgenda/GetEventos GET (carrega eventos existentes + recorrentes),
+ *        /api/ViagemAgenda/Salvar POST (cria evento unico ou com recorrencia), PUT (edita),
+ *        DELETE (exclui), FullCalendar v6 API completa (initialization, eventClick handler,
+ *        dateClick handler, eventDrop drag&drop handler, eventResize resize handler, refetchEvents
+ *        para reload apos mudancas), funcoes utilitarias JavaScript (moeda formatacao R$,
+ *        dateToSQL conversao ISO8601, validacoes campo a campo)
+ * DEPENDENCIAS: ASP.NET Core Razor Pages 8.0, FullCalendar v6.1.8 (pacote completo com
+ *               dayGridPlugin/timeGridPlugin/listPlugin/interactionPlugin), Syncfusion EJ2
+ *               ASP.NET Core Tag Helpers (DropDownList, DatePicker, TimePicker, NumericTextBox,
+ *               Calendar, Modal/Popups), jQuery 3.7.1, Bootstrap 5.3.8 (cards, modals, tabs,
+ *               form-control, grid system), SweetAlert2 (alertas customizados via Alerta.js),
+ *               AppToast.js (notificacoes toast Verde/Vermelho), Stimulsoft Reports (para
+ *               impressao de relatorios de agenda), Kendo UI 2022.1.412 (alguns components legados
+ *               como DatePicker/TimePicker em modo misto), IUnitOfWork (Entity Framework Core
+ *               pattern para acesso ao banco de dados SQL Server), RecorrenciaToggleSettings
+ *               (classe customizada de configuracao lida do appsettings.json para habilitar/desabilitar
+ *               funcionalidade de recorrencia dinamicamente), Font Awesome 6 Duotone (icones)
+ * OBSERVACOES: 2008 LINHAS - pagina GIGANTE com funcionalidade complexa. Sistema de recorrencia
+ *              completo com 2 modos: (1) Padrao (diaria/semanal/mensal simples), (2) Customizado
+ *              (dias da semana especificos via checkboxes, intervalo de repeticao configuravel,
+ *              data final limite). Validacoes robustas: duracao minima 5 minutos, distancia maxima
+ *              permitida entre origem/destino, deteccao de conflitos de horario para mesmo motorista/veiculo,
+ *              participantes obrigatorios (motorista + requisitante). FullCalendar configurado com
+ *              locale pt-br completo, 3 views alternativas (mes/semana/lista), drag&drop de eventos
+ *              habilitado (eventDrop handler atualiza banco), resize de eventos permitido (eventResize
+ *              handler recalcula duracao). Modal hash modalEvento com 20+ campos Syncfusion incluindo
+ *              tabs Bootstrap 5 (Dados Basicos/Recorrencia/Participantes), calculos automaticos em
+ *              tempo real (duracao ao alterar hora inicial/final, distancia via chamada API externa
+ *              ao selecionar origem/destino). Secoes grandes: section HeadBlock (250+ linhas CSS
+ *              inline customizando calendario, modal, botoes, cores), section ScriptBlock (1000+ linhas
+ *              JavaScript inline incluindo funcoes de inicializacao do FullCalendar, handlers de
+ *              eventos, validacoes, formatacao, chamadas AJAX, alem de referencia ao arquivo externo
+ *              modal_agenda.js). RecorrenciaToggle controlado via appsettings.json permite habilitar/desabilitar
+ *              funcionalidade dinamicamente sem recompilar (feature flag). Sistema CRITICO para
+ *              agendamento de viagens/eventos no FrotiX usado diariamente por multiplos usuarios.
+ *              ATENCAO: Mistura de Syncfusion EJ2 + Kendo UI legado gera inconsistencia visual e
+ *              aumenta tamanho do bundle JavaScript (considerar padronizar apenas Syncfusion EJ2).
+ * REGRA: nunca use o simbolo arroba dentro deste bloco de comentario
+ ======================================================================================== *@
+
+@using FrotiX.Repository.IRepository
+@using Syncfusion.EJ2
+@using Stimulsoft.Report.Mvc;
+@using Syncfusion.EJ2.DropDowns
+@using Syncfusion.EJ2.Navigations
+@using Syncfusion.EJ2.Base
+@using Syncfusion.EJ2.Popups
+@using Kendo.Mvc.UI
+@using FrotiX.Helpers;
+
+@model FrotiX.Models.Agenda
+
+@inject IUnitOfWork _unitOfWork
+@inject FrotiX.Settings.RecorrenciaToggleSettings RecorrenciaToggleSettings
+
+@* ============================================
+   FUNÇÕES DO SERVIDOR (FORA DE BLOCOS @{})
+   ============================================ *@
+@functions {
+    public void OnGet()
+    {
+        FrotiX.Pages.Agenda.IndexModel.Initialize(_unitOfWork);
+        ViewData["dataCombustivel"] = new ListaNivelCombustivel(_unitOfWork).NivelCombustivelList();
+        ViewData["dataMotorista"] = new ListaMotorista(_unitOfWork).MotoristaList();
+        ViewData["dataVeiculo"] = new ListaVeiculos(_unitOfWork).VeiculosList();
+        ViewData["dataSetor"] = new ListaSetores(_unitOfWork).SetoresList();
+        ViewData["dataRequisitante"] = new ListaRequisitante(_unitOfWork).RequisitantesList();
+        ViewData["dataFinalidade"] = new ListaFinalidade(_unitOfWork).FinalidadesList();
+        ViewData["dataEvento"] = new ListaEvento(_unitOfWork).EventosList();
+        ViewData["dataSetorEvento"] = new ListaSetoresEvento(_unitOfWork).SetoresEventoList();
+        ViewData["dataPeriodo"] = new ListaPeriodos().PeriodosList();
+        ViewData["dataRecorrente"] = new ListaRecorrente().RecorrenteList();
+
+        var listaOrigem = _unitOfWork.Viagem.GetAllReduced(selector: v => v.Origem)
+        .Where(o => o != null)
+        .Distinct()
+        .OrderBy(o => o)
+        .ToList();
+        ViewData["ListaOrigem"] = listaOrigem;
+
+        var listaDestino = _unitOfWork.Viagem.GetAllReduced(selector: v => v.Destino)
+        .Where(d => d != null)
+        .Distinct()
+        .OrderBy(d => d)
+        .ToList();
+        ViewData["ListaDestino"] = listaDestino;
+    }
+}
+
+@* ============================================
+   CONFIGURAÇÕES DE MODAL E BOTÕES
+   ============================================ *@
+@{
+    var Modalanimation = new Syncfusion.EJ2.Popups.DialogAnimationSettings
+    {
+        Effect =
+    Syncfusion.EJ2.Popups.DialogEffect.None
+    };
+    var Okbutton = new
+    {
+        content = "Inserir Requisitante",
+        isPrimary = true
+    };
+    var Closebutton = new
+    {
+        content = "Fechar",
+        isPrimary = false
+    };
+}
+
+@* ============================================
+   CONFIGURAÇÕES DA PÃGINA
+   ============================================ *@
+@{
+    ViewData["Title"] = "Agenda";
+    ViewData["PageName"] = "agenda_index";
+    ViewData["Heading"] = "<i class='fa-duotone fa-calendar-alt'></i> Agenda: <span class='fw-300'>Agenda de Viagens</span>";
+    ViewData["Category1"] = "Agenda";
+    ViewData["PageIcon"] = "fa-duotone fa-calendar-alt";
+}
+
+@* ============================================
+   SECTION HEAD BLOCK - CSS E SCRIPTS DO HEAD
+   ============================================ *@
+@section HeadBlock {
+
+    <!-- FONTE OUTFIT PARA TÍTULOS DOS MODAIS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="~/css/modal-viagens-consolidado.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/modal-viagens-headers.css" asp-append-version="true" />
+
+    <!-- FullCalendar 6.1.15 -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    @Html.Raw("<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/locales-all.global.min.js'></script>")
+
+    <link rel="stylesheet" type="text/css" href="~/css/spinkit.css">
+
+    <!-- PDF.js - Usado pelo Telerik Report Viewer -->
+    <!-- Carregado de forma assíncrona com defer para evitar bloqueio e erros de inicialização -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
+    <script>
+        // Configuração do PDF.js worker com proteção contra erros
+        (function () {
+            try {
+                // Aguarda PDF.js carregar completamente antes de configurar
+                function configurarPdfJs() {
+                    if (window.pdfjsLib && window.pdfjsLib.GlobalWorkerOptions) {
+                        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                        console.log('✅ PDF.js worker configurado com sucesso');
+                    } else {
+                        // Se pdfjsLib ainda não carregou, tenta novamente após 100ms
+                        setTimeout(configurarPdfJs, 100);
+                    }
+                }
+
+                // Inicia configuração quando DOM estiver pronto
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', configurarPdfJs);
+                } else {
+                    configurarPdfJs();
+                }
+            } catch (error) {
+                console.warn('⚠️ Erro ao configurar PDF.js (não crítico):', error);
+                // Não bloqueia a aplicação - Telerik pode funcionar sem PDF.js em alguns casos
+            }
+        })();
+    </script>
+
+    <script>
+
+        /**
+    * Inicializa os templates do ComboBox de Motorista
+    * Configura itemTemplate e valueTemplate com fotos
+    */
+        function onLstMotoristaCreated() {
+            try {
+                const combo = document.getElementById('lstMotorista');
+                if (!combo || !combo.ej2_instances || !combo.ej2_instances[0]) {
+                    console.warn('lstMotorista não encontrado ou não inicializado');
+                    return;
+                }
+
+                const motoristaCombo = combo.ej2_instances[0];
+
+                // Template para itens da lista (dropdown)
+                motoristaCombo.itemTemplate = function (data) {
+                    if (!data) return '';
+
+                    let imgSrc = '/images/barbudo.jpg'; // Imagem padrío
+
+                    // Verifica se tem foto em base64
+                    if (data.Foto && data.Foto.startsWith('data:image')) {
+                        imgSrc = data.Foto;
+                    }
+
+                    return `
+                        <div class="d-flex align-items-center">
+                            <img src="${imgSrc}"
+                                 alt="Foto ${data.Nome || 'Motorista'}"
+                                 style="height:40px; width:40px; border-radius:50%; margin-right:10px; object-fit: cover;"
+                                 onerror="this.src='/images/barbudo.jpg';" />
+                            <span>${data.Nome || ''}</span>
+                        </div>`;
+                };
+
+                // Template para valor selecionado (input)
+                motoristaCombo.valueTemplate = function (data) {
+                    if (!data) return '';
+
+                    let imgSrc = '/images/barbudo.jpg'; // Imagem padrío
+
+                    // Verifica se tem foto em base64
+                    if (data.Foto && data.Foto.startsWith('data:image')) {
+                        imgSrc = data.Foto;
+                    }
+
+                    return `
+                        <div class="d-flex align-items-center">
+                            <img src="${imgSrc}"
+                                 alt="Foto ${data.Nome || 'Motorista'}"
+                                 style="height:30px; width:30px; border-radius:50%; margin-right:10px; object-fit: cover;"
+                                 onerror="this.src='/images/barbudo.jpg';" />
+                            <span>${data.Nome || ''}</span>
+                        </div>`;
+                };
+
+                console.log('Templates de foto do motorista configurados com sucesso');
+            } catch (error) {
+                console.error('Erro ao configurar templates do motorista:', error);
+                // Se houver sistema de alertas
+                if (typeof Alerta !== 'undefined' && Alerta.TratamentoErroComLinha) {
+                    Alerta.TratamentoErroComLinha("motorista-templates.js", "onLstMotoristaCreated", error);
+                }
+            }
+        }
+
+        /**
+         * Handler de mudança do ComboBox de Motorista
+         * Atualiza foto quando motorista é selecionado
+         */
+        function onLstMotoristaChange(args) {
+            try {
+                const motoristaId = args?.itemData?.MotoristaId;
+
+                if (!motoristaId) {
+                    console.log('Nenhum motorista selecionado');
+                    return;
+                }
+
+                console.log('Motorista selecionado:', motoristaId);
+
+                // Se houver um elemento de foto para atualizar
+                const fotoElement = document.getElementById("fotoMotorista");
+                if (fotoElement && args.itemData.Foto) {
+                    fotoElement.src = args.itemData.Foto;
+                    fotoElement.style.display = 'block';
+                }
+
+                // Opcional: buscar mais detalhes do motorista via API
+                // fetch(`/api/Viagem/FotoMotorista?id=${motoristaId}`)
+                //     .then(resp => resp.json())
+                //     .then(data => {
+                //         if (data.fotoBase64 && fotoElement) {
+                //             fotoElement.src = data.fotoBase64;
+                //             fotoElement.style.display = 'block';
+                //         }
+                //     })
+                //     .catch(error => console.error('Erro ao buscar foto:', error));
+
+            } catch (error) {
+                console.error('Erro ao processar mudança de motorista:', error);
+                if (typeof Alerta !== 'undefined' && Alerta.TratamentoErroComLinha) {
+                    Alerta.TratamentoErroComLinha("motorista-templates.js", "onLstMotoristaChange", error);
+                }
+            }
+        }
+
+    </script>
+
+    <style>
+        /* Usamos o header padrão FrotiX (ftx-card-header + titulo-paginas) definido em frotix.css */
+
+        /* ======== ASTERISCO VERMELHO CAMPOS OBRIGATÓRIOS ======== */
+        .campo-obrigatorio {
+            color: #dc3545;
+            font-style: italic;
+            font-size: calc(1em - 4px);
+            /* 4px menor que a label */
+            margin-right: 4px;
+            font-weight: 600;
+        }
+
+        /* ======== TREEVIEW SYNCFUSION NO MODAL ======== */
+        #treeSetorRequisitante {
+            font-size: 0.875rem;
+            font-family: "Poppins", sans-serif;
+        }
+
+        #treeSetorRequisitante .e-list-item {
+            padding: 4px 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            background-color: transparent !important;
+            border-left: 3px solid transparent;
+        }
+
+        /* Hover - cinza bem claro */
+        #treeSetorRequisitante .e-list-item:hover {
+            background-color: #f8f8f8 !important;
+        }
+
+        /* Selecionado/Ativo/Focus - verde bem suave (quase branco) */
+        #treeSetorRequisitante .e-list-item.e-active,
+        #treeSetorRequisitante .e-list-item.e-node-focus,
+        #treeSetorRequisitante .e-list-item[aria-selected="true"] {
+            background-color: #f0f7f0 !important;
+            border-left: 3px solid #5cb85c !important;
+        }
+
+        /* Item pai (com filhos) selecionado - verde um pouco mais forte */
+        #treeSetorRequisitante .e-list-item.e-has-child.e-active,
+        #treeSetorRequisitante .e-list-item.e-has-child.e-node-focus,
+        #treeSetorRequisitante .e-list-item.e-has-child[aria-selected="true"] {
+            background-color: #e8f4e8 !important;
+            border-left: 3px solid #28a745 !important;
+        }
+
+        /* Texto - cor neutra padrão */
+        #treeSetorRequisitante .e-list-item .e-list-text {
+            color: #333 !important;
+            font-size: 0.875rem;
+        }
+
+        /* Texto selecionado - verde suave */
+        #treeSetorRequisitante .e-list-item.e-active .e-list-text,
+        #treeSetorRequisitante .e-list-item.e-node-focus .e-list-text,
+        #treeSetorRequisitante .e-list-item[aria-selected="true"] .e-list-text {
+            color: #3d7a3d !important;
+            font-weight: 500;
+        }
+
+        /* Item pai selecionado - texto mais forte */
+        #treeSetorRequisitante .e-list-item.e-has-child.e-active .e-list-text,
+        #treeSetorRequisitante .e-list-item.e-has-child.e-node-focus .e-list-text,
+        #treeSetorRequisitante .e-list-item.e-has-child[aria-selected="true"] .e-list-text {
+            color: #2d5a2d !important;
+            font-weight: 600;
+        }
+
+        /* Ícones - cinza neutro */
+        #treeSetorRequisitante .e-icons,
+        #treeSetorRequisitante .e-icon-expandable,
+        #treeSetorRequisitante .e-icon-collapsible {
+            color: #666 !important;
+        }
+
+        /* Remove qualquer borda/outline azul do Syncfusion */
+        #treeSetorRequisitante .e-list-item:focus,
+        #treeSetorRequisitante .e-list-item:active,
+        #treeSetorRequisitante .e-fullrow {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        #treeSetorRequisitante .e-fullrow {
+            background-color: transparent !important;
+            border-color: transparent !important;
+        }
+
+        #treeSetorRequisitante .e-list-item.e-active .e-fullrow,
+        #treeSetorRequisitante .e-list-item.e-node-focus .e-fullrow,
+        #treeSetorRequisitante .e-list-item[aria-selected="true"] .e-fullrow {
+            background-color: #f0f7f0 !important;
+        }
+
+        #treeSetorRequisitante .e-list-item.e-has-child.e-active .e-fullrow,
+        #treeSetorRequisitante .e-list-item.e-has-child.e-node-focus .e-fullrow,
+        #treeSetorRequisitante .e-list-item.e-has-child[aria-selected="true"] .e-fullrow {
+            background-color: #e8f4e8 !important;
+        }
+
+        #treeSetorRequisitante .e-treeview {
+            border: none;
+        }
+
+        #setorSelecionadoDisplay {
+            padding: 0.5rem;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 0.25rem;
+        }
+
+        /* ======== Legenda de Cores da Agenda ======== */
+        .legenda-cores {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.75rem;
+            /* Reduzido 50% (era 1.5rem) */
+            padding: 0.25rem 0.5rem;
+            /* Reduzido 50% (era 0.5rem 1rem) */
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 1px solid #dee2e6;
+            flex-wrap: wrap;
+        }
+
+        .legenda-item {
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+            /* Reduzido 50% (era 0.4rem) */
+        }
+
+        .legenda-bola {
+            width: 16px;
+            /* Ajustado para 16px */
+            height: 16px;
+            /* Ajustado para 16px */
+            border-radius: 50%;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+            /* Reduzida a sombra */
+        }
+
+        .legenda-texto {
+            font-size: 0.8rem;
+            /* Ajustado para 0.8rem */
+            color: #495057;
+            font-weight: 500;
+        }
+
+        /* ======== Syncfusion ComboBox personalizado (motorista) ======== */
+        .lstMotorista_popup .e-dropdownbase .e-list-item {
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .lstMotorista_popup .e-dropdownbase .e-list-item img {
+            height: 45px;
+            width: 45px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .lstMotorista_popup .e-dropdownbase .e-list-item:hover {
+            background-color: #f0f8ff;
+        }
+
+        #lstMotorista_popup .e-dropdownbase .e-list-item:hover img {
+            transform: scale(1.2);
+        }
+
+        .lstMotorista .e-input-group .e-input,
+        .lstMotorista .e-control-wrapper .e-input {
+            display: flex;
+            align-items: center;
+        }
+
+        .lstMotorista .e-input-group .e-input img,
+        .lstMotorista .e-control-wrapper .e-input img {
+            height: 30px;
+            width: 30px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        /* ======== Placeholder (mobile) para Ficha de Vistoria ======== */
+        .placeholder-mobile::placeholder {
+            color: #555555;
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        /* Webkit browsers (Chrome, Safari, Edge) */
+        .placeholder-mobile::-webkit-input-placeholder {
+            color: #555555;
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        /* Firefox */
+        .placeholder-mobile::-moz-placeholder {
+            color: #555555;
+            font-style: italic;
+            font-weight: 400;
+            opacity: 1;
+        }
+
+        /* IE 10+ */
+        .placeholder-mobile:-ms-input-placeholder {
+            color: #555555;
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        /* ======== Distância > 100km - Vermelho Negrito ======== */
+        .distancia-alerta {
+            color: #dc3545 !important;
+            font-weight: 700 !important;
+        }
+
+        /* ======== Tooltips do Calendário ======== */
+        /* Agora usa a classe global .tooltip-ftx-azul definida em frotix.css */
+
+        /* ======== TOOLTIP DINÂMICA DA AGENDA (cor adaptativa) ======== */
+        .tooltip-ftx-agenda-dinamica .tooltip-inner {
+            border: 1px solid rgba(0, 0, 0, 0.2) !important;
+            border-radius: 8px !important;
+            padding: 10px 14px !important;
+            font-size: 13px !important;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25) !important;
+            text-align: left !important;
+            white-space: normal !important;
+            line-height: 1.5 !important;
+            max-width: 350px !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+        }
+
+        .tooltip-ftx-agenda-dinamica .tooltip-arrow {
+            display: none !important;
+        }
+
+        .tooltip-ftx-agenda-dinamica .tooltip-inner i {
+            width: 18px;
+            text-align: center;
+            margin-right: 6px;
+        }
+
+        /* ======== Z-INDEX PARA POPUPS SYNCFUSION EM MODAIS EMPILHADOS ======== */
+        /* Quando modalNovoEvento está aberto (z-index 1060), os popups precisam estar acima */
+        .e-popup.e-popup-open,
+        .e-dropdowntree .e-popup,
+        .e-dropdownbase.e-popup,
+        .e-ddl.e-popup {
+            z-index: 1070 !important;
+        }
+
+        /* ======== NumericTextBox - Forçar bordas no Modal Evento ======== */
+        #txtQtdParticipantesEventoCadastro.e-numerictextbox {
+            border: 1px solid #ced4da !important;
+            border-radius: 0.25rem !important;
+        }
+
+        #txtQtdParticipantesEventoCadastro .e-input-group {
+            border: 1px solid #ced4da !important;
+            border-radius: 0.25rem !important;
+        }
+
+        #txtQtdParticipantesEventoCadastro input.e-input {
+            border: none !important;
+        }
+
+        /* ======== Telerik DatePickers - Ajustar Altura no Modal Evento ======== */
+        input[name="txtDataInicialEvento"],
+        input[name="txtDataFinalEvento"] {
+            height: 38px !important;
+            padding: 0.375rem 0.75rem !important;
+            font-size: 1rem !important;
+            line-height: 1.5 !important;
+            border: 1px solid #ced4da !important;
+            border-radius: 0.25rem !important;
+        }
+    </style>
+
+}
+@* ============================================
+   FIM DA SECTION HeadBlock
+   ============================================ *@
+
+@* ============================================
+   CONTEÚDO DA PÁGINA (HTML DO BODY)
+   ============================================ *@
+
+@* Modal de Espera - Visível desde o início *@
+<div id="agenda-loading-overlay"
+    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999999; display: flex; align-items: center; justify-content: center;">
+    <div
+        style="background: rgba(30,30,30,0.95); padding: 30px; border-radius: 8px; text-align: center; min-width: 300px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        <img src="/images/logo_gota_frotix_transparente.png" alt="FrotiX"
+            style="width: 80px; height: 80px; margin: 0 auto 20px; display: block; animation: pulse 1.5s ease-in-out infinite;" />
+        <div
+            style="width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; margin-bottom: 15px;">
+            <div
+                style="width: 100%; height: 100%; background: linear-gradient(90deg, #C67750, #ff9966); animation: loading-bar 1.5s ease-in-out infinite;">
+            </div>
+        </div>
+        <div style="color: #fff; font-size: 16px; font-weight: 600; margin-bottom: 5px;">Carregando Agenda...</div>
+        <div style="color: rgba(255,255,255,0.7); font-size: 14px;">Aguarde, por favor</div>
+    </div>
+</div>
+
+<style>
+    @@keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        50% {
+            opacity: 0.7;
+            transform: scale(0.95);
+        }
+    }
+
+    @@keyframes loading-bar {
+        0% {
+            transform: translateX(-100%);
+        }
+
+        100% {
+            transform: translateX(100%);
+        }
+    }
+
+    /* FIX CRÍTICO: Força cores corretas nos botões do modal em TODOS os estados */
+
+    /* Botão Confirmar - Azul */
+    #btnConfirma:hover {
+        background-color: #2a4459 !important;
+        border-color: #1f3241 !important;
+        color: white !important;
+        box-shadow: 0 0 20px rgba(61, 87, 113, 0.8), 0 6px 12px rgba(61, 87, 113, 0.5) !important;
+    }
+
+    #btnConfirma:active,
+    #btnConfirma:focus,
+    #btnConfirma.active {
+        background-color: #1f3241 !important;
+        border-color: #152330 !important;
+        color: white !important;
+        box-shadow: 0 0 0 .2rem rgba(61, 87, 113, .35) !important;
+    }
+
+    /* Botões Fechar e Apagar - Vinho */
+    #btnFecha:hover,
+    #btnApaga:hover {
+        background-color: #5a252c !important;
+        border-color: #4a1f24 !important;
+        color: white !important;
+        box-shadow: 0 0 20px rgba(114, 47, 55, 0.8), 0 6px 12px rgba(114, 47, 55, 0.5) !important;
+    }
+
+    #btnFecha:active,
+    #btnFecha:focus,
+    #btnFecha.active,
+    #btnApaga:active,
+    #btnApaga:focus,
+    #btnApaga.active {
+        background-color: #4a1f24 !important;
+        border-color: #3a1820 !important;
+        color: white !important;
+        box-shadow: 0 0 0 .2rem rgba(114, 47, 55, .25) !important;
+    }
+
+    /* Botão Transforma em Viagem - Laranja */
+    #btnViagem:hover {
+        background-color: #8B4513 !important;
+        border-color: #6B3410 !important;
+        color: white !important;
+        box-shadow: 0 0 20px rgba(160, 82, 45, 0.8), 0 6px 12px rgba(160, 82, 45, 0.5) !important;
+    }
+
+    #btnViagem:active,
+    #btnViagem:focus,
+    #btnViagem.active {
+        background-color: #6B3410 !important;
+        border-color: #5A2A0D !important;
+        color: white !important;
+        box-shadow: 0 0 0 .2rem rgba(160, 82, 45, .35) !important;
+    }
+
+    /* ===== MultiSelect Dias da Semana - Correções Visuais ===== */
+    .multiselect-dias-semana.e-multiselect .e-multi-select-wrapper {
+        min-height: 38px;
+        padding: 4px 30px 4px 8px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        position: relative;
+    }
+
+    /* Esconde o input de texto (não permite digitação) */
+    .multiselect-dias-semana.e-multiselect .e-multi-select-wrapper input.e-dropdownbase {
+        width: 0 !important;
+        min-width: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        flex: 0 !important;
+    }
+
+    /* Centraliza os chips verticalmente */
+    .multiselect-dias-semana.e-multiselect .e-chips-collection {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 0;
+    }
+
+    /* Ajusta posição da seta dropdown para dentro do controle */
+    .multiselect-dias-semana.e-multiselect .e-input-group-icon.e-ddl-icon {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    /* Garante que o wrapper tenha position relative */
+    .multiselect-dias-semana.e-multiselect {
+        position: relative;
+    }
+
+    /* Ajusta o clear icon também */
+    .multiselect-dias-semana.e-multiselect .e-clear-icon {
+        position: absolute;
+        right: 28px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+</style>
+
+<div class="row" align="center">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <!-- ===== HEADER FROTIX ===== -->
+            <div class="ftx-card-header">
+                <h2 class="titulo-paginas">
+                    <i class="fa-duotone fa-calendar-lines-pen"></i>
+                    Agenda de Viagens
+                </h2>
+            </div>
+
+            <div class="panel-container show">
+                <div class="panel-content ">
+
+                    <!-- Legenda de Cores -->
+                    <div class="legenda-cores">
+                        <div class="legenda-item">
+                            <span class="legenda-bola" style="background-color: #FFA726;"></span>
+                            <span class="legenda-texto">Agendamento</span>
+                        </div>
+                        <div class="legenda-item">
+                            <span class="legenda-bola" style="background-color: #A39481;"></span>
+                            <span class="legenda-texto">Evento</span>
+                        </div>
+                        <div class="legenda-item">
+                            <span class="legenda-bola" style="background-color: #476b47;"></span>
+                            <span class="legenda-texto">Aberta</span>
+                        </div>
+                        <div class="legenda-item">
+                            <span class="legenda-bola" style="background-color: #154c62;"></span>
+                            <span class="legenda-texto">Realizada</span>
+                        </div>
+                        <div class="legenda-item">
+                            <span class="legenda-bola" style="background-color: #722F37;"></span>
+                            <span class="legenda-texto">Cancelada</span>
+                        </div>
+                    </div>
+
+                    <div id="loading " class="example">
+                    </div>
+                    <div class="box-body">
+                        <br />
+                        <div id='agenda'></div>
+                        <br /><br />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* ============================================
+   MODAL AGENDAMENTO/VIAGENS - REFATORADO
+   ============================================ *@
+
+<div class="modal fade" id="modalViagens" role="dialog" data-bs-focus="false">
+    <div class="modal-dialog custom-modal-lg">
+        <div class="modal-content">
+            <div id="Titulo" class="modal-header modal-header-dinheiro">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close btn-close-modal" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-duotone fa-xmark"></i>
+                </button>
+            </div>
+            <div id="divModal" class="modal-body">
+                <!-- Hidden Inputs - MANTIDOS TODOS OS ORIGINAIS -->
+                <input id="txtReport" class="form-control form-control-xs" hidden="hidden" />
+                <input id="txtViagemId" class="form-control form-control-xs" hidden="hidden" />
+                <input id="txtRecorrenciaViagemId" class="form-control form-control-xs" hidden="hidden" />
+                <input id="txtStatusAgendamento" class="form-control form-control-xs" hidden="hidden" />
+                <input id="txtUsuarioIdCriacao" class="form-control form-control-xs" hidden="hidden" />
+                <input id="txtDataCriacao" class="form-control form-control-xs" hidden="hidden" />
+
+                <div id="dialogRecorrencia"></div>
+
+                <!-- ============================================
+                     SEÇÃO 1: INFORMAÇÕES BÃSICAS
+                     Campos de data, hora e duração da viagem
+                     ============================================ -->
+                <div class="section-card">
+                    <div class="section-card-header">
+                        <i class="fa-duotone fa-info-circle"></i> Informações Básicas
+                    </div>
+                    <div class="section-card-body">
+                        <div class="row align-baseline">
+
+                            <!-- ===================================
+                                 FICHA DE VISTORIA
+                                 Campo visí­vel apenas em modo viagem
+                                 =================================== -->
+                            <div id="divNoFichaVistoria" class="col-12 col-md-2">
+                                <div class="form-group">
+                                    <label class="label font-weight-bold">
+                                        Nº Ficha Vistoria
+                                        <i class="fa-duotone fa-clipboard-list field-icon"
+                                            style="font-size: 1.25em; cursor: pointer;"></i>
+                                    </label>
+                                    <input id="txtNoFichaVistoria" class="form-control form-control-xs" />
+                                </div>
+                            </div>
+
+                            <!-- ===================================
+                                 DATA INICIAL
+                                 Data de iní­cio da viagem/agendamento
+                                 Obrigatório
+                                 =================================== -->
+                            <div class="col-6 col-md-2">
+                                <div class="form-group">
+                                    <label class="label font-weight-bold">
+                                        <span class="campo-obrigatorio">*</span>Data Inicial
+                                        <i class="fa-duotone fa-calendar-day field-icon"
+                                            style="font-size: 1.25em; cursor: pointer;"></i>
+                                    </label>
+                                    <ejs-datepicker id="txtDataInicial" format="dd/MM/yyyy"
+                                        placeholder="Selecione a data" min="@DateTime.Today">
+                                    </ejs-datepicker>
+                                </div>
+                            </div>
+
+                            <!-- ===================================
+                                 HORA INÍCIO
+                                 Horário de iní­cio da viagem
+                                 Obrigatório
+                                 =================================== -->
+                            <div class="col-6 col-md-2">
+                                <div class="form-group">
+                                    <label class="label font-weight-bold">
+                                        <span class="campo-obrigatorio">*</span>Hora Início
+                                        <i class="fa-duotone fa-clock field-icon"
+                                            style="font-size: 1.25em; cursor: pointer;"></i>
+                                    </label>
+                                    <input id="txtHoraInicial" class="form-control form-control-xs" />
+                                </div>
+                            </div>
+
+                            <!-- ===================================
+                                 DATA FINAL
+                                 Data de término da viagem
+                                 Visí­vel apenas em modo viagem
+                                 =================================== -->
+                            <div class="col-6 col-md-2">
+                                <div id="divDataFinal" class="form-group">
+                                    <label class="label font-weight-bold">
+                                        Data Final
+                                        <i class="fa-duotone fa-calendar-check field-icon"
+                                            style="font-size: 1.25em; cursor: pointer;"></i>
+                                    </label>
+                                    <ejs-datepicker id="txtDataFinal" format="dd/MM/yyyy" placeholder="Selecione a data"
+                                        min="@DateTime.Today">
+                                    </ejs-datepicker>
+                                </div>
+                            </div>
+
+                            <!-- ===================================
+                                 HORA FIM
+                                 Horário de término da viagem
+                                 Visível apenas em modo viagem
+                                 =================================== -->
+                            <div class="col-6 col-md-2">
+                                <div id="divHoraFinal" class="form-group">
+                                    <label class="label font-weight-bold">
+                                        Hora Fim
+                                        <i class="fa-duotone fa-stopwatch field-icon"
+                                            style="font-size: 1.25em; cursor: pointer;"></i>
+                                    </label>
+                                    <input id="txtHoraFinal" class="form-control form-control-xs" />
+                                </div>
+                            </div>
+
+                            <!-- ===================================
+                                 DURAÇÃO
+                                 Calculado automaticamente (somente leitura)
+                                 Diferença entre data/hora inicial e final
+                                 =================================== -->
+                            <div class="col-6 col-md-2">
+                                <div id="divDuracao" class="form-group">
+                                    <label class="label font-weight-bold">
+                                        Duração (hs)
+                                        <i class="fa-duotone fa-hourglass-half field-icon"
+                                            style="font-size: 1.25em; cursor: pointer;"></i>
+                                    </label>
+                                    <ejs-numerictextbox id="txtDuracao" Enabled="false" format="n0" Readonly="true"
+                                        showSpinButton="false"
+                                        data-ejtip="Se a <strong>Duração</strong> estiver alta, revise o horário e datas">
+                                    </ejs-numerictextbox>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================
+                     SEÇÃO 2: ROTEIRO
+                     Finalidade, origem e destino da viagem
+                     ============================================ -->
+                <div class="section-card" id="divFinalidadeOrigemDestino">
+                    <div class="section-card-header">
+                        <i class="fa-duotone fa-route"></i> Roteiro
+                    </div>
+                    <div class="section-card-body">
+                        <div class="row align-baseline">
+
+                            <!-- ===================================
+                                 FINALIDADE
+                                 Motivo/objetivo da viagem
+                                 Campo obrigatório
+                                 Tipo: DropDownTree hierárquico
+                                 =================================== -->
+                            <div class="col-4 col-md-3">
+                                <div class="form-group">
+                                    <div class="d-flex flex-column ml-2">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <label for="lstFinalidade" class="label mr-2 mb-0"><span
+                                                    class="campo-obrigatorio">*</span>Finalidade</label>
+                                            <i class="fa-duotone fa-rectangle-history-circle-user field-icon"
+                                                style="font-size: 1.25em; cursor: pointer;"></i>
+                                        </div>
+
+                                        <div class="dropdown-wrapper">
+                                            <ejs-dropdowntree id="lstFinalidade"
+                                                placeholder="Selecione uma Finalidade..." showCheckBox="false"
+                                                allowMultiSelection="false" allowFiltering="true" filterType="Contains"
+                                                filterBarPlaceholder="Procurar..." popupHeight="200px"
+                                                sortOrder="Ascending" showClearButton="true">
+                                                <e-dropdowntree-fields dataSource="@ViewData["dataFinalidade"]"
+                                                    value="FinalidadeId" text="Descricao">
+                                                </e-dropdowntree-fields>
+                                            </ejs-dropdowntree>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ===================================
+                                 ORIGEM
+                                 Local de partida da viagem
+                                 Campo obrigatório
+                                 Tipo: ComboBox com valores customizáveis
+                                 =================================== -->
+                            <div class="col-4 col-md-3">
+                                <div class="form-group">
+                                    <div class="d-flex flex-column ml-2">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <label for="cmbOrigem" class="label mr-2 mb-0"><span
+                                                    class="campo-obrigatorio">*</span>Origem</label>
+                                            <i class="fa-duotone fa-map-location field-icon"
+                                                style="font-size: 1.25em; cursor: pointer;"></i>
+                                        </div>
+                                        <!-- allowCustom="true" permite digitação livre -->
+                                        <ejs-combobox id="cmbOrigem" dataSource="@ViewData["ListaOrigem"]"
+                                            placeholder="Selecione ou digite a origem" allowFiltering="true"
+                                            filterType="Contains" allowCustom="true" popupHeight="220px"
+                                            data-ejtip="Origem não está na lista? Consulte direito antes de cadastrar!">
+                                        </ejs-combobox>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ===================================
+                                 DESTINO
+                                 Local de chegada da viagem
+                                 Campo obrigatório
+                                 Tipo: ComboBox com valores customizáveis
+                                 =================================== -->
+                            <div class="col-4 col-md-3">
+                                <div class="form-group">
+                                    <div class="d-flex flex-column ml-2">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <label for="cmbDestino" class="label mr-2 mb-0"><span
+                                                    class="campo-obrigatorio">*</span>Destino</label>
+                                            <i class="fa-duotone fa-map-location-dot field-icon"
+                                                style="font-size: 1.25em; cursor: pointer;"></i>
+                                        </div>
+                                        <!-- allowCustom="true" permite digitação livre -->
+                                        <ejs-combobox id="cmbDestino" dataSource="@ViewData["ListaDestino"]"
+                                            placeholder="Selecione ou digite o destino" allowFiltering="true"
+                                            filterType="Contains" allowCustom="true" popupHeight="220px"
+                                            data-ejtip="Destino não está na lista? Consulte direito antes de cadastrar!">
+                                        </ejs-combobox>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================
+                     SEÇÃO 3: EVENTO - SELEÇÃO
+                     Aparece quando Finalidade = "Evento"
+                     Permite selecionar evento existente
+                     ============================================ -->
+                <div id="sectionEvento" class="section-card" style="display: none;">
+                    <div class="section-card-header">
+                        <i class="fa-duotone fa-tent-circus"></i> Evento
+                    </div>
+                    <div class="section-card-body">
+                        <div class="row">
+
+                            <!-- ===================================
+                                 LISTA DE EVENTOS
+                                 ComboBox com eventos cadastrados
+                                 =================================== -->
+                            <div class="col-md-8 mb-3">
+                                <label for="lstEventos" class="label font-weight-bold">
+                                    Nome do Evento
+                                    <i class="fa-duotone fa-tent-circus field-icon"
+                                        style="font-size: 1.25em; cursor: pointer;"></i>
+                                </label>
+                                <ejs-combobox id="lstEventos" placeholder="Selecione um evento..." allowFiltering="true"
+                                    filterType="Contains" dataSource="@ViewData["dataEvento"]" popupHeight="200px"
+                                    showClearButton="true"
+                                    data-ejtip="Selecione um evento existente ou cadastre um novo">
+                                    <e-combobox-fields text="Evento" value="EventoId"></e-combobox-fields>
+                                </ejs-combobox>
+                            </div>
+
+                            <!-- ===================================
+                                 BOtão NOVO EVENTO
+                                 Abre formulário de cadastro (seção 3.1)
+                                 =================================== -->
+                            <div class="col-md-4 mb-3 d-flex align-items-end">
+                                <!-- Botão Novo Evento - abre modal via JS (não usar data-bs-toggle para evitar fechar modal pai) -->
+                                <button type="button" id="btnEvento" class="btn btn-azul"
+                                    style="width: 100%; height: 38px;" onclick="abrirFormularioCadastroEvento()">
+                                    <i class="fa-duotone fa-calendar-check"></i>
+                                    Novo Evento
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <!-- ===================================
+                             LINHA 2: CAMPOS DO EVENTO SELECIONADO
+                             Aparecem quando um evento é selecionado
+                             Todos os campos desabilitados
+                             =================================== -->
+                        <div id="divDadosEventoSelecionado" class="row" style="display: none;">
+
+                            <!-- Data Início -->
+                            <div class="col-md-4 mb-3">
+                                <label for="txtDataInicioEvento" class="label font-weight-bold">
+                                    Data Início
+                                    <i class="fa-duotone fa-calendar-day field-icon"
+                                        style="font-size: 1.25em; cursor: pointer;"></i>
+                                </label>
+                                <ejs-datepicker id="txtDataInicioEvento" format="dd/MM/yyyy" placeholder="Data Início"
+                                    locale="pt-BR" enabled="false">
+                                </ejs-datepicker>
+                            </div>
+
+                            <!-- Data Fim -->
+                            <div class="col-md-4 mb-3">
+                                <label for="txtDataFimEvento" class="label font-weight-bold">
+                                    Data Fim
+                                    <i class="fa-duotone fa-calendar-check field-icon"
+                                        style="font-size: 1.25em; cursor: pointer;"></i>
+                                </label>
+                                <ejs-datepicker id="txtDataFimEvento" format="dd/MM/yyyy" placeholder="Data Fim"
+                                    locale="pt-BR" enabled="false">
+                                </ejs-datepicker>
+                            </div>
+
+                            <!-- Quantidade de Participantes -->
+                            <div class="col-md-4 mb-3">
+                                <label for="txtQtdParticipantesEvento" class="label font-weight-bold">
+                                    Qtd Participantes
+                                    <i class="fa-duotone fa-users field-icon"
+                                        style="font-size: 1.25em; cursor: pointer;"></i>
+                                </label>
+                                <ejs-numerictextbox id="txtQtdParticipantesEvento" format="N0" min="0"
+                                    placeholder="Quantidade" enabled="false">
+                                </ejs-numerictextbox>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ============================================
+                     SEÇÃO 4: INFORMAÇÕES DO TRANSPORTE
+                     Motorista, veí­culo, quilometragem e combustí­vel
+                     ============================================ -->
+                <div class="section-card">
+                    <div class="section-card-header">
+                        <i class="fa-duotone fa-car"></i> Informações do Transporte
+                    </div>
+                    <div class="section-card-body">
+
+                        <!-- ===================================
+                             LINHA 1: Motorista, Veí­culo e Quilometragem
+                             =================================== -->
+                        <div class="row align-baseline">
+
+                            <!-- ===================================
+                                 MOTORISTA
+                                 Campo obrigatório
+                                 Lista apenas motoristas ativos
+                                 =================================== -->
+                            <div class="col-4 col-md-4">
+                                <div class="d-flex flex-column ml-2">
+                                    <div class="d-flex align-items-center mb-1">
+                                        <label id="lblMotorista" for="lstMotorista" class="label font-weight-bold mr-2"
+                                            style="margin: 0;">Motorista</label>
+                                        <i id="icoMotorista" class="fa-duotone fa-person-biking field-icon"
+                                            style="font-size: 1.25em; cursor: pointer;"></i>
+                                    </div>
+                                    <ejs-combobox id="lstMotorista" placeholder="Selecione um Motorista"
+                                        allowFiltering="true" filterType="Contains" popupHeight="200px" width="100%"
+                                        showClearButton="true" dataSource="@ViewData["dataMotorista"]"
+                                        data-ejtip="Motorista não aparece? Talvez esteja inativo">
+                                        <e-combobox-fields text="Nome" value="MotoristaId"
+                                            imageUrl="FotoBase64"></e-combobox-fields>
+                                    </ejs-combobox>
+                                </div>
+                            </div>
+
+                            <!-- ===================================
+                                 VeíCULO
+                                 Campo obrigatório
+                                 Lista apenas veí­culos ativos
+                                 =================================== -->
+                            <div class="col-4 col-md-3">
+                                <div class="d-flex flex-column ml-2">
+                                    <div class="d-flex align-items-center mb-1">
+                                        <label for="lstVeiculo" class="label mr-2 mb-0">Veí­culo</label>
+                                        <i class="fa-duotone fa-truck-bolt field-icon"
+                                            style="font-size: 1.25em; cursor: pointer;"></i>
+                                    </div>
+                                    <ejs-combobox id="lstVeiculo" placeholder="Selecione um Veí­culo"
+                                        allowFiltering="true" filterType="Contains"
+                                        dataSource="@ViewData["dataVeiculo"]" popupHeight="200px" width="100%"
+                                        showClearButton="true" data-ejtip="Veí­culo não aparece? Talvez esteja inativo">
+                                        <e-combobox-fields text="Descricao" value="VeiculoId"></e-combobox-fields>
+                                    </ejs-combobox>
+                                </div>
+                            </div>
+
+                            <!-- ===================================
+                                 BLOCO DE QUILOMETRAGEM
+                                 4 campos relacionados ao hodômetro
+                                 Visíveis apenas em modo viagem
+                                 =================================== -->
+                            <div class="col-5 col-md-5 d-flex align-items-start">
+                                <!-- KM Atual (somente leitura - mostra último KM registrado) -->
+                                <div class="form-group mr-2" id="divKmAtual">
+                                    <label class="label">
+                                        Km Atual
+                                        <i class="fa-duotone fa-gauge field-icon"
+                                            style="font-size: 1.25em; cursor: pointer;"></i>
+                                    </label>
+                                    <input readonly id="txtKmAtual" class="form-control form-control-xs" />
+                                </div>
+
+                                <!-- KM Inicial (preenchido ao iniciar viagem) -->
+                                <div class="form-group mr-2" id="divKmInicial">
+                                    <label class="label">
+                                        Km Inicial
+                                        <i class="fa-duotone fa-gauge-max field-icon"
+                                            style="font-size: 1.25em; cursor: pointer;"></i>
+                                    </label>
+                                    <input id="txtKmInicial" class="form-control form-control-xs" />
+                                </div>
+
+                                <!-- KM Final (preenchido ao finalizar viagem) -->
+                                <div class="form-group mr-2" id="divKmFinal">
+                                    <label class="label">
+                                        Km Final
+                                        <i class="fa-duotone fa-gauge-min field-icon"
+                                            style="font-size: 1.25em; cursor: pointer;"></i>
+                                    </label>
+                                    <input id="txtKmFinal" class="form-control form-control-xs" />
+                                </div>
+
+                                <!-- Distância (calculado: KM Final - KM Inicial) -->
+                                <div class="form-group mr-2" id="divQuilometragem">
+                                    <label class="label">
+                                        Distância
+                                        <i class="fa-duotone fa-road field-icon"
+                                            style="font-size: 1.25em; cursor: pointer;"></i>
+                                    </label>
+                                    <input id="txtQuilometragem" class="form-control form-control-xs" readonly
+                                        data-ejtip="Quilometragem alta? Confirme os valores antes de salvar" />
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- ===================================
+                             LINHA 2: níveis de Combustí­vel
+                             Visíveis apenas em modo viagem
+                             =================================== -->
+                        <div class="row align-baseline mt-3">
+
+                            <!-- Combustí­vel Inicial -->
+                            <div class="col-6 col-md-3">
+                                <div class="form-group" id="divCombustivelInicial">
+                                    <label class="label">
+                                        Combustí­vel Inicial
+                                        <i class="fa-duotone fa-gauge-circle-plus field-icon"
+                                            style="font-size: 1.25em; cursor: pointer;"></i>
+                                    </label>
+                                    <!-- DropDownTree com imagens dos níveis -->
+                                    <ejs-dropdowntree id="ddtCombustivelInicial" popupHeight="200px"
+                                        showClearButton="true">
+                                        <e-dropdowntree-fields dataSource="@ViewData["dataCombustivel"]" value="Nivel"
+                                            text="Descricao" imageURL="Imagem">
+                                        </e-dropdowntree-fields>
+                                    </ejs-dropdowntree>
+                                </div>
+                            </div>
+
+                            <!-- Combustí­vel Final -->
+                            <div class="col-6 col-md-3">
+                                <div class="form-group" id="divCombustivelFinal">
+                                    <label class="label">
+                                        Combustí­vel Final
+                                        <i class="fa-duotone fa-gauge-circle-minus field-icon"
+                                            style="font-size: 1.25em; cursor: pointer;"></i>
+                                    </label>
+                                    <!-- DropDownTree com imagens dos níveis -->
+                                    <ejs-dropdowntree id="ddtCombustivelFinal" popupHeight="200px"
+                                        showClearButton="true">
+                                        <e-dropdowntree-fields dataSource="@ViewData["dataCombustivel"]" value="Nivel"
+                                            text="Descricao" imageURL="Imagem">
+                                        </e-dropdowntree-fields>
+                                    </ejs-dropdowntree>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ============================================
+                     SEÇÃO 5: REQUISITANTE E SETOR
+                     Dados do solicitante da viagem
+                     ============================================ -->
+                <div class="section-card">
+                    <div class="section-card-header">
+                        <i class="fa-duotone fa-users"></i> Requisitante e Setor
+                    </div>
+                    <div class="section-card-body">
+                        <!-- g-3: espaçamento horizontal/vertical; align-items-end: alinha pela base -->
+                        <div class="row g-3 align-items-end">
+
+                            <!-- ===================================
+                                 BLOCO 1: REQUISITANTE (col-md-5)
+                                 ComboBox + Botão "Novo Requisitante"
+                                 =================================== -->
+                            <div class="col-md-5">
+                                <div class="form-group mb-0">
+                                    <div class="d-flex flex-column">
+                                        <!-- Label com ícone -->
+                                        <div class="d-flex align-items-center mb-1">
+                                            <label for="lstRequisitante" class="label font-weight-bold mr-2"
+                                                style="margin: 0;">
+                                                <span class="campo-obrigatorio">*</span>Requisitante
+                                            </label>
+                                            <i class="fa-duotone fa-person-simple field-icon"
+                                                style="font-size: 1.25em; cursor: pointer;"></i>
+                                        </div>
+
+                                        <!-- ComboBox + Botão na mesma linha -->
+                                        <div class="d-flex flex-row align-items-center" style="gap: 6px;">
+                                            <!-- Lista de Requisitantes -->
+                                            <input id="lstRequisitante" name="lstRequisitante"
+                                                class="flex-grow-1" style="width: 100%;"
+                                                data-ejtip="Se o <strong>Requisitante</strong> não estiver presente na Lista, verifique primeiro se ele não está <strong>Inativo</strong> antes de cadastrar um novo" />
+
+                                            <!-- Botão Novo Requisitante - abre modal -->
+                                            <button type="button" id="btnRequisitante" class="btn btn-nfs"
+                                                style="height: 38px; display: flex; align-items: center;"
+                                                onclick="abrirFormularioCadastroRequisitante()"
+                                                title="Acrescentar novo Requisitante">
+                                                <i class="fa-duotone fa-user-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ===================================
+                                 BLOCO 2: RAMAL (col-md-2)
+                                 Número de telefone/ramal do requisitante
+                                 =================================== -->
+                            <div class="col-md-2">
+                                <div class="form-group mb-0">
+                                    <div class="d-flex flex-column">
+                                        <!-- Label com ícone -->
+                                        <div class="d-flex align-items-center mb-1">
+                                            <label class="label font-weight-bold mr-2" style="margin: 0;">
+                                                <span class="campo-obrigatorio">*</span>Ramal
+                                            </label>
+                                            <i class="fa-duotone fa-phone-office field-icon"
+                                                style="font-size: 1.25em; cursor: pointer;"></i>
+                                        </div>
+
+                                        <!-- Input Ramal -->
+                                        <input type="text" id="txtRamalRequisitanteSF" class="form-control"
+                                            placeholder="Ex: 1234" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ===================================
+                                 BLOCO 3: SETOR (col-md-5)
+                                 DropDownTree hierárquico de setores
+                                 =================================== -->
+                            <div class="col-md-5">
+                                <div class="form-group mb-0">
+                                    <div class="d-flex flex-column">
+                                        <!-- Label com ícone -->
+                                        <div class="d-flex align-items-center mb-1">
+                                            <label for="lstSetorRequisitanteAgendamento"
+                                                class="label font-weight-bold mr-2" style="margin: 0;">
+                                                <span class="campo-obrigatorio">*</span>Setor do Requisitante
+                                            </label>
+                                            <i class="fa-duotone fa-building-user field-icon"
+                                                style="font-size: 1.25em; cursor: pointer;"></i>
+                                        </div>
+
+                                        <!-- DropDownTree com estrutura hierárquica -->
+                                        <ejs-dropdowntree id="lstSetorRequisitanteAgendamento" allowFiltering="true"
+                                            placeholder="Selecione um setor..." sortOrder="Ascending"
+                                            showCheckBox="false" filterType="Contains"
+                                            filterBarPlaceholder="Procurar setor..." popupHeight="200px">
+                                            <e-dropdowntree-fields dataSource="@ViewData["dataSetor"]"
+                                                value="SetorSolicitanteId" parentValue="SetorPaiId"
+                                                hasChildren="HasChild" text="Nome">
+                                            </e-dropdowntree-fields>
+                                        </ejs-dropdowntree>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div><!-- /.row -->
+                    </div>
+                </div>
+
+                <!-- ============================================
+                     SEÇÃO 6: CONFIGURAÇÕES DE RECORRÊNCIA
+                     Define se a viagem se repete e com qual frequência
+                     ============================================ -->
+                <div class="section-card" id="cardRecorrencia">
+                    <div class="section-card-header">
+                        <i class="fa-duotone fa-repeat"></i> Configurações de Recorrência
+                    </div>
+                    <div class="section-card-body">
+                        <div class="select-container" id="divRecorrencia">
+
+                            <!-- ===================================
+                                 LINHA 1: Recorrente? e Perí­odo
+                                 =================================== -->
+                            <div class="row">
+
+                                <!-- lstRecorrente - Col 2 (CORRIGIDO: era col-md-9) -->
+                                <div class="col-md-2">
+                                    <div class="form-group mb-3">
+                                        <label for="lstRecorrente" class="label font-weight-bold">
+                                            Recorrente?
+                                            <i class="fa-duotone fa-arrows-spin field-icon"
+                                                style="font-size: 1.25em; cursor: pointer;"></i>
+                                        </label>
+                                        <ejs-dropdownlist id="lstRecorrente" popupHeight="200px"
+                                            cssClass="e-outline text-center" floatLabelType="Never">
+                                            <e-dropdownlist-fields text="Descricao"
+                                                value="RecorrenteId"></e-dropdownlist-fields>
+                                        </ejs-dropdownlist>
+                                    </div>
+                                </div>
+
+                                <!-- lstPeriodos - Col 2 (CORRIGIDO: era col-md-3) -->
+                                <div class="col-md-2" id="divPeriodo" style="display: none;">
+                                    <div class="form-group mb-3">
+                                        <label for="lstPeriodos" class="label font-weight-bold">
+                                            <span class="campo-obrigatorio">*</span>Período
+                                            <i class="fa-duotone fa-calendar-circle-exclamation field-icon"
+                                                style="font-size: 1.25em; cursor: pointer;"></i>
+                                        </label>
+                                        <input id="lstPeriodos" type="text" class="e-control e-dropdownlist"
+                                            style="width: 100%; height: 38px;" />
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- LINHA 2: Campos especí­ficos por perí­odo -->
+                            <div class="row">
+
+                                <!-- lstDias - Col 6 (CORRIGIDO: era col-md-4) -->
+                                <div class="col-md-6" id="divDias" style="display: none;">
+                                    <div class="form-group mb-3">
+                                        <label for="lstDias" class="label font-weight-bold">
+                                            <span class="campo-obrigatorio">*</span>Dias da Semana
+                                            <i class="fa-duotone fa-calendar-week field-icon"
+                                                style="font-size: 1.25em; cursor: pointer;"></i>
+                                        </label>
+                                        <ejs-multiselect id="lstDias" placeholder="Selecione os dias..." mode="Box"
+                                            showSelectAll="true" selectAllText="Selecionar todos"
+                                            unSelectAllText="Desmarcar todos" showDropDownIcon="true"
+                                            allowFiltering="false" readonly="false" cssClass="multiselect-dias-semana"
+                                            popupHeight="250px">
+                                            <e-multiselect-fields value="Value" text="Text"></e-multiselect-fields>
+                                        </ejs-multiselect>
+                                    </div>
+                                </div>
+
+                                <!-- lstDiasMes - Col 3 (MANTIDO) -->
+                                <div class="col-md-3" id="divDiaMes" style="display: none;">
+                                    <div class="form-group mb-3">
+                                        <label for="lstDiasMes" class="label font-weight-bold">
+                                            <span class="campo-obrigatorio">*</span>Dia do Mês
+                                            <i class="fa-duotone fa-calendar-clock field-icon"
+                                                style="font-size: 1.25em; cursor: pointer;"></i>
+                                        </label>
+                                        <ejs-dropdownlist id="lstDiasMes" placeholder="Selecione o dia..."
+                                            popupHeight="250px" cssClass="e-outline">
+                                            <e-dropdownlist-fields value="Value" text="Text"></e-dropdownlist-fields>
+                                        </ejs-dropdownlist>
+                                    </div>
+                                </div>
+
+                                <!-- txtFinalRecorrencia - Col 3 (CORRIGIDO: era col-md-5) -->
+                                <div class="col-md-3" id="divFinalRecorrencia" style="display: none;">
+                                    <div class="form-group mb-3">
+                                        <label for="txtFinalRecorrencia" class="label font-weight-bold">
+                                            <span class="campo-obrigatorio">*</span>Data Final Recorrência
+                                            <i class="fa-duotone fa-calendar-check field-icon"
+                                                style="font-size: 1.25em; cursor: pointer;"></i>
+                                        </label>
+                                        <ejs-datepicker id="txtFinalRecorrencia" format="dd/MM/yyyy"
+                                            placeholder="Selecione a data final" locale="pt-BR" min="@DateTime.Today"
+                                            cssClass="e-outline">
+                                        </ejs-datepicker>
+                                        <!-- Campo de texto para exibir data em modo de edição (substituição do DatePicker) -->
+                                        <input type="text" id="txtFinalRecorrenciaTexto"
+                                            class="form-control e-outline ftx-final-recorrencia-texto"
+                                            readonly style="display:none;" placeholder="dd/MM/yyyy">
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <style>
+                                .ftx-final-recorrencia-texto {
+                                    display: block;
+                                    width: 100%;
+                                    max-width: 100%;
+                                    text-align: left !important;
+                                    margin: 0;
+                                    box-sizing: border-box;
+                                }
+
+                                .ftx-ocultar-recorrencia-date {
+                                    display: none !important;
+                                }
+                            </style>
+
+                            <!-- ===================================
+                                 LINHA 3: CALENDÁRIO (Recorrência Variada)
+                                 Permite selecionar datas especí­ficas manualmente
+                                 =================================== -->
+                            <div class="row" id="calendarContainer" style="display: none;">
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        <label class="label font-weight-bold" id="lblSelecioneAsDatas">
+                                            <span class="campo-obrigatorio">*</span>Selecione as Datas
+                                            <i class="fa-duotone fa-calendar-days field-icon"
+                                                style="font-size: 1.25em; cursor: pointer;"></i>
+                                        </label>
+                                        <!-- Componente Calendar será inicializado via JavaScript -->
+                                        <div id="calDatasSelecionadas"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ============================================
+                                 CONTAINER LISTBOX - DATAS VARIADAS
+                                 Exibe datas selecionadas em recorrência variada
+                                 ============================================ -->
+                            <div class="row" id="listboxDatasVariadasContainer" style="display: none;">
+                                <div class="col-12">
+                                    <div class="form-group mb-3 position-relative">
+                                        <!-- Badge contador (similar ao calendário) -->
+                                        <span id="badgeContadorDatasVariadas" class="badge">0</span>
+
+                                        <label class="label font-weight-bold">
+                                            Datas Selecionadas para este Agendamento
+                                            <i class="fa-duotone fa-list-check field-icon"
+                                                style="font-size: 1.25em; cursor: pointer;"></i>
+                                        </label>
+
+                                        <!-- ListBox Syncfusion será inicializado aqui via JavaScript -->
+                                        <select id="lstDatasVariadas" class="form-control"></select>
+
+                                        <small class="form-text text-muted mt-2">
+                                            <i class="fa-duotone fa-info-circle"></i>
+                                            Lista de todas as datas vinculadas a este agendamento recorrente.
+                                            <span style="color: #dc3545; font-weight: bold;">A data atual é destacada em
+                                                vermelho.</span>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================
+                     SEÇÃO 7: DESCRIÇÃO DA VIAGEM
+                     Editor de texto rico para detalhes da viagem
+                     ============================================ -->
+                <div class="section-card">
+                    <div class="section-card-header">
+                        <i class="fa-duotone fa-file-alt"></i> Descrição da Viagem
+                    </div>
+                    <div class="section-card-body">
+                        <div class="row">
+                            <div class="col-md-12 col-xl-10 control-section">
+                                <div class="control-wrapper">
+                                    <div>
+                                        <div class="d-flex flex-column ml-2">
+                                            <div class="d-flex align-items-center mb-1">
+                                                <label for="rteDescricao" class="label mr-2 mb-0">Descrição da Viagem
+                                                    (passageiros / carga)</label>
+                                                <i class="fa-duotone fa-typewriter field-icon"
+                                                    style="font-size: 1.25em; cursor: pointer;"></i>
+                                            </div>
+                                            <!-- Kendo Editor - Substitui Syncfusion RTE -->
+                                            <!-- Upload de imagens configurado em kendo-editor-helper.js -->
+                                            <textarea id="rteDescricao" name="Descricao"
+                                                style="height:250px; width:100%;"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================
+                     SEÇÃO 8: RELAtÓRIO DA FICHA DE VISTORIA
+                     Exibe PDF da ficha de viagem usando Telerik
+                     Visível apenas quando viagem possui ID
+                     ============================================ -->
+                <div class="section-card" id="cardRelatorio" style="display: none;">
+                    <div class="section-card-header">
+                        <i class="fa-duotone fa-file-pdf" style="color: #e74c3c;"></i> Ficha da Viagem
+                    </div>
+                    <div class="section-card-body p-0">
+                        <!-- Hidden input para armazenar ID da viagem -->
+                        <input type="hidden" id="txtViagemIdRelatorio" />
+
+                        <!-- Container do Telerik Report Viewer -->
+                        <div id="ReportContainerAgenda" style="min-height: 850px; background-color: #f8f9fa;">
+                            <div id="reportViewerAgenda" style="width:100%; height: 800px; min-height: 800px;">
+                                <!-- Spinner de carregamento -->
+                                <div class="text-center p-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Carregando...</span>
+                                    </div>
+                                    <p class="mt-3 text-muted">Carregando relatório...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Labels - Gerenciadas por JavaScript -->
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div id="lblUsuarioAgendamento" style="display: none;"></div>
+                        <div id="lblUsuarioCriacao" style="display: none;"></div>
+                        <div id="lblUsuarioFinalizacao" style="display: none;"></div>
+                        <div id="lblUsuarioCancelamento" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer - MANTIDO ORIGINAL -->
+                <div class="modal-footer" id="divBotoes">
+                    <button id="btnToggleRecorrenciaDev" type="button" class="btn btn-sm btn-azul"
+                        style="display: none;">
+                        <i class="fa-duotone fa-toggle-on icon-space" aria-hidden="true"></i>
+                        <span id="lblToggleRecorrenciaDev">Recorrência: Texto</span>
+                    </button>
+                    <button id="btnViagem" type="button" class="btn btn-sm btn-fundo-laranja">
+                        <i class="fa-duotone fa-shuffle" aria-hidden="true"></i>&nbsp;Transforma em Viagem
+                    </button>
+                    <button id="btnConfirma" type="button" class="btn btn-sm btn-azul">
+                        <i class="fa-duotone fa-floppy-disk icon-space" aria-hidden="true"></i>Confirmar
+                    </button>
+                    <button id="btnApaga" type="button" class="btn btn-sm btn-vinho">
+                        <i class="fa-duotone fa-trash-can-undo icon-space" aria-hidden="true"></i>Apagar
+                    </button>
+                    <button id="btnFecha" type="button" class="btn btn-sm btn-vinho" data-bs-dismiss="modal">
+                        <i class="fa-duotone fa-circle-xmark icon-space icon-pulse" aria-hidden="true"></i>Cancelar
+                        Operação
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL: NOVO EVENTO -->
+<!-- Modal Bootstrap para cadastro de novo evento -->
+<!-- ========================================================================= -->
+<div class="modal fade" id="modalEvento" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header modal-header-azul">
+                <h4 class="modal-title">
+                    <i class="fa-duotone fa-calendar-plus"></i>
+                    Cadastrar Novo Evento
+                </h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="frmEvento">
+                    <!-- Linha 1: Nome do Evento -->
+                    <div class="form-row mb-3">
+                        <div class="col-md-12">
+                            <label for="txtNomeEvento" class="font-weight-bold">
+                                Nome do Evento <span class="text-danger">*</span>
+                            </label>
+                            <input id="txtNomeEvento" class="form-control" maxlength="200"
+                                placeholder="Digite o nome do evento" required
+                                title="Nome do evento (máx. 200 caracteres)" />
+                        </div>
+                    </div>
+
+                    <!-- Linha 2: Descrição -->
+                    <div class="form-row mb-3">
+                        <div class="col-md-12">
+                            <label for="txtDescricaoEvento" class="font-weight-bold">
+                                Descrição <span class="text-danger">*</span>
+                            </label>
+                            <textarea id="txtDescricaoEvento" class="form-control" rows="3" maxlength="500"
+                                placeholder="Descreva o evento" required
+                                title="Descrição do evento (máx. 500 caracteres)"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Linha 3: Datas -->
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="txtDataInicialEvento" class="font-weight-bold">
+                                Data Inicial <span class="text-danger">*</span>
+                            </label>
+                            <input id="txtDataInicialEvento" name="txtDataInicialEvento"
+                                style="width: 100%;" />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="txtDataFinalEvento" class="font-weight-bold">
+                                Data Final <span class="text-danger">*</span>
+                            </label>
+                            <input id="txtDataFinalEvento" name="txtDataFinalEvento"
+                                style="width: 100%;" />
+                        </div>
+                    </div>
+
+                    <!-- Linha 4: Quantidade de Participantes -->
+                    <div class="form-row mb-3">
+                        <div class="col-md-12">
+                            <label for="txtQtdParticipantesEventoCadastro" class="font-weight-bold">
+                                Quantidade de Participantes <span class="text-danger">*</span>
+                            </label>
+                            <ejs-numerictextbox id="txtQtdParticipantesEventoCadastro" format="N0" min="1"
+                                placeholder="Quantidade de participantes">
+                            </ejs-numerictextbox>
+                        </div>
+                    </div>
+
+                    <!-- Linha 5: Requisitante -->
+                    <div class="form-row mb-3">
+                        <div class="col-md-12">
+                            <label for="lstRequisitanteEvento" class="font-weight-bold">
+                                Requisitante <span class="text-danger">*</span>
+                            </label>
+                            <input id="lstRequisitanteEvento" name="lstRequisitanteEvento"
+                                style="width: 100%;" />
+                        </div>
+                    </div>
+
+                    <!-- Linha 6: Setor (preenchido automaticamente) -->
+                    <div class="form-row mb-4">
+                        <div class="col-md-12">
+                            <label for="txtSetorRequisitanteEvento" class="font-weight-bold">
+                                Setor do Requisitante <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" id="txtSetorRequisitanteEvento" class="form-control"
+                                placeholder="Setor será preenchido automaticamente" readonly
+                                style="background-color: #e9ecef; cursor: not-allowed;"
+                                title="Este campo é preenchido automaticamente ao selecionar o requisitante" />
+                            <input type="hidden" id="lstSetorRequisitanteEvento" />
+                        </div>
+                    </div>
+
+                    <!-- Botões -->
+                    <div class="modal-footer justify-content-between">
+                        <button id="btnInserirEvento" type="button" class="btn btn-azul">
+                            <i class="fa-duotone fa-floppy-disk"></i>
+                            Salvar Evento
+                        </button>
+                        <button id="btnCancelarEvento" type="button" class="btn btn-vinho" data-bs-dismiss="modal">
+                            <i class="fa-duotone fa-circle-xmark"></i>
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL: NOVO REQUISITANTE -->
+<!-- SOLUÇÃO DEFINITIVA: TreeView Syncfusion (inline, sem popup) -->
+<!-- ========================================================================= -->
+<div class="modal fade" id="modalNovoRequisitante" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header modal-header-azul">
+                <h4 class="modal-title">
+                    <i class="fa-duotone fa-user-plus"></i>
+                    Inserir um novo Requisitante
+                </h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="frmRequisitante">
+                    <!-- Linha 1: Ponto, Nome e Ramal -->
+                    <div class="form-row mb-3">
+                        <div class="col-md-2">
+                            <label for="txtPonto" class="font-weight-bold">
+                                Ponto <span class="text-danger">*</span>
+                            </label>
+                            <input id="txtPonto" class="form-control" maxlength="10" placeholder="p_" required
+                                title="Ponto do requisitante (máx. 10 caracteres)" />
+                        </div>
+                        <div class="col-md-8">
+                            <label for="txtNome" class="font-weight-bold">
+                                Nome do Requisitante <span class="text-danger">*</span>
+                            </label>
+                            <input id="txtNome" class="form-control" maxlength="100" placeholder="Nome completo"
+                                required title="Nome completo do requisitante" />
+                        </div>
+                        <div class="col-md-2">
+                            <label for="txtRamal" class="font-weight-bold">
+                                Ramal <span class="text-danger">*</span>
+                            </label>
+                            <input id="txtRamal" class="form-control" type="number" min="1" max="99999"
+                                placeholder="Ex: 1234" required title="Número do ramal telefônico" />
+                        </div>
+                    </div>
+
+                    <!-- Linha 2: Email -->
+                    <div class="form-row mb-3">
+                        <div class="col-md-12">
+                            <label for="txtEmail" class="font-weight-bold">Email</label>
+                            <input id="txtEmail" class="form-control" type="email" maxlength="100"
+                                placeholder="nome@exemplo.com" title="Email do requisitante (opcional)" />
+                        </div>
+                    </div>
+
+                    <!-- Linha 3: Setor - TREEVIEW SYNCFUSION (inline, sem popup) -->
+                    <div class="form-row mb-4">
+                        <div class="col-md-12">
+                            <label for="treeSetorRequisitante" class="font-weight-bold">
+                                Setor do Requisitante <span class="text-danger">*</span>
+                            </label>
+
+                            <div
+                                style="border: 1px solid #ced4da; border-radius: 0.375rem; padding: 0.5rem; background: #fff; max-height: 250px; overflow-y: auto;">
+                                <ejs-treeview id="treeSetorRequisitante" allowDragAndDrop="false" showCheckBox="false"
+                                    nodeSelected="onSetorSelected">
+                                    <e-treeview-fields dataSource="@ViewData["dataSetor"]" id="SetorSolicitanteId"
+                                        text="Nome" parentID="SetorPaiId" hasChildren="HasChild">
+                                    </e-treeview-fields>
+                                </ejs-treeview>
+                            </div>
+
+                            <!-- Campo oculto para armazenar o ID do setor selecionado -->
+                            <input type="hidden" id="hiddenSetorId" />
+
+                            <!-- Exibir setor selecionado -->
+                            <div id="setorSelecionadoDisplay" class="mt-2" style="display: none;">
+                                <small class="text-success">
+                                    <i class="fa-duotone fa-check-circle"></i>
+                                    <strong>Selecionado:</strong> <span id="setorSelecionadoNome"></span>
+                                </small>
+                            </div>
+
+                            <small class="form-text text-muted">
+                                <i class="fa-duotone fa-info-circle"></i>
+                                Clique no setor desejado na árvore acima
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Botões -->
+                    <div class="modal-footer justify-content-between">
+                        <button id="btnInserirRequisitante" type="submit" value="SUBMIT" class="btn btn-azul">
+                            <i class="fa-duotone fa-floppy-disk"></i>
+                            Inserir Requisitante
+                        </button>
+                        <button type="button" class="btn btn-vinho" data-bs-dismiss="modal">
+                            <i class="fa-duotone fa-circle-xmark"></i>
+                            Cancelar Operação
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section ScriptsBlock
+{
+    @* ============================================
+       NOTA: _ScriptsBasePlugins já é carregado no _Layout.cshtml
+       NÃO carregar novamente aqui para evitar conflitos!
+       ============================================ *@
+
+    @* ============================================
+       DADOS DO SERVIDOR (C# â†' JavaScript)
+       ============================================ *@
+    <script>
+        window.dataFinalidade = @Html.Raw(Json.Serialize(ViewData["dataFinalidade"]));
+        window.dataPeriodo = @Html.Raw(Json.Serialize(ViewData["dataPeriodo"]));
+        window.dataPeriodos = @Html.Raw(Json.Serialize(ViewData["dataPeriodos"]));
+
+        window.FrotiXConfig = window.FrotiXConfig || {};
+        window.FrotiXConfig.recorrencia = {
+            forcarTextoRecorrencia: @RecorrenciaToggleSettings.ForcarTextoRecorrencia.ToString().ToLower(),
+            forcarDatePickerRecorrencia: @RecorrenciaToggleSettings.ForcarDatePickerRecorrencia.ToString().ToLower(),
+            mostrarToggleDev: @RecorrenciaToggleSettings.MostrarToggleDev.ToString().ToLower()
+        };
+    </script>
+
+    <script>
+        /**
+         * ═══════════════════════════════════════════════════════════════════════════
+         * INICIALIZAÇÃO KENDO UI - TIMEPICKERS
+         * ═══════════════════════════════════════════════════════════════════════════
+         * @description Inicialização jQuery dos controles Kendo conforme ControlesKendo.md
+         * IMPORTANTE: NUNCA usar TagHelpers <kendo-*> - sempre jQuery init
+         */
+        $(document).ready(function () {
+            try {
+                /** TimePicker - Hora Inicial */
+                $("#txtHoraInicial").kendoTimePicker({
+                    format: "HH:mm",
+                    culture: "pt-BR",
+                    interval: 30
+                });
+
+                /** TimePicker - Hora Final */
+                $("#txtHoraFinal").kendoTimePicker({
+                    format: "HH:mm",
+                    culture: "pt-BR",
+                    interval: 30
+                });
+
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("Agenda/Index.cshtml", "kendo.init.timepickers", error);
+            }
+        });
+    </script>
+
+    @* ============================================
+       DEPENDÚNCIAS EXTERNAS
+       ============================================ *@
+    @* Kendo UI: usa versão global 2025.2.520 de _ScriptsBasePlugins (cultura pt-BR já configurada) *@
+    @* PDF.js removido daqui - já carregado no <head> (linha 127-130) para evitar duplicação e erros *@
+    <script src="/api/reports/resources/js/telerikReportViewer"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.10/index.global.js"
+        integrity="sha512-zAadCzZHXo/f5A/3uhF50bZXahdYNqisNgKKniyoJJVpp27b2bR82N4hPLGj3/qBEh3tGZ9SYGmSA1jpdtNF5A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    @* REMOVIDO: locales-all.js (arquivo não existe, FullCalendar v6 já inclui locales) *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
+    <script src="/api/reports/resources/js/telerikReportViewer-18.1.24.514.min.js"></script>
+
+    @* ============================================
+       LOCALIZATION - Inicialização CLDR para Syncfusion pt-BR
+       ============================================ *@
+    <script src="~/js/localization-init.js" asp-append-version="true"></script>
+
+    @* ============================================
+       CORE - Camada Base
+       ============================================ *@
+    <script src="~/js/agendamento/core/ajax-helper.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/core/state.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/core/api-client.js" asp-append-version="true"></script>
+
+    @* ============================================
+       UTILS - Utilitários
+       ============================================ *@
+    <script src="~/js/agendamento/utils/date.utils.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/utils/syncfusion.utils.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/utils/kendo-editor-helper.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/utils/formatters.js" asp-append-version="true"></script>
+
+    @* ============================================
+       SERVICES - Serviços de API
+       ============================================ *@
+    <script src="~/js/agendamento/services/agendamento.service.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/services/viagem.service.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/services/requisitante.service.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/services/evento.service.js" asp-append-version="true"></script>
+
+    @* ============================================
+       COMPONENTS - Componentes da UI
+       ============================================ *@
+    <script src="~/js/agendamento/components/validacao.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/components/modal-viagem-novo.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/components/recorrencia.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/components/modal-config.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/components/exibe-viagem.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/components/event-handlers.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/components/dialogs.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/components/controls-init.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/components/recorrencia-init.js" asp-append-version="true"></script>
+    @* <script src="~/js/agendamento/components/sweetalert_interop.patch.js" asp-append-version="true"></script> *@
+    <script src="~/js/agendamento/components/reportviewer-close-guard.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/components/relatorio.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/components/evento.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/components/recorrencia-logic.js" asp-append-version="true"></script>
+    <script src="~/js/agendamento/components/calendario.js" asp-append-version="true"></script>
+
+    @* ============================================
+       VALIDAÇÃO IA - Validador Evolutivo de Finalização
+       ============================================ *@
+    <script src="~/js/validacao/ValidadorFinalizacaoIA.js" asp-append-version="true"></script>
+
+    @* ============================================
+   FUNÇÃO CALLBACK DO TREEVIEW DE SETORES
+   ============================================ *@
+    <script>
+        /**
+         * Callback quando um setor é selecionado no TreeView
+         */
+        function onSetorSelected(args) {
+            try {
+                console.log("🎯 Setor selecionado:", args);
+
+                if (!args || !args.nodeData) {
+                    console.warn("⚠️ Dados do nó não disponíveis");
+                    return;
+                }
+
+                const setorId = args.nodeData.id;
+                const setorNome = args.nodeData.text;
+
+                $("#hiddenSetorId").val(setorId);
+                $("#setorSelecionadoNome").text(setorNome);
+                $("#setorSelecionadoDisplay").fadeIn(300);
+
+                console.log(`✅ Setor selecionado: ${setorNome} (ID: ${setorId})`);
+            } catch (error) {
+                console.error("❌ Erro ao processar seleção de setor:", error);
+                if (typeof Alerta !== 'undefined') {
+                    Alerta.TratamentoErroComLinha("Agenda/Index.cshtml", "onSetorSelected", error);
+                }
+            }
+        }
+
+        $(document).ready(function () {
+            $('#modalNovoRequisitante').on('hidden.bs.modal', function () {
+                const treeObj = document.getElementById('treeSetorRequisitante');
+                if (treeObj && treeObj.ej2_instances && treeObj.ej2_instances[0]) {
+                    treeObj.ej2_instances[0].selectedNodes = [];
+                }
+                $("#hiddenSetorId").val('');
+                $("#setorSelecionadoDisplay").hide();
+                $("#setorSelecionadoNome").text('');
+                console.log("🧹 Seleção de setor limpa");
+            });
+        });
+    </script>
+
+    @* ============================================
+       KENDO - Inicialização jQuery (roda APÓS kendo.all.min.js carregado via _ScriptsBasePlugins)
+       ============================================ *@
+    <script>
+        (function () {
+            try {
+                var dataRequisitante = @Html.Raw(Json.Serialize(ViewData["dataRequisitante"]));
+
+                // ComboBox principal - Requisitante (form de agendamento)
+                $("#lstRequisitante").kendoComboBox({
+                    dataTextField: "requisitante",
+                    dataValueField: "requisitanteId",
+                    placeholder: "Selecione um Requisitante...",
+                    filter: "contains",
+                    dataSource: dataRequisitante,
+                    height: 200
+                });
+
+                // ComboBox evento - Requisitante (modal de evento)
+                $("#lstRequisitanteEvento").kendoComboBox({
+                    dataTextField: "requisitante",
+                    dataValueField: "requisitanteId",
+                    placeholder: "Selecione o requisitante...",
+                    filter: "contains",
+                    dataSource: dataRequisitante,
+                    height: 200
+                });
+
+                // DatePickers - Evento
+                $("#txtDataInicialEvento").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    placeholder: "Data Inicial"
+                });
+
+                $("#txtDataFinalEvento").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    placeholder: "Data Final"
+                });
+
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("Agenda/Index.cshtml", "kendoControls.init", error);
+            }
+        })();
+    </script>
+
+    @* ============================================
+       MAIN - Inicialização (SEMPRE POR ÚLTIMO)
+       ============================================ *@
+    <script src="~/js/agendamento/main.js" asp-append-version="true"></script>
+
+}
