@@ -786,6 +786,7 @@ $("#txtHoraInicial").focusout(function ()
 
 let evitandoLoop = false;
 let validandoDataFinal = false;
+let atualizandoDataFinal = false;
 let validandoHoraFinal = false;
 
 /****************************************************************************************
@@ -811,7 +812,7 @@ async function validarDataFinal()
 {
     try
     {
-        if (validandoDataFinal) return;
+        if (validandoDataFinal || atualizandoDataFinal) return;
         validandoDataFinal = true;
 
         if (evitandoLoop) return;
@@ -829,7 +830,9 @@ async function validarDataFinal()
         if (isNaN(dataFinal.getTime()))
         {
             Alerta.Erro("Erro na Data", "Data Final inválida!");
+            atualizandoDataFinal = true;
             window.setKendoDateValue("txtDataFinal", null);
+            atualizandoDataFinal = false;
             return;
         }
 
@@ -842,7 +845,9 @@ async function validarDataFinal()
             if (!resultadoDataFutura.valido)
             {
                 await Alerta.Erro(resultadoDataFutura.titulo, resultadoDataFutura.mensagem);
+                atualizandoDataFinal = true;
                 window.setKendoDateValue("txtDataFinal", null);
+                atualizandoDataFinal = false;
                 return;
             }
         }
@@ -858,7 +863,9 @@ async function validarDataFinal()
 
         if (dataFinal < dataInicial)
         {
+            atualizandoDataFinal = true;
             window.setKendoDateValue("txtDataFinal", null);
+            atualizandoDataFinal = false;
             $("#txtDuracao").val("");
             Alerta.Erro("Erro na Data", "A data final deve ser maior ou igual que a inicial!");
             return;
@@ -930,7 +937,9 @@ async function validarDataFinal()
                     );
                     if (!confirma)
                     {
+                        atualizandoDataFinal = true;
                         window.setKendoDateValue("txtDataFinal", null);
+                        atualizandoDataFinal = false;
                         return;
                     }
                 }
@@ -959,6 +968,7 @@ $("#txtDataFinal").change(function ()
 {
     try
     {
+        if (atualizandoDataFinal) return;
         validarDataFinal();
     }
     catch (error)

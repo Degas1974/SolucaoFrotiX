@@ -1,7 +1,7 @@
 # Documentação: Alertas FrotiX (Upsert)
 
-> **Última Atualização**: 10/02/2026 02:30
-> **Versão Atual**: 2.7
+> **Última Atualização**: 10/02/2026 02:40
+> **Versão Atual**: 2.8
 
 ---
 
@@ -223,6 +223,21 @@ Retorna a foto do motorista em Base64 para o template do ComboBox.
 > **FORMATO**: Entradas em ordem **decrescente** (mais recente primeiro)
 
 ---
+
+## [10/02/2026 02:40] - FIX: Evita recursao no change da Data Final
+
+**Descricao**: Adicionada flag para evitar recursao quando o campo e limpo
+programaticamente (setKendoDateValue), prevenindo stack overflow.
+
+**Mudancas**:
+1. **Data Final**: controle `atualizandoDataFinal` para bloquear `change` reentrante.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.8
 
 ## [10/02/2026 02:30] - FIX: Await na confirmacao de intervalo
 
