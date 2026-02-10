@@ -1,7 +1,7 @@
 # Documentação: Alertas FrotiX (Upsert)
 
-> **Última Atualização**: 16/01/2026 18:15
-> **Versão Atual**: 1.4
+> **Última Atualização**: 10/02/2026 00:15
+> **Versão Atual**: 1.7
 
 ---
 
@@ -135,6 +135,18 @@ function calcularDuracaoViagem() {
 }
 ```
 
+### Datas no Modal de Evento (Kendo DatePicker)
+Os campos **Data Inicial** e **Data Final** do modal de Evento foram migrados para
+Kendo DatePicker, garantindo padrao pt-BR e evitando uso de `<input type="date">`.
+
+```javascript
+$("#txtDataInicialEvento").kendoDatePicker({
+    format: "dd/MM/yyyy",
+    culture: "pt-BR",
+    dateInput: { format: "dd/MM/yyyy", messages: { year: "yyyy", month: "MM", day: "dd" } }
+});
+```
+
 ### Padrao de Data/Hora Inicial e Bloqueio de Data Final
 Quando a viagem e criada sem valores preexistentes, os campos **Data Inicial** e **Hora Inicio**
 sao preenchidos automaticamente com a data de hoje e a hora atual. A **Data Final** passa a
@@ -210,6 +222,23 @@ Retorna a foto do motorista em Base64 para o template do ComboBox.
 > **FORMATO**: Entradas em ordem **decrescente** (mais recente primeiro)
 
 ---
+
+## [10/02/2026 00:15] - FIX: Kendo no Modal de Evento e sem alert()
+
+**Descricao**: Ajuste para substituir `alert()` por `Alerta.*` e migrar
+as datas do modal de Evento para Kendo DatePicker com padrao pt-BR.
+
+**Mudancas**:
+1. **Alertas**: removido fallback com `alert()` e padronizado para `Alerta.Warning`.
+2. **Modal Evento**: inputs de data migrados para Kendo DatePicker.
+3. **Erros**: padronizacao de `Alerta.TratamentoErroComLinha` nos handlers.
+
+**Arquivos Afetados**:
+- `Pages/Viagens/Upsert.cshtml`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 1.7
 
 ## [10/02/2026 00:00] - FIX: Data/Hora Inicial padrao e minimo da Data Final
 

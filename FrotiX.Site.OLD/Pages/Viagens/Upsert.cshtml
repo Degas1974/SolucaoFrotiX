@@ -232,7 +232,7 @@
                     $(".esconde-diveventos").hide();
                 }
             } catch (error) {
-                TratamentoErroComLinha("Viagem_050", "lstFinalidade_Change", error);
+                Alerta.TratamentoErroComLinha("Viagem_050", "lstFinalidade_Change", error);
             }
         } catch (error) {
             Alerta.TratamentoErroComLinha("Upsert.cshtml", "lstFinalidade_Change", error);
@@ -255,7 +255,7 @@
                     setorHost.ej2_instances[0].dataBind();
                 }
             } catch (error) {
-                TratamentoErroComLinha("Viagem_050", "MotoristaValueChange", error);
+                Alerta.TratamentoErroComLinha("Viagem_050", "MotoristaValueChange", error);
             }
         } catch (error) {
             Alerta.TratamentoErroComLinha("Upsert.cshtml", "MotoristaValueChange", error);
@@ -336,7 +336,7 @@
                 if (!requisitanteId) return;
                 // Placeholder para lógica futura
             } catch (error) {
-                TratamentoErroComLinha("Viagem_050", "RequisitanteValueChange", error);
+                Alerta.TratamentoErroComLinha("Viagem_050", "RequisitanteValueChange", error);
             }
         } catch (error) {
             Alerta.TratamentoErroComLinha("Upsert.cshtml", "RequisitanteValueChange", error);
@@ -354,7 +354,7 @@
                 if (!requisitanteId) return;
                 // Placeholder para lógica futura
             } catch (error) {
-                TratamentoErroComLinha("Viagem_050", "RequisitanteEventoValueChange", error);
+                Alerta.TratamentoErroComLinha("Viagem_050", "RequisitanteEventoValueChange", error);
             }
         } catch (error) {
             Alerta.TratamentoErroComLinha("Upsert.cshtml", "RequisitanteEventoValueChange", error);
@@ -385,7 +385,7 @@
                             '</div>';
                     };
                 } catch (error) {
-                    TratamentoErroComLinha("Viagem_050", "onVeiculoComboCreated", error);
+                    Alerta.TratamentoErroComLinha("Viagem_050", "onVeiculoComboCreated", error);
                 }
             } catch (error) {
                 Alerta.TratamentoErroComLinha("Upsert.cshtml", "onVeiculoComboCreated", error);
@@ -427,7 +427,7 @@
             if (!input.files || !input.files[0]) return;
             var file = input.files[0];
             if (!file.type.startsWith("image/")) {
-                alert("Por favor escolha um arquivo de imagem.");
+                Alerta.Warning("Arquivo invalido", "Por favor escolha um arquivo de imagem.", "OK");
                 return;
             }
             var reader = new FileReader();
@@ -627,7 +627,7 @@
     function alertInfo(titulo, texto, confirm = "OK") {
         try {
             if (typeof Alerta !== "undefined" && Alerta?.Info) Alerta.Info(titulo, texto, confirm);
-            else alert(`${titulo}\n\n${texto}`);
+            else console.warn(`${titulo}\n\n${texto}`);
         } catch (error) {
             Alerta.TratamentoErroComLinha("Upsert.cshtml", "alertInfo", error);
         }
@@ -642,7 +642,7 @@
     function alertWarn(titulo, texto, confirm = "OK") {
         try {
             if (typeof Alerta !== "undefined" && Alerta?.Warning) Alerta.Warning(titulo, texto, confirm);
-            else alert(`${titulo}\n\n${texto}`);
+            else console.warn(`${titulo}\n\n${texto}`);
         } catch (error) {
             Alerta.TratamentoErroComLinha("Upsert.cshtml", "alertWarn", error);
         }
@@ -791,8 +791,8 @@
 
     // Fallback opcional se Alerta não estiver carregado
     window.Alerta = window.Alerta || {
-        Info: (t, x) => alert(`${t}\n\n${x}`),
-        Warning: (t, x) => alert(`${t}\n\n${x}`)
+        Info: (t, x) => console.warn(`${t}\n\n${x}`),
+        Warning: (t, x) => console.warn(`${t}\n\n${x}`)
     };
 
     // ====== Modal de Zoom: carrega a imagem ampliada ======
@@ -2282,13 +2282,13 @@
                         <div class="col-4">
                             <div class="form-group">
                                 <label class="label font-weight-bold">Data Inicial</label>
-                                <input id="txtDataInicialEvento" class="form-control form-control-xs" type="date" />
+                                <input id="txtDataInicialEvento" class="form-control form-control-xs" placeholder="dd/MM/yyyy" />
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="form-group">
                                 <label class="label font-weight-bold">Data Final</label>
-                                <input id="txtDataFinalEvento" class="form-control form-control-xs" type="date" />
+                                <input id="txtDataFinalEvento" class="form-control form-control-xs" placeholder="dd/MM/yyyy" />
                             </div>
                         </div>
                         <div class="col-4">
@@ -3407,6 +3407,37 @@
                         // Dispara quando usuário seleciona data do calendário
                         validarDataFinalEControlarHoraFim();
                     }
+                }).data("kendoDatePicker");
+
+                // Datas do Evento (modal)
+                var dpDataInicialEvento = $("#txtDataInicialEvento").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    placeholder: "dd/MM/yyyy",
+                    dateInput: {
+                        format: "dd/MM/yyyy",
+                        messages: {
+                            year: "yyyy",
+                            month: "MM",
+                            day: "dd"
+                        }
+                    },
+                    value: null
+                }).data("kendoDatePicker");
+
+                var dpDataFinalEvento = $("#txtDataFinalEvento").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    placeholder: "dd/MM/yyyy",
+                    dateInput: {
+                        format: "dd/MM/yyyy",
+                        messages: {
+                            year: "yyyy",
+                            month: "MM",
+                            day: "dd"
+                        }
+                    },
+                    value: null
                 }).data("kendoDatePicker");
 
                 // Adicionar evento blur no input (para quando usuário digitar manualmente)
