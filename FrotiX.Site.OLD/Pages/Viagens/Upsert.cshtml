@@ -3358,9 +3358,28 @@
 
                 // Forçar placeholders pt-BR no DateInput (evita fallback inglês quando vazio)
                 if (dpDataFinal && dpDataFinal.dateInput && dpDataFinal.dateInput.element) {
+                    if (typeof dpDataFinal.dateInput.setOptions === "function") {
+                        dpDataFinal.dateInput.setOptions({
+                            format: "dd/MM/yyyy",
+                            messages: {
+                                year: "yyyy",
+                                month: "MM",
+                                day: "dd"
+                            }
+                        });
+                    }
                     dpDataFinal.dateInput.element.attr("placeholder", "dd/MM/yyyy");
                 }
                 if (tpHoraFinal && tpHoraFinal.dateInput && tpHoraFinal.dateInput.element) {
+                    if (typeof tpHoraFinal.dateInput.setOptions === "function") {
+                        tpHoraFinal.dateInput.setOptions({
+                            format: "HH:mm",
+                            messages: {
+                                hour: "HH",
+                                minute: "mm"
+                            }
+                        });
+                    }
                     tpHoraFinal.dateInput.element.attr("placeholder", "HH:mm");
                 }
 

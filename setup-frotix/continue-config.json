@@ -1,0 +1,23 @@
+{
+  "models": [
+    {
+      "title": "DeepSeek Coder",
+      "provider": "deepseek",
+      "model": "deepseek-coder",
+      "apiKey": "SUBSTITUIR_PELA_SUA_API_KEY"
+    }
+  ],
+  "system_message": "Leia o arquivo RegrasDesenvolvimentoFrotiX.md antes de começar qualquer tarefa.",
+  "customCommands": [
+    {
+      "name": "regras",
+      "description": "Ler Regras FrotiX",
+      "prompt": "Leia o arquivo @RegrasDesenvolvimentoFrotiX.md na raiz do Projeto e utilize-o como base para as respostas."
+    },
+    {
+      "name": "doq",
+      "description": "Documentar conversa",
+      "prompt": "Crie um arquivo de registro de conversa com as seguintes especificacoes:\n1. Pergunte o nome/objetivo desta conversa\n2. Crie arquivo em Conversas/ com formato: [YYYY.MM.DD]-[HH.mm] - [Nome da Conversa] - [Continue - {modelo atual}].md\n3. Use a estrutura completa documentada na Secao 5.3 do RegrasDesenvolvimentoFrotiX.md\n4. Atualize o arquivo INCREMENTALMENTE durante toda a sessao\n5. Finalize com resumo completo ao terminar\n\nFormato do arquivo:\n- Cabecalho: Data/hora inicio, duracao, continuacao de, IA utilizada\n- Resumo Executivo\n- Arquivos Criados/Modificados\n- Problemas Encontrados e Solucoes\n- Decisoes Tecnicas\n- Tarefas Pendentes\n- Continuidade\n- Status Final"
+    }
+  ]
+}
