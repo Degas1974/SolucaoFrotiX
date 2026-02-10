@@ -199,23 +199,36 @@
             }
         }
 
-    /**
-     * Handler de mudança de Finalidade da viagem
-     * @@description Exibe / oculta seletor de Evento conforme tipo de viagem
-        */
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: lstFinalidade_Change
+     * --------------------------------------------------------------------------------------
+     * 🎯 OBJETIVO     : [PORQUÊ] Garantir que os campos de Evento sejam exibidos apenas
+     *                   quando a Finalidade for "Evento", evitando seleções indevidas.
+     *                   [O QUE] Alterna visibilidade do card de evento e habilita/desabilita
+     *                   o dropdown Telerik correspondente.
+     *                   [COMO] Consulta o valor atual da Finalidade no Kendo DropDownList
+     *                   e aplica show/hide + enable/disable no controle de Evento.
+     *
+     * 📥 ENTRADAS     : Nenhuma.
+     *
+     * 📤 SAÍDAS       : UI atualizada (card de evento e controle habilitado/desabilitado).
+     *
+     * ⬅️ CHAMADO POR  : Change do Kendo DropDownList `ddlFinalidade`.
+     *
+     * ➡️ CHAMA        : limparDetalhesEventoSelecionado() [ViagemUpsert.js]
+     *
+     * 📝 OBSERVAÇÕES  : Mantem compatibilidade com o botão de abrir modal de Evento.
+     ****************************************************************************************/
     function lstFinalidade_Change() {
         try {
             try {
                 const ddl = $("#ddlFinalidade").data("kendoDropDownList");
                 const finalidade = ddl ? ddl.value() : null;
-                const lstEvento = document.getElementById("ddtEventos")?.ej2_instances?.[0];
+                const ddlEvento = $("#ddlEvento").data("kendoDropDownList");
                 const btnEvento = document.getElementById("btnEvento");
 
                 if (finalidade === 'Evento') {
-                    if (lstEvento) {
-                        lstEvento.enabled = true;
-                        lstEvento.dataBind();
-                    }
+                    if (ddlEvento) ddlEvento.enable(true);
                     if (btnEvento) {
                         btnEvento.style.display = "block";
                         // compat Bootstrap 5
@@ -224,12 +237,15 @@
                     }
                     $(".esconde-diveventos").show();
                 } else {
-                    if (lstEvento) {
-                        lstEvento.enabled = false;
-                        lstEvento.dataBind();
+                    if (ddlEvento) {
+                        ddlEvento.value("");
+                        ddlEvento.enable(false);
                     }
                     if (btnEvento) btnEvento.style.display = "none";
                     $(".esconde-diveventos").hide();
+                    if (typeof limparDetalhesEventoSelecionado === "function") {
+                        limparDetalhesEventoSelecionado();
+                    }
                 }
             } catch (error) {
                 Alerta.TratamentoErroComLinha("Viagem_050", "lstFinalidade_Change", error);
@@ -1530,15 +1546,9 @@
                                             <label class="ftx-label">Nome do Evento</label>
                                             <div class="d-flex align-items-end gap-2">
                                                 <div class="flex-grow-1">
-                                                    <ejs-dropdowntree id="ddtEventos"
-                                                        placeholder="Selecione um Evento..." showCheckBox="false"
-                                                        allowMultiSelection="false" allowFiltering="true"
-                                                        filterType="Contains" filterBarPlaceholder="Procurar..."
-                                                        ejs-for="@Model.ViagemObj.Viagem.EventoId" popupHeight="200px"
-                                                        sortOrder="Ascending">
-                                                        <e-dropdowntree-fields dataSource="@ViewData["dataEvento"]"
-                                                            value="EventoId" text="Nome"></e-dropdowntree-fields>
-                                                    </ejs-dropdowntree>
+                                                    <input id="ddlEvento"
+                                                        name="ViagemObj.Viagem.EventoId"
+                                                        style="width: 100%;" />
                                                 </div>
                                                 <a class="btn btn-sm fundo-chocolate text-white" id="btnEvento"
                                                     style="height: 38px; display: flex; align-items: center;"
@@ -1547,6 +1557,21 @@
                                                     <i class="fa-duotone fa-calendar-plus"></i>
                                                 </a>
                                             </div>
+                                        </div>
+                                        <div class="col-12 col-md-2">
+                                            <label class="ftx-label">Data Início</label>
+                                            <input id="txtEventoDataInicio" class="form-control ftx-calculated" readonly
+                                                placeholder="dd/MM/yyyy" />
+                                        </div>
+                                        <div class="col-12 col-md-2">
+                                            <label class="ftx-label">Data Fim</label>
+                                            <input id="txtEventoDataFim" class="form-control ftx-calculated" readonly
+                                                placeholder="dd/MM/yyyy" />
+                                        </div>
+                                        <div class="col-12 col-md-2">
+                                            <label class="ftx-label">Qtd Participantes</label>
+                                            <input id="txtEventoQtdParticipantes" class="form-control ftx-calculated" readonly
+                                                placeholder="Quantidade" />
                                         </div>
                                     </div>
                                 </div>
@@ -3168,6 +3193,7 @@
                 // Dados serializados do servidor
                 var dataFinalidade = @Html.Raw(Json.Serialize(ViewData["dataFinalidade"]));
                 var dataCombustivel = @Html.Raw(Json.Serialize(ViewData["dataCombustivel"]));
+                var dataEvento = @Html.Raw(Json.Serialize(ViewData["dataEvento"]));
 
                 // Finalidade
                 $("#ddlFinalidade").kendoDropDownList({
@@ -3179,6 +3205,21 @@
                     value: "@(Model.ViagemObj?.Viagem?.Finalidade ?? "")",
                     change: function (e) {
                         try { lstFinalidade_Change(e); } catch (err) { console.error("lstFinalidade_Change:", err); }
+                    }
+                });
+
+                // Evento
+                $("#ddlEvento").kendoDropDownList({
+                    dataTextField: "nome",
+                    dataValueField: "eventoId",
+                    optionLabel: "Selecione um Evento...",
+                    dataSource: dataEvento,
+                    filter: "contains",
+                    height: 200,
+                    value: "@(Model.ViagemObj?.Viagem?.EventoId?.ToString() ?? "")",
+                    change: function (e) {
+                        try { if (typeof onEventoSelecionado === "function") onEventoSelecionado(e); }
+                        catch (err) { console.error("onEventoSelecionado:", err); }
                     }
                 });
 

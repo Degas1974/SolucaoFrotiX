@@ -14,11 +14,12 @@
  * 📤 SAÍDAS: POST /api/Viagens/Salvar, modais interativos, validações, toasts, redirecionamentos
  * 
  * 🔗 DEPENDÊNCIAS: jQuery, Syncfusion EJ2 (DropDownList/DatePicker/NumericTextBox/Grid/RTE),
- *    Bootstrap 5, SweetAlert2, AppToast, Alerta.js, OcorrenciaViagem module, KendoEditor
+ *    Kendo UI (DropDownList, Editor), Bootstrap 5, SweetAlert2, AppToast, Alerta.js,
+ *    OcorrenciaViagem module
  * 
  * 📝 PRINCIPAIS CATEGORIAS (200+ funções organizadas em seções):
  *    • Inicialização DOMContentLoaded + carregamentos iniciais (20+ funções)
- *    • Dropdowns Syncfusion (veículo/motorista/combustível/kit/solicitante) - 30 funções
+ *    • Dropdowns Syncfusion/Kendo (veículo/motorista/combustível/kit/solicitante/evento) - 30 funções
  *    • Validações campos obrigatórios + regras negócio - 25 funções
  *    • Cálculos automáticos (combustível inicial/final, custos, distância) - 15 funções
  *    • Modal Finalizaração Viagem (ocorrências, KM final, combustível) - 20 funções
@@ -1137,19 +1138,278 @@ $("#txtHoraFinal").change(function ()
 });
 
 
-function PreencheListaEventos()
+/****************************************************************************************
+ * ⚡ FUNÇÃO: PreencheListaEventos
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Atualizar a lista de eventos após inclusão/alteração,
+ *                   mantendo o dropdown sincronizado com o backend.
+ *                   [O QUE] Recarrega o dataSource do dropdown Telerik de eventos.
+ *                   [COMO] Consome o handler AJAX da página e atualiza o Kendo DropDownList.
+ *
+ * 📥 ENTRADAS     : eventoSelecionadoId [string] - ID do evento a selecionar (opcional).
+ *
+ * 📤 SAÍDAS       : Dropdown atualizado e detalhes do evento preenchidos.
+ *
+ * ⬅️ CHAMADO POR  : click #btnInserirEvento (após criar evento).
+ *
+ * ➡️ CHAMA        : atualizarDetalhesEventoSelecionado(), limparDetalhesEventoSelecionado().
+ *
+ * 📝 OBSERVAÇÕES  : Usa Kendo DropDownList e mantém compatibilidade com UI atual.
+ ****************************************************************************************/
+function PreencheListaEventos(eventoSelecionadoId)
 {
     try
     {
-        const eventos = document.getElementById("ddtEventos");
-        if (eventos && eventos.ej2_instances && eventos.ej2_instances.length > 0)
+        const ddlEvento = $("#ddlEvento").data("kendoDropDownList");
+        if (!ddlEvento) return;
+
+        /********************************************************************************
+         * [AJAX] Endpoint: GET /Viagens/Upsert?handler=AJAXPreencheListaEventos
+         * ------------------------------------------------------------------------------
+         * 📥 ENVIA        : Nenhum parâmetro
+         * 📤 RECEBE       : { data: [{ eventoId, nome }] }
+         * 🎯 MOTIVO       : Recarregar lista de eventos após inclusão no modal
+         ********************************************************************************/
+        if (typeof FrotiXApi !== "undefined" && FrotiXApi?.get)
         {
-            eventos.ej2_instances[0].dataSource = [];
+            FrotiXApi.get("/Viagens/Upsert?handler=AJAXPreencheListaEventos")
+                .then(function (response)
+                {
+                    try
+                    {
+                        const listaEventos = response?.data || [];
+                        ddlEvento.setDataSource(new kendo.data.DataSource({ data: listaEventos }));
+                        ddlEvento.dataSource.read();
+                        ddlEvento.refresh();
+
+                        if (eventoSelecionadoId)
+                        {
+                            ddlEvento.value(eventoSelecionadoId);
+                            atualizarDetalhesEventoSelecionado(eventoSelecionadoId);
+                        }
+                        else
+                        {
+                            limparDetalhesEventoSelecionado();
+                        }
+                    }
+                    catch (error)
+                    {
+                        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "PreencheListaEventos.then", error);
+                    }
+                })
+                .catch(function (error)
+                {
+                    Alerta.TratamentoErroComLinha("ViagemUpsert.js", "PreencheListaEventos.catch", error);
+                });
+        }
+        else
+        {
+            $.ajax({
+                type: "GET",
+                url: "/Viagens/Upsert?handler=AJAXPreencheListaEventos",
+                success: function (response)
+                {
+                    try
+                    {
+                        const listaEventos = response?.data || [];
+                        ddlEvento.setDataSource(new kendo.data.DataSource({ data: listaEventos }));
+                        ddlEvento.dataSource.read();
+                        ddlEvento.refresh();
+
+                        if (eventoSelecionadoId)
+                        {
+                            ddlEvento.value(eventoSelecionadoId);
+                            atualizarDetalhesEventoSelecionado(eventoSelecionadoId);
+                        }
+                        else
+                        {
+                            limparDetalhesEventoSelecionado();
+                        }
+                    }
+                    catch (error)
+                    {
+                        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "PreencheListaEventos.ajax.success", error);
+                    }
+                },
+                error: function (error)
+                {
+                    Alerta.TratamentoErroComLinha("ViagemUpsert.js", "PreencheListaEventos.ajax.error", error);
+                }
+            });
         }
     }
     catch (error)
     {
-        TratamentoErroComLinha("ViagemUpsert.js", "PreencheListaEventos", error);
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "PreencheListaEventos", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: onEventoSelecionado
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Atualizar os dados basicos do evento ao selecionar na lista.
+ *                   [O QUE] Dispara carregamento de detalhes ou limpa campos quando vazio.
+ *                   [COMO] Le valor do Kendo DropDownList e chama helper de detalhe.
+ *
+ * 📥 ENTRADAS     : e [Object] - Evento do Kendo DropDownList.
+ *
+ * 📤 SAÍDAS       : Campos de detalhes preenchidos/limpos.
+ *
+ * ⬅️ CHAMADO POR  : Change do dropdown `ddlEvento`.
+ *
+ * ➡️ CHAMA        : atualizarDetalhesEventoSelecionado(), limparDetalhesEventoSelecionado().
+ ****************************************************************************************/
+function onEventoSelecionado(e)
+{
+    try
+    {
+        const ddlEvento = $("#ddlEvento").data("kendoDropDownList");
+        const eventoId = e?.sender?.value() || ddlEvento?.value();
+
+        if (eventoId)
+        {
+            atualizarDetalhesEventoSelecionado(eventoId);
+        }
+        else
+        {
+            limparDetalhesEventoSelecionado();
+        }
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "onEventoSelecionado", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: atualizarDetalhesEventoSelecionado
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Exibir dados basicos do evento escolhido para padronizar UX.
+ *                   [O QUE] Busca detalhes do evento e preenche Data Inicio/Fim/Qtd.
+ *                   [COMO] Consome o endpoint `api/ViagemEvento/ObterPorId`.
+ *
+ * 📥 ENTRADAS     : eventoId [string] - ID do evento selecionado.
+ *
+ * 📤 SAÍDAS       : Inputs de detalhe preenchidos.
+ *
+ * ⬅️ CHAMADO POR  : onEventoSelecionado(), ExibeViagem().
+ *
+ * ➡️ CHAMA        : limparDetalhesEventoSelecionado() quando vazio.
+ ****************************************************************************************/
+function atualizarDetalhesEventoSelecionado(eventoId)
+{
+    try
+    {
+        if (!eventoId)
+        {
+            limparDetalhesEventoSelecionado();
+            return;
+        }
+
+        /********************************************************************************
+         * [AJAX] Endpoint: GET /api/ViagemEvento/ObterPorId?id={eventoId}
+         * ------------------------------------------------------------------------------
+         * 📥 ENVIA        : eventoId (query param)
+         * 📤 RECEBE       : { success, data: { DataInicial, DataFinal, QtdParticipantes } }
+         * 🎯 MOTIVO       : Preencher dados basicos do evento na tela de Viagem
+         ********************************************************************************/
+        if (typeof FrotiXApi !== "undefined" && FrotiXApi?.get)
+        {
+            FrotiXApi.get("/api/ViagemEvento/ObterPorId?id=" + eventoId)
+                .then(function (response)
+                {
+                    try
+                    {
+                        if (!response?.success)
+                        {
+                            limparDetalhesEventoSelecionado();
+                            return;
+                        }
+
+                        const data = response.data || {};
+                        const dataInicio = data.DataInicial ? moment(data.DataInicial).format("DD/MM/YYYY") : "";
+                        const dataFim = data.DataFinal ? moment(data.DataFinal).format("DD/MM/YYYY") : "";
+
+                        $("#txtEventoDataInicio").val(dataInicio);
+                        $("#txtEventoDataFim").val(dataFim);
+                        $("#txtEventoQtdParticipantes").val(data.QtdParticipantes ?? "");
+                    }
+                    catch (error)
+                    {
+                        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "atualizarDetalhesEventoSelecionado.then", error);
+                    }
+                })
+                .catch(function (error)
+                {
+                    Alerta.TratamentoErroComLinha("ViagemUpsert.js", "atualizarDetalhesEventoSelecionado.catch", error);
+                });
+        }
+        else
+        {
+            $.ajax({
+                type: "GET",
+                url: "/api/ViagemEvento/ObterPorId",
+                data: { id: eventoId },
+                success: function (response)
+                {
+                    try
+                    {
+                        if (!response?.success)
+                        {
+                            limparDetalhesEventoSelecionado();
+                            return;
+                        }
+
+                        const data = response.data || {};
+                        const dataInicio = data.DataInicial ? moment(data.DataInicial).format("DD/MM/YYYY") : "";
+                        const dataFim = data.DataFinal ? moment(data.DataFinal).format("DD/MM/YYYY") : "";
+
+                        $("#txtEventoDataInicio").val(dataInicio);
+                        $("#txtEventoDataFim").val(dataFim);
+                        $("#txtEventoQtdParticipantes").val(data.QtdParticipantes ?? "");
+                    }
+                    catch (error)
+                    {
+                        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "atualizarDetalhesEventoSelecionado.ajax.success", error);
+                    }
+                },
+                error: function (error)
+                {
+                    Alerta.TratamentoErroComLinha("ViagemUpsert.js", "atualizarDetalhesEventoSelecionado.ajax.error", error);
+                }
+            });
+        }
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "atualizarDetalhesEventoSelecionado", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: limparDetalhesEventoSelecionado
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Evitar dados antigos quando nenhum evento esta selecionado.
+ *                   [O QUE] Limpa os campos basicos de evento.
+ *                   [COMO] Reseta valores dos inputs de detalhes.
+ *
+ * 📥 ENTRADAS     : Nenhuma.
+ *
+ * 📤 SAÍDAS       : Inputs limpos.
+ *
+ * ⬅️ CHAMADO POR  : onEventoSelecionado(), lstFinalidade_Change(), atualizarDetalhesEventoSelecionado().
+ ****************************************************************************************/
+function limparDetalhesEventoSelecionado()
+{
+    try
+    {
+        $("#txtEventoDataInicio").val("");
+        $("#txtEventoDataFim").val("");
+        $("#txtEventoQtdParticipantes").val("");
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "limparDetalhesEventoSelecionado", error);
     }
 }
 
@@ -1570,6 +1830,21 @@ $(document).ready(function ()
 
 //=================================================================
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: ExibeViagem
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Popular a tela com os dados da viagem recuperada.
+ *                   [O QUE] Preenche campos, aplica regras de status e habilita/desabilita UI.
+ *                   [COMO] Usa dados da API para setar combos, inputs e estados dos controles.
+ *
+ * 📥 ENTRADAS     : viagem [Object] - DTO retornado por /api/Agenda/RecuperaViagem.
+ *
+ * 📤 SAÍDAS       : UI preenchida e controles ajustados.
+ *
+ * ⬅️ CHAMADO POR  : ajax.RecuperaViagem.success.
+ *
+ * ➡️ CHAMA        : atualizarDetalhesEventoSelecionado(), limparDetalhesEventoSelecionado().
+ ****************************************************************************************/
 function ExibeViagem(viagem)
 {
     try
@@ -1583,17 +1858,26 @@ function ExibeViagem(viagem)
 
         if (viagem.eventoId != null)
         {
-            const ddtEventos = document.getElementById("ddtEventos").ej2_instances[0];
-            ddtEventos.enabled = true;
-            ddtEventos.value = [viagem.eventoId];
+            const ddlEvento = $("#ddlEvento").data("kendoDropDownList");
+            if (ddlEvento)
+            {
+                ddlEvento.enable(true);
+                ddlEvento.value(viagem.eventoId);
+            }
             document.getElementById("btnEvento").style.display = "block";
             $(".esconde-diveventos").show();
+            atualizarDetalhesEventoSelecionado(viagem.eventoId);
         } else
         {
-            const ddtEventos = document.getElementById("ddtEventos").ej2_instances[0];
-            ddtEventos.enabled = false;
+            const ddlEvento = $("#ddlEvento").data("kendoDropDownList");
+            if (ddlEvento)
+            {
+                ddlEvento.value("");
+                ddlEvento.enable(false);
+            }
             document.getElementById("btnEvento").style.display = "none";
             $(".esconde-diveventos").hide();
+            limparDetalhesEventoSelecionado();
         }
 
         if (viagem.setorSolicitanteId)
@@ -1697,7 +1981,8 @@ function ExibeViagem(viagem)
             // Kendo: Finalidade
             var ddlFin = $("#ddlFinalidade").data("kendoDropDownList");
             if (ddlFin) ddlFin.enable(false);
-            document.getElementById("ddtEventos").ej2_instances[0].enabled = false;
+            var ddlEvento = $("#ddlEvento").data("kendoDropDownList");
+            if (ddlEvento) ddlEvento.enable(false);
 
             ["btnRequisitante", "btnSetor", "btnEvento"].forEach((id) =>
             {
