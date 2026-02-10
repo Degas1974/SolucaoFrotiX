@@ -1,7 +1,7 @@
 {
     // === DIRETÓRIO PADRÃO DE TRABALHO ===
-    "copilot.defaultWorkingDirectory": "FrotiX.Site.2026.01",
-    "chat.defaultWorkingDirectory": "FrotiX.Site.2026.01",
+    "copilot.defaultWorkingDirectory": "FrotiX.Site.OLD",
+    "chat.defaultWorkingDirectory": "FrotiX.Site.OLD",
     
     "genieai.enableConversationHistory": true,
   

@@ -1,0 +1,28 @@
+# Contexto para Agentes de IA - Workspace Root
+
+## Diretorio de Trabalho
+**Projeto ativo principal:** `FrotiX.Site.OLD/`
+
+## Instrucoes para IAs
+
+- SEMPRE leia `RegrasDesenvolvimentoFrotiX.md` (neste diretorio) antes de qualquer tarefa
+- SEMPRE considere `FrotiX.Site.OLD/` como diretorio de trabalho padrao
+- Se o usuario pedir para memorizar algo, grave em `RegrasDesenvolvimentoFrotiX.md`
+- Se a tarefa envolver banco de dados, consulte `FrotiX.Site.OLD/FrotiX.sql`
+
+## Projetos
+
+| Projeto | Status | Descricao |
+|---------|--------|-----------|
+| `FrotiX.Site.OLD` | ATIVO | Projeto principal (Janeiro 2026) |
+| `FrotiX.Site.Fevereiro` | Em migracao | Projeto Fevereiro 2026 - trabalhar somente se solicitado |
+| `FrotiX.Api` | ATIVO | API backend |
+| `FrotiX.Site.Novo/OLD/Q4/Backup` | Legado | Nao modificar |
+
+## Stack
+
+- ASP.NET Core MVC (.NET 10)
+- C#, Entity Framework Core, SQL Server
+- Bootstrap 5.3, jQuery 3.7.1
+- Syncfusion EJ2, Telerik Kendo UI
+- Stimulsoft Reports, QuestPDF

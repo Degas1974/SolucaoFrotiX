@@ -7,9 +7,7 @@
 <!-- ============================================ -->
 <!-- GRUPO 1: DEPENDÊNCIAS BASE (ORDEM EXATA!) -->
 <!-- ============================================ -->
-<!-- 1. jQuery PRIMEIRO (antes de qualquer plugin que use $) -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"
-	integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<!-- jQuery 3.7.1 já carregado em _Head.cshtml (HEAD) para scripts inline -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"
 	asp-append-version="true"></script>
 
@@ -184,31 +182,8 @@
 <!-- GRUPO 3: FRAMEWORKS UI -->
 <!-- ============================================ -->
 
-<!-- ⚠️ ADICIONE O KENDO UI AQUI, ANTES DO VENDORS.BUNDLE.JS -->
-<!-- Kendo UI - CDN Oficial Telerik -->
-@* <link href="~/lib/kendo/styles/kendo.default-main.min.css" asp-append-version="true" rel="stylesheet" /> *@
-<script src="~/lib/kendo/js/jszip.min.js" asp-append-version="true"></script>
-<!-- Usar distribuição clássica (non-module) para evitar SyntaxError em browsers -->
-<script src="~/lib/kendo/js/kendo.all.min.js" asp-append-version="true"></script>
-<script src="~/lib/kendo/js/kendo.aspnetmvc.min.js" asp-append-version="true"></script>
-<!-- Cultura pt-BR para Kendo UI (DatePickers, etc.) -->
-<script src="~/lib/kendo/js/cultures/kendo.culture.pt-BR.min.js" asp-append-version="true"></script>
-<script src="~/lib/kendo/js/messages/kendo.messages.pt-BR.min.js" asp-append-version="true"></script>
-<script>
-	// Definir cultura padrão do Kendo UI para pt-BR
-	try {
-		if (typeof kendo !== 'undefined') {
-			kendo.culture("pt-BR");
-			console.log('✅ Kendo UI cultura pt-BR configurada');
-		}
-	} catch (error) {
-		if (window.Alerta && Alerta.TratamentoErroComLinha) {
-			Alerta.TratamentoErroComLinha("Pages/Shared/_ScriptsBasePlugins.cshtml", "kendo.culture", error);
-		} else {
-			console.error('Erro ao definir cultura do Kendo UI:', error);
-		}
-	}
-</script>
+<!-- Kendo UI movido para DEPOIS do vendors.bundle.js (GRUPO 3B) -->
+<!-- vendors.bundle.js contém jQuery 3.5.1 embutido que sobrescreve plugins -->
 
 <!-- PDF.js para o Kendo PDFViewer -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
@@ -387,11 +362,32 @@
 <script src="~/js/frotix.js" asp-append-version="true"></script>
 
 <!-- ============================================ -->
-<!-- GRUPO 4: BUNDLES DO PROJETO -->
+<!-- GRUPO 4: BIBLIOTECAS (ex-vendors.bundle.js)  -->
+<!-- Desmontado em CDNs individuais + local       -->
+<!-- jQuery, jQuery UI e Popper.js REMOVIDOS      -->
+<!-- (já em GRUPO 1, abaixo e Bootstrap bundle)   -->
 <!-- ============================================ -->
 
-<script src="~/js/vendors.bundle.js"></script>
-<script src="/js/shims/jquery.throttle-debounce.js"></script>
+<!-- Pace.js 1.2.4 - Barra de progresso de carregamento -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js"></script>
+
+<!-- jQuery UI 1.14.1 (antes de SmartPanels que usa $.ui.sortable) -->
+<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js"></script>
+
+<!-- jQuery Color 2.1.2 - Animações de cor jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-color/2.1.2/jquery.color.min.js"></script>
+
+<!-- jQuery throttle/debounce 1.1 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-throttle-debounce/1.1/jquery.ba-throttle-debounce.min.js"></script>
+
+<!-- jQuery slimScroll 1.3.8 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js"></script>
+
+<!-- Waves 0.7.6 - Efeito material design de ondas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/node-waves/0.7.6/waves.min.js"></script>
+
+<!-- SmartPanels 1.0.0 - Plugin proprietário SmartAdmin (extraído local) -->
+<script src="~/js/smartpanels.js" asp-append-version="true"></script>
 <script>
 	(function () {
 		if (!(window.bootstrap && (bootstrap.Dropdown || bootstrap.Tooltip || bootstrap.Popover))) return;
@@ -433,6 +429,37 @@
 <script src="~/js/loading_script.js"></script>
 
 <!-- ============================================ -->
+<!-- GRUPO 3B: KENDO UI - CDN OFICIAL TELERIK    -->
+<!-- Carregado após GRUPO 4 para garantir que    -->
+<!-- todas as dependências base estejam prontas   -->
+<!-- ============================================ -->
+
+<!-- Kendo UI 2025.4.1321 - CDN Oficial (mesma versão do NuGet Telerik.UI.for.AspNet.Core) -->
+<script src="https://kendo.cdn.telerik.com/2025.4.1321/js/kendo.all.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2025.4.1321/js/kendo.aspnetmvc.min.js"></script>
+
+<!-- Cultura pt-BR para Kendo UI (DatePickers, Grids, etc.) -->
+<script src="https://kendo.cdn.telerik.com/2025.4.1321/js/cultures/kendo.culture.pt-BR.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2025.4.1321/js/messages/kendo.messages.pt-BR.min.js"></script>
+<script>
+	// Definir cultura padrão do Kendo UI para pt-BR
+	try {
+		if (typeof kendo !== 'undefined') {
+			kendo.culture("pt-BR");
+			console.log('✅ Kendo UI 2025.4.1321 cultura pt-BR configurada (CDN)');
+		} else {
+			console.error('❌ Kendo UI não carregou do CDN');
+		}
+	} catch (error) {
+		if (window.Alerta && Alerta.TratamentoErroComLinha) {
+			Alerta.TratamentoErroComLinha("Pages/Shared/_ScriptsBasePlugins.cshtml", "kendo.culture", error);
+		} else {
+			console.error('Erro ao definir cultura do Kendo UI:', error);
+		}
+	}
+</script>
+
+<!-- ============================================ -->
 <!-- GRUPO 5: BIBLIOTECAS DE DADOS E TABELAS -->
 <!-- ============================================ -->
 <!-- Moment.js -->
@@ -459,8 +486,7 @@
 <!-- ============================================ -->
 <!-- GRUPO 6: BIBLIOTECAS UI E ALERTAS -->
 <!-- ============================================ -->
-<!-- jQuery UI -->
-<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js"></script>
+<!-- jQuery UI já carregado no GRUPO 4 (antes de SmartPanels) -->
 
 <!-- Toastr -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css">

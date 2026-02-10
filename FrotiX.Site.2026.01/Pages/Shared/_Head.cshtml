@@ -17,8 +17,9 @@
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="msapplication-tap-highlight" content="no">
 
-@* Jquery Mais Atualizado *@
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- jQuery 3.7.1 - Carregado cedo no HEAD para scripts inline nas páginas -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+	integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
 <link id="vendorsbundle" rel="stylesheet" media="screen, print" href="~/css/vendors.bundle.css">
 <link id="appbundle" rel="stylesheet" media="screen, print" href="~/css/app.bundle.css">
@@ -97,8 +98,9 @@
 <!-- Bootstrap 5.3.8 CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
 
-<!-- Kendo UI CSS -->
-<link rel="stylesheet" href="~/lib/kendo/styles/themes/bootstrap/bootstrap-main.css" asp-append-version="true" />
+<!-- Kendo UI CSS - CDN Oficial Telerik (Temas Modernos) -->
+<link rel="stylesheet" href="https://kendo.cdn.telerik.com/themes/10.0.0/bootstrap/bootstrap-main.css" />
+<link rel="stylesheet" href="https://unpkg.com/@@progress/kendo-font-icons/dist/index.css" />
 
 <!-- Google Fonts - Outfit Black -->
 <link rel="preconnect" href="https://fonts.googleapis.com">

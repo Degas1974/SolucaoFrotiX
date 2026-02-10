@@ -5,8 +5,8 @@
 		}
 	],
 	"settings": {
-		"copilot.defaultWorkingDirectory": "FrotiX.Site.2026.01",
-		"chat.defaultWorkingDirectory": "FrotiX.Site.2026.01",
+		"copilot.defaultWorkingDirectory": "FrotiX.Site.OLD",
+		"chat.defaultWorkingDirectory": "FrotiX.Site.OLD",
 		"workbench.view.alwaysShowHeaderActions": true,
 		"workbench.editor.enablePreview": false,
 		"workbench.editor.closeEmptyGroups": false,
