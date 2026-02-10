@@ -3385,6 +3385,23 @@
                     tpHoraFinal.dateInput.element.attr("placeholder", "HH:mm");
                 }
 
+                // Reforco tardio: alguns scripts podem recriar o input interno apos init
+                setTimeout(function () {
+                    try {
+                        $("#txtDataFinal").attr("placeholder", "dd/MM/yyyy");
+                        $("#txtHoraFinal").attr("placeholder", "HH:mm");
+
+                        if (dpDataFinal && dpDataFinal.dateInput && dpDataFinal.dateInput.element) {
+                            dpDataFinal.dateInput.element.attr("placeholder", "dd/MM/yyyy");
+                        }
+                        if (tpHoraFinal && tpHoraFinal.dateInput && tpHoraFinal.dateInput.element) {
+                            tpHoraFinal.dateInput.element.attr("placeholder", "HH:mm");
+                        }
+                    } catch (error) {
+                        Alerta.TratamentoErroComLinha("Upsert.cshtml", "placeholder.reinforce", error);
+                    }
+                }, 800);
+
                 // Estado inicial: desabilitar Hora Fim se Data Final não estiver preenchida
                 var dataFinalInicial = dpDataFinal.value();
                 if (!dataFinalInicial || !(dataFinalInicial instanceof Date) || isNaN(dataFinalInicial)) {
