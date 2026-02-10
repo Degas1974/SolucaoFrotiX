@@ -812,8 +812,10 @@ namespace FrotiX.Controllers
                         x.ResumoOcorrencia ,
                         x.Status ,
                         x.StatusAgendamento ,
-                        x.StatusCartaoAbastecimento ,
-                        x.StatusDocumento ,
+                        x.DocumentoEntregue ,
+                        x.DocumentoDevolvido ,
+                        x.CartaoAbastecimentoEntregue ,
+                        x.CartaoAbastecimentoDevolvido ,
                         x.StatusOcorrencia ,
                         x.ViagemId ,
                         x.MotoristaId ,
@@ -3117,8 +3119,10 @@ namespace FrotiX.Controllers
                 objViagem.CombustivelFinal = viagem.CombustivelFinal;
                 objViagem.Descricao = viagem.Descricao;
                 objViagem.Status = "Realizada";
-                objViagem.StatusDocumento = viagem.StatusDocumento;
-                objViagem.StatusCartaoAbastecimento = viagem.StatusCartaoAbastecimento;
+                objViagem.DocumentoEntregue = viagem.DocumentoEntregue;
+                objViagem.DocumentoDevolvido = viagem.DocumentoDevolvido;
+                objViagem.CartaoAbastecimentoEntregue = viagem.CartaoAbastecimentoEntregue;
+                objViagem.CartaoAbastecimentoDevolvido = viagem.CartaoAbastecimentoDevolvido;
 
                 // 3. REGISTRA USUÁRIO E DATA DE FINALIZAÇÃO
                 ClaimsPrincipal currentUser = this.User;
@@ -3550,13 +3554,13 @@ namespace FrotiX.Controllers
                     temRubricaInicial = rubricaInicial != null ,
                     temRubricaFinal = rubricaFinal != null ,
                     // Documentos/Itens Entregues (Vistoria Inicial)
-                    statusDocumento = viagem.StatusDocumento ?? "" ,
-                    statusCartaoAbastecimento = viagem.StatusCartaoAbastecimento ?? "" ,
+                    documentoEntregue = viagem.DocumentoEntregue ?? false ,
+                    cartaoAbastecimentoEntregue = viagem.CartaoAbastecimentoEntregue ?? false ,
                     cintaEntregue = viagem.CintaEntregue ?? false ,
                     tabletEntregue = viagem.TabletEntregue ?? false ,
                     // Documentos/Itens Devolvidos (Vistoria Final)
-                    statusDocumentoFinal = viagem.StatusDocumentoFinal ?? "" ,
-                    statusCartaoAbastecimentoFinal = viagem.StatusCartaoAbastecimentoFinal ?? "" ,
+                    documentoDevolvido = viagem.DocumentoDevolvido ?? false ,
+                    cartaoAbastecimentoDevolvido = viagem.CartaoAbastecimentoDevolvido ?? false ,
                     cintaDevolvida = viagem.CintaDevolvida ?? false ,
                     tabletDevolvido = viagem.TabletDevolvido ?? false ,
                     // Ocorrências

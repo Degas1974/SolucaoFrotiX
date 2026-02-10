@@ -65,9 +65,13 @@ namespace FrotiX.Models
 
         public string? DescricaoVeiculo { get; set; }
 
-        public string? StatusDocumento { get; set; }
+        public bool? DocumentoEntregue { get; set; }
 
-        public string? StatusCartaoAbastecimento { get; set; }
+        public bool? DocumentoDevolvido { get; set; }
+
+        public bool? CartaoAbastecimentoEntregue { get; set; }
+
+        public bool? CartaoAbastecimentoDevolvido { get; set; }
 
         public string? Finalidade { get; set; }
 

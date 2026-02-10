@@ -1105,8 +1105,8 @@ $("#modalFinalizaViagem").on("shown.bs.modal", function (event)
                 rteDescricao.ej2_instances[0].readonly = true;
             }
 
-            $("#chkStatusDocumento").prop("checked", data.statusDocumento).prop("disabled", true);
-            $("#chkStatusCartaoAbastecimento").prop("checked", data.statusCartaoAbastecimento).prop("disabled", true);
+            $("#chkStatusDocumento").prop("checked", data.documentoEntregue === true).prop("disabled", true);
+            $("#chkStatusCartaoAbastecimento").prop("checked", data.cartaoAbastecimentoEntregue === true).prop("disabled", true);
 
             calcularDistanciaViagem();
             calcularDuracaoViagem();
@@ -2003,8 +2003,20 @@ function ListaTodasViagens()
                 { data: "combustivelFinal" },
                 { data: "resumoOcorrencia" },
                 { data: "descricaoOcorrencia" },
-                { data: "statusDocumento" },
-                { data: "statusCartaoAbastecimento" },
+                {
+                    data: "documentoEntregue",
+                    render: function (data)
+                    {
+                        return data === true ? "Entregue" : (data === false ? "Devolvido" : "");
+                    }
+                },
+                {
+                    data: "cartaoAbastecimentoEntregue",
+                    render: function (data)
+                    {
+                        return data === true ? "Entregue" : (data === false ? "Devolvido" : "");
+                    }
+                },
                 { data: "descricao" },
                 { data: "imagemOcorrencia" }
             ],
@@ -2236,8 +2248,10 @@ $("#btnFinalizarViagem").click(async function (e)
         // ✅ TODAS AS VALIDAÇÕES PASSARAM - PREPARANDO DADOS
         console.log("✅ Todas as validações passaram! Preparando dados para gravação...");
 
-        const statusDocumento = $("#chkStatusDocumento").prop("checked") ? "Entregue" : "Ausente";
-        const statusCartaoAbastecimento = $("#chkStatusCartaoAbastecimento").prop("checked") ? "Entregue" : "Ausente";
+        const documentoEntregue = $("#chkStatusDocumento").prop("checked") === true;
+        const documentoDevolvido = !documentoEntregue;
+        const cartaoAbastecimentoEntregue = $("#chkStatusCartaoAbastecimento").prop("checked") === true;
+        const cartaoAbastecimentoDevolvido = !cartaoAbastecimentoEntregue;
 
         var descricaoElement = document.getElementById("rteDescricao");
         var descricao = descricaoElement?.ej2_instances?.[0];
@@ -2261,8 +2275,10 @@ $("#btnFinalizarViagem").click(async function (e)
             HoraFim: $("#txtHoraFinal").val(),
             KmFinal: $("#txtKmFinal").val(),
             CombustivelFinal: nivelcombustivel,
-            StatusDocumento: statusDocumento,
-            StatusCartaoAbastecimento: statusCartaoAbastecimento,
+            DocumentoEntregue: documentoEntregue,
+            DocumentoDevolvido: documentoDevolvido,
+            CartaoAbastecimentoEntregue: cartaoAbastecimentoEntregue,
+            CartaoAbastecimentoDevolvido: cartaoAbastecimentoDevolvido,
             Descricao: descricao?.value || "",
             Ocorrencias: ocorrenciasParaEnviar  // ✅ NOVO: Lista de ocorrências
         };

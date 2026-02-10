@@ -223,10 +223,14 @@ namespace FrotiX.Models
         public DateTime? HoraFim { get; set; }
         // Km final registrado.
         public int? KmFinal { get; set; }
-        // Status do cartão de abastecimento.
-        public string? StatusCartaoAbastecimento { get; set; }
-        // Status do documento.
-        public string? StatusDocumento { get; set; }
+        // Indica se o documento foi entregue.
+        public bool? DocumentoEntregue { get; set; }
+        // Indica se o documento foi devolvido.
+        public bool? DocumentoDevolvido { get; set; }
+        // Indica se o cartão de abastecimento foi entregue.
+        public bool? CartaoAbastecimentoEntregue { get; set; }
+        // Indica se o cartão de abastecimento foi devolvido.
+        public bool? CartaoAbastecimentoDevolvido { get; set; }
         // Identificador da viagem.
         public Guid ViagemId { get; set; }
 

@@ -423,32 +423,32 @@
                                     <div class="row g-3">
                                         <div class="col-6 col-md-3">
                                             <div class="form-check form-switch">
-                                                <input type="hidden" id="hidStatusDocumento"
-                                                    name="ViagemObj.Viagem.StatusDocumento"
-                                                    value="@(Model.ViagemObj?.Viagem?.StatusDocumento == "Entregue" ? "Entregue" : "")" />
+                                                <input type="hidden" id="hidDocumentoEntregue"
+                                                    name="ViagemObj.Viagem.DocumentoEntregue"
+                                                    value="@(Model.ViagemObj?.Viagem?.DocumentoEntregue == true ? "true" : "false")" />
                                                 <input class="form-check-input" type="checkbox" id="chkStatusDocumento"
-                                                    @(Model.ViagemObj?.Viagem?.StatusDocumento == "Entregue" ? "checked" : "") @(viagemFinalizada ? "disabled" : "")
-                                                    onchange="document.getElementById('hidStatusDocumento').value = this.checked ? 'Entregue' : '';">
+                                                    @(Model.ViagemObj?.Viagem?.DocumentoEntregue == true ? "checked" : "") @(viagemFinalizada ? "disabled" : "")
+                                                    onchange="document.getElementById('hidDocumentoEntregue').value = this.checked ? 'true' : 'false';">
                                                 <label class="form-check-label fw-semibold" for="chkStatusDocumento">
                                                     <i class="fa-duotone fa-file-check me-1 text-success"></i>
-                                                    Documento
+                                                    Documento Entregue
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="col-6 col-md-3">
                                             <div class="form-check form-switch">
-                                                <input type="hidden" id="hidStatusCartaoAbastecimento"
-                                                    name="ViagemObj.Viagem.StatusCartaoAbastecimento"
-                                                    value="@(Model.ViagemObj?.Viagem?.StatusCartaoAbastecimento == "Entregue" ? "Entregue" : "")" />
+                                                <input type="hidden" id="hidCartaoAbastecimentoEntregue"
+                                                    name="ViagemObj.Viagem.CartaoAbastecimentoEntregue"
+                                                    value="@(Model.ViagemObj?.Viagem?.CartaoAbastecimentoEntregue == true ? "true" : "false")" />
                                                 <input class="form-check-input" type="checkbox"
                                                     id="chkStatusCartaoAbastecimento"
-                                                    @(Model.ViagemObj?.Viagem?.StatusCartaoAbastecimento == "Entregue" ?
+                                                    @(Model.ViagemObj?.Viagem?.CartaoAbastecimentoEntregue == true ?
                                                                                                         "checked" : "") @(viagemFinalizada ? "disabled" : "")
-                                                    onchange="document.getElementById('hidStatusCartaoAbastecimento').value = this.checked ? 'Entregue' : '';">
+                                                    onchange="document.getElementById('hidCartaoAbastecimentoEntregue').value = this.checked ? 'true' : 'false';">
                                                 <label class="form-check-label fw-semibold"
                                                     for="chkStatusCartaoAbastecimento">
                                                     <i class="fa-duotone fa-credit-card me-1 text-success"></i>
-                                                    Cartão Abastecimento
+                                                    Cartão Abastecimento Entregue
                                                 </label>
                                             </div>
                                         </div>
@@ -665,35 +665,35 @@
                                     <div class="row g-3">
                                         <div class="col-6 col-md-3">
                                             <div class="form-check form-switch">
-                                                <input type="hidden" id="hidStatusDocumentoFinal"
-                                                    name="ViagemObj.Viagem.StatusDocumentoFinal"
-                                                    value="@(Model.ViagemObj?.Viagem?.StatusDocumentoFinal == "Devolvido" ? "Devolvido" : "")" />
+                                                <input type="hidden" id="hidDocumentoDevolvido"
+                                                    name="ViagemObj.Viagem.DocumentoDevolvido"
+                                                    value="@(Model.ViagemObj?.Viagem?.DocumentoDevolvido == true ? "true" : "false")" />
                                                 <input class="form-check-input" type="checkbox"
                                                     id="chkStatusDocumentoFinal"
-                                                    @(Model.ViagemObj?.Viagem?.StatusDocumentoFinal == "Devolvido" ?
+                                                    @(Model.ViagemObj?.Viagem?.DocumentoDevolvido == true ?
                                                                                                         "checked" : "") @(viagemFinalizada ? "disabled" : "")
-                                                    onchange="document.getElementById('hidStatusDocumentoFinal').value = this.checked ? 'Devolvido' : '';">
+                                                    onchange="document.getElementById('hidDocumentoDevolvido').value = this.checked ? 'true' : 'false';">
                                                 <label class="form-check-label fw-semibold"
                                                     for="chkStatusDocumentoFinal">
                                                     <i class="fa-duotone fa-file-check me-1 text-info"></i>
-                                                    Documento
+                                                    Documento Devolvido
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="col-6 col-md-3">
                                             <div class="form-check form-switch">
-                                                <input type="hidden" id="hidStatusCartaoAbastecimentoFinal"
-                                                    name="ViagemObj.Viagem.StatusCartaoAbastecimentoFinal"
-                                                    value="@(Model.ViagemObj?.Viagem?.StatusCartaoAbastecimentoFinal == "Devolvido" ? "Devolvido" : "")" />
+                                                <input type="hidden" id="hidCartaoAbastecimentoDevolvido"
+                                                    name="ViagemObj.Viagem.CartaoAbastecimentoDevolvido"
+                                                    value="@(Model.ViagemObj?.Viagem?.CartaoAbastecimentoDevolvido == true ? "true" : "false")" />
                                                 <input class="form-check-input" type="checkbox"
                                                     id="chkStatusCartaoAbastecimentoFinal"
-                                                    @(Model.ViagemObj?.Viagem?.StatusCartaoAbastecimentoFinal ==
-                                                                                                        "Devolvido" ? "checked" : "") @(viagemFinalizada ? "disabled" : "")
-                                                    onchange="document.getElementById('hidStatusCartaoAbastecimentoFinal').value = this.checked ? 'Devolvido' : '';">
+                                                    @(Model.ViagemObj?.Viagem?.CartaoAbastecimentoDevolvido ==
+                                                                                                        true ? "checked" : "") @(viagemFinalizada ? "disabled" : "")
+                                                    onchange="document.getElementById('hidCartaoAbastecimentoDevolvido').value = this.checked ? 'true' : 'false';">
                                                 <label class="form-check-label fw-semibold"
                                                     for="chkStatusCartaoAbastecimentoFinal">
                                                     <i class="fa-duotone fa-credit-card me-1 text-info"></i>
-                                                    Cartão Abastecimento
+                                                    Cartão Abastecimento Devolvido
                                                 </label>
                                             </div>
                                         </div>

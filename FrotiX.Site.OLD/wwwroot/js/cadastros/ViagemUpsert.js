@@ -6092,9 +6092,8 @@ function carregarDocumentosItensMobile(data)
         const chkCintaEntregue = document.getElementById('chkCintaEntregueMobile');
         const chkTabletEntregue = document.getElementById('chkTabletEntregueMobile');
         
-        // StatusDocumento: checkbox marcado se não estiver vazio
-        if (chkStatusDocumento) chkStatusDocumento.checked = !!(data.statusDocumento && data.statusDocumento.trim() !== '');
-        if (chkStatusCartao) chkStatusCartao.checked = !!(data.statusCartaoAbastecimento && data.statusCartaoAbastecimento.trim() !== '');
+        if (chkStatusDocumento) chkStatusDocumento.checked = data.documentoEntregue === true;
+        if (chkStatusCartao) chkStatusCartao.checked = data.cartaoAbastecimentoEntregue === true;
         if (chkCintaEntregue) chkCintaEntregue.checked = data.cintaEntregue === true;
         if (chkTabletEntregue) chkTabletEntregue.checked = data.tabletEntregue === true;
         
@@ -6104,8 +6103,8 @@ function carregarDocumentosItensMobile(data)
         const chkCintaDevolvida = document.getElementById('chkCintaDevolvidaMobile');
         const chkTabletDevolvido = document.getElementById('chkTabletDevolvidoMobile');
         
-        if (chkStatusDocumentoFinal) chkStatusDocumentoFinal.checked = !!(data.statusDocumentoFinal && data.statusDocumentoFinal.trim() !== '');
-        if (chkStatusCartaoFinal) chkStatusCartaoFinal.checked = !!(data.statusCartaoAbastecimentoFinal && data.statusCartaoAbastecimentoFinal.trim() !== '');
+        if (chkStatusDocumentoFinal) chkStatusDocumentoFinal.checked = data.documentoDevolvido === true;
+        if (chkStatusCartaoFinal) chkStatusCartaoFinal.checked = data.cartaoAbastecimentoDevolvido === true;
         if (chkCintaDevolvida) chkCintaDevolvida.checked = data.cintaDevolvida === true;
         if (chkTabletDevolvido) chkTabletDevolvido.checked = data.tabletDevolvido === true;
     }
