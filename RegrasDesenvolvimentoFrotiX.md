@@ -715,82 +715,103 @@ git push origin main
 
 #### 5.3.3 Estrutura Obrigatória do Arquivo
 
-Todo arquivo de conversa DEVE conter as seguintes seções:
+Todo arquivo de conversa DEVE conter as seguintes seções. O template abaixo usa **tabelas visuais
+com ícones** para facilitar a leitura e identificação rápida das informações.
+
+**IMPORTANTE:** Ao finalizar uma conversa (Ctrl+Shift+F ou manualmente), a IA DEVE gerar o resumo
+final completo seguindo EXATAMENTE este template visual. Todas as seções são obrigatórias.
 
 ```markdown
 # [NOME DA CONVERSA]
 
-**Data/Hora de Início**: YYYY-MM-DD HH:mm:ss
-**Data/Hora de Término**: YYYY-MM-DD HH:mm:ss (atualizado ao final)
-**Duração Total**: X minutos/horas
-**Continuação de**: [Nome da conversa anterior] ou "Conversa nova"
-**IA Utilizada**: [Nome da IA - Modelo]
-
----
-
 ## Resumo Executivo
 
-[Descrição concisa do que foi feito na sessão - 2-3 parágrafos]
+[Descrição concisa do que foi feito na sessão - 2-3 parágrafos máximo]
 
 ---
 
-## Arquivos Criados/Modificados
+## ⏱️ Informações da Sessão
 
-### 1. [NomeArquivo.ext]
-- **Ação**: Criado/Modificado/Deletado
-- **Motivo**: Por que este arquivo foi alterado
-- **Principais mudanças**:
-  - Mudança 1
-  - Mudança 2
-
-### 2. [OutroArquivo.ext]
-[...]
+| ⏱️ Tempo | 📋 Detalhes |
+|----------|-------------|
+| **Início** | YYYY-MM-DD HH:mm:ss |
+| **Término** | YYYY-MM-DD HH:mm:ss |
+| **Duração** | Xh XXmin |
+| **IA** | [Nome da IA - Modelo] |
+| **Continuação de** | [Nome da conversa anterior] ou "Conversa nova" |
 
 ---
 
-## Problemas Encontrados e Soluções
+## 📁 Arquivos Alterados
 
-### Problema 1: [Título]
-**Descrição**: [O que aconteceu]
-**Causa Raiz**: [Por que aconteceu]
-**Solução**: [Como foi resolvido]
-**Lição Aprendida**: [O que aprender para evitar no futuro]
+| Ação | Arquivo | Motivo |
+|------|---------|--------|
+| ➕ Criado | `caminho/NomeArquivo.ext` | Por que foi criado |
+| ✏️ Modificado | `caminho/OutroArquivo.ext` | O que foi alterado e por quê |
+| 🗑️ Removido | `caminho/ArquivoAntigo.ext` | Por que foi removido |
+
+**Legenda:** ➕ Criado | ✏️ Modificado | 🗑️ Removido
 
 ---
 
-## Decisões Técnicas
+## 🐛 Problemas Encontrados e Soluções
+
+| # | Problema | Causa Raiz | Solução | Lição Aprendida |
+|---|---------|------------|---------|-----------------|
+| 1 | [Título do problema] | [Por que aconteceu] | [Como foi resolvido] | [O que aprender] |
+| 2 | [Título do problema] | [Por que aconteceu] | [Como foi resolvido] | [O que aprender] |
+
+> Se nenhum problema foi encontrado, escrever: "Nenhum problema encontrado nesta sessão."
+
+---
+
+## 🔧 Decisões Técnicas
 
 ### 1. [Nome da Decisão]
-**Decisão**: [O que foi decidido]
-**Justificativa**: [Por que esta foi a melhor escolha]
-**Alternativas Consideradas**: [Outras opções que foram descartadas]
-**Impacto**: [Consequências desta decisão]
+| Aspecto | Detalhe |
+|---------|---------|
+| **Decisão** | O que foi decidido |
+| **Justificativa** | Por que esta foi a melhor escolha |
+| **Alternativas** | Outras opções descartadas e por quê |
+| **Impacto** | Consequências desta decisão |
+
+> Repetir tabela para cada decisão técnica tomada.
 
 ---
 
-## Tarefas Pendentes
+## 📋 Tarefas Pendentes
 
-- [ ] Tarefa 1
-- [ ] Tarefa 2
-- [ ] Tarefa 3
-
----
-
-## Continuidade
-
-**Próximos Passos**: [O que deve ser feito na próxima sessão]
-**Contexto para Próxima Sessão**: [Informações importantes para continuar o trabalho]
+- [ ] Tarefa pendente 1
+- [ ] Tarefa pendente 2
+- [x] Tarefa concluída 1
+- [x] Tarefa concluída 2
 
 ---
 
-## Status Final
+## 🔄 Continuidade
 
-✅ **CONVERSA FINALIZADA COM SUCESSO**
+| Item | Detalhe |
+|------|---------|
+| **Próximos Passos** | O que deve ser feito na próxima sessão |
+| **Contexto Necessário** | Informações importantes para continuar o trabalho |
+| **Arquivos-Chave** | Arquivos que a próxima sessão deve consultar |
+| **Riscos/Alertas** | Pontos de atenção para a continuidade |
 
-**Objetivos alcançados:**
-- ✅ Objetivo 1
-- ✅ Objetivo 2
-- ✅ Objetivo 3
+---
+
+## ✅ Status Final
+
+| Objetivo | Status |
+|----------|--------|
+| Objetivo 1 | ✅ Concluído |
+| Objetivo 2 | ✅ Concluído |
+| Objetivo 3 | ⬜ Pendente (próxima sessão) |
+
+**Estatísticas:**
+- Arquivos criados: X
+- Arquivos modificados: X
+- Arquivos removidos: X
+- Commits realizados: X
 
 ---
 
