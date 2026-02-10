@@ -1,7 +1,7 @@
 # Documentação: Alertas FrotiX (Upsert)
 
-> **Última Atualização**: 10/02/2026 01:20
-> **Versão Atual**: 2.1
+> **Última Atualização**: 10/02/2026 01:30
+> **Versão Atual**: 2.2
 
 ---
 
@@ -223,6 +223,22 @@ Retorna a foto do motorista em Base64 para o template do ComboBox.
 > **FORMATO**: Entradas em ordem **decrescente** (mais recente primeiro)
 
 ---
+
+## [10/02/2026 01:30] - FIX: Guard na validacao de Hora Final
+
+**Descricao**: Evita erro quando `ValidadorFinalizacaoIA.obterInstancia` nao existe
+e garante strings de data ao validar duracao.
+
+**Mudancas**:
+1. **Guard**: verifica existencia de `obterInstancia` antes de chamar.
+2. **Datas**: formata `dataInicial` e `dataFinal` antes da analise.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.2
 
 ## [10/02/2026 01:20] - FIX: Toast padrao na confirmacao de datas
 

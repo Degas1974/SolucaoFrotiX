@@ -976,9 +976,11 @@ $("#txtHoraFinal").focusout(async function ()
         calcularDuracaoViagem();
 
         // VALIDAÇÃO IA: Análise de duração (se disponível)
-        if (typeof ValidadorFinalizacaoIA !== 'undefined')
+        if (typeof ValidadorFinalizacaoIA !== 'undefined' && typeof ValidadorFinalizacaoIA.obterInstancia === "function")
         {
             const validador = ValidadorFinalizacaoIA.obterInstancia();
+            const dataInicialStr = moment(dataInicial).format("YYYY-MM-DD");
+            const dataFinalStr = moment(dataFinal).format("YYYY-MM-DD");
             const dadosDatas = {
                 dataInicial: dataInicialStr,
                 horaInicial: horaInicial,
@@ -1001,6 +1003,13 @@ $("#txtHoraFinal").focusout(async function ()
                     $("#txtDuracao").val("");
                     return;
                 }
+            }
+        }
+        else if (typeof ValidadorFinalizacaoIA !== 'undefined')
+        {
+            if (window.console && typeof console.warn === "function")
+            {
+                console.warn("ValidadorFinalizacaoIA.obterInstancia indisponivel. Validacao IA ignorada.");
             }
         }
     }
