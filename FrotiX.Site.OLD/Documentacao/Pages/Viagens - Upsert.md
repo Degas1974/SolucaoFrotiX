@@ -1,7 +1,7 @@
 # Documentação: Alertas FrotiX (Upsert)
 
-> **Última Atualização**: 10/02/2026 02:20
-> **Versão Atual**: 2.6
+> **Última Atualização**: 10/02/2026 02:30
+> **Versão Atual**: 2.7
 
 ---
 
@@ -223,6 +223,21 @@ Retorna a foto do motorista em Base64 para o template do ComboBox.
 > **FORMATO**: Entradas em ordem **decrescente** (mais recente primeiro)
 
 ---
+
+## [10/02/2026 02:30] - FIX: Await na confirmacao de intervalo
+
+**Descricao**: A validacao de intervalo (`validarDatasInicialFinal`) passou a ser
+aguardada com `await` para evitar rejeicoes nao tratadas e loops de erro.
+
+**Mudancas**:
+1. **Data Final**: aguarda retorno da confirmacao antes de continuar validacao.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.7
 
 ## [10/02/2026 02:20] - FIX: Guardas anti-reentrada nas validacoes
 
