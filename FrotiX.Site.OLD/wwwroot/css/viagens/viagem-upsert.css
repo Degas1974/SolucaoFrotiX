@@ -351,6 +351,8 @@ img[alt="Foto"]:not([src]) {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 #cmbMotorista_listbox .k-list-item-text,
@@ -359,6 +361,8 @@ img[alt="Foto"]:not([src]) {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 #cmbMotorista_listbox .motorista-item {
@@ -370,6 +374,15 @@ img[alt="Foto"]:not([src]) {
     display: flex;
     justify-content: center;
     align-items: center;
+    text-align: center;
+}
+
+.k-dropdownlist[aria-controls="cmbMotorista_listbox"] .k-input-value-text,
+.k-dropdownlist[aria-controls="cmbMotorista_listbox"] .k-input-inner .k-input-value-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
     text-align: center;
 }
 
