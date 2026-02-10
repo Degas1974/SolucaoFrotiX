@@ -135,6 +135,26 @@ function calcularDuracaoViagem() {
 }
 ```
 
+### Padrao de Data/Hora Inicial e Bloqueio de Data Final
+Quando a viagem e criada sem valores preexistentes, os campos **Data Inicial** e **Hora Inicio**
+sao preenchidos automaticamente com a data de hoje e a hora atual. A **Data Final** passa a
+ter minimo dinamico igual a **Data Inicial**, impedindo selecao ou digitacao de datas anteriores.
+
+```javascript
+// Data Inicial: default para hoje quando vazio
+var dpDataInicial = $("#txtDataInicial").kendoDatePicker({
+    value: new Date(agora.getFullYear(), agora.getMonth(), agora.getDate())
+}).data("kendoDatePicker");
+
+// Hora Inicio: default para agora quando vazio
+var tpHoraInicial = $("#txtHoraInicial").kendoTimePicker({
+    value: new Date(0, 0, 0, agora.getHours(), agora.getMinutes(), 0, 0)
+}).data("kendoTimePicker");
+
+// Data Final: minimo dinamico igual a Data Inicial
+dpDataFinal.min(dpDataInicial.value());
+```
+
 ### Proteção de Dados
 O sistema detecta alterações no formulário e alerta o usuário se ele tentar sair sem salvar.
 
@@ -190,6 +210,24 @@ Retorna a foto do motorista em Base64 para o template do ComboBox.
 > **FORMATO**: Entradas em ordem **decrescente** (mais recente primeiro)
 
 ---
+
+## [10/02/2026 00:00] - FIX: Data/Hora Inicial padrao e minimo da Data Final
+
+**Descricao**: Ajuste para preencher automaticamente **Data Inicial** e **Hora Inicio** com
+data de hoje e hora atual quando nao houver valor no model. A **Data Final** passa a ter
+minimo dinamico igual a **Data Inicial**, bloqueando datas anteriores e limpando valor invalido.
+
+**Mudancas**:
+1. **Data Inicial**: default para hoje quando nulo.
+2. **Hora Inicio**: default para hora atual quando nula.
+3. **Data Final**: minimo dinamico baseado na Data Inicial e validacao de coerencia.
+
+**Arquivos Afetados**:
+- `Pages/Viagens/Upsert.cshtml`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 1.6
 
 ## [16/01/2026 18:15] - REFACTOR: Migração para Comparador Compartilhado
 

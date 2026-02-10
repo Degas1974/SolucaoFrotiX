@@ -3220,6 +3220,8 @@
                 var dataMinima = new Date();
                 dataMinima.setDate(dataMinima.getDate() - 15);
                 var dataMaxima = new Date();
+            var agora = new Date();
+            var horaAgora = new Date(0, 0, 0, agora.getHours(), agora.getMinutes(), 0, 0);
 
                 // Garantir mensagens pt-BR no DateInput antes de criar os controles
                 if (window.kendo && kendo.ui && kendo.ui.DateInput) {
@@ -3250,7 +3252,7 @@
                     placeholder: "dd/MM/yyyy",
                     value: @Html.Raw(Model.ViagemObj?.Viagem?.DataInicial != null ? 
                         $"new Date({Model.ViagemObj.Viagem.DataInicial.Value.Year}, {Model.ViagemObj.Viagem.DataInicial.Value.Month - 1}, {Model.ViagemObj.Viagem.DataInicial.Value.Day})" : 
-                        "null"),
+                        "new Date(agora.getFullYear(), agora.getMonth(), agora.getDate())"),
                     change: function(e) {
                         try {
                             var dataInicial = this.value();
@@ -3261,6 +3263,7 @@
                                 }, 100);
                                 dpDataInicial.value(null);
                             }
+                            aplicarMinimoDataFinal(dataInicial);
                         } catch (error) {
                             Alerta.TratamentoErroComLinha("Upsert.cshtml", "dpDataInicial.change", error);
                         }
@@ -3282,18 +3285,95 @@
                     placeholder: "HH:mm",
                     value: @Html.Raw(Model.ViagemObj?.Viagem?.HoraInicio != null ? 
                         $"new Date(0,0,0,{Model.ViagemObj.Viagem.HoraInicio.Value.Hour},{Model.ViagemObj.Viagem.HoraInicio.Value.Minute})" : 
-                        "null")
+                        "horaAgora")
                 }).data("kendoTimePicker");
 
+                /****************************************************************************************
+                 * FUNCAO: aplicarMinimoDataFinal
+                 * --------------------------------------------------------------------------------------
+                 * OBJETIVO     : [PORQUE] Garantir que a Data Final nunca aceite datas anteriores a
+                 *               Data Inicial, evitando inconsistencias no periodo da viagem.
+                 *               [O QUE] Atualiza o minimo do DatePicker de Data Final e limpa valores
+                 *               invalidos quando necessario.
+                 *               [COMO] Normaliza a Data Inicial, aplica em dpDataFinal.min(), valida o
+                 *               valor atual e aciona o controle de Hora Fim.
+                 *
+                 * ENTRADAS     : dataInicial [Date|null] - Data Inicial selecionada no picker.
+                 *
+                 * SAIDAS       : void - Atualiza limites do DatePicker e estado da Hora Fim.
+                 *
+                 * CHAMADO POR  : dpDataInicial.change (este bloco)
+                 *
+                 * CHAMA        : validarDataFinalEControlarHoraFim()
+                 *
+                 * OBSERVACOES  : Quando dataInicial e nula, o minimo volta para dataMinima.
+                 ****************************************************************************************/
+                function aplicarMinimoDataFinal(dataInicial) {
+                    try {
+                        if (!dpDataFinal) return;
+
+                        var baseMin = (dataInicial && dataInicial instanceof Date && !isNaN(dataInicial))
+                            ? new Date(dataInicial.getFullYear(), dataInicial.getMonth(), dataInicial.getDate())
+                            : dataMinima;
+
+                        dpDataFinal.min(baseMin);
+
+                        var dataFinalAtual = dpDataFinal.value();
+                        if (dataFinalAtual && dataFinalAtual instanceof Date && !isNaN(dataFinalAtual)) {
+                            if (dataFinalAtual < baseMin) {
+                                dpDataFinal.value(null);
+                            }
+                        }
+
+                        validarDataFinalEControlarHoraFim();
+                    } catch (error) {
+                        Alerta.TratamentoErroComLinha("Upsert.cshtml", "aplicarMinimoDataFinal", error);
+                    }
+                }
+
                 // Função auxiliar para validar Data Final e habilitar/desabilitar Hora Fim
+                /****************************************************************************************
+                 * FUNCAO: validarDataFinalEControlarHoraFim
+                 * --------------------------------------------------------------------------------------
+                 * OBJETIVO     : [PORQUE] Manter coerencia entre Data Final e Hora Fim e evitar
+                 *               periodos invalidos no cadastro da viagem.
+                 *               [O QUE] Valida Data Final, compara com Data Inicial e habilita ou
+                 *               desabilita a Hora Fim conforme a validade.
+                 *               [COMO] Le os valores dos Kendo DatePicker/TimePicker, limpa quando
+                 *               invalido e dispara alerta amigavel quando necessario.
+                 *
+                 * ENTRADAS     : Nenhuma (usa dpDataInicial, dpDataFinal, tpHoraFinal).
+                 *
+                 * SAIDAS       : void - Atualiza o estado do TimePicker e valores associados.
+                 *
+                 * CHAMADO POR  : dpDataFinal.change, txtDataFinal.blur, aplicarMinimoDataFinal()
+                 *
+                 * CHAMA        : Alerta.Warning(), tpHoraFinal.enable(), tpHoraFinal.value()
+                 *
+                 * OBSERVACOES  : Se Data Final for anterior a Data Inicial, a Data Final e limpa.
+                 ****************************************************************************************/
                 function validarDataFinalEControlarHoraFim() {
                     try {
                         if (!dpDataFinal || !tpHoraFinal) return;
-                        
+
                         var dataFinal = dpDataFinal.value();
-                        
-                        // Habilitar/desabilitar Hora Fim com base na Data Final
+                        var dataInicial = dpDataInicial ? dpDataInicial.value() : null;
+
                         if (dataFinal && dataFinal instanceof Date && !isNaN(dataFinal)) {
+                            if (dataInicial && dataInicial instanceof Date && !isNaN(dataInicial)) {
+                                if (dataFinal < dataInicial) {
+                                    Alerta.Warning(
+                                        "Data Final invalida",
+                                        "A <strong>Data Final</strong> deve ser maior ou igual a <strong>Data Inicial</strong>.",
+                                        "OK"
+                                    );
+                                    dpDataFinal.value(null);
+                                    tpHoraFinal.enable(false);
+                                    tpHoraFinal.value(null);
+                                    return;
+                                }
+                            }
+
                             tpHoraFinal.enable(true);
                         } else {
                             tpHoraFinal.enable(false);
@@ -3414,7 +3494,8 @@
                     }
                 }, 800);
 
-                // Estado inicial: desabilitar Hora Fim se Data Final não estiver preenchida
+                // Estado inicial: aplicar minimo dinamico e desabilitar Hora Fim se Data Final nao estiver preenchida
+                aplicarMinimoDataFinal(dpDataInicial ? dpDataInicial.value() : null);
                 var dataFinalInicial = dpDataFinal.value();
                 if (!dataFinalInicial || !(dataFinalInicial instanceof Date) || isNaN(dataFinalInicial)) {
                     tpHoraFinal.enable(false);
