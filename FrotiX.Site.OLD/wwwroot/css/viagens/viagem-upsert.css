@@ -386,6 +386,12 @@ img[alt="Foto"]:not([src]) {
     text-align: left;
 }
 
+.k-dropdownlist[aria-controls="cmbMotorista_listbox"] .k-input-values,
+.k-dropdownlist[aria-controls="cmbMotorista_listbox"] .k-input-value-text > span {
+    justify-content: flex-start;
+    text-align: left;
+}
+
 /* Balao laranja bonitao */
 .e-tooltip-wrap,
 .e-tooltip-wrap.custom-orange-tooltip,
