@@ -836,14 +836,17 @@ Todo arquivo de conversa DEVE conter as seguintes seções:
 }
 ```
 
-**Arquivo: `.vscode/keybindings.json`**
+**Arquivo: `~/.config/Code - Insiders/User/keybindings.json` (keybinding global)**
 ```json
 {
   "key": "ctrl+alt+d",
   "command": "workbench.action.tasks.runTask",
-  "args": "Documentar Conversa"
+  "args": "Documentar Conversa",
+  "when": "!terminalFocus"
 }
 ```
+
+**⚠️ IMPORTANTE:** Keybindings devem ser configurados no arquivo **global** do usuário, NÃO em `.vscode/keybindings.json` (que não é suportado pelo VS Code).
 
 **Arquivo: `~/.continue/config.json` (apenas Continue)**
 ```json

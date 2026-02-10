@@ -1,8 +1,0 @@
-[
-  {
-    "key": "ctrl+alt+d",
-    "command": "workbench.action.tasks.runTask",
-    "args": "Documentar Conversa",
-    "when": "!terminalFocus"
-  }
-]
