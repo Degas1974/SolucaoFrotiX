@@ -1570,6 +1570,8 @@
                 };
 
                 window.viagemId = context.valores.viagemId;
+                window.ViagemId = context.valores.viagemId;
+                window.VIAGEM_ID = context.valores.viagemId;
                 window.viagemStatus = context.valores.status;
                 window.viagemFinalizada = @Json.Serialize(Model.ViagemObj?.Viagem?.Status == "Realizada" || Model.ViagemObj?.Viagem?.Status == "Cancelada");
                 window.viagemUpsertContext = context;
