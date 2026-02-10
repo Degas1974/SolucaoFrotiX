@@ -643,49 +643,6 @@ $("#txtDataInicial").focusout(function ()
             return;
         }
 
-        // [REGRA] Data Inicial não pode ser superior a hoje
-        const hoje = new Date();
-        hoje.setHours(0, 0, 0, 0);
-        if (dataInicial > hoje)
-        {
-            Alerta.Erro("Erro na Data", "A Data Inicial não pode ser superior à data de hoje!");
-            window.setKendoDateValue("txtDataInicial", null);
-            return;
-        }
-
-        // [REGRA] Data Inicial não pode ser mais de 15 dias antes de hoje
-        const limite15Dias = new Date(hoje);
-        limite15Dias.setDate(limite15Dias.getDate() - 15);
-        if (dataInicial < limite15Dias)
-        {
-            Alerta.Erro(
-                "Erro na Data",
-                "A Data Inicial não pode ser anterior a 15 dias da data atual!"
-            );
-            window.setKendoDateValue("txtDataInicial", null);
-            return;
-        }
-
-        // [REGRA] Se Hora Início já preenchida, conjunto Data+Hora não pode ser futuro
-        const horaInicialVal = window.getKendoTimeValue("txtHoraInicial");
-        if (horaInicialVal)
-        {
-            const agora = new Date();
-            const [horas, minutos] = horaInicialVal.split(":").map(Number);
-            const dataHoraInicio = new Date(dataInicial);
-            dataHoraInicio.setHours(horas, minutos, 0, 0);
-            
-            if (dataHoraInicio > agora)
-            {
-                Alerta.Erro(
-                    "Erro na Data/Hora",
-                    "O conjunto Data Inicial + Hora Início não pode ser superior ao momento atual!"
-                );
-                window.setKendoDateValue("txtDataInicial", null);
-                return;
-            }
-        }
-
         // [VALIDACAO] Comparar com Data Final (se preenchida)
         if (dataFinal)
         {
@@ -855,40 +812,6 @@ $("#txtDataFinal").focusout(async function ()
                 return;
             }
 
-            // [REGRA] Data Final não pode ser superior a hoje
-            const hoje = new Date();
-            hoje.setHours(0, 0, 0, 0);
-            if (dataFinal > hoje)
-            {
-                evitandoLoop = true;
-                Alerta.Erro("Erro na Data", "A Data Final não pode ser superior à data de hoje!");
-                setTimeout(() =>
-                {
-                    try
-                    {
-                        window.setKendoDateValue("txtDataFinal", null);
-                        const picker = window.getKendoDatePicker("txtDataFinal");
-                        if (picker) picker.focus();
-                        evitandoLoop = false;
-                    }
-                    catch (error)
-                    {
-                        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "txtDataFinal.setTimeout", error);
-                    }
-                }, 1500);
-                return;
-            }
-
-            // [REGRA] Data Final não pode ser mais de 15 dias antes de hoje (consistência com Data Inicial)
-            const limite15Dias = new Date(hoje);
-            limite15Dias.setDate(limite15Dias.getDate() - 15);
-            if (dataFinal < limite15Dias)
-            {
-                Alerta.Erro("Erro na Data", "A Data Final não pode ser anterior a 15 dias da data atual!");
-                window.setKendoDateValue("txtDataFinal", null);
-                return;
-            }
-
             // [VALIDACAO IA] Análise adicional via ValidadorFinalizacaoIA (se disponível)
             if (typeof ValidadorFinalizacaoIA !== 'undefined' && typeof ValidadorFinalizacaoIA.obterInstancia === "function")
             {
@@ -914,7 +837,7 @@ $("#txtDataFinal").focusout(async function ()
 
             if (dataFinal < dataInicial)
             {
-                window.setKendoDateValue("txtDataInicial", null);
+                window.setKendoDateValue("txtDataFinal", null);
                 $("#txtDuracao").val("");
                 Alerta.Erro("Erro na Data", "A data final deve ser maior ou igual que a inicial!");
                 return;

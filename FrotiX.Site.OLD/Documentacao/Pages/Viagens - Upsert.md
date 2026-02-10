@@ -1,7 +1,7 @@
 # Documentação: Alertas FrotiX (Upsert)
 
-> **Última Atualização**: 10/02/2026 00:35
-> **Versão Atual**: 1.9
+> **Última Atualização**: 10/02/2026 01:10
+> **Versão Atual**: 2.0
 
 ---
 
@@ -223,6 +223,24 @@ Retorna a foto do motorista em Base64 para o template do ComboBox.
 > **FORMATO**: Entradas em ordem **decrescente** (mais recente primeiro)
 
 ---
+
+## [10/02/2026 01:10] - FIX: Validacao de Data Final sem bloqueio futuro
+
+**Descricao**: Ajustada a validacao em `ViagemUpsert.js` para permitir datas futuras
+em Data Inicial e Data Final, mantendo apenas a regra de Data Final >= Data Inicial.
+Tambem removido o foco invalido do Kendo DatePicker que gerava `picker.focus is not a function`.
+
+**Mudancas**:
+1. **Data Inicial**: removidas regras de bloqueio por data atual.
+2. **Data Final**: removidas regras de bloqueio por data atual e limite de 15 dias.
+3. **Coerencia**: ao detectar Data Final < Data Inicial, limpa apenas Data Final.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.0
 
 ## [10/02/2026 00:35] - FIX: Data Inicial sem bloqueio de datas futuras
 
