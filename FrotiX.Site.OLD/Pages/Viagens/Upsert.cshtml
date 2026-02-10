@@ -3225,7 +3225,15 @@
                     culture: "pt-BR",
                     min: dataMinima,
                     max: dataMaxima,
-                    dateInput: true,
+                    dateInput: {
+                        format: "dd/MM/yyyy",
+                        messages: {
+                            year: "yyyy",
+                            month: "MM",
+                            day: "dd"
+                        }
+                    },
+                    placeholder: "dd/MM/yyyy",
                     value: @Html.Raw(Model.ViagemObj?.Viagem?.DataInicial != null ? 
                         $"new Date({Model.ViagemObj.Viagem.DataInicial.Value.Year}, {Model.ViagemObj.Viagem.DataInicial.Value.Month - 1}, {Model.ViagemObj.Viagem.DataInicial.Value.Day})" : 
                         "null"),
@@ -3247,7 +3255,14 @@
                     format: "HH:mm",
                     culture: "pt-BR",
                     interval: 15,
-                    dateInput: true,
+                    dateInput: {
+                        format: "HH:mm",
+                        messages: {
+                            hour: "HH",
+                            minute: "mm"
+                        }
+                    },
+                    placeholder: "HH:mm",
                     value: @Html.Raw(Model.ViagemObj?.Viagem?.HoraInicio != null ? 
                         $"new Date(0,0,0,{Model.ViagemObj.Viagem.HoraInicio.Value.Hour},{Model.ViagemObj.Viagem.HoraInicio.Value.Minute})" : 
                         "null"),
@@ -3268,7 +3283,15 @@
                     culture: "pt-BR",
                     min: dataMinima,
                     max: dataMaxima,
-                    dateInput: true,
+                    dateInput: {
+                        format: "dd/MM/yyyy",
+                        messages: {
+                            year: "yyyy",
+                            month: "MM",
+                            day: "dd"
+                        }
+                    },
+                    placeholder: "dd/MM/yyyy",
                     value: @Html.Raw(Model.ViagemObj?.Viagem?.DataFinal != null ? 
                         $"new Date({Model.ViagemObj.Viagem.DataFinal.Value.Year}, {Model.ViagemObj.Viagem.DataFinal.Value.Month - 1}, {Model.ViagemObj.Viagem.DataFinal.Value.Day})" : 
                         "null"),
@@ -3288,7 +3311,14 @@
                     format: "HH:mm",
                     culture: "pt-BR",
                     interval: 15,
-                    dateInput: true,
+                    dateInput: {
+                        format: "HH:mm",
+                        messages: {
+                            hour: "HH",
+                            minute: "mm"
+                        }
+                    },
+                    placeholder: "HH:mm",
                     value: @Html.Raw(Model.ViagemObj?.Viagem?.HoraFim != null ? 
                         $"new Date(0,0,0,{Model.ViagemObj.Viagem.HoraFim.Value.Hour},{Model.ViagemObj.Viagem.HoraFim.Value.Minute})" : 
                         "null"),
