@@ -253,12 +253,12 @@ function atualizarStatusBar() {
             ? conversaAtual.nome.substring(0, 27) + '...'
             : conversaAtual.nome;
         statusBarItem.text = `$(comment-discussion) ${nomeResumido}`;
-        statusBarItem.tooltip = `FrotiX Conversa: ${conversaAtual.nome}\nIA: ${conversaAtual.ia}\nInício: ${formatarTimestamp(conversaAtual.inicio)}\n\nClique para checkpoint (Ctrl+Shift+S)`;
+        statusBarItem.tooltip = `FrotiX Conversa: ${conversaAtual.nome}\nIA: ${conversaAtual.ia}\nInício: ${formatarTimestamp(conversaAtual.inicio)}\n\nClique para checkpoint (Ctrl+Alt+S)`;
         statusBarItem.command = 'frotix.checkpoint';
         statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground');
     } else {
         statusBarItem.text = '$(comment-discussion) FrotiX';
-        statusBarItem.tooltip = 'FrotiX Conversa Manager\nClique para iniciar nova conversa (Ctrl+Shift+C)';
+        statusBarItem.tooltip = 'FrotiX Conversa Manager\nClique para iniciar nova conversa (Ctrl+Alt+C)';
         statusBarItem.command = 'frotix.novaConversa';
         statusBarItem.backgroundColor = undefined;
     }
@@ -271,7 +271,7 @@ function atualizarStatusBar() {
 // ═══════════════════════════════════════════════════════════════════
 
 /**
- * Ctrl+Shift+C - Nova Conversa (ou Quick Pick se detectado automaticamente)
+ * Ctrl+Alt+C - Nova Conversa (ou Quick Pick se detectado automaticamente)
  */
 async function novaConversa(iaDetectada) {
     const config = vscode.workspace.getConfiguration('frotix');
@@ -373,13 +373,27 @@ async function novaConversa(iaDetectada) {
 
     atualizarStatusBar();
 
-    vscode.window.showInformationMessage(
-        `FrotiX: Conversa "${nome}" iniciada! Arquivo criado em ${info.projeto}/Conversas/`
-    );
+    // Copiar prompt de notificação para o clipboard para o usuário colar no chat
+    const notificacaoPrompt = `🔴 REGISTRO ATIVO: Esta conversa está sendo registrada no arquivo "${nomeArquivo}" em ${info.projeto}/Conversas/.
 
-    // Abrir o arquivo criado
-    const doc = await vscode.workspace.openTextDocument(caminhoArquivo);
-    await vscode.window.showTextDocument(doc, { preview: false, viewColumn: vscode.ViewColumn.Beside });
+Atualize este arquivo INCREMENTALMENTE conforme a Seção 5.3 do RegrasDesenvolvimentoFrotiX.md. Cada arquivo criado/modificado/removido deve ser registrado imediatamente na seção "📁 Arquivos Alterados". Problemas e decisões técnicas também devem ser documentados conforme surgem.
+
+Atalhos disponíveis:
+- Ctrl+Alt+S = Checkpoint (eu colo o prompt e você atualiza o arquivo)
+- Ctrl+Alt+F = Finalizar (eu colo o prompt e você gera o resumo final completo)`;
+
+    await vscode.env.clipboard.writeText(notificacaoPrompt);
+
+    vscode.window.showInformationMessage(
+        `FrotiX: Conversa "${nome}" iniciada! Cole (Ctrl+V) no chat para notificar a IA.`,
+        'Abrir Arquivo'
+    ).then(acao => {
+        if (acao === 'Abrir Arquivo') {
+            vscode.workspace.openTextDocument(caminhoArquivo).then(doc => {
+                vscode.window.showTextDocument(doc, { preview: false, viewColumn: vscode.ViewColumn.Beside });
+            });
+        }
+    });
 }
 
 /**
@@ -429,17 +443,32 @@ async function continuarConversa(recentes, iaDetectada) {
 
     atualizarStatusBar();
 
-    vscode.window.showInformationMessage(
-        `FrotiX: Continuando conversa "${escolha.nomeOriginal}"`
-    );
+    // Copiar prompt de continuação para o clipboard
+    const nomeArquivo = path.basename(escolha.arquivo);
+    const continuacaoPrompt = `🔴 REGISTRO ATIVO (CONTINUAÇÃO): Esta conversa é continuação de uma sessão anterior. O arquivo de registro é "${nomeArquivo}" na pasta Conversas/.
 
-    // Abrir o arquivo
-    const doc = await vscode.workspace.openTextDocument(escolha.arquivo);
-    await vscode.window.showTextDocument(doc, { preview: false, viewColumn: vscode.ViewColumn.Beside });
+Atualize este arquivo INCREMENTALMENTE conforme a Seção 5.3 do RegrasDesenvolvimentoFrotiX.md. Cada arquivo criado/modificado/removido deve ser registrado imediatamente na seção "📁 Arquivos Alterados". Problemas e decisões técnicas também devem ser documentados conforme surgem.
+
+Atalhos disponíveis:
+- Ctrl+Alt+S = Checkpoint (eu colo o prompt e você atualiza o arquivo)
+- Ctrl+Alt+F = Finalizar (eu colo o prompt e você gera o resumo final completo)`;
+
+    await vscode.env.clipboard.writeText(continuacaoPrompt);
+
+    vscode.window.showInformationMessage(
+        `FrotiX: Continuando "${escolha.nomeOriginal}"! Cole (Ctrl+V) no chat para notificar a IA.`,
+        'Abrir Arquivo'
+    ).then(acao => {
+        if (acao === 'Abrir Arquivo') {
+            vscode.workspace.openTextDocument(escolha.arquivo).then(doc => {
+                vscode.window.showTextDocument(doc, { preview: false, viewColumn: vscode.ViewColumn.Beside });
+            });
+        }
+    });
 }
 
 /**
- * Ctrl+Shift+S - Checkpoint (salvar progresso)
+ * Ctrl+Alt+S - Checkpoint (salvar progresso)
  */
 async function checkpoint() {
     if (!conversaAtual) {
@@ -470,7 +499,7 @@ NÃO finalize a conversa. Mantenha status "⏳ EM ANDAMENTO".`;
 }
 
 /**
- * Ctrl+Shift+F - Finalizar Conversa
+ * Ctrl+Alt+F - Finalizar Conversa
  */
 async function finalizarConversa() {
     if (!conversaAtual) {

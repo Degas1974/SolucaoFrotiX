@@ -848,26 +848,43 @@ final completo seguindo EXATAMENTE este template visual. Todas as seções são 
 
 #### 5.3.5 Configuração Técnica
 
-**Arquivo: `.vscode/tasks.json`**
-```json
-{
-  "label": "Documentar Conversa",
-  "type": "shell",
-  "command": "echo '[${CURRENT_YEAR}.${CURRENT_MONTH}.${CURRENT_DATE}]-[${CURRENT_HOUR}.${CURRENT_MINUTE}] - [NOME DA CONVERSA] - [IA - MODELO]' | clip"
-}
-```
+**Extensão: FrotiX Conversa Manager** (`frotix-conversa-manager-1.0.0.vsix`)
 
-**Arquivo: `~/.config/Code - Insiders/User/keybindings.json` (keybinding global)**
-```json
-{
-  "key": "ctrl+alt+d",
-  "command": "workbench.action.tasks.runTask",
-  "args": "Documentar Conversa",
-  "when": "!terminalFocus"
-}
-```
+A extensão gerencia o ciclo de vida dos arquivos de conversa. Localizada em:
+`frotix-conversa-manager/` (raiz do workspace).
 
-**⚠️ IMPORTANTE:** Keybindings devem ser configurados no arquivo **global** do usuário, NÃO em `.vscode/keybindings.json` (que não é suportado pelo VS Code).
+**Atalhos da Extensão:**
+
+| Atalho | Comando | Ação |
+|--------|---------|------|
+| **Ctrl+Alt+C** | Nova Conversa | Quick Pick (Nova / Continuar últimas 20 / Ignorar) → cria arquivo → copia prompt de notificação para clipboard |
+| **Ctrl+Alt+S** | Checkpoint | Copia prompt de checkpoint para clipboard (atualização incremental) |
+| **Ctrl+Alt+F** | Finalizar | Copia prompt de finalização para clipboard (resumo final completo) |
+
+**Fluxo de Uso:**
+1. Abrir chat de IA no VS Code
+2. Pressionar **Ctrl+Alt+C** → escolher "Nova Conversa" → digitar nome
+3. A extensão cria o arquivo `.md` e **copia prompt de notificação para o clipboard**
+4. **Colar (Ctrl+V) no chat** → a IA reconhece o `🔴 REGISTRO ATIVO` e passa a atualizar o arquivo
+5. Durante a sessão: **Ctrl+Alt+S** → colar no chat → IA atualiza incrementalmente
+6. No final: **Ctrl+Alt+F** → colar no chat → IA gera resumo final completo (Seção 5.3.3)
+
+**⚠️ IMPORTANTE:** Após Ctrl+Alt+C, o prompt é copiado automaticamente para o clipboard.
+O usuário DEVE colar (Ctrl+V) no chat da IA para que ela reconheça o registro.
+Sem essa colagem, a IA não sabe que a conversa está sendo registrada.
+
+**Recursos da Extensão:**
+- Status bar (canto inferior esquerdo) mostra conversa ativa
+- Detecção semi-automática de tabs de IA (Claude, Copilot, Continue, Gemini, Genie)
+- Quick Pick com últimas 20 conversas para continuação
+- Configurações: pasta de conversas, detecção automática, máx. recentes
+
+**Alternativas manuais (fallback):**
+
+| Ferramenta | Uso |
+|------------|-----|
+| Continue `/doq` | Slash command exclusivo do Continue |
+| Snippet `logconv` | Em arquivos `.md`, digite `logconv` + Tab |
 
 **Arquivo: `~/.continue/config.json` (apenas Continue)**
 ```json
@@ -882,38 +899,25 @@ final completo seguindo EXATAMENTE este template visual. Todas as seções são 
 }
 ```
 
-**Snippet Markdown: `.vscode/markdown.code-snippets`**
-```json
-{
-  "Documentar Conversa": {
-    "prefix": "logconv",
-    "body": [
-      "[${CURRENT_YEAR}.${CURRENT_MONTH}.${CURRENT_DATE}]-[${CURRENT_HOUR}.${CURRENT_MINUTE}] - [$1] - [$2]"
-    ],
-    "description": "Template para nome de arquivo de conversa"
-  }
-}
-```
-
 ---
 
 #### 5.3.6 Comportamento Esperado das IAs
 
 **TODAS as IAs DEVEM:**
 
-1. ✅ **No INÍCIO de CADA nova sessão**: Perguntar o nome da conversa ou detectar comando de registro
-2. ✅ **Criar arquivo automaticamente** no formato correto com timestamp atual
-3. ✅ **Atualizar incrementalmente** durante toda a sessão
-4. ✅ **Finalizar com resumo completo** ao término da conversa
+1. ✅ **Reconhecer prompt de registro**: Quando o usuário colar texto começando com `🔴 REGISTRO ATIVO`, reconhecer o arquivo de conversa indicado e iniciar atualização incremental
+2. ✅ **Atualizar incrementalmente** durante toda a sessão (arquivos, problemas, decisões)
+3. ✅ **Reconhecer prompt de checkpoint** (Ctrl+Alt+S): Atualizar seções parciais do arquivo
+4. ✅ **Reconhecer prompt de finalização** (Ctrl+Alt+F): Gerar resumo final COMPLETO conforme template da Seção 5.3.3
 5. ✅ **Incluir rastreabilidade**: Links para commits, branches, PRs, issues
 6. ✅ **Documentar contexto**: Por que decisões foram tomadas, não apenas o que foi feito
 
 **❌ NUNCA:**
-- Esquecer de perguntar nome da conversa no início
+- Ignorar o prompt `🔴 REGISTRO ATIVO` colado pelo usuário
 - Esperar o final da sessão para documentar tudo
 - Criar arquivo sem timestamp ou identificação da IA
 - Omitir problemas ou erros encontrados
-- Deixar seções obrigatórias vazias
+- Deixar seções obrigatórias vazias no resumo final
 
 ---
 
