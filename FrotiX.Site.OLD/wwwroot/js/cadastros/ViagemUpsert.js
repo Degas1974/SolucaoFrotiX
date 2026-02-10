@@ -785,6 +785,8 @@ $("#txtHoraInicial").focusout(function ()
 });
 
 let evitandoLoop = false;
+let validandoDataFinal = false;
+let validandoHoraFinal = false;
 
 /****************************************************************************************
  * ⚡ FUNÇÃO: validarDataFinal
@@ -809,6 +811,9 @@ async function validarDataFinal()
 {
     try
     {
+        if (validandoDataFinal) return;
+        validandoDataFinal = true;
+
         if (evitandoLoop) return;
 
         // [KENDO] Obter valores via API Kendo
@@ -939,6 +944,10 @@ async function validarDataFinal()
     {
         Alerta.TratamentoErroComLinha("ViagemUpsert.js", "validarDataFinal", error);
     }
+    finally
+    {
+        validandoDataFinal = false;
+    }
 }
 
 // txtDataFinal - VALIDACAO IMEDIATA
@@ -989,6 +998,9 @@ async function validarHoraFinal()
 {
     try
     {
+        if (validandoHoraFinal) return;
+        validandoHoraFinal = true;
+
         // [KENDO] Obter valores via API Kendo
         const dataFinal = window.getKendoDateValue("txtDataFinal");
         const horaFinal = window.getKendoTimeValue("txtHoraFinal");
@@ -1075,6 +1087,10 @@ async function validarHoraFinal()
     catch (error)
     {
         Alerta.TratamentoErroComLinha("ViagemUpsert.js", "validarHoraFinal", error);
+    }
+    finally
+    {
+        validandoHoraFinal = false;
     }
 }
 

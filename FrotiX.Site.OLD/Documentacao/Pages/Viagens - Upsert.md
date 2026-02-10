@@ -1,7 +1,7 @@
 # Documentação: Alertas FrotiX (Upsert)
 
-> **Última Atualização**: 10/02/2026 02:10
-> **Versão Atual**: 2.5
+> **Última Atualização**: 10/02/2026 02:20
+> **Versão Atual**: 2.6
 
 ---
 
@@ -223,6 +223,22 @@ Retorna a foto do motorista em Base64 para o template do ComboBox.
 > **FORMATO**: Entradas em ordem **decrescente** (mais recente primeiro)
 
 ---
+
+## [10/02/2026 02:20] - FIX: Guardas anti-reentrada nas validacoes
+
+**Descricao**: Incluidas guardas de reentrada para evitar loops e stack overflow
+nas validacoes de Data Final e Hora Final.
+
+**Mudancas**:
+1. **Data Final**: guard `validandoDataFinal` para evitar chamadas duplicadas.
+2. **Hora Final**: guard `validandoHoraFinal` para evitar chamadas duplicadas.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.6
 
 ## [10/02/2026 02:10] - FIX: Validacao somente no change (sem focusout)
 
