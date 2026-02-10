@@ -643,6 +643,18 @@ $("#txtDataInicial").focusout(function ()
             return;
         }
 
+        // [REGRA] Data Inicial nao pode ser superior a data atual
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        const dataInicialNormalizada = new Date(dataInicial);
+        dataInicialNormalizada.setHours(0, 0, 0, 0);
+        if (dataInicialNormalizada > hoje)
+        {
+            Alerta.Erro("Erro na Data", "A Data Inicial nao pode ser superior a data atual!");
+            window.setKendoDateValue("txtDataInicial", null);
+            return;
+        }
+
         // [VALIDACAO] Comparar com Data Final (se preenchida)
         if (dataFinal)
         {
@@ -830,6 +842,20 @@ async function validarDataFinal()
         if (isNaN(dataFinal.getTime()))
         {
             Alerta.Erro("Erro na Data", "Data Final inválida!");
+            atualizandoDataFinal = true;
+            window.setKendoDateValue("txtDataFinal", null);
+            atualizandoDataFinal = false;
+            return;
+        }
+
+        // [REGRA] Data Final nao pode ser superior a data atual
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        const dataFinalNormalizada = new Date(dataFinal);
+        dataFinalNormalizada.setHours(0, 0, 0, 0);
+        if (dataFinalNormalizada > hoje)
+        {
+            Alerta.Erro("Erro na Data", "A Data Final nao pode ser superior a data atual!");
             atualizandoDataFinal = true;
             window.setKendoDateValue("txtDataFinal", null);
             atualizandoDataFinal = false;

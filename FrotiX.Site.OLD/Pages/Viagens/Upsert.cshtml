@@ -3240,6 +3240,7 @@
                     format: "dd/MM/yyyy",
                     culture: "pt-BR",
                     min: dataMinima,
+                    max: dataMaxima,
                     dateInput: {
                         format: "dd/MM/yyyy",
                         messages: {
@@ -3261,6 +3262,12 @@
                                     Alerta.Erro("Data Inicial inválida", "Por favor, selecione uma data válida.");
                                 }, 100);
                                 dpDataInicial.value(null);
+                            }
+                            if (dataInicial && dataInicial > dataMaxima) {
+                                Alerta.Erro("Data Inicial inválida", "A Data Inicial não pode ser superior à data atual.");
+                                dpDataInicial.value(null);
+                                aplicarMinimoDataFinal(null);
+                                return;
                             }
                             aplicarMinimoDataFinal(dataInicial);
                         } catch (error) {
@@ -3316,6 +3323,7 @@
                             : dataMinima;
 
                         dpDataFinal.min(baseMin);
+                        dpDataFinal.max(dataMaxima);
 
                         var dataFinalAtual = dpDataFinal.value();
                         if (dataFinalAtual && dataFinalAtual instanceof Date && !isNaN(dataFinalAtual)) {
@@ -3359,6 +3367,17 @@
                         var dataInicial = dpDataInicial ? dpDataInicial.value() : null;
 
                         if (dataFinal && dataFinal instanceof Date && !isNaN(dataFinal)) {
+                            if (dataFinal > dataMaxima) {
+                                Alerta.Warning(
+                                    "Data Final inválida",
+                                    "A <strong>Data Final</strong> não pode ser superior à data atual.",
+                                    "OK"
+                                );
+                                dpDataFinal.value(null);
+                                tpHoraFinal.enable(false);
+                                tpHoraFinal.value(null);
+                                return;
+                            }
                             if (dataInicial && dataInicial instanceof Date && !isNaN(dataInicial)) {
                                 if (dataFinal < dataInicial) {
                                     Alerta.Warning(
@@ -3388,6 +3407,7 @@
                     format: "dd/MM/yyyy",
                     culture: "pt-BR",
                     min: dataMinima,
+                    max: dataMaxima,
                     placeholder: "dd/MM/yyyy",
                     dateInput: {
                         format: "dd/MM/yyyy",
@@ -3437,12 +3457,6 @@
                     },
                     value: null
                 }).data("kendoDatePicker");
-
-                // Adicionar evento blur no input (para quando usuário digitar manualmente)
-                $("#txtDataFinal").on("blur", function() {
-                    // Dispara quando usuário digita manualmente e sai do campo
-                    validarDataFinalEControlarHoraFim();
-                });
 
                 // Hora Final (inicialmente desabilitada até Data Final ser preenchida)
                 var tpHoraFinal = $("#txtHoraFinal").kendoTimePicker({
