@@ -1,7 +1,7 @@
 # Documentação: Alertas FrotiX (Upsert)
 
-> **Última Atualização**: 10/02/2026 01:10
-> **Versão Atual**: 2.0
+> **Última Atualização**: 10/02/2026 01:20
+> **Versão Atual**: 2.1
 
 ---
 
@@ -223,6 +223,21 @@ Retorna a foto do motorista em Base64 para o template do ComboBox.
 > **FORMATO**: Entradas em ordem **decrescente** (mais recente primeiro)
 
 ---
+
+## [10/02/2026 01:20] - FIX: Toast padrao na confirmacao de datas
+
+**Descricao**: Substituido o toast customizado de Syncfusion pelo AppToast global
+no fluxo de confirmacao quando a Data Final e muito maior que a Data Inicial.
+
+**Mudancas**:
+1. **Toast**: removido `showSyncfusionToast` e aplicado `AppToast.show`.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.1
 
 ## [10/02/2026 01:10] - FIX: Validacao de Data Final sem bloqueio futuro
 

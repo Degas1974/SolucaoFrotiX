@@ -1255,11 +1255,11 @@ async function validarDatasInicialFinal(DataInicial, DataFinal)
 
             if (confirmado)
             {
-                showSyncfusionToast("Confirmação feita pelo usuário!", "success", "💪🏼");
+                AppToast.show("Verde", "Confirmacao feita pelo usuario!", 2000);
                 document.getElementById("txtHoraFinal").focus();
             } else
             {
-                showSyncfusionToast("Ação cancelada pelo usuário", "danger", "😟");
+                AppToast.show("Amarelo", "Acao cancelada pelo usuario", 2000);
 
                 const campo = document.getElementById("txtDataFinal");
                 if (campo)
