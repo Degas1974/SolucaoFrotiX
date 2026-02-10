@@ -658,11 +658,253 @@ git push origin main
 
 ### 5.3 Logs de Conversa
 
-📁 **Pasta:** `Conversas/`
+> **⚠️ REGRA CRÍTICA:** TODAS as conversas com IAs (Claude Code, Copilot, Continue, Gemini, Genie) DEVEM ser registradas. O histórico de conversas é FUNDAMENTAL para rastreabilidade, aprendizado e continuidade do projeto.
 
-- Um `.md` por sessão
-- Formato: `AAAA.MM.DD-HH.mm - [Nome].md`
-- Criar no início, atualizar durante, encerrar com resumo
+---
+
+#### 5.3.1 Localização e Formato
+
+📁 **Pasta:** `Conversas/` (na raiz de cada projeto)
+
+- **FrotiX.Site.OLD/Conversas/**
+- **FrotiX.Site.Fevereiro/Conversas/**
+- Cada projeto mantém seu próprio histórico
+
+**Formato Obrigatório do Arquivo:**
+```
+[YYYY.MM.DD]-[HH.mm] - [NOME DA CONVERSA] - [IA - MODELO].md
+```
+
+**Exemplos:**
+```
+[2026.02.10]-[14.30] - Implementação Login - [Claude Code].md
+[2026.02.10]-[15.45] - Refatoração Controllers - [GitHub Copilot - Claude Sonnet 4.5].md
+[2026.02.10]-[16.20] - Correção Bugs Dashboard - [Continue - GPT-4].md
+[2026.02.10]-[17.00] - Documentação API - [Gemini Code Assist].md
+[2026.02.10]-[18.30] - Análise Performance - [Genie AI - GPT-4o].md
+```
+
+**⚠️ IMPORTANTE:** Os colchetes `[]` fazem parte do nome do arquivo para facilitar identificação visual.
+
+---
+
+#### 5.3.2 Como Iniciar Registro por IA
+
+| IA | Método Principal | Método Alternativo |
+|---|---|---|
+| **Claude Code** | `/rename [YYYY.MM.DD]-[HH.mm] - [Nome] - [Claude Code]` | `Ctrl+Alt+D` → Cola no chat |
+| **Continue** | `/doq Nome da Conversa` | `Ctrl+Alt+D` → Cola no chat |
+| **GitHub Copilot** | `Ctrl+Alt+D` → Cola no chat | Snippet markdown (`logconv` + Tab) |
+| **Gemini Code Assist** | `Ctrl+Alt+D` → Cola no chat | Snippet markdown (`logconv` + Tab) |
+| **Genie AI** | `Ctrl+Alt+D` → Cola no chat | Snippet markdown (`logconv` + Tab) |
+
+**Atalho Universal:** `Ctrl+Alt+D`
+- Copia template com data/hora automática para clipboard
+- Mostra janela com instruções
+- Cole no chat com `Ctrl+V`
+- IA cria arquivo automaticamente
+
+**Snippet Markdown (Backup):**
+- Abrir qualquer arquivo `.md`
+- Digitar `logconv` + `Tab`
+- VS Code expande template
+- Preencher placeholders
+- Copiar e colar no chat
+
+---
+
+#### 5.3.3 Estrutura Obrigatória do Arquivo
+
+Todo arquivo de conversa DEVE conter as seguintes seções:
+
+```markdown
+# [NOME DA CONVERSA]
+
+**Data/Hora de Início**: YYYY-MM-DD HH:mm:ss
+**Data/Hora de Término**: YYYY-MM-DD HH:mm:ss (atualizado ao final)
+**Duração Total**: X minutos/horas
+**Continuação de**: [Nome da conversa anterior] ou "Conversa nova"
+**IA Utilizada**: [Nome da IA - Modelo]
+
+---
+
+## Resumo Executivo
+
+[Descrição concisa do que foi feito na sessão - 2-3 parágrafos]
+
+---
+
+## Arquivos Criados/Modificados
+
+### 1. [NomeArquivo.ext]
+- **Ação**: Criado/Modificado/Deletado
+- **Motivo**: Por que este arquivo foi alterado
+- **Principais mudanças**:
+  - Mudança 1
+  - Mudança 2
+
+### 2. [OutroArquivo.ext]
+[...]
+
+---
+
+## Problemas Encontrados e Soluções
+
+### Problema 1: [Título]
+**Descrição**: [O que aconteceu]
+**Causa Raiz**: [Por que aconteceu]
+**Solução**: [Como foi resolvido]
+**Lição Aprendida**: [O que aprender para evitar no futuro]
+
+---
+
+## Decisões Técnicas
+
+### 1. [Nome da Decisão]
+**Decisão**: [O que foi decidido]
+**Justificativa**: [Por que esta foi a melhor escolha]
+**Alternativas Consideradas**: [Outras opções que foram descartadas]
+**Impacto**: [Consequências desta decisão]
+
+---
+
+## Tarefas Pendentes
+
+- [ ] Tarefa 1
+- [ ] Tarefa 2
+- [ ] Tarefa 3
+
+---
+
+## Continuidade
+
+**Próximos Passos**: [O que deve ser feito na próxima sessão]
+**Contexto para Próxima Sessão**: [Informações importantes para continuar o trabalho]
+
+---
+
+## Status Final
+
+✅ **CONVERSA FINALIZADA COM SUCESSO**
+
+**Objetivos alcançados:**
+- ✅ Objetivo 1
+- ✅ Objetivo 2
+- ✅ Objetivo 3
+
+---
+
+*Conversa finalizada em: YYYY-MM-DD HH:mm:ss*
+```
+
+---
+
+#### 5.3.4 Gravação Incremental Automática
+
+**REGRA:** As IAs devem atualizar o arquivo de conversa AUTOMATICAMENTE durante a sessão:
+
+1. **Início da Sessão**:
+   - Perguntar nome da conversa
+   - Criar arquivo com cabeçalho completo
+   - Registrar timestamp de início
+
+2. **Durante a Sessão** (atualização incremental):
+   - Adicionar arquivo criado/modificado IMEDIATAMENTE após cada operação
+   - Registrar problemas encontrados conforme surgem
+   - Documentar decisões técnicas no momento em que são tomadas
+   - Atualizar seção de tarefas pendentes
+
+3. **Final da Sessão**:
+   - Completar Resumo Executivo
+   - Preencher timestamp de término
+   - Calcular duração total
+   - Revisar status final
+   - Listar próximos passos
+
+**⚠️ IMPORTANTE:** Nunca esperar o final da sessão para documentar tudo. A gravação incremental protege contra perda de informações se a sessão for interrompida.
+
+---
+
+#### 5.3.5 Configuração Técnica
+
+**Arquivo: `.vscode/tasks.json`**
+```json
+{
+  "label": "Documentar Conversa",
+  "type": "shell",
+  "command": "echo '[${CURRENT_YEAR}.${CURRENT_MONTH}.${CURRENT_DATE}]-[${CURRENT_HOUR}.${CURRENT_MINUTE}] - [NOME DA CONVERSA] - [IA - MODELO]' | clip"
+}
+```
+
+**Arquivo: `.vscode/keybindings.json`**
+```json
+{
+  "key": "ctrl+alt+d",
+  "command": "workbench.action.tasks.runTask",
+  "args": "Documentar Conversa"
+}
+```
+
+**Arquivo: `~/.continue/config.json` (apenas Continue)**
+```json
+{
+  "slashCommands": [
+    {
+      "name": "doq",
+      "description": "Documentar conversa",
+      "prompt": "Crie um arquivo de registro no formato: [YYYY.MM.DD]-[HH.mm] - [NOME] - [Continue - MODELO].md"
+    }
+  ]
+}
+```
+
+**Snippet Markdown: `.vscode/markdown.code-snippets`**
+```json
+{
+  "Documentar Conversa": {
+    "prefix": "logconv",
+    "body": [
+      "[${CURRENT_YEAR}.${CURRENT_MONTH}.${CURRENT_DATE}]-[${CURRENT_HOUR}.${CURRENT_MINUTE}] - [$1] - [$2]"
+    ],
+    "description": "Template para nome de arquivo de conversa"
+  }
+}
+```
+
+---
+
+#### 5.3.6 Comportamento Esperado das IAs
+
+**TODAS as IAs DEVEM:**
+
+1. ✅ **No INÍCIO de CADA nova sessão**: Perguntar o nome da conversa ou detectar comando de registro
+2. ✅ **Criar arquivo automaticamente** no formato correto com timestamp atual
+3. ✅ **Atualizar incrementalmente** durante toda a sessão
+4. ✅ **Finalizar com resumo completo** ao término da conversa
+5. ✅ **Incluir rastreabilidade**: Links para commits, branches, PRs, issues
+6. ✅ **Documentar contexto**: Por que decisões foram tomadas, não apenas o que foi feito
+
+**❌ NUNCA:**
+- Esquecer de perguntar nome da conversa no início
+- Esperar o final da sessão para documentar tudo
+- Criar arquivo sem timestamp ou identificação da IA
+- Omitir problemas ou erros encontrados
+- Deixar seções obrigatórias vazias
+
+---
+
+#### 5.3.7 Importância do Histórico de Conversas
+
+**POR QUE este registro é CRÍTICO:**
+
+1. **Rastreabilidade**: Saber exatamente quando e por que mudanças foram feitas
+2. **Continuidade**: Próxima sessão pode continuar de onde parou sem perder contexto
+3. **Aprendizado**: Documentar problemas e soluções para evitar repetição
+4. **Auditoria**: Histórico completo de decisões técnicas e suas justificativas
+5. **Colaboração**: Outras pessoas (ou IAs) podem entender o contexto do trabalho
+6. **Recuperação**: Se sessão for interrompida, gravação incremental preserva progresso
+
+**REGRA DE OURO:** Se não está documentado, não aconteceu. Se aconteceu mas não está documentado, será esquecido e pode ser refeito desnecessariamente.
 
 ---
 

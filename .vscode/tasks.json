@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Documentar Conversa",
+      "type": "shell",
+      "command": "echo",
+      "args": [
+        "[${CURRENT_YEAR}.${CURRENT_MONTH}.${CURRENT_DATE}]-[${CURRENT_HOUR}.${CURRENT_MINUTE}] - [NOME DA CONVERSA] - [IA - MODELO]",
+        "|",
+        "clip"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true,
+        "echo": true,
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "problemMatcher": [],
+      "detail": "Copia template de nome de conversa para clipboard com data/hora automática"
+    }
+  ]
+}
