@@ -31,12 +31,24 @@ BEGIN TRY
             ADD CartaoAbastecimentoDevolvido bit NULL
                 CONSTRAINT DF_Viagem_CartaoAbastecimentoDevolvido DEFAULT (0);
 
-    -- Backfill a partir dos campos legados (string)
+    -- Backfill a partir dos campos legados (string/boolean)
     UPDATE dbo.Viagem
-    SET DocumentoEntregue = CASE WHEN StatusDocumento = 'Entregue' THEN 1 ELSE 0 END,
-        DocumentoDevolvido = CASE WHEN StatusDocumentoFinal = 'Devolvido' THEN 1 ELSE 0 END,
-        CartaoAbastecimentoEntregue = CASE WHEN StatusCartaoAbastecimento = 'Entregue' THEN 1 ELSE 0 END,
-        CartaoAbastecimentoDevolvido = CASE WHEN StatusCartaoAbastecimentoFinal = 'Devolvido' THEN 1 ELSE 0 END
+    SET DocumentoEntregue = CASE
+            WHEN StatusDocumento IN ('Entregue', '1', 'true', 'True') THEN 1
+            ELSE 0
+        END,
+        DocumentoDevolvido = CASE
+            WHEN StatusDocumentoFinal IN ('Devolvido', '1', 'true', 'True') THEN 1
+            ELSE 0
+        END,
+        CartaoAbastecimentoEntregue = CASE
+            WHEN StatusCartaoAbastecimento IN ('Entregue', '1', 'true', 'True') THEN 1
+            ELSE 0
+        END,
+        CartaoAbastecimentoDevolvido = CASE
+            WHEN StatusCartaoAbastecimentoFinal IN ('Devolvido', '1', 'true', 'True') THEN 1
+            ELSE 0
+        END
     WHERE StatusDocumento IS NOT NULL
        OR StatusDocumentoFinal IS NOT NULL
        OR StatusCartaoAbastecimento IS NOT NULL
