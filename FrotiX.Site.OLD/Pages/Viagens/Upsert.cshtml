@@ -191,8 +191,43 @@
                     return `
                 <div class="d-flex align-items-center">
                     <img src="${imgSrc}" alt="Foto" style="height:30px; width:30px; border-radius:50%; margin-right:10px;" />
+                    <span>${data.Nome}</span>
                 </div>`;
                 };
+
+                const limparTextoInput = function () {
+                    try {
+                        if (combo && combo.inputElement) {
+                            combo.inputElement.value = "";
+                        }
+                    } catch (err) {
+                        Alerta.TratamentoErroComLinha("Upsert.cshtml", "onCmbMotoristaCreated.limparTextoInput", err);
+                    }
+                };
+
+                const prevChange = combo.change;
+                combo.change = function () {
+                    try {
+                        if (typeof prevChange === "function") {
+                            prevChange.apply(combo, arguments);
+                        }
+                    } finally {
+                        limparTextoInput();
+                    }
+                };
+
+                const prevDataBound = combo.dataBound;
+                combo.dataBound = function () {
+                    try {
+                        if (typeof prevDataBound === "function") {
+                            prevDataBound.apply(combo, arguments);
+                        }
+                    } finally {
+                        limparTextoInput();
+                    }
+                };
+
+                limparTextoInput();
             } catch (error) {
                 Alerta.TratamentoErroComLinha("Upsert.cshtml", "onCmbMotoristaCreated", error);
             }
