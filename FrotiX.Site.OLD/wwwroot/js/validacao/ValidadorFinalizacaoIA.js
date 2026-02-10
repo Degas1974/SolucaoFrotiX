@@ -562,6 +562,40 @@ Isso está correto?`;
 // Instância global
 window.ValidadorFinalizacaoIA = new ValidadorFinalizacaoIA();
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: ValidadorFinalizacaoIA.obterInstancia
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUE] Garantir compatibilidade com chamadas legadas que esperam
+ *                   um factory para obter o singleton do validador.
+ *                   [O QUE] Retorna a instância global, criando se necessário.
+ *                   [COMO] Verifica window.ValidadorFinalizacaoIA e inicializa se ausente.
+ *
+ * 📥 ENTRADAS     : Nenhuma
+ *
+ * 📤 SAÍDAS       : ValidadorFinalizacaoIA (singleton global)
+ *
+ * ⬅️ CHAMADO POR  : ViagemUpsert.js e outros módulos de validação
+ *
+ * ➡️ CHAMA        : Alerta.TratamentoErroComLinha (em caso de erro)
+ ****************************************************************************************/
+ValidadorFinalizacaoIA.obterInstancia = function ()
+{
+    try
+    {
+        if (!window.ValidadorFinalizacaoIA)
+        {
+            window.ValidadorFinalizacaoIA = new ValidadorFinalizacaoIA();
+        }
+
+        return window.ValidadorFinalizacaoIA;
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ValidadorFinalizacaoIA.js", "ValidadorFinalizacaoIA.obterInstancia", error);
+        return null;
+    }
+};
+
 // =====================================================================
 // FUNÇÕES DE INTEGRAÇÃO COM SWEETALERT (DESIGN IA)
 // =====================================================================
