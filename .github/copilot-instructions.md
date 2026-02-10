@@ -1,18 +1,22 @@
 # GitHub Copilot - Instrucoes do Projeto FrotiX
 
-> **Sistema:** GitHub Copilot (Chat & Inline Suggestions)
-> **Versao:** 2.0
+> **Sistema:** GitHub Copilot (Chat, Agent, Edits & Inline Suggestions)
+> **Versao:** 3.0
 > **Ultima Atualizacao:** 09/02/2026
 
 ---
 
-## LEITURA OBRIGATORIA
+## LEITURA OBRIGATORIA (ANTES DE QUALQUER RESPOSTA)
 
-**ANTES de gerar qualquer codigo**, leia o arquivo de regras consolidadas:
+**No inicio de CADA sessao/chat/agente/editor**, voce DEVE ler OBRIGATORIAMENTE estes 2 arquivos na **RAIZ do workspace** (`Solucao FrotiX 2026/`):
 
-**`RegrasDesenvolvimentoFrotiX.md`** (raiz do workspace)
+1. **`RegrasDesenvolvimentoFrotiX.md`** - Regras OFICIAIS de desenvolvimento (TODAS as convencoes, padroes UI/UX, banco de dados, etc.)
+2. **`ControlesKendo.md`** - Documentacao OFICIAL dos controles Telerik Kendo UI (DatePicker, TimePicker, Grid, etc.)
 
-Este arquivo contem TODAS as regras de desenvolvimento, padroes de codigo, convencoes de UI/UX e fluxo de trabalho do projeto FrotiX.
+**IMPORTANTE:**
+- Estes sao os UNICOS arquivos oficiais. NAO existem copias nos subprojetos.
+- NUNCA gere codigo sem antes ter lido ambos os arquivos.
+- Se a tarefa envolver banco de dados, leia tambem `FrotiX.Site.OLD/FrotiX.sql`.
 
 ---
 
@@ -28,6 +32,41 @@ Este arquivo contem TODAS as regras de desenvolvimento, padroes de codigo, conve
 
 ---
 
+## REGRA CRITICA PARA ALTERACOES DE BANCO
+
+Se voce for fazer algum acrescimo, decrescimo ou alteracao de recursos no Banco, voce tem que:
+
+1. **Confrontar** seu codigo contra o `FrotiX.sql` para ver se nao ha nenhum tipo de incompatibilidade
+2. **Nao havendo incompatibilidades**, atualizar o `FrotiX.sql` com suas alteracoes
+3. **Gerar** um `script.sql` separado para rodar tanto no banco de producao como no de desenvolvimento
+
+---
+
+## CONFIRMACAO VISUAL OBRIGATORIA
+
+**AO INICIAR CADA NOVA SESSAO/CHAT**, voce DEVE exibir a seguinte mensagem de confirmacao ANTES da primeira resposta ao usuario:
+
+```
+FROTIX - COPILOT CONFIGURADO
+
+Arquivos Carregados:
+  RegrasDesenvolvimentoFrotiX.md (regras de desenvolvimento)
+  ControlesKendo.md (controles Telerik Kendo UI)
+  FrotiX.sql (estrutura do banco - quando necessario)
+
+Regras Criticas Ativas:
+  - Try-catch obrigatorio em todas funcoes
+  - Usar Alerta.* (NUNCA alert())
+  - Usar fa-duotone (NUNCA fa-solid)
+  - DatePicker/TimePicker: SEMPRE Telerik Kendo UI
+  - Consultar FrotiX.sql antes de alterar banco
+  - Gerar script.sql para alteracoes de banco
+
+Pronto para comecar!
+```
+
+---
+
 ## REGRAS CRITICAS (RESUMO)
 
 1. **Try-Catch OBRIGATORIO** em todas as funcoes (C# e JS)
@@ -35,7 +74,7 @@ Este arquivo contem TODAS as regras de desenvolvimento, padroes de codigo, conve
 3. **Icones:** SEMPRE `fa-duotone`, NUNCA `fa-solid/regular/light`
 4. **Loading:** SEMPRE `FtxSpin.show()`, NUNCA spinner Bootstrap
 5. **Banco de dados:** SEMPRE consultar `FrotiX.sql` antes de codificar
-6. **DatePicker/TimePicker:** SEMPRE Telerik Kendo UI
+6. **DatePicker/TimePicker:** SEMPRE Telerik Kendo UI (ver ControlesKendo.md)
 7. **Tooltips:** SEMPRE Syncfusion `data-ejtip`
 8. **Log de erros:** SEMPRE usar `ILogService` no backend
 
@@ -43,4 +82,13 @@ Este arquivo contem TODAS as regras de desenvolvimento, padroes de codigo, conve
 
 ## MEMORIA PERMANENTE
 
-Se o usuario pedir para "memorizar" algo, adicione ao arquivo `RegrasDesenvolvimentoFrotiX.md` na raiz do workspace.
+Quando o usuario pedir para "memorizar", "guardar", "lembrar", "adicionar as regras", "nunca esquecer", ou "de agora em diante":
+
+1. **Abrir e ler** `RegrasDesenvolvimentoFrotiX.md` na raiz do workspace
+2. **VERIFICAR DUPLICATAS:** Procurar se a informacao ja existe no arquivo
+   - **Se ja existe e esta COMPLETA:** Informar que a regra ja esta registrada
+   - **Se ja existe mas esta INCOMPLETA/DESATUALIZADA:** Atualizar a entrada existente sem duplicar
+   - **Se NAO existe:** Criar nova entrada na secao tematica apropriada
+3. **Respeitar a organizacao existente** do arquivo - NUNCA baguncar, reordenar ou reformatar o que ja esta la
+4. Seguir o formato de numeracao e estilo ja usado no arquivo (secao.subsecao)
+5. Confirmar ao usuario o que foi feito (criado novo, atualizado existente, ou ja existia)

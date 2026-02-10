@@ -49,5 +49,14 @@
   "workbench.editor.restoreViewState": true,
   "workbench.editor.tabActionCloseVisibility": false,
   "terminal.integrated.hideOnStartup": "always",
-  "chat.agent.maxRequests": 250000
+  "chat.agent.maxRequests": 250000,
+
+  // === ARQUIVOS OBRIGATORIOS DE INSTRUCOES ===
+  // Todos os chats/agentes/editores DEVEM ler estes arquivos no inicio de cada sessao
+  "github.copilot.chat.codeGeneration.instructions": [
+      { "text": "OBRIGATORIO: Leia RegrasDesenvolvimentoFrotiX.md e ControlesKendo.md na RAIZ do workspace ANTES de qualquer resposta." },
+      { "text": "MEMORIA PERMANENTE: Quando o usuario pedir para memorizar/guardar/lembrar algo, abra RegrasDesenvolvimentoFrotiX.md na raiz, VERIFIQUE se a info ja existe (se completa, informe; se incompleta, atualize; se nao existe, crie nova entrada respeitando a organizacao existente, NUNCA bagunce o arquivo)." },
+      { "file": "RegrasDesenvolvimentoFrotiX.md" },
+      { "file": "ControlesKendo.md" }
+  ]
 }

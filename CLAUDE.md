@@ -13,10 +13,11 @@
 Antes de qualquer resposta ao usuario, voce DEVE:
 
 1. **Ler completamente** o arquivo `RegrasDesenvolvimentoFrotiX.md` (NESTE MESMO DIRETORIO - raiz do workspace)
-2. **Se a tarefa envolver banco de dados:** Ler `FrotiX.Site.OLD/FrotiX.sql`
-3. **Confirmar mentalmente** que ambos arquivos foram lidos
+2. **Ler completamente** o arquivo `ControlesKendo.md` (NESTE MESMO DIRETORIO - raiz do workspace)
+3. **Se a tarefa envolver banco de dados:** Ler `FrotiX.Site.OLD/FrotiX.sql`
+4. **Confirmar mentalmente** que todos os arquivos foram lidos
 
-**IMPORTANTE:** Nao prossiga sem ler `RegrasDesenvolvimentoFrotiX.md`. Ele contem TODAS as regras do projeto.
+**IMPORTANTE:** Nao prossiga sem ler `RegrasDesenvolvimentoFrotiX.md` e `ControlesKendo.md`. Eles contem TODAS as regras do projeto e dos controles Kendo UI.
 
 ---
 
@@ -37,6 +38,7 @@ Antes de qualquer resposta ao usuario, voce DEVE:
 | Arquivo | Funcao | Quando Ler |
 |---------|--------|------------|
 | **`RegrasDesenvolvimentoFrotiX.md`** | FONTE OFICIAL DE REGRAS (raiz do workspace) | **SEMPRE** (obrigatorio) |
+| **`ControlesKendo.md`** | DOCUMENTACAO OFICIAL Telerik Kendo UI (raiz do workspace) | **SEMPRE** (obrigatorio) |
 | **`CLAUDE.md`** | Indice e instrucoes de inicializacao (voce esta aqui) | Automatico |
 | **`FrotiX.Site.OLD/FrotiX.sql`** | Estrutura do banco de dados | Quando trabalhar com dados |
 
@@ -53,11 +55,16 @@ Antes de qualquer resposta ao usuario, voce DEVE:
 
 **ACAO OBRIGATORIA:**
 
-1. Abrir: `RegrasDesenvolvimentoFrotiX.md` (raiz do workspace)
-2. Identificar secao apropriada ou criar nova
-3. Adicionar regra seguindo formato padrao
-4. Salvar arquivo
-5. Confirmar ao usuario que regra foi memorizada
+1. Abrir e ler: `RegrasDesenvolvimentoFrotiX.md` (raiz do workspace)
+2. **VERIFICAR DUPLICATAS:** Procurar se a informacao ja existe no arquivo
+   - **Se ja existe e esta COMPLETA:** Informar o usuario que a regra ja esta registrada
+   - **Se ja existe mas esta INCOMPLETA/DESATUALIZADA:** Atualizar a entrada existente sem duplicar
+   - **Se NAO existe:** Criar nova entrada seguindo os passos abaixo
+3. Identificar a secao tematica mais apropriada do arquivo (respeitando a organizacao ja existente)
+4. Adicionar a nova regra/orientacao seguindo o formato padrao abaixo
+5. **NUNCA baguncar, reordenar ou reformatar** o conteudo ja existente no arquivo
+6. Salvar arquivo
+7. Confirmar ao usuario o que foi feito (criado novo, atualizado existente, ou ja existia)
 
 ### FORMATO PADRAO PARA NOVAS REGRAS
 
@@ -108,6 +115,7 @@ Antes de qualquer resposta ao usuario, voce DEVE:
 
 | Versao | Data | Mudancas |
 |--------|------|----------|
+| 4.0 | 09/02/2026 | Adicionado ControlesKendo.md como leitura obrigatoria, centralizado na raiz |
 | 3.0 | 09/02/2026 | Movido para raiz do workspace, projeto padrao FrotiX.Site.OLD |
 | 2.0 | 18/01/2026 | Reformulacao completa: protocolo de inicializacao, sistema de memoria permanente |
 | 1.0 | 14/01/2026 | Versao inicial |
