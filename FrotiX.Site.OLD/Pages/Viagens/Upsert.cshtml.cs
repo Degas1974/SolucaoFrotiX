@@ -789,32 +789,41 @@ namespace FrotiX.Pages.Viagens
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnGetVerificaMotoristaViagem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : [PORQUÊ] Evitar alocar motorista em viagem aberta.
+         *                   [O QUE] Verifica se existe viagem em aberto para o motorista.
+         *                   [COMO] Valida GUID e consulta viagens com status "Aberta" e HoraFim nula.
+         *
+         * 📥 ENTRADAS     : id [string] - GUID do motorista.
+         *
+         * 📤 SAÍDAS       : JSON { data: bool } indicando se ha viagem aberta.
+         *
+         * 🔗 CHAMADA POR  : /Viagens/Upsert?handler=VerificaMotoristaViagem (AJAX).
+         *
+         * 🔄 CHAMA        : _unitOfWork.Viagem.GetFirstOrDefault.
+         ****************************************************************************************/
         public JsonResult OnGetVerificaMotoristaViagem(string id)
         {
             try
             {
-                Guid motoristaid = Guid.Parse(id);
-                var viagens = _unitOfWork.Viagem.GetFirstOrDefault(e =>
-                (
-                e.MotoristaId == motoristaid
-                && e.Status == "Aberta"
-                && e.StatusAgendamento == false
-                )
-                );
-                if (viagens == null)
+                if (string.IsNullOrEmpty(id) || !Guid.TryParse(id , out Guid motoristaId))
                 {
                     return new JsonResult(new
                     {
                         data = false
                     });
                 }
-                else
+
+                var viagens = _unitOfWork.Viagem.GetFirstOrDefault(e =>
+                    e.MotoristaId == motoristaId && e.HoraFim == null && e.Status == "Aberta"
+                );
+
+                return new JsonResult(new
                 {
-                    return new JsonResult(new
-                    {
-                        data = true
-                    });
-                }
+                    data = viagens != null
+                });
             }
             catch (Exception error)
             {
@@ -830,6 +839,21 @@ namespace FrotiX.Pages.Viagens
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnGetVerificaVeiculoViagem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : [PORQUÊ] Evitar alocar veiculo em viagem aberta.
+         *                   [O QUE] Verifica se existe viagem em aberto para o veiculo.
+         *                   [COMO] Valida GUID e consulta viagens com status "Aberta" e HoraFim nula.
+         *
+         * 📥 ENTRADAS     : id [string] - GUID do veiculo.
+         *
+         * 📤 SAÍDAS       : JSON { data: bool } indicando se ha viagem aberta.
+         *
+         * 🔗 CHAMADA POR  : /Viagens/Upsert?handler=VerificaVeiculoViagem (AJAX).
+         *
+         * 🔄 CHAMA        : _unitOfWork.Viagem.GetFirstOrDefault.
+         ****************************************************************************************/
         public JsonResult OnGetVerificaVeiculoViagem(string id)
         {
             try
@@ -843,7 +867,7 @@ namespace FrotiX.Pages.Viagens
                 }
 
                 var viagens = _unitOfWork.Viagem.GetFirstOrDefault(e =>
-                e.VeiculoId == veiculoId && e.Status == "Aberta" && e.StatusAgendamento == false
+                    e.VeiculoId == veiculoId && e.HoraFim == null && e.Status == "Aberta"
                 );
 
                 return new JsonResult(new
