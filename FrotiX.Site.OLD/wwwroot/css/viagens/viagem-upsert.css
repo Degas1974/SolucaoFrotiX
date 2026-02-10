@@ -340,23 +340,37 @@ img[alt="Foto"]:not([src]) {
 }
 
 /* Centralizacao no listbox do Kendo (motorista) */
+#cmbMotorista_listbox,
+#cmbMotorista_listbox .k-list-content,
+#cmbMotorista_listbox .k-list-ul {
+    text-align: center;
+}
+
 #cmbMotorista_listbox .k-list-item,
 #cmbMotorista_listbox .k-item {
     display: flex;
     justify-content: center;
+    align-items: center;
+}
+
+#cmbMotorista_listbox .k-list-item-text,
+#cmbMotorista_listbox .k-list-item-text > span {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #cmbMotorista_listbox .motorista-item {
     margin: 0 auto;
 }
 
-#cmbMotorista_listbox .k-list-item-text {
-    width: 100%;
-}
-
-#cmbMotorista.k-input-inner,
-#cmbMotorista .k-input-inner {
+/* Centralizacao do valor selecionado */
+.k-dropdownlist[aria-controls="cmbMotorista_listbox"] .k-input-inner {
+    display: flex;
     justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 /* Balao laranja bonitao */
