@@ -1185,8 +1185,8 @@
 
     .zoom-btn {
         position: absolute;
-        left: 8px;
-        bottom: 8px;
+        left: -20px;
+        bottom: 16px;
         width: 44px;
         height: 44px;
         border: none;
@@ -1434,8 +1434,8 @@
                                             </label>
                                             <span class="text-danger font-weight-light"
                                                 asp-validation-for="ViagemObj.Viagem.DataInicial"></span>
-                                            <input id="txtDataInicial" class="form-control"
-                                                asp-for="ViagemObj.Viagem.DataInicial" type="date" />
+                                            <input id="txtDataInicial" name="ViagemObj.Viagem.DataInicial" 
+                                                style="width: 100%; height: 38px;" />
                                         </div>
                                         <div class="col-6 col-md-2">
                                             <label class="ftx-label ftx-required" asp-for="ViagemObj.Viagem.HoraInicio">
@@ -1443,8 +1443,8 @@
                                             </label>
                                             <span class="text-danger font-weight-light"
                                                 asp-validation-for="ViagemObj.Viagem.HoraInicio"></span>
-                                            <input id="txtHoraInicial" class="form-control"
-                                                asp-for="ViagemObj.Viagem.HoraInicio" type="time" />
+                                            <input id="txtHoraInicial" name="ViagemObj.Viagem.HoraInicio" 
+                                                style="width: 100%; height: 38px;" />
                                         </div>
                                         <div class="col-6 col-md-2">
                                             <label class="ftx-label" asp-for="ViagemObj.Viagem.DataFinal">
@@ -1452,8 +1452,8 @@
                                             </label>
                                             <span class="text-danger font-weight-light"
                                                 asp-validation-for="ViagemObj.Viagem.DataFinal"></span>
-                                            <input id="txtDataFinal" class="form-control"
-                                                asp-for="ViagemObj.Viagem.DataFinal" type="date" />
+                                            <input id="txtDataFinal" name="ViagemObj.Viagem.DataFinal" 
+                                                style="width: 100%; height: 38px;" />
                                         </div>
                                         <div class="col-6 col-md-2">
                                             <label class="ftx-label" asp-for="ViagemObj.Viagem.HoraFim">
@@ -1461,8 +1461,8 @@
                                             </label>
                                             <span class="text-danger font-weight-light"
                                                 asp-validation-for="ViagemObj.Viagem.HoraFim"></span>
-                                            <input id="txtHoraFinal" class="form-control"
-                                                asp-for="ViagemObj.Viagem.HoraFim" type="time" />
+                                            <input id="txtHoraFinal" name="ViagemObj.Viagem.HoraFim" 
+                                                style="width: 100%; height: 38px;" />
                                         </div>
                                         <div class="col-6 col-md-2">
                                             <label class="ftx-label">Duração</label>
@@ -3031,6 +3031,9 @@
     <!-- Kendo Editor Helper -->
     <script src="~/js/viagens/kendo-editor-upsert.js" asp-append-version="true"></script>
 
+    <!-- Kendo DateTime Helper -->
+    <script src="~/js/agendamento/utils/kendo-datetime.js" asp-append-version="true"></script>
+
     <!-- Validação IA - Validador Evolutivo de Finalização -->
     <script src="~/js/validacao/ValidadorFinalizacaoIA.js" asp-append-version="true"></script>
 
@@ -3203,6 +3206,67 @@
 
             } catch (error) {
                 Alerta.TratamentoErroComLinha("Upsert.cshtml", "kendoDropDownList.init", error);
+            }
+        })();
+    </script>
+
+    <!-- Kendo DatePicker/TimePicker: Inicialização -->
+    <script>
+        (function () {
+            try {
+                // Limites de data (hoje - 15 dias até hoje)
+                var dataMinima = new Date();
+                dataMinima.setDate(dataMinima.getDate() - 15);
+                var dataMaxima = new Date();
+
+                // Data Inicial
+                $("#txtDataInicial").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    min: dataMinima,
+                    max: dataMaxima,
+                    dateInput: true,
+                    value: @Html.Raw(Model.ViagemObj?.Viagem?.DataInicial != null ? 
+                        $"new Date({Model.ViagemObj.Viagem.DataInicial.Year}, {Model.ViagemObj.Viagem.DataInicial.Month - 1}, {Model.ViagemObj.Viagem.DataInicial.Day})" : 
+                        "null")
+                });
+
+                // Hora Inicial
+                $("#txtHoraInicial").kendoTimePicker({
+                    format: "HH:mm",
+                    culture: "pt-BR",
+                    interval: 15,
+                    dateInput: true,
+                    value: @Html.Raw(Model.ViagemObj?.Viagem?.HoraInicio != null ? 
+                        $"new Date(0,0,0,{Model.ViagemObj.Viagem.HoraInicio.Hours},{Model.ViagemObj.Viagem.HoraInicio.Minutes})" : 
+                        "null")
+                });
+
+                // Data Final
+                $("#txtDataFinal").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    min: dataMinima,
+                    max: dataMaxima,
+                    dateInput: true,
+                    value: @Html.Raw(Model.ViagemObj?.Viagem?.DataFinal != null ? 
+                        $"new Date({Model.ViagemObj.Viagem.DataFinal.Value.Year}, {Model.ViagemObj.Viagem.DataFinal.Value.Month - 1}, {Model.ViagemObj.Viagem.DataFinal.Value.Day})" : 
+                        "null")
+                });
+
+                // Hora Final
+                $("#txtHoraFinal").kendoTimePicker({
+                    format: "HH:mm",
+                    culture: "pt-BR",
+                    interval: 15,
+                    dateInput: true,
+                    value: @Html.Raw(Model.ViagemObj?.Viagem?.HoraFim != null ? 
+                        $"new Date(0,0,0,{Model.ViagemObj.Viagem.HoraFim.Value.Hours},{Model.ViagemObj.Viagem.HoraFim.Value.Minutes})" : 
+                        "null")
+                });
+
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("Upsert.cshtml", "kendoDateTimePicker.init", error);
             }
         })();
     </script>

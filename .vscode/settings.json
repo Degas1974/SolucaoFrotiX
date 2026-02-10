@@ -53,10 +53,26 @@
 
   // === ARQUIVOS OBRIGATORIOS DE INSTRUCOES ===
   // Todos os chats/agentes/editores DEVEM ler estes arquivos no inicio de cada sessao
+  // LOCALIZACAO: Raiz do workspace (d:\FrotiX\Solucao FrotiX 2026\)
+
+  // Claude Code
+  "claude.customInstructions": "OBRIGATORIO: No inicio de CADA sessao/chat/agente/editor, leia os arquivos RegrasDesenvolvimentoFrotiX.md e ControlesKendo.md na RAIZ do workspace (Solucao FrotiX 2026/) ANTES de qualquer resposta. Estes sao os arquivos OFICIAIS de regras. CRITICO: A Secao 5 (DOCUMENTACAO INTRA-CODIGO) e EXTREMAMENTE IMPORTANTE - TODO codigo criado/alterado DEVE seguir rigorosamente os padroes de Cards de Arquivo, Cards de Funcao (com PORQUE/O QUE/COMO), e comentarios APENAS para codigo complexo. MEMORIA PERMANENTE: Quando o usuario pedir para memorizar/guardar/lembrar algo, abra RegrasDesenvolvimentoFrotiX.md, VERIFIQUE se a info ja existe (se sim e esta completa, informe; se incompleta, atualize; se nao existe, crie nova entrada respeitando a organizacao existente, NUNCA bagunce o arquivo).",
+
+  // GitHub Copilot
   "github.copilot.chat.codeGeneration.instructions": [
-      { "text": "OBRIGATORIO: Leia RegrasDesenvolvimentoFrotiX.md e ControlesKendo.md na RAIZ do workspace ANTES de qualquer resposta." },
+      { "text": "OBRIGATORIO: Leia RegrasDesenvolvimentoFrotiX.md e ControlesKendo.md na RAIZ do workspace (Solucao FrotiX 2026/) ANTES de qualquer resposta." },
+      { "text": "CRITICO: A Secao 5 (DOCUMENTACAO INTRA-CODIGO) do RegrasDesenvolvimentoFrotiX.md e EXTREMAMENTE IMPORTANTE e deve ser seguida A RISCA para qualquer criacao/manutencao de codigo. TODO arquivo/funcao criado/alterado DEVE ter Cards completos (PORQUE/O QUE/COMO + rastreabilidade). Comentarios APENAS para codigo complexo." },
       { "text": "MEMORIA PERMANENTE: Quando o usuario pedir para memorizar/guardar/lembrar algo, abra RegrasDesenvolvimentoFrotiX.md na raiz, VERIFIQUE se a info ja existe (se completa, informe; se incompleta, atualize; se nao existe, crie nova entrada respeitando a organizacao existente, NUNCA bagunce o arquivo)." },
       { "file": "RegrasDesenvolvimentoFrotiX.md" },
       { "file": "ControlesKendo.md" }
-  ]
+  ],
+
+  // Continue
+  "continue.systemMessage": "OBRIGATORIO: No inicio de CADA sessao, leia os arquivos RegrasDesenvolvimentoFrotiX.md e ControlesKendo.md na RAIZ do workspace ANTES de qualquer resposta. CRITICO: A Secao 5 (DOCUMENTACAO INTRA-CODIGO) e EXTREMAMENTE IMPORTANTE - TODO codigo criado/alterado DEVE seguir rigorosamente os padroes de Cards (PORQUE/O QUE/COMO + rastreabilidade). MEMORIA PERMANENTE: Quando o usuario pedir para memorizar/guardar/lembrar algo, abra RegrasDesenvolvimentoFrotiX.md, VERIFIQUE se a info ja existe (se sim e esta completa, informe; se incompleta, atualize; se nao existe, crie nova entrada respeitando a organizacao existente, NUNCA bagunce o arquivo).",
+
+  // Gemini Code Assist
+  "geminicodeassist.rules": "OBRIGATORIO: No inicio de CADA sessao, leia os arquivos RegrasDesenvolvimentoFrotiX.md e ControlesKendo.md na RAIZ do workspace (Solucao FrotiX 2026/) ANTES de qualquer resposta. CRITICO: A Secao 5 (DOCUMENTACAO INTRA-CODIGO) e EXTREMAMENTE IMPORTANTE e deve ser seguida A RISCA. TODO codigo criado/alterado DEVE ter Cards completos (PORQUE/O QUE/COMO + rastreabilidade). MEMORIA PERMANENTE: Quando o usuario pedir para memorizar/guardar/lembrar algo, abra RegrasDesenvolvimentoFrotiX.md, VERIFIQUE se a info ja existe (se sim e esta completa, informe; se incompleta, atualize; se nao existe, crie nova entrada respeitando a organizacao existente, NUNCA bagunce o arquivo).",
+
+  // Genie AI
+  "chatgpt.promptPrefix.addTests": "OBRIGATORIO: Leia RegrasDesenvolvimentoFrotiX.md e ControlesKendo.md na RAIZ do workspace (Solucao FrotiX 2026/) ANTES de gerar codigo. CRITICO: A Secao 5 (DOCUMENTACAO INTRA-CODIGO) e EXTREMAMENTE IMPORTANTE - TODO codigo criado/alterado DEVE ter Cards completos (PORQUE/O QUE/COMO + rastreabilidade). MEMORIA PERMANENTE: Quando o usuario pedir para memorizar/guardar/lembrar algo, abra RegrasDesenvolvimentoFrotiX.md, VERIFIQUE se a info ja existe (se completa, informe; se incompleta, atualize; se nao existe, crie nova entrada respeitando a organizacao existente)."
 }

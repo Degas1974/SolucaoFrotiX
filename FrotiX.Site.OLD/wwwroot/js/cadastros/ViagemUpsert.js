@@ -631,68 +631,105 @@ $("#txtDataInicial").focusout(function ()
 {
     try
     {
-        const rawDataFinal = document.getElementById("txtDataFinal")?.value;
-        const rawDataInicial = document.getElementById("txtDataInicial")?.value;
-        const data = new Date(rawDataInicial);
-        const anoAtual = new Date().getFullYear();
-        const anoInformado = data.getFullYear();
+        // [KENDO] Obter valores via API Kendo
+        const dataInicial = window.getKendoDateValue("txtDataInicial");
+        const dataFinal = window.getKendoDateValue("txtDataFinal");
 
-        const ehValida =
-            !isNaN(data.getTime()) &&
-            rawDataInicial === data.toISOString().split("T")[0] &&
-            anoInformado >= anoAtual - 1 &&
-            anoInformado <= anoAtual + 1;
+        // [VALIDACAO] Verificar se a data é válida
+        if (!dataInicial || isNaN(dataInicial.getTime()))
+        {
+            Alerta.Erro("Erro na Data", "Data Inicial inválida!");
+            window.setKendoDateValue("txtDataInicial", null);
+            return;
+        }
 
-        if (!ehValida)
+        // [REGRA] Data Inicial não pode ser superior a hoje
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        if (dataInicial > hoje)
+        {
+            Alerta.Erro("Erro na Data", "A Data Inicial não pode ser superior à data de hoje!");
+            window.setKendoDateValue("txtDataInicial", null);
+            return;
+        }
+
+        // [REGRA] Data Inicial não pode ser mais de 15 dias antes de hoje
+        const limite15Dias = new Date(hoje);
+        limite15Dias.setDate(limite15Dias.getDate() - 15);
+        if (dataInicial < limite15Dias)
         {
             Alerta.Erro(
                 "Erro na Data",
-                "A data deve ser válida e o ano deve estar entre o ano anterior e o próximo!",
+                "A Data Inicial não pode ser anterior a 15 dias da data atual!"
             );
-            document.getElementById("txtDataFinal").value = "";
-            document.getElementById("txtDataFinal").focus();
+            window.setKendoDateValue("txtDataInicial", null);
             return;
         }
 
-        const dataInicial = rawDataInicial.replace(/-/g, "/");
-        const dataFinal = rawDataFinal.replace(/-/g, "/");
-
-        var inicio = moment(`${dataInicial}`, "DD/MM/YYYY HH:mm");
-        var fim = moment(`${dataFinal}`, "DD/MM/YYYY HH:mm");
-
-        if (!inicio.isValid() || !fim.isValid()) return;
-
-        if (dataFinal < dataInicial)
+        // [REGRA] Se Hora Início já preenchida, conjunto Data+Hora não pode ser futuro
+        const horaInicialVal = window.getKendoTimeValue("txtHoraInicial");
+        if (horaInicialVal)
         {
-            $("#txtDataInicial").val("");
-            $("#txtDuracao").val("");
-            Alerta.Erro("Erro na Data", "A data inicial deve ser menor que a final!");
-            return;
-        }
-
-        validarDatasInicialFinal(dataInicial, dataFinal);
-
-        if (dataFinal === dataInicial)
-        {
-            const horaInicial = $("#txtHoraInicial").val();
-            const horaFinal = $("#txtHoraFinal").val();
-
-            if (!horaInicial || !horaFinal) return;
-
-            const [hI, mI] = horaInicial.split(":").map(Number);
-            const [hF, mF] = horaFinal.split(":").map(Number);
-            const minIni = hI * 60 + mI;
-            const minFin = hF * 60 + mF;
-
-            if (minFin <= minIni)
+            const agora = new Date();
+            const [horas, minutos] = horaInicialVal.split(":").map(Number);
+            const dataHoraInicio = new Date(dataInicial);
+            dataHoraInicio.setHours(horas, minutos, 0, 0);
+            
+            if (dataHoraInicio > agora)
             {
-                $("#txtHoraFinal").val("");
-                $("#txtDuracao").val("");
                 Alerta.Erro(
-                    "Erro na Hora",
-                    "A hora inicial deve ser menor que a final quando as datas forem iguais!",
+                    "Erro na Data/Hora",
+                    "O conjunto Data Inicial + Hora Início não pode ser superior ao momento atual!"
                 );
+                window.setKendoDateValue("txtDataInicial", null);
                 return;
+            }
+        }
+
+        // [VALIDACAO] Comparar com Data Final (se preenchida)
+        if (dataFinal)
+        {
+            if (dataFinal < dataInicial)
+            {
+                window.setKendoDateValue("txtDataInicial", null);
+                $("#txtDuracao").val("");
+                Alerta.Erro("Erro na Data", "A Data Inicial deve ser menor ou igual à Data Final!");
+                return;
+            }
+
+            // Formatar para moment (compatibilidade com validarDatasInicialFinal)
+            const strDataInicial = moment(dataInicial).format("DD/MM/YYYY");
+            const strDataFinal = moment(dataFinal).format("DD/MM/YYYY");
+            validarDatasInicialFinal(strDataInicial, strDataFinal);
+
+            // [REGRA] Se mesma data, Hora Fim >= Hora Início
+            const sameDay = dataInicial.getFullYear() === dataFinal.getFullYear() &&
+                           dataInicial.getMonth() === dataFinal.getMonth() &&
+                           dataInicial.getDate() === dataFinal.getDate();
+            
+            if (sameDay)
+            {
+                const horaInicial = window.getKendoTimeValue("txtHoraInicial");
+                const horaFinal = window.getKendoTimeValue("txtHoraFinal");
+
+                if (horaInicial && horaFinal)
+                {
+                    const [hI, mI] = horaInicial.split(":").map(Number);
+                    const [hF, mF] = horaFinal.split(":").map(Number);
+                    const minIni = hI * 60 + mI;
+                    const minFin = hF * 60 + mF;
+
+                    if (minFin <= minIni)
+                    {
+                        window.setKendoTimeValue("txtHoraFinal", null);
+                        $("#txtDuracao").val("");
+                        Alerta.Erro(
+                            "Erro na Hora",
+                            "A Hora Início deve ser menor que a Hora Fim quando as datas forem iguais!"
+                        );
+                        return;
+                    }
+                }
             }
         }
 
@@ -700,7 +737,93 @@ $("#txtDataInicial").focusout(function ()
     }
     catch (error)
     {
-        TratamentoErroComLinha("ViagemUpsert.js", "focusout.txtDataFinal", error);
+        TratamentoErroComLinha("ViagemUpsert.js", "focusout.txtDataInicial", error);
+    }
+});
+
+//================================================
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: focusout.txtHoraInicial
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Garantir que o conjunto Data Inicial + Hora Início não
+ *                   represente um momento futuro, e que a Hora Início seja consistente
+ *                   com a Hora Fim quando as datas forem iguais.
+ *                   [O QUE] Valida hora de início contra momento atual e hora fim.
+ *                   [COMO] Compara datetime montado com Date() atual; se mesma data,
+ *                   compara minutos totais de início vs fim.
+ *
+ * 📥 ENTRADAS     : Valores de #txtDataInicial, #txtHoraInicial, #txtDataFinal, #txtHoraFinal
+ *
+ * 📤 SAÍDAS       : Limpa campo e exibe erro se inválido; recalcula duração se válido.
+ *
+ * ⬅️ CHAMADO POR  : Evento focusout do input #txtHoraInicial
+ *
+ * ➡️ CHAMA        : calcularDuracaoViagem() [ViagemUpsert.js]
+ *                   Alerta.Erro() [alerta.js]
+ ****************************************************************************************/
+$("#txtHoraInicial").focusout(function ()
+{
+    try
+    {
+        // [KENDO] Obter valores via API Kendo
+        const dataInicial = window.getKendoDateValue("txtDataInicial");
+        const horaInicial = window.getKendoTimeValue("txtHoraInicial");
+
+        if (!dataInicial || !horaInicial) return;
+
+        // [REGRA] Conjunto Data Inicial + Hora Início não pode ser superior ao momento atual
+        const agora = new Date();
+        const [horas, minutos] = horaInicial.split(":").map(Number);
+        const dataHoraInicio = new Date(dataInicial);
+        dataHoraInicio.setHours(horas, minutos, 0, 0);
+
+        if (dataHoraInicio > agora)
+        {
+            Alerta.Erro(
+                "Erro na Hora",
+                "O conjunto Data Inicial + Hora Início não pode ser superior ao momento atual!"
+            );
+            window.setKendoTimeValue("txtHoraInicial", null);
+            $("#txtDuracao").val("");
+            return;
+        }
+
+        // [REGRA] Se mesma data que Data Final, Hora Fim deve ser >= Hora Início
+        const dataFinal = window.getKendoDateValue("txtDataFinal");
+        const horaFinal = window.getKendoTimeValue("txtHoraFinal");
+
+        if (dataFinal && horaFinal)
+        {
+            const sameDay = dataInicial.getFullYear() === dataFinal.getFullYear() &&
+                           dataInicial.getMonth() === dataFinal.getMonth() &&
+                           dataInicial.getDate() === dataFinal.getDate();
+            
+            if (sameDay)
+            {
+                const [hI, mI] = horaInicial.split(":").map(Number);
+                const [hF, mF] = horaFinal.split(":").map(Number);
+                const minIni = hI * 60 + mI;
+                const minFin = hF * 60 + mF;
+
+                if (minFin <= minIni)
+                {
+                    Alerta.Erro(
+                        "Erro na Hora",
+                        "A Hora Início não pode ser maior ou igual à Hora Fim quando as datas forem iguais!"
+                    );
+                    window.setKendoTimeValue("txtHoraInicial", null);
+                    $("#txtDuracao").val("");
+                    return;
+                }
+            }
+        }
+
+        calcularDuracaoViagem();
+    }
+    catch (error)
+    {
+        TratamentoErroComLinha("ViagemUpsert.js", "focusout.txtHoraInicial", error);
     }
 });
 
@@ -715,101 +838,94 @@ $("#txtDataFinal").focusout(async function ()
 
         try
         {
-            const rawDataFinal = document.getElementById("txtDataFinal")?.value;
-            const rawDataInicial = document.getElementById("txtDataInicial")?.value;
-            const data = new Date(rawDataFinal);
-            const anoAtual = new Date().getFullYear();
-            const anoInformado = data.getFullYear();
+            // [KENDO] Obter valores via API Kendo
+            const dataFinal = window.getKendoDateValue("txtDataFinal");
+            const dataInicial = window.getKendoDateValue("txtDataInicial");
 
-            if (rawDataFinal === "" || rawDataFinal === null)
+            if (!dataFinal)
             {
                 return;
             }
 
-            const ehValida =
-                !isNaN(data.getTime()) &&
-                rawDataFinal === data.toISOString().split("T")[0] &&
-                anoInformado >= anoAtual - 1 &&
-                anoInformado <= anoAtual + 1;
+            // [VALIDACAO] Verificar se a data é válida
+            if (isNaN(dataFinal.getTime()))
+            {
+                Alerta.Erro("Erro na Data", "Data Final inválida!");
+                window.setKendoDateValue("txtDataFinal", null);
+                return;
+            }
 
-            if (!ehValida)
+            // [REGRA] Data Final não pode ser superior a hoje
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            if (dataFinal > hoje)
             {
                 evitandoLoop = true;
-
-                Alerta.Erro(
-                    "Erro na Data",
-                    "A data deve ser válida e o ano deve estar entre o ano anterior e o próximo!",
-                );
-
+                Alerta.Erro("Erro na Data", "A Data Final não pode ser superior à data de hoje!");
                 setTimeout(() =>
                 {
                     try
                     {
-                        document.getElementById("txtDataFinal").value = "";
-                        document.getElementById("txtDataFinal").focus();
+                        window.setKendoDateValue("txtDataFinal", null);
+                        const picker = window.getKendoDatePicker("txtDataFinal");
+                        if (picker) picker.focus();
                         evitandoLoop = false;
                     }
                     catch (error)
                     {
-                        Alerta.TratamentoErroComLinha(
-                            "ViagemUpsert.js",
-                            "callback@setTimeout#0",
-                            error,
-                        );
+                        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "txtDataFinal.setTimeout", error);
                     }
                 }, 1500);
-
                 return;
             }
 
-            // VALIDAÇÃO IA: Data Final não pode ser superior à data atual
+            // [REGRA] Data Final não pode ser mais de 15 dias antes de hoje (consistência com Data Inicial)
+            const limite15Dias = new Date(hoje);
+            limite15Dias.setDate(limite15Dias.getDate() - 15);
+            if (dataFinal < limite15Dias)
+            {
+                Alerta.Erro("Erro na Data", "A Data Final não pode ser anterior a 15 dias da data atual!");
+                window.setKendoDateValue("txtDataFinal", null);
+                return;
+            }
+
+            // [VALIDACAO IA] Análise adicional via ValidadorFinalizacaoIA (se disponível)
             if (typeof ValidadorFinalizacaoIA !== 'undefined')
             {
                 const validador = ValidadorFinalizacaoIA.obterInstancia();
-                const resultadoDataFutura = await validador.validarDataNaoFutura(rawDataFinal);
+                const strDataFinal = moment(dataFinal).format("YYYY-MM-DD");
+                const resultadoDataFutura = await validador.validarDataNaoFutura(strDataFinal);
                 if (!resultadoDataFutura.valido)
                 {
                     await Alerta.Erro(resultadoDataFutura.titulo, resultadoDataFutura.mensagem);
-                    document.getElementById("txtDataFinal").value = "";
-                    return;
-                }
-            }
-            else
-            {
-                // Fallback: validação simples
-                const hoje = new Date();
-                hoje.setHours(0, 0, 0, 0);
-                if (data > hoje)
-                {
-                    document.getElementById("txtDataFinal").value = "";
-                    document.getElementById("txtDataFinal").focus();
-                    AppToast.show("Amarelo", "A Data Final não pode ser superior à data atual.", 4000);
+                    window.setKendoDateValue("txtDataFinal", null);
                     return;
                 }
             }
 
-            const dataInicial = rawDataInicial.replace(/-/g, "/");
-            const dataFinal = rawDataFinal.replace(/-/g, "/");
-
-            var inicio = moment(`${dataInicial}`, "DD/MM/YYYY HH:mm");
-            var fim = moment(`${dataFinal}`, "DD/MM/YYYY HH:mm");
-
-            if (!inicio.isValid() || !fim.isValid()) return;
+            if (!dataInicial) return;
 
             if (dataFinal < dataInicial)
             {
-                $("#txtDataInicial").val("");
+                window.setKendoDateValue("txtDataInicial", null);
                 $("#txtDuracao").val("");
                 Alerta.Erro("Erro na Data", "A data final deve ser maior ou igual que a inicial!");
                 return;
             }
 
-            validarDatasInicialFinal(dataInicial, dataFinal);
+            // Formatar para moment (compatibilidade com validarDatasInicialFinal)
+            const strDataInicial = moment(dataInicial).format("DD/MM/YYYY");
+            const strDataFinal = moment(dataFinal).format("DD/MM/YYYY");
+            validarDatasInicialFinal(strDataInicial, strDataFinal);
 
-            if (dataFinal === dataInicial)
+            const sameDay = dataInicial.getFullYear() === dataFinal.getFullYear() &&
+                           dataInicial.getMonth() === dataFinal.getMonth() &&
+                           dataInicial.getDate() === dataFinal.getDate();
+            
+            if (sameDay)
             {
-                const horaInicial = $("#txtHoraInicial").val();
-                const horaFinal = $("#txtHoraFinal").val();
+                const horaInicial = window.getKendoTimeValue("txtHoraInicial");
+                const horaFinal = window.getKendoTimeValue("txtHoraFinal");
 
                 if (!horaInicial || !horaFinal) return;
 
@@ -820,7 +936,7 @@ $("#txtDataFinal").focusout(async function ()
 
                 if (minFin <= minIni)
                 {
-                    $("#txtHoraFinal").val("");
+                    window.setKendoTimeValue("txtHoraFinal", null);
                     $("#txtDuracao").val("");
                     Alerta.Erro(
                         "Erro na Hora",
@@ -835,16 +951,16 @@ $("#txtDataFinal").focusout(async function ()
             // VALIDAÇÃO IA: Análise de duração (se disponível)
             if (typeof ValidadorFinalizacaoIA !== 'undefined')
             {
-                const horaInicial = $("#txtHoraInicial").val();
-                const horaFinal = $("#txtHoraFinal").val();
+                const horaInicial = window.getKendoTimeValue("txtHoraInicial");
+                const horaFinal = window.getKendoTimeValue("txtHoraFinal");
 
-                if (rawDataInicial && horaInicial && horaFinal)
+                if (dataInicial && horaInicial && horaFinal)
                 {
                     const validador = ValidadorFinalizacaoIA.obterInstancia();
                     const dadosDatas = {
-                        dataInicial: rawDataInicial,
+                        dataInicial: moment(dataInicial).format("YYYY-MM-DD"),
                         horaInicial: horaInicial,
-                        dataFinal: rawDataFinal,
+                        dataFinal: moment(dataFinal).format("YYYY-MM-DD"),
                         horaFinal: horaFinal
                     };
 
@@ -859,7 +975,7 @@ $("#txtDataFinal").focusout(async function ()
                         );
                         if (!confirma)
                         {
-                            document.getElementById("txtDataFinal").value = "";
+                            window.setKendoDateValue("txtDataFinal", null);
                             return;
                         }
                     }
@@ -884,28 +1000,31 @@ $("#txtHoraFinal").focusout(async function ()
 {
     try
     {
-        if ($("#txtDataFinal").val() === "" && $("#txtHoraFinal").val() != "")
+        // [KENDO] Obter valores via API Kendo
+        const dataFinal = window.getKendoDateValue("txtDataFinal");
+        const horaFinal = window.getKendoTimeValue("txtHoraFinal");
+        
+        if (!dataFinal && horaFinal)
         {
             Alerta.Erro(
                 "Erro na Hora",
                 "A hora final só pode ser preenchida depois de Data Final!",
             );
-            $("#txtHoraFinal").val("");
+            window.setKendoTimeValue("txtHoraFinal", null);
             $("#txtDuracao").val("");
             return;
         }
 
-        const dataInicialStr = $("#txtDataInicial").val();
-        const dataFinalStr = $("#txtDataFinal").val();
-        const horaInicial = $("#txtHoraInicial").val();
-        const horaFinal = $("#txtHoraFinal").val();
+        const dataInicial = window.getKendoDateValue("txtDataInicial");
+        const horaInicial = window.getKendoTimeValue("txtHoraInicial");
 
-        if (!dataInicialStr || !dataFinalStr || !horaInicial || !horaFinal) return;
+        if (!dataInicial || !dataFinal || !horaInicial || !horaFinal) return;
 
-        const [dia, mes, ano] = dataInicialStr.split("/");
-        const dataInicial = `${ano}-${mes}-${dia}`;
+        const sameDay = dataInicial.getFullYear() === dataFinal.getFullYear() &&
+                       dataInicial.getMonth() === dataFinal.getMonth() &&
+                       dataInicial.getDate() === dataFinal.getDate();
 
-        if (dataInicial === dataFinalStr)
+        if (sameDay)
         {
             const [hI, mI] = horaInicial.split(":").map(Number);
             const [hF, mF] = horaFinal.split(":").map(Number);
@@ -1236,20 +1355,21 @@ function calcularDuracaoViagem()
 {
     try
     {
-        var rawDataInicial = document.getElementById("txtDataInicial") && document.getElementById("txtDataInicial").value;
-        var horaInicial = document.getElementById("txtHoraInicial") && document.getElementById("txtHoraInicial").value;
-        var rawDataFinal = document.getElementById("txtDataFinal") && document.getElementById("txtDataFinal").value;
-        var horaFinal = document.getElementById("txtHoraFinal") && document.getElementById("txtHoraFinal").value;
+        // [KENDO] Obter valores via API Kendo
+        var dataInicial = window.getKendoDateValue("txtDataInicial");
+        var horaInicial = window.getKendoTimeValue("txtHoraInicial");
+        var dataFinal = window.getKendoDateValue("txtDataFinal");
+        var horaFinal = window.getKendoTimeValue("txtHoraFinal");
         var elDuracao = document.getElementById("txtDuracao");
         
-        console.log("calcularDuracaoViagem - DataInicial:", rawDataInicial, "HoraInicial:", horaInicial, "DataFinal:", rawDataFinal, "HoraFinal:", horaFinal);
+        console.log("calcularDuracaoViagem - DataInicial:", dataInicial, "HoraInicial:", horaInicial, "DataFinal:", dataFinal, "HoraFinal:", horaFinal);
         
         if (!elDuracao) return;
 
         var LIMIAR_MINUTOS = 120; // > 120 => inválido/tooltip
 
         // Faltando campos → limpar e resetar estados
-        if (!rawDataInicial || !horaInicial || !rawDataFinal || !horaFinal)
+        if (!dataInicial || !horaInicial || !dataFinal || !horaFinal)
         {
             elDuracao.value = "";
             if (typeof FieldUX !== 'undefined') {
@@ -1259,8 +1379,12 @@ function calcularDuracaoViagem()
             return;
         }
 
-        var inicio = moment(rawDataInicial + "T" + horaInicial, "YYYY-MM-DDTHH:mm");
-        var fim = moment(rawDataFinal + "T" + horaFinal, "YYYY-MM-DDTHH:mm");
+        // Montar strings para moment
+        const strDataInicial = moment(dataInicial).format("YYYY-MM-DD");
+        const strDataFinal = moment(dataFinal).format("YYYY-MM-DD");
+        
+        var inicio = moment(strDataInicial + "T" + horaInicial, "YYYY-MM-DDTHH:mm");
+        var fim = moment(strDataFinal + "T" + horaFinal, "YYYY-MM-DDTHH:mm");
         if (!inicio.isValid() || !fim.isValid())
         {
             elDuracao.value = "";

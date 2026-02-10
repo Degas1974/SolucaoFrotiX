@@ -743,6 +743,28 @@ Cada arquivo de código (C#, JS ou CSHTML) deve ser um artefato auto-explicativo
 
 ---
 
+### 5.1.1 Regras Fundamentais de Documentação
+
+**REGRA OBRIGATÓRIA - Criação de Novos Arquivos:**
+- ✅ **TODO arquivo novo** (CSHTML, CSHTML.CS, JS) DEVE ter um **Card Inicial** completo
+- ✅ O Card DEVE explicar: objetivo, funcionalidade, entrada/saída
+- ✅ O Card DEVE mapear rastreabilidade: **quem chama** (arquivos/funções) e **para quê**
+- ✅ O Card DEVE mapear dependências: **quem esse arquivo chama** (arquivos/funções) e **para quê**
+
+**REGRA OBRIGATÓRIA - Criação/Alteração de Funções:**
+- ✅ **TODA função** (nova ou alterada) DEVE ter um **Card Descritivo** completo
+- ✅ O Card DEVE priorizar o **PORQUÊ** da existência da função (não apenas "o que faz")
+- ✅ O Card DEVE explicar o **FUNCIONAMENTO DO ALGORITMO** em alto nível (facilitar manutenção)
+- ✅ O Card DEVE ter rastreabilidade: **⬅️ CHAMADO POR** e **➡️ CHAMA** com arquivos/funções específicos
+
+**REGRA OBRIGATÓRIA - Comentários Internos:**
+- ✅ **Código autoexplicável NÃO precisa de comentários**
+- ✅ **APENAS código complexo** precisa de comentários robustos
+- ✅ Comentários DEVEM explicar o **PORQUÊ** (não o "o que", que deve estar claro pelo código)
+- ✅ Use tags semânticas (`[LOGICA]`, `[AJAX]`, `[DB]`, etc) para categorização
+
+---
+
 ### 5.2 Card do Arquivo (Header Principal)
 
 **REGRA:** Todo arquivo (.cs, .js ou .cshtml) DEVE iniciar com um **Card de Identificação** descrevendo:
@@ -825,24 +847,31 @@ Cada arquivo de código (C#, JS ou CSHTML) deve ser um artefato auto-explicativo
 
 **REGRA:** Cada função DEVE ter um header descritivo imediatamente antes da declaração.
 
+**IMPORTANTE:** O Card de Função deve priorizar:
+1. **O PORQUÊ** da existência da função (razão de negócio/técnica), não apenas "o que faz"
+2. **O FUNCIONAMENTO DO ALGORITMO** em alto nível para facilitar manutenção futura
+3. **Rastreabilidade completa** (quem chama/chama quem) para entender o fluxo
+
 #### ✅ Modelo para C# (Funções/Métodos)
 
 ```csharp
 /****************************************************************************************
  * ⚡ FUNÇÃO: NomeDaFuncao
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Descrição detalhada do que a função faz.
+ * 🎯 OBJETIVO     : [PORQUÊ] Explicar PORQUÊ esta função existe e qual problema resolve.
+ *                   [O QUE] Descrição detalhada do que a função faz.
+ *                   [COMO] Resumo do funcionamento do algoritmo em alto nível.
  *
- * 📥 ENTRADAS     : param1 [tipo] - Descrição
- *                   param2 [tipo] - Descrição
+ * 📥 ENTRADAS     : param1 [tipo] - Descrição e propósito do parâmetro
+ *                   param2 [tipo] - Descrição e propósito do parâmetro
  *
- * 📤 SAÍDAS       : Tipo de retorno e o que representa.
+ * 📤 SAÍDAS       : Tipo de retorno e o que representa (cenários de sucesso/erro).
  *
- * 🔗 CHAMADA POR  : Quem invoca esta função.
+ * 🔗 CHAMADA POR  : Quem invoca esta função (arquivo/função/evento específico).
  *
- * 🔄 CHAMA        : O que esta função invoca internamente.
+ * 🔄 CHAMA        : O que esta função invoca internamente (funções/APIs/serviços).
  *
- * 📝 OBSERVAÇÕES  : Regras especiais, validações, side effects.
+ * 📝 OBSERVAÇÕES  : Regras especiais, validações, side effects, edge cases.
  ****************************************************************************************/
 public IActionResult NomeDaFuncao(int param1, string param2)
 {
@@ -865,17 +894,19 @@ public IActionResult NomeDaFuncao(int param1, string param2)
 /****************************************************************************************
  * ⚡ FUNÇÃO: nomeDaFuncao
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Descrição detalhada do que a função faz.
+ * 🎯 OBJETIVO     : [PORQUÊ] Explicar PORQUÊ esta função existe e qual problema resolve.
+ *                   [O QUE] Descrição detalhada do que a função faz.
+ *                   [COMO] Resumo do funcionamento do algoritmo em alto nível.
  *
- * 📥 ENTRADAS     : param1 [tipo] - Descrição
+ * 📥 ENTRADAS     : param1 [tipo] - Descrição e propósito do parâmetro
  *
- * 📤 SAÍDAS       : Tipo de retorno (void, Promise, Object, etc).
+ * 📤 SAÍDAS       : Tipo de retorno (void, Promise, Object, etc) e cenários.
  *
- * 🔗 CHAMADA POR  : Evento onclick, outra função, DOMContentLoaded.
+ * 🔗 CHAMADA POR  : Evento onclick, outra função, DOMContentLoaded (especificar).
  *
- * 🔄 CHAMA        : Endpoints da API, funções auxiliares.
+ * 🔄 CHAMA        : Endpoints da API, funções auxiliares (listar com propósito).
  *
- * 📝 OBSERVAÇÕES  : Regras especiais, validações, dependências.
+ * 📝 OBSERVAÇÕES  : Regras especiais, validações, dependências, edge cases.
  ****************************************************************************************/
 function nomeDaFuncao(param1) {
     try {
@@ -900,6 +931,19 @@ function nomeDaFuncao(param1) {
 ### 5.4 Comentários Internos (Tags Semânticas)
 
 **REGRA:** Use tags descritivas para categorizar blocos de código e facilitar a leitura.
+
+**REGRA CRÍTICA DE COMENTÁRIOS:**
+- ✅ **Código AUTOEXPLICÁVEL NÃO precisa de comentários** (ex: `var idade = 25;`)
+- ✅ **APENAS código COMPLEXO precisa de comentários ROBUSTOS** (ex: algoritmos, lógica de negócio não-óbvia, integrações)
+- ✅ **Priorize nomes de variáveis/funções claros** ao invés de comentários excessivos
+- ✅ **Explique o PORQUÊ**, não o "o que" (que já deve estar claro pelo código)
+
+**Quando comentar:**
+- Algoritmos complexos ou otimizações não-óbvias
+- Regras de negócio específicas que não ficam claras apenas pelo código
+- Workarounds temporários ou limitações técnicas
+- Integrações com APIs/bibliotecas externas
+- Trechos críticos para segurança ou performance
 
 | Tag | Significado | Exemplo de Uso |
 | :--- | :--- | :--- |
@@ -1129,9 +1173,16 @@ function validarFormulario() {
 
 **Workflow:**
 1. Ler arquivo completo e entender seu propósito
-2. Adicionar Card de Arquivo no topo
-3. Documentar cada função com Card de Função
-4. Adicionar comentários internos com tags semânticas
+2. Adicionar **Card de Arquivo** no topo (objetivo, entrada/saída, quem chama/chama quem)
+3. Documentar cada função com **Card de Função** enfatizando:
+   - **PORQUÊ** a função existe (razão de negócio/técnica)
+   - **O QUE** ela faz (descrição funcional)
+   - **COMO** funciona (resumo do algoritmo)
+   - **Rastreabilidade** completa (⬅️ CHAMADO POR / ➡️ CHAMA)
+4. Adicionar comentários internos **APENAS para código complexo**:
+   - Use tags semânticas (`[LOGICA]`, `[AJAX]`, `[DB]`, etc)
+   - Código autoexplicável NÃO precisa de comentários
+   - Explique o PORQUÊ, não o "o que"
 5. Garantir try-catch em todas as funções
 6. Documentar chamadas AJAX com detalhes de entrada/saída
 7. Mapear rastreabilidade (quem chama quem)
