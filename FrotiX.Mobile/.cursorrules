@@ -1,0 +1,18 @@
+INSTRUCAO OBRIGATORIA: Leia RegrasDesenvolvimentoFrotiXMobile.md antes de qualquer sugestao.
+
+Arquivo principal de regras: RegrasDesenvolvimentoFrotiXMobile.md
+Adicione novas regras APENAS no arquivo principal.
+
+CONTEXTO: Projetos .NET MAUI Blazor Hybrid (net10.0-android)
+- FrotiX.Mobile.Shared (Razor Class Library - Models, Services, Helpers)
+- FrotiX.Mobile.Economildo (App MAUI - Syncfusion + MudBlazor)
+- FrotiX.Mobile.Vistorias (App MAUI - Syncfusion + Radzen)
+
+REGRAS CRITICAS:
+- Try-catch obrigatorio em TODAS funcoes
+- AlertaJs via JS Interop (NUNCA alert() nativo)
+- fa-duotone (NUNCA fa-solid)
+- Services = equivalente a Controllers do web
+- Azure Relay para comunicacao com backend
+- GC.Collect() antes de navegacao
+- Syncfusion Blazor para componentes UI

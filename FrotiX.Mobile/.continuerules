@@ -1,0 +1,6 @@
+INSTRUCAO OBRIGATORIA: Leia RegrasDesenvolvimentoFrotiXMobile.md
+Arquivo principal: RegrasDesenvolvimentoFrotiXMobile.md
+Adicione novas regras APENAS no arquivo principal.
+
+CONTEXTO: .NET MAUI Blazor Hybrid (net10.0-android)
+REGRAS: Try-catch obrigatorio, AlertaJs (nao alert()), fa-duotone, Services = Controllers, Azure Relay, GC.Collect() em navegacao, Syncfusion Blazor.

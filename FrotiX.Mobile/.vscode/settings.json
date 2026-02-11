@@ -1,0 +1,12 @@
+{
+  "task.allowAutomaticTasks": "on",
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+      "text": "CONFIRMACAO VISUAL OBRIGATORIA: Ao iniciar chat, exiba: 'FROTIX MOBILE - GITHUB COPILOT CONFIGURADO | Arquivos Carregados: RegrasDesenvolvimentoFrotiXMobile.md | Regras Criticas Ativas: * Try-catch obrigatorio * AlertaJs via JS Interop (NUNCA alert()) * fa-duotone (NUNCA fa-solid) * Services = Controllers do web * Azure Relay para comunicacao * Syncfusion Blazor para componentes UI * GC.Collect() antes de navegacao | Pronto!' | INSTRUCOES: 1) Leia COMPLETAMENTE RegrasDesenvolvimentoFrotiXMobile.md antes de qualquer sugestao. 2) Projetos: FrotiX.Mobile.Shared (RCL), FrotiX.Mobile.Economildo (MAUI), FrotiX.Mobile.Vistorias (MAUI). 3) Stack: .NET 10 MAUI Blazor Hybrid, Syncfusion Blazor, MudBlazor (Economildo), Radzen (Vistorias). 4) SEMPRE: try-catch, AlertaJs (nao alert()), fa-duotone (nao fa-solid), GC.Collect() em navegacao. Siga TODAS as regras do RegrasDesenvolvimentoFrotiXMobile.md."
+    }
+  ],
+  "gemini.contextFiles": [
+    "GEMINI.md",
+    "RegrasDesenvolvimentoFrotiXMobile.md"
+  ]
+}
