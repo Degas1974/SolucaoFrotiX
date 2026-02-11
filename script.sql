@@ -1573,6 +1573,43 @@ GO
 BEGIN TRY
     BEGIN TRAN;
 
+    -- Validacao: impede drop se houver dados nas tabelas do schema sync
+    IF OBJECT_ID('dbo.ObservacoesEscala', 'U') IS NOT NULL
+       AND EXISTS (SELECT 1 FROM dbo.ObservacoesEscala)
+        RAISERROR('Rollback abortado: tabela dbo.ObservacoesEscala possui dados.', 16, 1);
+
+    IF OBJECT_ID('dbo.CoberturaFolga', 'U') IS NOT NULL
+       AND EXISTS (SELECT 1 FROM dbo.CoberturaFolga)
+        RAISERROR('Rollback abortado: tabela dbo.CoberturaFolga possui dados.', 16, 1);
+
+    IF OBJECT_ID('dbo.Ferias', 'U') IS NOT NULL
+       AND EXISTS (SELECT 1 FROM dbo.Ferias)
+        RAISERROR('Rollback abortado: tabela dbo.Ferias possui dados.', 16, 1);
+
+    IF OBJECT_ID('dbo.FolgaRecesso', 'U') IS NOT NULL
+       AND EXISTS (SELECT 1 FROM dbo.FolgaRecesso)
+        RAISERROR('Rollback abortado: tabela dbo.FolgaRecesso possui dados.', 16, 1);
+
+    IF OBJECT_ID('dbo.EscalaDiaria', 'U') IS NOT NULL
+       AND EXISTS (SELECT 1 FROM dbo.EscalaDiaria)
+        RAISERROR('Rollback abortado: tabela dbo.EscalaDiaria possui dados.', 16, 1);
+
+    IF OBJECT_ID('dbo.VAssociado', 'U') IS NOT NULL
+       AND EXISTS (SELECT 1 FROM dbo.VAssociado)
+        RAISERROR('Rollback abortado: tabela dbo.VAssociado possui dados.', 16, 1);
+
+    IF OBJECT_ID('dbo.Turno', 'U') IS NOT NULL
+       AND EXISTS (SELECT 1 FROM dbo.Turno)
+        RAISERROR('Rollback abortado: tabela dbo.Turno possui dados.', 16, 1);
+
+    IF OBJECT_ID('dbo.TipoServico', 'U') IS NOT NULL
+       AND EXISTS (SELECT 1 FROM dbo.TipoServico)
+        RAISERROR('Rollback abortado: tabela dbo.TipoServico possui dados.', 16, 1);
+
+    IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
+       AND EXISTS (SELECT 1 FROM dbo.LogErros)
+        RAISERROR('Rollback abortado: tabela dbo.LogErros possui dados.', 16, 1);
+
     -- Views
     IF OBJECT_ID('dbo.ViewStatusMotoristas', 'V') IS NOT NULL
         DROP VIEW dbo.ViewStatusMotoristas;
