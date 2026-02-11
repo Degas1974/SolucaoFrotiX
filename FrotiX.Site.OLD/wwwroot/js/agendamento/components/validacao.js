@@ -438,7 +438,8 @@ class ValidadorAgendamento
     {
         try
         {
-            const origem = document.getElementById("cmbOrigem").ej2_instances[0].value;
+            // ✅ KENDO: cmbOrigem agora usa Kendo ComboBox
+            const origem = $("#cmbOrigem").data("kendoComboBox")?.value();
 
             if (origem === "" || origem === null)
             {
@@ -461,7 +462,8 @@ class ValidadorAgendamento
     {
         try
         {
-            const destino = document.getElementById("cmbDestino").ej2_instances[0].value;
+            // ✅ KENDO: cmbDestino agora usa Kendo ComboBox
+            const destino = $("#cmbDestino").data("kendoComboBox")?.value();
 
             if (destino === "" || destino === null)
             {
@@ -542,8 +544,8 @@ class ValidadorAgendamento
                 }
             }
 
-            // Validar destino quando finalizado
-            const destino = document.getElementById("cmbDestino")?.ej2_instances?.[0]?.value;
+            // Validar destino quando finalizado (✅ KENDO: cmbDestino agora usa Kendo ComboBox)
+            const destino = $("#cmbDestino").data("kendoComboBox")?.value();
             if (destino === "" || destino === null)
             {
                 await Alerta.Erro("Informação Ausente", "O Destino é obrigatório para finalizar a viagem");

@@ -1162,7 +1162,7 @@ BEGIN TRY
           CREATE INDEX IX_LogErros_UrlHash
              ON dbo.LogErros (UrlHash, Tipo)
              INCLUDE (Url, DataHora)
-             WHERE (UrlHash IS NOT NULL);
+             WHERE (Url IS NOT NULL);
      END
 
     IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
