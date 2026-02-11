@@ -1,0 +1,10 @@
+{
+  "Documentar Conversa": {
+    "prefix": "logconv",
+    "scope": "markdown",
+    "body": [
+      "[${CURRENT_YEAR}.${CURRENT_MONTH}.${CURRENT_DATE}]-[${CURRENT_HOUR}.${CURRENT_MINUTE}] - [$1] - [$2]"
+    ],
+    "description": "Template para nome de arquivo de conversa com data/hora automática"
+  }
+}

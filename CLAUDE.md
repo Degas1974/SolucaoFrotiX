@@ -1,8 +1,17 @@
 # CLAUDE.md - Configuracao Claude Code (Workspace Root)
 
 > **ATENCAO CLAUDE:** Este arquivo e carregado automaticamente no inicio de cada sessao.
-> **Versao:** 5.0
+> **Versao:** 5.1
 > **Ultima Atualizacao:** 10/02/2026
+
+---
+
+## ⚠️ AVISO CRÍTICO: REGRAS OFICIAIS
+
+**ESTE ARQUIVO É APENAS UM REDIRECIONADOR!**
+
+A **ÚNICA FONTE DE VERDADE** é o arquivo `RegrasDesenvolvimentoFrotiX.md` (raiz do workspace).
+Em caso de conflito entre este arquivo e `RegrasDesenvolvimentoFrotiX.md`, **`RegrasDesenvolvimentoFrotiX.md` SEMPRE VENCE**.
 
 ---
 
@@ -14,7 +23,7 @@ Antes de qualquer resposta ao usuario, voce DEVE:
 
 1. **Ler completamente** o arquivo `RegrasDesenvolvimentoFrotiX.md` (NESTE MESMO DIRETORIO - raiz do workspace)
 2. **Ler completamente** o arquivo `ControlesKendo.md` (NESTE MESMO DIRETORIO - raiz do workspace)
-3. **Se a tarefa envolver banco de dados:** Ler `FrotiX.Site.Fevereiro/FrotiX.sql`
+3. **Se a tarefa envolver banco de dados:** Ler `FrotiX.Site.OLD/FrotiX.sql`
 4. **Confirmar mentalmente** que todos os arquivos foram lidos
 
 **IMPORTANTE:** Nao prossiga sem ler `RegrasDesenvolvimentoFrotiX.md` e `ControlesKendo.md`. Eles contem TODAS as regras do projeto e dos controles Kendo UI.
@@ -23,12 +32,12 @@ Antes de qualquer resposta ao usuario, voce DEVE:
 
 ## DIRETORIO PADRAO DE TRABALHO
 
-**SEMPRE trabalhe no diretorio:** `FrotiX.Site.Fevereiro/`
+**SEMPRE trabalhe no diretorio:** `FrotiX.Site.OLD/`
 
-- Este e o projeto ativo principal (Fevereiro 2026)
+- Este e o projeto ativo principal (Janeiro 2026)
 - Todos os caminhos relativos devem partir deste diretorio
 - Ao buscar arquivos, priorize esta pasta
-- `FrotiX.Site.OLD` e o projeto anterior (Janeiro 2026) - usar apenas para referencia
+- `FrotiX.Site.Fevereiro` e o projeto em migracao - trabalhar somente se solicitado
 - Outros projetos (FrotiX.Site.Novo, FrotiX.Site.Q4, FrotiX.Site.Backup) sao legados
 
 ---
@@ -40,7 +49,7 @@ Antes de qualquer resposta ao usuario, voce DEVE:
 | **`RegrasDesenvolvimentoFrotiX.md`** | FONTE OFICIAL DE REGRAS (raiz do workspace) | **SEMPRE** (obrigatorio) |
 | **`ControlesKendo.md`** | DOCUMENTACAO OFICIAL Telerik Kendo UI (raiz do workspace) | **SEMPRE** (obrigatorio) |
 | **`CLAUDE.md`** | Indice e instrucoes de inicializacao (voce esta aqui) | Automatico |
-| **`FrotiX.Site.Fevereiro/FrotiX.sql`** | Estrutura do banco de dados | Quando trabalhar com dados |
+| **`FrotiX.Site.OLD/FrotiX.sql`** | Estrutura do banco de dados | Quando trabalhar com dados |
 
 ---
 
@@ -115,7 +124,8 @@ Antes de qualquer resposta ao usuario, voce DEVE:
 
 | Versao | Data | Mudancas |
 |--------|------|----------|
-| 5.0 | 10/02/2026 | Projeto principal alterado para FrotiX.Site.Fevereiro |
+| 5.1 | 10/02/2026 | **CORRIGIDO:** Projeto principal e FrotiX.Site.OLD (nao Fevereiro) - alinhado com RegrasDesenvolvimentoFrotiX.md |
+| 5.0 | 10/02/2026 | Projeto principal alterado para FrotiX.Site.Fevereiro (REVERTIDO) |
 | 4.0 | 09/02/2026 | Adicionado ControlesKendo.md como leitura obrigatoria, centralizado na raiz |
 | 3.0 | 09/02/2026 | Movido para raiz do workspace, projeto padrao FrotiX.Site.OLD |
 | 2.0 | 18/01/2026 | Reformulacao completa: protocolo de inicializacao, sistema de memoria permanente |

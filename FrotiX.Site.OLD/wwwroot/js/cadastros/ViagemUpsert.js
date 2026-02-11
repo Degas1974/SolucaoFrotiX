@@ -14,11 +14,12 @@
  * 📤 SAÍDAS: POST /api/Viagens/Salvar, modais interativos, validações, toasts, redirecionamentos
  * 
  * 🔗 DEPENDÊNCIAS: jQuery, Syncfusion EJ2 (DropDownList/DatePicker/NumericTextBox/Grid/RTE),
- *    Bootstrap 5, SweetAlert2, AppToast, Alerta.js, OcorrenciaViagem module, KendoEditor
+ *    Kendo UI (DropDownList, Editor), Bootstrap 5, SweetAlert2, AppToast, Alerta.js,
+ *    OcorrenciaViagem module
  * 
  * 📝 PRINCIPAIS CATEGORIAS (200+ funções organizadas em seções):
  *    • Inicialização DOMContentLoaded + carregamentos iniciais (20+ funções)
- *    • Dropdowns Syncfusion (veículo/motorista/combustível/kit/solicitante) - 30 funções
+ *    • Dropdowns Syncfusion/Kendo (veículo/motorista/combustível/kit/solicitante/evento) - 30 funções
  *    • Validações campos obrigatórios + regras negócio - 25 funções
  *    • Cálculos automáticos (combustível inicial/final, custos, distância) - 15 funções
  *    • Modal Finalizaração Viagem (ocorrências, KM final, combustível) - 20 funções
@@ -459,7 +460,23 @@ $(document).ready(function ()
 
 //Para controlar a exibição de ToolTips
 var CarregandoViagemBloqueada = false;
+const MAX_KM_VALOR = 1000000;
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: focusout.txtKmInicial
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Evitar quilometragem inicial invalida ou acima do limite.
+ *                   [O QUE] Valida KM inicial contra KM atual e limite maximo.
+ *                   [COMO] Converte valores, verifica limites e exibe alertas.
+ *
+ * 📥 ENTRADAS     : #txtKmInicial, #txtKmAtual
+ *
+ * 📤 SAÍDAS       : Ajustes nos campos e alertas de erro.
+ *
+ * ⬅️ CHAMADO POR  : Evento focusout do input #txtKmInicial
+ *
+ * ➡️ CHAMA        : validarKmAtualInicial(), Alerta.Erro()
+ ****************************************************************************************/
 $("#txtKmInicial").focusout(function ()
 {
     try
@@ -489,6 +506,17 @@ $("#txtKmInicial").focusout(function ()
         if (isNaN(kmInicial) || isNaN(kmAtual))
         {
             $("#txtKmPercorrido").val("");
+            return;
+        }
+
+        if (kmInicial > MAX_KM_VALOR)
+        {
+            $("#txtKmInicial").val("");
+            $("#txtKmPercorrido").val("");
+            Alerta.Erro(
+                "Erro na Quilometragem",
+                "A quilometragem <strong>inicial</strong> nao pode ultrapassar <strong>1.000.000</strong>!",
+            );
             return;
         }
 
@@ -524,6 +552,21 @@ $("#txtKmInicial").focusout(function ()
     }
 });
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: focusout.txtKmFinal
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Evitar quilometragem final invalida ou acima do limite.
+ *                   [O QUE] Valida KM final contra KM inicial e limite maximo.
+ *                   [COMO] Converte valores, verifica limites e exibe alertas.
+ *
+ * 📥 ENTRADAS     : #txtKmInicial, #txtKmFinal
+ *
+ * 📤 SAÍDAS       : Ajustes nos campos e alertas de erro.
+ *
+ * ⬅️ CHAMADO POR  : Evento focusout do input #txtKmFinal
+ *
+ * ➡️ CHAMA        : calcularKmPercorrido(), Alerta.Erro()
+ ****************************************************************************************/
 // txtKmFinal - VALIDAÇÃO IA
 $("#txtKmFinal").focusout(async function ()
 {
@@ -559,6 +602,17 @@ $("#txtKmFinal").focusout(async function ()
         if (isNaN(kmInicial) || isNaN(kmFinal))
         {
             $("#txtKmPercorrido").val("");
+            return;
+        }
+
+        if (kmFinal > MAX_KM_VALOR)
+        {
+            $("#txtKmFinal").val("");
+            $("#txtKmPercorrido").val("");
+            Alerta.Erro(
+                "Erro na Quilometragem",
+                "A quilometragem <strong>final</strong> nao pode ultrapassar <strong>1.000.000</strong>!",
+            );
             return;
         }
 
@@ -631,51 +685,291 @@ $("#txtDataInicial").focusout(function ()
 {
     try
     {
-        const rawDataFinal = document.getElementById("txtDataFinal")?.value;
-        const rawDataInicial = document.getElementById("txtDataInicial")?.value;
-        const data = new Date(rawDataInicial);
-        const anoAtual = new Date().getFullYear();
-        const anoInformado = data.getFullYear();
+        // [KENDO] Obter valores via API Kendo
+        const dataInicial = window.getKendoDateValue("txtDataInicial");
+        const dataFinal = window.getKendoDateValue("txtDataFinal");
 
-        const ehValida =
-            !isNaN(data.getTime()) &&
-            rawDataInicial === data.toISOString().split("T")[0] &&
-            anoInformado >= anoAtual - 1 &&
-            anoInformado <= anoAtual + 1;
-
-        if (!ehValida)
+        // [VALIDACAO] Verificar se a data é válida
+        if (!dataInicial || isNaN(dataInicial.getTime()))
         {
-            Alerta.Erro(
-                "Erro na Data",
-                "A data deve ser válida e o ano deve estar entre o ano anterior e o próximo!",
-            );
-            document.getElementById("txtDataFinal").value = "";
-            document.getElementById("txtDataFinal").focus();
+            Alerta.Erro("Erro na Data", "Data Inicial inválida!");
+            window.setKendoDateValue("txtDataInicial", null);
             return;
         }
 
-        const dataInicial = rawDataInicial.replace(/-/g, "/");
-        const dataFinal = rawDataFinal.replace(/-/g, "/");
+        // [REGRA] Data Inicial nao pode ser superior a data atual
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        const dataInicialNormalizada = new Date(dataInicial);
+        dataInicialNormalizada.setHours(0, 0, 0, 0);
+        if (dataInicialNormalizada > hoje)
+        {
+            Alerta.Warning("Data Inicial invalida", "A Data Inicial nao pode ser superior a data atual!", "OK");
+            window.setKendoDateValue("txtDataInicial", null);
+            return;
+        }
 
-        var inicio = moment(`${dataInicial}`, "DD/MM/YYYY HH:mm");
-        var fim = moment(`${dataFinal}`, "DD/MM/YYYY HH:mm");
+        // [VALIDACAO] Comparar com Data Final (se preenchida)
+        if (dataFinal)
+        {
+            if (dataFinal < dataInicial)
+            {
+                window.setKendoDateValue("txtDataInicial", null);
+                $("#txtDuracao").val("");
+                Alerta.Erro("Erro na Data", "A Data Inicial deve ser menor ou igual à Data Final!");
+                return;
+            }
 
-        if (!inicio.isValid() || !fim.isValid()) return;
+            // Formatar para moment (compatibilidade com validarDatasInicialFinal)
+            const strDataInicial = moment(dataInicial).format("DD/MM/YYYY");
+            const strDataFinal = moment(dataFinal).format("DD/MM/YYYY");
+            validarDatasInicialFinal(strDataInicial, strDataFinal);
+
+            // [REGRA] Se mesma data, Hora Fim >= Hora Início
+            const sameDay = dataInicial.getFullYear() === dataFinal.getFullYear() &&
+                           dataInicial.getMonth() === dataFinal.getMonth() &&
+                           dataInicial.getDate() === dataFinal.getDate();
+            
+            if (sameDay)
+            {
+                const horaInicial = window.getKendoTimeValue("txtHoraInicial");
+                const horaFinal = window.getKendoTimeValue("txtHoraFinal");
+
+                if (horaInicial && horaFinal)
+                {
+                    const [hI, mI] = horaInicial.split(":").map(Number);
+                    const [hF, mF] = horaFinal.split(":").map(Number);
+                    const minIni = hI * 60 + mI;
+                    const minFin = hF * 60 + mF;
+
+                    if (minFin <= minIni)
+                    {
+                        window.setKendoTimeValue("txtHoraFinal", null);
+                        $("#txtDuracao").val("");
+                        Alerta.Erro(
+                            "Erro na Hora",
+                            "A Hora Início deve ser menor que a Hora Fim quando as datas forem iguais!"
+                        );
+                        return;
+                    }
+                }
+            }
+        }
+
+        calcularDuracaoViagem();
+    }
+    catch (error)
+    {
+        TratamentoErroComLinha("ViagemUpsert.js", "focusout.txtDataInicial", error);
+    }
+});
+
+//================================================
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: focusout.txtHoraInicial
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Garantir que o conjunto Data Inicial + Hora Início não
+ *                   represente um momento futuro, e que a Hora Início seja consistente
+ *                   com a Hora Fim quando as datas forem iguais.
+ *                   [O QUE] Valida hora de início contra momento atual e hora fim.
+ *                   [COMO] Compara datetime montado com Date() atual; se mesma data,
+ *                   compara minutos totais de início vs fim.
+ *
+ * 📥 ENTRADAS     : Valores de #txtDataInicial, #txtHoraInicial, #txtDataFinal, #txtHoraFinal
+ *
+ * 📤 SAÍDAS       : Limpa campo e exibe erro se inválido; recalcula duração se válido.
+ *
+ * ⬅️ CHAMADO POR  : Evento focusout do input #txtHoraInicial
+ *
+ * ➡️ CHAMA        : calcularDuracaoViagem() [ViagemUpsert.js]
+ *                   Alerta.Erro() [alerta.js]
+ ****************************************************************************************/
+$("#txtHoraInicial").focusout(function ()
+{
+    try
+    {
+        // [KENDO] Obter valores via API Kendo
+        const dataInicial = window.getKendoDateValue("txtDataInicial");
+        const horaInicial = window.getKendoTimeValue("txtHoraInicial");
+
+        if (!dataInicial || !horaInicial) return;
+
+        // [REGRA] Conjunto Data Inicial + Hora Início não pode ser superior ao momento atual
+        const agora = new Date();
+        const [horas, minutos] = horaInicial.split(":").map(Number);
+        const dataHoraInicio = new Date(dataInicial);
+        dataHoraInicio.setHours(horas, minutos, 0, 0);
+
+        if (dataHoraInicio > agora)
+        {
+            Alerta.Erro(
+                "Erro na Hora",
+                "O conjunto Data Inicial + Hora Início não pode ser superior ao momento atual!"
+            );
+            window.setKendoTimeValue("txtHoraInicial", null);
+            $("#txtDuracao").val("");
+            return;
+        }
+
+        // [REGRA] Se mesma data que Data Final, Hora Fim deve ser >= Hora Início
+        const dataFinal = window.getKendoDateValue("txtDataFinal");
+        const horaFinal = window.getKendoTimeValue("txtHoraFinal");
+
+        if (dataFinal && horaFinal)
+        {
+            const sameDay = dataInicial.getFullYear() === dataFinal.getFullYear() &&
+                           dataInicial.getMonth() === dataFinal.getMonth() &&
+                           dataInicial.getDate() === dataFinal.getDate();
+            
+            if (sameDay)
+            {
+                const [hI, mI] = horaInicial.split(":").map(Number);
+                const [hF, mF] = horaFinal.split(":").map(Number);
+                const minIni = hI * 60 + mI;
+                const minFin = hF * 60 + mF;
+
+                if (minFin <= minIni)
+                {
+                    Alerta.Erro(
+                        "Erro na Hora",
+                        "A Hora Início não pode ser maior ou igual à Hora Fim quando as datas forem iguais!"
+                    );
+                    window.setKendoTimeValue("txtHoraInicial", null);
+                    $("#txtDuracao").val("");
+                    return;
+                }
+            }
+        }
+
+        calcularDuracaoViagem();
+    }
+    catch (error)
+    {
+        TratamentoErroComLinha("ViagemUpsert.js", "focusout.txtHoraInicial", error);
+    }
+});
+
+let evitandoLoop = false;
+let validandoDataFinal = false;
+let atualizandoDataFinal = false;
+let validandoHoraFinal = false;
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: validarDataFinal
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUE] Garantir coerencia entre Data Inicial e Data Final, com
+ *                   confirmacao quando o intervalo e muito grande.
+ *                   [O QUE] Valida formato, ordem, hora final quando mesma data e
+ *                   aciona validacao IA quando disponivel.
+ *                   [COMO] Obtem valores Kendo, compara datas/horas e dispara alertas.
+ *
+ * 📥 ENTRADAS     : Valores atuais de #txtDataInicial, #txtDataFinal, #txtHoraInicial,
+ *                   #txtHoraFinal
+ *
+ * 📤 SAÍDAS       : Ajustes nos campos, alertas e recálculo de duração
+ *
+ * ⬅️ CHAMADO POR  : Eventos change/focusout de #txtDataFinal
+ *
+ * ➡️ CHAMA        : validarDatasInicialFinal(), calcularDuracaoViagem(),
+ *                   Alerta.*(), ValidadorFinalizacaoIA.* (se disponível)
+ ****************************************************************************************/
+async function validarDataFinal()
+{
+    try
+    {
+        if (validandoDataFinal || atualizandoDataFinal) return;
+        validandoDataFinal = true;
+
+        if (evitandoLoop) return;
+
+        // [KENDO] Obter valores via API Kendo
+        const dataFinal = window.getKendoDateValue("txtDataFinal");
+        const dataInicial = window.getKendoDateValue("txtDataInicial");
+
+        if (!dataFinal)
+        {
+            return;
+        }
+
+        // [VALIDACAO] Verificar se a data é válida
+        if (isNaN(dataFinal.getTime()))
+        {
+            Alerta.Erro("Erro na Data", "Data Final inválida!");
+            atualizandoDataFinal = true;
+            window.setKendoDateValue("txtDataFinal", null);
+            atualizandoDataFinal = false;
+            return;
+        }
+
+        // [REGRA] Data Final nao pode ser superior a data atual
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        const dataFinalNormalizada = new Date(dataFinal);
+        dataFinalNormalizada.setHours(0, 0, 0, 0);
+        if (dataFinalNormalizada > hoje)
+        {
+            Alerta.Warning("Data Final invalida", "A Data Final nao pode ser superior a data atual!", "OK");
+            atualizandoDataFinal = true;
+            window.setKendoDateValue("txtDataFinal", null);
+            atualizandoDataFinal = false;
+            return;
+        }
+
+        // [VALIDACAO IA] Análise adicional via ValidadorFinalizacaoIA (se disponível)
+        if (typeof ValidadorFinalizacaoIA !== 'undefined' && typeof ValidadorFinalizacaoIA.obterInstancia === "function")
+        {
+            const validador = ValidadorFinalizacaoIA.obterInstancia();
+            const strDataFinal = moment(dataFinal).format("YYYY-MM-DD");
+            const resultadoDataFutura = await validador.validarDataNaoFutura(strDataFinal);
+            if (!resultadoDataFutura.valido)
+            {
+                await Alerta.Erro(resultadoDataFutura.titulo, resultadoDataFutura.mensagem);
+                atualizandoDataFinal = true;
+                window.setKendoDateValue("txtDataFinal", null);
+                atualizandoDataFinal = false;
+                return;
+            }
+        }
+        else if (typeof ValidadorFinalizacaoIA !== 'undefined')
+        {
+            if (window.console && typeof console.warn === "function")
+            {
+                console.warn("ValidadorFinalizacaoIA.obterInstancia indisponivel. Validacao IA ignorada.");
+            }
+        }
+
+        if (!dataInicial) return;
 
         if (dataFinal < dataInicial)
         {
-            $("#txtDataInicial").val("");
+            atualizandoDataFinal = true;
+            window.setKendoDateValue("txtDataFinal", null);
+            atualizandoDataFinal = false;
             $("#txtDuracao").val("");
-            Alerta.Erro("Erro na Data", "A data inicial deve ser menor que a final!");
+            Alerta.Erro("Erro na Data", "A data final deve ser maior ou igual que a inicial!");
             return;
         }
 
-        validarDatasInicialFinal(dataInicial, dataFinal);
-
-        if (dataFinal === dataInicial)
+        // Formatar para moment (compatibilidade com validarDatasInicialFinal)
+        const strDataInicial = moment(dataInicial).format("DD/MM/YYYY");
+        const strDataFinal = moment(dataFinal).format("DD/MM/YYYY");
+        atualizandoDataFinal = true;
+        const confirmouIntervalo = await validarDatasInicialFinal(strDataInicial, strDataFinal);
+        atualizandoDataFinal = false;
+        if (!confirmouIntervalo)
         {
-            const horaInicial = $("#txtHoraInicial").val();
-            const horaFinal = $("#txtHoraFinal").val();
+            return;
+        }
+
+        const sameDay = dataInicial.getFullYear() === dataFinal.getFullYear() &&
+                       dataInicial.getMonth() === dataFinal.getMonth() &&
+                       dataInicial.getDate() === dataFinal.getDate();
+        
+        if (sameDay)
+        {
+            const horaInicial = window.getKendoTimeValue("txtHoraInicial");
+            const horaFinal = window.getKendoTimeValue("txtHoraFinal");
 
             if (!horaInicial || !horaFinal) return;
 
@@ -686,226 +980,135 @@ $("#txtDataInicial").focusout(function ()
 
             if (minFin <= minIni)
             {
-                $("#txtHoraFinal").val("");
+                window.setKendoTimeValue("txtHoraFinal", null);
                 $("#txtDuracao").val("");
                 Alerta.Erro(
                     "Erro na Hora",
-                    "A hora inicial deve ser menor que a final quando as datas forem iguais!",
+                    "A hora final deve ser maior ou igual que a inicial quando as datas forem iguais!",
                 );
                 return;
             }
         }
 
         calcularDuracaoViagem();
+
+        // VALIDAÇÃO IA: Análise de duração (se disponível)
+        if (typeof ValidadorFinalizacaoIA !== 'undefined' && typeof ValidadorFinalizacaoIA.obterInstancia === "function")
+        {
+            const horaInicial = window.getKendoTimeValue("txtHoraInicial");
+            const horaFinal = window.getKendoTimeValue("txtHoraFinal");
+
+            if (dataInicial && horaInicial && horaFinal)
+            {
+                const validador = ValidadorFinalizacaoIA.obterInstancia();
+                const dadosDatas = {
+                    dataInicial: moment(dataInicial).format("YYYY-MM-DD"),
+                    horaInicial: horaInicial,
+                    dataFinal: moment(dataFinal).format("YYYY-MM-DD"),
+                    horaFinal: horaFinal
+                };
+
+                const resultadoDatas = await validador.analisarDatasHoras(dadosDatas);
+                if (!resultadoDatas.valido && resultadoDatas.nivel === 'aviso')
+                {
+                    const confirma = await Alerta.ValidacaoIAConfirmar(
+                        resultadoDatas.titulo,
+                        resultadoDatas.mensagem,
+                        "Manter Data",
+                        "Corrigir"
+                    );
+                    if (!confirma)
+                    {
+                        atualizandoDataFinal = true;
+                        window.setKendoDateValue("txtDataFinal", null);
+                        atualizandoDataFinal = false;
+                        return;
+                    }
+                }
+            }
+        }
+        else if (typeof ValidadorFinalizacaoIA !== 'undefined')
+        {
+            if (window.console && typeof console.warn === "function")
+            {
+                console.warn("ValidadorFinalizacaoIA.obterInstancia indisponivel. Validacao IA ignorada.");
+            }
+        }
     }
     catch (error)
     {
-        TratamentoErroComLinha("ViagemUpsert.js", "focusout.txtDataFinal", error);
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "validarDataFinal", error);
     }
-});
+    finally
+    {
+        validandoDataFinal = false;
+    }
+}
 
-let evitandoLoop = false;
-
-// txtDataFinal - VALIDAÇÃO IA
-$("#txtDataFinal").focusout(async function ()
+// txtDataFinal - VALIDACAO IMEDIATA
+$("#txtDataFinal").change(function ()
 {
     try
     {
-        if (evitandoLoop) return;
-
-        try
-        {
-            const rawDataFinal = document.getElementById("txtDataFinal")?.value;
-            const rawDataInicial = document.getElementById("txtDataInicial")?.value;
-            const data = new Date(rawDataFinal);
-            const anoAtual = new Date().getFullYear();
-            const anoInformado = data.getFullYear();
-
-            if (rawDataFinal === "" || rawDataFinal === null)
-            {
-                return;
-            }
-
-            const ehValida =
-                !isNaN(data.getTime()) &&
-                rawDataFinal === data.toISOString().split("T")[0] &&
-                anoInformado >= anoAtual - 1 &&
-                anoInformado <= anoAtual + 1;
-
-            if (!ehValida)
-            {
-                evitandoLoop = true;
-
-                Alerta.Erro(
-                    "Erro na Data",
-                    "A data deve ser válida e o ano deve estar entre o ano anterior e o próximo!",
-                );
-
-                setTimeout(() =>
-                {
-                    try
-                    {
-                        document.getElementById("txtDataFinal").value = "";
-                        document.getElementById("txtDataFinal").focus();
-                        evitandoLoop = false;
-                    }
-                    catch (error)
-                    {
-                        Alerta.TratamentoErroComLinha(
-                            "ViagemUpsert.js",
-                            "callback@setTimeout#0",
-                            error,
-                        );
-                    }
-                }, 1500);
-
-                return;
-            }
-
-            // VALIDAÇÃO IA: Data Final não pode ser superior à data atual
-            if (typeof ValidadorFinalizacaoIA !== 'undefined')
-            {
-                const validador = ValidadorFinalizacaoIA.obterInstancia();
-                const resultadoDataFutura = await validador.validarDataNaoFutura(rawDataFinal);
-                if (!resultadoDataFutura.valido)
-                {
-                    await Alerta.Erro(resultadoDataFutura.titulo, resultadoDataFutura.mensagem);
-                    document.getElementById("txtDataFinal").value = "";
-                    return;
-                }
-            }
-            else
-            {
-                // Fallback: validação simples
-                const hoje = new Date();
-                hoje.setHours(0, 0, 0, 0);
-                if (data > hoje)
-                {
-                    document.getElementById("txtDataFinal").value = "";
-                    document.getElementById("txtDataFinal").focus();
-                    AppToast.show("Amarelo", "A Data Final não pode ser superior à data atual.", 4000);
-                    return;
-                }
-            }
-
-            const dataInicial = rawDataInicial.replace(/-/g, "/");
-            const dataFinal = rawDataFinal.replace(/-/g, "/");
-
-            var inicio = moment(`${dataInicial}`, "DD/MM/YYYY HH:mm");
-            var fim = moment(`${dataFinal}`, "DD/MM/YYYY HH:mm");
-
-            if (!inicio.isValid() || !fim.isValid()) return;
-
-            if (dataFinal < dataInicial)
-            {
-                $("#txtDataInicial").val("");
-                $("#txtDuracao").val("");
-                Alerta.Erro("Erro na Data", "A data final deve ser maior ou igual que a inicial!");
-                return;
-            }
-
-            validarDatasInicialFinal(dataInicial, dataFinal);
-
-            if (dataFinal === dataInicial)
-            {
-                const horaInicial = $("#txtHoraInicial").val();
-                const horaFinal = $("#txtHoraFinal").val();
-
-                if (!horaInicial || !horaFinal) return;
-
-                const [hI, mI] = horaInicial.split(":").map(Number);
-                const [hF, mF] = horaFinal.split(":").map(Number);
-                const minIni = hI * 60 + mI;
-                const minFin = hF * 60 + mF;
-
-                if (minFin <= minIni)
-                {
-                    $("#txtHoraFinal").val("");
-                    $("#txtDuracao").val("");
-                    Alerta.Erro(
-                        "Erro na Hora",
-                        "A hora final deve ser maior ou igual que a inicial quando as datas forem iguais!",
-                    );
-                    return;
-                }
-            }
-
-            calcularDuracaoViagem();
-
-            // VALIDAÇÃO IA: Análise de duração (se disponível)
-            if (typeof ValidadorFinalizacaoIA !== 'undefined')
-            {
-                const horaInicial = $("#txtHoraInicial").val();
-                const horaFinal = $("#txtHoraFinal").val();
-
-                if (rawDataInicial && horaInicial && horaFinal)
-                {
-                    const validador = ValidadorFinalizacaoIA.obterInstancia();
-                    const dadosDatas = {
-                        dataInicial: rawDataInicial,
-                        horaInicial: horaInicial,
-                        dataFinal: rawDataFinal,
-                        horaFinal: horaFinal
-                    };
-
-                    const resultadoDatas = await validador.analisarDatasHoras(dadosDatas);
-                    if (!resultadoDatas.valido && resultadoDatas.nivel === 'aviso')
-                    {
-                        const confirma = await Alerta.ValidacaoIAConfirmar(
-                            resultadoDatas.titulo,
-                            resultadoDatas.mensagem,
-                            "Manter Data",
-                            "Corrigir"
-                        );
-                        if (!confirma)
-                        {
-                            document.getElementById("txtDataFinal").value = "";
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-        catch (error)
-        {
-            TratamentoErroComLinha("ViagemUpsert.js", "focusout.txtDataFinal", error);
-        }
+        if (atualizandoDataFinal) return;
+        validarDataFinal();
     }
     catch (error)
     {
-        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "callback@$.focusout#0", error);
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "change.txtDataFinal", error);
     }
 });
 
 //================================================
 
-// txtHoraFinal - VALIDAÇÃO IA
-$("#txtHoraFinal").focusout(async function ()
+/****************************************************************************************
+ * ⚡ FUNÇÃO: validarHoraFinal
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUE] Validar Hora Final imediatamente e recalcular duracao.
+ *                   [O QUE] Verifica ordem das horas e roda validacao IA quando disponivel.
+ *                   [COMO] Usa valores Kendo, compara minutos e recalcula duracao.
+ *
+ * 📥 ENTRADAS     : Valores atuais de #txtDataInicial, #txtDataFinal, #txtHoraInicial,
+ *                   #txtHoraFinal
+ *
+ * 📤 SAÍDAS       : Ajustes nos campos, alertas e recálculo de duração
+ *
+ * ⬅️ CHAMADO POR  : Eventos change/focusout de #txtHoraFinal
+ *
+ * ➡️ CHAMA        : calcularDuracaoViagem(), Alerta.*(), ValidadorFinalizacaoIA.*
+ ****************************************************************************************/
+async function validarHoraFinal()
 {
     try
     {
-        if ($("#txtDataFinal").val() === "" && $("#txtHoraFinal").val() != "")
+        if (validandoHoraFinal) return;
+        validandoHoraFinal = true;
+
+        // [KENDO] Obter valores via API Kendo
+        const dataFinal = window.getKendoDateValue("txtDataFinal");
+        const horaFinal = window.getKendoTimeValue("txtHoraFinal");
+        
+        if (!dataFinal && horaFinal)
         {
             Alerta.Erro(
                 "Erro na Hora",
                 "A hora final só pode ser preenchida depois de Data Final!",
             );
-            $("#txtHoraFinal").val("");
+            window.setKendoTimeValue("txtHoraFinal", null);
             $("#txtDuracao").val("");
             return;
         }
 
-        const dataInicialStr = $("#txtDataInicial").val();
-        const dataFinalStr = $("#txtDataFinal").val();
-        const horaInicial = $("#txtHoraInicial").val();
-        const horaFinal = $("#txtHoraFinal").val();
+        const dataInicial = window.getKendoDateValue("txtDataInicial");
+        const horaInicial = window.getKendoTimeValue("txtHoraInicial");
 
-        if (!dataInicialStr || !dataFinalStr || !horaInicial || !horaFinal) return;
+        if (!dataInicial || !dataFinal || !horaInicial || !horaFinal) return;
 
-        const [dia, mes, ano] = dataInicialStr.split("/");
-        const dataInicial = `${ano}-${mes}-${dia}`;
+        const sameDay = dataInicial.getFullYear() === dataFinal.getFullYear() &&
+                       dataInicial.getMonth() === dataFinal.getMonth() &&
+                       dataInicial.getDate() === dataFinal.getDate();
 
-        if (dataInicial === dataFinalStr)
+        if (sameDay)
         {
             const [hI, mI] = horaInicial.split(":").map(Number);
             const [hF, mF] = horaFinal.split(":").map(Number);
@@ -927,9 +1130,11 @@ $("#txtHoraFinal").focusout(async function ()
         calcularDuracaoViagem();
 
         // VALIDAÇÃO IA: Análise de duração (se disponível)
-        if (typeof ValidadorFinalizacaoIA !== 'undefined')
+        if (typeof ValidadorFinalizacaoIA !== 'undefined' && typeof ValidadorFinalizacaoIA.obterInstancia === "function")
         {
             const validador = ValidadorFinalizacaoIA.obterInstancia();
+            const dataInicialStr = moment(dataInicial).format("YYYY-MM-DD");
+            const dataFinalStr = moment(dataFinal).format("YYYY-MM-DD");
             const dadosDatas = {
                 dataInicial: dataInicialStr,
                 horaInicial: horaInicial,
@@ -954,26 +1159,318 @@ $("#txtHoraFinal").focusout(async function ()
                 }
             }
         }
-    }
-    catch (error)
-    {
-        TratamentoErroComLinha("ViagemUpsert.js", "focusout.txtHoraFinal", error);
-    }
-});
-
-function PreencheListaEventos()
-{
-    try
-    {
-        const eventos = document.getElementById("ddtEventos");
-        if (eventos && eventos.ej2_instances && eventos.ej2_instances.length > 0)
+        else if (typeof ValidadorFinalizacaoIA !== 'undefined')
         {
-            eventos.ej2_instances[0].dataSource = [];
+            if (window.console && typeof console.warn === "function")
+            {
+                console.warn("ValidadorFinalizacaoIA.obterInstancia indisponivel. Validacao IA ignorada.");
+            }
         }
     }
     catch (error)
     {
-        TratamentoErroComLinha("ViagemUpsert.js", "PreencheListaEventos", error);
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "validarHoraFinal", error);
+    }
+    finally
+    {
+        validandoHoraFinal = false;
+    }
+}
+
+// txtHoraFinal - CALCULO IMEDIATO
+$("#txtHoraFinal").change(function ()
+{
+    try
+    {
+        validarHoraFinal();
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "change.txtHoraFinal", error);
+    }
+});
+
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: PreencheListaEventos
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Atualizar a lista de eventos após inclusão/alteração,
+ *                   mantendo o dropdown sincronizado com o backend.
+ *                   [O QUE] Recarrega o dataSource do dropdown Telerik de eventos.
+ *                   [COMO] Consome o handler AJAX da página e atualiza o Kendo DropDownList.
+ *
+ * 📥 ENTRADAS     : eventoSelecionadoId [string] - ID do evento a selecionar (opcional).
+ *
+ * 📤 SAÍDAS       : Dropdown atualizado e detalhes do evento preenchidos.
+ *
+ * ⬅️ CHAMADO POR  : click #btnInserirEvento (após criar evento).
+ *
+ * ➡️ CHAMA        : atualizarDetalhesEventoSelecionado(), limparDetalhesEventoSelecionado().
+ *
+ * 📝 OBSERVAÇÕES  : Usa Kendo DropDownList e mantém compatibilidade com UI atual.
+ ****************************************************************************************/
+function PreencheListaEventos(eventoSelecionadoId)
+{
+    try
+    {
+        const ddlEvento = $("#ddlEvento").data("kendoDropDownList");
+        if (!ddlEvento) return;
+
+        /********************************************************************************
+         * [AJAX] Endpoint: GET /Viagens/Upsert?handler=AJAXPreencheListaEventos
+         * ------------------------------------------------------------------------------
+         * 📥 ENVIA        : Nenhum parâmetro
+         * 📤 RECEBE       : { data: [{ eventoId, nome }] }
+         * 🎯 MOTIVO       : Recarregar lista de eventos após inclusão no modal
+         ********************************************************************************/
+        if (typeof FrotiXApi !== "undefined" && FrotiXApi?.get)
+        {
+            FrotiXApi.get("/Viagens/Upsert?handler=AJAXPreencheListaEventos")
+                .then(function (response)
+                {
+                    try
+                    {
+                        const listaEventos = response?.data || [];
+                        ddlEvento.setDataSource(new kendo.data.DataSource({ data: listaEventos }));
+                        ddlEvento.dataSource.read();
+                        ddlEvento.refresh();
+
+                        if (eventoSelecionadoId)
+                        {
+                            ddlEvento.value(eventoSelecionadoId);
+                            atualizarDetalhesEventoSelecionado(eventoSelecionadoId);
+                        }
+                        else
+                        {
+                            limparDetalhesEventoSelecionado();
+                        }
+                    }
+                    catch (error)
+                    {
+                        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "PreencheListaEventos.then", error);
+                    }
+                })
+                .catch(function (error)
+                {
+                    Alerta.TratamentoErroComLinha("ViagemUpsert.js", "PreencheListaEventos.catch", error);
+                });
+        }
+        else
+        {
+            $.ajax({
+                type: "GET",
+                url: "/Viagens/Upsert?handler=AJAXPreencheListaEventos",
+                success: function (response)
+                {
+                    try
+                    {
+                        const listaEventos = response?.data || [];
+                        ddlEvento.setDataSource(new kendo.data.DataSource({ data: listaEventos }));
+                        ddlEvento.dataSource.read();
+                        ddlEvento.refresh();
+
+                        if (eventoSelecionadoId)
+                        {
+                            ddlEvento.value(eventoSelecionadoId);
+                            atualizarDetalhesEventoSelecionado(eventoSelecionadoId);
+                        }
+                        else
+                        {
+                            limparDetalhesEventoSelecionado();
+                        }
+                    }
+                    catch (error)
+                    {
+                        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "PreencheListaEventos.ajax.success", error);
+                    }
+                },
+                error: function (error)
+                {
+                    Alerta.TratamentoErroComLinha("ViagemUpsert.js", "PreencheListaEventos.ajax.error", error);
+                }
+            });
+        }
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "PreencheListaEventos", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: onEventoSelecionado
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Atualizar os dados basicos do evento ao selecionar na lista.
+ *                   [O QUE] Dispara carregamento de detalhes ou limpa campos quando vazio.
+ *                   [COMO] Le valor do Kendo DropDownList e chama helper de detalhe.
+ *
+ * 📥 ENTRADAS     : e [Object] - Evento do Kendo DropDownList.
+ *
+ * 📤 SAÍDAS       : Campos de detalhes preenchidos/limpos.
+ *
+ * ⬅️ CHAMADO POR  : Change do dropdown `ddlEvento`.
+ *
+ * ➡️ CHAMA        : atualizarDetalhesEventoSelecionado(), limparDetalhesEventoSelecionado().
+ ****************************************************************************************/
+function onEventoSelecionado(e)
+{
+    try
+    {
+        const ddlEvento = $("#ddlEvento").data("kendoDropDownList");
+        const eventoId = e?.sender?.value() || ddlEvento?.value();
+
+        if (eventoId)
+        {
+            atualizarDetalhesEventoSelecionado(eventoId);
+        }
+        else
+        {
+            limparDetalhesEventoSelecionado();
+        }
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "onEventoSelecionado", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: atualizarDetalhesEventoSelecionado
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Exibir dados basicos do evento escolhido para padronizar UX.
+ *                   [O QUE] Busca detalhes do evento e preenche Data Inicio/Fim/Qtd.
+ *                   [COMO] Consome o endpoint `api/ViagemEvento/ObterPorId`.
+ *
+ * 📥 ENTRADAS     : eventoId [string] - ID do evento selecionado.
+ *
+ * 📤 SAÍDAS       : Inputs de detalhe preenchidos.
+ *
+ * ⬅️ CHAMADO POR  : onEventoSelecionado(), ExibeViagem().
+ *
+ * ➡️ CHAMA        : limparDetalhesEventoSelecionado() quando vazio.
+ ****************************************************************************************/
+function atualizarDetalhesEventoSelecionado(eventoId)
+{
+    try
+    {
+        if (!eventoId)
+        {
+            limparDetalhesEventoSelecionado();
+            return;
+        }
+
+        /********************************************************************************
+         * [AJAX] Endpoint: GET /api/ViagemEvento/ObterPorId?id={eventoId}
+         * ------------------------------------------------------------------------------
+         * 📥 ENVIA        : eventoId (query param)
+         * 📤 RECEBE       : { success, data: { DataInicial, DataFinal, QtdParticipantes } }
+         * 🎯 MOTIVO       : Preencher dados basicos do evento na tela de Viagem
+         ********************************************************************************/
+        if (typeof FrotiXApi !== "undefined" && FrotiXApi?.get)
+        {
+            FrotiXApi.get("/api/ViagemEvento/ObterPorId?id=" + eventoId)
+                .then(function (response)
+                {
+                    try
+                    {
+                        if (!response?.success)
+                        {
+                            limparDetalhesEventoSelecionado();
+                            return;
+                        }
+
+                        const data = response.data || {};
+                        const dataInicialRaw = data.dataInicial ?? data.DataInicial ?? null;
+                        const dataFinalRaw = data.dataFinal ?? data.DataFinal ?? null;
+                        const qtdParticipantes = data.qtdParticipantes ?? data.QtdParticipantes ?? "";
+
+                        const dataInicio = dataInicialRaw ? moment(dataInicialRaw).format("DD/MM/YYYY") : "";
+                        const dataFim = dataFinalRaw ? moment(dataFinalRaw).format("DD/MM/YYYY") : "";
+
+                        $("#txtEventoDataInicio").val(dataInicio);
+                        $("#txtEventoDataFim").val(dataFim);
+                        $("#txtEventoQtdParticipantes").val(qtdParticipantes);
+                    }
+                    catch (error)
+                    {
+                        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "atualizarDetalhesEventoSelecionado.then", error);
+                    }
+                })
+                .catch(function (error)
+                {
+                    Alerta.TratamentoErroComLinha("ViagemUpsert.js", "atualizarDetalhesEventoSelecionado.catch", error);
+                });
+        }
+        else
+        {
+            $.ajax({
+                type: "GET",
+                url: "/api/ViagemEvento/ObterPorId",
+                data: { id: eventoId },
+                success: function (response)
+                {
+                    try
+                    {
+                        if (!response?.success)
+                        {
+                            limparDetalhesEventoSelecionado();
+                            return;
+                        }
+
+                        const data = response.data || {};
+                        const dataInicialRaw = data.dataInicial ?? data.DataInicial ?? null;
+                        const dataFinalRaw = data.dataFinal ?? data.DataFinal ?? null;
+                        const qtdParticipantes = data.qtdParticipantes ?? data.QtdParticipantes ?? "";
+
+                        const dataInicio = dataInicialRaw ? moment(dataInicialRaw).format("DD/MM/YYYY") : "";
+                        const dataFim = dataFinalRaw ? moment(dataFinalRaw).format("DD/MM/YYYY") : "";
+
+                        $("#txtEventoDataInicio").val(dataInicio);
+                        $("#txtEventoDataFim").val(dataFim);
+                        $("#txtEventoQtdParticipantes").val(qtdParticipantes);
+                    }
+                    catch (error)
+                    {
+                        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "atualizarDetalhesEventoSelecionado.ajax.success", error);
+                    }
+                },
+                error: function (error)
+                {
+                    Alerta.TratamentoErroComLinha("ViagemUpsert.js", "atualizarDetalhesEventoSelecionado.ajax.error", error);
+                }
+            });
+        }
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "atualizarDetalhesEventoSelecionado", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: limparDetalhesEventoSelecionado
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Evitar dados antigos quando nenhum evento esta selecionado.
+ *                   [O QUE] Limpa os campos basicos de evento.
+ *                   [COMO] Reseta valores dos inputs de detalhes.
+ *
+ * 📥 ENTRADAS     : Nenhuma.
+ *
+ * 📤 SAÍDAS       : Inputs limpos.
+ *
+ * ⬅️ CHAMADO POR  : onEventoSelecionado(), lstFinalidade_Change(), atualizarDetalhesEventoSelecionado().
+ ****************************************************************************************/
+function limparDetalhesEventoSelecionado()
+{
+    try
+    {
+        $("#txtEventoDataInicio").val("");
+        $("#txtEventoDataFim").val("");
+        $("#txtEventoQtdParticipantes").val("");
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "limparDetalhesEventoSelecionado", error);
     }
 }
 
@@ -1026,15 +1523,1383 @@ function upload(args)
     }
 }
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: toolbarClick
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Garantir que uploads do editor levem AntiForgery.
+ *                   [O QUE] Injeta o header XSRF ao clicar em Image no toolbar.
+ *                   [COMO] Configura o callback de upload do EJ2 quando necessário.
+ *
+ * 📥 ENTRADAS     : e [Object] - Evento do toolbar com item.id.
+ *
+ * 📤 SAÍDAS       : void.
+ *
+ * ⬅️ CHAMADO POR  : Toolbar do RichTextEditor.
+ *
+ * ➡️ CHAMA        : Alerta.TratamentoErroComLinha().
+ ****************************************************************************************/
 function toolbarClick(e)
 {
     try
     {
-        console.log("Toolbar click:", e);
+        if (e && e.item && e.item.id && e.item.id.indexOf("Image") >= 0)
+        {
+            var up = document.getElementById("rte_upload");
+            if (up && up.ej2_instances && up.ej2_instances[0])
+            {
+                up.ej2_instances[0].uploading = function (args)
+                {
+                    const token =
+                        document.getElementsByName("__RequestVerificationToken")[0]?.value ||
+                        document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                    if (token)
+                    {
+                        args.currentRequest.setRequestHeader("XSRF-TOKEN", token);
+                    }
+                };
+            }
+        }
     }
     catch (error)
     {
-        TratamentoErroComLinha("ViagemUpsert.js", "toolbarClick", error);
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "toolbarClick", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: stopEnterSubmitting
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Evitar submissão acidental do formulário por Enter.
+ *                   [O QUE] Bloqueia Enter fora de divs contenteditable.
+ *                   [COMO] Cancela o evento de teclado quando apropriado.
+ *
+ * 📥 ENTRADAS     : e [Event] - Evento de teclado.
+ *
+ * 📤 SAÍDAS       : void.
+ *
+ * ⬅️ CHAMADO POR  : onkeypress do formulário de viagem.
+ *
+ * ➡️ CHAMA        : Alerta.TratamentoErroComLinha().
+ ****************************************************************************************/
+function stopEnterSubmitting(e)
+{
+    try
+    {
+        const evt = e || window.event;
+        if (!evt) return;
+        if ((evt.key && evt.key === "Enter") || evt.keyCode === 13)
+        {
+            const src = evt.target || evt.srcElement;
+            if (!src || src.tagName.toLowerCase() !== "div")
+            {
+                if (evt.preventDefault) evt.preventDefault();
+                else evt.returnValue = false;
+            }
+        }
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "stopEnterSubmitting", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: atualizarImagemModal
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Garantir que o modal de zoom mostre a imagem atual.
+ *                   [O QUE] Copia o src da imagem de preview para o modal.
+ *                   [COMO] Busca os elementos e atualiza o atributo src.
+ *
+ * 📥 ENTRADAS     : Nenhuma.
+ *
+ * 📤 SAÍDAS       : void.
+ *
+ * ⬅️ CHAMADO POR  : Clique no botão de zoom da ficha.
+ *
+ * ➡️ CHAMA        : Alerta.TratamentoErroComLinha().
+ ****************************************************************************************/
+function atualizarImagemModal()
+{
+    try
+    {
+        const imgSrc = document.getElementById("imgViewerItem")?.src || "";
+        const modalImg = document.getElementById("imgZoomed");
+        if (modalImg)
+        {
+            modalImg.src = imgSrc;
+        }
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "atualizarImagemModal", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: lstFinalidade_Change
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Exibir campos de Evento apenas quando finalidade for Evento.
+ *                   [O QUE] Alterna visibilidade e habilita/desabilita o dropdown.
+ *                   [COMO] Usa o Kendo DropDownList e atualiza o card de evento.
+ *
+ * 📥 ENTRADAS     : Nenhuma.
+ *
+ * 📤 SAÍDAS       : UI atualizada.
+ *
+ * ⬅️ CHAMADO POR  : change do Kendo `ddlFinalidade`.
+ *
+ * ➡️ CHAMA        : limparDetalhesEventoSelecionado().
+ ****************************************************************************************/
+function lstFinalidade_Change()
+{
+    try
+    {
+        const ddl = $("#ddlFinalidade").data("kendoDropDownList");
+        const finalidade = ddl ? ddl.value() : null;
+        const ddlEvento = $("#ddlEvento").data("kendoDropDownList");
+        const btnEvento = document.getElementById("btnEvento");
+
+        if (finalidade === "Evento")
+        {
+            if (ddlEvento) ddlEvento.enable(true);
+            if (btnEvento)
+            {
+                btnEvento.style.display = "block";
+                btnEvento.setAttribute("data-bs-toggle", "modal");
+                btnEvento.setAttribute("data-bs-target", "#modalEvento");
+            }
+            $(".esconde-diveventos").show();
+        }
+        else
+        {
+            if (ddlEvento)
+            {
+                ddlEvento.value("");
+                ddlEvento.enable(false);
+            }
+            if (btnEvento) btnEvento.style.display = "none";
+            $(".esconde-diveventos").hide();
+            if (typeof limparDetalhesEventoSelecionado === "function")
+            {
+                limparDetalhesEventoSelecionado();
+            }
+        }
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "lstFinalidade_Change", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: controlarSecaoOcorrencias
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Impedir ocorrencias sem veiculo valido.
+ *                   [O QUE] Habilita/desabilita a secao conforme selecao.
+ *                   [COMO] Aplica classes e ajusta botao/aviso.
+ *
+ * 📥 ENTRADAS     : veiculoId [string] - GUID do veiculo.
+ *
+ * 📤 SAÍDAS       : UI da secao de ocorrencias.
+ *
+ * ⬅️ CHAMADO POR  : VeiculoValueChange(), inicializacao da pagina.
+ *
+ * ➡️ CHAMA        : Alerta.TratamentoErroComLinha().
+ ****************************************************************************************/
+function controlarSecaoOcorrencias(veiculoId)
+{
+    try
+    {
+        const secao = document.getElementById("secaoOcorrenciasUpsert");
+        const btnAdicionar = document.getElementById("btnAdicionarOcorrenciaUpsert");
+        const aviso = document.getElementById("avisoSelecionarVeiculo");
+
+        if (!secao) return;
+
+        if (window.viagemFinalizada === true)
+        {
+            if (btnAdicionar) btnAdicionar.disabled = true;
+            return;
+        }
+
+        const temVeiculo = veiculoId &&
+            veiculoId !== "" &&
+            veiculoId !== "00000000-0000-0000-0000-000000000000";
+
+        if (temVeiculo)
+        {
+            secao.classList.remove("ftx-section-disabled");
+            if (btnAdicionar) btnAdicionar.disabled = false;
+            if (aviso) aviso.style.display = "none";
+        }
+        else
+        {
+            secao.classList.add("ftx-section-disabled");
+            if (btnAdicionar) btnAdicionar.disabled = true;
+            if (aviso) aviso.style.display = "";
+        }
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "controlarSecaoOcorrencias", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: initModalZoomHandler
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Garantir sincronismo da imagem no modal de zoom.
+ *                   [O QUE] Copia o src do preview antes de abrir o modal.
+ *                   [COMO] Escuta o evento show.bs.modal.
+ *
+ * 📥 ENTRADAS     : Nenhuma.
+ *
+ * 📤 SAÍDAS       : void.
+ *
+ * ⬅️ CHAMADO POR  : initViagemUpsertPage().
+ *
+ * ➡️ CHAMA        : Alerta.TratamentoErroComLinha().
+ ****************************************************************************************/
+function initModalZoomHandler()
+{
+    try
+    {
+        var mz = document.getElementById("modalZoom");
+        if (!mz) return;
+        mz.addEventListener("show.bs.modal", function ()
+        {
+            try
+            {
+                var src = document.getElementById("imgViewerItem")?.getAttribute("src") ||
+                    document.getElementById("imgViewer")?.getAttribute("src") || "";
+                var target = document.getElementById("imgZoomed");
+                if (target) target.setAttribute("src", src);
+            }
+            catch (error)
+            {
+                Alerta.TratamentoErroComLinha("ViagemUpsert.js", "initModalZoomHandler.show", error);
+            }
+        });
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "initModalZoomHandler", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: normalizeTextoFuzzy
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Padronizar strings para comparacao fuzzy.
+ *                   [O QUE] Remove acentos, espacos extras e normaliza caixa.
+ *                   [COMO] Aplica normalizacao Unicode e regex.
+ *
+ * 📥 ENTRADAS     : texto [string] - Texto bruto.
+ *
+ * 📤 SAÍDAS       : string normalizada.
+ *
+ * ⬅️ CHAMADO POR  : validarDuplicadoNaLista(), validarCruzado().
+ *
+ * ➡️ CHAMA        : Alerta.TratamentoErroComLinha().
+ ****************************************************************************************/
+function normalizeTextoFuzzy(texto)
+{
+    try
+    {
+        if (!texto) return "";
+        return String(texto)
+            .normalize("NFKC")
+            .replace(/[\u200B-\u200D\uFEFF]/g, "")
+            .replace(/\u00A0/g, " ")
+            .toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .replace(/[\s\u00A0]+/g, " ")
+            .trim();
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "normalizeTextoFuzzy", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: levenshteinRaw
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Calcular distancia de edicao para comparacao fuzzy.
+ *                   [O QUE] Retorna numero de edicoes entre duas strings.
+ *                   [COMO] Usa DP classico com matriz n+1 x m+1.
+ *
+ * 📥 ENTRADAS     : a [string], b [string].
+ *
+ * 📤 SAÍDAS       : number.
+ *
+ * ⬅️ CHAMADO POR  : similarityFuzzy().
+ *
+ * ➡️ CHAMA        : Alerta.TratamentoErroComLinha().
+ ****************************************************************************************/
+function levenshteinRaw(a, b)
+{
+    try
+    {
+        const n = a.length, m = b.length;
+        if (n === 0) return m;
+        if (m === 0) return n;
+        const dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+        for (let i = 0; i <= n; i++) dp[i][0] = i;
+        for (let j = 0; j <= m; j++) dp[0][j] = j;
+        for (let i = 1; i <= n; i++)
+        {
+            for (let j = 1; j <= m; j++)
+            {
+                const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+                dp[i][j] = Math.min(
+                    dp[i - 1][j] + 1,
+                    dp[i][j - 1] + 1,
+                    dp[i - 1][j - 1] + cost,
+                );
+            }
+        }
+        return dp[n][m];
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "levenshteinRaw", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: similarityFuzzy
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Medir similaridade para evitar destinos duplicados.
+ *                   [O QUE] Retorna score 0..1.
+ *                   [COMO] Normaliza e usa distancia de Levenshtein.
+ *
+ * 📥 ENTRADAS     : a [string], b [string].
+ *
+ * 📤 SAÍDAS       : number.
+ *
+ * ⬅️ CHAMADO POR  : validarDuplicadoNaLista(), validarCruzado().
+ *
+ * ➡️ CHAMA        : normalizeTextoFuzzy(), levenshteinRaw().
+ ****************************************************************************************/
+function similarityFuzzy(a, b)
+{
+    try
+    {
+        const na = normalizeTextoFuzzy(a);
+        const nb = normalizeTextoFuzzy(b);
+        if (!na && !nb) return 1;
+        const dist = levenshteinRaw(na, nb);
+        const maxLen = Math.max(na.length, nb.length) || 1;
+        return 1 - dist / maxLen;
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "similarityFuzzy", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: getComboEJ2
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Centralizar acesso a combos EJ2 por ID.
+ *                   [O QUE] Retorna instancia ou null.
+ *                   [COMO] Usa ej2_instances do elemento.
+ *
+ * 📥 ENTRADAS     : id [string] - ID do elemento.
+ *
+ * 📤 SAÍDAS       : Object|null.
+ *
+ * ⬅️ CHAMADO POR  : initFuzzyDestinoValidation().
+ *
+ * ➡️ CHAMA        : Alerta.TratamentoErroComLinha().
+ ****************************************************************************************/
+function getComboEJ2(id)
+{
+    try
+    {
+        const host = document.getElementById(id);
+        return host?.ej2_instances?.[0] ?? null;
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "getComboEJ2", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: extractTextsFromItems
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Obter textos para validacao fuzzy.
+ *                   [O QUE] Extrai textos de arrays heterogeneos.
+ *                   [COMO] Usa fields.text quando disponivel.
+ *
+ * 📥 ENTRADAS     : items [Array], fields [Object].
+ *
+ * 📤 SAÍDAS       : Array<string>.
+ *
+ * ⬅️ CHAMADO POR  : getMasterTexts().
+ *
+ * ➡️ CHAMA        : Alerta.TratamentoErroComLinha().
+ ****************************************************************************************/
+function extractTextsFromItems(items, fields)
+{
+    try
+    {
+        const textField = fields?.text;
+        if (!Array.isArray(items)) return [];
+        if (items.length && (typeof items[0] === "string" || typeof items[0] === "number"))
+        {
+            return items.map(x => String(x));
+        }
+        return items.map(obj =>
+        {
+            if (!obj) return "";
+            if (textField && obj[textField] != null) return String(obj[textField]);
+            if (obj.text != null) return String(obj.text);
+            if (obj.value != null) return String(obj.value);
+            return "";
+        }).filter(x => x !== "");
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "extractTextsFromItems", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: getMasterTexts
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Cachear textos de lista para validacao fuzzy.
+ *                   [O QUE] Retorna lista de textos do datasource.
+ *                   [COMO] Usa listData ou dataSource do combo EJ2.
+ *
+ * 📥 ENTRADAS     : combo [Object] - Instancia EJ2.
+ *
+ * 📤 SAÍDAS       : Array<string>.
+ *
+ * ⬅️ CHAMADO POR  : validarDuplicadoNaLista().
+ *
+ * ➡️ CHAMA        : extractTextsFromItems().
+ ****************************************************************************************/
+function getMasterTexts(combo)
+{
+    try
+    {
+        if (Array.isArray(combo.__masterTexts) && combo.__masterTexts.length) return combo.__masterTexts;
+        let texts = extractTextsFromItems(combo.listData, combo.fields);
+        if (!texts.length)
+        {
+            const ds = combo.dataSource;
+            texts = extractTextsFromItems(ds?.dataSource?.json ?? ds, combo.fields);
+        }
+        combo.__masterTexts = texts;
+        return texts;
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "getMasterTexts", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: wireMasterCache
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Manter cache atualizado apos dataBound.
+ *                   [O QUE] Conecta o cache de textos ao combo EJ2.
+ *                   [COMO] Sobrescreve dataBound preservando o original.
+ *
+ * 📥 ENTRADAS     : combo [Object] - Instancia EJ2.
+ *
+ * 📤 SAÍDAS       : void.
+ *
+ * ⬅️ CHAMADO POR  : initFuzzyDestinoValidation().
+ ****************************************************************************************/
+function wireMasterCache(combo)
+{
+    try
+    {
+        if (!combo.__masterTexts || !combo.__masterTexts.length)
+        {
+            combo.__masterTexts = getMasterTexts(combo);
+        }
+        const prev = combo.dataBound;
+        combo.dataBound = function ()
+        {
+            if (typeof prev === "function") prev.apply(combo, arguments);
+            if (!combo.__masterTexts || !combo.__masterTexts.length)
+            {
+                combo.__masterTexts = extractTextsFromItems(combo.listData, combo.fields);
+            }
+        };
+        combo.dataBind();
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "wireMasterCache", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: alertInfo
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Padronizar informativos do fuzzy validator.
+ *                   [O QUE] Dispara Alerta.Info com fallback console.
+ *                   [COMO] Verifica disponibilidade do Alerta.
+ *
+ * 📥 ENTRADAS     : titulo [string], texto [string], confirm [string].
+ *
+ * 📤 SAÍDAS       : void.
+ *
+ * ⬅️ CHAMADO POR  : validarDuplicadoNaLista(), validarCruzado().
+ ****************************************************************************************/
+function alertInfo(titulo, texto, confirm)
+{
+    try
+    {
+        const confirmText = confirm || "OK";
+        if (typeof Alerta !== "undefined" && Alerta?.Info) Alerta.Info(titulo, texto, confirmText);
+        else console.warn(`${titulo}\n\n${texto}`);
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "alertInfo", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: alertWarn
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Padronizar advertencias do fuzzy validator.
+ *                   [O QUE] Dispara Alerta.Warning com fallback console.
+ *                   [COMO] Verifica disponibilidade do Alerta.
+ *
+ * 📥 ENTRADAS     : titulo [string], texto [string], confirm [string].
+ *
+ * 📤 SAÍDAS       : void.
+ *
+ * ⬅️ CHAMADO POR  : validarDuplicadoNaLista(), validarCruzado().
+ ****************************************************************************************/
+function alertWarn(titulo, texto, confirm)
+{
+    try
+    {
+        const confirmText = confirm || "OK";
+        if (typeof Alerta !== "undefined" && Alerta?.Warning) Alerta.Warning(titulo, texto, confirmText);
+        else console.warn(`${titulo}\n\n${texto}`);
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "alertWarn", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: validarDuplicadoNaLista
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Evitar origem/destino duplicado por digitacao livre.
+ *                   [O QUE] Compara com lista via similaridade fuzzy.
+ *                   [COMO] Usa thresholds e sugere canonizacao.
+ *
+ * 📥 ENTRADAS     : combo [Object], opts [Object].
+ *
+ * 📤 SAÍDAS       : void.
+ *
+ * ⬅️ CHAMADO POR  : initFuzzyDestinoValidation().
+ *
+ * ➡️ CHAMA        : getMasterTexts(), similarityFuzzy(), alertInfo(), alertWarn().
+ ****************************************************************************************/
+function validarDuplicadoNaLista(combo, opts)
+{
+    try
+    {
+        const {
+            infoThreshold = 0.85,
+            warnThreshold = 0.92,
+            confirmarTexto = "OK",
+            incluirSugestao = true,
+            autoCanonizar = true,
+        } = opts || {};
+
+        if (Number.isInteger(combo.index) && combo.index >= 0) return;
+
+        const digitado = combo.inputElement ? combo.inputElement.value : combo.value;
+        const norm = normalizeTextoFuzzy(digitado);
+        if (!norm) return;
+
+        const opcoes = getMasterTexts(combo);
+        if (!opcoes.length) return;
+
+        const existeExato = opcoes.some(o => String(o) === digitado);
+        if (existeExato) return;
+
+        const mapaNormParaOriginal = new Map();
+        for (const o of opcoes)
+        {
+            const n = normalizeTextoFuzzy(o);
+            if (!mapaNormParaOriginal.has(n)) mapaNormParaOriginal.set(n, o);
+        }
+        if (mapaNormParaOriginal.has(norm))
+        {
+            const canonico = mapaNormParaOriginal.get(norm);
+            if (autoCanonizar && canonico && digitado !== canonico)
+            {
+                combo.inputElement.value = canonico;
+                if ("text" in combo) combo.text = canonico;
+                if ("value" in combo && (typeof combo.value === "string" || combo.value == null)) combo.value = canonico;
+                combo.dataBind?.();
+            }
+            return;
+        }
+
+        let best = { item: null, score: 0 };
+        for (const opt of opcoes)
+        {
+            const s = similarityFuzzy(digitado, opt);
+            if (s > best.score) best = { item: opt, score: s };
+        }
+        if (!best.item) return;
+
+        const pct = (best.score * 100).toFixed(0);
+        const id = combo.element?.id || "";
+        const tituloBase = id === "cmbOrigem" ? "Origem" : id === "cmbDestino" ? "Destino" : "Item";
+        const sugestao = incluirSugestao ? `\nSugestao: “${best.item}” (similaridade ${pct}%).` : "";
+
+        if (best.score >= warnThreshold)
+        {
+            alertWarn(`Provavel duplicado • ${tituloBase}`, `E muito provavel que ja exista na lista.${sugestao}`, confirmarTexto);
+        }
+        else if (best.score >= infoThreshold)
+        {
+            alertInfo(`Semelhanca alta • ${tituloBase}`, `Pode ja existir algo parecido na lista.${sugestao}`, confirmarTexto);
+        }
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "validarDuplicadoNaLista", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: validarCruzado
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Evitar origem e destino praticamente iguais.
+ *                   [O QUE] Alerta quando campos sao muito similares.
+ *                   [COMO] Usa similarityFuzzy com thresholds.
+ *
+ * 📥 ENTRADAS     : origemCombo [Object], destinoCombo [Object], opts [Object].
+ *
+ * 📤 SAÍDAS       : void.
+ *
+ * ⬅️ CHAMADO POR  : initFuzzyDestinoValidation().
+ *
+ * ➡️ CHAMA        : similarityFuzzy(), alertInfo(), alertWarn().
+ ****************************************************************************************/
+function validarCruzado(origemCombo, destinoCombo, opts)
+{
+    try
+    {
+        const { infoThreshold = 0.85, warnThreshold = 0.92, confirmarTexto = "OK" } = opts || {};
+
+        const origem = origemCombo?.inputElement ? origemCombo.inputElement.value : origemCombo?.value;
+        const destino = destinoCombo?.inputElement ? destinoCombo.inputElement.value : destinoCombo?.value;
+
+        const norigem = normalizeTextoFuzzy(origem);
+        const ndestino = normalizeTextoFuzzy(destino);
+        if (!norigem || !ndestino) return;
+
+        const score = norigem === ndestino ? 1 : similarityFuzzy(norigem, ndestino);
+        const pct = (score * 100).toFixed(0);
+
+        if (score >= warnThreshold)
+        {
+            alertWarn("Origem e destino muito parecidos", `Os campos parecem referir-se ao mesmo lugar (similaridade ${pct}%).`, confirmarTexto);
+        }
+        else if (score >= infoThreshold)
+        {
+            alertInfo("Origem e destino semelhantes", `Verifique se sao realmente distintos (similaridade ${pct}%).`, confirmarTexto);
+        }
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "validarCruzado", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: initFuzzyDestinoValidation
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Ativar validacao fuzzy para Origem/Destino.
+ *                   [O QUE] Conecta blur handlers aos combos EJ2.
+ *                   [COMO] Usa getComboEJ2 e wireMasterCache.
+ *
+ * 📥 ENTRADAS     : Nenhuma.
+ *
+ * 📤 SAÍDAS       : void.
+ *
+ * ⬅️ CHAMADO POR  : initViagemUpsertPage().
+ *
+ * ➡️ CHAMA        : validarDuplicadoNaLista(), validarCruzado().
+ ****************************************************************************************/
+function initFuzzyDestinoValidation()
+{
+    try
+    {
+        function connect(id, peerId, opts)
+        {
+            const c = getComboEJ2(id);
+            const p = getComboEJ2(peerId);
+            if (!c || !c.inputElement) return false;
+            wireMasterCache(c);
+            c.inputElement.addEventListener("blur", function ()
+            {
+                validarDuplicadoNaLista(c, opts);
+                if (p && p.inputElement) validarCruzado(id === "cmbOrigem" ? c : p, id === "cmbOrigem" ? p : c, opts);
+            });
+            return true;
+        }
+
+        function tryWire()
+        {
+            const opts = { infoThreshold: 0.85, warnThreshold: 0.92, autoCanonizar: true };
+            const okO = connect("cmbOrigem", "cmbDestino", opts);
+            const okD = connect("cmbDestino", "cmbOrigem", opts);
+            return okO && okD;
+        }
+
+        if (!tryWire())
+        {
+            document.addEventListener("DOMContentLoaded", tryWire, { once: true });
+            window.addEventListener("load", () => setTimeout(tryWire, 0), { once: true });
+        }
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "initFuzzyDestinoValidation", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: initKendoDropDowns
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Inicializar dropdowns Kendo do Upsert.
+ *                   [O QUE] Configura Finalidade, Evento, Motorista e Combustiveis.
+ *                   [COMO] Usa dados do contexto e templates locais.
+ *
+ * 📥 ENTRADAS     : context [Object] - Dados serializados da pagina.
+ *
+ * 📤 SAÍDAS       : void.
+ *
+ * ⬅️ CHAMADO POR  : initViagemUpsertPage().
+ *
+ * ➡️ CHAMA        : lstFinalidade_Change(), MotoristaValueChange(), onEventoSelecionado().
+ ****************************************************************************************/
+function initKendoDropDowns(context)
+{
+    try
+    {
+        if (!window.kendo || !context) return;
+
+        var dataFinalidade = context.dataFinalidade || [];
+        var dataCombustivel = context.dataCombustivel || [];
+        var dataEvento = context.dataEvento || [];
+        var dataMotorista = context.dataMotorista || [];
+
+        function combustivelTemplate(data)
+        {
+            try
+            {
+                return '<span class="d-flex align-items-center">' +
+                    '<img src="' + kendo.htmlEncode(data.imagem) + '" style="height: 22px; margin-right: 8px;" alt="' + kendo.htmlEncode(data.descricao) + '" />' +
+                    '<span>' + kendo.htmlEncode(data.descricao) + '</span></span>';
+            }
+            catch (error)
+            {
+                return '<span>' + (data.descricao || '') + '</span>';
+            }
+        }
+
+        function combustivelValueTemplate(data)
+        {
+            try
+            {
+                if (data && data.imagem)
+                {
+                    return '<span class="d-flex align-items-center">' +
+                        '<img src="' + kendo.htmlEncode(data.imagem) + '" style="height: 22px; margin-right: 8px;" alt="' + kendo.htmlEncode(data.descricao) + '" />' +
+                        '<span>' + kendo.htmlEncode(data.descricao) + '</span></span>';
+                }
+                return '<span>' + kendo.htmlEncode(data.descricao || '') + '</span>';
+            }
+            catch (error)
+            {
+                return '<span>' + (data.descricao || '') + '</span>';
+            }
+        }
+
+        function motoristaTemplate(data)
+        {
+            try
+            {
+                var imgSrc = (data && data.foto && data.foto.indexOf('data:image') === 0)
+                    ? data.foto
+                    : '/images/barbudo.jpg';
+                return '<span class="motorista-item">' +
+                    '<img src="' + kendo.htmlEncode(imgSrc) + '" alt="Foto" />' +
+                    '<span>' + kendo.htmlEncode(data.nome || '') + '</span>' +
+                    '</span>';
+            }
+            catch (error)
+            {
+                return '<span>' + (data && data.nome ? kendo.htmlEncode(data.nome) : '') + '</span>';
+            }
+        }
+
+        function motoristaValueTemplate(data)
+        {
+            try
+            {
+                if (!data) return '';
+                var imgSrc = (data.foto && data.foto.indexOf('data:image') === 0)
+                    ? data.foto
+                    : '/images/barbudo.jpg';
+                return '<span class="motorista-value">' +
+                    '<img src="' + kendo.htmlEncode(imgSrc) + '" alt="Foto" />' +
+                    '<span>' + kendo.htmlEncode(data.nome || '') + '</span>' +
+                    '</span>';
+            }
+            catch (error)
+            {
+                return '<span>' + (data && data.nome ? kendo.htmlEncode(data.nome) : '') + '</span>';
+            }
+        }
+
+        $("#ddlFinalidade").kendoDropDownList({
+            dataTextField: "descricao",
+            dataValueField: "finalidadeId",
+            optionLabel: "Escolha a Finalidade...",
+            dataSource: dataFinalidade,
+            height: 200,
+            value: context.valores?.finalidade || "",
+            change: function ()
+            {
+                try { lstFinalidade_Change(); } catch (err) { console.error("lstFinalidade_Change:", err); }
+            },
+        });
+
+        $("#ddlEvento").kendoDropDownList({
+            dataTextField: "nome",
+            dataValueField: "eventoId",
+            optionLabel: "Selecione um Evento...",
+            dataSource: dataEvento,
+            filter: "contains",
+            height: 200,
+            value: context.valores?.eventoId || "",
+            change: function (e)
+            {
+                try { if (typeof onEventoSelecionado === "function") onEventoSelecionado(e); }
+                catch (err) { console.error("onEventoSelecionado:", err); }
+            },
+        });
+
+        $("#cmbMotorista").kendoDropDownList({
+            dataTextField: "nome",
+            dataValueField: "motoristaId",
+            optionLabel: "Selecione um Motorista",
+            dataSource: dataMotorista,
+            filter: "contains",
+            height: 200,
+            value: context.valores?.motoristaId || "",
+            template: motoristaTemplate,
+            valueTemplate: motoristaValueTemplate,
+            change: function ()
+            {
+                try { if (typeof MotoristaValueChange === "function") MotoristaValueChange(); }
+                catch (err) { console.error("MotoristaValueChange:", err); }
+            },
+        });
+
+        $("#ddlCombustivelInicial").kendoDropDownList({
+            dataTextField: "descricao",
+            dataValueField: "nivel",
+            optionLabel: "Selecione...",
+            dataSource: dataCombustivel,
+            height: 200,
+            value: context.valores?.combustivelInicial || "",
+            template: combustivelTemplate,
+            valueTemplate: combustivelValueTemplate,
+        });
+
+        $("#ddlCombustivelFinal").kendoDropDownList({
+            dataTextField: "descricao",
+            dataValueField: "nivel",
+            optionLabel: "Selecione...",
+            dataSource: dataCombustivel,
+            height: 200,
+            value: context.valores?.combustivelFinal || "",
+            template: combustivelTemplate,
+            valueTemplate: combustivelValueTemplate,
+        });
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "initKendoDropDowns", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: initKendoDateTimePickers
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Inicializar DatePicker/TimePicker com regras pt-BR.
+ *                   [O QUE] Configura limites, placeholders e validacoes de periodo.
+ *                   [COMO] Usa contexto para valores iniciais e helpers locais.
+ *
+ * 📥 ENTRADAS     : context [Object] - Datas e horas iniciais.
+ *
+ * 📤 SAÍDAS       : void.
+ *
+ * ⬅️ CHAMADO POR  : initViagemUpsertPage().
+ *
+ * ➡️ CHAMA        : Alerta.TratamentoErroComLinha().
+ ****************************************************************************************/
+function initKendoDateTimePickers(context)
+{
+    try
+    {
+        var agora = new Date();
+        var dataMinima = new Date();
+        dataMinima.setDate(dataMinima.getDate() - 15);
+        var dataMaxima = new Date();
+        var horaAgora = new Date(0, 0, 0, agora.getHours(), agora.getMinutes(), 0, 0);
+
+        var dataInicialContext = context?.datas?.dataInicial || null;
+        var dataFinalContext = context?.datas?.dataFinal || null;
+        var horaInicialContext = context?.datas?.horaInicio || null;
+        var horaFinalContext = context?.datas?.horaFim || null;
+
+        if (window.kendo && kendo.ui && kendo.ui.DateInput)
+        {
+            kendo.culture("pt-BR");
+            kendo.ui.DateInput.prototype.options.messages = {
+                year: "yyyy",
+                month: "MM",
+                day: "dd",
+                hour: "HH",
+                minute: "mm",
+            };
+        }
+
+        var dpDataInicial = $("#txtDataInicial").kendoDatePicker({
+            format: "dd/MM/yyyy",
+            culture: "pt-BR",
+            min: dataMinima,
+            max: dataMaxima,
+            dateInput: {
+                format: "dd/MM/yyyy",
+                messages: { year: "yyyy", month: "MM", day: "dd" },
+            },
+            placeholder: "dd/MM/yyyy",
+            value: dataInicialContext || new Date(agora.getFullYear(), agora.getMonth(), agora.getDate()),
+            change: function ()
+            {
+                try
+                {
+                    var dataInicial = this.value();
+                    if (!dataInicial)
+                    {
+                        setTimeout(function ()
+                        {
+                            Alerta.Erro("Data Inicial invalida", "Por favor, selecione uma data valida.");
+                        }, 100);
+                        dpDataInicial.value(null);
+                    }
+                    if (dataInicial && dataInicial > dataMaxima)
+                    {
+                        Alerta.Warning("Data Inicial invalida", "A Data Inicial nao pode ser superior a data atual.", "OK");
+                        dpDataInicial.value(null);
+                        aplicarMinimoDataFinal(null);
+                        return;
+                    }
+                    aplicarMinimoDataFinal(dataInicial);
+                }
+                catch (error)
+                {
+                    Alerta.TratamentoErroComLinha("ViagemUpsert.js", "dpDataInicial.change", error);
+                }
+            },
+        }).data("kendoDatePicker");
+
+        var tpHoraInicial = $("#txtHoraInicial").kendoTimePicker({
+            format: "HH:mm",
+            culture: "pt-BR",
+            interval: 15,
+            dateInput: {
+                format: "HH:mm",
+                messages: { hour: "HH", minute: "mm" },
+            },
+            placeholder: "HH:mm",
+            value: horaInicialContext || horaAgora,
+        }).data("kendoTimePicker");
+
+        function aplicarMinimoDataFinal(dataInicial)
+        {
+            try
+            {
+                if (!dpDataFinal) return;
+
+                var baseMin = (dataInicial && dataInicial instanceof Date && !isNaN(dataInicial))
+                    ? new Date(dataInicial.getFullYear(), dataInicial.getMonth(), dataInicial.getDate())
+                    : dataMinima;
+
+                dpDataFinal.min(baseMin);
+                dpDataFinal.max(dataMaxima);
+
+                var dataFinalAtual = dpDataFinal.value();
+                if (dataFinalAtual && dataFinalAtual instanceof Date && !isNaN(dataFinalAtual))
+                {
+                    if (dataFinalAtual < baseMin)
+                    {
+                        dpDataFinal.value(null);
+                    }
+                }
+
+                validarDataFinalEControlarHoraFim();
+            }
+            catch (error)
+            {
+                Alerta.TratamentoErroComLinha("ViagemUpsert.js", "aplicarMinimoDataFinal", error);
+            }
+        }
+
+        function validarDataFinalEControlarHoraFim()
+        {
+            try
+            {
+                if (!dpDataFinal || !tpHoraFinal) return;
+
+                var dataFinal = dpDataFinal.value();
+                var dataInicial = dpDataInicial ? dpDataInicial.value() : null;
+
+                if (dataFinal && dataFinal instanceof Date && !isNaN(dataFinal))
+                {
+                    if (dataFinal > dataMaxima)
+                    {
+                        Alerta.Warning(
+                            "Data Final invalida",
+                            "A <strong>Data Final</strong> nao pode ser superior a data atual.",
+                            "OK",
+                        );
+                        dpDataFinal.value(null);
+                        tpHoraFinal.enable(false);
+                        tpHoraFinal.value(null);
+                        return;
+                    }
+                    if (dataInicial && dataInicial instanceof Date && !isNaN(dataInicial))
+                    {
+                        if (dataFinal < dataInicial)
+                        {
+                            Alerta.Warning(
+                                "Data Final invalida",
+                                "A <strong>Data Final</strong> deve ser maior ou igual a <strong>Data Inicial</strong>.",
+                                "OK",
+                            );
+                            dpDataFinal.value(null);
+                            tpHoraFinal.enable(false);
+                            tpHoraFinal.value(null);
+                            return;
+                        }
+                    }
+
+                    tpHoraFinal.enable(true);
+                }
+                else
+                {
+                    tpHoraFinal.enable(false);
+                    tpHoraFinal.value(null);
+                }
+            }
+            catch (error)
+            {
+                Alerta.TratamentoErroComLinha("ViagemUpsert.js", "validarDataFinalEControlarHoraFim", error);
+            }
+        }
+
+        var dpDataFinal = $("#txtDataFinal").kendoDatePicker({
+            format: "dd/MM/yyyy",
+            culture: "pt-BR",
+            min: dataMinima,
+            max: dataMaxima,
+            placeholder: "dd/MM/yyyy",
+            dateInput: {
+                format: "dd/MM/yyyy",
+                placeholder: "dd/MM/yyyy",
+                messages: { year: "yyyy", month: "MM", day: "dd" },
+            },
+            value: dataFinalContext,
+            change: function ()
+            {
+                validarDataFinalEControlarHoraFim();
+            },
+        }).data("kendoDatePicker");
+
+        $("#txtDataInicialEvento").kendoDatePicker({
+            format: "dd/MM/yyyy",
+            culture: "pt-BR",
+            placeholder: "dd/MM/yyyy",
+            dateInput: {
+                format: "dd/MM/yyyy",
+                messages: { year: "yyyy", month: "MM", day: "dd" },
+            },
+            value: null,
+        });
+
+        $("#txtDataFinalEvento").kendoDatePicker({
+            format: "dd/MM/yyyy",
+            culture: "pt-BR",
+            placeholder: "dd/MM/yyyy",
+            dateInput: {
+                format: "dd/MM/yyyy",
+                messages: { year: "yyyy", month: "MM", day: "dd" },
+            },
+            value: null,
+        });
+
+        var tpHoraFinal = $("#txtHoraFinal").kendoTimePicker({
+            format: "HH:mm",
+            culture: "pt-BR",
+            interval: 15,
+            placeholder: "HH:mm",
+            dateInput: {
+                format: "HH:mm",
+                placeholder: "HH:mm",
+                messages: { hour: "HH", minute: "mm" },
+            },
+            value: horaFinalContext,
+            open: function (e)
+            {
+                try
+                {
+                    var dataFinal = dpDataFinal.value();
+                    if (!dataFinal || !(dataFinal instanceof Date) || isNaN(dataFinal))
+                    {
+                        e.preventDefault();
+                        Alerta.Warning(
+                            "Data Final Obrigatoria",
+                            "Preencha a <strong>Data Final</strong> antes de selecionar a Hora Fim.",
+                            "OK",
+                        );
+                    }
+                }
+                catch (error)
+                {
+                    Alerta.TratamentoErroComLinha("ViagemUpsert.js", "tpHoraFinal.open", error);
+                }
+            },
+        }).data("kendoTimePicker");
+
+        if (dpDataFinal && dpDataFinal.dateInput && dpDataFinal.dateInput.element)
+        {
+            if (typeof dpDataFinal.dateInput.setOptions === "function")
+            {
+                dpDataFinal.dateInput.setOptions({
+                    format: "dd/MM/yyyy",
+                    messages: { year: "yyyy", month: "MM", day: "dd" },
+                });
+            }
+            dpDataFinal.dateInput.element.attr("placeholder", "dd/MM/yyyy");
+        }
+        if (tpHoraFinal && tpHoraFinal.dateInput && tpHoraFinal.dateInput.element)
+        {
+            if (typeof tpHoraFinal.dateInput.setOptions === "function")
+            {
+                tpHoraFinal.dateInput.setOptions({
+                    format: "HH:mm",
+                    messages: { hour: "HH", minute: "mm" },
+                });
+            }
+            tpHoraFinal.dateInput.element.attr("placeholder", "HH:mm");
+        }
+
+        setTimeout(function ()
+        {
+            try
+            {
+                $("#txtDataFinal").attr("placeholder", "dd/MM/yyyy");
+                $("#txtHoraFinal").attr("placeholder", "HH:mm");
+
+                if (dpDataFinal && dpDataFinal.dateInput && dpDataFinal.dateInput.element)
+                {
+                    dpDataFinal.dateInput.element.attr("placeholder", "dd/MM/yyyy");
+                }
+                if (tpHoraFinal && tpHoraFinal.dateInput && tpHoraFinal.dateInput.element)
+                {
+                    tpHoraFinal.dateInput.element.attr("placeholder", "HH:mm");
+                }
+            }
+            catch (error)
+            {
+                Alerta.TratamentoErroComLinha("ViagemUpsert.js", "placeholder.reinforce", error);
+            }
+        }, 800);
+
+        aplicarMinimoDataFinal(dpDataInicial ? dpDataInicial.value() : null);
+        var dataFinalInicial = dpDataFinal.value();
+        if (!dataFinalInicial || !(dataFinalInicial instanceof Date) || isNaN(dataFinalInicial))
+        {
+            tpHoraFinal.enable(false);
+        }
+        else
+        {
+            tpHoraFinal.enable(true);
+        }
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "initKendoDateTimePickers", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: initUnsavedChangesGuard
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Evitar perda de alteracoes nao salvas.
+ *                   [O QUE] Detecta mudancas e confirma ao sair.
+ *                   [COMO] Compara serialize() do form e intercepta botoes.
+ *
+ * 📥 ENTRADAS     : Nenhuma.
+ *
+ * 📤 SAÍDAS       : void.
+ *
+ * ⬅️ CHAMADO POR  : initViagemUpsertPage().
+ *
+ * ➡️ CHAMA        : Alerta.Confirmar().
+ ****************************************************************************************/
+function initUnsavedChangesGuard()
+{
+    try
+    {
+        var estadoInicial = $("form").serialize();
+        var formularioAlterado = false;
+
+        $("form").on("change input", "input, select, textarea", function ()
+        {
+            try
+            {
+                formularioAlterado = ($("form").serialize() !== estadoInicial);
+            }
+            catch (error)
+            {
+                Alerta.TratamentoErroComLinha("ViagemUpsert.js", "form.change", error);
+            }
+        });
+
+        function verificarEVoltar()
+        {
+            try
+            {
+                if (formularioAlterado)
+                {
+                    Alerta.Confirmar(
+                        "Descartar Alteracoes?",
+                        "Voce fez alteracoes no formulario que ainda nao foram salvas. Deseja realmente descartar essas mudancas?",
+                        "Sim, descartar",
+                        "Cancelar",
+                    ).then(function (confirmado)
+                    {
+                        try
+                        {
+                            if (confirmado)
+                            {
+                                window.location.href = "/Viagens";
+                            }
+                        }
+                        catch (error)
+                        {
+                            Alerta.TratamentoErroComLinha("ViagemUpsert.js", "verificarEVoltar.confirmar.then", error);
+                        }
+                    });
+                }
+                else
+                {
+                    window.location.href = "/Viagens";
+                }
+            }
+            catch (error)
+            {
+                Alerta.TratamentoErroComLinha("ViagemUpsert.js", "verificarEVoltar", error);
+            }
+        }
+
+        $("#btnVoltarLista").on("click", function (e)
+        {
+            try
+            {
+                e.preventDefault();
+                verificarEVoltar();
+            }
+            catch (error)
+            {
+                Alerta.TratamentoErroComLinha("ViagemUpsert.js", "btnVoltarLista.click", error);
+            }
+        });
+
+        $(".btn-voltar-lista").on("click", function (e)
+        {
+            try
+            {
+                e.preventDefault();
+                verificarEVoltar();
+            }
+            catch (error)
+            {
+                Alerta.TratamentoErroComLinha("ViagemUpsert.js", "btn-voltar-lista.click", error);
+            }
+        });
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "initUnsavedChangesGuard", error);
+    }
+}
+
+/****************************************************************************************
+ * ⚡ FUNÇÃO: initViagemUpsertPage
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Centralizar bootstrap do Upsert de Viagens.
+ *                   [O QUE] Inicializa Kendo, validacoes e handlers da pagina.
+ *                   [COMO] Executa inicializadores no ready.
+ *
+ * 📥 ENTRADAS     : context [Object] - Dados da pagina.
+ *
+ * 📤 SAÍDAS       : void.
+ *
+ * ⬅️ CHAMADO POR  : Upsert.cshtml (ScriptsBlock).
+ *
+ * ➡️ CHAMA        : initKendoDropDowns(), initKendoDateTimePickers(), initFuzzyDestinoValidation(), initModalZoomHandler(), initUnsavedChangesGuard().
+ ****************************************************************************************/
+function initViagemUpsertPage(context)
+{
+    try
+    {
+        $(document).ready(function ()
+        {
+            try
+            {
+                initKendoDropDowns(context);
+                initKendoDateTimePickers(context);
+                initFuzzyDestinoValidation();
+                initModalZoomHandler();
+                initUnsavedChangesGuard();
+            }
+            catch (error)
+            {
+                Alerta.TratamentoErroComLinha("ViagemUpsert.js", "initViagemUpsertPage.ready", error);
+            }
+        });
+    }
+    catch (error)
+    {
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "initViagemUpsertPage", error);
     }
 }
 
@@ -1206,11 +3071,11 @@ async function validarDatasInicialFinal(DataInicial, DataFinal)
 
             if (confirmado)
             {
-                showSyncfusionToast("Confirmação feita pelo usuário!", "success", "💪🏼");
+                AppToast.show("Verde", "Confirmacao feita pelo usuario!", 2000);
                 document.getElementById("txtHoraFinal").focus();
             } else
             {
-                showSyncfusionToast("Ação cancelada pelo usuário", "danger", "😟");
+                AppToast.show("Amarelo", "Acao cancelada pelo usuario", 2000);
 
                 const campo = document.getElementById("txtDataFinal");
                 if (campo)
@@ -1236,20 +3101,21 @@ function calcularDuracaoViagem()
 {
     try
     {
-        var rawDataInicial = document.getElementById("txtDataInicial") && document.getElementById("txtDataInicial").value;
-        var horaInicial = document.getElementById("txtHoraInicial") && document.getElementById("txtHoraInicial").value;
-        var rawDataFinal = document.getElementById("txtDataFinal") && document.getElementById("txtDataFinal").value;
-        var horaFinal = document.getElementById("txtHoraFinal") && document.getElementById("txtHoraFinal").value;
+        // [KENDO] Obter valores via API Kendo
+        var dataInicial = window.getKendoDateValue("txtDataInicial");
+        var horaInicial = window.getKendoTimeValue("txtHoraInicial");
+        var dataFinal = window.getKendoDateValue("txtDataFinal");
+        var horaFinal = window.getKendoTimeValue("txtHoraFinal");
         var elDuracao = document.getElementById("txtDuracao");
         
-        console.log("calcularDuracaoViagem - DataInicial:", rawDataInicial, "HoraInicial:", horaInicial, "DataFinal:", rawDataFinal, "HoraFinal:", horaFinal);
+        console.log("calcularDuracaoViagem - DataInicial:", dataInicial, "HoraInicial:", horaInicial, "DataFinal:", dataFinal, "HoraFinal:", horaFinal);
         
         if (!elDuracao) return;
 
         var LIMIAR_MINUTOS = 120; // > 120 => inválido/tooltip
 
         // Faltando campos → limpar e resetar estados
-        if (!rawDataInicial || !horaInicial || !rawDataFinal || !horaFinal)
+        if (!dataInicial || !horaInicial || !dataFinal || !horaFinal)
         {
             elDuracao.value = "";
             if (typeof FieldUX !== 'undefined') {
@@ -1259,8 +3125,12 @@ function calcularDuracaoViagem()
             return;
         }
 
-        var inicio = moment(rawDataInicial + "T" + horaInicial, "YYYY-MM-DDTHH:mm");
-        var fim = moment(rawDataFinal + "T" + horaFinal, "YYYY-MM-DDTHH:mm");
+        // Montar strings para moment
+        const strDataInicial = moment(dataInicial).format("YYYY-MM-DD");
+        const strDataFinal = moment(dataFinal).format("YYYY-MM-DD");
+        
+        var inicio = moment(strDataInicial + "T" + horaInicial, "YYYY-MM-DDTHH:mm");
+        var fim = moment(strDataFinal + "T" + horaFinal, "YYYY-MM-DDTHH:mm");
         if (!inicio.isValid() || !fim.isValid())
         {
             elDuracao.value = "";
@@ -1389,6 +3259,21 @@ $(document).ready(function ()
 
 //=================================================================
 
+/****************************************************************************************
+ * ⚡ FUNÇÃO: ExibeViagem
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : [PORQUÊ] Popular a tela com os dados da viagem recuperada.
+ *                   [O QUE] Preenche campos, aplica regras de status e habilita/desabilita UI.
+ *                   [COMO] Usa dados da API para setar combos, inputs e estados dos controles.
+ *
+ * 📥 ENTRADAS     : viagem [Object] - DTO retornado por /api/Agenda/RecuperaViagem.
+ *
+ * 📤 SAÍDAS       : UI preenchida e controles ajustados.
+ *
+ * ⬅️ CHAMADO POR  : ajax.RecuperaViagem.success.
+ *
+ * ➡️ CHAMA        : atualizarDetalhesEventoSelecionado(), limparDetalhesEventoSelecionado().
+ ****************************************************************************************/
 function ExibeViagem(viagem)
 {
     try
@@ -1402,17 +3287,26 @@ function ExibeViagem(viagem)
 
         if (viagem.eventoId != null)
         {
-            const ddtEventos = document.getElementById("ddtEventos").ej2_instances[0];
-            ddtEventos.enabled = true;
-            ddtEventos.value = [viagem.eventoId];
+            const ddlEvento = $("#ddlEvento").data("kendoDropDownList");
+            if (ddlEvento)
+            {
+                ddlEvento.enable(true);
+                ddlEvento.value(viagem.eventoId);
+            }
             document.getElementById("btnEvento").style.display = "block";
             $(".esconde-diveventos").show();
+            atualizarDetalhesEventoSelecionado(viagem.eventoId);
         } else
         {
-            const ddtEventos = document.getElementById("ddtEventos").ej2_instances[0];
-            ddtEventos.enabled = false;
+            const ddlEvento = $("#ddlEvento").data("kendoDropDownList");
+            if (ddlEvento)
+            {
+                ddlEvento.value("");
+                ddlEvento.enable(false);
+            }
             document.getElementById("btnEvento").style.display = "none";
             $(".esconde-diveventos").hide();
+            limparDetalhesEventoSelecionado();
         }
 
         if (viagem.setorSolicitanteId)
@@ -1472,7 +3366,7 @@ function ExibeViagem(viagem)
                 }
             }, 500);
 
-            ["cmbMotorista", "cmbVeiculo", "cmbRequisitante", "cmbOrigem", "cmbDestino"].forEach(
+            ["cmbVeiculo", "cmbRequisitante", "cmbOrigem", "cmbDestino"].forEach(
                 (id) =>
                 {
                     try
@@ -1484,12 +3378,20 @@ function ExibeViagem(viagem)
                     {
                         Alerta.TratamentoErroComLinha(
                             "ViagemUpsert.js",
-                            'callback@["cmbMotorista", "cmbVeiculo", "cmbRequi.forEach#0',
+                            'callback@["cmbVeiculo", "cmbRequisitante", "cmbOrigem", "cmbDestino".forEach#0',
                             error,
                         );
                     }
                 },
             );
+
+            // Kendo: Motorista
+            try {
+                const ddlMotorista = $("#cmbMotorista").data("kendoDropDownList");
+                if (ddlMotorista) ddlMotorista.enable(false);
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("ViagemUpsert.js", "cmbMotorista.disable", error);
+            }
 
             // Syncfusion: ddtSetor
             try {
@@ -1516,7 +3418,8 @@ function ExibeViagem(viagem)
             // Kendo: Finalidade
             var ddlFin = $("#ddlFinalidade").data("kendoDropDownList");
             if (ddlFin) ddlFin.enable(false);
-            document.getElementById("ddtEventos").ej2_instances[0].enabled = false;
+            var ddlEvento = $("#ddlEvento").data("kendoDropDownList");
+            if (ddlEvento) ddlEvento.enable(false);
 
             ["btnRequisitante", "btnSetor", "btnEvento"].forEach((id) =>
             {
@@ -2250,12 +4153,10 @@ function MotoristaValueChange()
 {
     try
     {
-        var ddTreeObj = document.getElementById("cmbMotorista").ej2_instances[0];
-        console.log("Objeto Motorista:", ddTreeObj);
+        var ddlMotorista = $("#cmbMotorista").data("kendoDropDownList");
+        if (!ddlMotorista || !ddlMotorista.value()) return;
 
-        if (ddTreeObj.value === null) return;
-
-        var motoristaid = String(ddTreeObj.value);
+        var motoristaid = String(ddlMotorista.value());
 
         $.ajax({
             url: "/Viagens/Upsert?handler=VerificaMotoristaViagem",
@@ -2280,7 +4181,7 @@ function MotoristaValueChange()
                 }
                 catch (error)
                 {
-                    TratamentoErroComLinha(
+                    Alerta.TratamentoErroComLinha(
                         __scriptName,
                         "ajax.UpserthandlerVerificaMotoristaViagem.success",
                         error,
@@ -2291,7 +4192,7 @@ function MotoristaValueChange()
     }
     catch (error)
     {
-        TratamentoErroComLinha("ViagemUpsert.js", "MotoristaValueChange", error);
+        Alerta.TratamentoErroComLinha("ViagemUpsert.js", "MotoristaValueChange", error);
     }
 }
 
@@ -2673,8 +4574,8 @@ $("#btnSubmit").click(async function (event)
             return;
         }
 
-        const motorista = document.getElementById("cmbMotorista").ej2_instances[0];
-        if (motorista.value === null)
+        const ddlMotorista = $("#cmbMotorista").data("kendoDropDownList");
+        if (!ddlMotorista || !ddlMotorista.value())
         {
             Alerta.Erro("Informação Ausente", "O Motorista é obrigatório");
             return;
@@ -4191,9 +6092,8 @@ function carregarDocumentosItensMobile(data)
         const chkCintaEntregue = document.getElementById('chkCintaEntregueMobile');
         const chkTabletEntregue = document.getElementById('chkTabletEntregueMobile');
         
-        // StatusDocumento: checkbox marcado se não estiver vazio
-        if (chkStatusDocumento) chkStatusDocumento.checked = !!(data.statusDocumento && data.statusDocumento.trim() !== '');
-        if (chkStatusCartao) chkStatusCartao.checked = !!(data.statusCartaoAbastecimento && data.statusCartaoAbastecimento.trim() !== '');
+        if (chkStatusDocumento) chkStatusDocumento.checked = data.documentoEntregue === true;
+        if (chkStatusCartao) chkStatusCartao.checked = data.cartaoAbastecimentoEntregue === true;
         if (chkCintaEntregue) chkCintaEntregue.checked = data.cintaEntregue === true;
         if (chkTabletEntregue) chkTabletEntregue.checked = data.tabletEntregue === true;
         
@@ -4203,8 +6103,8 @@ function carregarDocumentosItensMobile(data)
         const chkCintaDevolvida = document.getElementById('chkCintaDevolvidaMobile');
         const chkTabletDevolvido = document.getElementById('chkTabletDevolvidoMobile');
         
-        if (chkStatusDocumentoFinal) chkStatusDocumentoFinal.checked = !!(data.statusDocumentoFinal && data.statusDocumentoFinal.trim() !== '');
-        if (chkStatusCartaoFinal) chkStatusCartaoFinal.checked = !!(data.statusCartaoAbastecimentoFinal && data.statusCartaoAbastecimentoFinal.trim() !== '');
+        if (chkStatusDocumentoFinal) chkStatusDocumentoFinal.checked = data.documentoDevolvido === true;
+        if (chkStatusCartaoFinal) chkStatusCartaoFinal.checked = data.cartaoAbastecimentoDevolvido === true;
         if (chkCintaDevolvida) chkCintaDevolvida.checked = data.cintaDevolvida === true;
         if (chkTabletDevolvido) chkTabletDevolvido.checked = data.tabletDevolvido === true;
     }

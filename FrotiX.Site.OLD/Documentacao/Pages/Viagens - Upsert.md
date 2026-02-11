@@ -1,7 +1,7 @@
 # Documentação: Alertas FrotiX (Upsert)
 
-> **Última Atualização**: 16/01/2026 18:15
-> **Versão Atual**: 1.4
+> **Última Atualização**: 10/02/2026 03:00
+> **Versão Atual**: 3.0
 
 ---
 
@@ -135,6 +135,39 @@ function calcularDuracaoViagem() {
 }
 ```
 
+### Datas no Modal de Evento (Kendo DatePicker)
+Os campos **Data Inicial** e **Data Final** do modal de Evento foram migrados para
+Kendo DatePicker, garantindo padrao pt-BR e evitando uso de `<input type="date">`.
+
+```javascript
+$("#txtDataInicialEvento").kendoDatePicker({
+    format: "dd/MM/yyyy",
+    culture: "pt-BR",
+    dateInput: { format: "dd/MM/yyyy", messages: { year: "yyyy", month: "MM", day: "dd" } }
+});
+```
+
+### Padrao de Data/Hora Inicial e Bloqueio de Data Final
+Quando a viagem e criada sem valores preexistentes, os campos **Data Inicial** e **Hora Inicio**
+sao preenchidos automaticamente com a data de hoje e a hora atual. A **Data Inicial** nao
+bloqueia datas futuras. A **Data Final** passa a ter minimo dinamico igual a **Data Inicial**,
+impedindo selecao ou digitacao de datas anteriores, sem bloquear datas futuras.
+
+```javascript
+// Data Inicial: default para hoje quando vazio
+var dpDataInicial = $("#txtDataInicial").kendoDatePicker({
+    value: new Date(agora.getFullYear(), agora.getMonth(), agora.getDate())
+}).data("kendoDatePicker");
+
+// Hora Inicio: default para agora quando vazio
+var tpHoraInicial = $("#txtHoraInicial").kendoTimePicker({
+    value: new Date(0, 0, 0, agora.getHours(), agora.getMinutes(), 0, 0)
+}).data("kendoTimePicker");
+
+// Data Final: minimo dinamico igual a Data Inicial
+dpDataFinal.min(dpDataInicial.value());
+```
+
 ### Proteção de Dados
 O sistema detecta alterações no formulário e alerta o usuário se ele tentar sair sem salvar.
 
@@ -190,6 +223,247 @@ Retorna a foto do motorista em Base64 para o template do ComboBox.
 > **FORMATO**: Entradas em ordem **decrescente** (mais recente primeiro)
 
 ---
+
+## [10/02/2026 03:00] - FIX: Remove trigger focusout no change
+
+**Descricao**: Removidos os handlers que disparavam `focusout` dentro do `change`,
+eliminando recursao e stack overflow.
+
+**Mudancas**:
+1. **Data Final**: removido `change` que fazia `trigger("focusout")`.
+2. **Hora Final**: removido `change` que fazia `trigger("focusout")`.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 3.0
+
+## [10/02/2026 02:50] - FIX: Flag durante confirmacao de intervalo
+
+**Descricao**: Ativada a flag `atualizandoDataFinal` durante a confirmacao de
+intervalo para impedir reentrada quando a funcao limpa o campo.
+
+**Mudancas**:
+1. **Data Final**: flag ativa enquanto `validarDatasInicialFinal` executa.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.9
+
+## [10/02/2026 02:40] - FIX: Evita recursao no change da Data Final
+
+**Descricao**: Adicionada flag para evitar recursao quando o campo e limpo
+programaticamente (setKendoDateValue), prevenindo stack overflow.
+
+**Mudancas**:
+1. **Data Final**: controle `atualizandoDataFinal` para bloquear `change` reentrante.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.8
+
+## [10/02/2026 02:30] - FIX: Await na confirmacao de intervalo
+
+**Descricao**: A validacao de intervalo (`validarDatasInicialFinal`) passou a ser
+aguardada com `await` para evitar rejeicoes nao tratadas e loops de erro.
+
+**Mudancas**:
+1. **Data Final**: aguarda retorno da confirmacao antes de continuar validacao.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.7
+
+## [10/02/2026 02:20] - FIX: Guardas anti-reentrada nas validacoes
+
+**Descricao**: Incluidas guardas de reentrada para evitar loops e stack overflow
+nas validacoes de Data Final e Hora Final.
+
+**Mudancas**:
+1. **Data Final**: guard `validandoDataFinal` para evitar chamadas duplicadas.
+2. **Hora Final**: guard `validandoHoraFinal` para evitar chamadas duplicadas.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.6
+
+## [10/02/2026 02:10] - FIX: Validacao somente no change (sem focusout)
+
+**Descricao**: Removidas as validacoes por Lost Focus em Data Final e Hora Final,
+mantendo apenas o disparo no `change`.
+
+**Mudancas**:
+1. **Data Final**: removido handler `focusout`.
+2. **Hora Final**: removido handler `focusout`.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.5
+
+## [10/02/2026 02:00] - FIX: Validacao imediata sem loop e alerta fora do padrao
+
+**Descricao**: Reestruturada a validacao de Data Final e Hora Final para disparar no
+`change` sem recursao, evitando stack overflow e alerta nativo do browser.
+
+**Mudancas**:
+1. **Data Final**: validacao centralizada em funcao `validarDataFinal()`.
+2. **Hora Final**: validacao centralizada em funcao `validarHoraFinal()`.
+3. **Eventos**: `change` e `focusout` chamam as funcoes sem `trigger()` recursivo.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.4
+
+## [10/02/2026 01:45] - FIX: Validacao imediata em Data Final e Hora Final
+
+**Descricao**: Ajustado para validar e calcular na mudanca do controle, sem esperar
+o Lost Focus. Inclui guard para o validador de IA em Data Final.
+
+**Mudancas**:
+1. **Data Final**: validacao disparada no `change`.
+2. **Hora Final**: calculo de duracao disparado no `change`.
+3. **Guard**: protege `ValidadorFinalizacaoIA.obterInstancia` na Data Final.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.3
+
+## [10/02/2026 01:30] - FIX: Guard na validacao de Hora Final
+
+**Descricao**: Evita erro quando `ValidadorFinalizacaoIA.obterInstancia` nao existe
+e garante strings de data ao validar duracao.
+
+**Mudancas**:
+1. **Guard**: verifica existencia de `obterInstancia` antes de chamar.
+2. **Datas**: formata `dataInicial` e `dataFinal` antes da analise.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.2
+
+## [10/02/2026 01:20] - FIX: Toast padrao na confirmacao de datas
+
+**Descricao**: Substituido o toast customizado de Syncfusion pelo AppToast global
+no fluxo de confirmacao quando a Data Final e muito maior que a Data Inicial.
+
+**Mudancas**:
+1. **Toast**: removido `showSyncfusionToast` e aplicado `AppToast.show`.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.1
+
+## [10/02/2026 01:10] - FIX: Validacao de Data Final sem bloqueio futuro
+
+**Descricao**: Ajustada a validacao em `ViagemUpsert.js` para permitir datas futuras
+em Data Inicial e Data Final, mantendo apenas a regra de Data Final >= Data Inicial.
+Tambem removido o foco invalido do Kendo DatePicker que gerava `picker.focus is not a function`.
+
+**Mudancas**:
+1. **Data Inicial**: removidas regras de bloqueio por data atual.
+2. **Data Final**: removidas regras de bloqueio por data atual e limite de 15 dias.
+3. **Coerencia**: ao detectar Data Final < Data Inicial, limpa apenas Data Final.
+
+**Arquivos Afetados**:
+- `wwwroot/js/cadastros/ViagemUpsert.js`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 2.0
+
+## [10/02/2026 00:35] - FIX: Data Inicial sem bloqueio de datas futuras
+
+**Descricao**: Removido o limite maximo da Data Inicial, mantendo apenas o minimo
+de 15 dias atras.
+
+**Mudancas**:
+1. **Data Inicial**: agora permite datas futuras.
+
+**Arquivos Afetados**:
+- `Pages/Viagens/Upsert.cshtml`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 1.9
+
+## [10/02/2026 00:25] - FIX: Data Final sem bloqueio de datas futuras
+
+**Descricao**: Removido o limite maximo da Data Final, mantendo apenas o minimo
+dinamico igual a Data Inicial.
+
+**Mudancas**:
+1. **Data Final**: agora bloqueia somente datas anteriores a Data Inicial.
+
+**Arquivos Afetados**:
+- `Pages/Viagens/Upsert.cshtml`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 1.8
+
+## [10/02/2026 00:15] - FIX: Kendo no Modal de Evento e sem alert()
+
+**Descricao**: Ajuste para substituir `alert()` por `Alerta.*` e migrar
+as datas do modal de Evento para Kendo DatePicker com padrao pt-BR.
+
+**Mudancas**:
+1. **Alertas**: removido fallback com `alert()` e padronizado para `Alerta.Warning`.
+2. **Modal Evento**: inputs de data migrados para Kendo DatePicker.
+3. **Erros**: padronizacao de `Alerta.TratamentoErroComLinha` nos handlers.
+
+**Arquivos Afetados**:
+- `Pages/Viagens/Upsert.cshtml`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 1.7
+
+## [10/02/2026 00:00] - FIX: Data/Hora Inicial padrao e minimo da Data Final
+
+**Descricao**: Ajuste para preencher automaticamente **Data Inicial** e **Hora Inicio** com
+data de hoje e hora atual quando nao houver valor no model. A **Data Final** passa a ter
+minimo dinamico igual a **Data Inicial**, bloqueando datas anteriores e limpando valor invalido.
+
+**Mudancas**:
+1. **Data Inicial**: default para hoje quando nulo.
+2. **Hora Inicio**: default para hora atual quando nula.
+3. **Data Final**: minimo dinamico baseado na Data Inicial e validacao de coerencia.
+
+**Arquivos Afetados**:
+- `Pages/Viagens/Upsert.cshtml`
+
+**Status**: ✅ **Concluido**
+
+**Versao**: 1.6
 
 ## [16/01/2026 18:15] - REFACTOR: Migração para Comparador Compartilhado
 

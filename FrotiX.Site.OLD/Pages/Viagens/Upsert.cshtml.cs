@@ -30,6 +30,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Blazor.Data;
 using Syncfusion.EJ2.DropDowns;
@@ -789,32 +790,41 @@ namespace FrotiX.Pages.Viagens
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnGetVerificaMotoristaViagem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : [PORQUÊ] Evitar alocar motorista em viagem aberta.
+         *                   [O QUE] Verifica se existe viagem em aberto para o motorista.
+         *                   [COMO] Valida GUID e consulta viagens com status "Aberta" e HoraFim nula.
+         *
+         * 📥 ENTRADAS     : id [string] - GUID do motorista.
+         *
+         * 📤 SAÍDAS       : JSON { data: bool } indicando se ha viagem aberta.
+         *
+         * 🔗 CHAMADA POR  : /Viagens/Upsert?handler=VerificaMotoristaViagem (AJAX).
+         *
+         * 🔄 CHAMA        : _unitOfWork.Viagem.GetFirstOrDefault.
+         ****************************************************************************************/
         public JsonResult OnGetVerificaMotoristaViagem(string id)
         {
             try
             {
-                Guid motoristaid = Guid.Parse(id);
-                var viagens = _unitOfWork.Viagem.GetFirstOrDefault(e =>
-                (
-                e.MotoristaId == motoristaid
-                && e.Status == "Aberta"
-                && e.StatusAgendamento == false
-                )
-                );
-                if (viagens == null)
+                if (string.IsNullOrEmpty(id) || !Guid.TryParse(id , out Guid motoristaId))
                 {
                     return new JsonResult(new
                     {
                         data = false
                     });
                 }
-                else
+
+                bool temViagemAberta = _context.Viagem
+                    .AsNoTracking()
+                    .Any(e => e.MotoristaId == motoristaId && e.HoraFim == null && e.Status == "Aberta");
+
+                return new JsonResult(new
                 {
-                    return new JsonResult(new
-                    {
-                        data = true
-                    });
-                }
+                    data = temViagemAberta
+                });
             }
             catch (Exception error)
             {
@@ -830,6 +840,21 @@ namespace FrotiX.Pages.Viagens
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnGetVerificaVeiculoViagem
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : [PORQUÊ] Evitar alocar veiculo em viagem aberta.
+         *                   [O QUE] Verifica se existe viagem em aberto para o veiculo.
+         *                   [COMO] Valida GUID e consulta viagens com status "Aberta" e HoraFim nula.
+         *
+         * 📥 ENTRADAS     : id [string] - GUID do veiculo.
+         *
+         * 📤 SAÍDAS       : JSON { data: bool } indicando se ha viagem aberta.
+         *
+         * 🔗 CHAMADA POR  : /Viagens/Upsert?handler=VerificaVeiculoViagem (AJAX).
+         *
+         * 🔄 CHAMA        : _unitOfWork.Viagem.GetFirstOrDefault.
+         ****************************************************************************************/
         public JsonResult OnGetVerificaVeiculoViagem(string id)
         {
             try
@@ -842,13 +867,13 @@ namespace FrotiX.Pages.Viagens
                     });
                 }
 
-                var viagens = _unitOfWork.Viagem.GetFirstOrDefault(e =>
-                e.VeiculoId == veiculoId && e.Status == "Aberta" && e.StatusAgendamento == false
-                );
+                bool temViagemAberta = _context.Viagem
+                    .AsNoTracking()
+                    .Any(e => e.VeiculoId == veiculoId && e.HoraFim == null && e.Status == "Aberta");
 
                 return new JsonResult(new
                 {
-                    data = viagens != null
+                    data = temViagemAberta
                 });
             }
             catch (Exception error)
@@ -866,6 +891,19 @@ namespace FrotiX.Pages.Viagens
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnPostEditAsync
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : [PORQUÊ] Atualizar viagem garantindo regras de negocio essenciais.
+         *                   [O QUE] Valida limites de km e persiste alteracoes.
+         *                   [COMO] Valida modelo e salva via UnitOfWork.
+         *
+         * 📥 ENTRADAS     : Id [Guid] - Identificador da viagem.
+         *
+         * 📤 SAÍDAS       : IActionResult (JSON em AJAX ou redirect).
+         *
+         * 🔗 CHAMADA POR  : Submit do formulario Upsert (edit).
+         ****************************************************************************************/
         public async Task<IActionResult> OnPostEditAsync(Guid Id)
         {
             try
@@ -924,6 +962,37 @@ namespace FrotiX.Pages.Viagens
                             );
                         }
                     }
+                }
+
+                const int maxKm = 1000000;
+                if (ViagemObj?.Viagem?.KmInicial != null && ViagemObj.Viagem.KmInicial > maxKm)
+                {
+                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    {
+                        return new JsonResult(new
+                        {
+                            success = false,
+                            message = "A quilometragem inicial nao pode ultrapassar 1.000.000."
+                        });
+                    }
+
+                    AppToast.show("Vermelho", "A quilometragem inicial nao pode ultrapassar 1.000.000.", 3000);
+                    return Page();
+                }
+
+                if (ViagemObj?.Viagem?.KmFinal != null && ViagemObj.Viagem.KmFinal > maxKm)
+                {
+                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    {
+                        return new JsonResult(new
+                        {
+                            success = false,
+                            message = "A quilometragem final nao pode ultrapassar 1.000.000."
+                        });
+                    }
+
+                    AppToast.show("Vermelho", "A quilometragem final nao pode ultrapassar 1.000.000.", 3000);
+                    return Page();
                 }
 
                 if (ViagemObj.Viagem.HoraFim == null)
@@ -1149,6 +1218,19 @@ namespace FrotiX.Pages.Viagens
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: OnPostSubmitAsync
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : [PORQUÊ] Criar nova viagem garantindo regras de negocio essenciais.
+         *                   [O QUE] Valida limites de km e persiste novo registro.
+         *                   [COMO] Valida modelo e salva via UnitOfWork.
+         *
+         * 📥 ENTRADAS     : Formulario ViagemObj (POST).
+         *
+         * 📤 SAÍDAS       : IActionResult (JSON em AJAX ou redirect).
+         *
+         * 🔗 CHAMADA POR  : Submit do formulario Upsert (create).
+         ****************************************************************************************/
         public async Task<IActionResult> OnPostSubmitAsync()
         {
             try
@@ -1162,6 +1244,37 @@ namespace FrotiX.Pages.Viagens
                 if (ViagemObj.Viagem.NoFichaVistoria == null || ViagemObj.Viagem.NoFichaVistoria == 0)
                 {
                     ViagemObj.Viagem.NoFichaVistoria = 0;
+                }
+
+                const int maxKm = 1000000;
+                if (ViagemObj?.Viagem?.KmInicial != null && ViagemObj.Viagem.KmInicial > maxKm)
+                {
+                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    {
+                        return new JsonResult(new
+                        {
+                            success = false,
+                            message = "A quilometragem inicial nao pode ultrapassar 1.000.000."
+                        });
+                    }
+
+                    AppToast.show("Vermelho", "A quilometragem inicial nao pode ultrapassar 1.000.000.", 3000);
+                    return Page();
+                }
+
+                if (ViagemObj?.Viagem?.KmFinal != null && ViagemObj.Viagem.KmFinal > maxKm)
+                {
+                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    {
+                        return new JsonResult(new
+                        {
+                            success = false,
+                            message = "A quilometragem final nao pode ultrapassar 1.000.000."
+                        });
+                    }
+
+                    AppToast.show("Vermelho", "A quilometragem final nao pode ultrapassar 1.000.000.", 3000);
+                    return Page();
                 }
 
                 if (Request.Form.ContainsKey("FotoBase64"))
@@ -1389,6 +1502,26 @@ namespace FrotiX.Pages.Viagens
             }
         }
 
+        /****************************************************************************************
+         * ⚡ FUNÇÃO: PreencheListaFinalidade
+         * --------------------------------------------------------------------------------------
+         * 🎯 OBJETIVO     : [PORQUÊ] Garantir que a lista de finalidades seja carregada e
+         *                   ordenada alfabeticamente para facilitar a selecao pelo usuario.
+         *                   [O QUE] Monta o dataSource com as finalidades fixas do sistema.
+         *                   [COMO] Cria a lista base e ordena por descricao com comparador natural.
+         *
+         * 📥 ENTRADAS     : Nenhuma.
+         *
+         * 📤 SAÍDAS       : ViewData["dataFinalidade"] preenchido com lista ordenada.
+         *
+         * ⬅️ CHAMADO POR  : OnGet() [Upsert.cshtml.cs]
+         *                   OnPostEditAsync() [Upsert.cshtml.cs]
+         *                   OnPostSubmitAsync() [Upsert.cshtml.cs]
+         *
+         * ➡️ CHAMA        : FrotiX.Helpers.NaturalStringComparer (ordenacao natural)
+         *
+         * 📝 OBSERVAÇÕES  : Lista fixa de finalidades usada no DropDownList de Viagens.
+         ****************************************************************************************/
         public void PreencheListaFinalidade()
         {
             try
@@ -1550,6 +1683,10 @@ namespace FrotiX.Pages.Viagens
                 FinalidadeDataSource.Add(
                 new FinalidadeData { FinalidadeId = "Cursos Depol" , Descricao = "Cursos Depol" }
                 );
+
+                FinalidadeDataSource = FinalidadeDataSource
+                    .OrderBy(f => (f.Descricao ?? string.Empty).Trim(), new FrotiX.Helpers.NaturalStringComparer())
+                    .ToList();
 
                 ViewData["dataFinalidade"] = FinalidadeDataSource;
             }
@@ -2061,6 +2198,94 @@ namespace FrotiX.Pages.Viagens
                 get; set;
             }
         }
+
+        /* ****************************************************************************************
+         * 🚨 PROBLEMAS IDENTIFICADOS E MELHORIAS PROPOSTAS
+         * --------------------------------------------------------------------------------------
+         * Data de Identificação: 10/02/2026
+         * Identificado por: GitHub Copilot - GPT-5.2-Codex (Análise Automática)
+         * Status: 🟡 PENDENTE (aguardando refatoração)
+         *
+         * ========================================================================================
+         * PROBLEMA #1: Estado compartilhado com campos static
+         * ----------------------------------------------------------------------------------------
+         * Severidade: 🟡 ALTA
+         *
+         * Descrição:
+         * Campos static armazenam dados de requisições e podem vazar entre usuários,
+         * causando inconsistências em cenários concorrentes.
+         *
+         * Localização:
+         * - Linhas: 49-59 (campos static no topo da classe)
+         *
+         * Impacto:
+         * - Concorrência: risco de dados cruzados entre sessões
+         * - Debugging difícil em ambientes com múltiplos usuários
+         *
+         * Solução Proposta:
+         * Remover static e armazenar estado por request (propriedades de instância,
+         * TempData/Session ou reconsulta controlada).
+         *
+         * ========================================================================================
+         * PROBLEMA #2: Max() sem fallback para sequência vazia
+         * ----------------------------------------------------------------------------------------
+         * Severidade: 🟡 ALTA
+         *
+         * Descrição:
+         * OnGetVerificaFicha usa Max() sem tratar cenário de tabela vazia.
+         *
+         * Localização:
+         * - Linhas: 771-777 (OnGetVerificaFicha)
+         *
+         * Impacto:
+         * - Exceção em ambientes sem registros
+         *
+         * Solução Proposta:
+         * Usar DefaultIfEmpty/FirstOrDefault com valor padrão.
+         *
+         * ========================================================================================
+         * PROBLEMA #3: Possíveis NullReference em endpoints auxiliares
+         * ----------------------------------------------------------------------------------------
+         * Severidade: 🟠 MÉDIA
+         *
+         * Descrição:
+         * Falta validação de null em consultas de veículo e setor.
+         *
+         * Localização:
+         * - Linhas: 677-684 (OnGetPegaKmAtualVeiculo)
+         * - Linhas: 740-749 (OnGetPegaSetor)
+         *
+         * Impacto:
+         * - Exceções quando registros não são encontrados
+         *
+         * Solução Proposta:
+         * Validar retorno antes de acessar propriedades e retornar fallback seguro.
+         *
+         * ========================================================================================
+         * PROBLEMA #4: Strings de lista montadas e não utilizadas
+         * ----------------------------------------------------------------------------------------
+         * Severidade: 🟢 BAIXA
+         *
+         * Descrição:
+         * Variáveis eventosList/requisitantesList são montadas e não usadas.
+         *
+         * Localização:
+         * - Linhas: 419-507 (OnGetAJAXPreencheListaEventos/Requisitantes)
+         *
+         * Impacto:
+         * - Código morto e risco de exceção quando lista vazia
+         *
+         * Solução Proposta:
+         * Remover montagem de string ou proteger com validação.
+         *
+         * ========================================================================================
+         * OBSERVAÇÕES GERAIS:
+         * Este arquivo possui múltiplos endpoints auxiliares e deve manter validações
+         * defensivas para evitar erros intermitentes em produção.
+         *
+         * REFERÊNCIAS:
+         * - ArquivosCriticos.md (entrada completa)
+         **************************************************************************************** */
     }
 }
 

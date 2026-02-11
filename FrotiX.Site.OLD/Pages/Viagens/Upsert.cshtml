@@ -1,4 +1,23 @@
-﻿@page
+﻿@*
+****************************************************************************************
+⚡ ARQUIVO: Upsert.cshtml
+--------------------------------------------------------------------------------------
+🎯 OBJETIVO     : Pagina de criacao/edicao de viagens com validacoes e seções completas.
+
+📥 ENTRADAS     : Model ViagemObj, ViewData (listas de finalidade, motorista, veiculo).
+
+📤 SAÍDAS       : POST /Viagens/Upsert (Create/Edit) e renderizacao de UI completa.
+
+🔗 CHAMADA POR  : Navegacao do menu Cadastros > Viagens.
+
+🔄 CHAMA        : ViagemUpsert.js (validacoes e eventos), Kendo UI e Syncfusion EJ2.
+
+📦 DEPENDÊNCIAS : jQuery, Kendo UI, Syncfusion EJ2, alerta.js, frotix.js.
+
+📝 OBSERVAÇÕES  : Controles Kendo devem ser inicializados via jQuery em ScriptsBlock.
+****************************************************************************************
+*@
+@page
 @addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
 @using Syncfusion.EJ2.DropDowns;
 @using Syncfusion.EJ2;
@@ -63,1275 +82,9 @@
 }
 
 @section HeadBlock {
-    <style>
-        /* ======== OUTLINE BRANCO NO BOTÃO DO HEADER (Padrão FrotiX) ======== */
-        .ftx-card-header .btn-fundo-laranja {
-            outline: 2px solid rgba(255, 255, 255, 0.5) !important;
-            outline-offset: 1px;
-            transition: all 0.2s ease;
-        }
-
-        .ftx-card-header .btn-fundo-laranja:hover {
-            outline: 2px solid rgba(255, 255, 255, 0.8) !important;
-            outline-offset: 2px;
-        }
-    </style>
     <link href="~/css/ftx-card-styled.css" rel="stylesheet" asp-append-version="true" />
-
-    <style>
-        /* ======== KENDO EDITOR - ESTILOS ======== */
-        .k-editor {
-            border-radius: 4px;
-            border: 1px solid #ced4da;
-        }
-
-        .k-editor-content {
-            min-height: 280px;
-        }
-
-        /* Kendo Editor desabilitado */
-        .k-editor.k-disabled {
-            opacity: 0.65;
-            pointer-events: none;
-            background-color: #e9ecef;
-        }
-
-        .k-editor.k-disabled .k-editor-content {
-            background-color: #f5f5f5;
-        }
-
-        .k-editor.k-disabled .k-toolbar {
-            background-color: #e9ecef;
-        }
-    </style>
+    <link href="~/css/viagens/viagem-upsert.css" rel="stylesheet" asp-append-version="true" />
 }
-
-<script>
-    /**
-     * ═══════════════════════════════════════════════════════════════════════════
-     * UPSERT VIAGEM - FORMULÁRIO PRINCIPAL
-     * ═══════════════════════════════════════════════════════════════════════════
-     * @@description Formulário completo de criação / edição de viagens.
-     * Integra múltiplos combos(motorista, veículo, requisitante, destinos),
-     * validação cruzada e editor de texto rico.
-     * @@requires jQuery, Syncfusion(ComboBox, RichTextEditor), Kendo UI
-        * @@file Viagens / Upsert.cshtml
-        */
-
-    /**
-     * Previne submissão do form ao pressionar Enter
-     * @@param { Event } e - Evento de teclado
-        * @@description Bloqueia Enter exceto em divs contenteditable
-            */
-    function stopEnterSubmitting(e) {
-        try {
-            const evt = e || window.event;
-            if (!evt) return;
-            if ((evt.key && evt.key === 'Enter') || evt.keyCode === 13) {
-                const src = evt.target || evt.srcElement;
-                if (!src || src.tagName.toLowerCase() !== "div") {
-                    if (evt.preventDefault) evt.preventDefault();
-                    else evt.returnValue = false;
-                }
-            }
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "stopEnterSubmitting", error);
-        }
-    }
-
-    /**
-     * Handler de clique na toolbar do RichTextEditor
-     * @@param { Object } e - Evento com item.id indicando botão clicado
-        * @@description Injeta token AntiForgery para upload de imagens
-            */
-    function toolbarClick(e) {
-        try {
-            if (e && e.item && e.item.id && e.item.id.indexOf("Image") >= 0) {
-                var up = document.getElementById('rte_upload');
-                if (up && up.ej2_instances && up.ej2_instances[0]) {
-                    up.ej2_instances[0].uploading = function (args) {
-                        const token =
-                            document.getElementsByName('__RequestVerificationToken')[0]?.value ||
-                            document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-                        if (token) {
-                            args.currentRequest.setRequestHeader('XSRF-TOKEN', token);
-                        }
-                    };
-                }
-            }
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "toolbarClick", error);
-        }
-    }
-
-    /**
-     * Callback de criação do ComboBox de Motoristas
-     * @@description Configura templates personalizados com foto do motorista
-        */
-    function onCmbMotoristaCreated() {
-            try {
-                const combo = document.getElementById('cmbMotorista').ej2_instances[0];
-
-                combo.itemTemplate = function (data) {
-                    let imgSrc = (data.Foto && data.Foto.startsWith('data:image'))
-                        ? data.Foto
-                        : '/images/barbudo.jpg';
-                    return `
-                <div class="d-flex align-items-center">
-                    <img src="${imgSrc}" alt="Foto" style="height:40px; width:40px; border-radius:50%; margin-right:10px;" />
-                    <span>${data.Nome}</span>
-                </div>`;
-                };
-
-                combo.valueTemplate = function (data) {
-                    if (!data) return '';
-                    let imgSrc = (data.Foto && data.Foto.startsWith('data:image'))
-                        ? data.Foto
-                        : '/images/barbudo.jpg';
-                    return `
-                <div class="d-flex align-items-center">
-                    <img src="${imgSrc}" alt="Foto" style="height:30px; width:30px; border-radius:50%; margin-right:10px;" />
-                    <span>${data.Nome}</span>
-                </div>`;
-                };
-            } catch (error) {
-                Alerta.TratamentoErroComLinha("Upsert.cshtml", "onCmbMotoristaCreated", error);
-            }
-        }
-
-    /**
-     * Handler de mudança de Finalidade da viagem
-     * @@description Exibe / oculta seletor de Evento conforme tipo de viagem
-        */
-    function lstFinalidade_Change() {
-        try {
-            try {
-                const ddl = $("#ddlFinalidade").data("kendoDropDownList");
-                const finalidade = ddl ? ddl.value() : null;
-                const lstEvento = document.getElementById("ddtEventos")?.ej2_instances?.[0];
-                const btnEvento = document.getElementById("btnEvento");
-
-                if (finalidade === 'Evento') {
-                    if (lstEvento) {
-                        lstEvento.enabled = true;
-                        lstEvento.dataBind();
-                    }
-                    if (btnEvento) {
-                        btnEvento.style.display = "block";
-                        // compat Bootstrap 5
-                        btnEvento.setAttribute('data-bs-toggle', 'modal');
-                        btnEvento.setAttribute('data-bs-target', '#modalEvento');
-                    }
-                    $(".esconde-diveventos").show();
-                } else {
-                    if (lstEvento) {
-                        lstEvento.enabled = false;
-                        lstEvento.dataBind();
-                    }
-                    if (btnEvento) btnEvento.style.display = "none";
-                    $(".esconde-diveventos").hide();
-                }
-            } catch (error) {
-                TratamentoErroComLinha("Viagem_050", "lstFinalidade_Change", error);
-            }
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "lstFinalidade_Change", error);
-        }
-    }
-
-    /**
-     * Handler de mudança de Motorista
-     * @@description Desabilita seletor de Setor ao selecionar motorista
-        */
-    function MotoristaValueChange() {
-        try {
-            try {
-                const motoristaId = document.getElementById('cmbMotorista').ej2_instances[0]?.value;
-                if (!motoristaId) return;
-
-                const setorHost = document.getElementById('ddtSetor'); // CORRIGIDO (era cmbSetor)
-                if (setorHost?.ej2_instances?.length) {
-                    setorHost.ej2_instances[0].enabled = false;
-                    setorHost.ej2_instances[0].dataBind();
-                }
-            } catch (error) {
-                TratamentoErroComLinha("Viagem_050", "MotoristaValueChange", error);
-            }
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "MotoristaValueChange", error);
-        }
-    }
-
-    /**
-     * Controla habilitação/desabilitação da seção de ocorrências
-     * @@param { string } veiculoId - GUID do veículo selecionado
-        * @@description Habilita seção apenas se veículo selecionado e viagem não finalizada
-            */
-    function controlarSecaoOcorrencias(veiculoId) {
-        try {
-            const secao = document.getElementById('secaoOcorrenciasUpsert');
-            const btnAdicionar = document.getElementById('btnAdicionarOcorrenciaUpsert');
-            const aviso = document.getElementById('avisoSelecionarVeiculo');
-
-            if (!secao) return;
-
-            // Se viagem finalizada, manter botão desabilitado sempre
-            if (window.viagemFinalizada === true) {
-                if (btnAdicionar) btnAdicionar.disabled = true;
-                return;
-            }
-
-            // Normalizar veiculoId - pode ser string, GUID ou null/undefined
-            const temVeiculo = veiculoId &&
-                veiculoId !== '' &&
-                veiculoId !== '00000000-0000-0000-0000-000000000000' &&
-                veiculoId !== null &&
-                veiculoId !== undefined;
-
-            if (temVeiculo) {
-                // Veículo selecionado - habilitar seção
-                secao.classList.remove('ftx-section-disabled');
-                if (btnAdicionar) btnAdicionar.disabled = false;
-                if (aviso) aviso.style.display = 'none';
-            } else {
-                // Sem veículo - desabilitar seção
-                secao.classList.add('ftx-section-disabled');
-                if (btnAdicionar) btnAdicionar.disabled = true;
-                if (aviso) aviso.style.display = '';
-            }
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "controlarSecaoOcorrencias", error);
-        }
-    }
-
-    /**
-     * Handler de mudança de Veículo
-     * @@description Aciona controle de seção de ocorrências
-        */
-    function VeiculoValueChange() {
-        try {
-            const cmbVeiculo = document.getElementById('cmbVeiculo');
-            if (!cmbVeiculo || !cmbVeiculo.ej2_instances || !cmbVeiculo.ej2_instances[0]) return;
-
-            let veiculoId = cmbVeiculo.ej2_instances[0].value;
-            if (Array.isArray(veiculoId)) {
-                veiculoId = veiculoId[0];
-            }
-
-            // Controlar seção de ocorrências
-            controlarSecaoOcorrencias(veiculoId);
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "VeiculoValueChange", error);
-        }
-    }
-
-    /**
-     * Handler de mudança de Requisitante (viagem normal)
-     * @@description Placeholder para lógica futura de integração
-        */
-    function RequisitanteValueChange() {
-        try {
-            try {
-                const requisitanteId = document.getElementById('cmbRequisitante').ej2_instances[0]?.value;
-                if (!requisitanteId) return;
-                // Placeholder para lógica futura
-            } catch (error) {
-                TratamentoErroComLinha("Viagem_050", "RequisitanteValueChange", error);
-            }
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "RequisitanteValueChange", error);
-        }
-    }
-
-    /**
-     * Handler de mudança de Requisitante (viagem de evento)
-     * @@description Placeholder para lógica futura de integração com eventos
-        */
-    function RequisitanteEventoValueChange() {
-        try {
-            try {
-                const requisitanteId = document.getElementById('lstRequisitanteEvento').ej2_instances[0]?.value;
-                if (!requisitanteId) return;
-                // Placeholder para lógica futura
-            } catch (error) {
-                TratamentoErroComLinha("Viagem_050", "RequisitanteEventoValueChange", error);
-            }
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "RequisitanteEventoValueChange", error);
-        }
-    }
-
-    /**
-     * Callback de criação do ComboBox de Veículos
-     * @@description Configura templates com imagem do veículo
-        */
-    function onVeiculoComboCreated() {
-            try {
-                try {
-                    var veiculoCombo = document.getElementById('cmbVeiculo').ej2_instances[0];
-
-                    veiculoCombo.itemTemplate = function (data) {
-                        return '<div class="d-flex align-items-center">' +
-                            '<img src="' + (data.Imagem || '/Images/carro.jpg') + '" alt="Imagem" style="height:30px; width:30px; border-radius:5px; margin-right:10px;" />' +
-                            '<span>' + data.Descricao + '</span>' +
-                            '</div>';
-                    };
-
-                    veiculoCombo.valueTemplate = function (data) {
-                        if (!data) return '';
-                        return '<div class="d-flex align-items-center">' +
-                            '<img src="' + (data.Imagem || '/Images/carro.jpg') + '" alt="Imagem" style="height:30px; width:30px; border-radius:5px; margin-right:10px;" />' +
-                            '<span>' + data.Descricao + '</span>' +
-                            '</div>';
-                    };
-                } catch (error) {
-                    TratamentoErroComLinha("Viagem_050", "onVeiculoComboCreated", error);
-                }
-            } catch (error) {
-                Alerta.TratamentoErroComLinha("Upsert.cshtml", "onVeiculoComboCreated", error);
-            }
-        }
-
-    /**
-     * Handler de mudança de Motorista com foto
-     * @@param { Object } args - Evento com itemData contendo MotoristaId
-        * @@description Busca e exibe foto do motorista selecionado
-            */
-    function onMotoristaChange(args) {
-        try {
-            const motoristaId = args?.itemData?.MotoristaId;
-            if (!motoristaId) return;
-            fetch(`/api/Viagem/FotoMotorista?id=${motoristaId}`)
-                .then(resp => resp.json())
-                .then(data => {
-                    if (data.fotoBase64) {
-                        const img = document.getElementById("fotoMotorista");
-                        if (img) {
-                            img.src = data.fotoBase64;
-                            img.style.display = 'block';
-                        }
-                    }
-                });
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "onMotoristaChange", error);
-        }
-    }
-
-    /**
-     * Preview de imagem antes do upload
-     * @@param { HTMLInputElement } input - Campo file com imagem selecionada
-        * @@description Usa FileReader para mostrar preview em imgViewer
-            */
-    function VisualizaImagem(input) {
-        try {
-            if (!input.files || !input.files[0]) return;
-            var file = input.files[0];
-            if (!file.type.startsWith("image/")) {
-                alert("Por favor escolha um arquivo de imagem.");
-                return;
-            }
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                document.getElementById("imgViewer").src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "VisualizaImagem", error);
-        }
-    }
-
-    /**
-     * Atualiza imagem no modal de zoom
-     * @@description Copia src de imgViewerItem para imgZoomed
-        */
-    function atualizarImagemModal() {
-        const imgSrc = document.getElementById('imgViewerItem').src;
-        const modalImg = document.getElementById('imgZoomed');
-        if (modalImg) {
-            modalImg.src = imgSrc;
-        }
-    }
-
-</script>
-<script>
-    /**
-     * ═══════════════════════════════════════════════════════════════════════════
-     * VALIDAÇÃO FUZZY DE DUPLICADOS - DESTINOS ORIGEM/DESTINO
-     * ═══════════════════════════════════════════════════════════════════════════
-     * @@description Sistema de detecção de destinos similares usando Levenshtein
-        * para evitar duplicação acidental de origem / destino.
-     */
-
-    /**
-     * Normaliza texto para comparação fuzzy
-     * @@param { string } str - Texto a normalizar
-        * @@returns { string } Texto normalizado(lowercase, sem acentos, sem espaços extras)
-            */
-    function normalize(str) {
-        try {
-            if (!str) return "";
-            return String(str)
-                .normalize("NFKC")
-                .replace(/[\u200B-\u200D\uFEFF]/g, "")
-                .replace(/\u00A0/g, " ")
-                .toLowerCase()
-                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                .replace(/[\s\u00A0]+/g, " ")
-                .trim();
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "normalize", error);
-        }
-    }
-
-    /**
-     * Calcula distância de Levenshtein entre duas strings
-     * @@param { string } a - Primeira string
-        * @@param { string } b - Segunda string
-            * @@returns { number } Número de edições necessárias
-                */
-    function levenshteinRaw(a, b) {
-        try {
-            const n = a.length, m = b.length;
-            if (n === 0) return m;
-            if (m === 0) return n;
-            const dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
-            for (let i = 0; i <= n; i++) dp[i][0] = i;
-            for (let j = 0; j <= m; j++) dp[0][j] = j;
-            for (let i = 1; i <= n; i++) {
-                for (let j = 1; j <= m; j++) {
-                    const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-                    dp[i][j] = Math.min(
-                        dp[i - 1][j] + 1,
-                        dp[i][j - 1] + 1,
-                        dp[i - 1][j - 1] + cost
-                    );
-                }
-            }
-            return dp[n][m];
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "levenshteinRaw", error);
-        }
-    }
-
-    /**
-     * Calcula similaridade entre duas strings (0 a 1)
-     * @@param { string } a - Primeira string
-        * @@param { string } b - Segunda string
-            * @@returns { number } Valor entre 0(diferentes) e 1(idênticas)
-                */
-    function similarity(a, b) {
-        try {
-            const na = normalize(a), nb = normalize(b);
-            if (!na && !nb) return 1;
-            const dist = levenshteinRaw(na, nb);
-            const maxLen = Math.max(na.length, nb.length) || 1;
-            return 1 - dist / maxLen; // 0..1
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "similarity", error);
-        }
-    }
-
-    /**
-     * ═══════════════════════════════════════════════════════════════════════════
-     * HELPERS SYNCFUSION EJ2
-     * ═══════════════════════════════════════════════════════════════════════════
-     */
-
-    /**
-     * Obtém instância de ComboBox/DropDownTree por ID
-     * @@param { string } id - ID do elemento
-        * @@returns { Object| null} Instância EJ2 ou null
-            */
-    function getCombo(id) {
-        try {
-            const host = document.getElementById(id);
-            return host?.ej2_instances?.[0] ?? null;
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "getCombo", error);
-        }
-    }
-
-    /**
-     * Extrai textos de array de itens do combo
-     * @@param { Array } items - Array de objetos ou strings
-        * @@param { Object } fields - Configuração de campos(text, value)
-            * @@returns { Array<string>} Array de textos extraídos
-                */
-    function extractTexts(items, fields) {
-        try {
-            const textField = fields?.text;
-            if (!Array.isArray(items)) return [];
-            if (items.length && (typeof items[0] === "string" || typeof items[0] === "number")) {
-                return items.map(x => String(x));
-            }
-            return items.map(obj => {
-                if (!obj) return "";
-                if (textField && obj[textField] != null) return String(obj[textField]);
-                if (obj.text != null) return String(obj.text);
-                if (obj.value != null) return String(obj.value);
-                return "";
-            }).filter(x => x !== "");
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "extractTexts", error);
-        }
-    }
-
-    /**
-     * Obtém cache de textos master de um combo
-     * @@param { Object } combo - Instância EJ2 do combo
-        * @@returns { Array<string>} Lista de textos disponíveis
-            */
-    function getMasterTexts(combo) {
-        try {
-            if (Array.isArray(combo.__masterTexts) && combo.__masterTexts.length) return combo.__masterTexts;
-            let texts = extractTexts(combo.listData, combo.fields);
-            if (!texts.length) {
-                const ds = combo.dataSource;
-                texts = extractTexts(ds?.dataSource?.json ?? ds, combo.fields);
-            }
-            combo.__masterTexts = texts;
-            return texts;
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "getMasterTexts", error);
-        }
-    }
-
-    /**
-     * Conecta cache de textos ao combo para validação
-     * @@param { Object } combo - Instância EJ2 do combo
-        */
-    function wireMasterCache(combo) {
-            try {
-                if (!combo.__masterTexts || !combo.__masterTexts.length) {
-                    combo.__masterTexts = getMasterTexts(combo);
-                }
-                const prev = combo.dataBound;
-                combo.dataBound = function () {
-                    if (typeof prev === "function") prev.apply(combo, arguments);
-                    if (!combo.__masterTexts || !combo.__masterTexts.length) {
-                        combo.__masterTexts = extractTexts(combo.listData, combo.fields);
-                    }
-                };
-                combo.dataBind();
-            } catch (error) {
-                Alerta.TratamentoErroComLinha("Upsert.cshtml", "wireMasterCache", error);
-            }
-        }
-
-    /**
-     * Exibe alerta informativo
-     * @@param { string } titulo - Título do alerta
-        * @@param { string } texto - Texto do alerta
-            * @@param { string } confirm - Texto do botão de confirmação
-                */
-    function alertInfo(titulo, texto, confirm = "OK") {
-        try {
-            if (typeof Alerta !== "undefined" && Alerta?.Info) Alerta.Info(titulo, texto, confirm);
-            else alert(`${titulo}\n\n${texto}`);
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "alertInfo", error);
-        }
-    }
-
-    /**
-     * Exibe alerta de advertência
-     * @@param { string } titulo - Título do alerta
-        * @@param { string } texto - Texto do alerta
-            * @@param { string } confirm - Texto do botão de confirmação
-                */
-    function alertWarn(titulo, texto, confirm = "OK") {
-        try {
-            if (typeof Alerta !== "undefined" && Alerta?.Warning) Alerta.Warning(titulo, texto, confirm);
-            else alert(`${titulo}\n\n${texto}`);
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "alertWarn", error);
-        }
-    }
-
-    /**
-     * Valida duplicados fuzzy na lista de destinos
-     * @@param { Object } combo - Instância EJ2 do combo
-        * @@param { Object } opts - Opções de validação(infoThreshold, warnThreshold, etc.)
-            * @@description Detecta destinos similares digitados manualmente e sugere correção
-                */
-    function validarDuplicadoNaLista(combo, opts) {
-        try {
-            const {
-                infoThreshold = 0.85,
-                warnThreshold = 0.92,
-                confirmarTexto = "OK",
-                incluirSugestao = true,
-                autoCanonizar = true
-            } = opts || {};
-
-            // Se usuário selecionou opção da lista, não alerta
-            if (Number.isInteger(combo.index) && combo.index >= 0) return;
-
-            const digitado = combo.inputElement ? combo.inputElement.value : combo.value;
-            const norm = normalize(digitado);
-            if (!norm) return;
-
-            const opcoes = getMasterTexts(combo);
-            if (!opcoes.length) return;
-
-            // Igualdade exata -> OK
-            const existeExato = opcoes.some(o => String(o) === digitado);
-            if (existeExato) return;
-
-            // Igualdade normalizada -> canoniza sem alertar
-            const mapaNormParaOriginal = new Map();
-            for (const o of opcoes) {
-                const n = normalize(o);
-                if (!mapaNormParaOriginal.has(n)) mapaNormParaOriginal.set(n, o);
-            }
-            if (mapaNormParaOriginal.has(norm)) {
-                const canonico = mapaNormParaOriginal.get(norm);
-                if (autoCanonizar && canonico && digitado !== canonico) {
-                    combo.inputElement.value = canonico;
-                    if ("text" in combo) combo.text = canonico;
-                    if ("value" in combo && (typeof combo.value === "string" || combo.value == null)) combo.value = canonico;
-                    combo.dataBind?.();
-                }
-                return;
-            }
-
-            // Fuzzy
-            let best = { item: null, score: 0 };
-            for (const opt of opcoes) {
-                const s = similarity(digitado, opt);
-                if (s > best.score) best = { item: opt, score: s };
-            }
-            if (!best.item) return;
-
-            const pct = (best.score * 100).toFixed(0);
-            const id = combo.element?.id || "";
-            const tituloBase = id === "cmbOrigem" ? "Origem" : id === "cmbDestino" ? "Destino" : "Item";
-            const sugestao = incluirSugestao ? `\nSugestão: “${best.item}” (similaridade ${pct}%).` : "";
-
-            if (best.score >= warnThreshold) {
-                alertWarn(`Provável duplicado • ${tituloBase}`, `É muito provável que já exista na lista.${sugestao}`, confirmarTexto);
-            } else if (best.score >= infoThreshold) {
-                alertInfo(`Semelhança alta • ${tituloBase}`, `Pode já existir algo parecido na lista.${sugestao}`, confirmarTexto);
-            }
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "validarDuplicadoNaLista", error);
-        }
-    }
-
-    /**
-     * Valida cruzamento entre Origem e Destino
-     * @@param { Object } origemCombo - Instância EJ2 do combo de origem
-        * @@param { Object } destinoCombo - Instância EJ2 do combo de destino
-            * @@param { Object } opts - Opções(infoThreshold, warnThreshold)
-                * @@description Alerta se origem e destino são muito similares
-                    */
-    function validarCruzado(origemCombo, destinoCombo, opts) {
-        try {
-            const { infoThreshold = 0.85, warnThreshold = 0.92, confirmarTexto = "OK" } = opts || {};
-
-            const origem = origemCombo?.inputElement ? origemCombo.inputElement.value : origemCombo?.value;
-            const destino = destinoCombo?.inputElement ? destinoCombo.inputElement.value : destinoCombo?.value;
-
-            const norigem = normalize(origem);
-            const ndestino = normalize(destino);
-            if (!norigem || !ndestino) return;
-
-            const score = norigem === ndestino ? 1 : similarity(norigem, ndestino);
-            const pct = (score * 100).toFixed(0);
-
-            if (score >= warnThreshold) {
-                alertWarn("Origem e destino muito parecidos", `Os campos parecem referir-se ao mesmo lugar (similaridade ${pct}%).`, confirmarTexto);
-            } else if (score >= infoThreshold) {
-                alertInfo("Origem e destino semelhantes", `Verifique se são realmente distintos (similaridade ${pct}%).`, confirmarTexto);
-            }
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "validarCruzado", error);
-        }
-    }
-
-    /**
-     * ═══════════════════════════════════════════════════════════════════════════
-     * INICIALIZAÇÃO DOS COMBOS ORIGEM/DESTINO
-     * ═══════════════════════════════════════════════════════════════════════════
-     * @@description IIFE que conecta validação fuzzy aos combos de origem / destino
-        */
-            (function boot() {
-                try {
-            /**
-             * Conecta eventos de blur aos combos para validação
-             * @@param { string } id - ID do combo principal
-                        * @@param { string } peerId - ID do combo pareado(para validação cruzada)
-                            * @@param { Object } opts - Opções de validação
-                                */
-                    function connect(id, peerId, opts) {
-                        const c = getCombo(id);
-                        const p = getCombo(peerId);
-                        if (!c || !c.inputElement) return false;
-                        wireMasterCache(c);
-                        c.inputElement.addEventListener("blur", function () {
-                            validarDuplicadoNaLista(c, opts);
-                            if (p && p.inputElement) validarCruzado(id === "cmbOrigem" ? c : p, id === "cmbOrigem" ? p : c, opts);
-                        });
-                        return true;
-                    }
-                    function tryWire() {
-                        const opts = { infoThreshold: 0.85, warnThreshold: 0.92, autoCanonizar: true };
-                        const okO = connect("cmbOrigem", "cmbDestino", opts);
-                        const okD = connect("cmbDestino", "cmbOrigem", opts);
-                        return okO && okD;
-                    }
-                    if (!tryWire()) {
-                        document.addEventListener("DOMContentLoaded", tryWire, { once: true });
-                        window.addEventListener("load", () => setTimeout(tryWire, 0), { once: true });
-                    }
-                } catch (error) {
-                    Alerta.TratamentoErroComLinha("Upsert.cshtml", "boot", error);
-                }
-            })();
-
-    // Fallback opcional se Alerta não estiver carregado
-    window.Alerta = window.Alerta || {
-        Info: (t, x) => alert(`${t}\n\n${x}`),
-        Warning: (t, x) => alert(`${t}\n\n${x}`)
-    };
-
-    // ====== Modal de Zoom: carrega a imagem ampliada ======
-    document.addEventListener('DOMContentLoaded', function () {
-        try {
-            var mz = document.getElementById('modalZoom');
-            if (mz) {
-                mz.addEventListener('show.bs.modal', function () {
-                    var src = document.getElementById('imgViewer')?.getAttribute('src') || '';
-                    var target = document.getElementById('imgZoomed');
-                    if (target) target.setAttribute('src', src);
-                });
-            }
-        } catch (error) {
-            Alerta.TratamentoErroComLinha("Upsert.cshtml", "modalZoom.DCL", error);
-        }
-    });
-</script>
-
-<style>
-    /* Header usa padrão global .ftx-card-header do frotix.css */
-
-    /* ======== SEÇÕES TEMÁTICAS ======== */
-    .ftx-section {
-        background: linear-gradient(135deg, #fafbfc 0%, #f5f6f7 100%);
-        border-radius: 10px;
-        padding: 1.25rem 1.5rem;
-        margin-bottom: 1.25rem;
-        border: 1px solid rgba(0, 0, 0, 0.06);
-        border-left: 4px solid #6c757d;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    }
-
-    .ftx-section-title {
-        font-size: 0.8rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .ftx-section-title i {
-        font-size: 1.1rem;
-        opacity: 0.85;
-    }
-
-    /* Cores das seções */
-    .ftx-section-periodo {
-        border-left-color: #325d88;
-    }
-
-    .ftx-section-periodo .ftx-section-title {
-        color: #325d88;
-    }
-
-    .ftx-section-trajeto {
-        border-left-color: #2e7d32;
-    }
-
-    .ftx-section-trajeto .ftx-section-title {
-        color: #2e7d32;
-    }
-
-    .ftx-section-evento {
-        border-left-color: #7b1fa2;
-    }
-
-    .ftx-section-evento .ftx-section-title {
-        color: #7b1fa2;
-    }
-
-    .ftx-section-veiculo {
-        border-left-color: #ef6c00;
-    }
-
-    .ftx-section-veiculo .ftx-section-title {
-        color: #ef6c00;
-    }
-
-    .ftx-section-combustivel {
-        border-left-color: #c62828;
-    }
-
-    .ftx-section-combustivel .ftx-section-title {
-        color: #c62828;
-    }
-
-    .ftx-section-solicitante {
-        border-left-color: #00695c;
-    }
-
-    .ftx-section-solicitante .ftx-section-title {
-        color: #00695c;
-    }
-
-    .ftx-section-descricao {
-        border-left-color: #37474f;
-    }
-
-    .ftx-section-descricao .ftx-section-title {
-        color: #37474f;
-    }
-
-    /* ======== Labels e Inputs melhorados ======== */
-    .ftx-label {
-        font-weight: 600;
-        font-size: 0.8rem;
-        color: #495057;
-        margin-bottom: 0.35rem;
-        display: block;
-    }
-
-    .ftx-label .text-danger {
-        font-size: 0.9em;
-    }
-
-    /* Inputs maiores */
-    .ftx-section .form-control,
-    .ftx-section .e-input-group,
-    .ftx-section .e-control-wrapper,
-    .ftx-section .e-ddl,
-    .ftx-section .e-ddt {
-        height: 38px !important;
-        min-height: 38px !important;
-        font-size: 0.9rem !important;
-        border: 1px solid #ced4da !important;
-        border-radius: 0.25rem !important;
-    }
-
-    .ftx-section .form-control:focus {
-        border-color: #325d88;
-        box-shadow: 0 0 0 0.2rem rgba(50, 93, 136, 0.15);
-    }
-
-    /* Valor calculado em destaque - cor sólida intermediária */
-    .ftx-calculated {
-        background-color: #c9e0f5 !important;
-        border: 1px solid #90caf9;
-        font-weight: 600;
-        color: #1565c0;
-    }
-
-    /* Form group com espaçamento adequado */
-    .ftx-section .form-group {
-        margin-bottom: 0.75rem;
-    }
-
-    .ftx-section .row {
-        margin-bottom: 0.5rem;
-    }
-
-    /* ======== Inputs e Layout (legado - manter compatibilidade) ======== */
-    .form-control-xs {
-        height: 38px !important;
-        padding: .375rem .5rem !important;
-        font-size: .875rem !important;
-        line-height: 1.5;
-        border-radius: .25rem;
-    }
-
-    .label {
-        font-weight: 600;
-        font-size: 0.8rem;
-        color: #495057;
-        margin-bottom: 0.35rem;
-        margin-top: 0;
-    }
-
-    .label i {
-        display: none;
-        /* Esconde ícones individuais das labels */
-    }
-
-    input[type=checkbox] {
-        vertical-align: middle;
-        position: relative;
-        bottom: 1px;
-    }
-
-    .esconde-diveventos {
-        display: none;
-    }
-
-    .bottom-space {
-        margin-bottom: 2rem;
-    }
-
-    .icon-space {
-        margin-right: 10px;
-        display: inline-flex;
-        align-items: center;
-    }
-
-    img[alt="Foto"]:not([src]) {
-        display: none;
-    }
-
-    .modal-divider {
-        height: 1px;
-        border: none;
-        background-color: #dee2e6;
-        margin: 0.5rem 0;
-    }
-
-    /* ======== Botões customizados ======== */
-    .btn-vinho {
-        background-color: #c82333 !important;
-        color: #fff !important;
-        border: 1px solid #bd2130 !important;
-        transition: background-color 0.2s ease;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-decoration: none;
-    }
-
-    .btn-vinho:hover,
-    .btn-vinho:focus,
-    .btn-vinho:active,
-    .btn-vinho:focus-visible {
-        background-color: #a71d2a !important;
-        border-color: #a71d2a !important;
-        color: #fff !important;
-        outline: none !important;
-        box-shadow: none !important;
-    }
-
-    .custom-blue-btn {
-        background-color: #6c87a3 !important;
-        color: #fff !important;
-        border: 1px solid #5c748f !important;
-        transition: background-color 0.2s ease;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .custom-blue-btn:hover,
-    .custom-blue-btn:focus,
-    .custom-blue-btn:active,
-    .custom-blue-btn:focus-visible {
-        background-color: #5c748f !important;
-        color: #fff !important;
-        border-color: #5c748f !important;
-        outline: none !important;
-        box-shadow: none !important;
-    }
-
-    /* Botão primário usado nos modais desta página */
-    .custom-primary-btn {
-        background-color: #0d6efd !important;
-        color: #fff !important;
-        border: 1px solid #0b5ed7 !important;
-        transition: background-color .2s ease;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: .5rem;
-    }
-
-    .custom-primary-btn:hover,
-    .custom-primary-btn:focus {
-        background-color: #0b5ed7 !important;
-        border-color: #0a58ca !important;
-        color: #fff !important;
-    }
-
-    .custom-primary-btn .btn-inner i {
-        font-size: 1rem;
-    }
-
-    /* ======== Syncfusion ComboBox personalizado (motorista) ======== */
-    .cmbMotorista_popup .e-dropdownbase .e-list-item {
-        min-height: 60px;
-        display: flex;
-        align-items: center;
-        padding-left: 10px;
-        transition: background-color 0.3s;
-    }
-
-    .cmbMotorista_popup .e-dropdownbase .e-list-item img {
-        height: 45px;
-        width: 45px;
-        object-fit: cover;
-        border-radius: 50%;
-        margin-right: 10px;
-        transition: transform 0.3s ease;
-    }
-
-    .cmbMotorista_popup .e-dropdownbase .e-list-item:hover {
-        background-color: #f0f8ff;
-    }
-
-    #cmbMotorista_popup .e-dropdownbase .e-list-item:hover img {
-        transform: scale(1.2);
-    }
-
-    .cmbMotorista .e-input-group .e-input,
-    .cmbMotorista .e-control-wrapper .e-input {
-        display: flex;
-        align-items: center;
-    }
-
-    .cmbMotorista .e-input-group .e-input img,
-    .cmbMotorista .e-control-wrapper .e-input img {
-        height: 30px;
-        width: 30px;
-        object-fit: cover;
-        border-radius: 50%;
-        margin-right: 8px;
-    }
-
-    /* Balão laranja bonitão */
-    .e-tooltip-wrap,
-    .e-tooltip-wrap.custom-orange-tooltip,
-    .e-tooltip-wrap.tooltip-laranja {
-        background-color: orange !important;
-        color: #fff !important;
-        border-radius: 8px !important;
-        padding: 8px 12px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-        font-family: 'Segoe UI', sans-serif;
-        font-size: 0.95rem;
-        z-index: 99999 !important;
-    }
-
-    .e-tooltip-wrap .e-tip-content,
-    .e-tooltip-wrap.custom-orange-tooltip .e-tip-content,
-    .e-tooltip-wrap.tooltip-laranja .e-tip-content {
-        color: #fff !important;
-        font-weight: 500;
-        line-height: 1.4;
-        background-color: transparent !important;
-    }
-
-    .e-tooltip-wrap .e-tip-arrow,
-    .e-tooltip-wrap.custom-orange-tooltip .e-tip-arrow,
-    .e-tooltip-wrap.tooltip-laranja .e-tip-arrow {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-        width: auto !important;
-        height: auto !important;
-        min-width: 0 !important;
-        min-height: 0 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-
-    .e-tooltip-wrap .e-arrow-tip-inner,
-    .e-tooltip-wrap.custom-orange-tooltip .e-arrow-tip-inner,
-    .e-tooltip-wrap.tooltip-laranja .e-arrow-tip-inner {
-        background: orange !important;
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }
-
-    .e-tooltip-wrap .e-tip-arrow svg,
-    .e-tooltip-wrap.custom-orange-tooltip .e-tip-arrow svg,
-    .e-tooltip-wrap.tooltip-laranja .e-tip-arrow svg {
-        display: none !important;
-    }
-
-    .e-tooltip-wrap .e-tip-arrow::before,
-    .e-tooltip-wrap .e-tip-arrow::after,
-    .e-tooltip-wrap .e-arrow-tip-inner::before,
-    .e-tooltip-wrap .e-arrow-tip-inner::after {
-        background: none !important;
-        border: none !important;
-        content: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }
-
-    /* ======== ZOOM – botão na imagem ======== */
-    .img-zoom-wrapper {
-        position: relative;
-        display: inline-block;
-        width: fit-content;
-        inline-size: fit-content;
-        width: -moz-fit-content;
-    }
-
-    .zoom-btn {
-        position: absolute;
-        left: 8px;
-        bottom: 8px;
-        width: 44px;
-        height: 44px;
-        border: none;
-        outline: none;
-        cursor: pointer;
-        background: #ff7a00;
-        color: #fff;
-        border-radius: 50%;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease, filter .12s ease;
-        z-index: 2;
-    }
-
-    .zoom-btn:hover {
-        transform: translateY(-1px);
-        background: #ff8f26;
-        box-shadow: 0 0 0 3px rgba(255, 122, 0, .25), 0 8px 18px rgba(0, 0, 0, .3);
-        filter: saturate(1.05);
-    }
-
-    .zoom-btn .fa-duotone {
-        --fa-primary-color: #ffffff;
-        --fa-secondary-color: rgba(255, 255, 255, .75);
-        --fa-secondary-opacity: 1;
-        font-size: 1.15rem;
-        line-height: 1;
-    }
-
-    .modal-zoom {
-        max-width: 960px;
-    }
-
-    #modalZoom .modal-body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: .75rem;
-    }
-
-    #imgZoomed {
-        max-width: 920px;
-        width: 100%;
-        height: auto;
-        max-height: 120vh;
-        object-fit: contain;
-        cursor: zoom-out;
-    }
-
-    .modal-close-floating {
-        position: absolute;
-        top: .5rem;
-        right: .5rem;
-        z-index: 5;
-        filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .35));
-    }
-
-    /* Validação sutil */
-    :root {
-        --ftx-invalid: #dc3545;
-        --ftx-glow: rgba(220, 53, 69, .18);
-        --ftx-glow-focus: rgba(220, 53, 69, .28);
-    }
-
-    input.is-invalid,
-    textarea.is-invalid {
-        border-color: var(--ftx-invalid) !important;
-        box-shadow: 0 0 0 .2rem var(--ftx-glow);
-        color: var(--ftx-invalid) !important;
-    }
-
-    input.is-invalid:focus,
-    textarea.is-invalid:focus {
-        box-shadow: 0 0 0 .28rem var(--ftx-glow-focus);
-    }
-
-    .e-input-group.is-invalid,
-    .e-float-input.is-invalid,
-    .e-control-wrapper.is-invalid {
-        box-shadow: 0 0 0 .2rem var(--ftx-glow);
-        border-radius: .25rem;
-    }
-
-    .e-input-group.is-invalid:focus-within,
-    .e-float-input.is-invalid:focus-within,
-    .e-control-wrapper.is-invalid:focus-within {
-        box-shadow: 0 0 0 .28rem var(--ftx-glow-focus);
-    }
-
-    .e-input-group.is-invalid .e-input,
-    .e-float-input.is-invalid input,
-    .e-control-wrapper.is-invalid input {
-        border-color: var(--ftx-invalid) !important;
-        color: var(--ftx-invalid) !important;
-    }
-
-    .e-float-input.is-invalid label.e-float-text,
-    .e-float-input.is-invalid .e-float-line {
-        color: var(--ftx-invalid) !important;
-        border-color: var(--ftx-invalid) !important;
-    }
-
-    #imgViewerItem {
-        display: block;
-        border-radius: 4px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    /* ===== BADGES DE OCORRÊNCIA ===== */
-    .ftx-ocorrencia-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 70px;
-        padding: 0.25rem 0.6rem;
-        border-radius: 50px;
-        color: #fff !important;
-        font-size: 0.7rem;
-        font-weight: 600;
-        letter-spacing: 0.3px;
-        text-transform: uppercase;
-    }
-
-    .ftx-ocorrencia-badge-aberta {
-        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-        box-shadow: 0 2px 6px rgba(39, 174, 96, 0.35);
-    }
-
-    .ftx-ocorrencia-badge-baixada {
-        background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
-        box-shadow: 0 2px 6px rgba(127, 140, 141, 0.35);
-    }
-
-    .ftx-ocorrencia-badge-pendente {
-        background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
-        box-shadow: 0 2px 6px rgba(255, 165, 0, 0.35);
-    }
-
-    .ftx-ocorrencia-badge-manutencao {
-        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-        box-shadow: 0 2px 6px rgba(52, 152, 219, 0.35);
-    }
-</style>
 
 <!-- FORM PRINCIPAL (MVC) -->
 <form method="post" asp-action="Upsert" onkeypress="stopEnterSubmitting(event)" enctype="multipart/form-data">
@@ -1434,8 +187,8 @@
                                             </label>
                                             <span class="text-danger font-weight-light"
                                                 asp-validation-for="ViagemObj.Viagem.DataInicial"></span>
-                                            <input id="txtDataInicial" class="form-control"
-                                                asp-for="ViagemObj.Viagem.DataInicial" type="date" />
+                                            <input id="txtDataInicial" name="ViagemObj.Viagem.DataInicial" 
+                                                style="width: 100%; height: 38px;" />
                                         </div>
                                         <div class="col-6 col-md-2">
                                             <label class="ftx-label ftx-required" asp-for="ViagemObj.Viagem.HoraInicio">
@@ -1443,8 +196,8 @@
                                             </label>
                                             <span class="text-danger font-weight-light"
                                                 asp-validation-for="ViagemObj.Viagem.HoraInicio"></span>
-                                            <input id="txtHoraInicial" class="form-control"
-                                                asp-for="ViagemObj.Viagem.HoraInicio" type="time" />
+                                            <input id="txtHoraInicial" name="ViagemObj.Viagem.HoraInicio" 
+                                                style="width: 100%; height: 38px;" />
                                         </div>
                                         <div class="col-6 col-md-2">
                                             <label class="ftx-label" asp-for="ViagemObj.Viagem.DataFinal">
@@ -1452,8 +205,9 @@
                                             </label>
                                             <span class="text-danger font-weight-light"
                                                 asp-validation-for="ViagemObj.Viagem.DataFinal"></span>
-                                            <input id="txtDataFinal" class="form-control"
-                                                asp-for="ViagemObj.Viagem.DataFinal" type="date" />
+                                            <input id="txtDataFinal" name="ViagemObj.Viagem.DataFinal" 
+                                                placeholder="dd/MM/yyyy"
+                                                style="width: 100%; height: 38px;" />
                                         </div>
                                         <div class="col-6 col-md-2">
                                             <label class="ftx-label" asp-for="ViagemObj.Viagem.HoraFim">
@@ -1461,8 +215,9 @@
                                             </label>
                                             <span class="text-danger font-weight-light"
                                                 asp-validation-for="ViagemObj.Viagem.HoraFim"></span>
-                                            <input id="txtHoraFinal" class="form-control"
-                                                asp-for="ViagemObj.Viagem.HoraFim" type="time" />
+                                            <input id="txtHoraFinal" name="ViagemObj.Viagem.HoraFim" 
+                                                placeholder="HH:mm"
+                                                style="width: 100%; height: 38px;" />
                                         </div>
                                         <div class="col-6 col-md-2">
                                             <label class="ftx-label">Duração</label>
@@ -1528,15 +283,9 @@
                                             <label class="ftx-label">Nome do Evento</label>
                                             <div class="d-flex align-items-end gap-2">
                                                 <div class="flex-grow-1">
-                                                    <ejs-dropdowntree id="ddtEventos"
-                                                        placeholder="Selecione um Evento..." showCheckBox="false"
-                                                        allowMultiSelection="false" allowFiltering="true"
-                                                        filterType="Contains" filterBarPlaceholder="Procurar..."
-                                                        ejs-for="@Model.ViagemObj.Viagem.EventoId" popupHeight="200px"
-                                                        sortOrder="Ascending">
-                                                        <e-dropdowntree-fields dataSource="@ViewData["dataEvento"]"
-                                                            value="EventoId" text="Nome"></e-dropdowntree-fields>
-                                                    </ejs-dropdowntree>
+                                                    <input id="ddlEvento"
+                                                        name="ViagemObj.Viagem.EventoId"
+                                                        style="width: 100%;" />
                                                 </div>
                                                 <a class="btn btn-sm fundo-chocolate text-white" id="btnEvento"
                                                     style="height: 38px; display: flex; align-items: center;"
@@ -1545,6 +294,18 @@
                                                     <i class="fa-duotone fa-calendar-plus"></i>
                                                 </a>
                                             </div>
+                                        </div>
+                                        <div class="col-12 col-md-2">
+                                            <label class="ftx-label">Data Início</label>
+                                            <input id="txtEventoDataInicio" class="form-control ftx-calculated" readonly />
+                                        </div>
+                                        <div class="col-12 col-md-2">
+                                            <label class="ftx-label">Data Fim</label>
+                                            <input id="txtEventoDataFim" class="form-control ftx-calculated" readonly />
+                                        </div>
+                                        <div class="col-12 col-md-2">
+                                            <label class="ftx-label">Qtd Participantes</label>
+                                            <input id="txtEventoQtdParticipantes" class="form-control ftx-calculated" readonly />
                                         </div>
                                     </div>
                                 </div>
@@ -1560,13 +321,7 @@
                                     <div class="row g-3 mb-3">
                                         <div class="col-12 col-md-5">
                                             <label class="ftx-label ftx-required">Motorista</label>
-                                            <ejs-combobox id="cmbMotorista" placeholder="Selecione um Motorista"
-                                                ejs-for="@Model.ViagemObj.Viagem.MotoristaId" allowFiltering="true"
-                                                filterType="Contains" popupHeight="200px" width="100%"
-                                                showClearButton="true" dataSource="@ViewData["dataMotorista"]"
-                                                created="onCmbMotoristaCreated" change="MotoristaValueChange">
-                                                <e-combobox-fields text="Nome" value="MotoristaId"></e-combobox-fields>
-                                            </ejs-combobox>
+                                            <input id="cmbMotorista" name="ViagemObj.Viagem.MotoristaId" style="width: 100%;" />
                                         </div>
                                         <div class="col-12 col-md-5">
                                             <label class="ftx-label ftx-required">Veículo</label>
@@ -1612,14 +367,14 @@
                                             <span class="text-danger font-weight-light"
                                                 asp-validation-for="ViagemObj.Viagem.KmInicial"></span>
                                             <input id="txtKmInicial" class="form-control"
-                                                asp-for="ViagemObj.Viagem.KmInicial" type="number" />
+                                                asp-for="ViagemObj.Viagem.KmInicial" type="number" min="0" max="1000000" />
                                         </div>
                                         <div class="col-4 col-md-2">
                                             <label class="ftx-label" asp-for="ViagemObj.Viagem.KmFinal">Km Final</label>
                                             <span class="text-danger font-weight-light"
                                                 asp-validation-for="ViagemObj.Viagem.KmFinal"></span>
                                             <input id="txtKmFinal" class="form-control"
-                                                asp-for="ViagemObj.Viagem.KmFinal" type="number" />
+                                                asp-for="ViagemObj.Viagem.KmFinal" type="number" min="0" max="1000000" />
                                         </div>
                                         <div class="col-4 col-md-2">
                                             <label class="ftx-label">Km Percorrido</label>
@@ -1668,32 +423,32 @@
                                     <div class="row g-3">
                                         <div class="col-6 col-md-3">
                                             <div class="form-check form-switch">
-                                                <input type="hidden" id="hidStatusDocumento"
-                                                    name="ViagemObj.Viagem.StatusDocumento"
-                                                    value="@(Model.ViagemObj?.Viagem?.StatusDocumento == "Entregue" ? "Entregue" : "")" />
+                                                <input type="hidden" id="hidDocumentoEntregue"
+                                                    name="ViagemObj.Viagem.DocumentoEntregue"
+                                                    value="@(Model.ViagemObj?.Viagem?.DocumentoEntregue == true ? "true" : "false")" />
                                                 <input class="form-check-input" type="checkbox" id="chkStatusDocumento"
-                                                    @(Model.ViagemObj?.Viagem?.StatusDocumento == "Entregue" ? "checked" : "") @(viagemFinalizada ? "disabled" : "")
-                                                    onchange="document.getElementById('hidStatusDocumento').value = this.checked ? 'Entregue' : '';">
+                                                    @(Model.ViagemObj?.Viagem?.DocumentoEntregue == true ? "checked" : "") @(viagemFinalizada ? "disabled" : "")
+                                                    onchange="document.getElementById('hidDocumentoEntregue').value = this.checked ? 'true' : 'false';">
                                                 <label class="form-check-label fw-semibold" for="chkStatusDocumento">
                                                     <i class="fa-duotone fa-file-check me-1 text-success"></i>
-                                                    Documento
+                                                    Documento Entregue
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="col-6 col-md-3">
                                             <div class="form-check form-switch">
-                                                <input type="hidden" id="hidStatusCartaoAbastecimento"
-                                                    name="ViagemObj.Viagem.StatusCartaoAbastecimento"
-                                                    value="@(Model.ViagemObj?.Viagem?.StatusCartaoAbastecimento == "Entregue" ? "Entregue" : "")" />
+                                                <input type="hidden" id="hidCartaoAbastecimentoEntregue"
+                                                    name="ViagemObj.Viagem.CartaoAbastecimentoEntregue"
+                                                    value="@(Model.ViagemObj?.Viagem?.CartaoAbastecimentoEntregue == true ? "true" : "false")" />
                                                 <input class="form-check-input" type="checkbox"
                                                     id="chkStatusCartaoAbastecimento"
-                                                    @(Model.ViagemObj?.Viagem?.StatusCartaoAbastecimento == "Entregue" ?
+                                                    @(Model.ViagemObj?.Viagem?.CartaoAbastecimentoEntregue == true ?
                                                                                                         "checked" : "") @(viagemFinalizada ? "disabled" : "")
-                                                    onchange="document.getElementById('hidStatusCartaoAbastecimento').value = this.checked ? 'Entregue' : '';">
+                                                    onchange="document.getElementById('hidCartaoAbastecimentoEntregue').value = this.checked ? 'true' : 'false';">
                                                 <label class="form-check-label fw-semibold"
                                                     for="chkStatusCartaoAbastecimento">
                                                     <i class="fa-duotone fa-credit-card me-1 text-success"></i>
-                                                    Cartão Abastecimento
+                                                    Cartão Abastecimento Entregue
                                                 </label>
                                             </div>
                                         </div>
@@ -1910,35 +665,35 @@
                                     <div class="row g-3">
                                         <div class="col-6 col-md-3">
                                             <div class="form-check form-switch">
-                                                <input type="hidden" id="hidStatusDocumentoFinal"
-                                                    name="ViagemObj.Viagem.StatusDocumentoFinal"
-                                                    value="@(Model.ViagemObj?.Viagem?.StatusDocumentoFinal == "Devolvido" ? "Devolvido" : "")" />
+                                                <input type="hidden" id="hidDocumentoDevolvido"
+                                                    name="ViagemObj.Viagem.DocumentoDevolvido"
+                                                    value="@(Model.ViagemObj?.Viagem?.DocumentoDevolvido == true ? "true" : "false")" />
                                                 <input class="form-check-input" type="checkbox"
                                                     id="chkStatusDocumentoFinal"
-                                                    @(Model.ViagemObj?.Viagem?.StatusDocumentoFinal == "Devolvido" ?
+                                                    @(Model.ViagemObj?.Viagem?.DocumentoDevolvido == true ?
                                                                                                         "checked" : "") @(viagemFinalizada ? "disabled" : "")
-                                                    onchange="document.getElementById('hidStatusDocumentoFinal').value = this.checked ? 'Devolvido' : '';">
+                                                    onchange="document.getElementById('hidDocumentoDevolvido').value = this.checked ? 'true' : 'false';">
                                                 <label class="form-check-label fw-semibold"
                                                     for="chkStatusDocumentoFinal">
                                                     <i class="fa-duotone fa-file-check me-1 text-info"></i>
-                                                    Documento
+                                                    Documento Devolvido
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="col-6 col-md-3">
                                             <div class="form-check form-switch">
-                                                <input type="hidden" id="hidStatusCartaoAbastecimentoFinal"
-                                                    name="ViagemObj.Viagem.StatusCartaoAbastecimentoFinal"
-                                                    value="@(Model.ViagemObj?.Viagem?.StatusCartaoAbastecimentoFinal == "Devolvido" ? "Devolvido" : "")" />
+                                                <input type="hidden" id="hidCartaoAbastecimentoDevolvido"
+                                                    name="ViagemObj.Viagem.CartaoAbastecimentoDevolvido"
+                                                    value="@(Model.ViagemObj?.Viagem?.CartaoAbastecimentoDevolvido == true ? "true" : "false")" />
                                                 <input class="form-check-input" type="checkbox"
                                                     id="chkStatusCartaoAbastecimentoFinal"
-                                                    @(Model.ViagemObj?.Viagem?.StatusCartaoAbastecimentoFinal ==
-                                                                                                        "Devolvido" ? "checked" : "") @(viagemFinalizada ? "disabled" : "")
-                                                    onchange="document.getElementById('hidStatusCartaoAbastecimentoFinal').value = this.checked ? 'Devolvido' : '';">
+                                                    @(Model.ViagemObj?.Viagem?.CartaoAbastecimentoDevolvido ==
+                                                                                                        true ? "checked" : "") @(viagemFinalizada ? "disabled" : "")
+                                                    onchange="document.getElementById('hidCartaoAbastecimentoDevolvido').value = this.checked ? 'true' : 'false';">
                                                 <label class="form-check-label fw-semibold"
                                                     for="chkStatusCartaoAbastecimentoFinal">
                                                     <i class="fa-duotone fa-credit-card me-1 text-info"></i>
-                                                    Cartão Abastecimento
+                                                    Cartão Abastecimento Devolvido
                                                 </label>
                                             </div>
                                         </div>
@@ -2280,13 +1035,13 @@
                         <div class="col-4">
                             <div class="form-group">
                                 <label class="label font-weight-bold">Data Inicial</label>
-                                <input id="txtDataInicialEvento" class="form-control form-control-xs" type="date" />
+                                <input id="txtDataInicialEvento" class="form-control form-control-xs" placeholder="dd/MM/yyyy" />
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="form-group">
                                 <label class="label font-weight-bold">Data Final</label>
-                                <input id="txtDataFinalEvento" class="form-control form-control-xs" type="date" />
+                                <input id="txtDataFinalEvento" class="form-control form-control-xs" placeholder="dd/MM/yyyy" />
                             </div>
                         </div>
                         <div class="col-4">
@@ -2787,249 +1542,13 @@
     </div>
 </div>
 
-<style>
-    /* ===== SEÇÃO DOCUMENTOS ===== */
-    .ftx-section-documentos {
-        border-left: 4px solid #198754;
-        background: linear-gradient(135deg, #f0fff4 0%, #e6ffed 100%);
-    }
-
-    .ftx-section-documentos .form-check-input:checked {
-        background-color: #198754;
-        border-color: #198754;
-    }
-
-    /* ===== SEÇÃO DOCUMENTOS DEVOLVIDOS ===== */
-    .ftx-section-devolvidos {
-        border-left: 4px solid #0dcaf0;
-        background: linear-gradient(135deg, #f0faff 0%, #e6f7ff 100%);
-    }
-
-    .ftx-section-devolvidos .ftx-section-title {
-        color: #0aa2c0;
-    }
-
-    .ftx-section-devolvidos .form-check-input:checked {
-        background-color: #0dcaf0;
-        border-color: #0dcaf0;
-    }
-
-    /* ===== SEÇÃO OCORRÊNCIAS ===== */
-    .ftx-section-ocorrencias {
-        border-left: 4px solid #fd7e14;
-        background: linear-gradient(135deg, #fff8f0 0%, #fff3e6 100%);
-        transition: opacity 0.3s, filter 0.3s;
-    }
-
-    /* Estado desabilitado da seção de ocorrências */
-    .ftx-section-ocorrencias.ftx-section-disabled {
-        opacity: 0.6;
-        pointer-events: none;
-        filter: grayscale(30%);
-    }
-
-    .ftx-section-ocorrencias.ftx-section-disabled .ftx-section-title {
-        color: #6c757d;
-    }
-
-    .ftx-section-ocorrencias.ftx-section-disabled .ocorrencias-lista {
-        background: #f8f9fa;
-    }
-
-    /* Permitir interação com o aviso mesmo desabilitado */
-    .ftx-section-ocorrencias.ftx-section-disabled .alert {
-        pointer-events: auto;
-        opacity: 1;
-    }
-
-    .ocorrencias-lista {
-        background: #fff;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        min-height: 100px;
-        max-height: 300px;
-        overflow-y: auto;
-    }
-
-    .ocorrencia-item {
-        display: flex;
-        align-items: center;
-        padding: 0.75rem 1rem;
-        border-bottom: 1px solid #eee;
-        transition: background-color 0.2s;
-    }
-
-    .ocorrencia-item:last-child {
-        border-bottom: none;
-    }
-
-    .ocorrencia-item:hover {
-        background-color: #f8f9fa;
-    }
-
-    .ocorrencia-info {
-        flex: 1;
-    }
-
-    .ocorrencia-resumo {
-        font-weight: 600;
-        color: #333;
-    }
-
-    .ocorrencia-descricao {
-        font-size: 0.85rem;
-        color: #666;
-        margin-top: 2px;
-    }
-
-    .ocorrencia-acoes {
-        display: flex;
-        gap: 0.5rem;
-    }
-
-    .ocorrencia-acoes .btn {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.8rem;
-    }
-
-    .badge-ocorrencias {
-        font-size: 0.85rem;
-    }
-
-    /* Modal header terracota */
-    .modal-header-terracota {
-        background: linear-gradient(135deg, #fd7e14 0%, #e55e00 100%);
-        color: #fff;
-    }
-
-    /* ===== SEÇÃO MOBILE ===== */
-    .ftx-section-mobile {
-        border-left: 4px solid #9c27b0;
-        background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
-    }
-
-    .rubrica-container {
-        background: #f8f9fa;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        padding: 1rem;
-        height: 180px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-    }
-
-    .rubrica-vazia {
-        text-align: center;
-    }
-
-    .rubrica-imagem {
-        max-width: 100%;
-        max-height: 160px;
-        object-fit: contain;
-        border-radius: 4px;
-    }
-
-    /* Badges de status das ocorrências */
-    .ftx-status-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 70px;
-        padding: 0.25rem 0.6rem;
-        border-radius: 50px;
-        color: #fff !important;
-        font-size: 0.7rem;
-        font-weight: 600;
-        letter-spacing: 0.3px;
-        text-transform: uppercase;
-    }
-
-    .ftx-status-aberta {
-        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-        box-shadow: 0 2px 6px rgba(39, 174, 96, 0.35);
-    }
-
-    .ftx-status-baixada {
-        background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
-        box-shadow: 0 2px 6px rgba(127, 140, 141, 0.35);
-    }
-
-    .ftx-status-pendente {
-        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-        box-shadow: 0 2px 6px rgba(243, 156, 18, 0.35);
-    }
-
-    /* Botões de ação da tabela de ocorrências */
-    .btn-ver-ocorrencia {
-        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        padding: 0.25rem 0.5rem;
-        font-size: 0.8rem;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .btn-ver-ocorrencia:hover {
-        background: linear-gradient(135deg, #2980b9 0%, #1f6391 100%);
-        transform: scale(1.05);
-    }
-
-    .btn-ver-ocorrencia:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
-    /* Ajuste do texto truncado nas colunas */
-    #tblOcorrenciasViagem td {
-        vertical-align: middle;
-        max-width: 200px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    #tblOcorrenciasViagem td:hover {
-        white-space: normal;
-        word-wrap: break-word;
-    }
-
-    /* Cards de documentos/itens */
-    #secaoMobile .card-header {
-        font-size: 0.9rem;
-    }
-
-    #secaoMobile .form-check-label {
-        font-size: 0.85rem;
-    }
-</style>
 
 @section ScriptsBlock {
-
-    <script>
-        /**
-         * ═══════════════════════════════════════════════════════════════════════════
-         * VARIÁVEIS GLOBAIS DE VIAGEM
-         * ═══════════════════════════════════════════════════════════════════════════
-         * @@description Parâmetros passados do servidor para uso em JavaScript
-        */
-
-        /** @@type { string } ViagemId - ID da viagem atual(GUID) */
-        const ViagemId = "@(Model.ViagemObj.Viagem?.ViagemId.ToString() ?? "")";
-        window.viagemId = ViagemId;
-
-        /** @@type { string } Status da viagem para controle de desabilitação */
-        window.viagemStatus = "@(Model.ViagemObj?.Viagem?.Status ?? "")";
-        /** @@type { boolean } Indica se viagem está finalizada(Realizada / Cancelada) */
-        window.viagemFinalizada = @Json.Serialize(Model.ViagemObj?.Viagem?.Status == "Realizada" || Model.ViagemObj?.Viagem?.Status == "Cancelada");
-
-    </script>
-
     <!-- Kendo Editor Helper -->
     <script src="~/js/viagens/kendo-editor-upsert.js" asp-append-version="true"></script>
+
+    <!-- Kendo DateTime Helper -->
+    <script src="~/js/agendamento/utils/kendo-datetime.js" asp-append-version="true"></script>
 
     <!-- Validação IA - Validador Evolutivo de Finalização -->
     <script src="~/js/validacao/ValidadorFinalizacaoIA.js" asp-append-version="true"></script>
@@ -3037,172 +1556,51 @@
     <script src="~/js/cadastros/ViagemUpsert.js" asp-append-version="true"></script>
 
     <script>
-        /**
-         * ═══════════════════════════════════════════════════════════════════════════
-         * DETECÇÃO DE MUDANÇAS E CONFIRMAÇÃO AO SAIR
-         * ═══════════════════════════════════════════════════════════════════════════
-         * @@description Sistema de rastreamento de alterações no formulário.
-         * Solicita confirmação antes de sair se houver dados não salvos.
-         */
-        $(document).ready(function () {
-            try {
-                /** @@type { string } Estado serializado inicial do formulário */
-                var estadoInicial = $('form').serialize();
-                /** @@type { boolean } Flag de formulário alterado */
-                var formularioAlterado = false;
-
-                /**
-                 * Handler: Detecta mudanças no formulário
-                 * @@description Compara estado atual com inicial para detectar alterações
-                */
-                $('form').on('change input', 'input, select, textarea', function () {
-                    try {
-                        formularioAlterado = ($('form').serialize() !== estadoInicial);
-                    } catch (error) {
-                        Alerta.TratamentoErroComLinha("Viagem_Upsert.cshtml", "form.change", error);
-                    }
-                });
-
-                /**
-                 * Verifica alterações e redireciona com confirmação
-                 * @@description Se há alterações não salvas, exibe dialog de confirmação
-                */
-                function verificarEVoltar() {
-                    try {
-                        if (formularioAlterado) {
-                            Alerta.Confirmar(
-                                "Descartar Alterações?",
-                                "Você fez alterações no formulário que ainda não foram salvas. Deseja realmente descartar essas mudanças?",
-                                "Sim, descartar",
-                                "Cancelar"
-                            ).then(function (confirmado) {
-                                try {
-                                    if (confirmado) {
-                                        window.location.href = '/Viagens';
-                                    }
-                                } catch (error) {
-                                    Alerta.TratamentoErroComLinha("Viagem_Upsert.cshtml", "verificarEVoltar.confirmar.then", error);
-                                }
-                            });
-                        } else {
-                            window.location.href = '/Viagens';
-                        }
-                    } catch (error) {
-                        Alerta.TratamentoErroComLinha("Viagem_Upsert.cshtml", "verificarEVoltar", error);
-                    }
-                }
-
-                /**
-                 * Handler: Botão Voltar à Lista no header
-                 */
-                $('#btnVoltarLista').on('click', function (e) {
-                    try {
-                        e.preventDefault();
-                        verificarEVoltar();
-                    } catch (error) {
-                        Alerta.TratamentoErroComLinha("Viagem_Upsert.cshtml", "btnVoltarLista.click", error);
-                    }
-                });
-
-                /**
-                 * Handler: Botão Voltar à Lista no rodapé
-                 */
-                $('.btn-voltar-lista').on('click', function (e) {
-                    try {
-                        e.preventDefault();
-                        verificarEVoltar();
-                    } catch (error) {
-                        Alerta.TratamentoErroComLinha("Viagem_Upsert.cshtml", "btn-voltar-lista.click", error);
-                    }
-                });
-
-            } catch (error) {
-                Alerta.TratamentoErroComLinha("Viagem_Upsert.cshtml", "document.ready.voltarLista", error);
-            }
-        });
-    </script>
-
-    <!-- ═══════════════════════════════════════════════════════════
-         Kendo DropDownList: Templates (devem existir ANTES da inicialização)
-         ═══════════════════════════════════════════════════════════ -->
-    <script>
-        /**
-         * Template para itens da lista de combustível (imagem + texto)
-         */
-        function combustivelTemplate(data) {
-            try {
-                return '<span class="d-flex align-items-center">' +
-                    '<img src="' + kendo.htmlEncode(data.imagem) + '" style="height: 22px; margin-right: 8px;" alt="' + kendo.htmlEncode(data.descricao) + '" />' +
-                    '<span>' + kendo.htmlEncode(data.descricao) + '</span></span>';
-            } catch (error) {
-                return '<span>' + (data.descricao || '') + '</span>';
-            }
-        }
-
-        /**
-         * Template para valor selecionado de combustível (imagem + texto)
-         */
-        function combustivelValueTemplate(data) {
-            try {
-                if (data && data.imagem) {
-                    return '<span class="d-flex align-items-center">' +
-                        '<img src="' + kendo.htmlEncode(data.imagem) + '" style="height: 22px; margin-right: 8px;" alt="' + kendo.htmlEncode(data.descricao) + '" />' +
-                        '<span>' + kendo.htmlEncode(data.descricao) + '</span></span>';
-                }
-                return '<span>' + kendo.htmlEncode(data.descricao || '') + '</span>';
-            } catch (error) {
-                return '<span>' + (data.descricao || '') + '</span>';
-            }
-        }
-    </script>
-
-    <!-- Kendo DropDownList: Inicialização via jQuery (roda APÓS kendo.all.min.js carregado) -->
-    <script>
         (function () {
             try {
-                // Dados serializados do servidor
-                var dataFinalidade = @Html.Raw(Json.Serialize(ViewData["dataFinalidade"]));
-                var dataCombustivel = @Html.Raw(Json.Serialize(ViewData["dataCombustivel"]));
-
-                // Finalidade
-                $("#ddlFinalidade").kendoDropDownList({
-                    dataTextField: "descricao",
-                    dataValueField: "finalidadeId",
-                    optionLabel: "Escolha a Finalidade...",
-                    dataSource: dataFinalidade,
-                    height: 200,
-                    value: "@(Model.ViagemObj?.Viagem?.Finalidade ?? "")",
-                    change: function (e) {
-                        try { lstFinalidade_Change(e); } catch (err) { console.error("lstFinalidade_Change:", err); }
+                var context = {
+                    dataFinalidade: @Html.Raw(Json.Serialize(ViewData["dataFinalidade"])),
+                    dataCombustivel: @Html.Raw(Json.Serialize(ViewData["dataCombustivel"])),
+                    dataEvento: @Html.Raw(Json.Serialize(ViewData["dataEvento"])),
+                    dataMotorista: @Html.Raw(Json.Serialize(ViewData["dataMotorista"])),
+                    valores: {
+                        viagemId: "@(Model.ViagemObj?.Viagem?.ViagemId.ToString() ?? "")",
+                        status: "@(Model.ViagemObj?.Viagem?.Status ?? "")",
+                        finalidade: "@(Model.ViagemObj?.Viagem?.Finalidade ?? "")",
+                        eventoId: "@(Model.ViagemObj?.Viagem?.EventoId?.ToString() ?? "")",
+                        motoristaId: "@(Model.ViagemObj?.Viagem?.MotoristaId?.ToString() ?? "")",
+                        combustivelInicial: "@(Model.ViagemObj?.Viagem?.CombustivelInicial ?? "")",
+                        combustivelFinal: "@(Model.ViagemObj?.Viagem?.CombustivelFinal ?? "")"
+                    },
+                    datas: {
+                        dataInicial: @Html.Raw(Model.ViagemObj?.Viagem?.DataInicial != null ?
+                            $"new Date({Model.ViagemObj.Viagem.DataInicial.Value.Year}, {Model.ViagemObj.Viagem.DataInicial.Value.Month - 1}, {Model.ViagemObj.Viagem.DataInicial.Value.Day})" :
+                            "null"),
+                        dataFinal: @Html.Raw(Model.ViagemObj?.Viagem?.DataFinal != null ?
+                            $"new Date({Model.ViagemObj.Viagem.DataFinal.Value.Year}, {Model.ViagemObj.Viagem.DataFinal.Value.Month - 1}, {Model.ViagemObj.Viagem.DataFinal.Value.Day})" :
+                            "null"),
+                        horaInicio: @Html.Raw(Model.ViagemObj?.Viagem?.HoraInicio != null ?
+                            $"new Date(0,0,0,{Model.ViagemObj.Viagem.HoraInicio.Value.Hour},{Model.ViagemObj.Viagem.HoraInicio.Value.Minute})" :
+                            "null"),
+                        horaFim: @Html.Raw(Model.ViagemObj?.Viagem?.HoraFim != null ?
+                            $"new Date(0,0,0,{Model.ViagemObj.Viagem.HoraFim.Value.Hour},{Model.ViagemObj.Viagem.HoraFim.Value.Minute})" :
+                            "null")
                     }
-                });
+                };
 
-                // Combustível Inicial
-                $("#ddlCombustivelInicial").kendoDropDownList({
-                    dataTextField: "descricao",
-                    dataValueField: "nivel",
-                    optionLabel: "Selecione...",
-                    dataSource: dataCombustivel,
-                    height: 200,
-                    value: "@(Model.ViagemObj?.Viagem?.CombustivelInicial ?? "")",
-                    template: combustivelTemplate,
-                    valueTemplate: combustivelValueTemplate
-                });
+                window.viagemId = context.valores.viagemId;
+                window.ViagemId = context.valores.viagemId;
+                window.VIAGEM_ID = context.valores.viagemId;
+                window.viagemStatus = context.valores.status;
+                window.viagemFinalizada = @Json.Serialize(Model.ViagemObj?.Viagem?.Status == "Realizada" || Model.ViagemObj?.Viagem?.Status == "Cancelada");
+                window.viagemUpsertContext = context;
 
-                // Combustível Final
-                $("#ddlCombustivelFinal").kendoDropDownList({
-                    dataTextField: "descricao",
-                    dataValueField: "nivel",
-                    optionLabel: "Selecione...",
-                    dataSource: dataCombustivel,
-                    height: 200,
-                    value: "@(Model.ViagemObj?.Viagem?.CombustivelFinal ?? "")",
-                    template: combustivelTemplate,
-                    valueTemplate: combustivelValueTemplate
-                });
-
+                if (typeof initViagemUpsertPage === "function")
+                {
+                    initViagemUpsertPage(context);
+                }
             } catch (error) {
-                Alerta.TratamentoErroComLinha("Upsert.cshtml", "kendoDropDownList.init", error);
+                Alerta.TratamentoErroComLinha("Upsert.cshtml", "initViagemUpsertContext", error);
             }
         })();
     </script>

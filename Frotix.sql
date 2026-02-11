@@ -7875,8 +7875,10 @@ CREATE TABLE dbo.Viagem (
   ResumoOcorrencia varchar(100) NULL CONSTRAINT DF_Viagem_ResumoOcorrencia DEFAULT (''),
   DescricaoOcorrencia varchar(max) NULL CONSTRAINT DF_Viagem_DescricaoOcorrencia DEFAULT (''),
   StatusOcorrencia varchar(50) NULL CONSTRAINT DF_Viagem_StatusOcorrencia DEFAULT (''),
-  StatusDocumento varchar(50) NULL CONSTRAINT DF_Viagem_StatusDocumento DEFAULT (''),
-  StatusCartaoAbastecimento varchar(50) NULL CONSTRAINT DF_Viagem_StatusCartaoAbastecimento DEFAULT (''),
+  DocumentoEntregue bit NULL DEFAULT (0),
+  DocumentoDevolvido bit NULL DEFAULT (0),
+  CartaoAbastecimentoEntregue bit NULL DEFAULT (0),
+  CartaoAbastecimentoDevolvido bit NULL DEFAULT (0),
   StatusAgendamento bit NULL DEFAULT (0),
   Origem varchar(max) NULL CONSTRAINT DF_Viagem_Origem DEFAULT (''),
   Destino varchar(max) NULL CONSTRAINT DF_Viagem_Destino DEFAULT (''),
@@ -7916,8 +7918,6 @@ CREATE TABLE dbo.Viagem (
   DataCancelamento datetime NULL,
   Rubrica nvarchar(max) NULL CONSTRAINT DF_Viagem_Rubrica DEFAULT (''),
   DanoAvaria varchar(max) NULL CONSTRAINT DF_Viagem_DanoAvaria DEFAULT (''),
-  StatusDocumentoFinal varchar(50) NULL CONSTRAINT DF_Viagem_StatusDocumentoFinal DEFAULT (''),
-  StatusCartaoAbastecimentoFinal varchar(50) NULL CONSTRAINT DF_Viagem_StatusCartaoAbastecimentoFinal DEFAULT (''),
   RubricaFinal nvarchar(max) NULL CONSTRAINT DF_Viagem_RubricaFinal DEFAULT (''),
   DanoAvariaFinal varchar(max) NULL CONSTRAINT DF_Viagem_DanoAvariaFinal DEFAULT (''),
   FotosBase64 varbinary(max) NULL,
@@ -10417,8 +10417,10 @@ AS SELECT
     Viagem.ResumoOcorrencia,
     Viagem.DescricaoOcorrencia,
     Viagem.StatusOcorrencia,
-    Viagem.StatusDocumento,
-    Viagem.StatusCartaoAbastecimento,
+    Viagem.DocumentoEntregue,
+    Viagem.DocumentoDevolvido,
+    Viagem.CartaoAbastecimentoEntregue,
+    Viagem.CartaoAbastecimentoDevolvido,
     Viagem.StatusAgendamento,
     Viagem.NoFichaVistoria,
     Viagem.Finalidade,
@@ -11619,8 +11621,10 @@ SELECT [ViagemId]
       ,[ResumoOcorrencia]
       ,[DescricaoOcorrencia]
       ,[StatusOcorrencia]
-      ,[StatusDocumento]
-      ,[StatusCartaoAbastecimento]
+      ,[DocumentoEntregue]
+      ,[DocumentoDevolvido]
+      ,[CartaoAbastecimentoEntregue]
+      ,[CartaoAbastecimentoDevolvido]
       ,[StatusAgendamento]
       ,[Origem]
       ,[Destino]
@@ -11733,8 +11737,10 @@ SELECT [VeiculoId]
  ,Viagem.ResumoOcorrencia
  ,Viagem.DescricaoOcorrencia
  ,Viagem.StatusOcorrencia
- ,Viagem.StatusDocumento
- ,Viagem.StatusCartaoAbastecimento
+ ,Viagem.DocumentoEntregue
+ ,Viagem.DocumentoDevolvido
+ ,Viagem.CartaoAbastecimentoEntregue
+ ,Viagem.CartaoAbastecimentoDevolvido
  ,Viagem.StatusAgendamento
  ,Viagem.NoFichaVistoria
  ,Viagem.Finalidade

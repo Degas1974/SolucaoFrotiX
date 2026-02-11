@@ -617,6 +617,103 @@ $("#txtDataInicialEvento").kendoDatePicker({
 });
 ```
 
+### ⚠️ CONFIGURAÇÃO CRÍTICA PARA pt-BR (OBRIGATÓRIA)
+
+**IMPORTANTE:** Apenas `culture: "pt-BR"` NÃO é suficiente para ter formatação pt-BR completa!
+
+#### 🔧 Problema Comum
+
+O Kendo DatePicker com `dateInput: true` usa um componente interno chamado **DateInput** que tem seus próprios placeholders e formatações padrão em inglês (`day/month/year`). A configuração `culture: "pt-BR"` global afeta apenas o calendário popup, mas **NÃO afeta** o componente DateInput que gerencia a digitação direta e os placeholders.
+
+#### ❌ Configuração INCORRETA (placeholder em inglês)
+
+```javascript
+$("#txtDataInicial").kendoDatePicker({
+    format: "dd/MM/yyyy",
+    culture: "pt-BR",
+    dateInput: true,  // ❌ Usa configurações padrão em inglês
+    placeholder: "Data Inicial"
+});
+// RESULTADO: Campo vazio mostra "day/month/year" mesmo com culture pt-BR
+```
+
+#### ✅ Configuração CORRETA (completa pt-BR)
+
+```javascript
+$("#txtDataInicial").kendoDatePicker({
+    format: "dd/MM/yyyy",
+    culture: "pt-BR",
+    dateInput: {
+        format: "dd/MM/yyyy",
+        messages: {
+            year: "yyyy",
+            month: "MM",
+            day: "dd"
+        }
+    },
+    placeholder: "dd/MM/yyyy",
+    min: dataMinima,
+    max: dataMaxima,
+    value: dataInicial
+});
+// RESULTADO: Campo vazio mostra "dd/MM/yyyy" (formato brasileiro)
+```
+
+#### 📋 3 Níveis de Configuração Necessários
+
+Para ter controle completo da formatação pt-BR, configure **3 níveis**:
+
+| Nível | Propriedade | Afeta | Obrigatório? |
+|-------|-------------|-------|--------------|
+| 1️⃣ | `culture: "pt-BR"` | Calendário popup e formatação de valores | ✅ SIM |
+| 2️⃣ | `format: "dd/MM/yyyy"` | Formato de exibição do valor | ✅ SIM |
+| 3️⃣ | `dateInput: { format, messages }` | Digitação direta e **placeholders** | ✅ SIM |
+
+#### 🎯 Exemplo Completo FrotiX (Data Inicial/Final)
+
+```javascript
+// Limites de data
+var dataMinima = new Date();
+dataMinima.setDate(dataMinima.getDate() - 15);
+var dataMaxima = new Date();
+
+// DatePicker com configuração completa pt-BR
+$("#txtDataInicial").kendoDatePicker({
+    format: "dd/MM/yyyy",
+    culture: "pt-BR",
+    min: dataMinima,
+    max: dataMaxima,
+    dateInput: {
+        format: "dd/MM/yyyy",
+        messages: {
+            year: "yyyy",
+            month: "MM",
+            day: "dd"
+        }
+    },
+    placeholder: "dd/MM/yyyy",
+    value: null,
+    open: function() {
+        // Armazena valor antes de abrir calendário
+        this._previousValue = this.value();
+    },
+    close: function() {
+        // Se fechou sem selecionar, restaura valor anterior
+        var currentValue = this.value();
+        if (!currentValue || isNaN(currentValue)) {
+            this.value(this._previousValue || null);
+        }
+    }
+});
+```
+
+#### 📊 Resultado Visual
+
+| Configuração | Campo Vazio | Campo Preenchido |
+|-------------|-------------|------------------|
+| ❌ **Sem dateInput explícito** | `day/month/year` | `2026-02-10` (americano) |
+| ✅ **Com dateInput completo** | `dd/MM/yyyy` | `10/02/2026` (brasileiro) |
+
 ### Sintaxe TagHelper (NAO USAR - apenas referencia)
 
 ```html
@@ -758,6 +855,79 @@ Seletor de hora com popup de horarios. Substitui `<input type="time">` HTML5.
     style="width: 100%; height: 38px;">
 </kendo-timepicker>
 ```
+
+### ⚠️ CONFIGURAÇÃO CRÍTICA PARA pt-BR (OBRIGATÓRIA)
+
+**IMPORTANTE:** Assim como o DatePicker, o TimePicker também requer configuração explícita do `dateInput` para placeholders pt-BR!
+
+#### ❌ Configuração INCORRETA (placeholder em inglês)
+
+```javascript
+$("#txtHoraInicial").kendoTimePicker({
+    format: "HH:mm",
+    culture: "pt-BR",
+    dateInput: true,  // ❌ Usa configurações padrão em inglês
+    interval: 15
+});
+// RESULTADO: Campo vazio mostra "hours:minutes" mesmo com culture pt-BR
+```
+
+#### ✅ Configuração CORRETA (completa pt-BR)
+
+```javascript
+$("#txtHoraInicial").kendoTimePicker({
+    format: "HH:mm",
+    culture: "pt-BR",
+    interval: 15,
+    dateInput: {
+        format: "HH:mm",
+        messages: {
+            hour: "HH",
+            minute: "mm"
+        }
+    },
+    placeholder: "HH:mm",
+    value: horaInicial
+});
+// RESULTADO: Campo vazio mostra "HH:mm" (formato brasileiro)
+```
+
+#### 🎯 Exemplo Completo FrotiX (Hora Inicial/Final)
+
+```javascript
+$("#txtHoraInicial").kendoTimePicker({
+    format: "HH:mm",
+    culture: "pt-BR",
+    interval: 15,  // intervalos de 15 minutos
+    dateInput: {
+        format: "HH:mm",
+        messages: {
+            hour: "HH",
+            minute: "mm"
+        }
+    },
+    placeholder: "HH:mm",
+    value: null,
+    open: function() {
+        // Armazena valor antes de abrir popup
+        this._previousValue = this.value();
+    },
+    close: function() {
+        // Se fechou sem selecionar, restaura valor anterior
+        var currentValue = this.value();
+        if (!currentValue || isNaN(currentValue)) {
+            this.value(this._previousValue || null);
+        }
+    }
+});
+```
+
+#### 📊 Resultado Visual
+
+| Configuração | Campo Vazio | Campo Preenchido |
+|-------------|-------------|------------------|
+| ❌ **Sem dateInput explícito** | `hours:minutes` | `14:30` |
+| ✅ **Com dateInput completo** | `HH:mm` | `14:30` |
 
 ### Acesso via JavaScript (HELPER FrotiX)
 

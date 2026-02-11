@@ -171,8 +171,8 @@ $('#modalFinalizaViagem').on('shown.bs.modal', function (event) {
         var CombustivelFinal = data['combustivelFinal'];
         var ResumoOcorrencia = data['resumoOcorrencia'];
         var DescricaoOcorrencia = data['descricaoOcorrencia'];
-        var StatusDocumento = data['statusDocumento'];
-        var StatusCartaoAbastecimento = data['statusCartaoAbastecimento'];
+        var DocumentoEntregue = data['documentoEntregue'];
+        var CartaoAbastecimentoEntregue = data['cartaoAbastecimentoEntregue'];
         var NomeMotorista = data['nomeMotorista'];
         var noFichaVistoria = data['noFichaVistoria'];
         var Descricao = data['descricao'];
@@ -215,8 +215,8 @@ $('#modalFinalizaViagem').on('shown.bs.modal', function (event) {
             descricaoLista.value = Descricao;
 
             $('#txtResumo').val(ResumoOcorrencia).attr('readonly', true);
-            $('#chkStatusDocumento').prop("checked", StatusDocumento).attr('readonly', true);
-            $('#chkStatusCartaoAbastecimento').prop("checked", StatusCartaoAbastecimento).attr('readonly', true);
+            $('#chkStatusDocumento').prop("checked", DocumentoEntregue === true).attr('readonly', true);
+            $('#chkStatusCartaoAbastecimento').prop("checked", CartaoAbastecimentoEntregue === true).attr('readonly', true);
 
             var descricaoOcorrenciaLista = document.getElementById('rteOcorrencias').ej2_instances[0];
             descricaoOcorrenciaLista.value = DescricaoOcorrencia;
@@ -369,8 +369,10 @@ $("#btnFinalizarViagem").click(async function (e) {
             return;
         }
 
-        const statusDocumento = $('#chkStatusDocumento').prop('checked') ? "Entregue" : "Ausente";
-        const statusCartaoAbastecimento = $('#chkStatusCartaoAbastecimento').prop('checked') ? "Entregue" : "Ausente";
+        const documentoEntregue = $('#chkStatusDocumento').prop('checked') === true;
+        const documentoDevolvido = !documentoEntregue;
+        const cartaoAbastecimentoEntregue = $('#chkStatusCartaoAbastecimento').prop('checked') === true;
+        const cartaoAbastecimentoDevolvido = !cartaoAbastecimentoEntregue;
         const descricao = document.getElementById('rteDescricao').ej2_instances[0];
 
         const objViagem = JSON.stringify({
@@ -381,8 +383,10 @@ $("#btnFinalizarViagem").click(async function (e) {
             CombustivelFinal: nivelcombustivel,
             ResumoOcorrencia: $('#txtResumo').val(),
             DescricaoOcorrencia: descricaoOcorrencia.value,
-            StatusDocumento: statusDocumento,
-            StatusCartaoAbastecimento: statusCartaoAbastecimento,
+            DocumentoEntregue: documentoEntregue,
+            DocumentoDevolvido: documentoDevolvido,
+            CartaoAbastecimentoEntregue: cartaoAbastecimentoEntregue,
+            CartaoAbastecimentoDevolvido: cartaoAbastecimentoDevolvido,
             Descricao: descricao.value,
             ImagemOcorrencia: ImagemSelecionada
         });
@@ -772,8 +776,8 @@ function ListaTodasViagens() {
                 { "data": "combustivelFinal" },
                 { "data": "resumoOcorrencia" },
                 { "data": "descricaoOcorrencia" },
-                { "data": "statusDocumento" },
-                { "data": "statusCartaoAbastecimento" },
+                { "data": "documentoEntregue" },
+                { "data": "cartaoAbastecimentoEntregue" },
                 { "data": "descricao" },
                 { "data": "imagemOcorrencia" },
             ],

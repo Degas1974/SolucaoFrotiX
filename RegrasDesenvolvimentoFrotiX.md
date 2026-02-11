@@ -4,8 +4,8 @@
 > **Tipo:** Aplicação Web ASP.NET Core MVC – Gestão de Frotas
 > **Stack:** .NET 10, C#, Entity Framework Core, SQL Server, Bootstrap 5.3, jQuery, Syncfusion EJ2, Telerik UI
 > **Status:** ✅ Arquivo ÚNICO e OFICIAL de regras do projeto
-> **Versão:** 1.5
-> **Última Atualização:** 03/02/2026
+> **Versão:** 1.6
+> **Última Atualização:** 10/02/2026
 
 ---
 
@@ -595,8 +595,7 @@ POST /api/LogErros/Client
    - Refatorações significativas
    - Novos componentes/services/controllers
 
-3. **Após atualizar documentação:**
-   - Arquivos em `Documentacao/`
+3. **Após atualizar regras:**
    - Arquivos de regras (`RegrasDesenvolvimentoFrotiX.md`, `CLAUDE.md`, etc.)
 
 **Processo:**
@@ -629,40 +628,289 @@ git push origin main
 
 **Data de Adição:** 18/01/2026
 
-### 5.2 Documentação (Obrigatória e Detalhada)
-
-📁 **Pastas Alvo:** `Documentacao/` e seus subdiretórios correspondentes a:
-
-- `Controllers/`, `Services/`, `Repository/`
-- `Data/` (Contextos e Configurações de Banco)
-- `Helpers/` (Utilitários e Helpers customizados)
-- `Hubs/` (Comunicação Real-time SignalR)
-- `Middlewares/` (Pipeline de requisição e tratamento de erros)
-- `Models/` (Entidades e DTOs críticos)
-- `Pages/` (Páginas Razor e complementos)
-- `wwwroot/js/` (Scripts globais e lógicas de front-end)
-
-**REGRA DE OURO:** Toda alteração de código exige atualização imediata da documentação ANTES do push para `main`.
-
-**Conteúdo Obrigatório por Arquivo `.md`:**
-
-1. **Explicação em Prosa:** Descrição completa da funcionalidade em estilo de "prosa leve", porém tecnicamente exaustiva. Não apenas listar campos, mas explicar o _porquê_ e o _como_ o módulo interage com o sistema.
-2. **Code Snippets:** Incluir trechos das principais funções/métodos (C#, JS, SQL).
-3. **Detalhamento Técnico:** Cada snippet deve ser acompanhado de uma explicação linha-a-linha ou por blocos lógicos do que está sendo executado.
-4. **Log de Modificações:** Manter sempre o histórico (Versão/Data/Autor/O que mudou).
-
-📌 **Formatos:**
-
-- `.md` (Técnico e exaustivo) - **Prioridade Máxima**
-- `.html` (Visual/Portfólio A4) - Gerado a partir do `.md` quando solicitado.
-
 ### 5.3 Logs de Conversa
 
-📁 **Pasta:** `Conversas/`
+> **⚠️ REGRA CRÍTICA:** TODAS as conversas com IAs (Claude Code, Copilot, Continue, Gemini, Genie) DEVEM ser registradas. O histórico de conversas é FUNDAMENTAL para rastreabilidade, aprendizado e continuidade do projeto.
 
-- Um `.md` por sessão
-- Formato: `AAAA.MM.DD-HH.mm - [Nome].md`
-- Criar no início, atualizar durante, encerrar com resumo
+---
+
+#### 5.3.1 Localização e Formato
+
+📁 **Pasta:** `Conversas/` (na raiz de cada projeto)
+
+- **FrotiX.Site.OLD/Conversas/**
+- **FrotiX.Site.Fevereiro/Conversas/**
+- Cada projeto mantém seu próprio histórico
+
+**Formato Obrigatório do Arquivo:**
+```
+[YYYY.MM.DD]-[HH.mm] - [NOME DA CONVERSA] - [IA - MODELO].md
+```
+
+**Exemplos:**
+```
+[2026.02.10]-[14.30] - Implementação Login - [Claude Code].md
+[2026.02.10]-[15.45] - Refatoração Controllers - [GitHub Copilot - Claude Sonnet 4.5].md
+[2026.02.10]-[16.20] - Correção Bugs Dashboard - [Continue - GPT-4].md
+[2026.02.10]-[17.00] - Documentação API - [Gemini Code Assist].md
+[2026.02.10]-[18.30] - Análise Performance - [Genie AI - GPT-4o].md
+```
+
+**⚠️ IMPORTANTE:** Os colchetes `[]` fazem parte do nome do arquivo para facilitar identificação visual.
+
+---
+
+#### 5.3.2 Como Iniciar Registro por IA
+
+**Método Universal:** Extensão **FrotiX Conversa Manager** (`Ctrl+Alt+C`)
+
+| Atalho | Ação |
+|--------|------|
+| **Ctrl+Alt+C** | Nova Conversa (Quick Pick → cria arquivo → copia notificação para clipboard) |
+| **Ctrl+Alt+S** | Checkpoint (copia prompt de atualização incremental para clipboard) |
+| **Ctrl+Alt+F** | Finalizar (copia prompt de resumo final para clipboard) |
+
+**Fluxo:**
+1. Pressionar `Ctrl+Alt+C` → escolher "Nova Conversa" → digitar nome → selecionar IA
+2. A extensão cria o arquivo `.md` e copia `🔴 REGISTRO ATIVO` para o clipboard
+3. Colar (`Ctrl+V`) no chat da IA → a IA reconhece e passa a atualizar o arquivo
+
+| IA | Alternativas |
+|---|---|
+| **Claude Code** | `/rename [YYYY.MM.DD]-[HH.mm] - [Nome] - [Claude Code]` |
+| **Continue** | `/doq Nome da Conversa` |
+| **Todas** | Snippet markdown (`logconv` + Tab) em arquivos `.md` |
+- IA cria arquivo automaticamente
+
+**Snippet Markdown (Backup):**
+- Abrir qualquer arquivo `.md`
+- Digitar `logconv` + `Tab`
+- VS Code expande template
+- Preencher placeholders
+- Copiar e colar no chat
+
+---
+
+#### 5.3.3 Estrutura Obrigatória do Arquivo
+
+Todo arquivo de conversa DEVE conter as seguintes seções. O template abaixo usa **tabelas visuais
+com ícones** para facilitar a leitura e identificação rápida das informações.
+
+**IMPORTANTE:** Ao finalizar uma conversa (Ctrl+Shift+F ou manualmente), a IA DEVE gerar o resumo
+final completo seguindo EXATAMENTE este template visual. Todas as seções são obrigatórias.
+
+```markdown
+# [NOME DA CONVERSA]
+
+## Resumo Executivo
+
+[Descrição concisa do que foi feito na sessão - 2-3 parágrafos máximo]
+
+---
+
+## ⏱️ Informações da Sessão
+
+| ⏱️ Tempo | 📋 Detalhes |
+|----------|-------------|
+| **Início** | YYYY-MM-DD HH:mm:ss |
+| **Término** | YYYY-MM-DD HH:mm:ss |
+| **Duração** | Xh XXmin |
+| **IA** | [Nome da IA - Modelo] |
+| **Continuação de** | [Nome da conversa anterior] ou "Conversa nova" |
+
+---
+
+## 📁 Arquivos Alterados
+
+| Ação | Arquivo | Motivo |
+|------|---------|--------|
+| ➕ Criado | `caminho/NomeArquivo.ext` | Por que foi criado |
+| ✏️ Modificado | `caminho/OutroArquivo.ext` | O que foi alterado e por quê |
+| 🗑️ Removido | `caminho/ArquivoAntigo.ext` | Por que foi removido |
+
+**Legenda:** ➕ Criado | ✏️ Modificado | 🗑️ Removido
+
+---
+
+## 🐛 Problemas Encontrados e Soluções
+
+| # | Problema | Causa Raiz | Solução | Lição Aprendida |
+|---|---------|------------|---------|-----------------|
+| 1 | [Título do problema] | [Por que aconteceu] | [Como foi resolvido] | [O que aprender] |
+| 2 | [Título do problema] | [Por que aconteceu] | [Como foi resolvido] | [O que aprender] |
+
+> Se nenhum problema foi encontrado, escrever: "Nenhum problema encontrado nesta sessão."
+
+---
+
+## 🔧 Decisões Técnicas
+
+### 1. [Nome da Decisão]
+| Aspecto | Detalhe |
+|---------|---------|
+| **Decisão** | O que foi decidido |
+| **Justificativa** | Por que esta foi a melhor escolha |
+| **Alternativas** | Outras opções descartadas e por quê |
+| **Impacto** | Consequências desta decisão |
+
+> Repetir tabela para cada decisão técnica tomada.
+
+---
+
+## 📋 Tarefas Pendentes
+
+- [ ] Tarefa pendente 1
+- [ ] Tarefa pendente 2
+- [x] Tarefa concluída 1
+- [x] Tarefa concluída 2
+
+---
+
+## 🔄 Continuidade
+
+| Item | Detalhe |
+|------|---------|
+| **Próximos Passos** | O que deve ser feito na próxima sessão |
+| **Contexto Necessário** | Informações importantes para continuar o trabalho |
+| **Arquivos-Chave** | Arquivos que a próxima sessão deve consultar |
+| **Riscos/Alertas** | Pontos de atenção para a continuidade |
+
+---
+
+## ✅ Status Final
+
+| Objetivo | Status |
+|----------|--------|
+| Objetivo 1 | ✅ Concluído |
+| Objetivo 2 | ✅ Concluído |
+| Objetivo 3 | ⬜ Pendente (próxima sessão) |
+
+**Estatísticas:**
+- Arquivos criados: X
+- Arquivos modificados: X
+- Arquivos removidos: X
+- Commits realizados: X
+
+---
+
+*Conversa finalizada em: YYYY-MM-DD HH:mm:ss*
+```
+
+---
+
+#### 5.3.4 Gravação Incremental Automática
+
+**REGRA:** As IAs devem atualizar o arquivo de conversa AUTOMATICAMENTE durante a sessão:
+
+1. **Início da Sessão**:
+   - Perguntar nome da conversa
+   - Criar arquivo com cabeçalho completo
+   - Registrar timestamp de início
+
+2. **Durante a Sessão** (atualização incremental):
+   - Adicionar arquivo criado/modificado IMEDIATAMENTE após cada operação
+   - Registrar problemas encontrados conforme surgem
+   - Documentar decisões técnicas no momento em que são tomadas
+   - Atualizar seção de tarefas pendentes
+
+3. **Final da Sessão**:
+   - Completar Resumo Executivo
+   - Preencher timestamp de término
+   - Calcular duração total
+   - Revisar status final
+   - Listar próximos passos
+
+**⚠️ IMPORTANTE:** Nunca esperar o final da sessão para documentar tudo. A gravação incremental protege contra perda de informações se a sessão for interrompida.
+
+---
+
+#### 5.3.5 Configuração Técnica
+
+**Extensão: FrotiX Conversa Manager** (`frotix-conversa-manager-1.0.0.vsix`)
+
+A extensão gerencia o ciclo de vida dos arquivos de conversa. Localizada em:
+`frotix-conversa-manager/` (raiz do workspace).
+
+**Atalhos da Extensão:**
+
+| Atalho | Comando | Ação |
+|--------|---------|------|
+| **Ctrl+Alt+C** | Nova Conversa | Quick Pick (Nova / Continuar últimas 20 / Ignorar) → cria arquivo → copia prompt de notificação para clipboard |
+| **Ctrl+Alt+S** | Checkpoint | Copia prompt de checkpoint para clipboard (atualização incremental) |
+| **Ctrl+Alt+F** | Finalizar | Copia prompt de finalização para clipboard (resumo final completo) |
+
+**Fluxo de Uso:**
+1. Abrir chat de IA no VS Code
+2. Pressionar **Ctrl+Alt+C** → escolher "Nova Conversa" → digitar nome
+3. A extensão cria o arquivo `.md` e **copia prompt de notificação para o clipboard**
+4. **Colar (Ctrl+V) no chat** → a IA reconhece o `🔴 REGISTRO ATIVO` e passa a atualizar o arquivo
+5. Durante a sessão: **Ctrl+Alt+S** → colar no chat → IA atualiza incrementalmente
+6. No final: **Ctrl+Alt+F** → colar no chat → IA gera resumo final completo (Seção 5.3.3)
+
+**⚠️ IMPORTANTE:** Após Ctrl+Alt+C, o prompt é copiado automaticamente para o clipboard.
+O usuário DEVE colar (Ctrl+V) no chat da IA para que ela reconheça o registro.
+Sem essa colagem, a IA não sabe que a conversa está sendo registrada.
+
+**Recursos da Extensão:**
+- Status bar (canto inferior esquerdo) mostra conversa ativa
+- Detecção semi-automática de tabs de IA (Claude, Copilot, Continue, Gemini, Genie)
+- Quick Pick com últimas 20 conversas para continuação
+- Configurações: pasta de conversas, detecção automática, máx. recentes
+
+**Alternativas manuais (fallback):**
+
+| Ferramenta | Uso |
+|------------|-----|
+| Continue `/doq` | Slash command exclusivo do Continue |
+| Snippet `logconv` | Em arquivos `.md`, digite `logconv` + Tab |
+
+**Arquivo: `~/.continue/config.json` (apenas Continue)**
+```json
+{
+  "slashCommands": [
+    {
+      "name": "doq",
+      "description": "Documentar conversa",
+      "prompt": "Crie um arquivo de registro no formato: [YYYY.MM.DD]-[HH.mm] - [NOME] - [Continue - MODELO].md"
+    }
+  ]
+}
+```
+
+---
+
+#### 5.3.6 Comportamento Esperado das IAs
+
+**TODAS as IAs DEVEM:**
+
+1. ✅ **Reconhecer prompt de registro**: Quando o usuário colar texto começando com `🔴 REGISTRO ATIVO`, reconhecer o arquivo de conversa indicado e iniciar atualização incremental
+2. ✅ **Atualizar incrementalmente** durante toda a sessão (arquivos, problemas, decisões)
+3. ✅ **Reconhecer prompt de checkpoint** (Ctrl+Alt+S): Atualizar seções parciais do arquivo
+4. ✅ **Reconhecer prompt de finalização** (Ctrl+Alt+F): Gerar resumo final COMPLETO conforme template da Seção 5.3.3
+5. ✅ **Incluir rastreabilidade**: Links para commits, branches, PRs, issues
+6. ✅ **Documentar contexto**: Por que decisões foram tomadas, não apenas o que foi feito
+
+**❌ NUNCA:**
+- Ignorar o prompt `🔴 REGISTRO ATIVO` colado pelo usuário
+- Esperar o final da sessão para documentar tudo
+- Criar arquivo sem timestamp ou identificação da IA
+- Omitir problemas ou erros encontrados
+- Deixar seções obrigatórias vazias no resumo final
+
+---
+
+#### 5.3.7 Importância do Histórico de Conversas
+
+**POR QUE este registro é CRÍTICO:**
+
+1. **Rastreabilidade**: Saber exatamente quando e por que mudanças foram feitas
+2. **Continuidade**: Próxima sessão pode continuar de onde parou sem perder contexto
+3. **Aprendizado**: Documentar problemas e soluções para evitar repetição
+4. **Auditoria**: Histórico completo de decisões técnicas e suas justificativas
+5. **Colaboração**: Outras pessoas (ou IAs) podem entender o contexto do trabalho
+6. **Recuperação**: Se sessão for interrompida, gravação incremental preserva progresso
+
+**REGRA DE OURO:** Se não está documentado, não aconteceu. Se aconteceu mas não está documentado, será esquecido e pode ser refeito desnecessariamente.
 
 ---
 
@@ -689,9 +937,8 @@ git push origin main
 
 ### Ao criar/modificar funcionalidade
 
-1. Verificar documentação existente em `Documentacao/`
-2. Atualizar documentação se existir
-3. Criar documentação se não existir
+1. Seguir Cards de Arquivo e Função (Seção 5)
+2. Registrar na conversa ativa (Seção 5.3)
 
 ---
 
@@ -724,6 +971,7 @@ git push origin main
 
 | Versão | Data       | Descrição                                                                        |
 | ------ | ---------- | -------------------------------------------------------------------------------- |
+| 1.6    | 10/02/2026 | Adiciona regra que desativa criação de arquivos .md no diretório Documentacao/   |
 | 1.5    | 03/02/2026 | Adiciona seção 5.13 (Guia de Enriquecimento - Segunda Passada) com checklist detalhado por tipo de arquivo, exemplos de antes/depois, e workflow para agentes Haiku de enriquecimento de documentação |
 | 1.4    | 03/02/2026 | Adiciona seções 5.11 (Mapeamento de Dependências) e 5.12 (Análise de Arquivos Críticos). Atualiza 5.6 (🎯 MOTIVO em AJAX) e 5.9 (símbolos ⬅️ ➡️). Estabelece regra de limpeza do ArquivosCriticos.md |
 | 1.3    | 01/02/2026 | Adiciona seção 4.5 - Tratamento de Erros e APIs (ApiResponse, CORS, FrotiXApi)   |
@@ -740,6 +988,37 @@ git push origin main
 ### 5.1 Visão Geral
 
 Cada arquivo de código (C#, JS ou CSHTML) deve ser um artefato auto-explicativo. Adotamos um padrão de documentação com **headers descritivos** e **comentários robustos** para garantir leitura rápida, manutenção segura e rastreabilidade completa.
+
+---
+
+### 5.1.1 Regras Fundamentais de Documentação
+
+**REGRA OBRIGATÓRIA - Criação de Novos Arquivos:**
+- ✅ **TODO arquivo novo** (CSHTML, CSHTML.CS, JS) DEVE ter um **Card Inicial** completo
+- ✅ O Card DEVE explicar: objetivo, funcionalidade, entrada/saída
+- ✅ O Card DEVE mapear rastreabilidade: **quem chama** (arquivos/funções) e **para quê**
+- ✅ O Card DEVE mapear dependências: **quem esse arquivo chama** (arquivos/funções) e **para quê**
+
+**REGRA OBRIGATÓRIA - Criação/Alteração de Funções:**
+- ✅ **TODA função** (nova ou alterada) DEVE ter um **Card Descritivo** completo
+- ✅ O Card DEVE priorizar o **PORQUÊ** da existência da função (não apenas "o que faz")
+- ✅ O Card DEVE explicar o **FUNCIONAMENTO DO ALGORITMO** em alto nível (facilitar manutenção)
+- ✅ O Card DEVE ter rastreabilidade: **⬅️ CHAMADO POR** e **➡️ CHAMA** com arquivos/funções específicos
+
+**REGRA OBRIGATÓRIA - Comentários Internos:**
+- ✅ **Código autoexplicável NÃO precisa de comentários**
+- ✅ **APENAS código complexo** precisa de comentários robustos
+- ✅ Comentários DEVEM explicar o **PORQUÊ** (não o "o que", que deve estar claro pelo código)
+- ✅ Use tags semânticas (`[LOGICA]`, `[AJAX]`, `[DB]`, etc) para categorização
+
+### 5.1.2 Documentacao em MD externos (Documentacao/)
+
+**REGRA:** Nao criar nem atualizar arquivos `.md` no diretorio `Documentacao/` como
+documentacao paralela ao arquivo de codigo trabalhado. A documentacao obrigatoria deve
+ser mantida **apenas** via cards e comentarios dentro do proprio arquivo de codigo.
+
+**Excecao:** Somente criar/atualizar `.md` em `Documentacao/` quando houver pedido
+explicito do usuario.
 
 ---
 
@@ -825,24 +1104,31 @@ Cada arquivo de código (C#, JS ou CSHTML) deve ser um artefato auto-explicativo
 
 **REGRA:** Cada função DEVE ter um header descritivo imediatamente antes da declaração.
 
+**IMPORTANTE:** O Card de Função deve priorizar:
+1. **O PORQUÊ** da existência da função (razão de negócio/técnica), não apenas "o que faz"
+2. **O FUNCIONAMENTO DO ALGORITMO** em alto nível para facilitar manutenção futura
+3. **Rastreabilidade completa** (quem chama/chama quem) para entender o fluxo
+
 #### ✅ Modelo para C# (Funções/Métodos)
 
 ```csharp
 /****************************************************************************************
  * ⚡ FUNÇÃO: NomeDaFuncao
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Descrição detalhada do que a função faz.
+ * 🎯 OBJETIVO     : [PORQUÊ] Explicar PORQUÊ esta função existe e qual problema resolve.
+ *                   [O QUE] Descrição detalhada do que a função faz.
+ *                   [COMO] Resumo do funcionamento do algoritmo em alto nível.
  *
- * 📥 ENTRADAS     : param1 [tipo] - Descrição
- *                   param2 [tipo] - Descrição
+ * 📥 ENTRADAS     : param1 [tipo] - Descrição e propósito do parâmetro
+ *                   param2 [tipo] - Descrição e propósito do parâmetro
  *
- * 📤 SAÍDAS       : Tipo de retorno e o que representa.
+ * 📤 SAÍDAS       : Tipo de retorno e o que representa (cenários de sucesso/erro).
  *
- * 🔗 CHAMADA POR  : Quem invoca esta função.
+ * 🔗 CHAMADA POR  : Quem invoca esta função (arquivo/função/evento específico).
  *
- * 🔄 CHAMA        : O que esta função invoca internamente.
+ * 🔄 CHAMA        : O que esta função invoca internamente (funções/APIs/serviços).
  *
- * 📝 OBSERVAÇÕES  : Regras especiais, validações, side effects.
+ * 📝 OBSERVAÇÕES  : Regras especiais, validações, side effects, edge cases.
  ****************************************************************************************/
 public IActionResult NomeDaFuncao(int param1, string param2)
 {
@@ -865,17 +1151,19 @@ public IActionResult NomeDaFuncao(int param1, string param2)
 /****************************************************************************************
  * ⚡ FUNÇÃO: nomeDaFuncao
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Descrição detalhada do que a função faz.
+ * 🎯 OBJETIVO     : [PORQUÊ] Explicar PORQUÊ esta função existe e qual problema resolve.
+ *                   [O QUE] Descrição detalhada do que a função faz.
+ *                   [COMO] Resumo do funcionamento do algoritmo em alto nível.
  *
- * 📥 ENTRADAS     : param1 [tipo] - Descrição
+ * 📥 ENTRADAS     : param1 [tipo] - Descrição e propósito do parâmetro
  *
- * 📤 SAÍDAS       : Tipo de retorno (void, Promise, Object, etc).
+ * 📤 SAÍDAS       : Tipo de retorno (void, Promise, Object, etc) e cenários.
  *
- * 🔗 CHAMADA POR  : Evento onclick, outra função, DOMContentLoaded.
+ * 🔗 CHAMADA POR  : Evento onclick, outra função, DOMContentLoaded (especificar).
  *
- * 🔄 CHAMA        : Endpoints da API, funções auxiliares.
+ * 🔄 CHAMA        : Endpoints da API, funções auxiliares (listar com propósito).
  *
- * 📝 OBSERVAÇÕES  : Regras especiais, validações, dependências.
+ * 📝 OBSERVAÇÕES  : Regras especiais, validações, dependências, edge cases.
  ****************************************************************************************/
 function nomeDaFuncao(param1) {
     try {
@@ -900,6 +1188,19 @@ function nomeDaFuncao(param1) {
 ### 5.4 Comentários Internos (Tags Semânticas)
 
 **REGRA:** Use tags descritivas para categorizar blocos de código e facilitar a leitura.
+
+**REGRA CRÍTICA DE COMENTÁRIOS:**
+- ✅ **Código AUTOEXPLICÁVEL NÃO precisa de comentários** (ex: `var idade = 25;`)
+- ✅ **APENAS código COMPLEXO precisa de comentários ROBUSTOS** (ex: algoritmos, lógica de negócio não-óbvia, integrações)
+- ✅ **Priorize nomes de variáveis/funções claros** ao invés de comentários excessivos
+- ✅ **Explique o PORQUÊ**, não o "o que" (que já deve estar claro pelo código)
+
+**Quando comentar:**
+- Algoritmos complexos ou otimizações não-óbvias
+- Regras de negócio específicas que não ficam claras apenas pelo código
+- Workarounds temporários ou limitações técnicas
+- Integrações com APIs/bibliotecas externas
+- Trechos críticos para segurança ou performance
 
 | Tag | Significado | Exemplo de Uso |
 | :--- | :--- | :--- |
@@ -1129,9 +1430,16 @@ function validarFormulario() {
 
 **Workflow:**
 1. Ler arquivo completo e entender seu propósito
-2. Adicionar Card de Arquivo no topo
-3. Documentar cada função com Card de Função
-4. Adicionar comentários internos com tags semânticas
+2. Adicionar **Card de Arquivo** no topo (objetivo, entrada/saída, quem chama/chama quem)
+3. Documentar cada função com **Card de Função** enfatizando:
+   - **PORQUÊ** a função existe (razão de negócio/técnica)
+   - **O QUE** ela faz (descrição funcional)
+   - **COMO** funciona (resumo do algoritmo)
+   - **Rastreabilidade** completa (⬅️ CHAMADO POR / ➡️ CHAMA)
+4. Adicionar comentários internos **APENAS para código complexo**:
+   - Use tags semânticas (`[LOGICA]`, `[AJAX]`, `[DB]`, etc)
+   - Código autoexplicável NÃO precisa de comentários
+   - Explique o PORQUÊ, não o "o que"
 5. Garantir try-catch em todas as funções
 6. Documentar chamadas AJAX com detalhes de entrada/saída
 7. Mapear rastreabilidade (quem chama quem)
@@ -1634,7 +1942,7 @@ Closes #45 (ArquivosCriticos.md)"
  * REFERÊNCIAS:
  * - ArquivosCriticos.md (entrada completa com 6 problemas)
  * - Issue #234: Refatorar modal_agenda.js
- * - Documentação: Documentacao/JavaScript/modal_agenda.md
+ * - Issue #234: Refatorar modal_agenda.js (ver ArquivosCriticos.md)
  **************************************************************************************** */
 ```
 
@@ -1754,7 +2062,7 @@ causando conflitos frequentes de merge e dificuldade para novos desenvolvedores.
 REFERÊNCIAS:
 - ArquivosCriticos.md (entrada completa)
 - Issue #156: Refatorar ListaAutuacao.cshtml
-- Documentação: Documentacao/Pages/Multa/ListaAutuacao.md
+- Issue #156: Refatorar ListaAutuacao.cshtml (ver ArquivosCriticos.md)
 ****************************************************************************************
 *@
 ```

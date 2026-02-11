@@ -1301,8 +1301,10 @@ namespace FrotiX.Controllers
                 objViagem.CombustivelFinal = viagem.CombustivelFinal;
                 objViagem.Descricao = viagem.Descricao;
                 objViagem.Status = "Realizada";
-                objViagem.StatusDocumento = viagem.StatusDocumento;
-                objViagem.StatusCartaoAbastecimento = viagem.StatusCartaoAbastecimento;
+                objViagem.DocumentoEntregue = viagem.DocumentoEntregue;
+                objViagem.DocumentoDevolvido = viagem.DocumentoDevolvido;
+                objViagem.CartaoAbastecimentoEntregue = viagem.CartaoAbastecimentoEntregue;
+                objViagem.CartaoAbastecimentoDevolvido = viagem.CartaoAbastecimentoDevolvido;
 
                 ClaimsPrincipal currentUser = this.User;
                 var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;

@@ -1,0 +1,79 @@
+{
+  "name": "frotix-conversa-manager",
+  "displayName": "FrotiX Conversa Manager",
+  "description": "Gerenciador de registro de conversas com IAs para o projeto FrotiX",
+  "version": "1.0.0",
+  "publisher": "frotix",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "icon": "icon.png",
+  "activationEvents": [
+    "onView:claudeVSCodeSidebarSecondary",
+    "onView:claudeVSCodePanel",
+    "onView:workbench.panel.chat.view.copilot",
+    "onView:continue.continueGUIView",
+    "onView:cloudcode.gemini.chatView",
+    "onView:genieai.view"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "frotix.novaConversa",
+        "title": "FrotiX: Nova Conversa",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "frotix.checkpoint",
+        "title": "FrotiX: Checkpoint (Salvar Progresso)",
+        "icon": "$(save)"
+      },
+      {
+        "command": "frotix.finalizarConversa",
+        "title": "FrotiX: Finalizar Conversa",
+        "icon": "$(check-all)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "frotix.novaConversa",
+        "key": "ctrl+alt+c",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "frotix.checkpoint",
+        "key": "ctrl+alt+s",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "frotix.finalizarConversa",
+        "key": "ctrl+alt+f",
+        "when": "!terminalFocus"
+      }
+    ],
+    "configuration": {
+      "title": "FrotiX Conversa Manager",
+      "properties": {
+        "frotix.conversasPasta": {
+          "type": "string",
+          "default": "Conversas",
+          "description": "Nome da pasta de conversas dentro de cada projeto"
+        },
+        "frotix.deteccaoAutomatica": {
+          "type": "boolean",
+          "default": true,
+          "description": "Detectar automaticamente quando um chat de IA é aberto"
+        },
+        "frotix.maxConversasRecentes": {
+          "type": "number",
+          "default": 20,
+          "description": "Número máximo de conversas recentes exibidas no Quick Pick"
+        }
+      }
+    }
+  }
+}

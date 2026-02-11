@@ -1,0 +1,798 @@
+/* ======== OUTLINE BRANCO NO BOTAO DO HEADER (Padrao FrotiX) ======== */
+.ftx-card-header .btn-fundo-laranja {
+    outline: 2px solid rgba(255, 255, 255, 0.5) !important;
+    outline-offset: 1px;
+    transition: all 0.2s ease;
+}
+
+.ftx-card-header .btn-fundo-laranja:hover {
+    outline: 2px solid rgba(255, 255, 255, 0.8) !important;
+    outline-offset: 2px;
+}
+
+/* ======== KENDO EDITOR - ESTILOS ======== */
+.k-editor {
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+}
+
+.k-editor-content {
+    min-height: 280px;
+}
+
+/* Kendo Editor desabilitado */
+.k-editor.k-disabled {
+    opacity: 0.65;
+    pointer-events: none;
+    background-color: #e9ecef;
+}
+
+.k-editor.k-disabled .k-editor-content {
+    background-color: #f5f5f5;
+}
+
+.k-editor.k-disabled .k-toolbar {
+    background-color: #e9ecef;
+}
+
+/* Header usa padrao global .ftx-card-header do frotix.css */
+
+/* ======== SECOES TEMATICAS ======== */
+.ftx-section {
+    background: linear-gradient(135deg, #fafbfc 0%, #f5f6f7 100%);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-left: 4px solid #6c757d;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.ftx-section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ftx-section-title i {
+    font-size: 1.1rem;
+    opacity: 0.85;
+}
+
+/* Cores das secoes */
+.ftx-section-periodo {
+    border-left-color: #325d88;
+}
+
+.ftx-section-periodo .ftx-section-title {
+    color: #325d88;
+}
+
+.ftx-section-trajeto {
+    border-left-color: #2e7d32;
+}
+
+.ftx-section-trajeto .ftx-section-title {
+    color: #2e7d32;
+}
+
+.ftx-section-evento {
+    border-left-color: #7b1fa2;
+}
+
+.ftx-section-evento .ftx-section-title {
+    color: #7b1fa2;
+}
+
+.ftx-section-veiculo {
+    border-left-color: #ef6c00;
+}
+
+.ftx-section-veiculo .ftx-section-title {
+    color: #ef6c00;
+}
+
+.ftx-section-combustivel {
+    border-left-color: #c62828;
+}
+
+.ftx-section-combustivel .ftx-section-title {
+    color: #c62828;
+}
+
+.ftx-section-solicitante {
+    border-left-color: #00695c;
+}
+
+.ftx-section-solicitante .ftx-section-title {
+    color: #00695c;
+}
+
+.ftx-section-descricao {
+    border-left-color: #37474f;
+}
+
+.ftx-section-descricao .ftx-section-title {
+    color: #37474f;
+}
+
+/* ======== Labels e Inputs melhorados ======== */
+.ftx-label {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #495057;
+    margin-bottom: 0.35rem;
+    display: block;
+}
+
+.ftx-label .text-danger {
+    font-size: 0.9em;
+}
+
+/* Inputs maiores */
+.ftx-section .form-control,
+.ftx-section .e-input-group,
+.ftx-section .e-control-wrapper,
+.ftx-section .e-ddl,
+.ftx-section .e-ddt {
+    height: 38px !important;
+    min-height: 38px !important;
+    font-size: 0.9rem !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.25rem !important;
+}
+
+.ftx-section .k-dropdown,
+.ftx-section .k-input {
+    height: 38px !important;
+    min-height: 38px !important;
+}
+
+.ftx-section .k-input-inner {
+    height: 38px !important;
+    line-height: 38px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.ftx-section .form-control:focus {
+    border-color: #325d88;
+    box-shadow: 0 0 0 0.2rem rgba(50, 93, 136, 0.15);
+}
+
+/* Valor calculado em destaque - cor solida intermediaria */
+.ftx-calculated {
+    background-color: #c9e0f5 !important;
+    border: 1px solid #90caf9;
+    font-weight: 600;
+    color: #1565c0;
+}
+
+/* Form group com espacamento adequado */
+.ftx-section .form-group {
+    margin-bottom: 0.75rem;
+}
+
+.ftx-section .row {
+    margin-bottom: 0.5rem;
+}
+
+/* ======== Inputs e Layout (legado - manter compatibilidade) ======== */
+.form-control-xs {
+    height: 38px !important;
+    padding: .375rem .5rem !important;
+    font-size: .875rem !important;
+    line-height: 1.5;
+    border-radius: .25rem;
+}
+
+.label {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #495057;
+    margin-bottom: 0.35rem;
+    margin-top: 0;
+}
+
+.label i {
+    display: none;
+    /* Esconde icones individuais das labels */
+}
+
+input[type=checkbox] {
+    vertical-align: middle;
+    position: relative;
+    bottom: 1px;
+}
+
+.esconde-diveventos {
+    display: none;
+}
+
+.bottom-space {
+    margin-bottom: 2rem;
+}
+
+.icon-space {
+    margin-right: 10px;
+    display: inline-flex;
+    align-items: center;
+}
+
+img[alt="Foto"]:not([src]) {
+    display: none;
+}
+
+.modal-divider {
+    height: 1px;
+    border: none;
+    background-color: #dee2e6;
+    margin: 0.5rem 0;
+}
+
+/* ======== Botoes customizados ======== */
+.btn-vinho {
+    background-color: #c82333 !important;
+    color: #fff !important;
+    border: 1px solid #bd2130 !important;
+    transition: background-color 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+}
+
+.btn-vinho:hover,
+.btn-vinho:focus,
+.btn-vinho:active,
+.btn-vinho:focus-visible {
+    background-color: #a71d2a !important;
+    border-color: #a71d2a !important;
+    color: #fff !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.custom-blue-btn {
+    background-color: #6c87a3 !important;
+    color: #fff !important;
+    border: 1px solid #5c748f !important;
+    transition: background-color 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.custom-blue-btn:hover,
+.custom-blue-btn:focus,
+.custom-blue-btn:active,
+.custom-blue-btn:focus-visible {
+    background-color: #5c748f !important;
+    color: #fff !important;
+    border-color: #5c748f !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Botao primario usado nos modais desta pagina */
+.custom-primary-btn {
+    background-color: #0d6efd !important;
+    color: #fff !important;
+    border: 1px solid #0b5ed7 !important;
+    transition: background-color .2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+}
+
+.custom-primary-btn:hover,
+.custom-primary-btn:focus {
+    background-color: #0b5ed7 !important;
+    border-color: #0a58ca !important;
+    color: #fff !important;
+}
+
+.custom-primary-btn .btn-inner i {
+    font-size: 1rem;
+}
+
+/* ======== Kendo DropDownList personalizado (motorista) ======== */
+.motorista-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 40px;
+    width: 100%;
+}
+
+.motorista-item img {
+    height: 40px;
+    width: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.motorista-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 38px;
+    width: 100%;
+}
+
+.motorista-value img {
+    height: 26px;
+    width: 26px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Centralizacao no listbox do Kendo (motorista) */
+#cmbMotorista_listbox,
+#cmbMotorista_listbox .k-list-content,
+#cmbMotorista_listbox .k-list-ul {
+    text-align: left;
+}
+
+#cmbMotorista_listbox .k-list-item,
+#cmbMotorista_listbox .k-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#cmbMotorista_listbox .k-list-item-text,
+#cmbMotorista_listbox .k-list-item-text > span {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#cmbMotorista_listbox .motorista-item {
+    margin: 0 auto;
+}
+
+/* Centralizacao do valor selecionado */
+.k-dropdownlist[aria-controls="cmbMotorista_listbox"] .k-input-inner {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+}
+
+.k-dropdownlist[aria-controls="cmbMotorista_listbox"] .k-input-value-text,
+.k-dropdownlist[aria-controls="cmbMotorista_listbox"] .k-input-inner .k-input-value-text {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+}
+
+.k-dropdownlist[aria-controls="cmbMotorista_listbox"] .k-input-values,
+.k-dropdownlist[aria-controls="cmbMotorista_listbox"] .k-input-value-text > span {
+    justify-content: flex-start;
+    text-align: left;
+}
+
+/* Balao laranja bonitao */
+.e-tooltip-wrap,
+.e-tooltip-wrap.custom-orange-tooltip,
+.e-tooltip-wrap.tooltip-laranja {
+    background-color: orange !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+    padding: 8px 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.95rem;
+    z-index: 99999 !important;
+}
+
+.e-tooltip-wrap .e-tip-content,
+.e-tooltip-wrap.custom-orange-tooltip .e-tip-content,
+.e-tooltip-wrap.tooltip-laranja .e-tip-content {
+    color: #fff !important;
+    font-weight: 500;
+    line-height: 1.4;
+    background-color: transparent !important;
+}
+
+.e-tooltip-wrap .e-tip-arrow,
+.e-tooltip-wrap.custom-orange-tooltip .e-tip-arrow,
+.e-tooltip-wrap.tooltip-laranja .e-tip-arrow {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.e-tooltip-wrap .e-arrow-tip-inner,
+.e-tooltip-wrap.custom-orange-tooltip .e-arrow-tip-inner,
+.e-tooltip-wrap.tooltip-laranja .e-arrow-tip-inner {
+    background: orange !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.e-tooltip-wrap .e-tip-arrow svg,
+.e-tooltip-wrap.custom-orange-tooltip .e-tip-arrow svg,
+.e-tooltip-wrap.tooltip-laranja .e-tip-arrow svg {
+    display: none !important;
+}
+
+.e-tooltip-wrap .e-tip-arrow::before,
+.e-tooltip-wrap .e-tip-arrow::after,
+.e-tooltip-wrap .e-arrow-tip-inner::before,
+.e-tooltip-wrap .e-arrow-tip-inner::after {
+    background: none !important;
+    border: none !important;
+    content: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* ======== ZOOM - botao na imagem ======== */
+.img-zoom-wrapper {
+    position: relative;
+    display: inline-block;
+    width: fit-content;
+    inline-size: fit-content;
+    width: -moz-fit-content;
+}
+
+.modal-zoom {
+    max-width: 960px;
+}
+
+#modalZoom .modal-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: .75rem;
+}
+
+#imgZoomed {
+    max-width: 920px;
+    width: 100%;
+    height: auto;
+    max-height: 120vh;
+    object-fit: contain;
+    cursor: zoom-out;
+}
+
+.modal-close-floating {
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+    z-index: 5;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .35));
+}
+
+/* Validacao sutil */
+:root {
+    --ftx-invalid: #dc3545;
+    --ftx-glow: rgba(220, 53, 69, .18);
+    --ftx-glow-focus: rgba(220, 53, 69, .28);
+}
+
+input.is-invalid,
+textarea.is-invalid {
+    border-color: var(--ftx-invalid) !important;
+    box-shadow: 0 0 0 .2rem var(--ftx-glow);
+    color: var(--ftx-invalid) !important;
+}
+
+input.is-invalid:focus,
+textarea.is-invalid:focus {
+    box-shadow: 0 0 0 .28rem var(--ftx-glow-focus);
+}
+
+.e-input-group.is-invalid,
+.e-float-input.is-invalid,
+.e-control-wrapper.is-invalid {
+    box-shadow: 0 0 0 .2rem var(--ftx-glow);
+    border-radius: .25rem;
+}
+
+.e-input-group.is-invalid:focus-within,
+.e-float-input.is-invalid:focus-within,
+.e-control-wrapper.is-invalid:focus-within {
+    box-shadow: 0 0 0 .28rem var(--ftx-glow-focus);
+}
+
+.e-input-group.is-invalid .e-input,
+.e-float-input.is-invalid input,
+.e-control-wrapper.is-invalid input {
+    border-color: var(--ftx-invalid) !important;
+    color: var(--ftx-invalid) !important;
+}
+
+.e-float-input.is-invalid label.e-float-text,
+.e-float-input.is-invalid .e-float-line {
+    color: var(--ftx-invalid) !important;
+    border-color: var(--ftx-invalid) !important;
+}
+
+#imgViewerItem {
+    display: block;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== BADGES DE OCORRENCIA ===== */
+.ftx-ocorrencia-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 70px;
+    padding: 0.25rem 0.6rem;
+    border-radius: 50px;
+    color: #fff !important;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.ftx-ocorrencia-badge-aberta {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    box-shadow: 0 2px 6px rgba(39, 174, 96, 0.35);
+}
+
+.ftx-ocorrencia-badge-baixada {
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    box-shadow: 0 2px 6px rgba(127, 140, 141, 0.35);
+}
+
+.ftx-ocorrencia-badge-pendente {
+    background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
+    box-shadow: 0 2px 6px rgba(255, 165, 0, 0.35);
+}
+
+.ftx-ocorrencia-badge-manutencao {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.35);
+}
+
+/* ===== SECAO DOCUMENTOS ===== */
+.ftx-section-documentos {
+    border-left: 4px solid #198754;
+    background: linear-gradient(135deg, #f0fff4 0%, #e6ffed 100%);
+}
+
+.ftx-section-documentos .form-check-input:checked {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+/* ===== SECAO DOCUMENTOS DEVOLVIDOS ===== */
+.ftx-section-devolvidos {
+    border-left: 4px solid #0dcaf0;
+    background: linear-gradient(135deg, #f0faff 0%, #e6f7ff 100%);
+}
+
+.ftx-section-devolvidos .ftx-section-title {
+    color: #0aa2c0;
+}
+
+.ftx-section-devolvidos .form-check-input:checked {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+}
+
+/* ===== SECAO OCORRENCIAS ===== */
+.ftx-section-ocorrencias {
+    border-left: 4px solid #fd7e14;
+    background: linear-gradient(135deg, #fff8f0 0%, #fff3e6 100%);
+    transition: opacity 0.3s, filter 0.3s;
+}
+
+/* Estado desabilitado da secao de ocorrencias */
+.ftx-section-ocorrencias.ftx-section-disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    filter: grayscale(30%);
+}
+
+.ftx-section-ocorrencias.ftx-section-disabled .ftx-section-title {
+    color: #6c757d;
+}
+
+.ftx-section-ocorrencias.ftx-section-disabled .ocorrencias-lista {
+    background: #f8f9fa;
+}
+
+/* Permitir interacao com o aviso mesmo desabilitado */
+.ftx-section-ocorrencias.ftx-section-disabled .alert {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+.ocorrencias-lista {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    min-height: 100px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.ocorrencia-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s;
+}
+
+.ocorrencia-item:last-child {
+    border-bottom: none;
+}
+
+.ocorrencia-item:hover {
+    background-color: #f8f9fa;
+}
+
+.ocorrencia-info {
+    flex: 1;
+}
+
+.ocorrencia-resumo {
+    font-weight: 600;
+    color: #333;
+}
+
+.ocorrencia-descricao {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 2px;
+}
+
+.ocorrencia-acoes {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.ocorrencia-acoes .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.badge-ocorrencias {
+    font-size: 0.85rem;
+}
+
+/* Modal header terracota */
+.modal-header-terracota {
+    background: linear-gradient(135deg, #fd7e14 0%, #e55e00 100%);
+    color: #fff;
+}
+
+/* ===== SECAO MOBILE ===== */
+.ftx-section-mobile {
+    border-left: 4px solid #9c27b0;
+    background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+}
+
+.rubrica-container {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.rubrica-vazia {
+    text-align: center;
+}
+
+.rubrica-imagem {
+    max-width: 100%;
+    max-height: 160px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+/* Badges de status das ocorrencias */
+.ftx-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 70px;
+    padding: 0.25rem 0.6rem;
+    border-radius: 50px;
+    color: #fff !important;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.ftx-status-aberta {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    box-shadow: 0 2px 6px rgba(39, 174, 96, 0.35);
+}
+
+.ftx-status-baixada {
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    box-shadow: 0 2px 6px rgba(127, 140, 141, 0.35);
+}
+
+.ftx-status-pendente {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    box-shadow: 0 2px 6px rgba(243, 156, 18, 0.35);
+}
+
+/* Botoes de acao da tabela de ocorrencias */
+.btn-ver-ocorrencia {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-ver-ocorrencia:hover {
+    background: linear-gradient(135deg, #2980b9 0%, #1f6391 100%);
+    transform: scale(1.05);
+}
+
+.btn-ver-ocorrencia:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Ajuste do texto truncado nas colunas */
+#tblOcorrenciasViagem td {
+    vertical-align: middle;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#tblOcorrenciasViagem td:hover {
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+/* Cards de documentos/itens */
+#secaoMobile .card-header {
+    font-size: 0.9rem;
+}
+
+#secaoMobile .form-check-label {
+    font-size: 0.85rem;
+}

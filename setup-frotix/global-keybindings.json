@@ -1,0 +1,95 @@
+[
+  {
+    "key": "ctrl+alt+3",
+    "command": "workbench.action.editorLayoutThreeColumns"
+  },
+  {
+    "key": "ctrl+shift+1",
+    "command": "workbench.action.focusFirstEditorGroup",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "ctrl+shift+2",
+    "command": "workbench.action.focusSecondEditorGroup",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "ctrl+shift+3",
+    "command": "workbench.action.focusThirdEditorGroup",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "ctrl+shift+4",
+    "command": "workbench.action.chat.open",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "ctrl+shift+5",
+    "command": "workbench.panel.chat.view.gemini.focus",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "ctrl+alt+1",
+    "command": "workbench.view.extension.claude-sidebar"
+  },
+  {
+    "key": "ctrl+l",
+    "command": "continue.focusContinueInput"
+  },
+  {
+    "key": "ctrl+shift+i",
+    "command": "workbench.action.chat.open"
+  },
+  {
+    "key": "ctrl+i",
+    "command": "github.copilot.inlineChat.trigger"
+  },
+  {
+    "key": "ctrl+alt+5",
+    "command": "geminicodeassist.openChat"
+  },
+  {
+    "key": "ctrl+pageup",
+    "command": "workbench.action.focusPreviousGroup"
+  },
+  {
+    "key": "ctrl+pagedown",
+    "command": "workbench.action.focusNextGroup"
+  },
+  {
+    "key": "ctrl+j",
+    "command": "workbench.action.togglePanel"
+  },
+  {
+    "key": "ctrl+b",
+    "command": "workbench.action.toggleSidebarVisibility"
+  },
+  {
+    "key": "ctrl+shift+e",
+    "command": "workbench.view.explorer"
+  },
+  {
+    "key": "ctrl+alt+1",
+    "command": "claude-vscode.sidebar.open"
+  },
+  {
+    "key": "ctrl+alt+2",
+    "command": "workbench.action.editorLayoutTwoColumns"
+  },
+  {
+    "key": "ctrl+alt+right",
+    "command": "workbench.action.splitEditorRight"
+  },
+  {
+    "key": "ctrl+alt+down",
+    "command": "workbench.action.splitEditorDown"
+  },
+  {
+    "key": "ctrl+alt+b",
+    "command": "workbench.action.toggleSecondarySideBar"
+  },
+  {
+    "key": "ctrl+alt+g",
+    "command": "workbench.action.quickOpenView"
+  }
+]

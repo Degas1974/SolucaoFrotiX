@@ -74,14 +74,7 @@ Sempre que houver uma operação assíncrona demorada (AJAX, Form Submit):
   - Mensagens descritivas.
   - Se corrigir um erro próprio, explicar "Erro: X, Correção: Y" no commit.
 
-### 4.2. Documentação (Processo Crítico)
-- **Local:** Pasta `Documentacao/`.
-- **Formato Duplo:** Para cada funcionalidade, manter **DOIS** arquivos sincronizados:
-  1. `.md` (Técnico/Dev).
-  2. `.html` (Portfólio/Visual - Formato A4).
-- **Updates:** Ao alterar código, atualizar a documentação correspondente e adicionar entrada no log de modificações do arquivo.
-
-### 4.3. Logs de Conversa
+### 4.2. Logs de Conversa
 - **Pasta:** `Conversas/`.
 - **Arquivo:** Criar/Atualizar arquivo `.md` para cada sessão (ex: `2026.01.13 - Refatoração Login.md`).
 - **Conteúdo:** Resumo executivo, arquivos alterados, decisões técnicas.
