@@ -32,27 +32,33 @@ BEGIN TRY
                 CONSTRAINT DF_Viagem_CartaoAbastecimentoDevolvido DEFAULT (0);
 
     -- Backfill a partir dos campos legados (string/boolean)
-    UPDATE dbo.Viagem
-    SET DocumentoEntregue = CASE
-            WHEN StatusDocumento IN ('Entregue', '1', 'true', 'True') THEN 1
-            ELSE 0
-        END,
-        DocumentoDevolvido = CASE
-            WHEN StatusDocumentoFinal IN ('Devolvido', '1', 'true', 'True') THEN 1
-            ELSE 0
-        END,
-        CartaoAbastecimentoEntregue = CASE
-            WHEN StatusCartaoAbastecimento IN ('Entregue', '1', 'true', 'True') THEN 1
-            ELSE 0
-        END,
-        CartaoAbastecimentoDevolvido = CASE
-            WHEN StatusCartaoAbastecimentoFinal IN ('Devolvido', '1', 'true', 'True') THEN 1
-            ELSE 0
-        END
-    WHERE StatusDocumento IS NOT NULL
-       OR StatusDocumentoFinal IS NOT NULL
-       OR StatusCartaoAbastecimento IS NOT NULL
-       OR StatusCartaoAbastecimentoFinal IS NOT NULL;
+    IF COL_LENGTH('dbo.Viagem', 'StatusDocumento') IS NOT NULL
+       OR COL_LENGTH('dbo.Viagem', 'StatusDocumentoFinal') IS NOT NULL
+       OR COL_LENGTH('dbo.Viagem', 'StatusCartaoAbastecimento') IS NOT NULL
+       OR COL_LENGTH('dbo.Viagem', 'StatusCartaoAbastecimentoFinal') IS NOT NULL
+    BEGIN
+        UPDATE dbo.Viagem
+        SET DocumentoEntregue = CASE
+                WHEN StatusDocumento IN ('Entregue', '1', 'true', 'True') THEN 1
+                ELSE 0
+            END,
+            DocumentoDevolvido = CASE
+                WHEN StatusDocumentoFinal IN ('Devolvido', '1', 'true', 'True') THEN 1
+                ELSE 0
+            END,
+            CartaoAbastecimentoEntregue = CASE
+                WHEN StatusCartaoAbastecimento IN ('Entregue', '1', 'true', 'True') THEN 1
+                ELSE 0
+            END,
+            CartaoAbastecimentoDevolvido = CASE
+                WHEN StatusCartaoAbastecimentoFinal IN ('Devolvido', '1', 'true', 'True') THEN 1
+                ELSE 0
+            END
+        WHERE StatusDocumento IS NOT NULL
+           OR StatusDocumentoFinal IS NOT NULL
+           OR StatusCartaoAbastecimento IS NOT NULL
+           OR StatusCartaoAbastecimentoFinal IS NOT NULL;
+    END
 
     -- Remove constraints defaults dos campos legados (se existirem)
     DECLARE @sql nvarchar(max);
@@ -978,6 +984,11 @@ BEGIN TRY
             StackTrace nvarchar(max) NULL,
             InnerException nvarchar(max) NULL,
             Url nvarchar(1000) NULL,
+            UrlHash AS (
+                CONVERT(binary(32),
+                    HASHBYTES('SHA2_256', ISNULL(CONVERT(nvarchar(1000), Url), N''))
+                )
+            ) PERSISTED,
             HttpMethod nvarchar(10) NULL,
             StatusCode int NULL,
             UserAgent nvarchar(500) NULL,
@@ -1003,6 +1014,17 @@ BEGIN TRY
             CriadoEm datetime2(3) NOT NULL DEFAULT (getdate()),
             CONSTRAINT PK_LogErros PRIMARY KEY CLUSTERED (LogErroId DESC)
         );
+    END
+
+    IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
+       AND COL_LENGTH('dbo.LogErros', 'UrlHash') IS NULL
+    BEGIN
+        ALTER TABLE dbo.LogErros
+            ADD UrlHash AS (
+                CONVERT(binary(32),
+                    HASHBYTES('SHA2_256', ISNULL(CONVERT(nvarchar(1000), Url), N''))
+                )
+            ) PERSISTED;
     END
 
     IF OBJECT_ID('dbo.VAssociado', 'U') IS NOT NULL
@@ -1112,14 +1134,20 @@ BEGIN TRY
           WHERE (Usuario IS NOT NULL);
     END
 
-    IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
-       AND NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_LogErros_Url' AND object_id = OBJECT_ID('dbo.LogErros'))
-    BEGIN
-        CREATE INDEX IX_LogErros_Url
-          ON dbo.LogErros (Url, Tipo)
-          INCLUDE (DataHora)
-          WHERE (Url IS NOT NULL);
-    END
+     IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
+         AND EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_LogErros_Url' AND object_id = OBJECT_ID('dbo.LogErros'))
+     BEGIN
+          DROP INDEX IX_LogErros_Url ON dbo.LogErros;
+     END
+
+     IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
+         AND NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_LogErros_UrlHash' AND object_id = OBJECT_ID('dbo.LogErros'))
+     BEGIN
+          CREATE INDEX IX_LogErros_UrlHash
+             ON dbo.LogErros (UrlHash, Tipo)
+             INCLUDE (Url, DataHora)
+             WHERE (UrlHash IS NOT NULL);
+     END
 
     IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
        AND NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_LogErros_HashErro' AND object_id = OBJECT_ID('dbo.LogErros'))
@@ -1702,6 +1730,14 @@ BEGIN TRY
     IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
        AND EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_LogErros_DataHora' AND object_id = OBJECT_ID('dbo.LogErros'))
         DROP INDEX IX_LogErros_DataHora ON dbo.LogErros;
+
+    IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
+       AND EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_LogErros_UrlHash' AND object_id = OBJECT_ID('dbo.LogErros'))
+        DROP INDEX IX_LogErros_UrlHash ON dbo.LogErros;
+
+    IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
+       AND EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_LogErros_Url' AND object_id = OBJECT_ID('dbo.LogErros'))
+        DROP INDEX IX_LogErros_Url ON dbo.LogErros;
 
     -- Tables (reverse dependency order)
     IF OBJECT_ID('dbo.ObservacoesEscala', 'U') IS NOT NULL

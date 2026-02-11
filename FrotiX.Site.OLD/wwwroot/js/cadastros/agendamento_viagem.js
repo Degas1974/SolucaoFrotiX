@@ -446,8 +446,8 @@ function criarAgendamentoNovo()
         const veiculoId = lstVeiculo?.value ?? null;
         const setorId = getSfValue0(ddtSetor);
         const requisitanteId = document.getElementById("lstRequisitante")?.ej2_instances?.[0]?.value ?? null;
-        const destino = document.getElementById("cmbDestino")?.ej2_instances?.[0]?.value ?? null;
-        const origem = document.getElementById("cmbOrigem")?.ej2_instances?.[0]?.value ?? null;
+        const destino = $("#cmbDestino").data("kendoComboBox")?.value() ?? null;
+        const origem = $("#cmbOrigem").data("kendoComboBox")?.value() ?? null;
         const finalidade = getSfValue0(ddtFinalidade);
         const combustivelInicial = getSfValue0(ddtCombIniInst);
         const combustivelFinal = getSfValue0(ddtCombFimInst);
@@ -1755,7 +1755,7 @@ async function ValidaCampos(viagemId)
             await Alerta.Erro("Informação Ausente", "A <strong>Finalidade</strong> é obrigatória");
             return false;
         }
-        const origem = document.getElementById("cmbOrigem").ej2_instances[0].value;
+        const origem = $("#cmbOrigem").data("kendoComboBox").value();
         if (origem === "" || origem === null)
         {
             await Alerta.Erro("Informação Ausente", "A Origem é obrigatória");
@@ -1773,7 +1773,7 @@ async function ValidaCampos(viagemId)
         const todosFinalPreenchidos = dataFinal && horaFinal && combustivelFinal && kmFinal;
         if (todosFinalPreenchidos)
         {
-            const destino = document.getElementById("cmbDestino").ej2_instances[0].value;
+            const destino = $("#cmbDestino").data("kendoComboBox").value();
             if (destino === "" || destino === null)
             {
                 await Alerta.Erro("Informação Ausente", "O Destino é obrigatório");
@@ -1975,8 +1975,8 @@ function criarAgendamento(viagemId, viagemIdRecorrente, dataInicial)
             DataInicial: dataInicialFormatada,
             HoraInicio: $("#txtHoraInicial").val(),
             Finalidade: document.getElementById("lstFinalidade").ej2_instances[0].value[0],
-            Origem: document.getElementById("cmbOrigem").ej2_instances[0].value,
-            Destino: document.getElementById("cmbDestino").ej2_instances[0].value,
+            Origem: $("#cmbOrigem").data("kendoComboBox").value(),
+            Destino: $("#cmbDestino").data("kendoComboBox").value(),
             MotoristaId: lstMotorista.value || null,
             VeiculoId: lstVeiculo.value || null,
             KmAtual: parseInt($("#txtKmAtual").val(), 10) || null,
@@ -2067,8 +2067,8 @@ function criarAgendamentoUnico()
         let ramal = $("#txtRamalRequisitante").val();
         let requisitanteId = document.getElementById("lstRequisitante").ej2_instances[0].value;
         let kmAtual = parseInt($("#txtKmAtual").val(), 10);
-        let destino = document.getElementById("cmbDestino").ej2_instances[0].value;
-        let origem = document.getElementById("cmbOrigem").ej2_instances[0].value;
+        let destino = $("#cmbDestino").data("kendoComboBox").value();
+        let origem = $("#cmbOrigem").data("kendoComboBox").value();
         let finalidade = document.getElementById("lstFinalidade").ej2_instances[0].value[0];
 
         const agendamento = {
@@ -2117,8 +2117,8 @@ function criarAgendamentoEdicao(agendamentoOriginal)
         const veiculoId = lstVeiculo?.value ?? null;
         const setorId = getSfValue0(ddtSetor);
         const requisitanteId = document.getElementById("lstRequisitante")?.ej2_instances?.[0]?.value ?? null;
-        const destino = document.getElementById("cmbDestino")?.ej2_instances?.[0]?.value ?? null;
-        const origem = document.getElementById("cmbOrigem")?.ej2_instances?.[0]?.value ?? null;
+        const destino = $("#cmbDestino").data("kendoComboBox")?.value() ?? null;
+        const origem = $("#cmbOrigem").data("kendoComboBox")?.value() ?? null;
         const finalidade = getSfValue0(ddtFinalidade);
         const combustivelInicial = getSfValue0(ddtCombIniInst);
         const combustivelFinal = getSfValue0(ddtCombFimInst);
@@ -2215,8 +2215,8 @@ function criarAgendamentoViagem(agendamentoUnicoAlterado)
         let kmAtual = parseInt($("#txtKmAtual").val(), 10);
         let kmInicial = parseInt($("#txtKmInicial").val(), 10);
         let kmFinal = parseInt($("#txtKmFinal").val(), 10);
-        let destino = document.getElementById("cmbDestino").ej2_instances[0].value;
-        let origem = document.getElementById("cmbOrigem").ej2_instances[0].value;
+        let destino = $("#cmbDestino").data("kendoComboBox").value();
+        let origem = $("#cmbOrigem").data("kendoComboBox").value();
         let finalidade = document.getElementById("lstFinalidade").ej2_instances[0].value[0];
         let combustivelInicial = document.getElementById("ddtCombustivelInicial").ej2_instances[0].value[0];
         let combustivelFinal = "";
@@ -3879,16 +3879,16 @@ function preencherCamposBasicos(viagem)
             lstFinalidade.ej2_instances[0].text = viagem.finalidade;
         }
 
-        const cmbOrigem = document.getElementById("cmbOrigem");
-        if (cmbOrigem && cmbOrigem.ej2_instances && cmbOrigem.ej2_instances[0])
+        const cmbOrigem = $("#cmbOrigem").data("kendoComboBox");
+        if (cmbOrigem)
         {
-            cmbOrigem.ej2_instances[0].value = viagem.origem;
+            cmbOrigem.value(viagem.origem);
         }
 
-        const cmbDestino = document.getElementById("cmbDestino");
-        if (cmbDestino && cmbDestino.ej2_instances && cmbDestino.ej2_instances[0])
+        const cmbDestino = $("#cmbDestino").data("kendoComboBox");
+        if (cmbDestino)
         {
-            cmbDestino.ej2_instances[0].value = viagem.destino;
+            cmbDestino.value(viagem.destino);
         }
 
         // Evento
