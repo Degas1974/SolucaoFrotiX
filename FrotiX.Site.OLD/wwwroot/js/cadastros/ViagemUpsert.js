@@ -4567,8 +4567,8 @@ $("#btnSubmit").click(async function (event)
             return;
         }
 
-        const origem = $("#cmbOrigem").data("kendoComboBox");
-        if (!origem || !origem.value())
+        const origem = document.getElementById("cmbOrigem").ej2_instances[0];
+        if (origem.value === null)
         {
             Alerta.Erro("Informação Ausente", "A Origem é obrigatória");
             return;

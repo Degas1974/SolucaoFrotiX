@@ -250,14 +250,22 @@
                                                 asp-for="ViagemObj.Viagem.Origem">Origem</label>
                                             <span class="text-danger font-weight-light"
                                                 asp-validation-for="ViagemObj.Viagem.Origem"></span>
-                                            <input id="cmbOrigem" name="ViagemObj.Viagem.Origem" style="width: 100%;" />
+                                            <ejs-combobox id="cmbOrigem" ejs-for="ViagemObj.Viagem.Origem"
+                                                dataSource="@ViewData["ListaOrigem"]"
+                                                placeholder="Selecione ou digite a Origem" allowFiltering="true"
+                                                filterType="Contains" allowCustom="true" popupHeight="220px">
+                                            </ejs-combobox>
                                         </div>
                                         <div class="col-12 col-md-4">
                                             <label class="ftx-label ftx-required"
                                                 asp-for="ViagemObj.Viagem.Destino">Destino</label>
                                             <span class="text-danger font-weight-light"
                                                 asp-validation-for="ViagemObj.Viagem.Destino"></span>
-                                            <input id="cmbDestino" name="ViagemObj.Viagem.Destino" style="width: 100%;" />
+                                            <ejs-combobox id="cmbDestino" ejs-for="ViagemObj.Viagem.Destino"
+                                                dataSource="@ViewData["ListaDestino"]"
+                                                placeholder="Selecione ou digite o destino" allowFiltering="true"
+                                                filterType="Contains" allowCustom="true" popupHeight="220px">
+                                            </ejs-combobox>
                                         </div>
                                     </div>
                                 </div>
@@ -1555,8 +1563,6 @@
                     dataCombustivel: @Html.Raw(Json.Serialize(ViewData["dataCombustivel"])),
                     dataEvento: @Html.Raw(Json.Serialize(ViewData["dataEvento"])),
                     dataMotorista: @Html.Raw(Json.Serialize(ViewData["dataMotorista"])),
-                    listaOrigem: @Html.Raw(Json.Serialize(ViewData["ListaOrigem"])),
-                    listaDestino: @Html.Raw(Json.Serialize(ViewData["ListaDestino"])),
                     valores: {
                         viagemId: "@(Model.ViagemObj?.Viagem?.ViagemId.ToString() ?? "")",
                         status: "@(Model.ViagemObj?.Viagem?.Status ?? "")",
@@ -1564,9 +1570,7 @@
                         eventoId: "@(Model.ViagemObj?.Viagem?.EventoId?.ToString() ?? "")",
                         motoristaId: "@(Model.ViagemObj?.Viagem?.MotoristaId?.ToString() ?? "")",
                         combustivelInicial: "@(Model.ViagemObj?.Viagem?.CombustivelInicial ?? "")",
-                        combustivelFinal: "@(Model.ViagemObj?.Viagem?.CombustivelFinal ?? "")",
-                        origem: "@(Model.ViagemObj?.Viagem?.Origem ?? "")",
-                        destino: "@(Model.ViagemObj?.Viagem?.Destino ?? "")"
+                        combustivelFinal: "@(Model.ViagemObj?.Viagem?.CombustivelFinal ?? "")"
                     },
                     datas: {
                         dataInicial: @Html.Raw(Model.ViagemObj?.Viagem?.DataInicial != null ?
@@ -1590,26 +1594,6 @@
                 window.viagemStatus = context.valores.status;
                 window.viagemFinalizada = @Json.Serialize(Model.ViagemObj?.Viagem?.Status == "Realizada" || Model.ViagemObj?.Viagem?.Status == "Cancelada");
                 window.viagemUpsertContext = context;
-
-                // Inicialização Kendo ComboBox - Origem
-                $("#cmbOrigem").kendoComboBox({
-                    dataSource: context.listaOrigem || [],
-                    filter: "contains",
-                    placeholder: "Selecione ou digite a Origem",
-                    height: 220,
-                    suggest: true,
-                    value: context.valores.origem
-                });
-
-                // Inicialização Kendo ComboBox - Destino
-                $("#cmbDestino").kendoComboBox({
-                    dataSource: context.listaDestino || [],
-                    filter: "contains",
-                    placeholder: "Selecione ou digite o Destino",
-                    height: 220,
-                    suggest: true,
-                    value: context.valores.destino
-                });
 
                 if (typeof initViagemUpsertPage === "function")
                 {
