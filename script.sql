@@ -1567,3 +1567,137 @@ LEFT JOIN dbo.ModeloVeiculo mv ON v.ModeloId = mv.ModeloId
 LEFT JOIN dbo.MarcaVeiculo ma ON mv.MarcaId = ma.MarcaId
 WHERE ed.DataEscala = CAST(GETDATE() AS date);
 GO
+
+-- ROLLBACK SCRIPT (execute manualmente se necessario)
+-- Schema sync (models) - desfaz views, constraints, indexes/stats e tabelas adicionadas
+BEGIN TRY
+    BEGIN TRAN;
+
+    -- Views
+    IF OBJECT_ID('dbo.ViewStatusMotoristas', 'V') IS NOT NULL
+        DROP VIEW dbo.ViewStatusMotoristas;
+
+    IF OBJECT_ID('dbo.ViewMotoristasVez', 'V') IS NOT NULL
+        DROP VIEW dbo.ViewMotoristasVez;
+
+    IF OBJECT_ID('dbo.ViewEscalasCompletas', 'V') IS NOT NULL
+        DROP VIEW dbo.ViewEscalasCompletas;
+
+    IF OBJECT_ID('dbo.ViewFluxoEconomildoData', 'V') IS NOT NULL
+        DROP VIEW dbo.ViewFluxoEconomildoData;
+
+    IF OBJECT_ID('dbo.ViewGlosa', 'V') IS NOT NULL
+        DROP VIEW dbo.ViewGlosa;
+
+    IF OBJECT_ID('dbo.ViewManutencao', 'V') IS NOT NULL
+        DROP VIEW dbo.ViewManutencao;
+
+    IF OBJECT_ID('dbo.ViewOcorrenciasAbertasVeiculo', 'V') IS NOT NULL
+        DROP VIEW dbo.ViewOcorrenciasAbertasVeiculo;
+
+    IF OBJECT_ID('dbo.ViewOcorrenciasViagem', 'V') IS NOT NULL
+        DROP VIEW dbo.ViewOcorrenciasViagem;
+
+    IF OBJECT_ID('dbo.ViewMotoristasViagem', 'V') IS NOT NULL
+        DROP VIEW dbo.ViewMotoristasViagem;
+
+    IF OBJECT_ID('dbo.ViewVeiculosManutencao', 'V') IS NOT NULL
+        DROP VIEW dbo.ViewVeiculosManutencao;
+
+    IF OBJECT_ID('dbo.ViewVeiculosManutencaoReserva', 'V') IS NOT NULL
+        DROP VIEW dbo.ViewVeiculosManutencaoReserva;
+
+    -- Foreign keys
+    IF EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_CoberturaFolga_MotoristaCobertura')
+        ALTER TABLE dbo.CoberturaFolga DROP CONSTRAINT FK_CoberturaFolga_MotoristaCobertura;
+
+    IF EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_CoberturaFolga_MotoristaFolga')
+        ALTER TABLE dbo.CoberturaFolga DROP CONSTRAINT FK_CoberturaFolga_MotoristaFolga;
+
+    IF EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Ferias_MotoristaSub')
+        ALTER TABLE dbo.Ferias DROP CONSTRAINT FK_Ferias_MotoristaSub;
+
+    IF EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Ferias_Motorista')
+        ALTER TABLE dbo.Ferias DROP CONSTRAINT FK_Ferias_Motorista;
+
+    IF EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_FolgaRecesso_Motorista')
+        ALTER TABLE dbo.FolgaRecesso DROP CONSTRAINT FK_FolgaRecesso_Motorista;
+
+    IF EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_EscalaDiaria_Requisitante')
+        ALTER TABLE dbo.EscalaDiaria DROP CONSTRAINT FK_EscalaDiaria_Requisitante;
+
+    IF EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_EscalaDiaria_Turno')
+        ALTER TABLE dbo.EscalaDiaria DROP CONSTRAINT FK_EscalaDiaria_Turno;
+
+    IF EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_EscalaDiaria_TipoServico')
+        ALTER TABLE dbo.EscalaDiaria DROP CONSTRAINT FK_EscalaDiaria_TipoServico;
+
+    IF EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_EscalaDiaria_Associacao')
+        ALTER TABLE dbo.EscalaDiaria DROP CONSTRAINT FK_EscalaDiaria_Associacao;
+
+    IF EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_VAssociado_Veiculo')
+        ALTER TABLE dbo.VAssociado DROP CONSTRAINT FK_VAssociado_Veiculo;
+
+    IF EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_VAssociado_Motorista')
+        ALTER TABLE dbo.VAssociado DROP CONSTRAINT FK_VAssociado_Motorista;
+
+    -- Indexes and stats
+    IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
+       AND EXISTS (SELECT 1 FROM sys.stats WHERE name = 'STAT_LogErros_DataHoraTipo' AND object_id = OBJECT_ID('dbo.LogErros'))
+        DROP STATISTICS dbo.LogErros.STAT_LogErros_DataHoraTipo;
+
+    IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
+       AND EXISTS (SELECT 1 FROM sys.stats WHERE name = 'STAT_LogErros_TipoOrigem' AND object_id = OBJECT_ID('dbo.LogErros'))
+        DROP STATISTICS dbo.LogErros.STAT_LogErros_TipoOrigem;
+
+    IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
+       AND EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_LogErros_Dashboard' AND object_id = OBJECT_ID('dbo.LogErros'))
+        DROP INDEX IX_LogErros_Dashboard ON dbo.LogErros;
+
+    IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
+       AND EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_LogErros_Resolvido' AND object_id = OBJECT_ID('dbo.LogErros'))
+        DROP INDEX IX_LogErros_Resolvido ON dbo.LogErros;
+
+    IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
+       AND EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_LogErros_HashErro' AND object_id = OBJECT_ID('dbo.LogErros'))
+        DROP INDEX IX_LogErros_HashErro ON dbo.LogErros;
+
+    IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
+       AND EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_LogErros_DataHora' AND object_id = OBJECT_ID('dbo.LogErros'))
+        DROP INDEX IX_LogErros_DataHora ON dbo.LogErros;
+
+    -- Tables (reverse dependency order)
+    IF OBJECT_ID('dbo.ObservacoesEscala', 'U') IS NOT NULL
+        DROP TABLE dbo.ObservacoesEscala;
+
+    IF OBJECT_ID('dbo.CoberturaFolga', 'U') IS NOT NULL
+        DROP TABLE dbo.CoberturaFolga;
+
+    IF OBJECT_ID('dbo.Ferias', 'U') IS NOT NULL
+        DROP TABLE dbo.Ferias;
+
+    IF OBJECT_ID('dbo.FolgaRecesso', 'U') IS NOT NULL
+        DROP TABLE dbo.FolgaRecesso;
+
+    IF OBJECT_ID('dbo.EscalaDiaria', 'U') IS NOT NULL
+        DROP TABLE dbo.EscalaDiaria;
+
+    IF OBJECT_ID('dbo.VAssociado', 'U') IS NOT NULL
+        DROP TABLE dbo.VAssociado;
+
+    IF OBJECT_ID('dbo.Turno', 'U') IS NOT NULL
+        DROP TABLE dbo.Turno;
+
+    IF OBJECT_ID('dbo.TipoServico', 'U') IS NOT NULL
+        DROP TABLE dbo.TipoServico;
+
+    IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
+        DROP TABLE dbo.LogErros;
+
+    COMMIT;
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK;
+    THROW;
+END CATCH;
+GO
