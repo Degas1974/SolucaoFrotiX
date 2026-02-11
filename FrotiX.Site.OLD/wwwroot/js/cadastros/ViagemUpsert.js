@@ -2887,7 +2887,11 @@ function initViagemUpsertPage(context)
             {
                 initKendoDropDowns(context);
                 initKendoDateTimePickers(context);
-                initFuzzyDestinoValidation();
+
+                // ⚠️ SISTEMA FUZZY MIGRADO: Agora usa kendo-fuzzy-validator.js (v2.0)
+                // A validação fuzzy para Origem/Destino está no novo módulo carregado no Upsert.cshtml
+                // initFuzzyDestinoValidation(); // ❌ DESATIVADO - código Syncfusion obsoleto
+
                 initModalZoomHandler();
                 initUnsavedChangesGuard();
             }

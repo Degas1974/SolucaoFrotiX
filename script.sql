@@ -32,82 +32,97 @@ BEGIN TRY
                 CONSTRAINT DF_Viagem_CartaoAbastecimentoDevolvido DEFAULT (0);
 
     -- Backfill a partir dos campos legados (string/boolean)
-    IF COL_LENGTH('dbo.Viagem', 'StatusDocumento') IS NOT NULL
-       OR COL_LENGTH('dbo.Viagem', 'StatusDocumentoFinal') IS NOT NULL
-       OR COL_LENGTH('dbo.Viagem', 'StatusCartaoAbastecimento') IS NOT NULL
-       OR COL_LENGTH('dbo.Viagem', 'StatusCartaoAbastecimentoFinal') IS NOT NULL
+    DECLARE @sql nvarchar(max) = N'';
+    DECLARE @set nvarchar(max) = N'';
+    DECLARE @where nvarchar(max) = N'';
+    DECLARE @hasStatusDocumento bit = CASE WHEN COL_LENGTH('dbo.Viagem', 'StatusDocumento') IS NOT NULL THEN 1 ELSE 0 END;
+    DECLARE @hasStatusDocumentoFinal bit = CASE WHEN COL_LENGTH('dbo.Viagem', 'StatusDocumentoFinal') IS NOT NULL THEN 1 ELSE 0 END;
+    DECLARE @hasStatusCartao bit = CASE WHEN COL_LENGTH('dbo.Viagem', 'StatusCartaoAbastecimento') IS NOT NULL THEN 1 ELSE 0 END;
+    DECLARE @hasStatusCartaoFinal bit = CASE WHEN COL_LENGTH('dbo.Viagem', 'StatusCartaoAbastecimentoFinal') IS NOT NULL THEN 1 ELSE 0 END;
+
+    IF @hasStatusDocumento = 1
     BEGIN
-        UPDATE dbo.Viagem
-        SET DocumentoEntregue = CASE
-                WHEN StatusDocumento IN ('Entregue', '1', 'true', 'True') THEN 1
-                ELSE 0
-            END,
-            DocumentoDevolvido = CASE
-                WHEN StatusDocumentoFinal IN ('Devolvido', '1', 'true', 'True') THEN 1
-                ELSE 0
-            END,
-            CartaoAbastecimentoEntregue = CASE
-                WHEN StatusCartaoAbastecimento IN ('Entregue', '1', 'true', 'True') THEN 1
-                ELSE 0
-            END,
-            CartaoAbastecimentoDevolvido = CASE
-                WHEN StatusCartaoAbastecimentoFinal IN ('Devolvido', '1', 'true', 'True') THEN 1
-                ELSE 0
-            END
-        WHERE StatusDocumento IS NOT NULL
-           OR StatusDocumentoFinal IS NOT NULL
-           OR StatusCartaoAbastecimento IS NOT NULL
-           OR StatusCartaoAbastecimentoFinal IS NOT NULL;
+        SET @set += N'DocumentoEntregue = CASE WHEN StatusDocumento IN (''Entregue'',''1'',''true'',''True'') THEN 1 ELSE 0 END,';
+        SET @where += N' OR StatusDocumento IS NOT NULL';
     END
 
-    -- Remove constraints defaults dos campos legados (se existirem)
-    DECLARE @sql nvarchar(max);
+    IF @hasStatusDocumentoFinal = 1
+    BEGIN
+        SET @set += N'DocumentoDevolvido = CASE WHEN StatusDocumentoFinal IN (''Devolvido'',''1'',''true'',''True'') THEN 1 ELSE 0 END,';
+        SET @where += N' OR StatusDocumentoFinal IS NOT NULL';
+    END
 
-    SELECT @sql = N'ALTER TABLE dbo.Viagem DROP CONSTRAINT ' + QUOTENAME(dc.name)
-    FROM sys.default_constraints dc
-    INNER JOIN sys.columns c
-        ON c.object_id = dc.parent_object_id
-       AND c.column_id = dc.parent_column_id
-    WHERE dc.parent_object_id = OBJECT_ID('dbo.Viagem')
-      AND c.name = 'StatusDocumento';
-    IF @sql IS NOT NULL EXEC sp_executesql @sql;
+    IF @hasStatusCartao = 1
+    BEGIN
+        SET @set += N'CartaoAbastecimentoEntregue = CASE WHEN StatusCartaoAbastecimento IN (''Entregue'',''1'',''true'',''True'') THEN 1 ELSE 0 END,';
+        SET @where += N' OR StatusCartaoAbastecimento IS NOT NULL';
+    END
 
-    SELECT @sql = N'ALTER TABLE dbo.Viagem DROP CONSTRAINT ' + QUOTENAME(dc.name)
-    FROM sys.default_constraints dc
-    INNER JOIN sys.columns c
-        ON c.object_id = dc.parent_object_id
-       AND c.column_id = dc.parent_column_id
-    WHERE dc.parent_object_id = OBJECT_ID('dbo.Viagem')
-      AND c.name = 'StatusCartaoAbastecimento';
-    IF @sql IS NOT NULL EXEC sp_executesql @sql;
+    IF @hasStatusCartaoFinal = 1
+    BEGIN
+        SET @set += N'CartaoAbastecimentoDevolvido = CASE WHEN StatusCartaoAbastecimentoFinal IN (''Devolvido'',''1'',''true'',''True'') THEN 1 ELSE 0 END,';
+        SET @where += N' OR StatusCartaoAbastecimentoFinal IS NOT NULL';
+    END
 
-    SELECT @sql = N'ALTER TABLE dbo.Viagem DROP CONSTRAINT ' + QUOTENAME(dc.name)
-    FROM sys.default_constraints dc
-    INNER JOIN sys.columns c
-        ON c.object_id = dc.parent_object_id
-       AND c.column_id = dc.parent_column_id
-    WHERE dc.parent_object_id = OBJECT_ID('dbo.Viagem')
-      AND c.name = 'StatusDocumentoFinal';
-    IF @sql IS NOT NULL EXEC sp_executesql @sql;
+    IF LEN(@set) > 0
+    BEGIN
+        SET @set = LEFT(@set, LEN(@set) - 1);
+        SET @sql = N'UPDATE dbo.Viagem SET ' + @set + N' WHERE 1 = 0' + @where + N';';
+        EXEC sp_executesql @sql;
+    END
 
-    SELECT @sql = N'ALTER TABLE dbo.Viagem DROP CONSTRAINT ' + QUOTENAME(dc.name)
-    FROM sys.default_constraints dc
-    INNER JOIN sys.columns c
-        ON c.object_id = dc.parent_object_id
-       AND c.column_id = dc.parent_column_id
-    WHERE dc.parent_object_id = OBJECT_ID('dbo.Viagem')
-      AND c.name = 'StatusCartaoAbastecimentoFinal';
-    IF @sql IS NOT NULL EXEC sp_executesql @sql;
+    -- Mantem colunas legadas por padrao (ajuste para 1 se quiser remover)
+    DECLARE @DropLegacyColumns bit = 0;
 
-    -- Remove colunas legadas
-    IF COL_LENGTH('dbo.Viagem', 'StatusDocumento') IS NOT NULL
-        ALTER TABLE dbo.Viagem DROP COLUMN StatusDocumento;
-    IF COL_LENGTH('dbo.Viagem', 'StatusCartaoAbastecimento') IS NOT NULL
-        ALTER TABLE dbo.Viagem DROP COLUMN StatusCartaoAbastecimento;
-    IF COL_LENGTH('dbo.Viagem', 'StatusDocumentoFinal') IS NOT NULL
-        ALTER TABLE dbo.Viagem DROP COLUMN StatusDocumentoFinal;
-    IF COL_LENGTH('dbo.Viagem', 'StatusCartaoAbastecimentoFinal') IS NOT NULL
-        ALTER TABLE dbo.Viagem DROP COLUMN StatusCartaoAbastecimentoFinal;
+    IF @DropLegacyColumns = 1
+    BEGIN
+        -- Remove constraints defaults dos campos legados (se existirem)
+        SELECT @sql = N'ALTER TABLE dbo.Viagem DROP CONSTRAINT ' + QUOTENAME(dc.name)
+        FROM sys.default_constraints dc
+        INNER JOIN sys.columns c
+            ON c.object_id = dc.parent_object_id
+           AND c.column_id = dc.parent_column_id
+        WHERE dc.parent_object_id = OBJECT_ID('dbo.Viagem')
+          AND c.name = 'StatusDocumento';
+        IF @sql IS NOT NULL EXEC sp_executesql @sql;
+
+        SELECT @sql = N'ALTER TABLE dbo.Viagem DROP CONSTRAINT ' + QUOTENAME(dc.name)
+        FROM sys.default_constraints dc
+        INNER JOIN sys.columns c
+            ON c.object_id = dc.parent_object_id
+           AND c.column_id = dc.parent_column_id
+        WHERE dc.parent_object_id = OBJECT_ID('dbo.Viagem')
+          AND c.name = 'StatusCartaoAbastecimento';
+        IF @sql IS NOT NULL EXEC sp_executesql @sql;
+
+        SELECT @sql = N'ALTER TABLE dbo.Viagem DROP CONSTRAINT ' + QUOTENAME(dc.name)
+        FROM sys.default_constraints dc
+        INNER JOIN sys.columns c
+            ON c.object_id = dc.parent_object_id
+           AND c.column_id = dc.parent_column_id
+        WHERE dc.parent_object_id = OBJECT_ID('dbo.Viagem')
+          AND c.name = 'StatusDocumentoFinal';
+        IF @sql IS NOT NULL EXEC sp_executesql @sql;
+
+        SELECT @sql = N'ALTER TABLE dbo.Viagem DROP CONSTRAINT ' + QUOTENAME(dc.name)
+        FROM sys.default_constraints dc
+        INNER JOIN sys.columns c
+            ON c.object_id = dc.parent_object_id
+           AND c.column_id = dc.parent_column_id
+        WHERE dc.parent_object_id = OBJECT_ID('dbo.Viagem')
+          AND c.name = 'StatusCartaoAbastecimentoFinal';
+        IF @sql IS NOT NULL EXEC sp_executesql @sql;
+
+        -- Remove colunas legadas
+        IF COL_LENGTH('dbo.Viagem', 'StatusDocumento') IS NOT NULL
+            ALTER TABLE dbo.Viagem DROP COLUMN StatusDocumento;
+        IF COL_LENGTH('dbo.Viagem', 'StatusCartaoAbastecimento') IS NOT NULL
+            ALTER TABLE dbo.Viagem DROP COLUMN StatusCartaoAbastecimento;
+        IF COL_LENGTH('dbo.Viagem', 'StatusDocumentoFinal') IS NOT NULL
+            ALTER TABLE dbo.Viagem DROP COLUMN StatusDocumentoFinal;
+        IF COL_LENGTH('dbo.Viagem', 'StatusCartaoAbastecimentoFinal') IS NOT NULL
+            ALTER TABLE dbo.Viagem DROP COLUMN StatusCartaoAbastecimentoFinal;
+    END
 
     COMMIT;
 END TRY
@@ -1141,6 +1156,7 @@ BEGIN TRY
      END
 
      IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
+         AND COL_LENGTH('dbo.LogErros', 'UrlHash') IS NOT NULL
          AND NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_LogErros_UrlHash' AND object_id = OBJECT_ID('dbo.LogErros'))
      BEGIN
           CREATE INDEX IX_LogErros_UrlHash
@@ -1598,8 +1614,12 @@ GO
 
 -- ROLLBACK SCRIPT (execute manualmente se necessario)
 -- Schema sync (models) - desfaz views, constraints, indexes/stats e tabelas adicionadas
-BEGIN TRY
-    BEGIN TRAN;
+DECLARE @RunRollback bit = 0;
+
+IF @RunRollback = 1
+BEGIN
+    BEGIN TRY
+        BEGIN TRAN;
 
     -- Validacao: impede drop se houver dados nas tabelas do schema sync
     IF OBJECT_ID('dbo.ObservacoesEscala', 'U') IS NOT NULL
@@ -1767,10 +1787,11 @@ BEGIN TRY
     IF OBJECT_ID('dbo.LogErros', 'U') IS NOT NULL
         DROP TABLE dbo.LogErros;
 
-    COMMIT;
-END TRY
-BEGIN CATCH
-    IF @@TRANCOUNT > 0 ROLLBACK;
-    THROW;
-END CATCH;
+        COMMIT;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK;
+        THROW;
+    END CATCH;
+END
 GO
