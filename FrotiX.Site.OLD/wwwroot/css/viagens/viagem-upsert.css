@@ -386,6 +386,129 @@ img[alt="Foto"]:not([src]) {
     text-align: left;
 }
 
+/* ======== Kendo DropDownList personalizado (combustível) ======== */
+.combustivel-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    min-height: 40px;
+    width: 100%;
+}
+
+.combustivel-item img {
+    height: 22px;
+    flex-shrink: 0;
+}
+
+.combustivel-value {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    height: 38px;
+    width: 100%;
+}
+
+.combustivel-value img {
+    height: 22px;
+    flex-shrink: 0;
+}
+
+/* Centralizacao no listbox do Kendo (combustível inicial) */
+#ddlCombustivelInicial_listbox,
+#ddlCombustivelInicial_listbox .k-list-content,
+#ddlCombustivelInicial_listbox .k-list-ul {
+    text-align: left;
+}
+
+#ddlCombustivelInicial_listbox .k-list-item,
+#ddlCombustivelInicial_listbox .k-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#ddlCombustivelInicial_listbox .k-list-item-text,
+#ddlCombustivelInicial_listbox .k-list-item-text > span {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#ddlCombustivelInicial_listbox .combustivel-item {
+    margin: 0 auto;
+}
+
+/* Centralizacao do valor selecionado (combustível inicial) */
+.k-dropdownlist[aria-controls="ddlCombustivelInicial_listbox"] .k-input-inner {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+}
+
+.k-dropdownlist[aria-controls="ddlCombustivelInicial_listbox"] .k-input-value-text,
+.k-dropdownlist[aria-controls="ddlCombustivelInicial_listbox"] .k-input-inner .k-input-value-text {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+}
+
+/* Centralizacao no listbox do Kendo (combustível final) */
+#ddlCombustivelFinal_listbox,
+#ddlCombustivelFinal_listbox .k-list-content,
+#ddlCombustivelFinal_listbox .k-list-ul {
+    text-align: left;
+}
+
+#ddlCombustivelFinal_listbox .k-list-item,
+#ddlCombustivelFinal_listbox .k-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#ddlCombustivelFinal_listbox .k-list-item-text,
+#ddlCombustivelFinal_listbox .k-list-item-text > span {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#ddlCombustivelFinal_listbox .combustivel-item {
+    margin: 0 auto;
+}
+
+/* Centralizacao do valor selecionado (combustível final) */
+.k-dropdownlist[aria-controls="ddlCombustivelFinal_listbox"] .k-input-inner {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+}
+
+.k-dropdownlist[aria-controls="ddlCombustivelFinal_listbox"] .k-input-value-text,
+.k-dropdownlist[aria-controls="ddlCombustivelFinal_listbox"] .k-input-inner .k-input-value-text {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+}
+
 .k-dropdownlist[aria-controls="cmbMotorista_listbox"] .k-input-values,
 .k-dropdownlist[aria-controls="cmbMotorista_listbox"] .k-input-value-text > span {
     justify-content: flex-start;
@@ -463,6 +586,42 @@ img[alt="Foto"]:not([src]) {
     width: fit-content;
     inline-size: fit-content;
     width: -moz-fit-content;
+}
+
+.zoom-btn {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 0.75rem;
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #ff6b35 0%, #ff5722 100%);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.zoom-btn:hover {
+    background: linear-gradient(135deg, #ff5722 0%, #e64a19 100%);
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(255, 107, 53, 0.5);
+}
+
+.zoom-btn:active {
+    transform: scale(0.95);
+}
+
+.zoom-btn i {
+    font-size: 1.4rem;
+    --fa-primary-color: #ffffff;
+    --fa-secondary-color: #ffffff;
+    --fa-secondary-opacity: 0.6;
 }
 
 .modal-zoom {

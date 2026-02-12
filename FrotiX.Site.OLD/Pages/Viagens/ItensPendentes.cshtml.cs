@@ -17,7 +17,7 @@
  *                   (includeProperties, navigation properties), System.Linq
  * 📝 OBSERVAÇÕES  : Filtro complexo: Status = "Realizada" AND ((DocumentoEntregue=true AND
  *                   DocumentoDevolvido=false) OR (CartaoAbastecimentoEntregue=true AND
- *                   CartaoAbastecimentoDevolvido=false) OR ... 6 tipos de itens verificados).
+ *                   CartaoAbastecimentoDevolvido=false) OR ... 7 tipos de itens verificados).
  *                   Sistema crítico para controle de patrimônio e itens emprestados aos motoristas.
  *                   Evita perda de equipamentos. 39 linhas com lógica de filtragem via LINQ/EF Core.
  *                   Navigation properties (Motorista, Veiculo) carregadas via includeProperties
@@ -55,7 +55,8 @@ namespace FrotiX.Pages.Viagens
                 (v.CintaEntregue == true && v.CintaDevolvida == false) ||
                 (v.TabletEntregue == true && v.TabletDevolvido == false) ||
                 (v.ArlaEntregue == true && v.ArlaDevolvido == false) ||
-                (v.CaboEntregue == true && v.CaboDevolvido == false)),
+                (v.CaboEntregue == true && v.CaboDevolvido == false) ||
+                (v.SuporteIntegro == true && v.SuporteDefeituoso == false)),
                 includeProperties: "Motorista,Veiculo"
             ).ToList();
         }

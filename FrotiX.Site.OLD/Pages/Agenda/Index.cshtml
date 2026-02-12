@@ -1019,6 +1019,11 @@
                                         <!-- allowCustom="true" permite digitação livre -->
                                         <input id="cmbOrigem" style="width: 100%;"
                                             data-ejtip="Origem não está na lista? Consulte direito antes de cadastrar!" />
+                                        <!-- Aviso fuzzy validator -->
+                                        <div id="fuzzy-alert-origem" class="fuzzy-inline-alert" style="display: none;">
+                                            <i class="fa-duotone fa-circle-exclamation"></i>
+                                            <span class="fuzzy-alert-text"></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1041,6 +1046,11 @@
                                         <!-- allowCustom="true" permite digitação livre -->
                                         <input id="cmbDestino" style="width: 100%;"
                                             data-ejtip="Destino não está na lista? Consulte direito antes de cadastrar!" />
+                                        <!-- Aviso fuzzy validator -->
+                                        <div id="fuzzy-alert-destino" class="fuzzy-inline-alert" style="display: none;">
+                                            <i class="fa-duotone fa-circle-exclamation"></i>
+                                            <span class="fuzzy-alert-text"></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1990,6 +2000,11 @@
     <script src="~/js/viagens/kendo-fuzzy-validator.js" asp-append-version="true"></script>
 
     @* ============================================
+       AUTO-CORREÇÃO ORTOGRÁFICA - Origem/Destino (blur)
+       ============================================ *@
+    <script src="~/js/viagens/origem-destino-autocorrect.js" asp-append-version="true"></script>
+
+    @* ============================================
    FUNÇÃO CALLBACK DO TREEVIEW DE SETORES
    ============================================ *@
     <script>
@@ -2073,6 +2088,187 @@
                     format: "dd/MM/yyyy",
                     placeholder: "Data Final"
                 });
+
+                // ═══════════════════════════════════════════════════════════════════════
+                // ORIGEM/DESTINO - ComboBox com validação fuzzy
+                // ═══════════════════════════════════════════════════════════════════════
+                console.log('[Agenda] 🔧 Inicializando ComboBox Origem/Destino...');
+
+                var cmbOrigem = $("#cmbOrigem").kendoComboBox({
+                    dataSource: window.dataOrigem || [],
+                    filter: "contains",
+                    placeholder: "Selecione ou digite a Origem",
+                    height: 220,
+                    suggest: false,
+                    minLength: 0,
+                    enforceMinLength: false,
+                    autoWidth: true
+                }).data("kendoComboBox");
+
+                // CRÍTICO: Preservar valor digitado e fechar dropdown ao Tab
+                var origemTypedValue = '';
+                var origemManualSelection = false;
+                var origemTabPressed = false;
+
+                cmbOrigem.input.on('input', function() {
+                    origemTypedValue = $(this).val();
+                    origemManualSelection = false;
+                });
+
+                // Detectar clique manual no dropdown
+                cmbOrigem.list.on('click', 'li', function() {
+                    origemManualSelection = true;
+                });
+
+                // Detectar Enter (seleção manual por teclado)
+                cmbOrigem.input.on('keydown', function(e) {
+                    if (e.keyCode === 13) { // Enter
+                        origemManualSelection = true;
+                    }
+                    if (e.keyCode === 9) { // Tab
+                        console.log('[Agenda] ⌨️ Tab pressionado - Prevenindo auto-seleção');
+                        e.preventDefault(); // CRÍTICO: Impedir comportamento padrão do Tab
+                        origemTabPressed = true;
+                        cmbOrigem.close();
+
+                        // Restaurar valor digitado IMEDIATAMENTE (SEM usar .value() para evitar auto-correção)
+                        if (origemTypedValue && !origemManualSelection) {
+                            cmbOrigem.text(origemTypedValue);
+                            cmbOrigem.input.val(origemTypedValue);
+                        }
+
+                        // Mover foco para próximo campo manualmente
+                        setTimeout(function() {
+                            $('#cmbDestino').data('kendoComboBox').input.focus();
+                        }, 50);
+                    }
+                });
+
+                cmbOrigem.input.on('blur', function() {
+                    setTimeout(function() {
+                        var currentText = cmbOrigem.text();
+
+                        // Se Tab foi pressionado e valor mudou, restaurar
+                        if (origemTabPressed && !origemManualSelection && origemTypedValue && currentText !== origemTypedValue) {
+                            console.log('[Agenda] 🔄 Tab pressionado - Restaurando valor digitado:', origemTypedValue);
+                            cmbOrigem.text(origemTypedValue);
+                            cmbOrigem.input.val(origemTypedValue);
+                            cmbOrigem.trigger('change');
+                        } else if (origemTypedValue) {
+                            console.log('[Agenda] ✅ Disparando change para fuzzy validator');
+                            cmbOrigem.trigger('change');
+                        }
+
+                        // Reset flags
+                        origemTabPressed = false;
+                        origemManualSelection = false;
+                    }, 100);
+                });
+                console.log('[Agenda] ✅ Kendo ComboBox cmbOrigem inicializado');
+
+                var cmbDestino = $("#cmbDestino").kendoComboBox({
+                    dataSource: window.dataDestino || [],
+                    filter: "contains",
+                    placeholder: "Selecione ou digite o Destino",
+                    height: 220,
+                    suggest: false,
+                    minLength: 0,
+                    enforceMinLength: false,
+                    autoWidth: true
+                }).data("kendoComboBox");
+
+                // CRÍTICO: Preservar valor digitado e fechar dropdown ao Tab
+                var destinoTypedValue = '';
+                var destinoManualSelection = false;
+                var destinoTabPressed = false;
+
+                cmbDestino.input.on('input', function() {
+                    destinoTypedValue = $(this).val();
+                    destinoManualSelection = false;
+                });
+
+                // Detectar clique manual no dropdown
+                cmbDestino.list.on('click', 'li', function() {
+                    destinoManualSelection = true;
+                });
+
+                // Detectar Enter (seleção manual por teclado)
+                cmbDestino.input.on('keydown', function(e) {
+                    if (e.keyCode === 13) { // Enter
+                        destinoManualSelection = true;
+                    }
+                    if (e.keyCode === 9) { // Tab
+                        console.log('[Agenda] ⌨️ Tab pressionado em Destino - Prevenindo auto-seleção');
+                        e.preventDefault(); // CRÍTICO: Impedir comportamento padrão do Tab
+                        destinoTabPressed = true;
+                        cmbDestino.close();
+
+                        // Restaurar valor digitado IMEDIATAMENTE (SEM usar .value() para evitar auto-correção)
+                        if (destinoTypedValue && !destinoManualSelection) {
+                            cmbDestino.text(destinoTypedValue);
+                            cmbDestino.input.val(destinoTypedValue);
+                        }
+
+                        // Mover foco para próximo campo manualmente
+                        setTimeout(function() {
+                            // Próximo campo na Agenda (pode ser outro campo do formulário)
+                            $(':input:eq(' + ($(':input').index(cmbDestino.input) + 1) + ')').focus();
+                        }, 50);
+                    }
+                });
+
+                cmbDestino.input.on('blur', function() {
+                    setTimeout(function() {
+                        var currentText = cmbDestino.text();
+
+                        // Se Tab foi pressionado e valor mudou, restaurar
+                        if (destinoTabPressed && !destinoManualSelection && destinoTypedValue && currentText !== destinoTypedValue) {
+                            console.log('[Agenda] 🔄 Tab pressionado - Restaurando valor digitado:', destinoTypedValue);
+                            cmbDestino.text(destinoTypedValue);
+                            cmbDestino.input.val(destinoTypedValue);
+                            cmbDestino.trigger('change');
+                        } else if (destinoTypedValue) {
+                            console.log('[Agenda] ✅ Disparando change para fuzzy validator');
+                            cmbDestino.trigger('change');
+                        }
+
+                        // Reset flags
+                        destinoTabPressed = false;
+                        destinoManualSelection = false;
+                    }, 100);
+                });
+                console.log('[Agenda] ✅ Kendo ComboBox cmbDestino inicializado');
+
+                // ═══════════════════════════════════════════════════════════════════════
+                // FUZZY VALIDATOR - Inicializar validação de duplicatas
+                // ═══════════════════════════════════════════════════════════════════════
+                if (typeof KendoFuzzyValidator !== 'undefined') {
+                    console.log('[Agenda] 🧠 Inicializando Fuzzy Validator...');
+                    setTimeout(function() {
+                        KendoFuzzyValidator.init({
+                            origemData: window.dataOrigem || [],
+                            destinoData: window.dataDestino || []
+                        });
+                    }, 500); // Aguardar inicialização completa dos controles
+                } else {
+                    console.warn('[Agenda] ⚠️ KendoFuzzyValidator não encontrado - validação fuzzy desabilitada');
+                }
+
+                // ═══════════════════════════════════════════════════════════════════════
+                // AUTO-CORREÇÃO ORTOGRÁFICA - Inicializar correção automática no blur
+                // ═══════════════════════════════════════════════════════════════════════
+                if (typeof OrigemDestinoAutoCorrect !== 'undefined') {
+                    console.log('[Agenda] 🔤 Inicializando Auto-Correção Ortográfica...');
+                    setTimeout(function() {
+                        OrigemDestinoAutoCorrect.init({
+                            origemId: '#cmbOrigem',
+                            destinoId: '#cmbDestino'
+                        });
+                        console.log('[Agenda] ✅ Auto-Correção Ortográfica v1.0 inicializada');
+                    }, 600); // Aguardar fuzzy validator inicializar primeiro
+                } else {
+                    console.warn('[Agenda] ⚠️ OrigemDestinoAutoCorrect não disponível');
+                }
 
             } catch (error) {
                 Alerta.TratamentoErroComLinha("Agenda/Index.cshtml", "kendoControls.init", error);

@@ -105,6 +105,23 @@
     }
 
     /****************************************************************************************
+     * ⚡ FUNÇÃO: capitalizeFirstLetter
+     * --------------------------------------------------------------------------------------
+     * Capitaliza primeira letra do texto (para texto livre digitado pelo usuário)
+     ****************************************************************************************/
+    function capitalizeFirstLetter(text) {
+        try {
+            if (!text) return '';
+            const trimmed = String(text).trim();
+            if (!trimmed) return '';
+            return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+        } catch (error) {
+            console.error('capitalizeFirstLetter error:', error);
+            return text;
+        }
+    }
+
+    /****************************************************************************************
      * ⚡ FUNÇÃO: levenshteinDistance
      * --------------------------------------------------------------------------------------
      * Calcula distância de Levenshtein (edições necessárias entre duas strings)
@@ -157,6 +174,32 @@
             if (!na || !nb) return 0.0;
             if (na === nb) return 1.0;
 
+            // ═══════════════════════════════════════════════════════════════════════
+            // NOVO: Detectar se uma string é SUBSTRING da outra
+            // ═══════════════════════════════════════════════════════════════════════
+            const isSubstring = nb.includes(na) || na.includes(nb);
+
+            if (isSubstring) {
+                // Determinar qual é a substring e qual é a string maior
+                const shorter = na.length < nb.length ? na : nb;
+                const longer = na.length < nb.length ? nb : na;
+
+                // Score baseado no tamanho relativo da substring
+                // Exemplo: "080" (3) em "... (0800)" (58) = 3/58 = 0.05
+                const lengthRatio = shorter.length / longer.length;
+
+                // Score mínimo de 85% para qualquer substring válida
+                // Score máximo de 97% para substrings que ocupam > 50% da string
+                const baseScore = 0.85;
+                const bonus = lengthRatio * 0.12; // Até 12% de bônus
+                const substringScore = baseScore + bonus;
+
+                console.log(`[Fuzzy] 🔍 SUBSTRING detectada: "${shorter}" em "${longer}" (ratio: ${(lengthRatio * 100).toFixed(1)}%, score: ${(substringScore * 100).toFixed(0)}%)`);
+
+                return Math.min(substringScore, 0.97); // Cap em 97%
+            }
+
+            // Fallback: Usar Levenshtein distance para similaridade por edições
             const dist = levenshteinDistance(na, nb);
             const maxLen = Math.max(na.length, nb.length);
 
@@ -280,24 +323,35 @@
     function findBestMatch(typedValue, options) {
         try {
             if (!typedValue || !Array.isArray(options) || !options.length) {
-                return { match: null, score: 0 };
+                return { match: null, score: 0, similarCount: 0 };
             }
 
             let bestMatch = null;
             let bestScore = 0;
+            let similarCount = 0; // Contador de matches similares (score >= 80%)
+            const SIMILAR_THRESHOLD = 0.80; // 80% de similaridade
 
             for (const option of options) {
                 const score = calculateSimilarity(typedValue, option);
+
+                // Contar opções com similaridade >= 80%
+                if (score >= SIMILAR_THRESHOLD) {
+                    similarCount++;
+                }
+
                 if (score > bestScore) {
                     bestScore = score;
                     bestMatch = option;
                 }
             }
 
-            return { match: bestMatch, score: bestScore };
+            // Subtrair 1 porque o melhor match já será mostrado separadamente
+            const otherSimilarCount = similarCount > 0 ? similarCount - 1 : 0;
+
+            return { match: bestMatch, score: bestScore, similarCount: otherSimilarCount };
         } catch (error) {
             console.error('findBestMatch error:', error);
-            return { match: null, score: 0 };
+            return { match: null, score: 0, similarCount: 0 };
         }
     }
 
@@ -427,32 +481,131 @@
     }
 
     /****************************************************************************************
+     * ⚡ FUNÇÃO: showInlineAlert
+     * --------------------------------------------------------------------------------------
+     * Exibe aviso visual inline embaixo do campo
+     ****************************************************************************************/
+    function showInlineAlert(comboId, type, text, similarCount = 0) {
+        try {
+            console.log(`[Fuzzy] 🎨 showInlineAlert chamada:`, { comboId, type, text, similarCount });
+
+            // Determinar ID do elemento de alerta baseado no comboId
+            let alertId;
+            if (comboId === 'cmbOrigem') {
+                alertId = 'fuzzy-alert-origem';
+            } else if (comboId === 'cmbDestino') {
+                alertId = 'fuzzy-alert-destino';
+            } else {
+                console.warn(`[Fuzzy] ❌ ComboId desconhecido: ${comboId}`);
+                return; // Sem elemento de alerta para este campo
+            }
+
+            const alertElement = document.getElementById(alertId);
+            if (!alertElement) {
+                console.error(`[Fuzzy] ❌ Elemento de alerta não encontrado: ${alertId}`);
+                return;
+            }
+            console.log(`[Fuzzy] ✅ Elemento de alerta encontrado: ${alertId}`);
+
+            const textElement = alertElement.querySelector('.fuzzy-alert-text');
+            if (!textElement) {
+                console.error(`[Fuzzy] ❌ Elemento de texto não encontrado em: ${alertId}`);
+                return;
+            }
+
+            // Remover classes anteriores
+            alertElement.classList.remove('warning', 'info', 'success', 'multiple');
+
+            // Adicionar classe do tipo
+            alertElement.classList.add(type);
+
+            // Montar texto com contagem de similares (se houver)
+            let finalText = text;
+            if (similarCount > 0) {
+                alertElement.classList.add('multiple'); // Classe extra para estilo diferente
+                finalText += ` • Além de outros ${similarCount} item${similarCount > 1 ? 's' : ''} similar${similarCount > 1 ? 'es' : ''}`;
+            }
+
+            textElement.textContent = finalText;
+
+            // Mostrar elemento
+            alertElement.style.display = 'flex';
+
+        } catch (error) {
+            console.error('showInlineAlert error:', error);
+        }
+    }
+
+    /****************************************************************************************
+     * ⚡ FUNÇÃO: hideInlineAlert
+     * --------------------------------------------------------------------------------------
+     * Oculta aviso visual inline
+     ****************************************************************************************/
+    function hideInlineAlert(comboId) {
+        try {
+            let alertId;
+            if (comboId === 'cmbOrigem') {
+                alertId = 'fuzzy-alert-origem';
+            } else if (comboId === 'cmbDestino') {
+                alertId = 'fuzzy-alert-destino';
+            } else {
+                return;
+            }
+
+            const alertElement = document.getElementById(alertId);
+            if (!alertElement) return;
+
+            alertElement.style.display = 'none';
+            alertElement.classList.remove('warning', 'info', 'success');
+
+        } catch (error) {
+            console.error('hideInlineAlert error:', error);
+        }
+    }
+
+    /****************************************************************************************
      * ⚡ FUNÇÃO: validateDuplicate
      * --------------------------------------------------------------------------------------
      * Valida se valor digitado é duplicata/similar a algum item da lista
      ****************************************************************************************/
     function validateDuplicate(combo, comboId, options) {
         try {
-            if (!combo) return;
+            console.log(`[Fuzzy] 🔍 validateDuplicate chamada para ${comboId}`);
+
+            if (!combo) {
+                console.warn(`[Fuzzy] ❌ Combo não encontrado em validateDuplicate: ${comboId}`);
+                return;
+            }
 
             const typedValue = combo.value();
-            if (!typedValue) return;
+            console.log(`[Fuzzy] 📝 Valor digitado em ${comboId}: "${typedValue}"`);
+
+            if (!typedValue) {
+                console.log(`[Fuzzy] ⚠️ Valor vazio em ${comboId} - ocultando alerta`);
+                hideInlineAlert(comboId);
+                return;
+            }
 
             // Verificar cache
             const cached = getCachedValidation(comboId, typedValue);
             if (cached !== null) {
+                console.log(`[Fuzzy] 💾 Valor em cache encontrado para ${comboId}:`, cached);
                 return cached;
             }
 
             const fieldLabel = getFieldLabel(comboId);
             const normalized = normalizeText(typedValue);
+            console.log(`[Fuzzy] 🔤 Valor normalizado: "${normalized}"`);
 
             // Se já existe exato na lista, ok
             const exactMatch = options.some(opt => String(opt) === typedValue);
             if (exactMatch) {
+                console.log(`[Fuzzy] ✅ Match EXATO encontrado - ocultando alerta`);
+                hideInlineAlert(comboId);
                 setCachedValidation(comboId, typedValue, { valid: true });
                 return { valid: true };
             }
+            console.log(`[Fuzzy] ❌ Nenhum match EXATO - continuando validação`);
 
             // Buscar match exato normalizado (para auto-correção)
             const canonicalMap = new Map();
@@ -465,17 +618,25 @@
 
             if (canonicalMap.has(normalized)) {
                 const canonical = canonicalMap.get(normalized);
+                console.log(`[Fuzzy] 🔄 Match NORMALIZADO encontrado: "${canonical}"`);
                 if (canonical !== typedValue) {
+                    console.log(`[Fuzzy] 🔄 Auto-corrigindo "${typedValue}" → "${canonical}"`);
                     // Auto-corrigir
                     autoCorrectValue(combo, comboId, canonical);
                     setCachedValidation(comboId, typedValue, { valid: true, corrected: canonical });
                     return { valid: true, corrected: canonical };
                 }
+                console.log(`[Fuzzy] ✅ Valor já é canônico - retornando válido`);
                 return { valid: true };
             }
+            console.log(`[Fuzzy] 🔍 Nenhum match normalizado - buscando similar`);
+
+
 
             // Buscar melhor match similar
-            const { match, score } = findBestMatch(typedValue, options);
+            console.log(`[Fuzzy] 🎯 Buscando melhor match similar...`);
+            const { match, score, similarCount } = findBestMatch(typedValue, options);
+            console.log(`[Fuzzy] 🎯 Melhor match:`, { match, score, pct: Math.round(score * 100), similarCount });
 
             // Atualizar métricas
             METRICS.totalValidations++;
@@ -484,6 +645,17 @@
                 (METRICS.avgSimilarityScore * (METRICS.totalValidations - 1) + score) / METRICS.totalValidations;
 
             if (!match) {
+                console.log(`[Fuzzy] ❌ Nenhum match similar encontrado - aplicando capitalização`);
+
+                // NOVO: Capitalizar primeira letra de texto livre
+                const capitalized = capitalizeFirstLetter(typedValue);
+                if (capitalized !== typedValue) {
+                    console.log(`[Fuzzy] 🔤 Capitalizando: "${typedValue}" → "${capitalized}"`);
+                    combo.text(capitalized);
+                    combo.input.val(capitalized);
+                }
+
+                hideInlineAlert(comboId);
                 setCachedValidation(comboId, typedValue, { valid: true });
                 return { valid: true };
             }
@@ -493,38 +665,54 @@
                 ? `\n\nSugestão: "${match}" (similaridade ${pct}%)`
                 : '';
 
+            console.log(`[Fuzzy] 📊 Verificando thresholds:`, {
+                score: pct + '%',
+                critical: Math.round(CONFIG.thresholds.critical * 100) + '%',
+                warning: Math.round(CONFIG.thresholds.warning * 100) + '%',
+                info: Math.round(CONFIG.thresholds.info * 100) + '%'
+            });
+
             // Verificar thresholds
             if (score >= CONFIG.thresholds.critical) {
+                console.log(`[Fuzzy] 🟢 CRITICAL threshold atingido - auto-corrigindo`);
                 // Muito similar - auto-corrigir sem perguntar
                 autoCorrectValue(combo, comboId, match);
+                showInlineAlert(comboId, 'success', `✓ Auto-corrigido para "${match}" (${pct}%)`, similarCount);
                 METRICS.duplicatesDetected++;
                 setCachedValidation(comboId, typedValue, { valid: true, corrected: match });
                 return { valid: true, corrected: match };
             }
             else if (score >= CONFIG.thresholds.warning) {
+                console.log(`[Fuzzy] 🟠 WARNING threshold atingido - mostrando alerta`);
                 // Provável duplicata - warning
                 highlightControl(combo, 'warning');
-                showAlert('warning',
-                    `Provável duplicado • ${fieldLabel}`,
-                    `É muito provável que já exista na lista.${suggestion}`,
-                    'OK'
-                );
+                showInlineAlert(comboId, 'warning', `⚠ Atenção: similar a "${match}" (${pct}%)`, similarCount);
+                // SweetAlert REMOVIDO - apenas alerta inline
                 METRICS.duplicatesDetected++;
                 setCachedValidation(comboId, typedValue, { valid: false, score: score, match: match });
                 return { valid: false, score: score, match: match };
             }
             else if (score >= CONFIG.thresholds.info) {
+                console.log(`[Fuzzy] 🔵 INFO threshold atingido - mostrando alerta`);
                 // Semelhança alta - info
                 highlightControl(combo, 'info');
-                showAlert('info',
-                    `Semelhança alta • ${fieldLabel}`,
-                    `Pode já existir algo parecido na lista.${suggestion}`,
-                    'OK'
-                );
+                showInlineAlert(comboId, 'info', `ℹ Aviso: parecido com "${match}" (${pct}%)`, similarCount);
+                // SweetAlert REMOVIDO - apenas alerta inline
                 setCachedValidation(comboId, typedValue, { valid: true, score: score, match: match });
                 return { valid: true, score: score, match: match };
             }
 
+            console.log(`[Fuzzy] ⬜ Score abaixo de todos os thresholds - aplicando capitalização`);
+
+            // NOVO: Capitalizar primeira letra de texto livre
+            const capitalized = capitalizeFirstLetter(typedValue);
+            if (capitalized !== typedValue) {
+                console.log(`[Fuzzy] 🔤 Capitalizando: "${typedValue}" → "${capitalized}"`);
+                combo.text(capitalized);
+                combo.input.val(capitalized);
+            }
+
+            hideInlineAlert(comboId);
             setCachedValidation(comboId, typedValue, { valid: true });
             return { valid: true };
 
@@ -608,8 +796,8 @@
                 return false;
             }
 
-            // Obter dataSource uma vez
-            const dataSource = getComboDataSource(combo);
+            // CRÍTICO: Aceitar dataSource passado como parâmetro ou pegar do combo
+            let dataSource = options.dataSource || getComboDataSource(combo);
             if (!dataSource.length) {
                 console.warn(`[Fuzzy] DataSource vazio para: ${comboId}`);
                 return false;
@@ -620,7 +808,13 @@
 
             // Evento CHANGE (quando usuário seleciona ou digita)
             combo.bind('change', function (e) {
+                console.log(`[Fuzzy] 🔔 Evento CHANGE disparado em ${comboId}:`, {
+                    value: combo.value(),
+                    text: combo.text()
+                });
+
                 debounce(`${comboId}_change`, () => {
+                    console.log(`[Fuzzy] 🔍 Iniciando validação para ${comboId}`);
                     const currentOptions = combo.__fuzzyDataSource || getComboDataSource(combo);
                     validateDuplicate(combo, comboId, currentOptions);
 
@@ -655,9 +849,13 @@
 
             console.log('[Fuzzy] Inicializando sistema de validação...');
 
-            // Conectar validação aos ComboBox
-            const origemOk = wireComboValidation('cmbOrigem', 'cmbDestino');
-            const destinoOk = wireComboValidation('cmbDestino', 'cmbOrigem');
+            // Conectar validação aos ComboBox (com dataSource opcional)
+            const origemOk = wireComboValidation('cmbOrigem', 'cmbDestino', {
+                dataSource: customConfig.origemData
+            });
+            const destinoOk = wireComboValidation('cmbDestino', 'cmbOrigem', {
+                dataSource: customConfig.destinoData
+            });
 
             if (origemOk && destinoOk) {
                 console.log('[Fuzzy] ✅ Sistema inicializado com sucesso!');

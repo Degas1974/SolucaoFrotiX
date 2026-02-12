@@ -481,12 +481,38 @@ $("#txtKmInicial").focusout(function ()
 {
     try
     {
+        // ✅ NOVO: Verificar se há veículo selecionado
+        const cmbVeiculo = document.getElementById("cmbVeiculo");
+        if (!cmbVeiculo || !cmbVeiculo.ej2_instances || !cmbVeiculo.ej2_instances[0])
+        {
+            $("#txtKmInicial").val("");
+            $("#txtKmPercorrido").val("");
+            Alerta.Erro(
+                "Veículo não selecionado",
+                'Selecione um <strong>veículo</strong> antes de preencher a quilometragem inicial.',
+            );
+            return;
+        }
+
+        const veiculoId = cmbVeiculo.ej2_instances[0].value;
+        if (!veiculoId || veiculoId === null || (Array.isArray(veiculoId) && veiculoId.length === 0))
+        {
+            $("#txtKmInicial").val("");
+            $("#txtKmPercorrido").val("");
+            Alerta.Erro(
+                "Veículo não selecionado",
+                'Selecione um <strong>veículo</strong> antes de preencher a quilometragem inicial.',
+            );
+            return;
+        }
+
         const kmInicialStr = $("#txtKmInicial").val();
         const kmAtualStr = $("#txtKmAtual").val();
 
         if (!kmInicialStr || !kmAtualStr)
         {
             $("#txtKmPercorrido").val("");
+            $("#txtKmFinal").prop("disabled", true); // ✅ NOVO: Desabilitar Km Final se Km Inicial vazio
             if (!kmAtualStr || kmAtualStr === "0" || kmAtualStr === 0)
             {
                 $("#txtKmInicial").val("");
@@ -506,6 +532,7 @@ $("#txtKmInicial").focusout(function ()
         if (isNaN(kmInicial) || isNaN(kmAtual))
         {
             $("#txtKmPercorrido").val("");
+            $("#txtKmFinal").prop("disabled", true); // ✅ NOVO: Desabilitar Km Final
             return;
         }
 
@@ -513,6 +540,7 @@ $("#txtKmInicial").focusout(function ()
         {
             $("#txtKmInicial").val("");
             $("#txtKmPercorrido").val("");
+            $("#txtKmFinal").prop("disabled", true); // ✅ NOVO: Desabilitar Km Final
             Alerta.Erro(
                 "Erro na Quilometragem",
                 "A quilometragem <strong>inicial</strong> nao pode ultrapassar <strong>1.000.000</strong>!",
@@ -524,6 +552,7 @@ $("#txtKmInicial").focusout(function ()
         {
             $("#txtKmInicial").val("");
             $("#txtKmPercorrido").val("");
+            $("#txtKmFinal").prop("disabled", true); // ✅ NOVO: Desabilitar Km Final
             Alerta.Erro(
                 "Erro na Quilometragem",
                 "A quilometragem <strong>inicial</strong> deve ser maior que <strong>zero</strong>!",
@@ -535,12 +564,16 @@ $("#txtKmInicial").focusout(function ()
         {
             $("#txtKmInicial").val("");
             $("#txtKmPercorrido").val("");
+            $("#txtKmFinal").prop("disabled", true); // ✅ NOVO: Desabilitar Km Final
             Alerta.Erro(
                 "Erro na Quilometragem",
                 "A quilometragem <strong>inicial</strong> deve ser maior que a <strong>atual</strong>!",
             );
             return;
         }
+
+        // ✅ NOVO: Habilitar Km Final se Km Inicial válido
+        $("#txtKmFinal").prop("disabled", false);
 
         validarKmAtualInicial();
 
@@ -572,9 +605,35 @@ $("#txtKmFinal").focusout(async function ()
 {
     try
     {
+        // ✅ NOVO: Verificar se há veículo selecionado
+        const cmbVeiculo = document.getElementById("cmbVeiculo");
+        if (!cmbVeiculo || !cmbVeiculo.ej2_instances || !cmbVeiculo.ej2_instances[0])
+        {
+            $("#txtKmFinal").val("");
+            $("#txtKmPercorrido").val("");
+            Alerta.Erro(
+                "Veículo não selecionado",
+                'Selecione um <strong>veículo</strong> antes de preencher a quilometragem final.',
+            );
+            return;
+        }
+
+        const veiculoId = cmbVeiculo.ej2_instances[0].value;
+        if (!veiculoId || veiculoId === null || (Array.isArray(veiculoId) && veiculoId.length === 0))
+        {
+            $("#txtKmFinal").val("");
+            $("#txtKmPercorrido").val("");
+            Alerta.Erro(
+                "Veículo não selecionado",
+                'Selecione um <strong>veículo</strong> antes de preencher a quilometragem final.',
+            );
+            return;
+        }
+
         const kmInicialStr = $("#txtKmInicial").val();
         const kmFinalStr = $("#txtKmFinal").val();
 
+        // ✅ REFORÇADO: Validar se Km Inicial está preenchido
         if (
             (kmInicialStr === "" || kmInicialStr === null) &&
             kmFinalStr != "" &&
@@ -678,6 +737,151 @@ $("#txtKmFinal").focusout(async function ()
     catch (error)
     {
         TratamentoErroComLinha("ViagemUpsert.js", "focusout.txtKmFinal", error);
+    }
+});
+
+/****************************************************************************************
+ * ⚡ EVENTO: input.txtKmInicial
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Habilitar/desabilitar campo Km Final conforme Km Inicial é digitado
+ *
+ * 📥 ENTRADAS     : Valor de #txtKmInicial
+ *
+ * 📤 SAÍDAS       : Habilita/desabilita #txtKmFinal, zera #txtKmPercorrido se inválido
+ ****************************************************************************************/
+$("#txtKmInicial").on("input", function ()
+{
+    try
+    {
+        const kmInicialStr = $("#txtKmInicial").val();
+
+        // Se vazio ou inválido, desabilitar Km Final e zerar Km Percorrido
+        if (!kmInicialStr || kmInicialStr.trim() === "")
+        {
+            $("#txtKmFinal").prop("disabled", true);
+            $("#txtKmPercorrido").val("");
+            return;
+        }
+
+        const kmInicial = parseFloat(kmInicialStr.replace(",", "."));
+
+        // Se não é número válido, desabilitar Km Final e zerar Km Percorrido
+        if (isNaN(kmInicial) || kmInicial <= 0)
+        {
+            $("#txtKmFinal").prop("disabled", true);
+            $("#txtKmPercorrido").val("");
+            return;
+        }
+
+        // Se valor válido, habilitar Km Final
+        $("#txtKmFinal").prop("disabled", false);
+
+        // Recalcular Km Percorrido se Km Final já estiver preenchido
+        calcularKmPercorrido();
+    }
+    catch (error)
+    {
+        TratamentoErroComLinha("ViagemUpsert.js", "input.txtKmInicial", error);
+    }
+});
+
+/****************************************************************************************
+ * ⚡ EVENTO: input.txtKmFinal
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Recalcular Km Percorrido conforme Km Final é digitado
+ *
+ * 📥 ENTRADAS     : Valores de #txtKmInicial e #txtKmFinal
+ *
+ * 📤 SAÍDAS       : Atualiza ou zera #txtKmPercorrido
+ ****************************************************************************************/
+$("#txtKmFinal").on("input", function ()
+{
+    try
+    {
+        const kmInicialStr = $("#txtKmInicial").val();
+        const kmFinalStr = $("#txtKmFinal").val();
+
+        // Se qualquer campo vazio, zerar Km Percorrido
+        if (!kmInicialStr || !kmFinalStr || kmInicialStr.trim() === "" || kmFinalStr.trim() === "")
+        {
+            $("#txtKmPercorrido").val("");
+            return;
+        }
+
+        const kmInicial = parseFloat(kmInicialStr.replace(",", "."));
+        const kmFinal = parseFloat(kmFinalStr.replace(",", "."));
+
+        // Se não são números válidos, zerar Km Percorrido
+        if (isNaN(kmInicial) || isNaN(kmFinal))
+        {
+            $("#txtKmPercorrido").val("");
+            return;
+        }
+
+        // Recalcular Km Percorrido
+        calcularKmPercorrido();
+    }
+    catch (error)
+    {
+        TratamentoErroComLinha("ViagemUpsert.js", "input.txtKmFinal", error);
+    }
+});
+
+/****************************************************************************************
+ * ⚡ INICIALIZAÇÃO: Estado inicial dos campos de Km
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Configurar estado correto dos campos ao carregar a página (create/edit)
+ ****************************************************************************************/
+$(document).ready(function ()
+{
+    try
+    {
+        // Verificar se há veículo selecionado
+        const cmbVeiculo = document.getElementById("cmbVeiculo");
+        let veiculoSelecionado = false;
+
+        if (cmbVeiculo && cmbVeiculo.ej2_instances && cmbVeiculo.ej2_instances[0])
+        {
+            const veiculoId = cmbVeiculo.ej2_instances[0].value;
+            veiculoSelecionado = veiculoId && veiculoId !== null && (!Array.isArray(veiculoId) || veiculoId.length > 0);
+        }
+
+        // Se não há veículo, desabilitar ambos os campos
+        if (!veiculoSelecionado)
+        {
+            $("#txtKmInicial").prop("disabled", true);
+            $("#txtKmFinal").prop("disabled", true);
+        }
+        else
+        {
+            // Se há veículo, verificar Km Inicial para habilitar/desabilitar Km Final
+            const kmInicialStr = $("#txtKmInicial").val();
+
+            $("#txtKmInicial").prop("disabled", false);
+
+            if (!kmInicialStr || kmInicialStr.trim() === "")
+            {
+                $("#txtKmFinal").prop("disabled", true);
+            }
+            else
+            {
+                const kmInicial = parseFloat(kmInicialStr.replace(",", "."));
+                if (isNaN(kmInicial) || kmInicial <= 0)
+                {
+                    $("#txtKmFinal").prop("disabled", true);
+                }
+                else
+                {
+                    $("#txtKmFinal").prop("disabled", false);
+                }
+            }
+        }
+
+        console.log("[ViagemUpsert] Estado inicial dos campos de Km configurado");
+    }
+    catch (error)
+    {
+        TratamentoErroComLinha("ViagemUpsert.js", "document.ready.inicializacaoKm", error);
     }
 });
 
@@ -2309,9 +2513,10 @@ function initKendoDropDowns(context)
         {
             try
             {
-                return '<span class="d-flex align-items-center">' +
-                    '<img src="' + kendo.htmlEncode(data.imagem) + '" style="height: 22px; margin-right: 8px;" alt="' + kendo.htmlEncode(data.descricao) + '" />' +
-                    '<span>' + kendo.htmlEncode(data.descricao) + '</span></span>';
+                return '<span class="combustivel-item">' +
+                    '<img src="' + kendo.htmlEncode(data.imagem) + '" alt="' + kendo.htmlEncode(data.descricao) + '" />' +
+                    '<span>' + kendo.htmlEncode(data.descricao) + '</span>' +
+                    '</span>';
             }
             catch (error)
             {
@@ -2325,9 +2530,10 @@ function initKendoDropDowns(context)
             {
                 if (data && data.imagem)
                 {
-                    return '<span class="d-flex align-items-center">' +
-                        '<img src="' + kendo.htmlEncode(data.imagem) + '" style="height: 22px; margin-right: 8px;" alt="' + kendo.htmlEncode(data.descricao) + '" />' +
-                        '<span>' + kendo.htmlEncode(data.descricao) + '</span></span>';
+                    return '<span class="combustivel-value">' +
+                        '<img src="' + kendo.htmlEncode(data.imagem) + '" alt="' + kendo.htmlEncode(data.descricao) + '" />' +
+                        '<span>' + kendo.htmlEncode(data.descricao) + '</span>' +
+                        '</span>';
                 }
                 return '<span>' + kendo.htmlEncode(data.descricao || '') + '</span>';
             }
@@ -3370,7 +3576,8 @@ function ExibeViagem(viagem)
                 }
             }, 500);
 
-            ["cmbVeiculo", "cmbRequisitante", "cmbOrigem", "cmbDestino"].forEach(
+            // Syncfusion: cmbVeiculo, cmbRequisitante
+            ["cmbVeiculo", "cmbRequisitante"].forEach(
                 (id) =>
                 {
                     try
@@ -3382,12 +3589,27 @@ function ExibeViagem(viagem)
                     {
                         Alerta.TratamentoErroComLinha(
                             "ViagemUpsert.js",
-                            'callback@["cmbVeiculo", "cmbRequisitante", "cmbOrigem", "cmbDestino".forEach#0',
+                            'callback@["cmbVeiculo", "cmbRequisitante"].forEach#0',
                             error,
                         );
                     }
                 },
             );
+
+            // Kendo: cmbOrigem, cmbDestino
+            try {
+                const cmbOrigem = $("#cmbOrigem").data("kendoComboBox");
+                if (cmbOrigem) cmbOrigem.enable(false);
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("ViagemUpsert.js", "cmbOrigem.disable", error);
+            }
+
+            try {
+                const cmbDestino = $("#cmbDestino").data("kendoComboBox");
+                if (cmbDestino) cmbDestino.enable(false);
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("ViagemUpsert.js", "cmbDestino.disable", error);
+            }
 
             // Kendo: Motorista
             try {
@@ -4211,16 +4433,27 @@ function VeiculoValueChange()
         {
             // Desabilita o botão de ocorrências quando não há veículo selecionado
             desabilitarBotaoOcorrenciasVeiculo();
-            
+
             // Desabilitar seção de ocorrências da viagem
             controlarSecaoOcorrencias(null);
+
+            // ✅ NOVO: Desabilitar campos de Km quando não há veículo selecionado
+            $("#txtKmInicial").prop("disabled", true).val("");
+            $("#txtKmFinal").prop("disabled", true).val("");
+            $("#txtKmPercorrido").val("");
+            $("#txtKmAtual").val("");
+
             return;
         }
 
         var veiculoid = String(ddTreeObj.value);
-        
+
         // Habilitar seção de ocorrências da viagem
         controlarSecaoOcorrencias(veiculoid);
+
+        // ✅ NOVO: Habilitar campo Km Inicial quando veículo é selecionado
+        $("#txtKmInicial").prop("disabled", false);
+        // Km Final continua desabilitado até que Km Inicial seja preenchido
 
         $.ajax({
             url: "/Viagens/Upsert?handler=VerificaVeiculoViagem",
@@ -4571,8 +4804,8 @@ $("#btnSubmit").click(async function (event)
             return;
         }
 
-        const origem = document.getElementById("cmbOrigem").ej2_instances[0];
-        if (origem.value === null)
+        const cmbOrigem = $("#cmbOrigem").data("kendoComboBox");
+        if (!cmbOrigem || !cmbOrigem.value())
         {
             Alerta.Erro("Informação Ausente", "A Origem é obrigatória");
             return;

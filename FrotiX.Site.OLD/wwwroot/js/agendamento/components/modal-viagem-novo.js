@@ -2752,24 +2752,124 @@ function aoAbrirModalViagem(event)
         // Inicializar Kendo ComboBox para Origem e Destino (se ainda não foram inicializados)
         if (!$("#cmbOrigem").data("kendoComboBox"))
         {
-            $("#cmbOrigem").kendoComboBox({
+            var cmbOrigem = $("#cmbOrigem").kendoComboBox({
                 dataSource: window.dataOrigem || [],
                 filter: "contains",
                 placeholder: "Selecione ou digite a origem",
                 height: 220,
-                suggest: true
+                suggest: false,
+                minLength: 0,
+                enforceMinLength: false,
+                autoWidth: true
+            }).data("kendoComboBox");
+
+            // CRÍTICO: Preservar valor digitado e fechar dropdown ao Tab
+            var origemTypedValue = '';
+            var origemUserSelected = false;
+
+            cmbOrigem.input.on('input', function() {
+                origemTypedValue = $(this).val();
+                origemUserSelected = false;
+            });
+
+            // Detectar seleção manual da lista
+            cmbOrigem.bind('select', function(e) {
+                if (e.item) {
+                    origemUserSelected = true;
+                    origemTypedValue = this.text();
+                }
+            });
+
+            // Fechar dropdown ao pressionar Tab
+            cmbOrigem.input.on('keydown', function(e) {
+                if (e.keyCode === 9) { // Tab
+                    cmbOrigem.close();
+                }
+            });
+
+            cmbOrigem.input.on('blur', function() {
+                setTimeout(function() {
+                    var currentText = cmbOrigem.text();
+
+                    console.log('[ModalViagem] 📊 Debug origem blur:', {
+                        origemTypedValue: origemTypedValue,
+                        currentText: currentText,
+                        userSelected: origemUserSelected
+                    });
+
+                    // Se usuário NÃO selecionou da lista e havia valor digitado
+                    if (!origemUserSelected && origemTypedValue && currentText !== origemTypedValue) {
+                        console.log('[ModalViagem] 🔄 Restaurando valor digitado origem:', origemTypedValue);
+                        cmbOrigem.value(origemTypedValue);
+                        cmbOrigem.text(origemTypedValue);
+                        cmbOrigem.trigger('change');
+                    } else if (origemTypedValue) {
+                        console.log('[ModalViagem] ✅ Disparando change para fuzzy validator');
+                        cmbOrigem.trigger('change');
+                    }
+                }, 100);
             });
             console.log("✅ [ModalViagem] Kendo ComboBox cmbOrigem inicializado");
         }
 
         if (!$("#cmbDestino").data("kendoComboBox"))
         {
-            $("#cmbDestino").kendoComboBox({
+            var cmbDestino = $("#cmbDestino").kendoComboBox({
                 dataSource: window.dataDestino || [],
                 filter: "contains",
                 placeholder: "Selecione ou digite o destino",
                 height: 220,
-                suggest: true
+                suggest: false,
+                minLength: 0,
+                enforceMinLength: false,
+                autoWidth: true
+            }).data("kendoComboBox");
+
+            // CRÍTICO: Preservar valor digitado e fechar dropdown ao Tab
+            var destinoTypedValue = '';
+            var destinoUserSelected = false;
+
+            cmbDestino.input.on('input', function() {
+                destinoTypedValue = $(this).val();
+                destinoUserSelected = false;
+            });
+
+            // Detectar seleção manual da lista
+            cmbDestino.bind('select', function(e) {
+                if (e.item) {
+                    destinoUserSelected = true;
+                    destinoTypedValue = this.text();
+                }
+            });
+
+            // Fechar dropdown ao pressionar Tab
+            cmbDestino.input.on('keydown', function(e) {
+                if (e.keyCode === 9) { // Tab
+                    cmbDestino.close();
+                }
+            });
+
+            cmbDestino.input.on('blur', function() {
+                setTimeout(function() {
+                    var currentText = cmbDestino.text();
+
+                    console.log('[ModalViagem] 📊 Debug destino blur:', {
+                        destinoTypedValue: destinoTypedValue,
+                        currentText: currentText,
+                        userSelected: destinoUserSelected
+                    });
+
+                    // Se usuário NÃO selecionou da lista e havia valor digitado
+                    if (!destinoUserSelected && destinoTypedValue && currentText !== destinoTypedValue) {
+                        console.log('[ModalViagem] 🔄 Restaurando valor digitado destino:', destinoTypedValue);
+                        cmbDestino.value(destinoTypedValue);
+                        cmbDestino.text(destinoTypedValue);
+                        cmbDestino.trigger('change');
+                    } else if (destinoTypedValue) {
+                        console.log('[ModalViagem] ✅ Disparando change para fuzzy validator');
+                        cmbDestino.trigger('change');
+                    }
+                }, 100);
             });
             console.log("✅ [ModalViagem] Kendo ComboBox cmbDestino inicializado");
         }

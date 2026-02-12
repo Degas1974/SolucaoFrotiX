@@ -3123,6 +3123,8 @@ namespace FrotiX.Controllers
                 objViagem.DocumentoDevolvido = viagem.DocumentoDevolvido;
                 objViagem.CartaoAbastecimentoEntregue = viagem.CartaoAbastecimentoEntregue;
                 objViagem.CartaoAbastecimentoDevolvido = viagem.CartaoAbastecimentoDevolvido;
+                objViagem.SuporteIntegro = viagem.SuporteIntegro;
+                objViagem.SuporteDefeituoso = viagem.SuporteDefeituoso;
 
                 // 3. REGISTRA USUÁRIO E DATA DE FINALIZAÇÃO
                 ClaimsPrincipal currentUser = this.User;
@@ -3558,11 +3560,17 @@ namespace FrotiX.Controllers
                     cartaoAbastecimentoEntregue = viagem.CartaoAbastecimentoEntregue ?? false ,
                     cintaEntregue = viagem.CintaEntregue ?? false ,
                     tabletEntregue = viagem.TabletEntregue ?? false ,
+                    caboEntregue = viagem.CaboEntregue ?? false ,
+                    arlaEntregue = viagem.ArlaEntregue ?? false ,
+                    suporteIntegro = viagem.SuporteIntegro ?? false ,
                     // Documentos/Itens Devolvidos (Vistoria Final)
                     documentoDevolvido = viagem.DocumentoDevolvido ?? false ,
                     cartaoAbastecimentoDevolvido = viagem.CartaoAbastecimentoDevolvido ?? false ,
                     cintaDevolvida = viagem.CintaDevolvida ?? false ,
                     tabletDevolvido = viagem.TabletDevolvido ?? false ,
+                    caboDevolvido = viagem.CaboDevolvido ?? false ,
+                    arlaDevolvido = viagem.ArlaDevolvido ?? false ,
+                    suporteDefeituoso = viagem.SuporteDefeituoso ?? false ,
                     // Ocorrências
                     ocorrencias = ocorrencias ,
                     totalOcorrencias = ocorrencias.Count

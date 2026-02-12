@@ -174,3 +174,123 @@
         padding: 6px 10px;
     }
 }
+
+/* ============================================================================
+   AVISOS INLINE (EMBAIXO DOS CAMPOS)
+   ============================================================================ */
+
+.fuzzy-inline-alert {
+    font-size: 11px;
+    padding: 4px 8px;
+    margin-top: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    animation: fuzzy-alert-slide-in 0.3s ease;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.fuzzy-inline-alert i {
+    font-size: 12px;
+}
+
+.fuzzy-alert-text {
+    flex: 1;
+    line-height: 1.3;
+}
+
+/* Variantes por tipo */
+.fuzzy-inline-alert.warning {
+    background-color: #fff3cd;
+    border-left: 3px solid #ff9800;
+    color: #856404;
+}
+
+.fuzzy-inline-alert.warning i {
+    color: #ff9800;
+}
+
+.fuzzy-inline-alert.info {
+    background-color: #d1ecf1;
+    border-left: 3px solid #2196f3;
+    color: #0c5460;
+}
+
+.fuzzy-inline-alert.info i {
+    color: #2196f3;
+}
+
+.fuzzy-inline-alert.success {
+    background-color: #d4edda;
+    border-left: 3px solid #4caf50;
+    color: #155724;
+}
+
+.fuzzy-inline-alert.success i {
+    color: #4caf50;
+}
+
+/* Variante MULTIPLE (quando há múltiplos matches similares) */
+.fuzzy-inline-alert.multiple {
+    border-left-width: 4px; /* Borda mais grossa */
+    font-weight: 500;
+}
+
+.fuzzy-inline-alert.warning.multiple {
+    background-color: #fff3cd;
+    border-left-color: #ff6f00; /* Laranja mais escuro */
+}
+
+.fuzzy-inline-alert.info.multiple {
+    background-color: #e1f5fe;
+    border-left-color: #0288d1; /* Azul mais escuro */
+}
+
+.fuzzy-inline-alert.success.multiple {
+    background-color: #c8e6c9;
+    border-left-color: #388e3c; /* Verde mais escuro */
+}
+
+@keyframes fuzzy-alert-slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 50px;
+    }
+}
+
+/* Modo escuro */
+@media (prefers-color-scheme: dark) {
+    .fuzzy-inline-alert.warning {
+        background-color: rgba(255, 152, 0, 0.15);
+        color: #ffb84d;
+    }
+
+    .fuzzy-inline-alert.info {
+        background-color: rgba(33, 150, 243, 0.15);
+        color: #64b5f6;
+    }
+
+    .fuzzy-inline-alert.success {
+        background-color: rgba(76, 175, 80, 0.15);
+        color: #81c784;
+    }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .fuzzy-inline-alert {
+        font-size: 10px;
+        padding: 3px 6px;
+    }
+
+    .fuzzy-inline-alert i {
+        font-size: 11px;
+    }
+}
