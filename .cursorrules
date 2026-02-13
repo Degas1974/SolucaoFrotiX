@@ -1,7 +1,7 @@
-# Regras do Projeto FrotiX (Cursor/Gemini/Windsurf)
+# Regras do Projeto FrotiX (Cursor/Windsurf)
 
 ## LEITURA OBRIGATORIA
-Leia `RegrasDesenvolvimentoFrotiX.md` (raiz do workspace) antes de qualquer tarefa.
+Leia `RegrasDesenvolvimentoFrotiX.md` E `ControlesKendo.md` (raiz do workspace) antes de qualquer tarefa.
 
 ## DIRETORIO DE TRABALHO
 Projeto ativo: `FrotiX.Site.OLD/`
@@ -15,6 +15,6 @@ Para memorizar regras: gravar em `RegrasDesenvolvimentoFrotiX.md` (raiz do works
 3. Icones: `fa-duotone`, NUNCA `fa-solid/regular/light`
 4. Loading: `FtxSpin.show()`, NUNCA spinner Bootstrap
 5. Banco: consultar `FrotiX.sql` antes de codificar
-6. DatePicker/TimePicker: Telerik Kendo UI
+6. DatePicker/TimePicker: Telerik Kendo UI (consultar ControlesKendo.md)
 7. Tooltips: Syncfusion `data-ejtip`
 8. Log: `ILogService` no backend

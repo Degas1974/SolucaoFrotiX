@@ -1,9 +1,5 @@
-⚠️ REDIRECIONAMENTO → ./RegrasDesenvolvimentoFrotiX.md
+⚠️ REDIRECIONAMENTO → ../RegrasDesenvolvimentoFrotiX.md e ../ControlesKendo.md
 
-**IMPORTANTE:** Leia `./RegrasDesenvolvimentoFrotiX.md` antes de gerar qualquer código.
-
-Todas as regras de desenvolvimento do projeto FrotiX estão centralizadas nesse arquivo.
-
-**NUNCA modifique este arquivo.** Adicione novas regras APENAS em `RegrasDesenvolvimentoFrotiX.md`.
-
-Caminho completo: D:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\RegrasDesenvolvimentoFrotiX.md
+Arquivos oficiais: c:\FrotiX\Solucao FrotiX 2026\RegrasDesenvolvimentoFrotiX.md e ControlesKendo.md
+Leia AMBOS ANTES de qualquer resposta.
+NUNCA modifique este arquivo. Adicione regras APENAS nos arquivos da raiz.
