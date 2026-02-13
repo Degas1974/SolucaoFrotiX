@@ -231,6 +231,10 @@ namespace FrotiX.Models
         public bool? CartaoAbastecimentoEntregue { get; set; }
         // Indica se o cartão de abastecimento foi devolvido.
         public bool? CartaoAbastecimentoDevolvido { get; set; }
+        // Indica se o suporte foi entregue íntegro.
+        public bool? SuporteIntegro { get; set; }
+        // Indica se o suporte foi devolvido defeituoso.
+        public bool? SuporteDefeituoso { get; set; }
         // Identificador da viagem.
         public Guid ViagemId { get; set; }
 
@@ -543,6 +547,14 @@ namespace FrotiX.Models
         // Indica se o cabo foi devolvido.
         [Display(Name = "Cabo Devolvido")]
         public bool? CaboDevolvido { get; set; }
+
+        // Indica se o suporte foi entregue íntegro.
+        [Display(Name = "Suporte Íntegro")]
+        public bool? SuporteIntegro { get; set; }
+
+        // Indica se o suporte foi devolvido defeituoso.
+        [Display(Name = "Suporte Defeituoso")]
+        public bool? SuporteDefeituoso { get; set; }
 
         // ===== VISTORIADORES =====
         // Vistoriador inicial.

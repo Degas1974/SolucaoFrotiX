@@ -1099,24 +1099,22 @@ function exibirViagemExistente(objViagem)
         // REMOVIDO: Campo ddtSetor não existe mais no modal de Agendamento
         // O Setor do Requisitante já é preenchido na seção 7.2 (lstSetorRequisitanteAgendamento)
 
-        // 10. Origem e Destino
+        // 10. Origem e Destino (✅ KENDO: agora usam Kendo ComboBox)
         if (objViagem.origem)
         {
-            const cmbOrigem = document.getElementById("cmbOrigem");
-            if (cmbOrigem && cmbOrigem.ej2_instances && cmbOrigem.ej2_instances[0])
+            const cmbOrigem = $("#cmbOrigem").data("kendoComboBox");
+            if (cmbOrigem)
             {
-                cmbOrigem.ej2_instances[0].value = objViagem.origem;
-                cmbOrigem.ej2_instances[0].dataBind();
+                cmbOrigem.value(objViagem.origem);
             }
         }
 
         if (objViagem.destino)
         {
-            const cmbDestino = document.getElementById("cmbDestino");
-            if (cmbDestino && cmbDestino.ej2_instances && cmbDestino.ej2_instances[0])
+            const cmbDestino = $("#cmbDestino").data("kendoComboBox");
+            if (cmbDestino)
             {
-                cmbDestino.ej2_instances[0].value = objViagem.destino;
-                cmbDestino.ej2_instances[0].dataBind();
+                cmbDestino.value(objViagem.destino);
             }
         }
 

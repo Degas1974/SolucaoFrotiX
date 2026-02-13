@@ -4,8 +4,8 @@
 > **Tipo:** Aplicação Web ASP.NET Core MVC – Gestão de Frotas
 > **Stack:** .NET 10, C#, Entity Framework Core, SQL Server, Bootstrap 5.3, jQuery, Syncfusion EJ2, Telerik UI
 > **Status:** ✅ Arquivo ÚNICO e OFICIAL de regras do projeto
-> **Versão:** 1.6
-> **Última Atualização:** 10/02/2026
+> **Versão:** 1.7
+> **Última Atualização:** 12/02/2026
 
 ---
 
@@ -568,6 +568,230 @@ POST /api/LogErros/Client
 
 ---
 
+## 🎯 4.6 PADRONIZAÇÃO E VALIDAÇÃO DE DADOS
+
+### 4.6.1 Capitalização de Siglas e Acrônimos (Língua Portuguesa)
+
+**Contexto:** O sistema FrotiX armazena dados textuais livres (Origem/Destino de viagens) que incluem siglas, acrônimos e nomes de instituições. É necessário seguir as regras da língua portuguesa para padronizar a capitalização desses termos e garantir consistência nos dados.
+
+**Regra:** Aplicar as seguintes regras de capitalização para siglas e acrônimos:
+
+1. **Inicialismo** (pronunciado letra por letra): **TODAS MAIÚSCULAS**
+   - Exemplos: **PGR** (pê-gê-erre), **CPF**, **RG**, **CNPJ**, **UnB**
+
+2. **Acrônimo/Sigla** (pronunciado como palavra, 4+ letras): **Primeira letra maiúscula**
+   - Exemplos: **Cefor** (sefôr), **Ctran** (cetran), **Unesco**, **Unicef**
+
+3. **Siglas curtas** (até 3 letras): **SEMPRE MAIÚSCULAS** (mesmo se pronunciáveis)
+   - Exemplos: **ONU**, **OMS**, **PGR**
+
+**Aplicação no FrotiX:**
+
+```sql
+-- ✅ Correto
+'Cefor'              -- Acrônimo pronunciável (Centro de Formação)
+'Ctran'              -- Acrônimo pronunciável (Centro de Trânsito)
+'PGR'                -- Inicialismo (Procuradoria-Geral da República)
+'UnB'                -- Nome próprio + tradição institucional
+
+-- ❌ Incorreto
+'CEFOR', 'cefor'     -- Deve ser 'Cefor'
+'CTRAN', 'ctran'     -- Deve ser 'Ctran'
+'pgr', 'Pgr'         -- Deve ser 'PGR'
+```
+
+**Data de Adição:** 12/02/2026
+
+---
+
+### 4.6.2 Capitalização de Texto Livre (Primeira Letra)
+
+**Contexto:** Quando usuários digitam texto livre nos campos Origem/Destino (sem selecionar item da lista), é necessário garantir que a primeira letra seja capitalizada automaticamente, seguindo padrão de nomes próprios.
+
+**Regra:** SEMPRE capitalizar automaticamente a primeira letra de texto livre digitado pelo usuário nos campos Origem e Destino (páginas Upsert e Agenda).
+
+**Implementação:**
+
+- **Frontend:** Função `capitalizeFirstLetter()` no módulo `kendo-fuzzy-validator.js`
+- **Quando aplicar:**
+  - Quando o usuário digita texto que NÃO existe na lista pré-carregada
+  - Quando a similaridade fuzzy é muito baixa (< 70%)
+  - Ao sair do campo (blur) ou pressionar Tab
+
+**Exemplo JavaScript:**
+
+```javascript
+function capitalizeFirstLetter(text) {
+    if (!text) return '';
+    const trimmed = String(text).trim();
+    if (!trimmed) return '';
+    return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+}
+
+// Aplicação no evento blur do ComboBox
+const capitalized = capitalizeFirstLetter(typedValue);
+if (capitalized !== typedValue) {
+    combo.text(capitalized);
+    combo.input.val(capitalized);
+}
+```
+
+**Arquivos envolvidos:**
+- `wwwroot/js/viagens/kendo-fuzzy-validator.js` (validador fuzzy)
+- `Pages/Viagens/Upsert.cshtml` (inicialização do ComboBox)
+- `Pages/Agenda/Index.cshtml` (inicialização do ComboBox)
+
+**Data de Adição:** 12/02/2026
+
+---
+
+### 4.6.3 Validação Fuzzy de Duplicatas (Origem/Destino)
+
+**Contexto:** O banco de dados contém centenas de variações duplicadas de Origem/Destino devido a erros de digitação, case incorreto, acentuação faltante, etc. (ex: "Cefor", "cefor", "CEFOR", "ceforc"). É necessário alertar o usuário em tempo real quando digitar valor similar a um existente, evitando novas duplicatas.
+
+**Regra:** SEMPRE ativar validação fuzzy (Levenshtein Distance) nos campos Origem e Destino das páginas Upsert e Agenda.
+
+**Funcionamento:**
+
+1. **Algoritmo:** Levenshtein Distance (distância de edição)
+2. **Thresholds de similaridade:**
+   - **≥ 90%:** Provável duplicata (alerta WARNING, 3 pulsos laranja)
+   - **70-89%:** Alta semelhança (alerta INFO, 2 pulsos azul)
+   - **< 70%:** Aceitar como novo valor + capitalizar primeira letra
+
+3. **Comportamento:**
+   - Exibir **alerta inline** (CSS: `fuzzy-inline-alert`) abaixo do campo
+   - Aplicar **highlight animado** no campo (CSS: `fuzzy-highlight-warning/info`)
+   - Se múltiplos matches: exibir classe `.multiple` (borda mais grossa)
+   - Cache de validações para performance
+   - Métricas de debug via console
+
+**Exemplo de Alerta Inline:**
+
+```
+⚠️ Aviso: praticamente idêntico a "Cefor" (95%)
+ℹ️ Aviso: parecido com "Câmara dos Deputados" (82%)
+```
+
+**Arquivos envolvidos:**
+- `wwwroot/js/viagens/kendo-fuzzy-validator.js` (lógica principal)
+- `wwwroot/css/kendo-fuzzy-validator.css` (estilos de alerta/highlight)
+- `Pages/Viagens/Upsert.cshtml` (inicialização)
+- `Pages/Agenda/Index.cshtml` (inicialização)
+
+**API JavaScript:**
+
+```javascript
+// Inicializar validador
+KendoFuzzyValidator.init({
+    origemData: window.dataOrigem || [],
+    destinoData: window.dataDestino || []
+});
+
+// Configuração (opcional)
+KendoFuzzyValidator.setConfig({
+    thresholdDuplicate: 0.90,
+    thresholdHighSimilarity: 0.70,
+    showSuggestions: true,
+    showMetrics: false
+});
+
+// Obter métricas
+const metrics = KendoFuzzyValidator.getMetrics();
+console.log(metrics.totalValidations, metrics.duplicatesDetected);
+```
+
+**Data de Adição:** 12/02/2026
+
+---
+
+### 4.6.4 Limpeza de Dados Legados (Scripts SQL)
+
+**Contexto:** O banco de dados acumulou centenas de duplicatas ao longo do tempo. É necessário executar scripts SQL de limpeza para unificar variações e reduzir a lista de valores únicos.
+
+**Regra:** Ao criar scripts de limpeza de dados duplicados, SEMPRE seguir o padrão abaixo:
+
+**Estrutura do Script:**
+
+```sql
+-- 1. Criar tabela temporária de mapeamento (ValorAntigo → ValorCanônico)
+CREATE TABLE #MapeamentoOrigemDestino (
+    ValorAntigo NVARCHAR(500) NOT NULL,
+    ValorCanonico NVARCHAR(500) NOT NULL,
+    Razao NVARCHAR(200) NOT NULL,
+    PRIMARY KEY (ValorAntigo)
+);
+
+-- 2. Inserir mapeamentos (CUIDADO com duplicatas case-insensitive)
+INSERT INTO #MapeamentoOrigemDestino VALUES
+    ('cefor', 'Cefor', 'Case incorreto'),
+    ('ANIVERSARIO', 'Aniversário', 'Sem acento'),
+    ('Camara', 'Câmara dos Deputados', 'Sem acento + incompleto');
+
+-- 3. Criar backup antes de atualizar
+SELECT * INTO Viagem_Backup_20260212 FROM dbo.Viagem;
+
+-- 4. Contar registros afetados ANTES de atualizar
+SELECT @RegistrosOrigemAfetados = COUNT(DISTINCT v.ViagemID)
+FROM dbo.Viagem v
+INNER JOIN #MapeamentoOrigemDestino m ON v.Origem = m.ValorAntigo;
+
+-- 5. Atualizar dentro de transação
+BEGIN TRANSACTION;
+    UPDATE v SET v.Origem = m.ValorCanonico
+    FROM dbo.Viagem v
+    INNER JOIN #MapeamentoOrigemDestino m ON v.Origem = m.ValorAntigo;
+
+    -- Repetir para Destino
+    UPDATE v SET v.Destino = m.ValorCanonico
+    FROM dbo.Viagem v
+    INNER JOIN #MapeamentoOrigemDestino m ON v.Destino = m.ValorAntigo;
+COMMIT;
+
+-- 6. Calcular e exibir estatísticas de redução
+DECLARE @OrigemPercentualReducao DECIMAL(5,2);
+SET @OrigemPercentualReducao =
+    (CAST(@OrigemReduzidos AS DECIMAL(10,2)) / CAST(@OrigemUnicosAntes AS DECIMAL(10,2))) * 100;
+
+PRINT '📊 Redução de Origem: ' + CAST(@OrigemPercentualReducao AS VARCHAR) + '%';
+```
+
+**Cuidados CRÍTICOS:**
+
+1. **Collation case-insensitive:** SQL Server compara 'CEFOR' = 'cefor' por padrão
+   - NUNCA inserir variações de case do mesmo valor
+   - Exemplo: inserir APENAS `('cefor', 'Cefor', ...)`, remover `('CEFOR', 'Cefor', ...)`
+
+2. **Espaços em branco:** `'pgr'` ≠ `'pgr '` (com espaço)
+   - Incluir na razão: `'Case incorreto (inclui Pgr e com espaço)'`
+
+3. **Backup obrigatório:** Sempre criar tabela de backup antes de UPDATE em massa
+
+4. **Transação:** Sempre usar `BEGIN TRANSACTION` / `COMMIT` / `ROLLBACK`
+
+5. **Valores canônicos:** Seguir regras de capitalização (seção 4.6.1 e 4.6.2)
+
+**Arquivo de Exemplo:**
+- `FrotiX.Site.OLD/Scripts/Limpeza_Origem_Destino.sql` (98 mapeamentos)
+
+**Data de Adição:** 12/02/2026
+
+---
+
+### 4.6.5 Referência Rápida - Arquivos de Validação de Dados
+
+| Arquivo | Descrição |
+|---------|-----------|
+| `wwwroot/js/viagens/kendo-fuzzy-validator.js` | Módulo de validação fuzzy (Levenshtein) |
+| `wwwroot/css/kendo-fuzzy-validator.css` | Estilos de alerta inline e highlights |
+| `Pages/Viagens/Upsert.cshtml` | Inicialização Origem/Destino + fuzzy validator |
+| `Pages/Agenda/Index.cshtml` | Inicialização Origem/Destino + fuzzy validator |
+| `Scripts/Limpeza_Origem_Destino.sql` | Script de limpeza de duplicatas (98 mapeamentos) |
+
+**Data de Adição:** 12/02/2026
+
+---
+
 ## 🔄 5. FLUXO DE TRABALHO
 
 ### 5.1 Git
@@ -981,6 +1205,7 @@ Sem essa colagem, a IA não sabe que a conversa está sendo registrada.
 
 | Versão | Data       | Descrição                                                                        |
 | ------ | ---------- | -------------------------------------------------------------------------------- |
+| 1.7    | 12/02/2026 | Adiciona seção 4.6 - Padronização e Validação de Dados (siglas, capitalização, fuzzy validator, limpeza SQL) |
 | 1.6    | 10/02/2026 | Adiciona regra que desativa criação de arquivos .md no diretório Documentacao/   |
 | 1.5    | 03/02/2026 | Adiciona seção 5.13 (Guia de Enriquecimento - Segunda Passada) com checklist detalhado por tipo de arquivo, exemplos de antes/depois, e workflow para agentes Haiku de enriquecimento de documentação |
 | 1.4    | 03/02/2026 | Adiciona seções 5.11 (Mapeamento de Dependências) e 5.12 (Análise de Arquivos Críticos). Atualiza 5.6 (🎯 MOTIVO em AJAX) e 5.9 (símbolos ⬅️ ➡️). Estabelece regra de limpeza do ArquivosCriticos.md |

@@ -844,8 +844,9 @@ window.criarAgendamentoNovo = function ()
         const lstRequisitanteEl = document.getElementById("lstRequisitante");
         const lstRequisitante = lstRequisitanteEl ? $(lstRequisitanteEl).data("kendoComboBox") : null;
         const lstSetorRequisitanteAgendamento = document.getElementById("lstSetorRequisitanteAgendamento")?.ej2_instances?.[0];
-        const cmbOrigem = document.getElementById("cmbOrigem")?.ej2_instances?.[0];
-        const cmbDestino = document.getElementById("cmbDestino")?.ej2_instances?.[0];
+        // ✅ KENDO: Origem e Destino agora usam Kendo ComboBox
+        const cmbOrigem = $("#cmbOrigem").data("kendoComboBox");
+        const cmbDestino = $("#cmbDestino").data("kendoComboBox");
         const lstFinalidade = document.getElementById("lstFinalidade")?.ej2_instances?.[0];
         const ddtCombustivelInicial = document.getElementById("ddtCombustivelInicial")?.ej2_instances?.[0];
         const ddtCombustivelFinal = document.getElementById("ddtCombustivelFinal")?.ej2_instances?.[0];
@@ -886,8 +887,9 @@ window.criarAgendamentoNovo = function ()
         const requisitanteId = lstRequisitante?.value();
 
         const setorId = lstSetorRequisitanteAgendamento.value[0];
-        const origem = cmbOrigem?.value;
-        const destino = cmbDestino?.value;
+        // ✅ KENDO: Precisa chamar value() com parênteses!
+        const origem = cmbOrigem?.value();
+        const destino = cmbDestino?.value();
         const finalidade = window.getSfValue0(lstFinalidade);
         const combustivelInicial = window.getSfValue0(ddtCombustivelInicial);
         const combustivelFinal = window.getSfValue0(ddtCombustivelFinal);
@@ -1215,8 +1217,9 @@ window.criarAgendamentoEdicao = function (agendamentoOriginal)
         console.log("  - lstReqEl encontrado:", lstReqEl ? "SIM" : "NÃO");
         console.log("  - lstReqKendo encontrado:", lstReqKendo ? "SIM" : "NÃO");
         console.log("  - requisitanteId extraído:", requisitanteId);
-        const destino = document.getElementById("cmbDestino")?.ej2_instances?.[0]?.value ?? null;
-        const origem = document.getElementById("cmbOrigem")?.ej2_instances?.[0]?.value ?? null;
+        // ✅ KENDO: Origem e Destino agora usam Kendo ComboBox
+        const destino = $("#cmbDestino").data("kendoComboBox")?.value() ?? null;
+        const origem = $("#cmbOrigem").data("kendoComboBox")?.value() ?? null;
         const finalidade = window.getSfValue0(ddtFinalidade);
         const combustivelInicial = window.getSfValue0(ddtCombIniInst);
         const combustivelFinal = window.getSfValue0(ddtCombFimInst);
@@ -1442,8 +1445,9 @@ window.criarAgendamentoViagem = function (agendamentoUnicoAlterado)
         let kmAtual = parseInt($("#txtKmAtual").val(), 10);
         let kmInicial = parseInt($("#txtKmInicial").val(), 10);
         let kmFinal = parseInt($("#txtKmFinal").val(), 10);
-        let destino = document.getElementById("cmbDestino").ej2_instances[0].value;
-        let origem = document.getElementById("cmbOrigem").ej2_instances[0].value;
+        // ✅ KENDO: Origem e Destino agora usam Kendo ComboBox
+        let destino = $("#cmbDestino").data("kendoComboBox").value();
+        let origem = $("#cmbOrigem").data("kendoComboBox").value();
         let finalidade = document.getElementById("lstFinalidade").ej2_instances[0].value[0];
         let combustivelInicial = document.getElementById("ddtCombustivelInicial").ej2_instances[0].value[0];
 
@@ -2745,6 +2749,151 @@ function aoAbrirModalViagem(event)
         window.modalJaFoiLimpo = false;
         window.ignorarEventosRecorrencia = false;
 
+        // Inicializar Kendo ComboBox para Origem e Destino (se ainda não foram inicializados)
+        if (!$("#cmbOrigem").data("kendoComboBox"))
+        {
+            var cmbOrigem = $("#cmbOrigem").kendoComboBox({
+                dataSource: window.dataOrigem || [],
+                filter: "contains",
+                placeholder: "Selecione ou digite a origem",
+                height: 220,
+                suggest: false,
+                minLength: 0,
+                enforceMinLength: false,
+                autoWidth: true
+            }).data("kendoComboBox");
+
+            // CRÍTICO: Preservar valor digitado e fechar dropdown ao Tab
+            var origemTypedValue = '';
+            var origemUserSelected = false;
+
+            cmbOrigem.input.on('input', function() {
+                origemTypedValue = $(this).val();
+                origemUserSelected = false;
+            });
+
+            // Detectar seleção manual da lista
+            cmbOrigem.bind('select', function(e) {
+                if (e.item) {
+                    origemUserSelected = true;
+                    origemTypedValue = this.text();
+                }
+            });
+
+            // Fechar dropdown ao pressionar Tab
+            cmbOrigem.input.on('keydown', function(e) {
+                if (e.keyCode === 9) { // Tab
+                    cmbOrigem.close();
+                }
+            });
+
+            cmbOrigem.input.on('blur', function() {
+                setTimeout(function() {
+                    var currentText = cmbOrigem.text();
+
+                    console.log('[ModalViagem] 📊 Debug origem blur:', {
+                        origemTypedValue: origemTypedValue,
+                        currentText: currentText,
+                        userSelected: origemUserSelected
+                    });
+
+                    // Se usuário NÃO selecionou da lista e havia valor digitado
+                    if (!origemUserSelected && origemTypedValue && currentText !== origemTypedValue) {
+                        console.log('[ModalViagem] 🔄 Restaurando valor digitado origem:', origemTypedValue);
+                        cmbOrigem.value(origemTypedValue);
+                        cmbOrigem.text(origemTypedValue);
+                        cmbOrigem.trigger('change');
+                    } else if (origemTypedValue) {
+                        console.log('[ModalViagem] ✅ Disparando change para fuzzy validator');
+                        cmbOrigem.trigger('change');
+                    }
+                }, 100);
+            });
+            console.log("✅ [ModalViagem] Kendo ComboBox cmbOrigem inicializado");
+        }
+
+        if (!$("#cmbDestino").data("kendoComboBox"))
+        {
+            var cmbDestino = $("#cmbDestino").kendoComboBox({
+                dataSource: window.dataDestino || [],
+                filter: "contains",
+                placeholder: "Selecione ou digite o destino",
+                height: 220,
+                suggest: false,
+                minLength: 0,
+                enforceMinLength: false,
+                autoWidth: true
+            }).data("kendoComboBox");
+
+            // CRÍTICO: Preservar valor digitado e fechar dropdown ao Tab
+            var destinoTypedValue = '';
+            var destinoUserSelected = false;
+
+            cmbDestino.input.on('input', function() {
+                destinoTypedValue = $(this).val();
+                destinoUserSelected = false;
+            });
+
+            // Detectar seleção manual da lista
+            cmbDestino.bind('select', function(e) {
+                if (e.item) {
+                    destinoUserSelected = true;
+                    destinoTypedValue = this.text();
+                }
+            });
+
+            // Fechar dropdown ao pressionar Tab
+            cmbDestino.input.on('keydown', function(e) {
+                if (e.keyCode === 9) { // Tab
+                    cmbDestino.close();
+                }
+            });
+
+            cmbDestino.input.on('blur', function() {
+                setTimeout(function() {
+                    var currentText = cmbDestino.text();
+
+                    console.log('[ModalViagem] 📊 Debug destino blur:', {
+                        destinoTypedValue: destinoTypedValue,
+                        currentText: currentText,
+                        userSelected: destinoUserSelected
+                    });
+
+                    // Se usuário NÃO selecionou da lista e havia valor digitado
+                    if (!destinoUserSelected && destinoTypedValue && currentText !== destinoTypedValue) {
+                        console.log('[ModalViagem] 🔄 Restaurando valor digitado destino:', destinoTypedValue);
+                        cmbDestino.value(destinoTypedValue);
+                        cmbDestino.text(destinoTypedValue);
+                        cmbDestino.trigger('change');
+                    } else if (destinoTypedValue) {
+                        console.log('[ModalViagem] ✅ Disparando change para fuzzy validator');
+                        cmbDestino.trigger('change');
+                    }
+                }, 100);
+            });
+            console.log("✅ [ModalViagem] Kendo ComboBox cmbDestino inicializado");
+        }
+
+        // Inicializar Fuzzy Validator para Origem/Destino (com delay para garantir que controles estejam prontos)
+        setTimeout(() =>
+        {
+            if (typeof KendoFuzzyValidator !== 'undefined')
+            {
+                try
+                {
+                    KendoFuzzyValidator.init({
+                        origemId: 'cmbOrigem',
+                        destinoId: 'cmbDestino',
+                        timeout: 200
+                    });
+                    console.log("✅ [ModalViagem] Fuzzy Validator inicializado");
+                } catch (error)
+                {
+                    console.warn("⚠️ [ModalViagem] Erro ao inicializar Fuzzy Validator:", error);
+                }
+            }
+        }, 300);
+
         // Buscar ViagemId
         const viagemId = $('#txtViagemId').val() ||
             $('#txtViagemIdRelatorio').val() ||
@@ -3241,8 +3390,35 @@ window.limparCamposModalViagens = function ()
             }
         });
 
-        // Limpar comboboxes e dropdowns - VERSÃO CORRIGIDA
-        const syncIds = ["lstFinalidade", "ddtSetor", "cmbOrigem", "cmbDestino", "lstMotorista", "lstVeiculo", "lstRequisitante", "lstSetorRequisitanteAgendamento", "lstEventos", "ddtCombustivelInicial", "ddtCombustivelFinal", "lstDiasMes", "lstDias"];
+        // ✅ KENDO: Limpar cmbOrigem e cmbDestino (agora são Kendo ComboBox)
+        try
+        {
+            const origemKendo = $("#cmbOrigem").data("kendoComboBox");
+            if (origemKendo)
+            {
+                origemKendo.value(null);
+                origemKendo.text("");
+            }
+        } catch (error)
+        {
+            console.warn("⚠️ [ModalViagem] Erro ao limpar cmbOrigem:", error);
+        }
+
+        try
+        {
+            const destinoKendo = $("#cmbDestino").data("kendoComboBox");
+            if (destinoKendo)
+            {
+                destinoKendo.value(null);
+                destinoKendo.text("");
+            }
+        } catch (error)
+        {
+            console.warn("⚠️ [ModalViagem] Erro ao limpar cmbDestino:", error);
+        }
+
+        // Limpar comboboxes e dropdowns Syncfusion - VERSÃO CORRIGIDA (removido cmbOrigem e cmbDestino)
+        const syncIds = ["lstFinalidade", "ddtSetor", "lstMotorista", "lstVeiculo", "lstRequisitante", "lstSetorRequisitanteAgendamento", "lstEventos", "ddtCombustivelInicial", "ddtCombustivelFinal", "lstDiasMes", "lstDias"];
         syncIds.forEach(id =>
         {
             try
@@ -3565,10 +3741,29 @@ window.desabilitarTodosControles = function ()
         }
 
         // Desabilita componentes EJ2 (EXCETO os do modal-footer)
+        // ✅ KENDO: Desabilitar cmbOrigem e cmbDestino (agora são Kendo ComboBox)
+        try
+        {
+            const origemKendo = $("#cmbOrigem").data("kendoComboBox");
+            if (origemKendo) origemKendo.enable(false);
+        } catch (error)
+        {
+            console.warn("⚠️ Erro ao desabilitar cmbOrigem:", error);
+        }
+
+        try
+        {
+            const destinoKendo = $("#cmbDestino").data("kendoComboBox");
+            if (destinoKendo) destinoKendo.enable(false);
+        } catch (error)
+        {
+            console.warn("⚠️ Erro ao desabilitar cmbDestino:", error);
+        }
+
         const componentesEJ2 = [
             "txtDataInicial", "txtDataFinal", "lstFinalidade",
             "lstMotorista", "lstVeiculo", "lstRequisitante",
-            "lstSetorRequisitanteAgendamento", "cmbOrigem", "cmbDestino",
+            "lstSetorRequisitanteAgendamento",
             "ddtCombustivelInicial", "ddtCombustivelFinal", "rteDescricao",
             "lstRecorrente", "lstPeriodos", "lstDias", "lstEventos"
         ];

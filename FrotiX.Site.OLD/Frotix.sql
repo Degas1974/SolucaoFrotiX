@@ -13064,3 +13064,843 @@ PRINT 'ðŸ“Š Tabelas: FileTracking, FileChangeHistory, DocumentationAlerts, 
 PRINT 'ðŸ”„ Stored Procedures: sp_DetectFileChanges, sp_MarkAsDocumented, sp_RunAutoScan';
 PRINT 'ðŸ‘ï¸â€ðŸ—¨ï¸ View: vw_FilesNeedingUpdate';
 PRINT 'â° Job agendado: DocGenerator_AutoScan (diariamente Ã s 2:00 AM)';
+
+-- ============================================================================
+-- SCHEMA SYNC - OBJECTS FROM MODELS (FrotiX.Site.OLD)
+-- ============================================================================
+
+--
+-- Create table [dbo].[TipoServico]
+--
+PRINT (N'Create table [dbo].[TipoServico]')
+GO
+CREATE TABLE dbo.TipoServico (
+  TipoServicoId uniqueidentifier NOT NULL,
+  NomeServico nvarchar(100) NOT NULL,
+  Descricao nvarchar(500) NULL,
+  Ativo bit NOT NULL DEFAULT (1),
+  DataCriacao datetime NULL,
+  DataAlteracao datetime NULL,
+  UsuarioIdAlteracao nvarchar(450) NULL,
+  CONSTRAINT PK_TipoServico PRIMARY KEY CLUSTERED (TipoServicoId)
+)
+ON [PRIMARY]
+GO
+
+--
+-- Create table [dbo].[Turno]
+--
+PRINT (N'Create table [dbo].[Turno]')
+GO
+CREATE TABLE dbo.Turno (
+  TurnoId uniqueidentifier NOT NULL,
+  NomeTurno nvarchar(50) NOT NULL,
+  HoraInicio time NOT NULL,
+  HoraFim time NOT NULL,
+  Ativo bit NOT NULL DEFAULT (1),
+  DataCriacao datetime NULL,
+  DataAlteracao datetime NULL,
+  UsuarioIdAlteracao nvarchar(450) NULL,
+  CONSTRAINT PK_Turno PRIMARY KEY CLUSTERED (TurnoId)
+)
+ON [PRIMARY]
+GO
+
+--
+-- Create table [dbo].[VAssociado]
+--
+PRINT (N'Create table [dbo].[VAssociado]')
+GO
+CREATE TABLE dbo.VAssociado (
+  AssociacaoId uniqueidentifier NOT NULL,
+  MotoristaId uniqueidentifier NOT NULL,
+  VeiculoId uniqueidentifier NULL,
+  DataInicio date NOT NULL,
+  DataFim date NULL,
+  Ativo bit NOT NULL DEFAULT (1),
+  Observacoes nvarchar(max) NULL,
+  DataCriacao datetime NULL,
+  DataAlteracao datetime NULL,
+  UsuarioIdAlteracao nvarchar(450) NULL,
+  CONSTRAINT PK_VAssociado PRIMARY KEY CLUSTERED (AssociacaoId)
+)
+ON [PRIMARY]
+TEXTIMAGE_ON [PRIMARY]
+GO
+
+--
+-- Create table [dbo].[EscalaDiaria]
+--
+PRINT (N'Create table [dbo].[EscalaDiaria]')
+GO
+CREATE TABLE dbo.EscalaDiaria (
+  EscalaDiaId uniqueidentifier NOT NULL,
+  AssociacaoId uniqueidentifier NULL,
+  TipoServicoId uniqueidentifier NOT NULL,
+  TurnoId uniqueidentifier NOT NULL,
+  DataEscala date NOT NULL,
+  HoraInicio time NOT NULL,
+  HoraFim time NOT NULL,
+  HoraIntervaloInicio time NULL,
+  HoraIntervaloFim time NULL,
+  Lotacao nvarchar(100) NULL,
+  NumeroSaidas int NOT NULL DEFAULT (0),
+  StatusMotorista nvarchar(20) NOT NULL DEFAULT (N'Disponivel'),
+  RequisitanteId uniqueidentifier NULL,
+  Observacoes nvarchar(max) NULL,
+  Ativo bit NOT NULL DEFAULT (1),
+  DataCriacao datetime NULL,
+  DataAlteracao datetime NULL,
+  UsuarioIdAlteracao nvarchar(450) NULL,
+  CONSTRAINT PK_EscalaDiaria PRIMARY KEY CLUSTERED (EscalaDiaId)
+)
+ON [PRIMARY]
+TEXTIMAGE_ON [PRIMARY]
+GO
+
+--
+-- Create table [dbo].[FolgaRecesso]
+--
+PRINT (N'Create table [dbo].[FolgaRecesso]')
+GO
+CREATE TABLE dbo.FolgaRecesso (
+  FolgaId uniqueidentifier NOT NULL,
+  MotoristaId uniqueidentifier NOT NULL,
+  DataInicio date NOT NULL,
+  DataFim date NOT NULL,
+  Tipo nvarchar(20) NOT NULL,
+  Observacoes nvarchar(max) NULL,
+  Ativo bit NOT NULL DEFAULT (1),
+  DataCriacao datetime NULL,
+  DataAlteracao datetime NULL,
+  UsuarioIdAlteracao nvarchar(450) NULL,
+  CONSTRAINT PK_FolgaRecesso PRIMARY KEY CLUSTERED (FolgaId)
+)
+ON [PRIMARY]
+TEXTIMAGE_ON [PRIMARY]
+GO
+
+--
+-- Create table [dbo].[Ferias]
+--
+PRINT (N'Create table [dbo].[Ferias]')
+GO
+CREATE TABLE dbo.Ferias (
+  FeriasId uniqueidentifier NOT NULL,
+  MotoristaId uniqueidentifier NOT NULL,
+  MotoristaSubId uniqueidentifier NULL,
+  DataInicio date NOT NULL,
+  DataFim date NOT NULL,
+  Observacoes nvarchar(max) NULL,
+  Ativo bit NOT NULL DEFAULT (1),
+  DataCriacao datetime NULL,
+  DataAlteracao datetime NULL,
+  UsuarioIdAlteracao nvarchar(450) NULL,
+  CONSTRAINT PK_Ferias PRIMARY KEY CLUSTERED (FeriasId)
+)
+ON [PRIMARY]
+TEXTIMAGE_ON [PRIMARY]
+GO
+
+--
+-- Create table [dbo].[CoberturaFolga]
+--
+PRINT (N'Create table [dbo].[CoberturaFolga]')
+GO
+CREATE TABLE dbo.CoberturaFolga (
+  CoberturaId uniqueidentifier NOT NULL,
+  MotoristaFolgaId uniqueidentifier NOT NULL,
+  MotoristaCoberturaId uniqueidentifier NOT NULL,
+  DataInicio date NOT NULL,
+  DataFim date NOT NULL,
+  Motivo nvarchar(50) NULL,
+  Observacoes nvarchar(max) NULL,
+  StatusOriginal nvarchar(50) NULL,
+  Ativo bit NOT NULL DEFAULT (1),
+  DataCriacao datetime NULL,
+  DataAlteracao datetime NULL,
+  UsuarioIdAlteracao nvarchar(450) NULL,
+  CONSTRAINT PK_CoberturaFolga PRIMARY KEY CLUSTERED (CoberturaId)
+)
+ON [PRIMARY]
+TEXTIMAGE_ON [PRIMARY]
+GO
+
+--
+-- Create table [dbo].[ObservacoesEscala]
+--
+PRINT (N'Create table [dbo].[ObservacoesEscala]')
+GO
+CREATE TABLE dbo.ObservacoesEscala (
+  ObservacaoId uniqueidentifier NOT NULL,
+  DataEscala date NOT NULL,
+  Titulo nvarchar(200) NULL,
+  Descricao nvarchar(max) NOT NULL,
+  Prioridade nvarchar(20) NOT NULL DEFAULT (N'Normal'),
+  ExibirDe date NOT NULL,
+  ExibirAte date NOT NULL,
+  Ativo bit NOT NULL DEFAULT (1),
+  DataCriacao datetime NULL,
+  DataAlteracao datetime NULL,
+  UsuarioIdAlteracao nvarchar(450) NULL,
+  CONSTRAINT PK_ObservacoesEscala PRIMARY KEY CLUSTERED (ObservacaoId)
+)
+ON [PRIMARY]
+TEXTIMAGE_ON [PRIMARY]
+GO
+
+--
+-- Create table [dbo].[LogErros]
+--
+PRINT (N'Create table [dbo].[LogErros]')
+GO
+CREATE TABLE dbo.LogErros (
+  LogErroId bigint IDENTITY(1, 1) NOT NULL,
+  DataHora datetime2(3) NOT NULL DEFAULT (getdate()),
+  Tipo nvarchar(50) NOT NULL,
+  Origem nvarchar(20) NOT NULL,
+  Nivel nvarchar(20) NULL,
+  Categoria nvarchar(100) NULL,
+  Mensagem nvarchar(max) NOT NULL,
+  MensagemCurta AS (
+    CASE
+      WHEN LEN(Mensagem) > 200 THEN LEFT(Mensagem, 200) + '...'
+      ELSE Mensagem
+    END
+  ) PERSISTED,
+  Arquivo nvarchar(500) NULL,
+  Metodo nvarchar(200) NULL,
+  Linha int NULL,
+  Coluna int NULL,
+  ExceptionType nvarchar(200) NULL,
+  ExceptionMessage nvarchar(max) NULL,
+  StackTrace nvarchar(max) NULL,
+  InnerException nvarchar(max) NULL,
+  Url nvarchar(1000) NULL,
+  HttpMethod nvarchar(10) NULL,
+  StatusCode int NULL,
+  UserAgent nvarchar(500) NULL,
+  IpAddress nvarchar(45) NULL,
+  Usuario nvarchar(100) NULL,
+  SessionId nvarchar(100) NULL,
+  DadosAdicionais nvarchar(max) NULL,
+  Resolvido bit NOT NULL DEFAULT (0),
+  DataResolucao datetime2(3) NULL,
+  ResolvidoPor nvarchar(100) NULL,
+  Observacoes nvarchar(max) NULL,
+  HashErro AS (
+    CONVERT(nvarchar(64),
+      HASHBYTES('SHA2_256',
+        CONCAT(
+          ISNULL(Tipo, ''), '|',
+          ISNULL(Arquivo, ''), '|',
+          ISNULL(CAST(Linha AS nvarchar(10)), '0'), '|',
+          LEFT(ISNULL(Mensagem, ''), 200)
+        )
+      ), 2)
+  ) PERSISTED,
+  CriadoEm datetime2(3) NOT NULL DEFAULT (getdate()),
+  CONSTRAINT PK_LogErros PRIMARY KEY CLUSTERED (LogErroId DESC)
+)
+ON [PRIMARY]
+TEXTIMAGE_ON [PRIMARY]
+GO
+
+--
+-- Create index [IX_LogErros_DataHora] on table [dbo].[LogErros]
+--
+PRINT (N'Create index [IX_LogErros_DataHora] on table [dbo].[LogErros]')
+GO
+CREATE INDEX IX_LogErros_DataHora
+  ON dbo.LogErros (DataHora DESC)
+  INCLUDE (Tipo, Origem, Nivel, MensagemCurta, Usuario)
+  ON [PRIMARY]
+GO
+
+--
+-- Create index [IX_LogErros_Tipo] on table [dbo].[LogErros]
+--
+PRINT (N'Create index [IX_LogErros_Tipo] on table [dbo].[LogErros]')
+GO
+CREATE INDEX IX_LogErros_Tipo
+  ON dbo.LogErros (Tipo, DataHora DESC)
+  ON [PRIMARY]
+GO
+
+--
+-- Create index [IX_LogErros_Origem] on table [dbo].[LogErros]
+--
+PRINT (N'Create index [IX_LogErros_Origem] on table [dbo].[LogErros]')
+GO
+CREATE INDEX IX_LogErros_Origem
+  ON dbo.LogErros (Origem, DataHora DESC)
+  ON [PRIMARY]
+GO
+
+--
+-- Create index [IX_LogErros_Usuario] on table [dbo].[LogErros]
+--
+PRINT (N'Create index [IX_LogErros_Usuario] on table [dbo].[LogErros]')
+GO
+CREATE INDEX IX_LogErros_Usuario
+  ON dbo.LogErros (Usuario, DataHora DESC)
+  WHERE (Usuario IS NOT NULL)
+  ON [PRIMARY]
+GO
+
+--
+-- Create index [IX_LogErros_Url] on table [dbo].[LogErros]
+--
+PRINT (N'Create index [IX_LogErros_Url] on table [dbo].[LogErros]')
+GO
+CREATE INDEX IX_LogErros_Url
+  ON dbo.LogErros (Url, Tipo)
+  INCLUDE (DataHora)
+  WHERE (Url IS NOT NULL)
+  ON [PRIMARY]
+GO
+
+--
+-- Create index [IX_LogErros_HashErro] on table [dbo].[LogErros]
+--
+PRINT (N'Create index [IX_LogErros_HashErro] on table [dbo].[LogErros]')
+GO
+CREATE INDEX IX_LogErros_HashErro
+  ON dbo.LogErros (HashErro, DataHora DESC)
+  INCLUDE (Mensagem, Arquivo, Linha)
+  ON [PRIMARY]
+GO
+
+--
+-- Create index [IX_LogErros_Resolvido] on table [dbo].[LogErros]
+--
+PRINT (N'Create index [IX_LogErros_Resolvido] on table [dbo].[LogErros]')
+GO
+CREATE INDEX IX_LogErros_Resolvido
+  ON dbo.LogErros (Resolvido, Tipo, DataHora DESC)
+  WHERE (Resolvido = 0)
+  ON [PRIMARY]
+GO
+
+--
+-- Create index [IX_LogErros_Dashboard] on table [dbo].[LogErros]
+--
+PRINT (N'Create index [IX_LogErros_Dashboard] on table [dbo].[LogErros]')
+GO
+CREATE INDEX IX_LogErros_Dashboard
+  ON dbo.LogErros (Tipo, Origem, DataHora DESC)
+  INCLUDE (Usuario, Url)
+  ON [PRIMARY]
+GO
+
+--
+-- Create statistics [STAT_LogErros_TipoOrigem] on table [dbo].[LogErros]
+--
+PRINT (N'Create statistics [STAT_LogErros_TipoOrigem] on table [dbo].[LogErros]')
+GO
+CREATE STATISTICS STAT_LogErros_TipoOrigem
+  ON dbo.LogErros (Tipo, Origem)
+GO
+
+--
+-- Create statistics [STAT_LogErros_DataHoraTipo] on table [dbo].[LogErros]
+--
+PRINT (N'Create statistics [STAT_LogErros_DataHoraTipo] on table [dbo].[LogErros]')
+GO
+CREATE STATISTICS STAT_LogErros_DataHoraTipo
+  ON dbo.LogErros (DataHora, Tipo)
+GO
+
+--
+-- Foreign keys for Escalas
+--
+PRINT (N'Create foreign keys for [Escalas] tables')
+GO
+ALTER TABLE dbo.VAssociado
+  ADD CONSTRAINT FK_VAssociado_Motorista FOREIGN KEY (MotoristaId) REFERENCES dbo.Motorista (MotoristaId)
+GO
+ALTER TABLE dbo.VAssociado
+  ADD CONSTRAINT FK_VAssociado_Veiculo FOREIGN KEY (VeiculoId) REFERENCES dbo.Veiculo (VeiculoId)
+GO
+ALTER TABLE dbo.EscalaDiaria
+  ADD CONSTRAINT FK_EscalaDiaria_Associacao FOREIGN KEY (AssociacaoId) REFERENCES dbo.VAssociado (AssociacaoId)
+GO
+ALTER TABLE dbo.EscalaDiaria
+  ADD CONSTRAINT FK_EscalaDiaria_TipoServico FOREIGN KEY (TipoServicoId) REFERENCES dbo.TipoServico (TipoServicoId)
+GO
+ALTER TABLE dbo.EscalaDiaria
+  ADD CONSTRAINT FK_EscalaDiaria_Turno FOREIGN KEY (TurnoId) REFERENCES dbo.Turno (TurnoId)
+GO
+ALTER TABLE dbo.EscalaDiaria
+  ADD CONSTRAINT FK_EscalaDiaria_Requisitante FOREIGN KEY (RequisitanteId) REFERENCES dbo.Requisitante (RequisitanteId)
+GO
+ALTER TABLE dbo.FolgaRecesso
+  ADD CONSTRAINT FK_FolgaRecesso_Motorista FOREIGN KEY (MotoristaId) REFERENCES dbo.Motorista (MotoristaId)
+GO
+ALTER TABLE dbo.Ferias
+  ADD CONSTRAINT FK_Ferias_Motorista FOREIGN KEY (MotoristaId) REFERENCES dbo.Motorista (MotoristaId)
+GO
+ALTER TABLE dbo.Ferias
+  ADD CONSTRAINT FK_Ferias_MotoristaSub FOREIGN KEY (MotoristaSubId) REFERENCES dbo.Motorista (MotoristaId)
+GO
+ALTER TABLE dbo.CoberturaFolga
+  ADD CONSTRAINT FK_CoberturaFolga_MotoristaFolga FOREIGN KEY (MotoristaFolgaId) REFERENCES dbo.Motorista (MotoristaId)
+GO
+ALTER TABLE dbo.CoberturaFolga
+  ADD CONSTRAINT FK_CoberturaFolga_MotoristaCobertura FOREIGN KEY (MotoristaCoberturaId) REFERENCES dbo.Motorista (MotoristaId)
+GO
+
+--
+-- Create or alter view [dbo].[ViewVeiculosManutencaoReserva]
+--
+PRINT (N'Create or alter view [dbo].[ViewVeiculosManutencaoReserva]')
+GO
+CREATE OR ALTER VIEW dbo.ViewVeiculosManutencaoReserva
+AS SELECT TOP 1000
+    v.VeiculoId,
+    (v.Placa + ' - ' + ma.DescricaoMarca + '/' + m.DescricaoModelo) AS Descricao
+FROM dbo.Veiculo v
+INNER JOIN dbo.ModeloVeiculo m ON v.ModeloId = m.ModeloId
+INNER JOIN dbo.MarcaVeiculo ma ON v.MarcaId = ma.MarcaId
+WHERE v.Status = 1 AND v.Reserva = 1
+ORDER BY Descricao
+GO
+
+--
+-- Create or alter view [dbo].[ViewVeiculosManutencao]
+--
+PRINT (N'Create or alter view [dbo].[ViewVeiculosManutencao]')
+GO
+CREATE OR ALTER VIEW dbo.ViewVeiculosManutencao
+AS SELECT TOP 1000
+    v.VeiculoId,
+    (v.Placa + ' - ' + ma.DescricaoMarca + '/' + m.DescricaoModelo) AS Descricao
+FROM dbo.Veiculo v
+INNER JOIN dbo.ModeloVeiculo m ON v.ModeloId = m.ModeloId
+INNER JOIN dbo.MarcaVeiculo ma ON v.MarcaId = ma.MarcaId
+WHERE v.Status = 1
+ORDER BY Descricao
+GO
+
+--
+-- Create or alter view [dbo].[ViewMotoristasViagem]
+--
+PRINT (N'Create or alter view [dbo].[ViewMotoristasViagem]')
+GO
+CREATE OR ALTER VIEW dbo.ViewMotoristasViagem
+AS SELECT TOP 10000
+    m.MotoristaId,
+    m.Nome,
+    m.TipoCondutor,
+    m.Status,
+    m.Foto,
+    CAST(m.Nome + ' (' + m.TipoCondutor + ')' AS nvarchar(300)) AS MotoristaCondutor
+FROM dbo.Motorista AS m
+WHERE m.Status = 1
+ORDER BY m.Nome
+GO
+
+--
+-- Create or alter view [dbo].[ViewOcorrenciasViagem]
+--
+PRINT (N'Create or alter view [dbo].[ViewOcorrenciasViagem]')
+GO
+CREATE OR ALTER VIEW dbo.ViewOcorrenciasViagem
+AS SELECT
+    oc.OcorrenciaViagemId,
+    oc.ViagemId,
+    oc.VeiculoId,
+    oc.MotoristaId,
+    ISNULL(oc.Resumo, '') AS Resumo,
+    ISNULL(oc.Descricao, '') AS Descricao,
+    ISNULL(oc.ImagemOcorrencia, '') AS ImagemOcorrencia,
+    ISNULL(oc.Status, 'Aberta') AS Status,
+    oc.DataCriacao,
+    oc.DataBaixa,
+    ISNULL(oc.UsuarioCriacao, '') AS UsuarioCriacao,
+    ISNULL(oc.UsuarioBaixa, '') AS UsuarioBaixa,
+    oc.ItemManutencaoId,
+    ISNULL(oc.Observacoes, '') AS Observacoes,
+    vi.DataInicial,
+    vi.DataFinal,
+    vi.HoraInicio,
+    vi.HoraFim,
+    vi.NoFichaVistoria,
+    ISNULL(vi.Origem, '') AS Origem,
+    ISNULL(vi.Destino, '') AS Destino,
+    ISNULL(vi.Finalidade, '') AS FinalidadeViagem,
+    ISNULL(vi.Status, '') AS StatusViagem,
+    ISNULL(ve.Placa, '') AS Placa,
+    ISNULL(ma.DescricaoMarca, '') AS DescricaoMarca,
+    ISNULL(mo.DescricaoModelo, '') AS DescricaoModelo,
+    ISNULL(CONCAT(ve.Placa, ' - ', ma.DescricaoMarca, '/', mo.DescricaoModelo), '') AS VeiculoCompleto,
+    ISNULL(CONCAT(ma.DescricaoMarca, '/', mo.DescricaoModelo), '') AS MarcaModelo,
+    ISNULL(mt.Nome, '') AS NomeMotorista,
+    CAST('' AS varchar(1)) AS FotoMotorista,
+    DATEDIFF(DAY, oc.DataCriacao, GETDATE()) AS DiasEmAberto,
+    CASE
+        WHEN oc.Status = 'Baixada' THEN 'Resolvida'
+        WHEN DATEDIFF(DAY, oc.DataCriacao, GETDATE()) > 30 THEN 'Critica'
+        WHEN DATEDIFF(DAY, oc.DataCriacao, GETDATE()) > 15 THEN 'Alta'
+        WHEN DATEDIFF(DAY, oc.DataCriacao, GETDATE()) > 7 THEN 'Media'
+        ELSE 'Normal'
+    END AS Urgencia,
+    CASE
+        WHEN oc.Status = 'Baixada' THEN '#28a745'
+        WHEN DATEDIFF(DAY, oc.DataCriacao, GETDATE()) > 30 THEN '#dc3545'
+        WHEN DATEDIFF(DAY, oc.DataCriacao, GETDATE()) > 15 THEN '#ffc107'
+        WHEN DATEDIFF(DAY, oc.DataCriacao, GETDATE()) > 7 THEN '#17a2b8'
+        ELSE '#6c757d'
+    END AS CorUrgencia
+FROM dbo.OcorrenciaViagem oc
+LEFT JOIN dbo.Viagem vi ON oc.ViagemId = vi.ViagemId
+LEFT JOIN dbo.Veiculo ve ON oc.VeiculoId = ve.VeiculoId
+LEFT JOIN dbo.MarcaVeiculo ma ON ve.MarcaId = ma.MarcaId
+LEFT JOIN dbo.ModeloVeiculo mo ON ve.ModeloId = mo.ModeloId
+LEFT JOIN dbo.Motorista mt ON oc.MotoristaId = mt.MotoristaId
+GO
+
+--
+-- Create or alter view [dbo].[ViewOcorrenciasAbertasVeiculo]
+--
+PRINT (N'Create or alter view [dbo].[ViewOcorrenciasAbertasVeiculo]')
+GO
+CREATE OR ALTER VIEW dbo.ViewOcorrenciasAbertasVeiculo
+AS
+SELECT
+    oc.OcorrenciaViagemId,
+    oc.ViagemId,
+    oc.VeiculoId,
+    oc.MotoristaId,
+    oc.Resumo,
+    oc.Descricao,
+    oc.ImagemOcorrencia,
+    oc.DataCriacao,
+    oc.UsuarioCriacao,
+    ve.Placa,
+    ma.DescricaoMarca,
+    mo.DescricaoModelo,
+    CONCAT(ve.Placa, ' - ', ma.DescricaoMarca, '/', mo.DescricaoModelo) AS VeiculoCompleto,
+    vi.DataInicial AS DataViagem,
+    vi.NoFichaVistoria,
+    mt.Nome AS NomeMotorista,
+    DATEDIFF(DAY, oc.DataCriacao, GETDATE()) AS DiasEmAberto,
+    CASE
+        WHEN DATEDIFF(DAY, oc.DataCriacao, GETDATE()) > 30 THEN 'Critica'
+        WHEN DATEDIFF(DAY, oc.DataCriacao, GETDATE()) > 15 THEN 'Alta'
+        WHEN DATEDIFF(DAY, oc.DataCriacao, GETDATE()) > 7 THEN 'Media'
+        ELSE 'Normal'
+    END AS Urgencia,
+    CASE
+        WHEN DATEDIFF(DAY, oc.DataCriacao, GETDATE()) > 30 THEN '#dc3545'
+        WHEN DATEDIFF(DAY, oc.DataCriacao, GETDATE()) > 15 THEN '#ffc107'
+        WHEN DATEDIFF(DAY, oc.DataCriacao, GETDATE()) > 7 THEN '#17a2b8'
+        ELSE '#6c757d'
+    END AS CorUrgencia
+FROM dbo.OcorrenciaViagem oc
+INNER JOIN dbo.Viagem vi ON oc.ViagemId = vi.ViagemId
+INNER JOIN dbo.Veiculo ve ON oc.VeiculoId = ve.VeiculoId
+INNER JOIN dbo.MarcaVeiculo ma ON ve.MarcaId = ma.MarcaId
+INNER JOIN dbo.ModeloVeiculo mo ON ve.ModeloId = mo.ModeloId
+LEFT JOIN dbo.Motorista mt ON oc.MotoristaId = mt.MotoristaId
+WHERE oc.Status = 'Aberta'
+GO
+
+--
+-- Create or alter view [dbo].[ViewManutencao]
+--
+PRINT (N'Create or alter view [dbo].[ViewManutencao]')
+GO
+CREATE OR ALTER VIEW dbo.ViewManutencao
+AS SELECT
+    ISNULL(v.Placa, '') + ' - ' + ISNULL(ma.DescricaoMarca, '') + '/' + ISNULL(m.DescricaoModelo, '') AS PlacaDescricao,
+    ISNULL(v.Placa, '') + ' - (' + ISNULL(ma.DescricaoMarca, '') + '/' + ISNULL(m.DescricaoModelo, '') + ')' AS Veiculo,
+    vc.ContratoId,
+    b.ManutencaoId,
+    b.NumOS,
+    b.ResumoOS,
+    CONVERT(char(10), b.DataSolicitacao, 103) AS DataSolicitacao,
+    CONVERT(char(10), b.DataDisponibilidade, 103) AS DataDisponibilidade,
+    CONVERT(char(10), b.DataRecolhimento, 103) AS DataRecolhimento,
+    CONVERT(char(10), b.DataRecebimentoReserva, 103) AS DataRecebimentoReserva,
+    CONVERT(char(10), b.DataDevolucaoReserva, 103) AS DataDevolucaoReserva,
+    CONVERT(char(10), b.DataEntrega, 103) AS DataEntrega,
+    CONVERT(char(10), b.DataDevolucao, 103) AS DataDevolucao,
+    b.DataSolicitacao AS DataSolicitacaoRaw,
+    b.DataDevolucao AS DataDevolucaoRaw,
+    b.StatusOS,
+    b.VeiculoId,
+    b.ReservaEnviado,
+    ma.DescricaoMarca + '/' + m.DescricaoModelo AS DescricaoVeiculo,
+    u.Sigla AS Sigla,
+    c.Descricao AS CombustivelDescricao,
+    v.Placa AS Placa,
+    CASE
+        WHEN b.ReservaEnviado = 1 THEN 'Enviado'
+        WHEN b.ReservaEnviado = 0 THEN 'Ausente'
+        ELSE ''
+    END AS Reserva,
+    ivc.Descricao,
+    ivc.Quantidade,
+    ivc.ValorUnitario,
+    d.DiasCalc AS DiasGlosa,
+    CAST(d.DiasCalc * COALESCE(CAST(ivc.ValorUnitario AS decimal(18, 2)), 0) AS decimal(18, 2)) AS ValorGlosa,
+    CASE
+        WHEN b.DataDevolucao IS NULL THEN 0
+        ELSE DATEDIFF(DAY, b.DataSolicitacao, b.DataDevolucao)
+    END AS Dias,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN '' ELSE 'data-toggle=''modal'' data-target=''#modalManutencao''' END AS Habilitado,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'fa-regular fa-lock' ELSE 'far fa-flag-checkered' END AS Icon,
+    ivc.NumItem,
+    CASE
+        WHEN b.VeiculoReservaId IS NULL THEN NULL
+        ELSE ISNULL(v.Placa, '') + ' - (' + ISNULL(ma.DescricaoMarca, '') + '/' + ISNULL(m.DescricaoModelo, '') + ')'
+    END AS CarroReserva,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'disabled' ELSE '' END AS HabilitadoEditar,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'opacity:0.3; pointer-events:none;' ELSE 'opacity:1;' END AS OpacityEditar,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'Visualizar Manutencao' ELSE 'Edita a Ordem de Servico!' END AS OpacityTooltipEditarEditar,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'disabled' ELSE '' END AS HabilitadoBaixar,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN '' ELSE 'data-toggle=''modal'' data-target=''#modalManutencao''' END AS ModalBaixarAttrs,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'opacity:0.3; pointer-events:none;' ELSE 'opacity:1;' END AS OpacityBaixar,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'Desabilitado' ELSE 'Fecha a Ordem de Servico!' END AS Tooltip,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'disabled' ELSE '' END AS HabilitadoCancelar,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'opacity:0.3; pointer-events:none;' ELSE 'opacity:1;' END AS OpacityCancelar,
+    CASE
+        WHEN b.StatusOS = 'Cancelada' THEN 'Manutencao Cancelada'
+        WHEN b.StatusOS = 'Fechada' THEN 'OS Fechada/Baixada'
+        ELSE 'Cancelar Manutencao'
+    END AS TooltipCancelar
+FROM dbo.Manutencao AS b
+LEFT JOIN dbo.Veiculo AS v ON v.VeiculoId = b.VeiculoId
+LEFT JOIN dbo.VeiculoContrato AS vc ON vc.VeiculoId = v.VeiculoId
+LEFT JOIN dbo.ModeloVeiculo AS m ON m.ModeloId = v.ModeloId
+LEFT JOIN dbo.MarcaVeiculo AS ma ON ma.MarcaId = v.MarcaId
+LEFT JOIN dbo.Combustivel AS c ON c.CombustivelId = v.CombustivelId
+LEFT JOIN dbo.Unidade AS u ON u.UnidadeId = v.UnidadeId
+LEFT JOIN dbo.ItemVeiculoContrato AS ivc ON ivc.ItemVeiculoId = v.ItemVeiculoId
+CROSS APPLY (
+  SELECT DiasCalc =
+    CASE
+      WHEN b.DataDevolucao IS NULL THEN 1
+      WHEN b.DataEntrega IS NOT NULL THEN DATEDIFF(DAY, b.DataEntrega, b.DataDevolucao)
+      ELSE DATEDIFF(DAY, b.DataSolicitacao, b.DataDevolucao)
+    END
+) AS d
+GO
+
+--
+-- Create or alter view [dbo].[ViewGlosa]
+--
+PRINT (N'Create or alter view [dbo].[ViewGlosa]')
+GO
+CREATE OR ALTER VIEW dbo.ViewGlosa
+AS SELECT
+    ISNULL(v.Placa, '') + ' - ' + ISNULL(ma.DescricaoMarca, '') + '/' + ISNULL(m.DescricaoModelo, '') AS PlacaDescricao,
+    vc.ContratoId,
+    b.ManutencaoId,
+    b.NumOS,
+    b.ResumoOS,
+    CONVERT(char(10), b.DataSolicitacao, 103) AS DataSolicitacao,
+    CONVERT(char(10), b.DataDisponibilidade, 103) AS DataDisponibilidade,
+    CONVERT(char(10), b.DataRecolhimento, 103) AS DataRecolhimento,
+    CONVERT(char(10), b.DataRecebimentoReserva, 103) AS DataRecebimentoReserva,
+    CONVERT(char(10), b.DataDevolucaoReserva, 103) AS DataDevolucaoReserva,
+    CONVERT(char(10), b.DataEntrega, 103) AS DataEntrega,
+    CONVERT(char(10), b.DataDevolucao, 103) AS DataDevolucao,
+    b.DataSolicitacao AS DataSolicitacaoRaw,
+    b.DataDisponibilidade AS DataDisponibilidadeRaw,
+    b.DataDevolucao AS DataDevolucaoRaw,
+    b.StatusOS,
+    b.VeiculoId,
+    ma.DescricaoMarca + '/' + m.DescricaoModelo AS DescricaoVeiculo,
+    u.Sigla AS Sigla,
+    c.Descricao AS CombustivelDescricao,
+    v.Placa AS Placa,
+    CASE
+        WHEN b.ReservaEnviado = 1 THEN 'Enviado'
+        WHEN b.ReservaEnviado = 0 THEN 'Ausente'
+        ELSE ''
+    END AS Reserva,
+    ivc.Descricao,
+    ivc.Quantidade,
+    ivc.ValorUnitario,
+    d.DiasCalc AS DiasGlosa,
+    CAST(d.DiasCalc * COALESCE(CAST(ivc.ValorUnitario AS decimal(18, 2)), 0) AS decimal(18, 2)) AS ValorGlosa,
+    CASE
+        WHEN b.DataDevolucao IS NULL THEN 0
+        ELSE DATEDIFF(DAY, b.DataSolicitacao, b.DataDevolucao)
+    END AS Dias,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN '' ELSE 'data-toggle=''modal'' data-target=''#modalManutencao''' END AS Habilitado,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'fa-regular fa-lock' ELSE 'far fa-flag-checkered' END AS Icon,
+    ivc.NumItem,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'disabled' ELSE '' END AS HabilitadoEditar,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'opacity:0.3; pointer-events:none;' ELSE 'opacity:1;' END AS OpacityEditar,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'Visualizar Manutencao' ELSE 'Edita a Ordem de Servico!' END AS OpacityTooltipEditarEditar,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'disabled' ELSE '' END AS HabilitadoBaixar,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN '' ELSE 'data-toggle=''modal'' data-target=''#modalManutencao''' END AS ModalBaixarAttrs,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'opacity:0.3; pointer-events:none;' ELSE 'opacity:1;' END AS OpacityBaixar,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'Desabilitado' ELSE 'Fecha a Ordem de Servico!' END AS Tooltip,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'disabled' ELSE '' END AS HabilitadoCancelar,
+    CASE WHEN b.StatusOS IN ('Fechada', 'Cancelada') THEN 'opacity:0.3; pointer-events:none;' ELSE 'opacity:1;' END AS OpacityCancelar,
+    CASE
+        WHEN b.StatusOS = 'Cancelada' THEN 'Manutencao Cancelada'
+        WHEN b.StatusOS = 'Fechada' THEN 'OS Fechada/Baixada'
+        ELSE 'Cancelar Manutencao'
+    END AS TooltipCancelar
+FROM dbo.Manutencao AS b
+LEFT JOIN dbo.Veiculo AS v ON v.VeiculoId = b.VeiculoId
+LEFT JOIN dbo.VeiculoContrato AS vc ON vc.VeiculoId = v.VeiculoId
+LEFT JOIN dbo.ModeloVeiculo AS m ON m.ModeloId = v.ModeloId
+LEFT JOIN dbo.MarcaVeiculo AS ma ON ma.MarcaId = v.MarcaId
+LEFT JOIN dbo.Combustivel AS c ON c.CombustivelId = v.CombustivelId
+LEFT JOIN dbo.Unidade AS u ON u.UnidadeId = v.UnidadeId
+LEFT JOIN dbo.ItemVeiculoContrato AS ivc ON ivc.ItemVeiculoId = v.ItemVeiculoId
+CROSS APPLY (
+  SELECT DiasCalc =
+    CASE
+      WHEN b.DataDevolucao IS NULL THEN 1
+      WHEN b.DataEntrega IS NOT NULL THEN DATEDIFF(DAY, b.DataEntrega, b.DataDevolucao)
+      ELSE DATEDIFF(DAY, b.DataSolicitacao, b.DataDevolucao)
+    END
+) AS d
+GO
+
+--
+-- Create or alter view [dbo].[ViewFluxoEconomildoData]
+--
+PRINT (N'Create or alter view [dbo].[ViewFluxoEconomildoData]')
+GO
+CREATE OR ALTER VIEW dbo.ViewFluxoEconomildoData
+AS SELECT
+    ViewFluxoEconomildo.VeiculoId,
+    ViewFluxoEconomildo.VIagemEconomildoId AS ViagemEconomildoId,
+    ViewFluxoEconomildo.MotoristaId,
+    ViewFluxoEconomildo.TipoCondutor,
+    ViewFluxoEconomildo.Data,
+    ViewFluxoEconomildo.MOB,
+    ViewFluxoEconomildo.HoraInicio,
+    ViewFluxoEconomildo.HoraFim,
+    ViewFluxoEconomildo.QtdPassageiros,
+    ViewFluxoEconomildo.NomeMotorista,
+    ViewFluxoEconomildo.DescricaoVeiculo
+FROM dbo.ViewFluxoEconomildo
+GO
+
+--
+-- Create or alter view [dbo].[ViewEscalasCompletas]
+--
+PRINT (N'Create or alter view [dbo].[ViewEscalasCompletas]')
+GO
+CREATE OR ALTER VIEW dbo.ViewEscalasCompletas
+AS SELECT
+    ed.EscalaDiaId,
+    ed.DataEscala,
+    CONVERT(varchar(5), ed.HoraInicio, 108) AS HoraInicio,
+    CONVERT(varchar(5), ed.HoraFim, 108) AS HoraFim,
+    CONVERT(varchar(5), ed.HoraIntervaloInicio, 108) AS HoraIntervaloInicio,
+    CONVERT(varchar(5), ed.HoraIntervaloFim, 108) AS HoraIntervaloFim,
+    ed.NumeroSaidas,
+    ed.StatusMotorista,
+    ed.Lotacao,
+    ed.Observacoes,
+    m.MotoristaId,
+    m.Nome AS NomeMotorista,
+    m.Ponto,
+    m.CPF,
+    m.CNH,
+    m.Celular01,
+    m.Foto,
+    v.VeiculoId,
+    v.Placa,
+    mv.DescricaoModelo AS Modelo,
+    CASE
+        WHEN v.VeiculoId IS NULL THEN NULL
+        ELSE '(' + v.Placa + ') - ' + ma.DescricaoMarca + '/' + mv.DescricaoModelo
+    END AS VeiculoDescricao,
+    ts.TipoServicoId,
+    ts.NomeServico,
+    t.TurnoId,
+    t.NomeTurno,
+    r.RequisitanteId,
+    r.Nome AS NomeRequisitante,
+    cf.CoberturaId,
+    cf.MotoristaCoberturaId,
+    cf.MotoristaFolgaId,
+    cf.DataInicio,
+    cf.DataFim,
+    cf.Motivo AS MotivoCobertura,
+    mc.Nome AS NomeMotoristaCobertor,
+    mf.Nome AS NomeMotoristaTitular
+FROM dbo.EscalaDiaria ed
+LEFT JOIN dbo.VAssociado va ON ed.AssociacaoId = va.AssociacaoId
+LEFT JOIN dbo.Motorista m ON va.MotoristaId = m.MotoristaId
+LEFT JOIN dbo.Veiculo v ON va.VeiculoId = v.VeiculoId
+LEFT JOIN dbo.ModeloVeiculo mv ON v.ModeloId = mv.ModeloId
+LEFT JOIN dbo.MarcaVeiculo ma ON mv.MarcaId = ma.MarcaId
+LEFT JOIN dbo.TipoServico ts ON ed.TipoServicoId = ts.TipoServicoId
+LEFT JOIN dbo.Turno t ON ed.TurnoId = t.TurnoId
+LEFT JOIN dbo.Requisitante r ON ed.RequisitanteId = r.RequisitanteId
+LEFT JOIN dbo.CoberturaFolga cf
+  ON cf.MotoristaFolgaId = m.MotoristaId
+ AND ed.DataEscala BETWEEN cf.DataInicio AND cf.DataFim
+LEFT JOIN dbo.Motorista mc ON cf.MotoristaCoberturaId = mc.MotoristaId
+LEFT JOIN dbo.Motorista mf ON cf.MotoristaFolgaId = mf.MotoristaId
+GO
+
+--
+-- Create or alter view [dbo].[ViewMotoristasVez]
+--
+PRINT (N'Create or alter view [dbo].[ViewMotoristasVez]')
+GO
+CREATE OR ALTER VIEW dbo.ViewMotoristasVez
+AS SELECT
+    m.MotoristaId,
+    m.Nome AS NomeMotorista,
+    m.Ponto,
+    m.Foto,
+    ed.DataEscala,
+    ed.NumeroSaidas,
+    ed.StatusMotorista,
+    ed.Lotacao,
+    CASE
+        WHEN v.VeiculoId IS NULL THEN NULL
+        ELSE v.Placa + ' - ' + ma.DescricaoMarca + '/' + mv.DescricaoModelo
+    END AS VeiculoDescricao,
+    v.Placa,
+    CONVERT(varchar(5), ed.HoraInicio, 108) AS HoraInicio,
+    CONVERT(varchar(5), ed.HoraFim, 108) AS HoraFim
+FROM dbo.EscalaDiaria ed
+LEFT JOIN dbo.VAssociado va ON ed.AssociacaoId = va.AssociacaoId
+LEFT JOIN dbo.Motorista m ON va.MotoristaId = m.MotoristaId
+LEFT JOIN dbo.Veiculo v ON va.VeiculoId = v.VeiculoId
+LEFT JOIN dbo.ModeloVeiculo mv ON v.ModeloId = mv.ModeloId
+LEFT JOIN dbo.MarcaVeiculo ma ON mv.MarcaId = ma.MarcaId
+WHERE ed.DataEscala = CAST(GETDATE() AS date)
+GO
+
+--
+-- Create or alter view [dbo].[ViewStatusMotoristas]
+--
+PRINT (N'Create or alter view [dbo].[ViewStatusMotoristas]')
+GO
+CREATE OR ALTER VIEW dbo.ViewStatusMotoristas
+AS SELECT
+    m.MotoristaId,
+    m.Nome,
+    m.Ponto,
+    ed.StatusMotorista AS StatusAtual,
+    ed.DataEscala,
+    ed.NumeroSaidas,
+    v.Placa,
+    CASE
+        WHEN v.VeiculoId IS NULL THEN NULL
+        ELSE v.Placa + ' - ' + ma.DescricaoMarca + '/' + mv.DescricaoModelo
+    END AS Veiculo
+FROM dbo.EscalaDiaria ed
+LEFT JOIN dbo.VAssociado va ON ed.AssociacaoId = va.AssociacaoId
+LEFT JOIN dbo.Motorista m ON va.MotoristaId = m.MotoristaId
+LEFT JOIN dbo.Veiculo v ON va.VeiculoId = v.VeiculoId
+LEFT JOIN dbo.ModeloVeiculo mv ON v.ModeloId = mv.ModeloId
+LEFT JOIN dbo.MarcaVeiculo ma ON mv.MarcaId = ma.MarcaId
+WHERE ed.DataEscala = CAST(GETDATE() AS date)
+GO

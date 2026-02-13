@@ -1305,6 +1305,8 @@ namespace FrotiX.Controllers
                 objViagem.DocumentoDevolvido = viagem.DocumentoDevolvido;
                 objViagem.CartaoAbastecimentoEntregue = viagem.CartaoAbastecimentoEntregue;
                 objViagem.CartaoAbastecimentoDevolvido = viagem.CartaoAbastecimentoDevolvido;
+                objViagem.SuporteIntegro = viagem.SuporteIntegro;
+                objViagem.SuporteDefeituoso = viagem.SuporteDefeituoso;
 
                 ClaimsPrincipal currentUser = this.User;
                 var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;

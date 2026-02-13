@@ -84,6 +84,7 @@
 @section HeadBlock {
     <link href="~/css/ftx-card-styled.css" rel="stylesheet" asp-append-version="true" />
     <link href="~/css/viagens/viagem-upsert.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/css/kendo-fuzzy-validator.css" rel="stylesheet" asp-append-version="true" />
 }
 
 <!-- FORM PRINCIPAL (MVC) -->
@@ -250,22 +251,24 @@
                                                 asp-for="ViagemObj.Viagem.Origem">Origem</label>
                                             <span class="text-danger font-weight-light"
                                                 asp-validation-for="ViagemObj.Viagem.Origem"></span>
-                                            <ejs-combobox id="cmbOrigem" ejs-for="ViagemObj.Viagem.Origem"
-                                                dataSource="@ViewData["ListaOrigem"]"
-                                                placeholder="Selecione ou digite a Origem" allowFiltering="true"
-                                                filterType="Contains" allowCustom="true" popupHeight="220px">
-                                            </ejs-combobox>
+                                            <input id="cmbOrigem" name="ViagemObj.Viagem.Origem" style="width: 100%;" />
+                                            <!-- Aviso fuzzy validator -->
+                                            <div id="fuzzy-alert-origem" class="fuzzy-inline-alert" style="display: none;">
+                                                <i class="fa-duotone fa-circle-exclamation"></i>
+                                                <span class="fuzzy-alert-text"></span>
+                                            </div>
                                         </div>
                                         <div class="col-12 col-md-4">
                                             <label class="ftx-label ftx-required"
                                                 asp-for="ViagemObj.Viagem.Destino">Destino</label>
                                             <span class="text-danger font-weight-light"
                                                 asp-validation-for="ViagemObj.Viagem.Destino"></span>
-                                            <ejs-combobox id="cmbDestino" ejs-for="ViagemObj.Viagem.Destino"
-                                                dataSource="@ViewData["ListaDestino"]"
-                                                placeholder="Selecione ou digite o destino" allowFiltering="true"
-                                                filterType="Contains" allowCustom="true" popupHeight="220px">
-                                            </ejs-combobox>
+                                            <input id="cmbDestino" name="ViagemObj.Viagem.Destino" style="width: 100%;" />
+                                            <!-- Aviso fuzzy validator -->
+                                            <div id="fuzzy-alert-destino" class="fuzzy-inline-alert" style="display: none;">
+                                                <i class="fa-duotone fa-circle-exclamation"></i>
+                                                <span class="fuzzy-alert-text"></span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -512,6 +515,21 @@
                                                 </label>
                                             </div>
                                         </div>
+                                        <div class="col-6 col-md-3">
+                                            <div class="form-check form-switch">
+                                                <input type="hidden" id="hidSuporteIntegro"
+                                                    name="ViagemObj.Viagem.SuporteIntegro"
+                                                    value="@(Model.ViagemObj?.Viagem?.SuporteIntegro == true ? "true" : "false")" />
+                                                <input class="form-check-input" type="checkbox" id="chkSuporteIntegro"
+                                                    @(Model.ViagemObj?.Viagem?.SuporteIntegro == true ? "checked" : "")
+                                                    @(viagemFinalizada ? "disabled" : "")
+                                                    onchange="document.getElementById('hidSuporteIntegro').value = this.checked ? 'true' : 'false';">
+                                                <label class="form-check-label fw-semibold" for="chkSuporteIntegro">
+                                                    <i class="fa-duotone fa-shield-check me-1 text-success"></i>
+                                                    Suporte Íntegro
+                                                </label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -754,6 +772,21 @@
                                                 <label class="form-check-label fw-semibold" for="chkArlaDevolvido">
                                                     <i class="fa-duotone fa-gas-pump me-1 text-success"></i>
                                                     Arla Devolvido
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <div class="form-check form-switch">
+                                                <input type="hidden" id="hidSuporteDefeituoso"
+                                                    name="ViagemObj.Viagem.SuporteDefeituoso"
+                                                    value="@(Model.ViagemObj?.Viagem?.SuporteDefeituoso == true ? "true" : "false")" />
+                                                <input class="form-check-input" type="checkbox" id="chkSuporteDefeituoso"
+                                                    @(Model.ViagemObj?.Viagem?.SuporteDefeituoso == true ? "checked" : "")
+                                                    @(viagemFinalizada ? "disabled" : "")
+                                                    onchange="document.getElementById('hidSuporteDefeituoso').value = this.checked ? 'true' : 'false';">
+                                                <label class="form-check-label fw-semibold" for="chkSuporteDefeituoso">
+                                                    <i class="fa-duotone fa-shield-xmark me-1 text-danger"></i>
+                                                    Suporte Defeituoso
                                                 </label>
                                             </div>
                                         </div>
@@ -1553,6 +1586,12 @@
     <!-- Validação IA - Validador Evolutivo de Finalização -->
     <script src="~/js/validacao/ValidadorFinalizacaoIA.js" asp-append-version="true"></script>
 
+    <!-- Validação Fuzzy para Origem/Destino (Kendo ComboBox) -->
+    <script src="~/js/viagens/kendo-fuzzy-validator.js" asp-append-version="true"></script>
+
+    <!-- Auto-Correção Ortográfica para Origem/Destino (blur) -->
+    <script src="~/js/viagens/origem-destino-autocorrect.js" asp-append-version="true"></script>
+
     <script src="~/js/cadastros/ViagemUpsert.js" asp-append-version="true"></script>
 
     <script>
@@ -1563,6 +1602,8 @@
                     dataCombustivel: @Html.Raw(Json.Serialize(ViewData["dataCombustivel"])),
                     dataEvento: @Html.Raw(Json.Serialize(ViewData["dataEvento"])),
                     dataMotorista: @Html.Raw(Json.Serialize(ViewData["dataMotorista"])),
+                    listaOrigem: @Html.Raw(Json.Serialize(ViewData["ListaOrigem"])),
+                    listaDestino: @Html.Raw(Json.Serialize(ViewData["ListaDestino"])),
                     valores: {
                         viagemId: "@(Model.ViagemObj?.Viagem?.ViagemId.ToString() ?? "")",
                         status: "@(Model.ViagemObj?.Viagem?.Status ?? "")",
@@ -1570,7 +1611,9 @@
                         eventoId: "@(Model.ViagemObj?.Viagem?.EventoId?.ToString() ?? "")",
                         motoristaId: "@(Model.ViagemObj?.Viagem?.MotoristaId?.ToString() ?? "")",
                         combustivelInicial: "@(Model.ViagemObj?.Viagem?.CombustivelInicial ?? "")",
-                        combustivelFinal: "@(Model.ViagemObj?.Viagem?.CombustivelFinal ?? "")"
+                        combustivelFinal: "@(Model.ViagemObj?.Viagem?.CombustivelFinal ?? "")",
+                        origem: "@(Model.ViagemObj?.Viagem?.Origem ?? "")",
+                        destino: "@(Model.ViagemObj?.Viagem?.Destino ?? "")"
                     },
                     datas: {
                         dataInicial: @Html.Raw(Model.ViagemObj?.Viagem?.DataInicial != null ?
@@ -1599,6 +1642,231 @@
                 {
                     initViagemUpsertPage(context);
                 }
+
+                // 🎯 Inicializar Kendo ComboBox para Origem e Destino
+                try {
+                    var cmbOrigem = $("#cmbOrigem").kendoComboBox({
+                        dataSource: context.listaOrigem || [],
+                        filter: "contains",
+                        placeholder: "Selecione ou digite a Origem",
+                        height: 220,
+                        suggest: false,
+                        minLength: 0,
+                        enforceMinLength: false,
+                        autoWidth: true,
+                        value: context.valores.origem
+                    }).data("kendoComboBox");
+
+                    // CRÍTICO: Preservar valor digitado e fechar dropdown ao Tab
+                    var origemTypedValue = '';
+                    var origemManualSelection = false;
+                    var origemTabPressed = false;
+
+                    cmbOrigem.input.on('input', function() {
+                        origemTypedValue = $(this).val();
+                        origemManualSelection = false;
+                    });
+
+                    // Detectar clique manual no dropdown
+                    cmbOrigem.list.on('click', 'li', function() {
+                        origemManualSelection = true;
+                    });
+
+                    // Detectar Enter (seleção manual por teclado)
+                    cmbOrigem.input.on('keydown', function(e) {
+                        if (e.keyCode === 13) { // Enter
+                            origemManualSelection = true;
+                        }
+                        if (e.keyCode === 9) { // Tab
+                            console.log('[Upsert] ⌨️ Tab pressionado - Prevenindo auto-seleção');
+                            e.preventDefault(); // CRÍTICO: Impedir comportamento padrão do Tab
+                            origemTabPressed = true;
+                            cmbOrigem.close();
+
+                            // Restaurar valor digitado IMEDIATAMENTE (SEM usar .value() para evitar auto-correção)
+                            if (origemTypedValue && !origemManualSelection) {
+                                cmbOrigem.text(origemTypedValue);
+                                cmbOrigem.input.val(origemTypedValue);
+                            }
+
+                            // Mover foco para próximo campo manualmente
+                            setTimeout(function() {
+                                $('#cmbDestino').data('kendoComboBox').input.focus();
+                            }, 50);
+                        }
+                    });
+
+                    cmbOrigem.input.on('blur', function() {
+                        setTimeout(function() {
+                            var currentText = cmbOrigem.text();
+
+                            console.log('[Upsert] 📊 Debug origem blur:', {
+                                origemTypedValue: origemTypedValue,
+                                currentText: currentText,
+                                manualSelection: origemManualSelection,
+                                tabPressed: origemTabPressed
+                            });
+
+                            // Se Tab foi pressionado e valor mudou, restaurar
+                            if (origemTabPressed && !origemManualSelection && origemTypedValue && currentText !== origemTypedValue) {
+                                console.log('[Upsert] 🔄 Tab pressionado - Restaurando valor digitado:', origemTypedValue);
+                                cmbOrigem.text(origemTypedValue);
+                                cmbOrigem.input.val(origemTypedValue);
+                                cmbOrigem.trigger('change');
+                            } else if (origemTypedValue) {
+                                console.log('[Upsert] ✅ Disparando change para fuzzy validator');
+                                cmbOrigem.trigger('change');
+                            }
+
+                            // Reset flags
+                            origemTabPressed = false;
+                            origemManualSelection = false;
+                        }, 100);
+                    });
+                    console.log('[Upsert] ✅ Kendo ComboBox cmbOrigem inicializado');
+
+                    var cmbDestino = $("#cmbDestino").kendoComboBox({
+                        dataSource: context.listaDestino || [],
+                        filter: "contains",
+                        placeholder: "Selecione ou digite o Destino",
+                        height: 220,
+                        suggest: false,
+                        minLength: 0,
+                        enforceMinLength: false,
+                        autoWidth: true,
+                        value: context.valores.destino
+                    }).data("kendoComboBox");
+
+                    // CRÍTICO: Preservar valor digitado e fechar dropdown ao Tab
+                    var destinoTypedValue = '';
+                    var destinoManualSelection = false;
+                    var destinoTabPressed = false;
+
+                    cmbDestino.input.on('input', function() {
+                        destinoTypedValue = $(this).val();
+                        destinoManualSelection = false;
+                    });
+
+                    // Detectar clique manual no dropdown
+                    cmbDestino.list.on('click', 'li', function() {
+                        destinoManualSelection = true;
+                    });
+
+                    // Detectar Enter (seleção manual por teclado)
+                    cmbDestino.input.on('keydown', function(e) {
+                        if (e.keyCode === 13) { // Enter
+                            destinoManualSelection = true;
+                        }
+                        if (e.keyCode === 9) { // Tab
+                            console.log('[Upsert] ⌨️ Tab pressionado em Destino - Prevenindo auto-seleção');
+                            e.preventDefault(); // CRÍTICO: Impedir comportamento padrão do Tab
+                            destinoTabPressed = true;
+                            cmbDestino.close();
+
+                            // Restaurar valor digitado IMEDIATAMENTE (SEM usar .value() para evitar auto-correção)
+                            if (destinoTypedValue && !destinoManualSelection) {
+                                cmbDestino.text(destinoTypedValue);
+                                cmbDestino.input.val(destinoTypedValue);
+                            }
+
+                            // Mover foco para próximo campo manualmente
+                            setTimeout(function() {
+                                // Assumindo que há um próximo campo (ajuste conforme necessário)
+                                var nextField = cmbDestino.input.closest('.form-group').next().find('input, select, textarea').first();
+                                if (nextField.length) {
+                                    nextField.focus();
+                                } else {
+                                    cmbDestino.input.blur(); // Se não houver próximo, apenas remove foco
+                                }
+                            }, 50);
+                        }
+                    });
+
+                    cmbDestino.input.on('blur', function() {
+                        setTimeout(function() {
+                            var currentText = cmbDestino.text();
+
+                            console.log('[Upsert] 📊 Debug destino blur:', {
+                                destinoTypedValue: destinoTypedValue,
+                                currentText: currentText,
+                                manualSelection: destinoManualSelection,
+                                tabPressed: destinoTabPressed
+                            });
+
+                            // Se Tab foi pressionado e valor mudou, restaurar
+                            if (destinoTabPressed && !destinoManualSelection && destinoTypedValue && currentText !== destinoTypedValue) {
+                                console.log('[Upsert] 🔄 Tab pressionado - Restaurando valor digitado:', destinoTypedValue);
+                                cmbDestino.text(destinoTypedValue);
+                                cmbDestino.input.val(destinoTypedValue);
+                                cmbDestino.trigger('change');
+                            } else if (destinoTypedValue) {
+                                console.log('[Upsert] ✅ Disparando change para fuzzy validator');
+                                cmbDestino.trigger('change');
+                            }
+
+                            // Reset flags
+                            destinoTabPressed = false;
+                            destinoManualSelection = false;
+                        }, 100);
+                    });
+                    console.log('[Upsert] ✅ Kendo ComboBox cmbDestino inicializado');
+                } catch (kendoError) {
+                    console.error('[Upsert] Erro ao inicializar Kendo ComboBox:', kendoError);
+                }
+
+                // ✨ Inicializar Sistema de Validação Fuzzy (v2.0)
+                // Aguardar 300ms para garantir que os ComboBox estão completamente prontos
+                setTimeout(function() {
+                    try {
+                        // DEBUG: Verificar dados disponíveis
+                        console.log('[Upsert] 🔍 Debug dados para fuzzy validator:', {
+                            listaOrigemLength: (context.listaOrigem || []).length,
+                            listaDestinoLength: (context.listaDestino || []).length,
+                            listaOrigemSample: (context.listaOrigem || []).slice(0, 3)
+                        });
+
+                        if (typeof KendoFuzzyValidator !== 'undefined') {
+                            KendoFuzzyValidator.init({
+                                origemId: 'cmbOrigem',
+                                destinoId: 'cmbDestino',
+                                // CRÍTICO: Passar dados diretamente ao invés de pegar do ComboBox
+                                origemData: context.listaOrigem || [],
+                                destinoData: context.listaDestino || [],
+                                thresholds: {
+                                    info: 0.85,      // 85% = Info
+                                    warning: 0.92,   // 92% = Warning
+                                    critical: 0.98   // 98% = Auto-correção
+                                },
+                                autoCorrect: true,
+                                showSuggestions: true,
+                                enableHighlight: true,
+                                enableHistory: true,
+                                debounceDelay: 300,
+                                timeout: 200
+                            });
+                            console.log('[Upsert] ✅ Sistema Fuzzy Validator v2.0 inicializado');
+                        } else {
+                            console.warn('[Upsert] ⚠️ KendoFuzzyValidator não disponível');
+                        }
+
+                        // ═══════════════════════════════════════════════════════════════
+                        // INICIALIZAR AUTO-CORREÇÃO ORTOGRÁFICA (BLUR)
+                        // ═══════════════════════════════════════════════════════════════
+                        if (typeof OrigemDestinoAutoCorrect !== 'undefined') {
+                            OrigemDestinoAutoCorrect.init({
+                                origemId: '#cmbOrigem',
+                                destinoId: '#cmbDestino'
+                            });
+                            console.log('[Upsert] ✅ Auto-Correção Ortográfica v1.0 inicializada');
+                        } else {
+                            console.warn('[Upsert] ⚠️ OrigemDestinoAutoCorrect não disponível');
+                        }
+
+                    } catch (fuzzyError) {
+                        console.error('[Upsert] Erro ao inicializar Fuzzy Validator:', fuzzyError);
+                    }
+                }, 300);
+
             } catch (error) {
                 Alerta.TratamentoErroComLinha("Upsert.cshtml", "initViagemUpsertContext", error);
             }
