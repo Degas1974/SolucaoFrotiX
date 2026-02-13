@@ -916,11 +916,21 @@ Sem essa colagem, a IA não sabe que a conversa está sendo registrada.
 
 ## 🤖 6. COMPORTAMENTO DOS AGENTES DE IA
 
+### Projeto Padrao de Trabalho
+
+**SEMPRE trabalhe no diretorio:** `FrotiX.Site.OLD/`
+
+- Este e o projeto ativo principal
+- Todos os caminhos relativos devem partir deste diretorio
+- Ao buscar arquivos, priorize esta pasta
+- Outros projetos (FrotiX.Site.Janeiro, FrotiX.Site.2026.01, FrotiX.Telerik, FrotiX.Site.Backup) sao legados - trabalhar somente se solicitado
+
 ### Antes de escrever código
 
-1. ✅ Ler este arquivo
-2. ✅ Consultar `FrotiX.sql` se houver operação com banco
-3. ✅ Verificar estrutura existente antes de criar
+1. ✅ Ler este arquivo (`RegrasDesenvolvimentoFrotiX.md`)
+2. ✅ Ler `ControlesKendo.md` (raiz do workspace)
+3. ✅ Consultar `FrotiX.sql` se houver operação com banco
+4. ✅ Verificar estrutura existente antes de criar
 
 ### Ao detectar divergência
 
