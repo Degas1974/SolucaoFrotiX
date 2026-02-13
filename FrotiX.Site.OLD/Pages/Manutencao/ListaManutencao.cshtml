@@ -371,8 +371,8 @@
             escolhendoData = false;
             escolhendoStatus = false;
 
-            const veiculos = document.getElementById('lstVeiculos').ej2_instances[0];
-            if (veiculos.value === null) {
+            const veiculos = $("#lstVeiculos").data("kendoComboBox");
+            if (veiculos && veiculos.value() === "") {
                 // ListaTodasManutencao();
             }
         } catch (error) {
@@ -396,8 +396,8 @@
             escolhendoData = false;
             escolhendoStatus = true;
 
-            const status = document.getElementById('lstStatus').ej2_instances[0];
-            if (status.value === null) {
+            const status = $("#lstStatus").data("kendoComboBox");
+            if (status && status.value() === "") {
                 // ListaTodasManutencao();
             }
         } catch (error) {
@@ -498,25 +498,13 @@
                         <!-- Veículo -->
                         <div class="ftx-manut-filter-group" style="grid-column: span 2;">
                             <label>Veículo</label>
-                            <ejs-combobox id="lstVeiculos"
-                                          placeholder="Selecione um Veículo..."
-                                          allowFiltering="true" filterType="Contains"
-                                          dataSource="@ViewData["lstVeiculos"]"
-                                          popupHeight="250px" width="100%" showClearButton="true">
-                                <e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-                            </ejs-combobox>
+                            <input id="lstVeiculos" name="lstVeiculos" style="width: 100%;" />
                         </div>
 
                         <!-- Status -->
                         <div class="ftx-manut-filter-group">
                             <label>Status</label>
-                            <ejs-combobox id="lstStatus"
-                                          placeholder="Status..."
-                                          allowFiltering="true" filterType="Contains"
-                                          dataSource="@ViewData["lstStatus"]"
-                                          popupHeight="250px" width="100%" showClearButton="true">
-                                <e-combobox-fields text="Status" value="StatusId"></e-combobox-fields>
-                            </ejs-combobox>
+                            <input id="lstStatus" name="lstStatus" style="width: 100%;" />
                         </div>
 
                         <!-- Botão Filtrar -->
@@ -601,16 +589,7 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold" for="lstVeiculoReserva">Veículo Reserva</label>
-                                    <ejs-combobox id="lstVeiculoReserva"
-                                                  placeholder="Selecione um Veículo"
-                                                  allowFiltering="true"
-                                                  filterType="Contains"
-                                                  dataSource="@ViewData["lstVeiculosReserva"]"
-                                                  popupHeight="200px"
-                                                  width="100%"
-                                                  showClearButton="true">
-                                        <e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-                                    </ejs-combobox>
+                                    <input id="lstVeiculoReserva" name="lstVeiculoReserva" style="width: 100%;" />
                                 </div>
 
                                 <div class="col-md-3">
@@ -710,26 +689,42 @@
 </div>
 
 @section ScriptsBlock {
-    <ejs-scripts></ejs-scripts>
-    <script src="~/js/cadastros/ListaManutencao.js" asp-append-version="true"></script>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            try {
-                var comboVeiculos = document.getElementById('lstVeiculos')?.ej2_instances?.[0];
-                if (comboVeiculos) {
-                    comboVeiculos.change = window.DefineEscolhaVeiculo;
-                    comboVeiculos.close = window.VeiculosValueChange;
-                }
+        // Kendo ComboBox init - dados serializados do ViewData
+        var dataVeiculosLista = @Html.Raw(Json.Serialize(ViewData["lstVeiculos"]));
+        var dataStatusLista = @Html.Raw(Json.Serialize(ViewData["lstStatus"]));
+        var dataVeiculosReservaLista = @Html.Raw(Json.Serialize(ViewData["lstVeiculosReserva"]));
 
-                var comboStatus = document.getElementById('lstStatus')?.ej2_instances?.[0];
-                if (comboStatus) {
-                    comboStatus.change = window.DefineEscolhaStatus;
-                    comboStatus.close = window.StatusValueChange;
-                }
-            } catch (error) {
-                Alerta.TratamentoErroComLinha("ListaManutencao.cshtml", "DOMContentLoaded", error);
-            }
+        $("#lstVeiculos").kendoComboBox({
+            dataTextField: "descricao",
+            dataValueField: "id",
+            placeholder: "Selecione um Ve\u00edculo...",
+            filter: "contains",
+            dataSource: dataVeiculosLista,
+            height: 250,
+            change: function () { window.DefineEscolhaVeiculo(); },
+            close: function () { window.VeiculosValueChange(); }
+        });
+
+        $("#lstStatus").kendoComboBox({
+            dataTextField: "status",
+            dataValueField: "statusId",
+            placeholder: "Status...",
+            filter: "contains",
+            dataSource: dataStatusLista,
+            height: 250,
+            change: function () { window.DefineEscolhaStatus(); },
+            close: function () { window.StatusValueChange(); }
+        });
+
+        $("#lstVeiculoReserva").kendoComboBox({
+            dataTextField: "descricao",
+            dataValueField: "id",
+            placeholder: "Selecione um Ve\u00edculo",
+            filter: "contains",
+            dataSource: dataVeiculosReservaLista,
+            height: 200
         });
     </script>
+    <script src="~/js/cadastros/ListaManutencao.js" asp-append-version="true"></script>
 }

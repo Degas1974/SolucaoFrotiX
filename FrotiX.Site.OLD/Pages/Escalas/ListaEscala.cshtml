@@ -184,37 +184,19 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label asp-for="Filtro.TipoServicoId"></label>
-                        <ejs-dropdownlist id="tipoServicoId" 
-                                          asp-for="Filtro.TipoServicoId" 
-                                          dataSource="@Model.Filtro.TipoServicoList" 
-                                          placeholder="Todos"
-                                          allowFiltering="true">
-                            <e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-                        </ejs-dropdownlist>
+                        <input id="tipoServicoId" name="Filtro.TipoServicoId" style="width: 100%;" />
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label asp-for="Filtro.TurnoId"></label>
-                        <ejs-dropdownlist id="turnoId" 
-                                          asp-for="Filtro.TurnoId" 
-                                          dataSource="@Model.Filtro.TurnoList" 
-                                          placeholder="Todos"
-                                          allowFiltering="true">
-                            <e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-                        </ejs-dropdownlist>
+                        <input id="turnoId" name="Filtro.TurnoId" style="width: 100%;" />
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label asp-for="Filtro.StatusMotorista"></label>
-                        <ejs-dropdownlist id="statusMotorista" 
-                                          asp-for="Filtro.StatusMotorista" 
-                                          dataSource="@Model.Filtro.StatusList" 
-                                          placeholder="Todos"
-                                          allowFiltering="true">
-                            <e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-                        </ejs-dropdownlist>
+                        <input id="statusMotorista" name="Filtro.StatusMotorista" style="width: 100%;" />
                     </div>
                 </div>
             </div>
@@ -222,37 +204,19 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label asp-for="Filtro.MotoristaId"></label>
-                        <ejs-dropdownlist id="motoristaId" 
-                                          asp-for="Filtro.MotoristaId" 
-                                          dataSource="@Model.Filtro.MotoristaList" 
-                                          placeholder="Todos" 
-                                          allowFiltering="true">
-                            <e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-                        </ejs-dropdownlist>
+                        <input id="motoristaId" name="Filtro.MotoristaId" style="width: 100%;" />
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label asp-for="Filtro.VeiculoId"></label>
-                        <ejs-dropdownlist id="veiculoId" 
-                                          asp-for="Filtro.VeiculoId" 
-                                          dataSource="@Model.Filtro.VeiculoList" 
-                                          placeholder="Todos" 
-                                          allowFiltering="true">
-                            <e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-                        </ejs-dropdownlist>
+                        <input id="veiculoId" name="Filtro.VeiculoId" style="width: 100%;" />
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label asp-for="Filtro.Lotacao"></label>
-                        <ejs-dropdownlist id="lotacao" 
-                                          asp-for="Filtro.Lotacao" 
-                                          dataSource="@Model.Filtro.LotacaoList" 
-                                          placeholder="Todas"
-                                          allowFiltering="true">
-                            <e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-                        </ejs-dropdownlist>
+                        <input id="lotacao" name="Filtro.Lotacao" style="width: 100%;" />
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -491,9 +455,7 @@
                 </div>
                 <div class="form-group mb-3">
                     <label>Prioridade</label>
-                    <ejs-dropdownlist id="obsPriority" dataSource='@(new List<object> { new { text = "Baixa", value = "Baixa" }, new { text = "Normal", value = "Normal" }, new { text = "Alta", value = "Alta" } })' value='@("Normal")'>
-                        <e-dropdownlist-fields text="text" value="value"></e-dropdownlist-fields>
-                    </ejs-dropdownlist>
+                    <input id="obsPriority" style="width: 100%;" />
                 </div>
                 <div class="row">
                     <div class="col-md-6">
@@ -519,6 +481,87 @@
 </div>
 
 @section ScriptsBlock {
+
+    <script>
+        (function () {
+            try {
+                var dataTipoServico = @Html.Raw(Json.Serialize(Model.Filtro.TipoServicoList));
+                var dataTurno = @Html.Raw(Json.Serialize(Model.Filtro.TurnoList));
+                var dataStatus = @Html.Raw(Json.Serialize(Model.Filtro.StatusList));
+                var dataMotorista = @Html.Raw(Json.Serialize(Model.Filtro.MotoristaList));
+                var dataVeiculo = @Html.Raw(Json.Serialize(Model.Filtro.VeiculoList));
+                var dataLotacao = @Html.Raw(Json.Serialize(Model.Filtro.LotacaoList));
+                var dataObsPriority = [
+                    { text: "Baixa", value: "Baixa" },
+                    { text: "Normal", value: "Normal" },
+                    { text: "Alta", value: "Alta" }
+                ];
+
+                $("#tipoServicoId").kendoDropDownList({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    optionLabel: "Todos",
+                    filter: "contains",
+                    dataSource: dataTipoServico,
+                    value: "@(Model.Filtro.TipoServicoId?.ToString() ?? "")"
+                });
+
+                $("#turnoId").kendoDropDownList({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    optionLabel: "Todos",
+                    filter: "contains",
+                    dataSource: dataTurno,
+                    value: "@(Model.Filtro.TurnoId?.ToString() ?? "")"
+                });
+
+                $("#statusMotorista").kendoDropDownList({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    optionLabel: "Todos",
+                    filter: "contains",
+                    dataSource: dataStatus,
+                    value: "@(Model.Filtro.StatusMotorista ?? "")"
+                });
+
+                $("#motoristaId").kendoDropDownList({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    optionLabel: "Todos",
+                    filter: "contains",
+                    dataSource: dataMotorista,
+                    value: "@(Model.Filtro.MotoristaId?.ToString() ?? "")"
+                });
+
+                $("#veiculoId").kendoDropDownList({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    optionLabel: "Todos",
+                    filter: "contains",
+                    dataSource: dataVeiculo,
+                    value: "@(Model.Filtro.VeiculoId?.ToString() ?? "")"
+                });
+
+                $("#lotacao").kendoDropDownList({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    optionLabel: "Todas",
+                    filter: "contains",
+                    dataSource: dataLotacao,
+                    value: "@(Model.Filtro.Lotacao ?? "")"
+                });
+
+                $("#obsPriority").kendoDropDownList({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    dataSource: dataObsPriority,
+                    value: "Normal"
+                });
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("ListaEscala.cshtml", "kendoDropDownList.init", error);
+            }
+        })();
+    </script>
 
     <script src="~/js/cadastros/ListaEscala.js" asp-append-version="true"></script>
 

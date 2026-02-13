@@ -3638,10 +3638,10 @@ function carregarDadosViagemParaAjuste(viagemId)
                         document.getElementById('txtNoFichaVistoriaDashboard').value = viagem.noFichaVistoria || '';
 
                         // Finalidade
-                        const lstFinalidadeKendo = $("#lstFinalidadeAlteradaDashboard").data("kendoComboBox");
-                        if (lstFinalidadeKendo)
+                        const lstFinalidade = document.getElementById('lstFinalidadeAlteradaDashboard');
+                        if (lstFinalidade && lstFinalidade.ej2_instances)
                         {
-                            lstFinalidadeKendo.value(viagem.finalidade || "");
+                            lstFinalidade.ej2_instances[0].value = viagem.finalidade || null;
                         }
 
                         // Evento
@@ -3678,24 +3678,24 @@ function carregarDadosViagemParaAjuste(viagemId)
                         setTimeout(function() {
                             try {
                                 // Motorista
-                                const lstMotoristaKendo = $("#lstMotoristaAlteradoDashboard").data("kendoComboBox");
-                                if (lstMotoristaKendo && viagem.motoristaId)
+                                const lstMotorista = document.getElementById('lstMotoristaAlteradoDashboard');
+                                if (lstMotorista && lstMotorista.ej2_instances && viagem.motoristaId)
                                 {
-                                    lstMotoristaKendo.value(viagem.motoristaId.toString());
+                                    lstMotorista.ej2_instances[0].value = viagem.motoristaId;
                                 }
 
                                 // Veículo
-                                const lstVeiculoKendo = $("#lstVeiculoAlteradoDashboard").data("kendoComboBox");
-                                if (lstVeiculoKendo && viagem.veiculoId)
+                                const lstVeiculo = document.getElementById('lstVeiculoAlteradoDashboard');
+                                if (lstVeiculo && lstVeiculo.ej2_instances && viagem.veiculoId)
                                 {
-                                    lstVeiculoKendo.value(viagem.veiculoId.toString());
+                                    lstVeiculo.ej2_instances[0].value = viagem.veiculoId;
                                 }
 
                                 // Solicitante (Requisitante)
-                                const lstRequisitanteKendo = $("#lstRequisitanteAlteradoDashboard").data("kendoComboBox");
-                                if (lstRequisitanteKendo && viagem.requisitanteId)
+                                const lstRequisitante = document.getElementById('lstRequisitanteAlteradoDashboard');
+                                if (lstRequisitante && lstRequisitante.ej2_instances && viagem.requisitanteId)
                                 {
-                                    lstRequisitanteKendo.value(viagem.requisitanteId.toString());
+                                    lstRequisitante.ej2_instances[0].value = viagem.requisitanteId;
                                 }
 
                                 // Setor Solicitante (DropDownTree - precisa de array)
@@ -3736,12 +3736,12 @@ function FinalidadeChangeDashboard()
 {
     try
     {
-        var finalidadeCb = $("#lstFinalidadeAlteradaDashboard").data("kendoComboBox");
+        var finalidadeCb = document.getElementById('lstFinalidadeAlteradaDashboard').ej2_instances[0];
         var eventoDdt = document.getElementById('lstEventoDashboard').ej2_instances[0];
 
         if (finalidadeCb && eventoDdt)
         {
-            if (finalidadeCb.value() === 'Evento')
+            if (finalidadeCb.value === 'Evento')
             {
                 eventoDdt.enabled = true;
                 $('.esconde-diveventos-dashboard').show();
@@ -3769,8 +3769,8 @@ function gravarViagemDashboard()
         const noFichaVistoria = document.getElementById('txtNoFichaVistoriaDashboard').value;
 
         // Finalidade
-        const lstFinalidadeK = $("#lstFinalidadeAlteradaDashboard").data("kendoComboBox");
-        const finalidade = lstFinalidadeK ? lstFinalidadeK.value() : null;
+        const lstFinalidade = document.getElementById('lstFinalidadeAlteradaDashboard');
+        const finalidade = lstFinalidade && lstFinalidade.ej2_instances ? lstFinalidade.ej2_instances[0].value : null;
 
         // Evento
         const lstEvento = document.getElementById('lstEventoDashboard');
@@ -3795,12 +3795,12 @@ function gravarViagemDashboard()
         const kmFinal = parseInt(document.getElementById('txtKmFinalDashboard').value) || null;
 
         // Motorista
-        const lstMotoristaK = $("#lstMotoristaAlteradoDashboard").data("kendoComboBox");
-        const motoristaId = lstMotoristaK ? lstMotoristaK.value() : null;
+        const lstMotorista = document.getElementById('lstMotoristaAlteradoDashboard');
+        const motoristaId = lstMotorista && lstMotorista.ej2_instances ? lstMotorista.ej2_instances[0].value : null;
 
         // Veículo
-        const lstVeiculoK = $("#lstVeiculoAlteradoDashboard").data("kendoComboBox");
-        const veiculoId = lstVeiculoK ? lstVeiculoK.value() : null;
+        const lstVeiculo = document.getElementById('lstVeiculoAlteradoDashboard');
+        const veiculoId = lstVeiculo && lstVeiculo.ej2_instances ? lstVeiculo.ej2_instances[0].value : null;
 
         // Setor Solicitante
         const lstSetor = document.getElementById('lstSetorSolicitanteAlteradoDashboard');
@@ -3815,8 +3815,8 @@ function gravarViagemDashboard()
         }
 
         // Solicitante (Requisitante)
-        const lstRequisitanteK = $("#lstRequisitanteAlteradoDashboard").data("kendoComboBox");
-        const requisitanteId = lstRequisitanteK ? lstRequisitanteK.value() : null;
+        const lstRequisitante = document.getElementById('lstRequisitanteAlteradoDashboard');
+        const requisitanteId = lstRequisitante && lstRequisitante.ej2_instances ? lstRequisitante.ej2_instances[0].value : null;
 
         // Ramal do Requisitante
         const ramalRequisitante = document.getElementById('txtRamalRequisitanteDashboard').value || null;

@@ -31,7 +31,6 @@
  * **************************************************************************************** *@
 
 @using FrotiX.Repository.IRepository
-@using Syncfusion.EJ2
 @using Stimulsoft.Report.Mvc;
 
 @inject IUnitOfWork _unitOfWork
@@ -228,52 +227,28 @@
 											<i class="fa-duotone fa-car text-info"></i>
 											Veículo
 										</label>
-										<ejs-combobox id="lstVeiculos" placeholder="Selecione um Veículo"
-											allowFiltering="true" filterType="Contains"
-											dataSource="@ViewData["lstVeiculos"]" popupHeight="250px"
-											change="DefineEscolhaVeiculo" width="100%" showClearButton="true"
-											close="VeiculosValueChange">
-											<e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-										</ejs-combobox>
+										<input id="lstVeiculos" style="width: 100%;" />
 									</div>
 									<div class="col-12 col-sm-6 col-md-3">
 										<label class="ftx-label">
 											<i class="fa-duotone fa-gas-pump text-warning"></i>
 											Combustível
 										</label>
-										<ejs-combobox id="lstCombustivel" placeholder="Selecione um Combustível"
-											allowFiltering="true" filterType="Contains"
-											dataSource="@ViewData["lstCombustivel"]" popupHeight="250px"
-											change="DefineEscolhaCombustivel" width="100%" showClearButton="true"
-											close="CombustivelValueChange">
-											<e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-										</ejs-combobox>
+										<input id="lstCombustivel" style="width: 100%;" />
 									</div>
 									<div class="col-12 col-sm-6 col-md-3">
 										<label class="ftx-label">
 											<i class="fa-duotone fa-building text-secondary"></i>
 											Unidade
 										</label>
-										<ejs-combobox id="lstUnidade" placeholder="Selecione uma Unidade"
-											allowFiltering="true" filterType="Contains"
-											dataSource="@ViewData["lstUnidade"]" popupHeight="250px"
-											change="DefineEscolhaUnidade" width="100%" showClearButton="true"
-											close="UnidadeValueChange">
-											<e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-										</ejs-combobox>
+										<input id="lstUnidade" style="width: 100%;" />
 									</div>
 									<div class="col-12 col-sm-6 col-md-3">
 										<label class="ftx-label">
 											<i class="fa-duotone fa-id-card text-success"></i>
 											Motorista
 										</label>
-										<ejs-combobox id="lstMotorista" placeholder="Selecione um Motorista"
-											allowFiltering="true" filterType="Contains"
-											dataSource="@ViewData["lstMotorista"]" popupHeight="250px"
-											change="DefineEscolhaMotorista" width="100%" showClearButton="true"
-											close="MotoristaValueChange">
-											<e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-										</ejs-combobox>
+										<input id="lstMotorista" style="width: 100%;" />
 									</div>
 								</div>
 							</div>
@@ -366,6 +341,67 @@
 		var escolhendoCombustivel = false;
 		var escolhendoData = false;
 
+		// Kendo ComboBox - Dados serializados do servidor
+		var dataVeiculos = @Html.Raw(Json.Serialize(ViewData["lstVeiculos"]));
+		var dataCombustivel = @Html.Raw(Json.Serialize(ViewData["lstCombustivel"]));
+		var dataUnidade = @Html.Raw(Json.Serialize(ViewData["lstUnidade"]));
+		var dataMotorista = @Html.Raw(Json.Serialize(ViewData["lstMotorista"]));
+
+		// Kendo ComboBox - Inicializacao
+		(function () {
+			try {
+				$("#lstVeiculos").kendoComboBox({
+					dataTextField: "descricao",
+					dataValueField: "id",
+					placeholder: "Selecione um Veículo",
+					filter: "contains",
+					dataSource: dataVeiculos,
+					height: 250,
+					clearButton: true,
+					change: function () { DefineEscolhaVeiculo(); },
+					close: function () { VeiculosValueChange(); }
+				});
+
+				$("#lstCombustivel").kendoComboBox({
+					dataTextField: "descricao",
+					dataValueField: "id",
+					placeholder: "Selecione um Combustível",
+					filter: "contains",
+					dataSource: dataCombustivel,
+					height: 250,
+					clearButton: true,
+					change: function () { DefineEscolhaCombustivel(); },
+					close: function () { CombustivelValueChange(); }
+				});
+
+				$("#lstUnidade").kendoComboBox({
+					dataTextField: "descricao",
+					dataValueField: "id",
+					placeholder: "Selecione uma Unidade",
+					filter: "contains",
+					dataSource: dataUnidade,
+					height: 250,
+					clearButton: true,
+					change: function () { DefineEscolhaUnidade(); },
+					close: function () { UnidadeValueChange(); }
+				});
+
+				$("#lstMotorista").kendoComboBox({
+					dataTextField: "descricao",
+					dataValueField: "id",
+					placeholder: "Selecione um Motorista",
+					filter: "contains",
+					dataSource: dataMotorista,
+					height: 250,
+					clearButton: true,
+					change: function () { DefineEscolhaMotorista(); },
+					close: function () { MotoristaValueChange(); }
+				});
+			} catch (error) {
+				Alerta.TratamentoErroComLinha("Index.cshtml", "kendoComboBox.init", error);
+			}
+		})();
+
 		//------ Indica um Item Sendo Escolhido-------------
 		//==================================================
 		function DefineEscolhaVeiculo() {
@@ -377,8 +413,8 @@
 				escolhendoCombustivel = false;
 				escolhendoData = false;
 
-				var veiculos = document.getElementById('lstVeiculos').ej2_instances[0];
-				if (veiculos.value === null) {
+				var veiculos = $("#lstVeiculos").data("kendoComboBox");
+				if (!veiculos || !veiculos.value()) {
 					ListaTodosAbastecimentos();
 				}
 			} catch (error) {
@@ -395,8 +431,8 @@
 				escolhendoCombustivel = false;
 				escolhendoData = false;
 
-				var unidades = document.getElementById('lstUnidade').ej2_instances[0];
-				if (unidades.value === null) {
+				var unidades = $("#lstUnidade").data("kendoComboBox");
+				if (!unidades || !unidades.value()) {
 					ListaTodosAbastecimentos();
 				}
 			} catch (error) {
@@ -413,8 +449,8 @@
 				escolhendoCombustivel = false;
 				escolhendoData = false;
 
-				var motoristas = document.getElementById('lstMotorista').ej2_instances[0];
-				if (motoristas.value === null) {
+				var motoristas = $("#lstMotorista").data("kendoComboBox");
+				if (!motoristas || !motoristas.value()) {
 					ListaTodosAbastecimentos();
 				}
 			} catch (error) {
@@ -431,8 +467,8 @@
 				escolhendoCombustivel = true;
 				escolhendoData = false;
 
-				var combustivel = document.getElementById('lstCombustivel').ej2_instances[0];
-				if (combustivel.value === null) {
+				var combustivel = $("#lstCombustivel").data("kendoComboBox");
+				if (!combustivel || !combustivel.value()) {
 					ListaTodosAbastecimentos();
 				}
 			} catch (error) {
@@ -926,14 +962,14 @@
 						DefineEscolhaData();
 						console.log("txtDataChange");
 
-						var veiculos = document.getElementById('lstVeiculos').ej2_instances[0];
-						veiculos.value = "";
-						var unidades = document.getElementById('lstUnidade').ej2_instances[0];
-						unidades.value = "";
-						var motoristas = document.getElementById('lstMotorista').ej2_instances[0];
-						motoristas.value = "";
-						var combustivel = document.getElementById('lstCombustivel').ej2_instances[0];
-						combustivel.value = "";
+						var cmbVeiculos = $("#lstVeiculos").data("kendoComboBox");
+						if (cmbVeiculos) { cmbVeiculos.value(""); cmbVeiculos.text(""); }
+						var cmbUnidades = $("#lstUnidade").data("kendoComboBox");
+						if (cmbUnidades) { cmbUnidades.value(""); cmbUnidades.text(""); }
+						var cmbMotoristas = $("#lstMotorista").data("kendoComboBox");
+						if (cmbMotoristas) { cmbMotoristas.value(""); cmbMotoristas.text(""); }
+						var cmbCombustivel = $("#lstCombustivel").data("kendoComboBox");
+						if (cmbCombustivel) { cmbCombustivel.value(""); cmbCombustivel.text(""); }
 
 						const partes = $('#txtData').val().split("-");
 						console.log(partes, $('#txtData').val());
@@ -1034,19 +1070,19 @@
 				dtDestroySafe();
 
 				$("#txtData").val('');
-				var combustivel = document.getElementById('lstCombustivel').ej2_instances[0];
-				combustivel.value = "";
-				var unidades = document.getElementById('lstUnidade').ej2_instances[0];
-				unidades.value = "";
-				var motoristas = document.getElementById('lstMotorista').ej2_instances[0];
-				motoristas.value = "";
+				var cmbComb = $("#lstCombustivel").data("kendoComboBox");
+				if (cmbComb) { cmbComb.value(""); cmbComb.text(""); }
+				var cmbUni = $("#lstUnidade").data("kendoComboBox");
+				if (cmbUni) { cmbUni.value(""); cmbUni.text(""); }
+				var cmbMot = $("#lstMotorista").data("kendoComboBox");
+				if (cmbMot) { cmbMot.value(""); cmbMot.text(""); }
 
-				var veiculos = document.getElementById('lstVeiculos').ej2_instances[0];
-				if (veiculos.value === null) {
+				var cmbVeic = $("#lstVeiculos").data("kendoComboBox");
+				if (!cmbVeic || !cmbVeic.value()) {
 					ListaTodosAbastecimentos();
 					return;
 				}
-				var veiculoId = veiculos.value.toString();
+				var veiculoId = cmbVeic.value().toString();
 
 				var opts = dtCommonOptions();
 				opts.ajax = {
@@ -1095,19 +1131,19 @@
 				dtDestroySafe();
 
 				$("#txtData").val('');
-				var veiculos = document.getElementById('lstVeiculos').ej2_instances[0];
-				veiculos.value = "";
-				var unidades = document.getElementById('lstUnidade').ej2_instances[0];
-				unidades.value = "";
-				var motoristas = document.getElementById('lstMotorista').ej2_instances[0];
-				motoristas.value = "";
+				var cmbVeic = $("#lstVeiculos").data("kendoComboBox");
+				if (cmbVeic) { cmbVeic.value(""); cmbVeic.text(""); }
+				var cmbUni = $("#lstUnidade").data("kendoComboBox");
+				if (cmbUni) { cmbUni.value(""); cmbUni.text(""); }
+				var cmbMot = $("#lstMotorista").data("kendoComboBox");
+				if (cmbMot) { cmbMot.value(""); cmbMot.text(""); }
 
-				var combustiveis = document.getElementById('lstCombustivel').ej2_instances[0];
-				if (combustiveis.value === null) {
+				var cmbComb = $("#lstCombustivel").data("kendoComboBox");
+				if (!cmbComb || !cmbComb.value()) {
 					ListaTodosAbastecimentos();
 					return;
 				}
-				var combustivelId = combustiveis.value.toString();
+				var combustivelId = cmbComb.value().toString();
 
 				var opts = dtCommonOptions();
 				opts.ajax = {
@@ -1157,19 +1193,19 @@
 				dtDestroySafe();
 
 				$("#txtData").val('');
-				var combustivel = document.getElementById('lstCombustivel').ej2_instances[0];
-				combustivel.value = "";
-				var veiculo = document.getElementById('lstVeiculos').ej2_instances[0];
-				veiculo.value = "";
-				var motoristas = document.getElementById('lstMotorista').ej2_instances[0];
-				motoristas.value = "";
+				var cmbComb = $("#lstCombustivel").data("kendoComboBox");
+				if (cmbComb) { cmbComb.value(""); cmbComb.text(""); }
+				var cmbVeic = $("#lstVeiculos").data("kendoComboBox");
+				if (cmbVeic) { cmbVeic.value(""); cmbVeic.text(""); }
+				var cmbMot = $("#lstMotorista").data("kendoComboBox");
+				if (cmbMot) { cmbMot.value(""); cmbMot.text(""); }
 
-				var unidades = document.getElementById('lstUnidade').ej2_instances[0];
-				if (unidades.value === null) {
+				var cmbUni = $("#lstUnidade").data("kendoComboBox");
+				if (!cmbUni || !cmbUni.value()) {
 					ListaTodosAbastecimentos();
 					return;
 				}
-				var unidadeId = unidades.value.toString();
+				var unidadeId = cmbUni.value().toString();
 
 				var opts = dtCommonOptions();
 				opts.ajax = {
@@ -1219,19 +1255,19 @@
 				dtDestroySafe();
 
 				$("#txtData").val('');
-				var combustivel = document.getElementById('lstCombustivel').ej2_instances[0];
-				combustivel.value = "";
-				var veiculo = document.getElementById('lstVeiculos').ej2_instances[0];
-				veiculo.value = "";
-				var unidade = document.getElementById('lstUnidade').ej2_instances[0];
-				unidade.value = "";
+				var cmbComb = $("#lstCombustivel").data("kendoComboBox");
+				if (cmbComb) { cmbComb.value(""); cmbComb.text(""); }
+				var cmbVeic = $("#lstVeiculos").data("kendoComboBox");
+				if (cmbVeic) { cmbVeic.value(""); cmbVeic.text(""); }
+				var cmbUni = $("#lstUnidade").data("kendoComboBox");
+				if (cmbUni) { cmbUni.value(""); cmbUni.text(""); }
 
-				var motoristas = document.getElementById('lstMotorista').ej2_instances[0];
-				if (motoristas.value === null) {
+				var cmbMot = $("#lstMotorista").data("kendoComboBox");
+				if (!cmbMot || !cmbMot.value()) {
 					ListaTodosAbastecimentos();
 					return;
 				}
-				var motoristaId = motoristas.value.toString();
+				var motoristaId = cmbMot.value().toString();
 
 				var opts = dtCommonOptions();
 				opts.ajax = {

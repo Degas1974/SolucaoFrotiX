@@ -19,12 +19,12 @@
  * 🔗 CHAMADA POR  : calendario.js (click evento/select data), botões UI (Novo Agendamento),
  *                   event handlers, páginas de agendamento
  * 🔄 CHAMA        : $.ajax (GET RecuperaViagem, ObterAgendamentoEdicao, GetDatasViagem,
- *                   etc.), Syncfusion components (ej2_instances, dataBind), jQuery
+ *                   etc.), Kendo UI jQuery API (.data('kendoXxx')), Syncfusion (lstPeriodos, lstDias, lstDiasMes, calDatasSelecionadas, lstSetorRequisitanteAgendamento), jQuery
  *                   (val, focus, show, hide), moment.js (format, toDate), FullCalendar
  *                   (refetchEvents), Alerta.TratamentoErroComLinha, window.criarErroAjax,
  *                   validação, inicialização de componentes
- * 📦 DEPENDÊNCIAS : jQuery, Syncfusion EJ2 (DatePicker, TimePicker, DropDownList,
- *                   MultiSelect, Calendar, ListBox, RichTextEditor), moment.js,
+ * 📦 DEPENDÊNCIAS : jQuery, Kendo UI (DropDownList, ComboBox, DatePicker, TimePicker,
+ *                   NumericTextBox, Editor), Syncfusion EJ2 (MultiSelect, Calendar, DropDownTree), moment.js,
  *                   FullCalendar, Bootstrap (Modal), Alerta.js, window.calendar
  * 📝 OBSERVAÇÕES  : Arquivo gigante (4764 linhas) com 39 funções. Função principal:
  *                   window.ExibeViagem (entry point). Recorrência complexa com 5 tipos
@@ -242,18 +242,16 @@ function inicializarLstRecorrente()
         ];
 
         // Verificar se já existe instância
-        if (lstRecorrenteElement.ej2_instances && lstRecorrenteElement.ej2_instances[0])
+        const lstRecorrenteWidget = $("#lstRecorrente").data("kendoDropDownList");
+        if (lstRecorrenteWidget)
         {
-            const lstRecorrente = lstRecorrenteElement.ej2_instances[0];
-
             // Verificar se dataSource está vazio ou undefined
-            if (!lstRecorrente.dataSource || lstRecorrente.dataSource.length === 0)
+            const dsData = lstRecorrenteWidget.dataSource.data();
+            if (!dsData || dsData.length === 0)
             {
                 console.log("🔄 lstRecorrente existe mas dataSource está vazio - populando...");
-                lstRecorrente.dataSource = dataRecorrente;
-                lstRecorrente.fields = { text: 'Descricao', value: 'RecorrenteId' };
-                lstRecorrente.dataBind();
-                console.log("✅ lstRecorrente dataSource populado");
+                lstRecorrenteWidget.dataSource.data(dataRecorrente);
+                console.log("✅ lstRecorrente dataSource populado (Kendo DropDownList)");
             }
             else
             {
@@ -361,47 +359,22 @@ function exibirNovaViagem(dataClicada, horaClicada)
             console.log("ðŸ§¹ [Extra] Garantindo limpeza de Motorista e Veí­culo...");
 
             // Limpar Motorista
-            const lstMotorista = document.getElementById("lstMotorista");
-            if (lstMotorista && lstMotorista.ej2_instances && lstMotorista.ej2_instances[0])
+            const motoristaWidget = $("#lstMotorista").data("kendoComboBox");
+            if (motoristaWidget)
             {
-                const motoristaInst = lstMotorista.ej2_instances[0];
-                motoristaInst.value = null;
-                motoristaInst.text = '';
-                motoristaInst.index = null;
+                motoristaWidget.value("");
+                motoristaWidget.text("");
 
-                if (typeof motoristaInst.dataBind === 'function')
-                {
-                    motoristaInst.dataBind();
-                }
-
-                if (typeof motoristaInst.clear === 'function')
-                {
-                    motoristaInst.clear();
-                }
-
-                console.log("âœ… Motorista limpo na criação de novo agendamento");
+                console.log("✅ Motorista limpo (Kendo ComboBox)");
             }
 
-            // Limpar Veí­culo
-            const lstVeiculo = document.getElementById("lstVeiculo");
-            if (lstVeiculo && lstVeiculo.ej2_instances && lstVeiculo.ej2_instances[0])
+            // Limpar Veículo
+            const veiculoWidget = $("#lstVeiculo").data("kendoComboBox");
+            if (veiculoWidget)
             {
-                const veiculoInst = lstVeiculo.ej2_instances[0];
-                veiculoInst.value = null;
-                veiculoInst.text = '';
-                veiculoInst.index = null;
-
-                if (typeof veiculoInst.dataBind === 'function')
-                {
-                    veiculoInst.dataBind();
-                }
-
-                if (typeof veiculoInst.clear === 'function')
-                {
-                    veiculoInst.clear();
-                }
-
-                console.log("âœ… Veí­culo limpo na criação de novo agendamento");
+                veiculoWidget.value("");
+                veiculoWidget.text("");
+                console.log("âœ… Veí­culo limpo na criação de novo agendamento (Kendo ComboBox)");
             }
 
             // ============================================
@@ -549,24 +522,23 @@ function exibirNovaViagem(dataClicada, horaClicada)
                 console.log("✅ Card de Configurações de Recorrência visível");
             }
 
-            const lstRecorrente = document.getElementById("lstRecorrente");
-            if (lstRecorrente && lstRecorrente.ej2_instances && lstRecorrente.ej2_instances[0])
+            const lstRecorrenteKendo = $("#lstRecorrente").data("kendoDropDownList");
+            if (lstRecorrenteKendo)
             {
-                lstRecorrente.ej2_instances[0].enabled = true;
-                lstRecorrente.ej2_instances[0].value = "N";
-                lstRecorrente.ej2_instances[0].dataBind();
+                lstRecorrenteKendo.enable(true);
+                lstRecorrenteKendo.value("N");
                 console.log("âœ… Recorrente definido como 'Não'");
             }
 
             // ============================================
             // 12. HABILITAR PEríODO
             // ============================================
-            const lstPeriodos = document.getElementById("lstPeriodos");
-            if (lstPeriodos && lstPeriodos.ej2_instances && lstPeriodos.ej2_instances[0])
+            var lstPeriodosInst = window.getSyncfusionInstance("lstPeriodos");
+            if (lstPeriodosInst)
             {
-                lstPeriodos.ej2_instances[0].enabled = true;
-                lstPeriodos.ej2_instances[0].value = null;
-                lstPeriodos.ej2_instances[0].dataBind();
+                lstPeriodosInst.enabled = true;
+                lstPeriodosInst.value = null;
+                lstPeriodosInst.dataBind();
                 console.log("âœ… Perí­odo habilitado e limpo");
             }
 
@@ -908,30 +880,27 @@ function exibirViagemExistente(objViagem)
         // 5. Motorista
         if (objViagem.motoristaId)
         {
-            const lstMotorista = document.getElementById("lstMotorista");
-            if (lstMotorista && lstMotorista.ej2_instances && lstMotorista.ej2_instances[0])
+            const motoristaCombo = $("#lstMotorista").data("kendoComboBox");
+            if (motoristaCombo)
             {
-                lstMotorista.ej2_instances[0].value = objViagem.motoristaId;
-                lstMotorista.ej2_instances[0].dataBind();
+                motoristaCombo.value(objViagem.motoristaId);
             }
         }
 
         // 6. Veí­culo
         if (objViagem.veiculoId)
         {
-            const lstVeiculo = document.getElementById("lstVeiculo");
-            if (lstVeiculo && lstVeiculo.ej2_instances && lstVeiculo.ej2_instances[0])
+            const veiculoCombo = $("#lstVeiculo").data("kendoComboBox");
+            if (veiculoCombo)
             {
-                lstVeiculo.ej2_instances[0].value = objViagem.veiculoId;
-                lstVeiculo.ej2_instances[0].dataBind();
+                veiculoCombo.value(objViagem.veiculoId);
             }
         }
 
         // 7. Finalidade
-        const lstFinalidade = document.getElementById("lstFinalidade");
-        if (lstFinalidade && lstFinalidade.ej2_instances && lstFinalidade.ej2_instances[0])
+        const finalidadeWidget = $("#lstFinalidade").data("kendoDropDownList");
+        if (finalidadeWidget)
         {
-            const finalidadeInst = lstFinalidade.ej2_instances[0];
             let finalidadeId = objViagem.finalidadeViagemId || objViagem.finalidadeId;
             const finalidadeNome = objViagem.finalidade;
 
@@ -940,28 +909,20 @@ function exibirViagemExistente(objViagem)
             console.log("   finalidadeId:", objViagem.finalidadeId);
             console.log("   finalidade (nome):", finalidadeNome);
 
-            // Se não temos ID mas temos nome, buscar o ID
+            // Se não temos ID mas temos nome, buscar o ID no dataSource do Kendo DropDownList
             if (!finalidadeId && finalidadeNome)
             {
-                // Tentar em treeData primeiro
-                if (finalidadeInst.treeData && finalidadeInst.treeData.length > 0)
+                const dsData = finalidadeWidget.dataSource.data();
+                if (dsData && dsData.length > 0)
                 {
-                    const finalidadeEncontrada = finalidadeInst.treeData.find(f => f.Descricao === finalidadeNome);
+                    // Buscar por descricao (camelCase - JSON serialization)
+                    const finalidadeEncontrada = dsData.find(f =>
+                        (f.descricao || f.Descricao) === finalidadeNome
+                    );
                     if (finalidadeEncontrada)
                     {
-                        finalidadeId = finalidadeEncontrada.FinalidadeId;
-                        console.log("   ✅ ID encontrado em treeData:", finalidadeId);
-                    }
-                }
-
-                // Se não encontrou, tentar em treeItems
-                if (!finalidadeId && finalidadeInst.treeItems && finalidadeInst.treeItems.length > 0)
-                {
-                    const finalidadeEncontrada = finalidadeInst.treeItems.find(f => f.Descricao === finalidadeNome);
-                    if (finalidadeEncontrada)
-                    {
-                        finalidadeId = finalidadeEncontrada.FinalidadeId;
-                        console.log("   ✅ ID encontrado em treeItems:", finalidadeId);
+                        finalidadeId = finalidadeEncontrada.finalidadeId || finalidadeEncontrada.FinalidadeId;
+                        console.log("   ✅ ID encontrado no dataSource Kendo:", finalidadeId);
                     }
                 }
             }
@@ -970,12 +931,8 @@ function exibirViagemExistente(objViagem)
             {
                 setTimeout(() =>
                 {
-                    finalidadeInst.value = [finalidadeId]; // Array para DropDownTree
-                    if (typeof finalidadeInst.dataBind === 'function')
-                    {
-                        finalidadeInst.dataBind();
-                    }
-                    console.log("✅ Finalidade carregada:", finalidadeId);
+                    finalidadeWidget.value(String(finalidadeId));
+                    console.log("✅ Finalidade carregada (Kendo DropDownList):", finalidadeId);
                 }, 200);
             } else
             {
@@ -993,10 +950,9 @@ function exibirViagemExistente(objViagem)
         }
 
         // 7.2. Setor Requisitante
-        const lstSetorRequisitanteAgendamento = document.getElementById("lstSetorRequisitanteAgendamento");
-        if (lstSetorRequisitanteAgendamento && lstSetorRequisitanteAgendamento.ej2_instances && lstSetorRequisitanteAgendamento.ej2_instances[0])
+        var setorInst = window.getSyncfusionInstance("lstSetorRequisitanteAgendamento");
+        if (setorInst)
         {
-            const setorInst = lstSetorRequisitanteAgendamento.ej2_instances[0];
             // CORRIGIDO: usar setorSolicitanteId ao invés de setorRequisitanteId
             const setorId = objViagem.setorSolicitanteId || objViagem.setorRequisitanteId || objViagem.setorId;
             let setorNome = objViagem.setorSolicitante || objViagem.nomeSetorRequisitante || objViagem.setorRequisitanteNome || objViagem.setorNome || objViagem.nomeSetor || null;
@@ -1121,11 +1077,15 @@ function exibirViagemExistente(objViagem)
         // 11. Descrição
         if (objViagem.descricao)
         {
-            const rteDescricao = document.getElementById("rteDescricao");
-            if (rteDescricao && rteDescricao.ej2_instances && rteDescricao.ej2_instances[0])
+            // ✅ KENDO: Usar helper setEditorUpsertValue
+            if (typeof setEditorUpsertValue === "function")
             {
-                rteDescricao.ej2_instances[0].value = objViagem.descricao;
-                rteDescricao.ej2_instances[0].dataBind();
+                setEditorUpsertValue(objViagem.descricao);
+            }
+            else
+            {
+                const rteEditor = $("#rte").data("kendoEditor");
+                if (rteEditor) rteEditor.value(objViagem.descricao);
             }
         }
 
@@ -1152,21 +1112,19 @@ function exibirViagemExistente(objViagem)
         // 13. Combustí­vel
         if (objViagem.combustivelInicial)
         {
-            const ddtCombustivelInicial = document.getElementById("ddtCombustivelInicial");
-            if (ddtCombustivelInicial && ddtCombustivelInicial.ej2_instances && ddtCombustivelInicial.ej2_instances[0])
+            const ddlCombIni = $("#ddtCombustivelInicial").data("kendoDropDownList");
+            if (ddlCombIni)
             {
-                ddtCombustivelInicial.ej2_instances[0].value = objViagem.combustivelInicial;
-                ddtCombustivelInicial.ej2_instances[0].dataBind();
+                ddlCombIni.value(objViagem.combustivelInicial);
             }
         }
 
         if (objViagem.combustivelFinal)
         {
-            const ddtCombustivelFinal = document.getElementById("ddtCombustivelFinal");
-            if (ddtCombustivelFinal && ddtCombustivelFinal.ej2_instances && ddtCombustivelFinal.ej2_instances[0])
+            const ddlCombFim = $("#ddtCombustivelFinal").data("kendoDropDownList");
+            if (ddlCombFim)
             {
-                ddtCombustivelFinal.ej2_instances[0].value = objViagem.combustivelFinal;
-                ddtCombustivelFinal.ej2_instances[0].dataBind();
+                ddlCombFim.value(objViagem.combustivelFinal);
             }
         }
 
@@ -1182,25 +1140,24 @@ function exibirViagemExistente(objViagem)
 
             const lstEventos = document.getElementById("lstEventos");
             console.log("lstEventos elemento:", lstEventos);
-            console.log("lstEventos tem ej2_instances?", lstEventos?.ej2_instances);
-            console.log("lstEventos instância [0]:", lstEventos?.ej2_instances?.[0]);
+            const lstEventosWidget = $("#lstEventos").data("kendoComboBox");
+            console.log("lstEventos kendoComboBox?", lstEventosWidget);
 
-            if (lstEventos && lstEventos.ej2_instances && lstEventos.ej2_instances[0])
+            if (lstEventosWidget)
             {
-                console.log("✅ lstEventos ENCONTRADO e INICIALIZADO");
+                console.log("✅ lstEventos ENCONTRADO e INICIALIZADO (Kendo ComboBox)");
 
-                const lstEventosInst = lstEventos.ej2_instances[0];
+                const lstEventosInst = lstEventosWidget;
 
                 console.log("DataSource do lstEventos:", lstEventosInst.dataSource);
-                console.log("Valor atual:", lstEventosInst.value);
+                console.log("Valor atual:", lstEventosInst.value());
 
                 // PASSO 1: Definir o valor
                 console.log("🔄 Definindo valor:", objViagem.eventoId);
-                lstEventosInst.value = objViagem.eventoId;
-                lstEventosInst.dataBind();
+                lstEventosInst.value(objViagem.eventoId);
 
-                console.log("✅ Valor definido. Novo valor:", lstEventosInst.value);
-                console.log("Texto selecionado:", lstEventosInst.text);
+                console.log("✅ Valor definido. Novo valor:", lstEventosInst.value());
+                console.log("Texto selecionado:", lstEventosInst.text());
 
                 // PASSO 2: Mostrar a div
                 const divDadosEventoSelecionado = document.getElementById("divDadosEventoSelecionado");
@@ -1247,9 +1204,8 @@ function exibirViagemExistente(objViagem)
 
                                 const txtDataInicioEvento = document.getElementById("txtDataInicioEvento");
                                 console.log("txtDataInicioEvento elemento:", txtDataInicioEvento);
-                                console.log("txtDataInicioEvento.ej2_instances:", txtDataInicioEvento?.ej2_instances);
-
-                                if (dataInicial && txtDataInicioEvento && txtDataInicioEvento.ej2_instances && txtDataInicioEvento.ej2_instances[0])
+                                // ✅ KENDO: Usar helper setKendoDateValue
+                                if (dataInicial)
                                 {
                                     try
                                     {
@@ -1257,22 +1213,19 @@ function exibirViagemExistente(objViagem)
                                         // Alterado em: 12/01/2026 - Validação de data antes de preencher DatePicker
                                         if (!isNaN(dataObj.getTime()))
                                         {
-                                            txtDataInicioEvento.ej2_instances[0].value = dataObj;
-                                            txtDataInicioEvento.ej2_instances[0].enabled = false;
-                                            txtDataInicioEvento.ej2_instances[0].dataBind();
-                                            console.log("✅ Data Início preenchida:", dataObj.toLocaleDateString('pt-BR'));
+                                            window.setKendoDateValue("txtDataInicioEvento", dataObj);
+                                            window.enableKendoDatePicker("txtDataInicioEvento", false);
+                                            console.log("✅ Data Início preenchida (Kendo):", dataObj.toLocaleDateString('pt-BR'));
                                         }
                                         else
                                         {
                                             console.error("❌ Data Início inválida:", dataInicial);
-                                            txtDataInicioEvento.ej2_instances[0].value = null;
-                                            txtDataInicioEvento.ej2_instances[0].dataBind();
+                                            window.setKendoDateValue("txtDataInicioEvento", null);
                                         }
                                     } catch (error)
                                     {
                                         console.error("❌ Erro ao preencher Data Início:", error);
-                                        txtDataInicioEvento.ej2_instances[0].value = null;
-                                        txtDataInicioEvento.ej2_instances[0].dataBind();
+                                        window.setKendoDateValue("txtDataInicioEvento", null);
                                     }
                                 }
                                 else
@@ -1288,7 +1241,7 @@ function exibirViagemExistente(objViagem)
                                 const txtDataFimEvento = document.getElementById("txtDataFimEvento");
                                 console.log("txtDataFimEvento elemento:", txtDataFimEvento);
 
-                                if (dataFinal && txtDataFimEvento && txtDataFimEvento.ej2_instances && txtDataFimEvento.ej2_instances[0])
+                                if (dataFinal)
                                 {
                                     try
                                     {
@@ -1296,22 +1249,19 @@ function exibirViagemExistente(objViagem)
                                         // Alterado em: 12/01/2026 - Validação de data antes de preencher DatePicker
                                         if (!isNaN(dataObj.getTime()))
                                         {
-                                            txtDataFimEvento.ej2_instances[0].value = dataObj;
-                                            txtDataFimEvento.ej2_instances[0].enabled = false;
-                                            txtDataFimEvento.ej2_instances[0].dataBind();
+                                            window.setKendoDateValue("txtDataFimEvento", dataObj);
+                                            window.enableKendoDatePicker("txtDataFimEvento", false);
                                             console.log("✅ Data Fim preenchida:", dataObj.toLocaleDateString('pt-BR'));
                                         }
                                         else
                                         {
                                             console.error("❌ Data Fim inválida:", dataFinal);
-                                            txtDataFimEvento.ej2_instances[0].value = null;
-                                            txtDataFimEvento.ej2_instances[0].dataBind();
+                                            window.setKendoDateValue("txtDataFimEvento", null);
                                         }
                                     } catch (error)
                                     {
                                         console.error("❌ Erro ao preencher Data Fim:", error);
-                                        txtDataFimEvento.ej2_instances[0].value = null;
-                                        txtDataFimEvento.ej2_instances[0].dataBind();
+                                        window.setKendoDateValue("txtDataFimEvento", null);
                                     }
                                 }
                                 else
@@ -1327,12 +1277,16 @@ function exibirViagemExistente(objViagem)
                                 const txtQtdParticipantesEvento = document.getElementById("txtQtdParticipantesEvento");
                                 console.log("txtQtdParticipantesEvento elemento:", txtQtdParticipantesEvento);
 
-                                if (qtdParticipantes !== undefined && txtQtdParticipantesEvento && txtQtdParticipantesEvento.ej2_instances && txtQtdParticipantesEvento.ej2_instances[0])
+                                if (qtdParticipantes !== undefined && txtQtdParticipantesEvento)
                                 {
                                     const qtdNumero = typeof qtdParticipantes === 'string' ? parseInt(qtdParticipantes, 10) : qtdParticipantes;
-                                    txtQtdParticipantesEvento.ej2_instances[0].value = qtdNumero;
-                                    txtQtdParticipantesEvento.ej2_instances[0].enabled = false;
-                                    txtQtdParticipantesEvento.ej2_instances[0].dataBind();
+                                    const qtdWidget = $("#txtQtdParticipantesEvento").data("kendoNumericTextBox");
+                                    if (qtdWidget) {
+                                        qtdWidget.value(qtdNumero);
+                                        qtdWidget.enable(false);
+                                    } else {
+                                        $(txtQtdParticipantesEvento).val(qtdNumero).prop("disabled", true);
+                                    }
                                     console.log("✅ Qtd Participantes preenchida");
                                 }
                                 else
@@ -1362,8 +1316,7 @@ function exibirViagemExistente(objViagem)
             {
                 console.error("❌ lstEventos NÃO encontrado ou NÃO inicializado!");
                 if (!lstEventos) console.error("   - Elemento não existe no DOM");
-                if (lstEventos && !lstEventos.ej2_instances) console.error("   - Não tem ej2_instances");
-                if (lstEventos && lstEventos.ej2_instances && !lstEventos.ej2_instances[0]) console.error("   - ej2_instances[0] é undefined");
+                if (!lstEventosWidget) console.error("   - Kendo ComboBox não inicializado");
             }
         }
         else
@@ -1395,12 +1348,11 @@ function exibirViagemExistente(objViagem)
             }
 
             // SEGUNDO: Definir lstRecorrente como "S"
-            const lstRecorrente = document.getElementById("lstRecorrente");
-            if (lstRecorrente && lstRecorrente.ej2_instances && lstRecorrente.ej2_instances[0])
+            const lstRecorrenteKendo = $("#lstRecorrente").data("kendoDropDownList");
+            if (lstRecorrenteKendo)
             {
-                lstRecorrente.ej2_instances[0].value = "S";
-                lstRecorrente.ej2_instances[0].enabled = false; // Desabilitar pois já existe
-                lstRecorrente.ej2_instances[0].dataBind();
+                lstRecorrenteKendo.value("S");
+                lstRecorrenteKendo.enable(false);
                 console.log("âœ… lstRecorrente definido como 'Sim'");
             }
 
@@ -1413,12 +1365,12 @@ function exibirViagemExistente(objViagem)
             }
 
             // TERCEIRO: Preencher perí­odo
-            const lstPeriodos = document.getElementById("lstPeriodos");
-            if (lstPeriodos && lstPeriodos.ej2_instances && lstPeriodos.ej2_instances[0])
+            var lstPeriodosInst = window.getSyncfusionInstance("lstPeriodos");
+            if (lstPeriodosInst)
             {
-                lstPeriodos.ej2_instances[0].value = objViagem.intervalo;
-                lstPeriodos.ej2_instances[0].enabled = false; // Desabilitar pois já existe
-                lstPeriodos.ej2_instances[0].dataBind();
+                lstPeriodosInst.value = objViagem.intervalo;
+                lstPeriodosInst.enabled = false; // Desabilitar pois já existe
+                lstPeriodosInst.dataBind();
                 console.log("âœ… Perí­odo definido:", objViagem.intervalo);
             }
 
@@ -1442,11 +1394,11 @@ function exibirViagemExistente(objViagem)
             console.log("âŒ Agendamento NÃO é recorrente");
 
             // Garantir que lstRecorrente esteja como "N"
-            const lstRecorrente = document.getElementById("lstRecorrente");
-            if (lstRecorrente && lstRecorrente.ej2_instances && lstRecorrente.ej2_instances[0])
+            const lstRecorrenteKendo = $("#lstRecorrente").data("kendoDropDownList");
+            if (lstRecorrenteKendo)
             {
-                lstRecorrente.ej2_instances[0].value = "N";
-                lstRecorrente.ej2_instances[0].enabled = false; // DESABILITAR pois é edição de não-recorrente
+                lstRecorrenteKendo.value("N");
+                lstRecorrenteKendo.enable(false);
                 console.log("✅ lstRecorrente definido como 'Não' e desabilitado");
             }
 
@@ -1642,8 +1594,8 @@ function configurarRecorrenciaSemanal(objViagem)
         // ============================================================
         // ðŸ”§ CORREÇÃO: Usar PascalCase (Monday em vez de monday)
         // ============================================================
-        const lstDias = document.getElementById("lstDias");
-        if (lstDias && lstDias.ej2_instances && lstDias.ej2_instances[0])
+        var lstDiasInst = window.getSyncfusionInstance("lstDias");
+        if (lstDiasInst)
         {
             const diasSelecionados = [];
 
@@ -1658,9 +1610,9 @@ function configurarRecorrenciaSemanal(objViagem)
 
             console.log("ðŸ“‹ Dias selecionados:", diasSelecionados);
 
-            lstDias.ej2_instances[0].value = diasSelecionados;
-            lstDias.ej2_instances[0].enabled = false;
-            lstDias.ej2_instances[0].dataBind();
+            lstDiasInst.value = diasSelecionados;
+            lstDiasInst.enabled = false;
+            lstDiasInst.dataBind();
         }
 
         // Preencher data final
@@ -1745,12 +1697,12 @@ function configurarRecorrenciaMensal(objViagem)
         // Preencher dia do mês
         if (objViagem.diaMesRecorrencia)
         {
-            const lstDiasMes = document.getElementById("lstDiasMes");
-            if (lstDiasMes && lstDiasMes.ej2_instances && lstDiasMes.ej2_instances[0])
+            var lstDiasMesInst = window.getSyncfusionInstance("lstDiasMes");
+            if (lstDiasMesInst)
             {
-                lstDiasMes.ej2_instances[0].value = objViagem.diaMesRecorrencia;
-                lstDiasMes.ej2_instances[0].enabled = false;
-                lstDiasMes.ej2_instances[0].dataBind();
+                lstDiasMesInst.value = objViagem.diaMesRecorrencia;
+                lstDiasMesInst.enabled = false;
+                lstDiasMesInst.dataBind();
             }
         }
 
@@ -2682,11 +2634,10 @@ function mostrarCamposViagem(objViagem)
         // Preencher combustível inicial
         if (objViagem.combustivelInicial)
         {
-            const ddtCombIni = document.getElementById("ddtCombustivelInicial");
-            if (ddtCombIni && ddtCombIni.ej2_instances && ddtCombIni.ej2_instances[0])
+            const ddlCombIniMostrar = $("#ddtCombustivelInicial").data("kendoDropDownList");
+            if (ddlCombIniMostrar)
             {
-                ddtCombIni.ej2_instances[0].value = [objViagem.combustivelInicial];
-                ddtCombIni.ej2_instances[0].dataBind();
+                ddlCombIniMostrar.value(objViagem.combustivelInicial);
             }
         }
 
@@ -2704,11 +2655,10 @@ function mostrarCamposViagem(objViagem)
 
             if (objViagem.combustivelFinal)
             {
-                const ddtCombFim = document.getElementById("ddtCombustivelFinal");
-                if (ddtCombFim && ddtCombFim.ej2_instances && ddtCombFim.ej2_instances[0])
+                const ddlCombFimMostrar = $("#ddtCombustivelFinal").data("kendoDropDownList");
+                if (ddlCombFimMostrar)
                 {
-                    ddtCombFim.ej2_instances[0].value = [objViagem.combustivelFinal];
-                    ddtCombFim.ej2_instances[0].dataBind();
+                    ddlCombFimMostrar.value(objViagem.combustivelFinal);
                 }
             }
         }
@@ -2784,12 +2734,11 @@ function configurarRecorrencia(objViagem)
         console.log("ðŸ”„ Configurando recorrência:", objViagem);
 
         // Definir recorrente como "S" e desabilitar
-        const lstRecorrente = document.getElementById("lstRecorrente");
-        if (lstRecorrente && lstRecorrente.ej2_instances && lstRecorrente.ej2_instances[0])
+        const lstRecorrenteKendo = $("#lstRecorrente").data("kendoDropDownList");
+        if (lstRecorrenteKendo)
         {
-            lstRecorrente.ej2_instances[0].value = "S";
-            lstRecorrente.ej2_instances[0].enabled = false;
-            lstRecorrente.ej2_instances[0].dataBind();
+            lstRecorrenteKendo.value("S");
+            lstRecorrenteKendo.enable(false);
         }
 
         // Mostrar divPeriodo
@@ -2800,15 +2749,15 @@ function configurarRecorrencia(objViagem)
         }
 
         // Configurar perí­odo e desabilitar
-        const lstPeriodos = document.getElementById("lstPeriodos");
-        if (lstPeriodos && lstPeriodos.ej2_instances && lstPeriodos.ej2_instances[0])
+        var lstPeriodosInst = window.getSyncfusionInstance("lstPeriodos");
+        if (lstPeriodosInst)
         {
-            lstPeriodos.ej2_instances[0].enabled = false;
+            lstPeriodosInst.enabled = false;
 
             if (objViagem.intervalo)
             {
-                lstPeriodos.ej2_instances[0].value = objViagem.intervalo;
-                lstPeriodos.ej2_instances[0].dataBind();
+                lstPeriodosInst.value = objViagem.intervalo;
+                lstPeriodosInst.dataBind();
 
                 console.log("ðŸ“‹ Tipo de intervalo:", objViagem.intervalo);
 
@@ -2899,8 +2848,8 @@ function mostrarCamposRecorrenciaSemanal(objViagem)
         }
 
         // Preencher dias da semana selecionados
-        const lstDias = document.getElementById("lstDias");
-        if (lstDias && lstDias.ej2_instances && lstDias.ej2_instances[0])
+        var lstDiasInst = window.getSyncfusionInstance("lstDias");
+        if (lstDiasInst)
         {
             const diasSelecionados = [];
 
@@ -2913,9 +2862,9 @@ function mostrarCamposRecorrenciaSemanal(objViagem)
             if (objViagem.saturday) diasSelecionados.push("Sábado");
             if (objViagem.sunday) diasSelecionados.push("Domingo");
 
-            lstDias.ej2_instances[0].value = diasSelecionados;
-            lstDias.ej2_instances[0].enabled = false;
-            lstDias.ej2_instances[0].dataBind();
+            lstDiasInst.value = diasSelecionados;
+            lstDiasInst.enabled = false;
+            lstDiasInst.dataBind();
 
             console.log("âœ… Dias selecionados:", diasSelecionados);
         }
@@ -2962,12 +2911,12 @@ function mostrarCamposRecorrenciaMensal(objViagem)
         // Preencher dia do mês
         if (objViagem.diaMesRecorrencia)
         {
-            const lstDiasMes = document.getElementById("lstDiasMes");
-            if (lstDiasMes && lstDiasMes.ej2_instances && lstDiasMes.ej2_instances[0])
+            var lstDiasMesInst = window.getSyncfusionInstance("lstDiasMes");
+            if (lstDiasMesInst)
             {
-                lstDiasMes.ej2_instances[0].value = objViagem.diaMesRecorrencia;
-                lstDiasMes.ej2_instances[0].enabled = false;
-                lstDiasMes.ej2_instances[0].dataBind();
+                lstDiasMesInst.value = objViagem.diaMesRecorrencia;
+                lstDiasMesInst.enabled = false;
+                lstDiasMesInst.dataBind();
 
                 console.log("âœ… Dia do mês:", objViagem.diaMesRecorrencia);
             }
@@ -3169,12 +3118,11 @@ function restaurarDadosRecorrencia(objViagem)
             console.log("âœ… Ã‰ recorrente, restaurando configurações...");
 
             // Restaurar lstRecorrente
-            const lstRecorrente = document.getElementById("lstRecorrente");
-            if (lstRecorrente && lstRecorrente.ej2_instances && lstRecorrente.ej2_instances[0])
+            const lstRecorrenteKendo = $("#lstRecorrente").data("kendoDropDownList");
+            if (lstRecorrenteKendo)
             {
-                lstRecorrente.ej2_instances[0].value = 'S';
-                lstRecorrente.ej2_instances[0].enabled = false; // Desabilitar em edição
-                lstRecorrente.ej2_instances[0].dataBind();
+                lstRecorrenteKendo.value("S");
+                lstRecorrenteKendo.enable(false);
                 console.log("âœ… lstRecorrente = Sim");
             }
 
@@ -3188,12 +3136,12 @@ function restaurarDadosRecorrencia(objViagem)
             // Restaurar periodo
             if (objViagem.intervalo)
             {
-                const lstPeriodos = document.getElementById("lstPeriodos");
-                if (lstPeriodos && lstPeriodos.ej2_instances && lstPeriodos.ej2_instances[0])
+                var lstPeriodosInst = window.getSyncfusionInstance("lstPeriodos");
+                if (lstPeriodosInst)
                 {
-                    lstPeriodos.ej2_instances[0].value = objViagem.intervalo;
-                    lstPeriodos.ej2_instances[0].enabled = false; // Desabilitar em edição de recorrência
-                    lstPeriodos.ej2_instances[0].dataBind();
+                    lstPeriodosInst.value = objViagem.intervalo;
+                    lstPeriodosInst.enabled = false; // Desabilitar em edição de recorrência
+                    lstPeriodosInst.dataBind();
                     console.log("âœ… Perí­odo = " + objViagem.intervalo);
                 }
 
@@ -3206,8 +3154,8 @@ function restaurarDadosRecorrencia(objViagem)
                     {
                         console.log("ðŸ“… [FINAL] Preenchendo lstDias...");
 
-                        const lstDias = document.getElementById("lstDias");
-                        if (lstDias && lstDias.ej2_instances && lstDias.ej2_instances[0])
+                        var lstDiasInst2 = window.getSyncfusionInstance("lstDias");
+                        if (lstDiasInst2)
                         {
                             const diasSelecionados = [];
 
@@ -3222,8 +3170,8 @@ function restaurarDadosRecorrencia(objViagem)
 
                             if (diasSelecionados.length > 0)
                             {
-                                lstDias.ej2_instances[0].value = diasSelecionados;
-                                lstDias.ej2_instances[0].dataBind();
+                                lstDiasInst2.value = diasSelecionados;
+                                lstDiasInst2.dataBind();
                                 console.log("âœ… [FINAL] lstDias preenchido:", diasSelecionados);
                             }
                         }
@@ -3235,12 +3183,11 @@ function restaurarDadosRecorrencia(objViagem)
                         {
                             console.log("ðŸ“… [RENDER] Renderizando chips visualmente...");
 
-                            const lstDias = document.getElementById("lstDias");
+                            var lstDiasInstRender = window.getSyncfusionInstance("lstDias");
 
-                            if (lstDias && lstDias.ej2_instances && lstDias.ej2_instances[0])
+                            if (lstDiasInstRender)
                             {
-                                const instance = lstDias.ej2_instances[0];
-                                const dias = instance.value;
+                                const dias = lstDiasInstRender.value;
 
                                 console.log("ðŸ“‹ [RENDER] Dias encontrados:", dias);
 
@@ -3343,11 +3290,11 @@ function restaurarDadosRecorrencia(objViagem)
                             // ========================================
                             // Desabilitar lstPeriodos (UMA VEZ)
                             // ========================================
-                            const lstPeriodos = document.getElementById("lstPeriodos");
-                            if (lstPeriodos && lstPeriodos.ej2_instances && lstPeriodos.ej2_instances[0])
+                            var lstPeriodosInstRender = window.getSyncfusionInstance("lstPeriodos");
+                            if (lstPeriodosInstRender)
                             {
-                                lstPeriodos.ej2_instances[0].enabled = false;
-                                lstPeriodos.ej2_instances[0].dataBind();
+                                lstPeriodosInstRender.enabled = false;
+                                lstPeriodosInstRender.dataBind();
                                 console.log("âœ… [RENDER] lstPeriodos desabilitado");
                             }
 
@@ -3374,12 +3321,12 @@ function restaurarDadosRecorrencia(objViagem)
 
                     if (objViagem.diaDoMes)
                     {
-                        const lstDiasMes = document.getElementById("lstDiasMes");
-                        if (lstDiasMes && lstDiasMes.ej2_instances && lstDiasMes.ej2_instances[0])
+                        var lstDiasMesInst = window.getSyncfusionInstance("lstDiasMes");
+                        if (lstDiasMesInst)
                         {
-                            lstDiasMes.ej2_instances[0].value = objViagem.diaDoMes;
-                            lstDiasMes.ej2_instances[0].enabled = false;
-                            lstDiasMes.ej2_instances[0].dataBind();
+                            lstDiasMesInst.value = objViagem.diaDoMes;
+                            lstDiasMesInst.enabled = false;
+                            lstDiasMesInst.dataBind();
                             console.log("âœ… lstDiasMes = " + objViagem.diaDoMes);
                         }
                     }
@@ -3450,8 +3397,8 @@ function restaurarRecorrenciaSemanal(objViagem)
         // ============================================================
         // ðŸ”§ CORREÇÃO: Usar PascalCase (Monday em vez de monday)
         // ============================================================
-        const lstDias = document.getElementById("lstDias");
-        if (lstDias && lstDias.ej2_instances && lstDias.ej2_instances[0])
+        var lstDiasInst = window.getSyncfusionInstance("lstDias");
+        if (lstDiasInst)
         {
             const diasSelecionados = [];
 
@@ -3464,9 +3411,9 @@ function restaurarRecorrenciaSemanal(objViagem)
             if (objViagem.Saturday) diasSelecionados.push("Sábado");
             if (objViagem.Sunday) diasSelecionados.push("Domingo");
 
-            lstDias.ej2_instances[0].value = diasSelecionados;
-            lstDias.ej2_instances[0].enabled = false;
-            lstDias.ej2_instances[0].dataBind();
+            lstDiasInst.value = diasSelecionados;
+            lstDiasInst.enabled = false;
+            lstDiasInst.dataBind();
         }
 
         // Preencher data final
@@ -3548,12 +3495,12 @@ function restaurarRecorrenciaMensal(objViagem)
         // Preencher dia do mês
         if (objViagem.diaMesRecorrencia)
         {
-            const lstDiasMes = document.getElementById("lstDiasMes");
-            if (lstDiasMes && lstDiasMes.ej2_instances && lstDiasMes.ej2_instances[0])
+            var lstDiasMesInst = window.getSyncfusionInstance("lstDiasMes");
+            if (lstDiasMesInst)
             {
-                lstDiasMes.ej2_instances[0].value = objViagem.diaMesRecorrencia;
-                lstDiasMes.ej2_instances[0].enabled = false;
-                lstDiasMes.ej2_instances[0].dataBind();
+                lstDiasMesInst.value = objViagem.diaMesRecorrencia;
+                lstDiasMesInst.enabled = false;
+                lstDiasMesInst.dataBind();
             }
         }
 
@@ -3638,11 +3585,11 @@ async function restaurarRecorrenciaVariada(objViagem)
         {
             setTimeout(async () =>
             {
-                const calDatasSelecionadas = document.getElementById("calDatasSelecionadas");
+                var calendarioInst = window.getSyncfusionInstance("calDatasSelecionadas");
 
-                if (calDatasSelecionadas && calDatasSelecionadas.ej2_instances && calDatasSelecionadas.ej2_instances[0])
+                if (calendarioInst)
                 {
-                    const calendario = calDatasSelecionadas.ej2_instances[0];
+                    const calendario = calendarioInst;
 
                     // Buscar datas do banco
                     const datasArray = await buscarDatasRecorrenciaVariada(

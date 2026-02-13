@@ -159,15 +159,7 @@
                                 <div class="col-12 col-md-6">
                                     <div class="form-group">
                                         <label class="label" for="cmbPatrimonio">Patrimônio *</label>
-                                        <ejs-combobox id="cmbPatrimonio"
-                                                      placeholder="Selecione o Patrimônio"
-                                                      allowFiltering="true"
-                                                      filterType="Contains"
-                                                      popupHeight="200px"
-                                                      width="100%"
-                                                      showClearButton="true">
-                                            <e-combobox-fields text="text" value="value"></e-combobox-fields>
-                                        </ejs-combobox>
+                                        <input id="cmbPatrimonio" style="width: 100%;" />
                                     </div>
                                 </div>
 
@@ -237,30 +229,14 @@
                                     <div class="col-12 col-md-6">
                                         <div class="form-group">
                                             <label class="label" for="cmbSetorDestino">Setor (Destino) *</label>
-                                            <ejs-combobox id="cmbSetorDestino"
-                                                          placeholder="Selecione o Setor de Destino"
-                                                          allowFiltering="true"
-                                                          filterType="Contains"
-                                                          popupHeight="200px"
-                                                          width="100%"
-                                                          showClearButton="true">
-                                                <e-combobox-fields text="text" value="value"></e-combobox-fields>
-                                            </ejs-combobox>
+                                            <input id="cmbSetorDestino" style="width: 100%;" />
                                         </div>
                                     </div>
 
                                     <div class="col-12 col-md-6" id="divSecaoDestino">
                                         <div class="form-group">
                                             <label class="label" for="cmbSecoesDestino">Seção (Destino) *</label>
-                                            <ejs-combobox id="cmbSecoesDestino"
-                                                          placeholder="Primeiro selecione o Setor de Destino"
-                                                          allowFiltering="true"
-                                                          filterType="Contains"
-                                                          popupHeight="200px"
-                                                          width="100%"
-                                                          showClearButton="true">
-                                                <e-combobox-fields text="text" value="value"></e-combobox-fields>
-                                            </ejs-combobox>
+                                            <input id="cmbSecoesDestino" style="width: 100%;" />
                                         </div>
                                     </div>
                                 </div>
@@ -304,6 +280,38 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
     <script src="~/js/cadastros/movimentacaopatrimonio.js" asp-append-version="true"></script>
+
+    <script>
+    (function () {
+        try {
+            $("#cmbPatrimonio").kendoComboBox({
+                dataTextField: "text",
+                dataValueField: "value",
+                placeholder: "Selecione o Patrim\u00f4nio",
+                filter: "contains",
+                height: 200
+            });
+
+            $("#cmbSetorDestino").kendoComboBox({
+                dataTextField: "text",
+                dataValueField: "value",
+                placeholder: "Selecione o Setor de Destino",
+                filter: "contains",
+                height: 200
+            });
+
+            $("#cmbSecoesDestino").kendoComboBox({
+                dataTextField: "text",
+                dataValueField: "value",
+                placeholder: "Primeiro selecione o Setor de Destino",
+                filter: "contains",
+                height: 200
+            });
+        } catch (error) {
+            Alerta.TratamentoErroComLinha("MovimentacaoPatrimonio/Upsert.cshtml", "kendoControls.init", error);
+        }
+    })();
+    </script>
 
     <script>
         $(document).ready(function () {
@@ -373,14 +381,14 @@
                                 // Atualizar combos EJ2
                                 setTimeout(function () {
                                     try {
-                                        var cmbPatrimonio = document.getElementById('cmbPatrimonio')?.ej2_instances?.[0];
-                                        if (cmbPatrimonio) cmbPatrimonio.value = data.patrimonioId;
+                                        var cmbPatrimonio = $("#cmbPatrimonio").data("kendoComboBox");
+                                        if (cmbPatrimonio) cmbPatrimonio.value(data.patrimonioId || "");
 
-                                        var cmbSetorDestino = document.getElementById('cmbSetorDestino')?.ej2_instances?.[0];
-                                        if (cmbSetorDestino) cmbSetorDestino.value = data.setorDestinoId;
+                                        var cmbSetorDestino = $("#cmbSetorDestino").data("kendoComboBox");
+                                        if (cmbSetorDestino) cmbSetorDestino.value(data.setorDestinoId || "");
 
-                                        var cmbSecaoDestino = document.getElementById('cmbSecoesDestino')?.ej2_instances?.[0];
-                                        if (cmbSecaoDestino) cmbSecaoDestino.value = data.secaoDestinoId;
+                                        var cmbSecaoDestino = $("#cmbSecoesDestino").data("kendoComboBox");
+                                        if (cmbSecaoDestino) cmbSecaoDestino.value(data.secaoDestinoId || "");
 
                                         var datePicker = document.getElementById('dataMov')?.ej2_instances?.[0];
                                         if (datePicker && data.dataMovimentacao) {
@@ -416,21 +424,21 @@
         function salvarMovimentacao() {
             try {
                 // Coletar dados dos componentes EJ2
-                var cmbPatrimonio = document.getElementById('cmbPatrimonio')?.ej2_instances?.[0];
-                var cmbSetorDestino = document.getElementById('cmbSetorDestino')?.ej2_instances?.[0];
-                var cmbSecaoDestino = document.getElementById('cmbSecoesDestino')?.ej2_instances?.[0];
+                var cmbPatrimonio = $("#cmbPatrimonio").data("kendoComboBox");
+                var cmbSetorDestino = $("#cmbSetorDestino").data("kendoComboBox");
+                var cmbSecaoDestino = $("#cmbSecoesDestino").data("kendoComboBox");
                 var datePicker = document.getElementById('dataMov')?.ej2_instances?.[0];
                 var statusCheckbox = document.getElementById('StatusCheckbox')?.ej2_instances?.[0];
 
                 // Montar objeto de dados
                 var dados = {
                     movimentacaoPatrimonioId: $('#MovimentacaoPatrimonioId').val(),
-                    patrimonioId: cmbPatrimonio?.value || $('#PatrimonioId').val(),
+                    patrimonioId: (cmbPatrimonio ? cmbPatrimonio.value() : null) || $('#PatrimonioId').val(),
                     dataMovimentacao: datePicker?.value ? datePicker.value.toISOString() : null,
                     setorOrigemId: $('#SetorOrigemId').val(),
                     secaoOrigemId: $('#SecaoOrigemId').val(),
-                    setorDestinoId: cmbSetorDestino?.value,
-                    secaoDestinoId: cmbSecaoDestino?.value,
+                    setorDestinoId: cmbSetorDestino ? cmbSetorDestino.value() : null,
+                    secaoDestinoId: cmbSecaoDestino ? cmbSecaoDestino.value() : null,
                     statusPatrimonio: statusCheckbox?.checked || false
                 };
 

@@ -359,10 +359,11 @@ $(document).ready(function ()
             {
                 try
                 {
-                    let setores = getComboEJ2("ddtSetorRequisitanteEvento");
+                    let setores = document.getElementById("ddtSetorRequisitanteEvento")
+                        .ej2_instances[0];
                     setores.value = "";
                     let requisitantes =
-                        getComboEJ2("lstRequisitanteEvento");
+                        document.getElementById("lstRequisitanteEvento").ej2_instances[0];
                     requisitantes.value = "";
                     $("#txtNome").val("");
                     $("#txtDescricao").val("");
@@ -387,7 +388,7 @@ $(document).ready(function ()
             {
                 try
                 {
-                    let setores = getComboEJ2("ddtSetorRequisitante");
+                    let setores = document.getElementById("ddtSetorRequisitante").ej2_instances[0];
                     setores.value = "";
                     $("#txtPonto").val("");
                     $("#txtNome").val("");
@@ -415,7 +416,7 @@ $(document).ready(function ()
             {
                 try
                 {
-                    let setores = getComboEJ2("ddtSetorPai");
+                    let setores = document.getElementById("ddtSetorPai").ej2_instances[0];
                     setores.value = "";
                     $("#txtSigla").val("");
                     $("#txtNomeSetor").val("");
@@ -482,7 +483,7 @@ $("#txtKmInicial").focusout(function ()
     {
         // ✅ NOVO: Verificar se há veículo selecionado
         const cmbVeiculo = document.getElementById("cmbVeiculo");
-        if (!$("#cmbVeiculo").data("kendoComboBox"))
+        if (!cmbVeiculo || !cmbVeiculo.ej2_instances || !cmbVeiculo.ej2_instances[0])
         {
             $("#txtKmInicial").val("");
             $("#txtKmPercorrido").val("");
@@ -493,7 +494,7 @@ $("#txtKmInicial").focusout(function ()
             return;
         }
 
-        const veiculoId = ($("#cmbVeiculo").data("kendoComboBox") ? $("#cmbVeiculo").data("kendoComboBox").value() : null);
+        const veiculoId = cmbVeiculo.ej2_instances[0].value;
         if (!veiculoId || veiculoId === null || (Array.isArray(veiculoId) && veiculoId.length === 0))
         {
             $("#txtKmInicial").val("");
@@ -606,7 +607,7 @@ $("#txtKmFinal").focusout(async function ()
     {
         // ✅ NOVO: Verificar se há veículo selecionado
         const cmbVeiculo = document.getElementById("cmbVeiculo");
-        if (!$("#cmbVeiculo").data("kendoComboBox"))
+        if (!cmbVeiculo || !cmbVeiculo.ej2_instances || !cmbVeiculo.ej2_instances[0])
         {
             $("#txtKmFinal").val("");
             $("#txtKmPercorrido").val("");
@@ -617,7 +618,7 @@ $("#txtKmFinal").focusout(async function ()
             return;
         }
 
-        const veiculoId = ($("#cmbVeiculo").data("kendoComboBox") ? $("#cmbVeiculo").data("kendoComboBox").value() : null);
+        const veiculoId = cmbVeiculo.ej2_instances[0].value;
         if (!veiculoId || veiculoId === null || (Array.isArray(veiculoId) && veiculoId.length === 0))
         {
             $("#txtKmFinal").val("");
@@ -693,7 +694,7 @@ $("#txtKmFinal").focusout(async function ()
         // VALIDAÇÃO IA: Análise de quilometragem (se disponível)
         if (typeof ValidadorFinalizacaoIA !== 'undefined')
         {
-            const veiculoId = ($("#cmbVeiculo").data("kendoComboBox") ? $("#cmbVeiculo").data("kendoComboBox").value() : null) || '';
+            const veiculoId = document.getElementById("cmbVeiculo")?.ej2_instances?.[0]?.value || '';
 
             if (veiculoId && kmInicial > 0 && kmFinal > 0)
             {
@@ -839,9 +840,9 @@ $(document).ready(function ()
         const cmbVeiculo = document.getElementById("cmbVeiculo");
         let veiculoSelecionado = false;
 
-        if ($("#cmbVeiculo").data("kendoComboBox"))
+        if (cmbVeiculo && cmbVeiculo.ej2_instances && cmbVeiculo.ej2_instances[0])
         {
-            const veiculoId = ($("#cmbVeiculo").data("kendoComboBox") ? $("#cmbVeiculo").data("kendoComboBox").value() : null);
+            const veiculoId = cmbVeiculo.ej2_instances[0].value;
             veiculoSelecionado = veiculoId && veiculoId !== null && (!Array.isArray(veiculoId) || veiculoId.length > 0);
         }
 
@@ -1683,10 +1684,12 @@ function PreencheListaRequisitantes()
     {
         const requisitantes = document.getElementById("cmbRequisitante");
         if (
-            $("#cmbRequisitante").data("kendoComboBox")
+            requisitantes &&
+            requisitantes.ej2_instances &&
+            requisitantes.ej2_instances.length > 0
         )
         {
-            $("#cmbRequisitante").data("kendoComboBox").dataSource.data([]);
+            requisitantes.ej2_instances[0].dataSource = [];
         }
     }
     catch (error)
@@ -1700,10 +1703,10 @@ function PreencheListaSetores(SetorSolicitanteId)
     try
     {
         const setor = document.getElementById("cmbSetor");
-        if (getComboEJ2("cmbSetor"))
+        if (setor && setor.ej2_instances && setor.ej2_instances.length > 0)
         {
-            getComboEJ2("cmbSetor").dataSource = [];
-            getComboEJ2("cmbSetor").enabled = true;
+            setor.ej2_instances[0].dataSource = [];
+            setor.ej2_instances[0].enabled = true;
         }
     }
     catch (error)
@@ -3517,7 +3520,7 @@ function ExibeViagem(viagem)
         }
 
         if (viagem.setorSolicitanteId)
-            getComboEJ2("ddtSetor").value = [
+            document.getElementById("ddtSetor").ej2_instances[0].value = [
                 viagem.setorSolicitanteId,
             ];
 
@@ -3557,7 +3560,9 @@ function ExibeViagem(viagem)
             setTimeout(function() {
                 try {
                     const rteElement = document.getElementById("rte");
-                    // ej2_instances RTE block removed — disableEditorUpsert() below handles Kendo Editor
+                    if (rteElement && rteElement.ej2_instances && rteElement.ej2_instances[0]) {
+                        rteElement.ej2_instances[0].enabled = false;
+                    }
                     if (typeof disableEditorUpsert === 'function') {
                         disableEditorUpsert();
                     }
@@ -3577,8 +3582,8 @@ function ExibeViagem(viagem)
                 {
                     try
                     {
-                        const control = $("#" + id).data("kendoComboBox");
-                        if (control) control.enable(false);
+                        const control = document.getElementById(id).ej2_instances[0];
+                        if (control) control.enabled = false;
                     }
                     catch (error)
                     {
@@ -3616,7 +3621,7 @@ function ExibeViagem(viagem)
 
             // Syncfusion: ddtSetor
             try {
-                const setorCtrl = getComboEJ2("ddtSetor");
+                const setorCtrl = document.getElementById("ddtSetor")?.ej2_instances?.[0];
                 if (setorCtrl) setorCtrl.enabled = false;
             } catch (error) {
                 Alerta.TratamentoErroComLinha("ViagemUpsert.js", "ddtSetor.disable", error);
@@ -4032,7 +4037,7 @@ function BuscarSetoresPorMotorista(motoristaId)
             {
                 try
                 {
-                    const ddtSetor = getComboEJ2("ddtSetor");
+                    const ddtSetor = document.getElementById("ddtSetor").ej2_instances[0];
                     ddtSetor.dataSource = data;
                     ddtSetor.refresh();
                 }
@@ -4091,10 +4096,10 @@ function InserirNovoRequisitante()
             {
                 try
                 {
-                    const cmb = $("#cmbRequisitante").data("kendoComboBox");
-                    cmb.dataSource.add(requisitante);
-                    cmb.value(requisitante.id);
-                    // cmb.dataBind(); // Removed: Kendo ComboBox auto-updates
+                    const cmb = document.getElementById("cmbRequisitante").ej2_instances[0];
+                    cmb.dataSource.push(requisitante);
+                    cmb.value = requisitante.id;
+                    cmb.dataBind();
                     $("#modalNovoRequisitante").modal("hide");
                 }
                 catch (error)
@@ -4246,7 +4251,7 @@ function PreencheListaSetores(SetorSolicitanteId)
                         }
                     });
 
-                    getComboEJ2("ddtSetor").fields.dataSource =
+                    document.getElementById("ddtSetor").ej2_instances[0].fields.dataSource =
                         SetorList;
                 }
                 catch (error)
@@ -4260,9 +4265,9 @@ function PreencheListaSetores(SetorSolicitanteId)
             },
         });
 
-        getComboEJ2("ddtSetor").refresh();
+        document.getElementById("ddtSetor").ej2_instances[0].refresh();
         var strSetor = String(SetorSolicitanteId);
-        getComboEJ2("ddtSetor").value = [strSetor];
+        document.getElementById("ddtSetor").ej2_instances[0].value = [strSetor];
     }
     catch (error)
     {
@@ -4274,9 +4279,9 @@ function RequisitanteValueChange()
 {
     try
     {
-        var ddTreeObj = $("#cmbRequisitante").data("kendoComboBox");
-        if ((ddTreeObj.value() === null || ddTreeObj.value() === "" || ddTreeObj.value() === undefined)) return;
-        var requisitanteid = String(ddTreeObj.value());
+        var ddTreeObj = document.getElementById("cmbRequisitante").ej2_instances[0];
+        if (ddTreeObj.value === null) return;
+        var requisitanteid = String(ddTreeObj.value);
 
         $.ajax({
             url: "/Viagens/Upsert?handler=PegaSetor",
@@ -4287,7 +4292,7 @@ function RequisitanteValueChange()
             {
                 try
                 {
-                    getComboEJ2("ddtSetor").value = [res.data];
+                    document.getElementById("ddtSetor").ej2_instances[0].value = [res.data];
                 }
                 catch (error)
                 {
@@ -4332,7 +4337,7 @@ function RequisitanteEventoValueChange()
 {
     try
     {
-        var ddTreeObj = getComboEJ2("lstRequisitanteEvento");
+        var ddTreeObj = document.getElementById("lstRequisitanteEvento").ej2_instances[0];
         if (ddTreeObj.value === null) return;
         var requisitanteid = String(ddTreeObj.value);
 
@@ -4345,7 +4350,7 @@ function RequisitanteEventoValueChange()
             {
                 try
                 {
-                    getComboEJ2("ddtSetorRequisitanteEvento").value = [
+                    document.getElementById("ddtSetorRequisitanteEvento").ej2_instances[0].value = [
                         res.data,
                     ];
                 }
@@ -4421,10 +4426,10 @@ function VeiculoValueChange()
 {
     try
     {
-        var ddTreeObj = $("#cmbVeiculo").data("kendoComboBox");
+        var ddTreeObj = document.getElementById("cmbVeiculo").ej2_instances[0];
         console.log("Objeto Veículo:", ddTreeObj);
 
-        if ((ddTreeObj.value() === null || ddTreeObj.value() === "" || ddTreeObj.value() === undefined))
+        if (ddTreeObj.value === null)
         {
             // Desabilita o botão de ocorrências quando não há veículo selecionado
             desabilitarBotaoOcorrenciasVeiculo();
@@ -4441,7 +4446,7 @@ function VeiculoValueChange()
             return;
         }
 
-        var veiculoid = String(ddTreeObj.value());
+        var veiculoid = String(ddTreeObj.value);
 
         // Habilitar seção de ocorrências da viagem
         controlarSecaoOcorrencias(veiculoid);
@@ -4504,10 +4509,10 @@ function VeiculoValueChange()
                         document.getElementById("txtKmAtual").value = "";
                         document.getElementById("txtKmInicial").value = "";
                         document.getElementById("txtKmFinal").value = "";
-                        var combo = $("#cmbVeiculo").data("kendoComboBox");
+                        var combo = document.getElementById("cmbVeiculo").ej2_instances[0];
 
                         // 1️⃣ Método oficial Syncfusion
-                        combo.input.focus(); // leva o foco para o input do ComboBox
+                        combo.focusIn(); // leva o foco para o input do ComboBox
                     }
                 }
                 catch (error)
@@ -4548,8 +4553,8 @@ $("#btnInserirEvento").click(function (e)
             return;
         }
 
-        let setores = getComboEJ2("ddtSetorRequisitanteEvento");
-        let requisitantes = getComboEJ2("lstRequisitanteEvento");
+        let setores = document.getElementById("ddtSetorRequisitanteEvento").ej2_instances[0];
+        let requisitantes = document.getElementById("lstRequisitanteEvento").ej2_instances[0];
 
         if (!setores.value || !requisitantes.value)
         {
@@ -4625,7 +4630,7 @@ $("#btnInserirRequisitante").click(function (e)
             return;
         }
 
-        let setores = getComboEJ2("ddtSetorRequisitante");
+        let setores = document.getElementById("ddtSetorRequisitante").ej2_instances[0];
         if (!setores.value)
         {
             AppToast.show("amarelo", "O Setor do Requisitante é obrigatório!", 5000);
@@ -4653,7 +4658,7 @@ $("#btnInserirRequisitante").click(function (e)
                     if (data.success)
                     {
                         AppToast.show('Verde', data.message);
-                        $("#cmbRequisitante").data("kendoComboBox").dataSource.add(
+                        document.getElementById("cmbRequisitante").ej2_instances[0].addItem(
                             {
                                 RequisitanteId: data.requisitanteid,
                                 Requisitante: $("#txtNome").val() + " - " + $("#txtPonto").val(),
@@ -4711,7 +4716,7 @@ $("#btnInserirSetor").click(function (e)
         }
 
         let setorPaiId = null;
-        let setorPai = getComboEJ2("ddtSetorPai").value;
+        let setorPai = document.getElementById("ddtSetorPai").ej2_instances[0].value;
         if (setorPai !== "" && setorPai !== null)
         {
             setorPaiId = setorPai.toString();
@@ -4813,8 +4818,8 @@ $("#btnSubmit").click(async function (event)
             return;
         }
 
-        const veiculo = $("#cmbVeiculo").data("kendoComboBox");
-        if ((veiculo.value() === null || veiculo.value() === "" || veiculo.value() === undefined))
+        const veiculo = document.getElementById("cmbVeiculo").ej2_instances[0];
+        if (veiculo.value === null)
         {
             Alerta.Erro("Informação Ausente", "O Veículo é obrigatório");
             return;
@@ -4833,8 +4838,8 @@ $("#btnSubmit").click(async function (event)
             return;
         }
 
-        const requisitante = $("#cmbRequisitante").data("kendoComboBox");
-        if ((!requisitante.value() || requisitante.value() === "") || requisitante.value() === null)
+        const requisitante = document.getElementById("cmbRequisitante").ej2_instances[0];
+        if (!requisitante.value || requisitante.value[0] === null)
         {
             Alerta.Erro("Informação Ausente", "O Requisitante é obrigatório");
             return;
@@ -4846,7 +4851,7 @@ $("#btnSubmit").click(async function (event)
             return;
         }
 
-        const setor = getComboEJ2("ddtSetor");
+        const setor = document.getElementById("ddtSetor").ej2_instances[0];
         if (!setor.value)
         {
             Alerta.Erro("Informação Ausente", "O Setor Solicitante é obrigatório");
@@ -4925,7 +4930,7 @@ $("#btnSubmit").click(async function (event)
         // VALIDAÇÃO IA CONSOLIDADA - Verifica se há alertas pendentes ao finalizar viagem
         if (todosFinalPreenchidos && typeof window.validarFinalizacaoConsolidadaIA === 'function')
         {
-            const veiculoId = ($("#cmbVeiculo").data("kendoComboBox") ? $("#cmbVeiculo").data("kendoComboBox").value() : null) || '';
+            const veiculoId = document.getElementById("cmbVeiculo")?.ej2_instances?.[0]?.value || '';
 
             const iaValida = await window.validarFinalizacaoConsolidadaIA({
                 dataInicial: $("#txtDataInicial").val(),
@@ -5612,8 +5617,8 @@ $(document).on('click', '#btnOcorrenciasVeiculo:not(.disabled)', function (e)
         modalEl.setAttribute('data-veiculo-id', String(_veiculoIdSelecionado));
 
         // Pega o texto do veículo selecionado
-        const ddTreeObj = $("#cmbVeiculo").data("kendoComboBox");
-        const textoVeiculo = ddTreeObj.text() || 'Veículo';
+        const ddTreeObj = document.getElementById("cmbVeiculo").ej2_instances[0];
+        const textoVeiculo = ddTreeObj.text || 'Veículo';
 
         // Atualiza o título do modal
         const tituloSpan = modalEl.querySelector('#modalOcorrenciasVeiculoUpsertLabel span');
@@ -6748,10 +6753,10 @@ function verificarVeiculoParaOcorrencias()
     try
     {
         const cmbVeiculo = document.getElementById('cmbVeiculo');
-        if (!$("#cmbVeiculo").data("kendoComboBox")) return;
+        if (!cmbVeiculo || !cmbVeiculo.ej2_instances || !cmbVeiculo.ej2_instances[0]) return;
         
         // Obter valor - pode ser string ou array
-        let veiculoId = ($("#cmbVeiculo").data("kendoComboBox") ? $("#cmbVeiculo").data("kendoComboBox").value() : null);
+        let veiculoId = cmbVeiculo.ej2_instances[0].value;
         if (Array.isArray(veiculoId))
         {
             veiculoId = veiculoId[0];

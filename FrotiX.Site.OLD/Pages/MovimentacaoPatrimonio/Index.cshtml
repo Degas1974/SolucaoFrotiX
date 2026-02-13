@@ -138,12 +138,7 @@
 										<i class="fa-duotone fa-user"></i>
 										Responsável
 									</label>
-									<ejs-combobox id="cmbResponsavel"
-										placeholder="Selecione o Responsável"
-										allowFiltering="true"
-										filterBarPlaceholder="Buscar..."
-										cssClass="e-outline">
-									</ejs-combobox>
+									<input id="cmbResponsavel" style="width: 100%;" />
 								</div>
 							</div>
 						</div>
@@ -187,6 +182,20 @@
 @section ScriptsBlock {
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+	<script>
+	(function () {
+		try {
+			$("#cmbResponsavel").kendoComboBox({
+				placeholder: "Selecione o Responsável",
+				filter: "contains",
+				height: 200
+			});
+		} catch (error) {
+			Alerta.TratamentoErroComLinha("MovimentacaoPatrimonio/Index.cshtml", "kendoControls.init", error);
+		}
+	})();
+	</script>
 
 	<script src="~/js/cadastros/movimentacaopatrimonio.js" asp-append-version="true"></script>
 }

@@ -317,13 +317,11 @@ class EventoService
                 throw new Error(result.error);
             }
 
-            const lstEventosElement = document.getElementById("lstEventos");
-            if (!lstEventosElement || !lstEventosElement.ej2_instances || !lstEventosElement.ej2_instances[0])
+            const lstEventos = window.getSyncfusionInstance("lstEventos");
+            if (!lstEventos)
             {
                 return;
             }
-
-            const lstEventos = lstEventosElement.ej2_instances[0];
             lstEventos.dataSource = result.data;
             lstEventos.dataBind();
 

@@ -708,16 +708,7 @@
 											<i class="fa-duotone fa-car"></i>
 											Veículo
 										</label>
-										<ejs-combobox id="lstVeiculos"
-													  placeholder="Todos os Veículos"
-													  allowFiltering="true"
-													  filterType="Contains"
-													  dataSource="@ViewData["lstVeiculos"]"
-													  popupHeight="250px"
-													  width="100%"
-													  showClearButton="true">
-											<e-combobox-fields text="Descricao" value="VeiculoId"></e-combobox-fields>
-										</ejs-combobox>
+										<input id="lstVeiculos" style="width: 100%;" />
 									</div>
 
 									<!-- Motorista -->
@@ -726,16 +717,7 @@
 											<i class="fa-duotone fa-id-card"></i>
 											Motorista
 										</label>
-										<ejs-combobox id="lstMotorista"
-													  placeholder="Todos os Motoristas"
-													  allowFiltering="true"
-													  filterType="Contains"
-													  dataSource="@ViewData["lstMotorista"]"
-													  popupHeight="250px"
-													  width="100%"
-													  showClearButton="true">
-											<e-combobox-fields text="Nome" value="MotoristaId"></e-combobox-fields>
-										</ejs-combobox>
+										<input id="lstMotorista" style="width: 100%;" />
 									</div>
 
 									<!-- Status -->
@@ -744,16 +726,7 @@
 											<i class="fa-duotone fa-circle-check"></i>
 											Status
 										</label>
-										<ejs-combobox id="lstStatus"
-													  placeholder="Todos os Status"
-													  allowFiltering="true"
-													  filterType="Contains"
-													  dataSource="@ViewData["lstStatus"]"
-													  popupHeight="250px"
-													  width="100%"
-													  showClearButton="true">
-											<e-combobox-fields text="Status" value="StatusId"></e-combobox-fields>
-										</ejs-combobox>
+										<input id="lstStatus" style="width: 100%;" />
 									</div>
 
 									<!-- Evento -->
@@ -762,16 +735,7 @@
 											<i class="fa-duotone fa-calendar-star"></i>
 											Evento
 										</label>
-										<ejs-combobox id="lstEventos"
-													  placeholder="Todos os Eventos"
-													  allowFiltering="true"
-													  filterType="Contains"
-													  dataSource="@ViewData["lstEventos"]"
-													  popupHeight="250px"
-													  width="100%"
-													  showClearButton="true">
-											<e-combobox-fields text="Evento" value="EventoId"></e-combobox-fields>
-										</ejs-combobox>
+										<input id="lstEventos" style="width: 100%;" />
 									</div>
 								</div>
 
@@ -1322,6 +1286,69 @@
 
 	<!-- Validador Inteligente de Finalização (IA Evolutiva) -->
 	<script src="~/js/validacao/ValidadorFinalizacaoIA.js" asp-append-version="true"></script>
+
+	<!-- 🎯 Kendo ComboBox Init: Filtros de Listagem de Viagens -->
+	<script>
+		(function () {
+			try {
+				var dataVeiculos = @Html.Raw(Json.Serialize(ViewData["lstVeiculos"]));
+				var dataMotorista = @Html.Raw(Json.Serialize(ViewData["lstMotorista"]));
+				var dataStatus = @Html.Raw(Json.Serialize(ViewData["lstStatus"]));
+				var dataEventos = @Html.Raw(Json.Serialize(ViewData["lstEventos"]));
+
+				$("#lstVeiculos").kendoComboBox({
+					dataSource: dataVeiculos || [],
+					dataTextField: "descricao",
+					dataValueField: "veiculoId",
+					filter: "contains",
+					placeholder: "Todos os Veículos",
+					height: 250,
+					clearButton: true,
+					suggest: false
+				});
+				console.log('[Index] ✅ Kendo ComboBox lstVeiculos inicializado');
+
+				$("#lstMotorista").kendoComboBox({
+					dataSource: dataMotorista || [],
+					dataTextField: "nome",
+					dataValueField: "motoristaId",
+					filter: "contains",
+					placeholder: "Todos os Motoristas",
+					height: 250,
+					clearButton: true,
+					suggest: false
+				});
+				console.log('[Index] ✅ Kendo ComboBox lstMotorista inicializado');
+
+				$("#lstStatus").kendoComboBox({
+					dataSource: dataStatus || [],
+					dataTextField: "status",
+					dataValueField: "statusId",
+					filter: "contains",
+					placeholder: "Todos os Status",
+					height: 250,
+					clearButton: true,
+					suggest: false
+				});
+				console.log('[Index] ✅ Kendo ComboBox lstStatus inicializado');
+
+				$("#lstEventos").kendoComboBox({
+					dataSource: dataEventos || [],
+					dataTextField: "evento",
+					dataValueField: "eventoId",
+					filter: "contains",
+					placeholder: "Todos os Eventos",
+					height: 250,
+					clearButton: true,
+					suggest: false
+				});
+				console.log('[Index] ✅ Kendo ComboBox lstEventos inicializado');
+
+			} catch (error) {
+				Alerta.TratamentoErroComLinha("Index.cshtml", "kendoComboBox.init", error);
+			}
+		})();
+	</script>
 
 	<script src="~/js/cadastros/ViagemIndex.js" asp-append-version="true"></script>
 }

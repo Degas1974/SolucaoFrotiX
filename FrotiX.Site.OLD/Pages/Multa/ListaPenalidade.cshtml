@@ -726,61 +726,31 @@
 							<!-- Órgão -->
 							<div class="ftx-penalidade-filter-group">
 								<label>Órgão Autuante</label>
-								<ejs-combobox id="lstOrgao"
-											  placeholder="Selecione..."
-											  allowFiltering="true" filterType="Contains"
-											  dataSource="@ViewData["dataOrgaoAutuante"]"
-											  popupHeight="250px" width="100%" showClearButton="true">
-									<e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-								</ejs-combobox>
+								<input id="lstOrgao" style="width: 100%;" />
 							</div>
 
 							<!-- Infração -->
 							<div class="ftx-penalidade-filter-group">
 								<label>Infração</label>
-								<ejs-combobox id="lstTiposMulta"
-											  placeholder="Selecione..."
-											  allowFiltering="true" filterType="Contains"
-											  dataSource="@ViewData["lstTipoMulta"]"
-											  popupHeight="250px" width="100%" showClearButton="true">
-									<e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-								</ejs-combobox>
+								<input id="lstTiposMulta" style="width: 100%;" />
 							</div>
 
 							<!-- Veículo -->
 							<div class="ftx-penalidade-filter-group">
 								<label>Veículo</label>
-								<ejs-combobox id="lstVeiculos"
-											  placeholder="Selecione..."
-											  allowFiltering="true" filterType="Contains"
-											  dataSource="@ViewData["lstVeiculos"]"
-											  popupHeight="250px" width="100%" showClearButton="true">
-									<e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-								</ejs-combobox>
+								<input id="lstVeiculos" style="width: 100%;" />
 							</div>
 
 							<!-- Motorista -->
 							<div class="ftx-penalidade-filter-group">
 								<label>Motorista</label>
-								<ejs-combobox id="lstMotorista"
-											  placeholder="Selecione..."
-											  allowFiltering="true" filterType="Contains"
-											  dataSource="@ViewData["lstMotorista"]"
-											  popupHeight="250px" width="100%" showClearButton="true">
-									<e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-								</ejs-combobox>
+								<input id="lstMotorista" style="width: 100%;" />
 							</div>
 
 							<!-- Status -->
 							<div class="ftx-penalidade-filter-group">
 								<label>Status</label>
-								<ejs-combobox id="lstStatus"
-											  placeholder="Selecione..."
-											  allowFiltering="true" filterType="Contains"
-											  dataSource="@ViewData["lstStatus"]"
-											  popupHeight="250px" width="100%" showClearButton="true">
-									<e-combobox-fields text="Status" value="StatusId"></e-combobox-fields>
-								</ejs-combobox>
+								<input id="lstStatus" style="width: 100%;" />
 							</div>
 
 							<!-- Botão Filtrar -->
@@ -1055,6 +1025,69 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
 	<script>
+		// ====== Kendo ComboBox Init (migrado de Syncfusion EJ2) ======
+		(function () {
+			try {
+				var dataOrgao = @Html.Raw(Json.Serialize(ViewData["dataOrgaoAutuante"]));
+				var dataTiposMulta = @Html.Raw(Json.Serialize(ViewData["lstTipoMulta"]));
+				var dataVeiculos = @Html.Raw(Json.Serialize(ViewData["lstVeiculos"]));
+				var dataMotorista = @Html.Raw(Json.Serialize(ViewData["lstMotorista"]));
+				var dataStatus = @Html.Raw(Json.Serialize(ViewData["lstStatus"]));
+
+				$("#lstOrgao").kendoComboBox({
+					dataTextField: "descricao",
+					dataValueField: "id",
+					placeholder: "Selecione...",
+					filter: "contains",
+					clearButton: true,
+					dataSource: dataOrgao,
+					height: 250
+				});
+
+				$("#lstTiposMulta").kendoComboBox({
+					dataTextField: "descricao",
+					dataValueField: "id",
+					placeholder: "Selecione...",
+					filter: "contains",
+					clearButton: true,
+					dataSource: dataTiposMulta,
+					height: 250
+				});
+
+				$("#lstVeiculos").kendoComboBox({
+					dataTextField: "descricao",
+					dataValueField: "id",
+					placeholder: "Selecione...",
+					filter: "contains",
+					clearButton: true,
+					dataSource: dataVeiculos,
+					height: 250
+				});
+
+				$("#lstMotorista").kendoComboBox({
+					dataTextField: "descricao",
+					dataValueField: "id",
+					placeholder: "Selecione...",
+					filter: "contains",
+					clearButton: true,
+					dataSource: dataMotorista,
+					height: 250
+				});
+
+				$("#lstStatus").kendoComboBox({
+					dataTextField: "status",
+					dataValueField: "statusId",
+					placeholder: "Selecione...",
+					filter: "contains",
+					clearButton: true,
+					dataSource: dataStatus,
+					height: 250
+				});
+			} catch (error) {
+				Alerta.TratamentoErroComLinha("ListaPenalidade.cshtml", "kendoComboBox.init", error);
+			}
+		})();
+
 		var URLapi = "/api/multa/listamultas";
 
 		// ====================================================================
@@ -1088,8 +1121,8 @@
 
 		function ListaTodasPenalidades() {
 			try {
-				const statusCmb = document.getElementById('lstStatus')?.ej2_instances?.[0];
-				const statusId = (!statusCmb || !statusCmb.value) ? "Pendentes" : "Todas";
+				var statusCmb = $("#lstStatus").data("kendoComboBox");
+				const statusId = (!statusCmb || !statusCmb.value()) ? "Pendentes" : "Todas";
 				URLapi = "/api/multa/listamultas";
 				ListaTblPenalidades();
 			}
@@ -1153,17 +1186,17 @@
 
 				let veiculoId = "", tipoMultaId = "", motoristaId = "", orgaoAutuanteId = "", statusId = "";
 
-				const veiculos = document.getElementById('lstVeiculos')?.ej2_instances?.[0];
-				const tipos = document.getElementById('lstTiposMulta')?.ej2_instances?.[0];
-				const motoristas = document.getElementById('lstMotorista')?.ej2_instances?.[0];
-				const orgaos = document.getElementById('lstOrgao')?.ej2_instances?.[0];
-				const status = document.getElementById('lstStatus')?.ej2_instances?.[0];
+				var veiculos = $("#lstVeiculos").data("kendoComboBox");
+				var tipos = $("#lstTiposMulta").data("kendoComboBox");
+				var motoristas = $("#lstMotorista").data("kendoComboBox");
+				var orgaos = $("#lstOrgao").data("kendoComboBox");
+				var status = $("#lstStatus").data("kendoComboBox");
 
-				if (veiculos && veiculos.value != null) veiculoId = veiculos.value;
-				if (tipos && (tipos.value != null || tipos.value === '')) tipoMultaId = tipos.value;
-				if (motoristas && motoristas.value != null) motoristaId = motoristas.value;
-				if (orgaos && orgaos.value != null) orgaoAutuanteId = orgaos.value;
-				if (status && status.value != null) statusId = status.value;
+				if (veiculos && veiculos.value()) veiculoId = veiculos.value();
+				if (tipos && tipos.value()) tipoMultaId = tipos.value();
+				if (motoristas && motoristas.value()) motoristaId = motoristas.value();
+				if (orgaos && orgaos.value()) orgaoAutuanteId = orgaos.value();
+				if (status && status.value()) statusId = status.value();
 
 				if ($.fn.DataTable.isDataTable('#tblMulta')) {
 					$('#tblMulta').DataTable().destroy();

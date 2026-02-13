@@ -115,12 +115,7 @@
 
 								<div class="col-4">
 									<label class="label font-weight-bold ftx-label label-required">Detentor</label>
-									<ejs-combobox id="cmbDetentores" placeholder="Selecione um Detentor"
-										allowFiltering="false" filterType="Contains" popupHeight="200px" width="100%"
-										showClearButton="true" ejs-for="SetorObj.DetentorId"
-										cssClass="my-syncfusion-input--small">
-										<e-combobox-fields text="text" value="value"></e-combobox-fields>
-									</ejs-combobox>
+									<input id="cmbDetentores" name="SetorObj.DetentorId" style="width: 100%;" />
 								</div>
 
 								<div class="row">
@@ -193,6 +188,21 @@
 		crossorigin="anonymous" />
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
 		crossorigin="anonymous"></script>
+
+	<script>
+	(function () {
+		try {
+			$("#cmbDetentores").kendoComboBox({
+				dataTextField: "text",
+				dataValueField: "value",
+				placeholder: "Selecione um Detentor",
+				height: 200
+			});
+		} catch (error) {
+			Alerta.TratamentoErroComLinha("SetorPatrimonial/Upsert.cshtml", "kendoControls.init", error);
+		}
+	})();
+	</script>
 
 	<script src="~/js/dropify.min.js"></script>
 	<script src="~/js/cadastros/setor_patrimonial.js"></script>

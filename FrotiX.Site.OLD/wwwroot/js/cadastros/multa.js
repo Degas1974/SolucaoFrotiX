@@ -496,13 +496,13 @@ function verificarModoEdicao()
             {
                 try
                 {
-                    var lstInfracao = document.getElementById("lstInfracao");
-                    if (lstInfracao?.ej2_instances?.[0])
+                    var lstInfracao = $("#lstInfracao").data("kendoDropDownList");
+                    if (lstInfracao)
                     {
                         var tipoMultaId = $('#MultaObj_Multa_TipoMultaId').val();
                         if (tipoMultaId)
                         {
-                            lstInfracao.ej2_instances[0].value = tipoMultaId;
+                            lstInfracao.value(tipoMultaId.toString());
                         }
                     }
                 } catch (error)
@@ -619,16 +619,16 @@ function inicializarNovoRegistro()
     try
     {
         // Limpa listas
-        var lstContratoVeiculo = document.getElementById("lstContratoVeiculo");
-        if (lstContratoVeiculo?.ej2_instances?.[0])
+        var lstContratoVeiculo = $("#lstContratoVeiculo").data("kendoComboBox");
+        if (lstContratoVeiculo)
         {
-            lstContratoVeiculo.ej2_instances[0].text = "";
+            lstContratoVeiculo.value(""); lstContratoVeiculo.text("");
         }
 
-        var lstContratoMotorista = document.getElementById("lstContratoMotorista");
-        if (lstContratoMotorista?.ej2_instances?.[0])
+        var lstContratoMotorista = $("#lstContratoMotorista").data("kendoComboBox");
+        if (lstContratoMotorista)
         {
-            lstContratoMotorista.ej2_instances[0].text = "";
+            lstContratoMotorista.value(""); lstContratoMotorista.text("");
         }
     } catch (error)
     {
@@ -729,22 +729,21 @@ function lstOrgaoChange()
 {
     try
     {
-        var lstEmpenhos = document.getElementById("lstEmpenhos");
-        if (lstEmpenhos?.ej2_instances?.[0])
+        var lstEmpenhos = $("#lstEmpenhos").data("kendoDropDownList");
+        if (lstEmpenhos)
         {
-            lstEmpenhos.ej2_instances[0].dataSource = [];
-            lstEmpenhos.ej2_instances[0].dataBind();
-            lstEmpenhos.ej2_instances[0].text = "";
+            lstEmpenhos.setDataSource(new kendo.data.DataSource({ data: [] }));
+            lstEmpenhos.value(""); lstEmpenhos.text("");
         }
         $('#txtEmpenhoMultaId').attr('value', "");
 
-        var lstOrgao = document.getElementById("lstOrgao");
-        if (!lstOrgao?.ej2_instances?.[0] || lstOrgao.ej2_instances[0].value === null)
+        var lstOrgao = $("#lstOrgao").data("kendoComboBox");
+        if (!lstOrgao || !lstOrgao.value())
         {
             return;
         }
 
-        var orgaoid = String(lstOrgao.ej2_instances[0].value);
+        var orgaoid = String(lstOrgao.value());
 
         $.ajax({
             url: "/Multa/UpsertPenalidade?handler=AJAXPreencheListaEmpenhos",
@@ -764,18 +763,17 @@ function lstOrgaoChange()
                         };
                         EmpenhoList.push(empenho);
                     }
-                    if (lstEmpenhos?.ej2_instances?.[0])
+                    if (lstEmpenhos)
                     {
-                        lstEmpenhos.ej2_instances[0].dataSource = EmpenhoList;
-                        lstEmpenhos.ej2_instances[0].dataBind();
+                        lstEmpenhos.setDataSource(new kendo.data.DataSource({ data: EmpenhoList }));
                     }
                 }
             }
         });
 
-        if (lstEmpenhos?.ej2_instances?.[0])
+        if (lstEmpenhos)
         {
-            lstEmpenhos.ej2_instances[0].refresh();
+            lstEmpenhos.dataSource.read();
         }
 
         swal({
@@ -797,12 +795,12 @@ function lstEmpenhosChange()
 {
     try
     {
-        var lstEmpenhos = document.getElementById("lstEmpenhos");
-        if (!lstEmpenhos?.ej2_instances?.[0]) return;
+        var lstEmpenhos = $("#lstEmpenhos").data("kendoDropDownList");
+        if (!lstEmpenhos) return;
 
-        $('#txtEmpenhoMultaId').attr('value', lstEmpenhos.ej2_instances[0].value);
+        $('#txtEmpenhoMultaId').attr('value', lstEmpenhos.value());
 
-        var empenhoid = String(lstEmpenhos.ej2_instances[0].value);
+        var empenhoid = String(lstEmpenhos.value());
 
         $.ajax({
             url: "/Multa/UpsertAutuacao?handler=PegaSaldoEmpenho",
@@ -845,13 +843,13 @@ function lstVeiculo_Change()
 {
     try
     {
-        var lstVeiculo = document.getElementById("lstVeiculo");
-        if (!lstVeiculo?.ej2_instances?.[0] || lstVeiculo.ej2_instances[0].value === '')
+        var lstVeiculo = $("#lstVeiculo").data("kendoComboBox");
+        if (!lstVeiculo || lstVeiculo.value() === '')
         {
             return;
         }
 
-        var veiculoId = lstVeiculo.ej2_instances[0].value;
+        var veiculoId = lstVeiculo.value();
 
         $.ajax({
             url: "/api/Multa/PegaInstrumentoVeiculo",
@@ -860,37 +858,37 @@ function lstVeiculo_Change()
             data: { Id: veiculoId },
             success: function (data)
             {
-                var lstContratoVeiculo = document.getElementById("lstContratoVeiculo");
-                var lstAtaVeiculo = document.getElementById("lstAtaVeiculo");
+                var lstContratoVeiculo = $("#lstContratoVeiculo").data("kendoComboBox");
+                var lstAtaVeiculo = $("#lstAtaVeiculo").data("kendoComboBox");
 
                 if (data.instrumentoid != null)
                 {
                     if (data.instrumento == "contrato")
                     {
-                        if (lstContratoVeiculo?.ej2_instances?.[0])
+                        if (lstContratoVeiculo)
                         {
-                            lstContratoVeiculo.ej2_instances[0].value = data.instrumentoid;
+                            lstContratoVeiculo.value(data.instrumentoid.toString());
                         }
-                        if (lstAtaVeiculo?.ej2_instances?.[0])
+                        if (lstAtaVeiculo)
                         {
-                            lstAtaVeiculo.ej2_instances[0].value = '';
+                            lstAtaVeiculo.value(""); lstAtaVeiculo.text("");
                         }
                     } else
                     {
-                        if (lstContratoVeiculo?.ej2_instances?.[0])
+                        if (lstContratoVeiculo)
                         {
-                            lstContratoVeiculo.ej2_instances[0].value = '';
+                            lstContratoVeiculo.value(""); lstContratoVeiculo.text("");
                         }
-                        if (lstAtaVeiculo?.ej2_instances?.[0])
+                        if (lstAtaVeiculo)
                         {
-                            lstAtaVeiculo.ej2_instances[0].value = data.instrumentoid;
+                            lstAtaVeiculo.value(data.instrumentoid.toString());
                         }
                     }
                 } else
                 {
-                    if (lstContratoVeiculo?.ej2_instances?.[0])
+                    if (lstContratoVeiculo)
                     {
-                        lstContratoVeiculo.ej2_instances[0].value = '';
+                        lstContratoVeiculo.value(""); lstContratoVeiculo.text("");
                     }
                     swal({
                         title: "Atenção ao Contrato do Veículo",
@@ -920,20 +918,20 @@ function lstContratoVeiculo_Change()
             return;
         }
 
-        var lstAtaVeiculo = document.getElementById("lstAtaVeiculo");
-        if (lstAtaVeiculo?.ej2_instances?.[0])
+        var lstAtaVeiculo = $("#lstAtaVeiculo").data("kendoComboBox");
+        if (lstAtaVeiculo)
         {
-            lstAtaVeiculo.ej2_instances[0].value = '';
+            lstAtaVeiculo.value(""); lstAtaVeiculo.text("");
         }
 
-        var lstContratoVeiculo = document.getElementById("lstContratoVeiculo");
-        var lstVeiculo = document.getElementById("lstVeiculo");
+        var lstContratoVeiculo = $("#lstContratoVeiculo").data("kendoComboBox");
+        var lstVeiculo = $("#lstVeiculo").data("kendoComboBox");
 
-        if (!lstContratoVeiculo?.ej2_instances?.[0] || !lstVeiculo?.ej2_instances?.[0]) return;
-        if (lstContratoVeiculo.ej2_instances[0].value === '' || lstVeiculo.ej2_instances[0].value === '') return;
+        if (!lstContratoVeiculo || !lstVeiculo) return;
+        if (lstContratoVeiculo.value() === '' || lstVeiculo.value() === '') return;
 
-        var veiculoId = lstVeiculo.ej2_instances[0].value;
-        var contratoId = lstContratoVeiculo.ej2_instances[0].value;
+        var veiculoId = lstVeiculo.value();
+        var contratoId = lstContratoVeiculo.value();
 
         $.ajax({
             url: "/api/Multa/ValidaContratoVeiculo",
@@ -950,9 +948,9 @@ function lstContratoVeiculo_Change()
                         icon: "warning",
                         buttons: { ok: "Ok" }
                     });
-                    if (lstVeiculo?.ej2_instances?.[0])
+                    if (lstVeiculo)
                     {
-                        lstVeiculo.ej2_instances[0].value = '';
+                        lstVeiculo.value(""); lstVeiculo.text("");
                     }
                 }
             }
@@ -976,20 +974,20 @@ function lstAtaVeiculo_Change()
             return;
         }
 
-        var lstContratoVeiculo = document.getElementById("lstContratoVeiculo");
-        if (lstContratoVeiculo?.ej2_instances?.[0])
+        var lstContratoVeiculo = $("#lstContratoVeiculo").data("kendoComboBox");
+        if (lstContratoVeiculo)
         {
-            lstContratoVeiculo.ej2_instances[0].value = '';
+            lstContratoVeiculo.value(""); lstContratoVeiculo.text("");
         }
 
-        var lstAtaVeiculo = document.getElementById("lstAtaVeiculo");
-        var lstVeiculo = document.getElementById("lstVeiculo");
+        var lstAtaVeiculo = $("#lstAtaVeiculo").data("kendoComboBox");
+        var lstVeiculo = $("#lstVeiculo").data("kendoComboBox");
 
-        if (!lstAtaVeiculo?.ej2_instances?.[0] || !lstVeiculo?.ej2_instances?.[0]) return;
-        if (lstAtaVeiculo.ej2_instances[0].value === '' || lstVeiculo.ej2_instances[0].value === '') return;
+        if (!lstAtaVeiculo || !lstVeiculo) return;
+        if (lstAtaVeiculo.value() === '' || lstVeiculo.value() === '') return;
 
-        var veiculoId = lstVeiculo.ej2_instances[0].value;
-        var ataId = lstAtaVeiculo.ej2_instances[0].value;
+        var veiculoId = lstVeiculo.value();
+        var ataId = lstAtaVeiculo.value();
 
         $.ajax({
             url: "/api/Multa/ValidaAtaVeiculo",
@@ -1006,9 +1004,9 @@ function lstAtaVeiculo_Change()
                         icon: "warning",
                         buttons: { ok: "Ok" }
                     });
-                    if (lstVeiculo?.ej2_instances?.[0])
+                    if (lstVeiculo)
                     {
-                        lstVeiculo.ej2_instances[0].value = '';
+                        lstVeiculo.value(""); lstVeiculo.text("");
                     }
                 }
             }
@@ -1041,13 +1039,13 @@ function lstMotorista_Change()
 {
     try
     {
-        var lstMotorista = document.getElementById("lstMotorista");
-        if (!lstMotorista?.ej2_instances?.[0] || lstMotorista.ej2_instances[0].value === '')
+        var lstMotorista = $("#lstMotorista").data("kendoComboBox");
+        if (!lstMotorista || lstMotorista.value() === '')
         {
             return;
         }
 
-        var motoristaId = lstMotorista.ej2_instances[0].value;
+        var motoristaId = lstMotorista.value();
 
         $.ajax({
             url: "/api/Multa/PegaContratoMotorista",
@@ -1056,19 +1054,19 @@ function lstMotorista_Change()
             data: { Id: motoristaId },
             success: function (data)
             {
-                var lstContratoMotorista = document.getElementById("lstContratoMotorista");
+                var lstContratoMotorista = $("#lstContratoMotorista").data("kendoComboBox");
 
                 if (data.contratoid != '')
                 {
-                    if (lstContratoMotorista?.ej2_instances?.[0])
+                    if (lstContratoMotorista)
                     {
-                        lstContratoMotorista.ej2_instances[0].value = data.contratoid;
+                        lstContratoMotorista.value(data.contratoid.toString());
                     }
                 } else
                 {
-                    if (lstContratoMotorista?.ej2_instances?.[0])
+                    if (lstContratoMotorista)
                     {
-                        lstContratoMotorista.ej2_instances[0].value = '';
+                        lstContratoMotorista.value(""); lstContratoMotorista.text("");
                     }
                     swal({
                         title: "Atenção ao Contrato do Motorista",
@@ -1098,14 +1096,14 @@ function lstContratoMotorista_Change()
             return;
         }
 
-        var lstContratoMotorista = document.getElementById("lstContratoMotorista");
-        var lstMotorista = document.getElementById("lstMotorista");
+        var lstContratoMotorista = $("#lstContratoMotorista").data("kendoComboBox");
+        var lstMotorista = $("#lstMotorista").data("kendoComboBox");
 
-        if (!lstContratoMotorista?.ej2_instances?.[0] || !lstMotorista?.ej2_instances?.[0]) return;
-        if (lstContratoMotorista.ej2_instances[0].value === '' || lstMotorista.ej2_instances[0].value === '') return;
+        if (!lstContratoMotorista || !lstMotorista) return;
+        if (lstContratoMotorista.value() === '' || lstMotorista.value() === '') return;
 
-        var motoristaId = lstMotorista.ej2_instances[0].value;
-        var contratoId = lstContratoMotorista.ej2_instances[0].value;
+        var motoristaId = lstMotorista.value();
+        var contratoId = lstContratoMotorista.value();
 
         $.ajax({
             url: "/api/Multa/ValidaContratoMotorista",
@@ -1122,9 +1120,9 @@ function lstContratoMotorista_Change()
                         icon: "warning",
                         buttons: { ok: "Ok" }
                     });
-                    if (lstMotorista?.ej2_instances?.[0])
+                    if (lstMotorista)
                     {
-                        lstMotorista.ej2_instances[0].value = '';
+                        lstMotorista.value(""); lstMotorista.text("");
                     }
                 }
             }
@@ -1210,8 +1208,8 @@ $("#btnSubmit").click(function (event)
             return;
         }
 
-        var lstStatus = document.getElementById("lstStatus");
-        if (lstStatus?.ej2_instances?.[0] && lstStatus.ej2_instances[0].value === null)
+        var lstStatus = $("#lstStatus").data("kendoComboBox");
+        if (lstStatus && !lstStatus.value())
         {
             swal({ title: "Informação Ausente", text: "O Status é obrigatório", icon: "error", buttons: { ok: "Ok" } });
             return;
@@ -1223,22 +1221,22 @@ $("#btnSubmit").click(function (event)
             return;
         }
 
-        var lstInfracao = document.getElementById("lstInfracao");
-        if (lstInfracao?.ej2_instances?.[0] && lstInfracao.ej2_instances[0].value === null)
+        var lstInfracao = $("#lstInfracao").data("kendoDropDownList");
+        if (lstInfracao && !lstInfracao.value())
         {
             swal({ title: "Informação Ausente", text: "A Infração é obrigatória", icon: "error", buttons: { ok: "Ok" } });
             return;
         }
 
-        var lstOrgao = document.getElementById("lstOrgao");
-        if (lstOrgao?.ej2_instances?.[0] && lstOrgao.ej2_instances[0].value === null)
+        var lstOrgao = $("#lstOrgao").data("kendoComboBox");
+        if (lstOrgao && !lstOrgao.value())
         {
             swal({ title: "Informação Ausente", text: "O Órgão Autuante é obrigatório", icon: "error", buttons: { ok: "Ok" } });
             return;
         }
 
-        var lstVeiculo = document.getElementById("lstVeiculo");
-        if (lstVeiculo?.ej2_instances?.[0] && lstVeiculo.ej2_instances[0].value === null)
+        var lstVeiculo = $("#lstVeiculo").data("kendoComboBox");
+        if (lstVeiculo && !lstVeiculo.value())
         {
             swal({ title: "Informação Ausente", text: "O Veículo é obrigatório", icon: "error", buttons: { ok: "Ok" } });
             return;
@@ -1282,15 +1280,15 @@ $(document).on('click', '.btnViagem', function ()
         return;
     }
 
-    var lstVeiculo = document.getElementById("lstVeiculo");
-    if (!lstVeiculo?.ej2_instances?.[0] || lstVeiculo.ej2_instances[0].value === null)
+    var lstVeiculo = $("#lstVeiculo").data("kendoComboBox");
+    if (!lstVeiculo || !lstVeiculo.value())
     {
         swal({ title: "Informação Ausente", text: "O Veículo deve ser informado!", icon: "error", buttons: { ok: "Ok" } });
         return;
     }
 
     var dataToPost = JSON.stringify({
-        'VeiculoId': lstVeiculo.ej2_instances[0].value,
+        'VeiculoId': lstVeiculo.value(),
         'Data': document.getElementById("txtDataInfracao").value,
         'Hora': document.getElementById("txtHoraInfracao").value
     });
@@ -1316,10 +1314,10 @@ $(document).on('click', '.btnViagem', function ()
 
                     // Recupera o motorista
                     EscolhendoMotorista = true;
-                    var lstMotorista = document.getElementById("lstMotorista");
-                    if (lstMotorista?.ej2_instances?.[0])
+                    var lstMotorista = $("#lstMotorista").data("kendoComboBox");
+                    if (lstMotorista)
                     {
-                        lstMotorista.ej2_instances[0].value = data.motoristaid;
+                        lstMotorista.value(data.motoristaid.toString());
                     }
                 } else
                 {

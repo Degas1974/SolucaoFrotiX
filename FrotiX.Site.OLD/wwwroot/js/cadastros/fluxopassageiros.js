@@ -47,7 +47,7 @@ function executarInsercaoLinha()
 {
     try
     {
-        const economildo = document.getElementById('lstVeiculos').ej2_instances[0].value;
+        const economildo = $("#lstVeiculos").data("kendoComboBox") ? $("#lstVeiculos").data("kendoComboBox").value() : null;
         const idaOuVolta = document.getElementById('lstIdaVolta').value;
         const horainicio = document.getElementById('txtHoraInicio').value;
         const horafim = document.getElementById('txtHoraFim').value;
@@ -193,8 +193,8 @@ document.getElementById('btnInsereFicha').addEventListener('click', function (e)
     try
     {
         const dataviagem = document.getElementById('txtData').value;
-        const economildo = document.getElementById('lstVeiculos').ej2_instances[0].value;
-        const motorista = document.getElementById('lstMotoristas').ej2_instances[0].value;
+        const economildo = $("#lstVeiculos").data("kendoComboBox") ? $("#lstVeiculos").data("kendoComboBox").value() : null;
+        const motorista = $("#lstMotoristas").data("kendoComboBox") ? $("#lstMotoristas").data("kendoComboBox").value() : null;
         const mob = document.getElementById('lstMOB').value;
         const responsavel = document.getElementById('lstResponsavel').value;
 
@@ -390,8 +390,8 @@ document.getElementById('btnInsereFicha').addEventListener('click', function (e)
 
         // Desabilita campos já preenchidos
         document.getElementById('txtData').disabled = true;
-        document.getElementById('lstVeiculos').ej2_instances[0].enabled = false;
-        document.getElementById('lstMotoristas').ej2_instances[0].enabled = false;
+        var _kVeiculos = $("#lstVeiculos").data("kendoComboBox"); if (_kVeiculos) _kVeiculos.enable(false);
+        var _kMotoristas = $("#lstMotoristas").data("kendoComboBox"); if (_kMotoristas) _kMotoristas.enable(false);
         document.getElementById('lstMOB').disabled = true;
         document.getElementById('lstResponsavel').disabled = true;
         document.getElementById('btnInsereFicha').hidden = true;
@@ -439,8 +439,8 @@ document.getElementById('btnSubmite').addEventListener('click', function (e)
     e.preventDefault();
     try
     {
-        const veiculoId = document.getElementById('lstVeiculos').ej2_instances[0].value;
-        const motoristaId = document.getElementById('lstMotoristas').ej2_instances[0].value;
+        const veiculoId = $("#lstVeiculos").data("kendoComboBox") ? $("#lstVeiculos").data("kendoComboBox").value() : null;
+        const motoristaId = $("#lstMotoristas").data("kendoComboBox") ? $("#lstMotoristas").data("kendoComboBox").value() : null;
         const data = $('#txtData').val();
         const mob = $('#lstMOB').val();
         const responsavel = $('#lstResponsavel').val();

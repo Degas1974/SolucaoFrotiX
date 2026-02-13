@@ -1,22 +1,22 @@
 /* ****************************************************************************************
  * ⚡ ARQUIVO: autuacao.js
  * --------------------------------------------------------------------------------------
- * 🎯 OBJETIVO     : Gerenciar preenchimento dinâmico de lista de empenhos (Syncfusion DropDown)
+ * 🎯 OBJETIVO     : Gerenciar preenchimento dinâmico de lista de empenhos (Kendo DropDownList)
  *                   baseado na seleção de órgão autuante. Carrega empenhos via AJAX e
- *                   atualiza componente lstEmpenhos (ej2_instances).
+ *                   atualiza componente lstEmpenhos (Kendo UI).
  * 📥 ENTRADAS     : lstOrgaoChange() - Seleção de órgão (lstOrgao.value),
  *                   GET /Multa/UpsertPenalidade?handler=AJAXPreencheListaEmpenhos&id,
  *                   res.data (array de {empenhoMultaId, notaEmpenho})
- * 📤 SAÍDAS       : Syncfusion DropDown lstEmpenhos atualizado (dataSource, dataBind),
+ * 📤 SAÍDAS       : Kendo DropDownList lstEmpenhos atualizado (setDataSource),
  *                   campo hidden #txtEmpenhoMultaId limpo, console.log (debug),
  *                   Alerta.TratamentoErroComLinha em caso de erro
- * 🔗 CHAMADA POR  : Event handler lstOrgaoChange (Syncfusion change event), formulário de autuação
- * 🔄 CHAMA        : $.ajax, document.getElementById, ej2_instances[0] (Syncfusion API),
- *                   dataSource, dataBind, Alerta.TratamentoErroComLinha, console.log
- * 📦 DEPENDÊNCIAS : jQuery 3.x, Syncfusion EJ2 (DropDown), Alerta.js
+ * 🔗 CHAMADA POR  : Event handler lstOrgaoChange (Kendo change event), formulário de autuação
+ * 🔄 CHAMA        : $.ajax, $("#id").data("kendoXxx") (Kendo UI API),
+ *                   setDataSource, Alerta.TratamentoErroComLinha, console.log
+ * 📦 DEPENDÊNCIAS : jQuery 3.x, Kendo UI (DropDownList, ComboBox), Alerta.js
  * 📝 OBSERVAÇÕES  : Limpa lstEmpenhos antes de carregar novos dados. Constrói array
- *                   EmpenhoList dinamicamente. Usa ej2_instances[0] para acessar
- *                   instância Syncfusion. Try-catch em success handler (301 linhas total).
+ *                   EmpenhoList dinamicamente. Usa Kendo UI jQuery API para acessar
+ *                   instâncias dos widgets. Try-catch em success handler.
  **************************************************************************************** */
 
 //Escolheu um órgão
@@ -29,34 +29,38 @@
  *
  * 📥 ENTRADAS     : lstOrgao.value (ID do órgão selecionado)
  *
- * 📤 SAÍDAS       : Syncfusion DropDown lstEmpenhos atualizado com dataSource,
+ * 📤 SAÍDAS       : Kendo DropDownList lstEmpenhos atualizado com setDataSource,
  *                   campo txtEmpenhoMultaId limpo
  *
- * ⬅️ CHAMADO POR  : Syncfusion change event lstOrgao
+ * ⬅️ CHAMADO POR  : Kendo change event lstOrgao
  *
  * ➡️ CHAMA        : GET /Multa/UpsertPenalidade?handler=AJAXPreencheListaEmpenhos [AJAX]
- *                   ej2_instances[0] (Syncfusion API)
+ *                   $("#id").data("kendoDropDownList/kendoComboBox") (Kendo UI API)
  *                   Alerta.TratamentoErroComLinha
  *
  * 📝 OBSERVAÇÕES  : Limpa lstEmpenhos antes de carregar. Constrói EmpenhoList dinamicamente.
- *                   Usa ej2_instances[0] para acessar instância Syncfusion.
+ *                   Usa Kendo UI jQuery API para acessar instâncias dos widgets.
  ****************************************************************************************/
 function lstOrgaoChange() {
     try
     {
-        document.getElementById("lstEmpenhos").ej2_instances[0].dataSource = [];
-        document.getElementById("lstEmpenhos").ej2_instances[0].dataBind();
-        document.getElementById("lstEmpenhos").ej2_instances[0].text = "";
+        var ddlEmpenhos = $("#lstEmpenhos").data("kendoDropDownList");
+        if (ddlEmpenhos) {
+            ddlEmpenhos.setDataSource(new kendo.data.DataSource({ data: [] }));
+            ddlEmpenhos.value("");
+            ddlEmpenhos.text("");
+        }
         $("#txtEmpenhoMultaId").attr("value", "");
 
-        var lstOrgao = document.getElementById("lstOrgao").ej2_instances[0];
-        console.log(lstOrgao.value);
+        var cmbOrgao = $("#lstOrgao").data("kendoComboBox");
+        var orgaoValue = cmbOrgao ? cmbOrgao.value() : null;
+        console.log(orgaoValue);
 
-        if (lstOrgao.value === null) {
+        if (!orgaoValue) {
             return;
         }
 
-        var orgaoid = String(lstOrgao.value);
+        var orgaoid = String(orgaoValue);
 
         /********************************************************************************
          * [AJAX] Endpoint: GET /Multa/UpsertPenalidade?handler=AJAXPreencheListaEmpenhos
@@ -100,10 +104,11 @@ function lstOrgaoChange() {
                             EmpenhoList.push(empenho);
                         }
 
-                        // [UI] Atualiza dropdown Syncfusion com novos dados
-                        document.getElementById("lstEmpenhos").ej2_instances[0].dataSource =
-                            EmpenhoList;
-                        document.getElementById("lstEmpenhos").ej2_instances[0].dataBind();
+                        // [UI] Atualiza dropdown Kendo com novos dados
+                        var ddlEmp = $("#lstEmpenhos").data("kendoDropDownList");
+                        if (ddlEmp) {
+                            ddlEmp.setDataSource(new kendo.data.DataSource({ data: EmpenhoList }));
+                        }
                     }
                 }
                 catch (error)
@@ -113,7 +118,8 @@ function lstOrgaoChange() {
             },
         });
 
-        document.getElementById("lstEmpenhos").ej2_instances[0].refresh();
+        var ddlEmpRefresh = $("#lstEmpenhos").data("kendoDropDownList");
+        if (ddlEmpRefresh) { ddlEmpRefresh.dataSource.read(); }
 
     //    Alerta.Info(
     //        "Empenho do órgão",
@@ -131,10 +137,11 @@ function lstOrgaoChange() {
 function lstEmpenhosChange() {
     try
     {
-        var lstEmpenhos = document.getElementById("lstEmpenhos").ej2_instances[0];
-        $("#txtEmpenhoMultaId").attr("value", lstEmpenhos.value);
+        var ddlEmpenhos = $("#lstEmpenhos").data("kendoDropDownList");
+        var empenhosValue = ddlEmpenhos ? ddlEmpenhos.value() : "";
+        $("#txtEmpenhoMultaId").attr("value", empenhosValue);
 
-        var empenhoid = String(lstEmpenhos.value);
+        var empenhoid = String(empenhosValue);
 
         $.ajax({
             url: "/Multa/UpsertAutuacao?handler=PegaSaldoEmpenho",
@@ -176,7 +183,8 @@ $(document).ready(function ()
     {
         if (multaId != '00000000-0000-0000-0000-000000000000')
         {
-            document.getElementById("lstInfracao").ej2_instances[0].value = ['@Model.MultaObj.Multa.TipoMultaId'];
+            var ddlInfracao = $("#lstInfracao").data("kendoDropDownList");
+            if (ddlInfracao) { ddlInfracao.value('@Model.MultaObj.Multa.TipoMultaId'.toString()); }
             $('#txtNoFichaVistoria').val('@Model.MultaObj.Multa.NoFichaVistoria');
 
             if ('@Model.MultaObj.Multa.AutuacaoPDF')
@@ -190,13 +198,20 @@ $(document).ready(function ()
             if (typeof lstEmpenhosChange === "function") lstEmpenhosChange();
         } else
         {
-            document.getElementById("lstContratoVeiculo").ej2_instances[0].text = "";
-            document.getElementById("lstContratoMotorista").ej2_instances[0].text = "";
-            document.getElementById("lstOrgao").ej2_instances[0].text = "";
-            document.getElementById("lstEmpenhos").ej2_instances[0].text = "";
-            document.getElementById("lstVeiculo").ej2_instances[0].text = "";
-            document.getElementById("lstAtaVeiculo").ej2_instances[0].text = "";
-            document.getElementById("lstMotorista").ej2_instances[0].text = "";
+            var _cmbContratoVeiculo = $("#lstContratoVeiculo").data("kendoComboBox");
+            if (_cmbContratoVeiculo) { _cmbContratoVeiculo.value(""); _cmbContratoVeiculo.text(""); }
+            var _cmbContratoMotorista = $("#lstContratoMotorista").data("kendoComboBox");
+            if (_cmbContratoMotorista) { _cmbContratoMotorista.value(""); _cmbContratoMotorista.text(""); }
+            var _cmbOrgao = $("#lstOrgao").data("kendoComboBox");
+            if (_cmbOrgao) { _cmbOrgao.value(""); _cmbOrgao.text(""); }
+            var _ddlEmpenhos = $("#lstEmpenhos").data("kendoDropDownList");
+            if (_ddlEmpenhos) { _ddlEmpenhos.value(""); _ddlEmpenhos.text(""); }
+            var _cmbVeiculo = $("#lstVeiculo").data("kendoComboBox");
+            if (_cmbVeiculo) { _cmbVeiculo.value(""); _cmbVeiculo.text(""); }
+            var _cmbAtaVeiculo = $("#lstAtaVeiculo").data("kendoComboBox");
+            if (_cmbAtaVeiculo) { _cmbAtaVeiculo.value(""); _cmbAtaVeiculo.text(""); }
+            var _cmbMotorista = $("#lstMotorista").data("kendoComboBox");
+            if (_cmbMotorista) { _cmbMotorista.value(""); _cmbMotorista.text(""); }
             $('#txtValorAteVencimento').val("0,00");
             $('#txtValorPosVencimento').val("0,00");
         }
@@ -218,14 +233,15 @@ $(document).on('click', '.btnViagem', function ()
         return;
     }
 
-    const lstVeiculo = document.getElementById("lstVeiculo").ej2_instances[0];
-    if (lstVeiculo.value == null)
+    var cmbVeiculo = $("#lstVeiculo").data("kendoComboBox");
+    var veiculoValue = cmbVeiculo ? cmbVeiculo.value() : null;
+    if (!veiculoValue)
     {
         Alerta.Warning("Informação Ausente", "O Veículo deve ser informado")
         return;
     }
 
-    var dataToPost = JSON.stringify({ VeiculoId: lstVeiculo.value, Data: $('#txtDataInfracao').val(), Hora: $('#txtHoraInfracao').val() });
+    var dataToPost = JSON.stringify({ VeiculoId: veiculoValue, Data: $('#txtDataInfracao').val(), Hora: $('#txtHoraInfracao').val() });
     $.ajax({
         url: '/api/Multa/ProcuraViagem',
         type: "POST",
@@ -242,7 +258,8 @@ $(document).on('click', '.btnViagem', function ()
                     $('#txtNoFichaVistoria').val(data.nofichavistoria);
                     $('#txtNoFichaVistoriaEscondido').val(data.nofichavistoria);
                     EscolhendoMotorista = true;
-                    document.getElementById("lstMotorista").ej2_instances[0].value = data.motoristaid;
+                    var cmbMotorista = $("#lstMotorista").data("kendoComboBox");
+                    if (cmbMotorista) { cmbMotorista.value(data.motoristaid ? data.motoristaid.toString() : ""); }
                 } else
                 {
                     $('#txtNoFichaVistoria').val('');

@@ -312,25 +312,25 @@ $("#btnDatas").click(function ()
             }
         }
 
-        // Veículo
+        // Veiculo
         let veiculoId = "";
-        const veiculosCombo = document.getElementById("lstVeiculos");
-        if (veiculosCombo?.ej2_instances?.length > 0)
+        const veiculosCombo = $("#lstVeiculos").data("kendoComboBox");
+        if (veiculosCombo)
         {
-            const combo = veiculosCombo.ej2_instances[0];
-            if (combo.value) veiculoId = combo.value;
+            var veiculoVal = veiculosCombo.value();
+            if (veiculoVal) veiculoId = veiculoVal;
         }
 
-        // Status (padrão: Aberta; se houver outros filtros e vier vazio => Todas)
+        // Status (padrao: Aberta; se houver outros filtros e vier vazio => Todas)
         let statusId = "Aberta";
-        const statusCombo = document.getElementById("lstStatus");
-        if (statusCombo?.ej2_instances?.length > 0)
+        const statusCombo = $("#lstStatus").data("kendoComboBox");
+        if (statusCombo)
         {
-            const st = statusCombo.ej2_instances[0];
-            if (st.value === "" || st.value === null)
+            var stVal = statusCombo.value();
+            if (stVal === "" || stVal === null)
             {
                 if (veiculoId || (Mes && Ano) || (temIni && temFim)) statusId = "Todas";
-            } else statusId = st.value;
+            } else statusId = stVal;
         }
 
         // Moment para ordenar datas no DataTable
@@ -1003,11 +1003,11 @@ $("#btnFecharManutencao").click(function ()
         var dataRecebimentoReserva = $("#txtDataRecebimentoReserva").val();
         var dataDevolucaoReserva = $("#txtDataDevolucaoReserva").val();
 
-        var veiculoReservaCombo = document.getElementById("lstVeiculoReserva");
-        if (veiculoReservaCombo?.ej2_instances?.length > 0)
+        var veiculoReservaCombo = $("#lstVeiculoReserva").data("kendoComboBox");
+        if (veiculoReservaCombo)
         {
-            var combo = veiculoReservaCombo.ej2_instances[0];
-            if (combo.value) veiculoReservaId = combo.value;
+            var comboVal = veiculoReservaCombo.value();
+            if (comboVal) veiculoReservaId = comboVal;
         }
 
         if (!dataDevolucao)

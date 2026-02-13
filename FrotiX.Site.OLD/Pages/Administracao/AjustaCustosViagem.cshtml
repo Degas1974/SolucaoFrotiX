@@ -136,18 +136,19 @@
 }
 
 <script>
-	function FinalidadeChange() {
+	function FinalidadeChange(e) {
 		try {
-			var finalidadeCb = document.getElementById('lstFinalidadeAlterada').ej2_instances[0];
-			var eventoDdt = document.getElementById('lstEvento').ej2_instances[0];
+			var ddlFinalidade = $("#lstFinalidadeAlterada").data("kendoDropDownList");
+			var eventoDdt = document.getElementById('lstEvento');
+			var eventoDdtEj2 = eventoDdt && eventoDdt.ej2_instances ? eventoDdt.ej2_instances[0] : null;
 
-			if (finalidadeCb && eventoDdt) {
-				if (finalidadeCb.value === 'Evento') {
-					eventoDdt.enabled = true;
+			if (ddlFinalidade && eventoDdtEj2) {
+				if (ddlFinalidade.value() === 'Evento') {
+					eventoDdtEj2.enabled = true;
 					$(".esconde-diveventos").show();
 				} else {
-					eventoDdt.enabled = false;
-					eventoDdt.value = null;
+					eventoDdtEj2.enabled = false;
+					eventoDdtEj2.value = null;
 					$(".esconde-diveventos").hide();
 				}
 			}
@@ -244,9 +245,7 @@
 								<div class="col-6">
 									<div class="form-group">
 										<label class="label font-weight-bold">Finalidade da Viagem</label>
-										<ejs-combobox id="lstFinalidadeAlterada" placeholder="Selecione uma Finalidade" allowFiltering="true" filterType="Contains" dataSource="@ViewData["lstFinalidade"]" popupHeight="250px" width="100%" showClearButton="true" change="FinalidadeChange">
-											<e-combobox-fields text="Descricao" value="FinalidadeId"></e-combobox-fields>
-										</ejs-combobox>
+										<input id="lstFinalidadeAlterada" style="width: 100%;" />
 									</div>
 								</div>
 								<div class="col-6">
@@ -306,24 +305,18 @@
 					<div class="row">
 						<div class="col-6">
 							<label class="label font-weight-bold">Motorista</label>
-							<ejs-combobox id="lstMotoristaAlterado" placeholder="Selecione um Motorista" allowFiltering="true" filterType="Contains" dataSource="@ViewData["lstMotorista"]" popupHeight="250px" width="100%" showClearButton="true">
-								<e-combobox-fields text="Nome" value="MotoristaId"></e-combobox-fields>
-							</ejs-combobox>
+							<input id="lstMotoristaAlterado" style="width: 100%;" />
 						</div>
 						<div class="col-6">
 							<label class="label font-weight-bold">Veículo</label>
-							<ejs-combobox id="lstVeiculoAlterado" placeholder="Selecione um Veículo" allowFiltering="true" filterType="Contains" dataSource="@ViewData["lstVeiculos"]" popupHeight="250px" width="100%" showClearButton="true">
-								<e-combobox-fields text="Descricao" value="VeiculoId"></e-combobox-fields>
-							</ejs-combobox>
+							<input id="lstVeiculoAlterado" style="width: 100%;" />
 						</div>
 					</div>
 
 					<div class="row mt-3">
 						<div class="col-5">
 							<label class="label font-weight-bold">Solicitante</label>
-							<ejs-combobox id="lstRequisitanteAlterado" placeholder="Selecione um Solicitante" allowFiltering="true" filterType="Contains" dataSource="@ViewData["lstRequisitante"]" popupHeight="250px" width="100%" showClearButton="true">
-								<e-combobox-fields text="Requisitante" value="RequisitanteId"></e-combobox-fields>
-							</ejs-combobox>
+							<input id="lstRequisitanteAlterado" style="width: 100%;" />
 						</div>
 						<div class="col-2">
 							<label class="label font-weight-bold">Ramal</label>
@@ -390,5 +383,57 @@
 </div>
 
 @section ScriptsBlock {
+	<script>
+	(function () {
+		try {
+			var dataFinalidade = @Html.Raw(Json.Serialize(ViewData["lstFinalidade"]));
+			var dataMotorista = @Html.Raw(Json.Serialize(ViewData["lstMotorista"]));
+			var dataVeiculos = @Html.Raw(Json.Serialize(ViewData["lstVeiculos"]));
+			var dataRequisitante = @Html.Raw(Json.Serialize(ViewData["lstRequisitante"]));
+
+			$("#lstFinalidadeAlterada").kendoDropDownList({
+				dataTextField: "descricao",
+				dataValueField: "finalidadeId",
+				optionLabel: "Selecione uma Finalidade",
+				filter: "contains",
+				dataSource: dataFinalidade,
+				height: 250,
+				change: function (e) {
+					try { FinalidadeChange(e); }
+					catch (err) { Alerta.TratamentoErroComLinha("AjustaCustosViagem.cshtml", "lstFinalidadeAlterada.change", err); }
+				}
+			});
+
+			$("#lstMotoristaAlterado").kendoComboBox({
+				dataTextField: "nome",
+				dataValueField: "motoristaId",
+				placeholder: "Selecione um Motorista",
+				filter: "contains",
+				dataSource: dataMotorista,
+				height: 250
+			});
+
+			$("#lstVeiculoAlterado").kendoComboBox({
+				dataTextField: "descricao",
+				dataValueField: "veiculoId",
+				placeholder: "Selecione um Veículo",
+				filter: "contains",
+				dataSource: dataVeiculos,
+				height: 250
+			});
+
+			$("#lstRequisitanteAlterado").kendoComboBox({
+				dataTextField: "requisitante",
+				dataValueField: "requisitanteId",
+				placeholder: "Selecione um Solicitante",
+				filter: "contains",
+				dataSource: dataRequisitante,
+				height: 250
+			});
+		} catch (error) {
+			Alerta.TratamentoErroComLinha("AjustaCustosViagem.cshtml", "kendoControls.init", error);
+		}
+	})();
+	</script>
 	<script src="~/js/cadastros/atualizacustosviagem.js" asp-append-version="true"></script>
 }

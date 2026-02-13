@@ -33,9 +33,9 @@
  *                   (modal-viagem-novo.js), window.enviarNovoAgendamento (modal-viagem-novo.js),
  *                   Alerta.TratamentoErroComLinha, AppToast.show (toasts Amarelo/Vermelho),
  *                   console.log/error/warn (debug extensivo)
- * 📦 DEPENDÊNCIAS : moment.js (date manipulation), Syncfusion EJ2 Calendars (Calendar.values
- *                   multiselect, DateTimePicker: txtDataInicial/txtFinalRecorrencia),
- *                   Syncfusion DropDownList (lstDias, lstDiasMes), modal-viagem-novo.js
+ * 📦 DEPENDÊNCIAS : moment.js (date manipulation), Kendo UI (DatePicker, MultiSelect,
+ *                   DropDownList), getSyncfusionInstance bridge (Calendar compat),
+ *                   kendo-datetime.js helpers (getKendoDateValue), modal-viagem-novo.js
  *                   (criarAgendamento, enviarNovoAgendamento), Alerta (TratamentoErroComLinha),
  *                   AppToast (toasts), DOM elements (txtDataInicial, txtFinalRecorrencia,
  *                   lstDias, lstDiasMes, calDatasSelecionadas, readOnly-checkbox)
@@ -450,11 +450,15 @@ class GerenciadorRecorrencia
             dataAtual = moment(dataAtual).toISOString().split("T")[0];
             const dataFinalFormatada = moment(dataFinal).toISOString().split("T")[0];
 
-            let diasSelecionados = document.getElementById("lstDias")?.ej2_instances?.[0]?.value || [];
+            // [KENDO] Obter dias selecionados do MultiSelect Kendo
+            const lstDiasWidget = $("#lstDias").data("kendoMultiSelect");
+            let diasSelecionados = lstDiasWidget ? lstDiasWidget.value() : [];
 
             if (tipoRecorrencia === "M")
             {
-                diasSelecionados = [].concat(document.getElementById("lstDiasMes")?.ej2_instances?.[0]?.value || []);
+                // [KENDO] Obter dias do mês do DropDownList Kendo
+                const lstDiasMesWidget = $("#lstDiasMes").data("kendoDropDownList");
+                diasSelecionados = lstDiasMesWidget ? [].concat(lstDiasMesWidget.value() || []) : [];
             }
 
             let diasSelecionadosIndex = [];
@@ -499,7 +503,8 @@ class GerenciadorRecorrencia
     {
         try
         {
-            const calendarObj = document.getElementById("calDatasSelecionadas")?.ej2_instances?.[0];
+            // [KENDO] Obter calendário via bridge (suporta Kendo e Syncfusion)
+            const calendarObj = window.getSyncfusionInstance ? window.getSyncfusionInstance("calDatasSelecionadas") : null;
 
             if (!calendarObj || !calendarObj.values || calendarObj.values.length === 0)
             {
@@ -852,11 +857,24 @@ class GerenciadorRecorrencia
         try
         {
             const selectedDates = datas.map(data => new Date(data));
-            const calendarObj = document.getElementById("calDatasSelecionadas").ej2_instances[0];
+            // [KENDO] Obter calendário via bridge (suporta Kendo e Syncfusion)
+            const calendarObj = window.getSyncfusionInstance ? window.getSyncfusionInstance("calDatasSelecionadas") : null;
 
-            calendarObj.values = selectedDates;
-            calendarObj.refresh();
-            calendarObj.isMultiSelection = false;
+            if (!calendarObj) {
+                console.warn("⚠️ calDatasSelecionadas widget não encontrado");
+                return;
+            }
+
+            // [KENDO] Atualizar valores e modo readonly
+            if (typeof calendarObj.values !== 'undefined') {
+                calendarObj.values = selectedDates;
+            }
+            if (typeof calendarObj.refresh === 'function') {
+                calendarObj.refresh();
+            }
+            if (typeof calendarObj.isMultiSelection !== 'undefined') {
+                calendarObj.isMultiSelection = false;
+            }
 
             const readOnlyElement = document.getElementById('readOnly-checkbox');
             if (readOnlyElement)

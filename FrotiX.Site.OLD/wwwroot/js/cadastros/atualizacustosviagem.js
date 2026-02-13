@@ -156,9 +156,9 @@ function carregarDadosViagem(viagemId) {
                         document.getElementById("txtNoFichaVistoria").value = viagem.noFichaVistoria || "";
 
                         // Finalidade
-                        const lstFinalidade = document.getElementById("lstFinalidadeAlterada");
-                        if (lstFinalidade && lstFinalidade.ej2_instances) {
-                            lstFinalidade.ej2_instances[0].value = viagem.finalidade || null;
+                        var ddlFinalidade = $("#lstFinalidadeAlterada").data("kendoDropDownList");
+                        if (ddlFinalidade) {
+                            ddlFinalidade.value(viagem.finalidade ? viagem.finalidade.toString() : "");
                         }
 
                         // Evento
@@ -192,21 +192,21 @@ function carregarDadosViagem(viagemId) {
                         setTimeout(function() {
                             try {
                                 // Motorista
-                                const lstMotorista = document.getElementById("lstMotoristaAlterado");
-                                if (lstMotorista && lstMotorista.ej2_instances && viagem.motoristaId) {
-                                    lstMotorista.ej2_instances[0].value = viagem.motoristaId;
+                                var cmbMotorista = $("#lstMotoristaAlterado").data("kendoComboBox");
+                                if (cmbMotorista && viagem.motoristaId) {
+                                    cmbMotorista.value(viagem.motoristaId.toString());
                                 }
 
                                 // Veículo
-                                const lstVeiculo = document.getElementById("lstVeiculoAlterado");
-                                if (lstVeiculo && lstVeiculo.ej2_instances && viagem.veiculoId) {
-                                    lstVeiculo.ej2_instances[0].value = viagem.veiculoId;
+                                var cmbVeiculo = $("#lstVeiculoAlterado").data("kendoComboBox");
+                                if (cmbVeiculo && viagem.veiculoId) {
+                                    cmbVeiculo.value(viagem.veiculoId.toString());
                                 }
 
                                 // Solicitante (Requisitante)
-                                const lstRequisitante = document.getElementById("lstRequisitanteAlterado");
-                                if (lstRequisitante && lstRequisitante.ej2_instances && viagem.requisitanteId) {
-                                    lstRequisitante.ej2_instances[0].value = viagem.requisitanteId;
+                                var cmbRequisitante = $("#lstRequisitanteAlterado").data("kendoComboBox");
+                                if (cmbRequisitante && viagem.requisitanteId) {
+                                    cmbRequisitante.value(viagem.requisitanteId.toString());
                                 }
 
                                 // Setor Solicitante (DropDownTree - precisa de array)
@@ -287,8 +287,8 @@ function gravarViagem() {
         const noFichaVistoria = document.getElementById("txtNoFichaVistoria").value;
 
         // Finalidade
-        const lstFinalidade = document.getElementById("lstFinalidadeAlterada");
-        const finalidade = lstFinalidade && lstFinalidade.ej2_instances ? lstFinalidade.ej2_instances[0].value : null;
+        var ddlFinalidade = $("#lstFinalidadeAlterada").data("kendoDropDownList");
+        const finalidade = ddlFinalidade ? ddlFinalidade.value() || null : null;
 
         // Evento
         const lstEvento = document.getElementById("lstEvento");
@@ -311,12 +311,12 @@ function gravarViagem() {
         const kmFinal = parseInt(document.getElementById("txtKmFinal").value) || null;
 
         // Motorista
-        const lstMotorista = document.getElementById("lstMotoristaAlterado");
-        const motoristaId = lstMotorista && lstMotorista.ej2_instances ? lstMotorista.ej2_instances[0].value : null;
+        var cmbMotorista = $("#lstMotoristaAlterado").data("kendoComboBox");
+        const motoristaId = cmbMotorista ? cmbMotorista.value() || null : null;
 
         // Veículo
-        const lstVeiculo = document.getElementById("lstVeiculoAlterado");
-        const veiculoId = lstVeiculo && lstVeiculo.ej2_instances ? lstVeiculo.ej2_instances[0].value : null;
+        var cmbVeiculo = $("#lstVeiculoAlterado").data("kendoComboBox");
+        const veiculoId = cmbVeiculo ? cmbVeiculo.value() || null : null;
 
         // Setor Solicitante
         const lstSetor = document.getElementById("lstSetorSolicitanteAlterado");
@@ -329,8 +329,8 @@ function gravarViagem() {
         }
 
         // Solicitante (Requisitante)
-        const lstRequisitante = document.getElementById("lstRequisitanteAlterado");
-        const requisitanteId = lstRequisitante && lstRequisitante.ej2_instances ? lstRequisitante.ej2_instances[0].value : null;
+        var cmbRequisitante = $("#lstRequisitanteAlterado").data("kendoComboBox");
+        const requisitanteId = cmbRequisitante ? cmbRequisitante.value() || null : null;
 
         // Ramal do Requisitante
         const ramalRequisitante = document.getElementById("txtRamalRequisitante").value || null;

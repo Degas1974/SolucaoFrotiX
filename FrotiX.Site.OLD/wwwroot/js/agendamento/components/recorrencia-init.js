@@ -316,35 +316,35 @@ window.inicializarLstDiasMes = function ()
             return false;
         }
 
-        // Aguardar instância Syncfusion
-        if (!lstDiasMesElement.ej2_instances || !lstDiasMesElement.ej2_instances[0])
+        // Obter widget Kendo
+        var lstDiasMesObj = $("#lstDiasMes").data("kendoDropDownList");
+
+        if (!lstDiasMesObj)
         {
-            console.warn("⚠️ lstDiasMes ainda não foi renderizado");
+            console.warn("⚠️ lstDiasMes: widget Kendo ainda não inicializado");
             return false;
         }
 
-        const lstDiasMesObj = lstDiasMesElement.ej2_instances[0];
-
         // Verificar se já está populado
-        if (lstDiasMesObj.dataSource && lstDiasMesObj.dataSource.length > 0)
+        var currentData = lstDiasMesObj.dataSource.data();
+        if (currentData && currentData.length > 0)
         {
             console.log("ℹ️ lstDiasMes já está populado");
             return true;
         }
 
         // Criar array com dias de 1 a 31
-        const diasDoMes = [];
-        for (let i = 1; i <= 31; i++)
+        var diasDoMes = [];
+        for (var i = 1; i <= 31; i++)
         {
             diasDoMes.push({
-                Value: i,
-                Text: i.toString()
+                value: i,
+                text: i.toString()
             });
         }
 
-        // Definir dataSource
-        lstDiasMesObj.dataSource = diasDoMes;
-        lstDiasMesObj.dataBind();
+        // Definir dataSource no widget Kendo
+        lstDiasMesObj.dataSource.data(diasDoMes);
 
         console.log("✅ lstDiasMes populado com 31 dias");
         return true;
@@ -372,35 +372,35 @@ window.inicializarLstDias = function ()
             return false;
         }
 
-        // Aguardar instância Syncfusion
-        if (!lstDiasElement.ej2_instances || !lstDiasElement.ej2_instances[0])
+        // Obter widget Kendo MultiSelect
+        var lstDiasObj = $("#lstDias").data("kendoMultiSelect");
+
+        if (!lstDiasObj)
         {
-            console.warn("⚠️ lstDias ainda não foi renderizado");
+            console.warn("⚠️ lstDias: widget Kendo ainda não inicializado");
             return false;
         }
 
-        const lstDiasObj = lstDiasElement.ej2_instances[0];
-
         // Verificar se já está populado
-        if (lstDiasObj.dataSource && lstDiasObj.dataSource.length > 0)
+        var currentData = lstDiasObj.dataSource.data();
+        if (currentData && currentData.length > 0)
         {
             console.log("ℹ️ lstDias já está populado");
             return true;
         }
 
         // Dias da semana
-        const diasDaSemana = [
-            { Value: 0, Text: "Domingo" },
-            { Value: 1, Text: "Segunda" },
-            { Value: 2, Text: "Terça" },
-            { Value: 3, Text: "Quarta" },
-            { Value: 4, Text: "Quinta" },
-            { Value: 5, Text: "Sexta" },
-            { Value: 6, Text: "Sábado" }
+        var diasDaSemana = [
+            { value: 0, text: "Domingo" },
+            { value: 1, text: "Segunda" },
+            { value: 2, text: "Terça" },
+            { value: 3, text: "Quarta" },
+            { value: 4, text: "Quinta" },
+            { value: 5, text: "Sexta" },
+            { value: 6, text: "Sábado" }
         ];
 
-        lstDiasObj.dataSource = diasDaSemana;
-        lstDiasObj.dataBind();
+        lstDiasObj.dataSource.data(diasDaSemana);
 
         console.log("✅ lstDias populado com dias da semana");
         return true;
@@ -461,18 +461,9 @@ window.inicializarDropdownPeriodos = function ()
 {
     try
     {
-        console.log("🔧 Inicializando dropdown de períodos...");
+        console.log("🔧 Inicializando dropdown de períodos (Kendo)...");
 
-        // Verificar se o Syncfusion está carregado
-        if (typeof ej === 'undefined' || !ej.dropdowns || !ej.dropdowns.DropDownList)
-        {
-            console.warn("⚠️ Syncfusion (ej.dropdowns.DropDownList) ainda não carregado. Aguardando...");
-            // Tentar novamente após um delay
-            setTimeout(window.inicializarDropdownPeriodos, 200);
-            return;
-        }
-
-        const lstPeriodosElement = document.getElementById("lstPeriodos");
+        var lstPeriodosElement = document.getElementById("lstPeriodos");
 
         if (!lstPeriodosElement)
         {
@@ -480,41 +471,32 @@ window.inicializarDropdownPeriodos = function ()
             return;
         }
 
-        // Destruir instância anterior se existir
-        if (lstPeriodosElement.ej2_instances && lstPeriodosElement.ej2_instances[0])
-        {
+        // Destruir instância Kendo anterior se existir
+        var existente = $("#lstPeriodos").data("kendoDropDownList");
+        if (existente) {
             console.log("🗑️ Destruindo instância anterior...");
-            lstPeriodosElement.ej2_instances[0].destroy();
+            existente.destroy();
         }
 
-        // Dados dos períodos
-        const periodos = [
-            { PeriodoId: "D", Periodo: "Diário" },
-            { PeriodoId: "S", Periodo: "Semanal" },
-            { PeriodoId: "Q", Periodo: "Quinzenal" },
-            { PeriodoId: "M", Periodo: "Mensal" },
-            { PeriodoId: "V", Periodo: "Dias Variados" }
+        // Dados dos períodos (camelCase para JSON compat)
+        var periodos = [
+            { periodoId: "D", periodo: "Diário" },
+            { periodoId: "S", periodo: "Semanal" },
+            { periodoId: "Q", periodo: "Quinzenal" },
+            { periodoId: "M", periodo: "Mensal" },
+            { periodoId: "V", periodo: "Dias Variados" }
         ];
 
-        // Criar nova instância do DropDownList
-        const dropdownPeriodos = new ej.dropdowns.DropDownList({
+        // Criar nova instância Kendo DropDownList
+        $("#lstPeriodos").kendoDropDownList({
+            dataTextField: "periodo",
+            dataValueField: "periodoId",
             dataSource: periodos,
-            fields: {
-                text: 'Periodo',
-                value: 'PeriodoId'
-            },
-            placeholder: 'Selecione o período...',
-            popupHeight: '200px',
-            // change: window.PeriodosValueChange,  // ❌ REMOVIDO - Substituído por recorrencia-logic.js
-            floatLabelType: 'Never',
-            cssClass: 'e-outline',
-            width: '100%'
+            optionLabel: "Selecione o período...",
+            height: 200
         });
 
-        // Renderizar o dropdown
-        dropdownPeriodos.appendTo(lstPeriodosElement);
-
-        console.log("✅ Dropdown de períodos inicializado com sucesso!");
+        console.log("✅ Dropdown de períodos Kendo inicializado com sucesso!");
         console.log("   📊 Total de períodos:", periodos.length);
 
     } catch (error)
@@ -548,27 +530,15 @@ window.rebuildLstPeriodos = function ()
 * ============================================
 */
 
-// Aguardar o Syncfusion carregar
-if (typeof ej !== 'undefined' && ej.dropdowns && ej.dropdowns.DropDownList)
-{
-    console.log("✅ Syncfusion DropDownList disponível");
-
-    // Aguardar um pouco para garantir que o elemento existe
-    setTimeout(() =>
-    {
-        try
-        {
-            if (document.getElementById("lstPeriodos"))
-            {
-                window.inicializarDropdownPeriodos();
-            }
-        } catch (error)
-        {
-            Alerta.TratamentoErroComLinha("recorrencia-init.js", "auto-init", error);
+// Auto-inicialização: Kendo já está disponível via _ScriptsBasePlugins (carregado antes do ScriptsBlock)
+$(document).ready(function () {
+    try {
+        // lstPeriodos pode já ter sido criado no CSHTML ScriptsBlock;
+        // se não, inicializar aqui como fallback
+        if (document.getElementById("lstPeriodos") && !$("#lstPeriodos").data("kendoDropDownList")) {
+            window.inicializarDropdownPeriodos();
         }
-    }, 500);
-}
-else
-{
-    console.warn("⚠️ Syncfusion ainda não carregado, aguardando...");
-}
+    } catch (error) {
+        Alerta.TratamentoErroComLinha("recorrencia-init.js", "auto-init", error);
+    }
+});

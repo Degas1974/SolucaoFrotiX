@@ -19,13 +19,15 @@
  * 🔗 CHAMADA POR  : controls-init.js (atribuição de eventos), event listeners Syncfusion/
  *                   Kendo, inicializarEventoSelect (DOMContentLoaded)
  * 🔄 CHAMA        : $.ajax (GET requests para PegaRamal, PegaSetor, PegaKmAtualVeiculo,
- *                   ObterPorId), document.getElementById, Syncfusion ej2_instances,
- *                   Kendo $(el).data("kendoComboBox"), ej.base.getComponent,
+ *                   ObterPorId), document.getElementById, jQuery $().val()/$().data(),
+ *                   Kendo $(el).data("kendoComboBox"/"kendoDatePicker"/"kendoNumericTextBox"),
+ *                   window.getSyncfusionInstance() bridge (DropDownTree, ComboBox),
  *                   Alerta.TratamentoErroComLinha, Alerta.Erro, window.criarErroAjax,
  *                   window.bootstrap.Modal, console.log/warn/error
- * 📦 DEPENDÊNCIAS : jQuery ($.ajax), Syncfusion EJ2 (ej2_instances, ej.base.getComponent,
- *                   DatePicker, ComboBox, NumericTextBox, DropDownTree), Kendo UI
- *                   (kendoComboBox), Bootstrap 5 (Modal), Alerta.js, window.criarErroAjax,
+ * 📦 DEPENDÊNCIAS : jQuery ($.ajax, $().val(), $().data()), Kendo UI (kendoComboBox,
+ *                   kendoDatePicker, kendoNumericTextBox), window.getSyncfusionInstance
+ *                   bridge (DropDownTree, ComboBox Syncfusion restantes),
+ *                   Bootstrap 5 (Modal), Alerta.js, window.criarErroAjax,
  *                   imagens (/images/barbudo.jpg)
  * 📝 OBSERVAÇÕES  : Exporta 11 funções window.* + 1 variável global (requisitanteOriginal).
  *                   Todas têm try-catch completo. console.log em produção (80+ logs).
@@ -261,7 +263,8 @@
  * - preencherCamposEvento flexível com aliases (DataInicial || dataInicial || ...)
  * - inicializarEventoSelect não exportada (setup interno, deve ser chamada em init)
  * - window.requisitanteOriginal usado para restaurar valores (possível undo)
- * - ej.base.getComponent usado para obter componentes Syncfusion (alternativa a ej2_instances)
+ * - window.getSyncfusionInstance() bridge para DropDownTree/ComboBox Syncfusion restantes
+ * - Kendo $("#id").data("kendoDatePicker"/"kendoNumericTextBox") para controles já migrados
  * - Evento clearing (lstEventos) chama ocultarDadosEvento quando clica X
  * - Código emoji: 🎯 🔧 ✅ ❌ ⚠️ 📦 🏢 📋 🔍 📝 🙈 📞 🆔
  *
@@ -329,44 +332,26 @@ window.onSelectRequisitante = function (args)
 
                 if (ramalValue !== null && ramalValue !== undefined && ramalValue !== '')
                 {
-                    // Buscar o componente Syncfusion
-                    const ramalElement = document.getElementById('txtRamalRequisitanteSF');
+                    // Setar valor via jQuery (input simples, não é widget Kendo)
+                    const $ramalInput = $('#txtRamalRequisitanteSF');
 
-                    if (ramalElement && ramalElement.ej2_instances && ramalElement.ej2_instances[0])
+                    if ($ramalInput.length)
                     {
-                        const ramalTextBox = ramalElement.ej2_instances[0];
-
-                        // Setar valor usando o método do Syncfusion
-                        ramalTextBox.value = String(ramalValue);
-
-                        // Forçar atualização visual
-                        ramalTextBox.dataBind();
-
-                        console.log('✓ Ramal atualizado (Syncfusion):', ramalValue);
+                        $ramalInput.val(String(ramalValue));
+                        console.log('✓ Ramal atualizado (jQuery):', ramalValue);
                     } else
                     {
-                        console.error('❌ TextBox Syncfusion não encontrado ou não inicializado');
-
-                        // Fallback para input normal
-                        if (ramalElement)
-                        {
-                            ramalElement.value = ramalValue;
-                        }
+                        console.error('❌ Input txtRamalRequisitanteSF não encontrado');
                     }
 
                     window.requisitanteOriginal.ramal = parseInt(ramalValue);
                 } else
                 {
-                    // Limpar o campo
-                    const ramalElement = document.getElementById('txtRamalRequisitanteSF');
-
-                    if (ramalElement && ramalElement.ej2_instances && ramalElement.ej2_instances[0])
+                    // Limpar o campo via jQuery
+                    const $ramalEmpty = $('#txtRamalRequisitanteSF');
+                    if ($ramalEmpty.length)
                     {
-                        ramalElement.ej2_instances[0].value = '';
-                        ramalElement.ej2_instances[0].dataBind();
-                    } else if (ramalElement)
-                    {
-                        ramalElement.value = '';
+                        $ramalEmpty.val('');
                     }
 
                     window.requisitanteOriginal.ramal = null;
@@ -377,14 +362,11 @@ window.onSelectRequisitante = function (args)
             {
                 console.error('❌ Erro ao buscar ramal:', error);
 
-                const ramalElement = document.getElementById('txtRamalRequisitanteSF');
-                if (ramalElement && ramalElement.ej2_instances && ramalElement.ej2_instances[0])
+                const $ramalError = $('#txtRamalRequisitanteSF');
+                if ($ramalError.length)
                 {
-                    ramalElement.ej2_instances[0].value = '';
-                    ramalElement.ej2_instances[0].enabled = true;
-                } else if (ramalElement)
-                {
-                    ramalElement.value = '';
+                    $ramalError.val('');
+                    $ramalError.prop('disabled', false);
                 }
 
                 window.requisitanteOriginal.ramal = null;
@@ -407,11 +389,10 @@ window.onSelectRequisitante = function (args)
 
                 if (setorValue !== null && setorValue !== undefined && setorValue !== '')
                 {
-                    // Verifica se o DropDownTree existe e tem instância
-                    if (ddtSetorElement?.ej2_instances?.[0])
+                    // Verifica se o DropDownTree existe via bridge
+                    const ddtSetorObj = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstSetorRequisitanteAgendamento") : null;
+                    if (ddtSetorObj)
                     {
-                        const ddtSetorObj = ddtSetorElement.ej2_instances[0];
-
                         // Define o valor do setor
                         ddtSetorObj.value = [setorValue];
                         ddtSetorObj.dataBind();
@@ -422,18 +403,16 @@ window.onSelectRequisitante = function (args)
                         console.log('✓ Setor atualizado:', setorValue);
                     } else
                     {
-                        console.error('❌ DropDownTree de setor não encontrado ou não inicializado');
-                        console.log('Elemento encontrado:', ddtSetorElement);
-                        console.log('Instâncias:', ddtSetorElement?.ej2_instances);
+                        console.error('❌ DropDownTree de setor não encontrado via getSyncfusionInstance');
                     }
                 } else
                 {
                     // Limpa o setor se não encontrou
-                    if (ddtSetorElement?.ej2_instances?.[0])
+                    const ddtSetorClear = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstSetorRequisitanteAgendamento") : null;
+                    if (ddtSetorClear)
                     {
-                        const ddtSetorObj = ddtSetorElement.ej2_instances[0];
-                        ddtSetorObj.value = [];
-                        ddtSetorObj.dataBind();
+                        ddtSetorClear.value = [];
+                        ddtSetorClear.dataBind();
                     }
 
                     window.requisitanteOriginal.setorId = null;
@@ -448,11 +427,11 @@ window.onSelectRequisitante = function (args)
                 console.error('Response:', xhr.responseText);
 
                 // Limpa o setor em caso de erro
-                if (ddtSetorElement?.ej2_instances?.[0])
+                const ddtSetorError = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstSetorRequisitanteAgendamento") : null;
+                if (ddtSetorError)
                 {
-                    const ddtSetorObj = ddtSetorElement.ej2_instances[0];
-                    ddtSetorObj.value = [];
-                    ddtSetorObj.dataBind();
+                    ddtSetorError.value = [];
+                    ddtSetorError.dataBind();
                 }
 
                 window.requisitanteOriginal.setorId = null;
@@ -510,30 +489,27 @@ window.onSelectRequisitanteEvento = function (args)
 
                 if (setorValue !== null && setorValue !== undefined && setorValue !== '')
                 {
-                    // Verifica se o DropDownTree existe e tem instância
-                    if (ddtSetorElement?.ej2_instances?.[0])
+                    // Verifica se o DropDownTree existe via bridge
+                    const ddtSetorEventoObj = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstSetorRequisitanteEvento") : null;
+                    if (ddtSetorEventoObj)
                     {
-                        const ddtSetorObj = ddtSetorElement.ej2_instances[0];
-
                         // Define o valor do setor
-                        ddtSetorObj.value = [setorValue];
-                        ddtSetorObj.dataBind();
+                        ddtSetorEventoObj.value = [setorValue];
+                        ddtSetorEventoObj.dataBind();
 
                         console.log('✓ Setor atualizado (Evento):', setorValue);
                     } else
                     {
-                        console.error('❌ DropDownTree de setor (Evento) não encontrado ou não inicializado');
-                        console.log('Elemento encontrado:', ddtSetorElement);
-                        console.log('Instâncias:', ddtSetorElement?.ej2_instances);
+                        console.error('❌ DropDownTree de setor (Evento) não encontrado via getSyncfusionInstance');
                     }
                 } else
                 {
                     // Limpa o setor se não encontrou
-                    if (ddtSetorElement?.ej2_instances?.[0])
+                    const ddtSetorEventoClear = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstSetorRequisitanteEvento") : null;
+                    if (ddtSetorEventoClear)
                     {
-                        const ddtSetorObj = ddtSetorElement.ej2_instances[0];
-                        ddtSetorObj.value = [];
-                        ddtSetorObj.dataBind();
+                        ddtSetorEventoClear.value = [];
+                        ddtSetorEventoClear.dataBind();
                     }
 
                     console.warn('⚠️ Setor não encontrado ou vazio (Evento)');
@@ -546,11 +522,11 @@ window.onSelectRequisitanteEvento = function (args)
                 console.error('Response:', xhr.responseText);
 
                 // Limpa o setor em caso de erro
-                if (ddtSetorElement?.ej2_instances?.[0])
+                const ddtSetorEventoError = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstSetorRequisitanteEvento") : null;
+                if (ddtSetorEventoError)
                 {
-                    const ddtSetorObj = ddtSetorElement.ej2_instances[0];
-                    ddtSetorObj.value = [];
-                    ddtSetorObj.dataBind();
+                    ddtSetorEventoError.value = [];
+                    ddtSetorEventoError.dataBind();
                 }
 
                 // Mostra mensagem ao usuário
@@ -605,11 +581,11 @@ window.lstFinalidade_Change = function (args)
             }
 
             // ❌ LIMPAR o lstEventos (mantém habilitado)
-            const lstEventosElement = document.getElementById("lstEventos");
-            if (lstEventosElement && lstEventosElement.ej2_instances && lstEventosElement.ej2_instances[0])
+            const lstEventosWidget = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstEventos") : null;
+            if (lstEventosWidget)
             {
-                lstEventosElement.ej2_instances[0].value = null;
-                lstEventosElement.ej2_instances[0].dataBind();
+                lstEventosWidget.value = null;
+                lstEventosWidget.dataBind();
                 console.log("✅ lstEventos limpo");
             }
 
@@ -662,7 +638,13 @@ window.MotoristaValueChange = function ()
 {
     try
     {
-        const ddTreeObj = document.getElementById("lstMotorista").ej2_instances[0];
+        const ddTreeObj = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstMotorista") : null;
+
+        if (!ddTreeObj)
+        {
+            console.warn('⚠️ lstMotorista não encontrado via getSyncfusionInstance');
+            return;
+        }
 
         console.log("Objeto Motorista:", ddTreeObj);
 
@@ -686,7 +668,13 @@ window.VeiculoValueChange = function ()
 {
     try
     {
-        const ddTreeObj = document.getElementById("lstVeiculo").ej2_instances[0];
+        const ddTreeObj = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstVeiculo") : null;
+
+        if (!ddTreeObj)
+        {
+            console.warn('⚠️ lstVeiculo não encontrado via getSyncfusionInstance');
+            return;
+        }
 
         console.log("Objeto Veículo:", ddTreeObj);
 
@@ -728,7 +716,13 @@ window.RequisitanteEventoValueChange = function ()
 {
     try
     {
-        const ddTreeObj = document.getElementById("lstRequisitanteEvento").ej2_instances[0];
+        const ddTreeObj = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstRequisitanteEvento") : null;
+
+        if (!ddTreeObj)
+        {
+            console.warn('⚠️ lstRequisitanteEvento não encontrado via getSyncfusionInstance');
+            return;
+        }
 
         if (ddTreeObj.value === null || ddTreeObj.value === '')
         {
@@ -745,7 +739,12 @@ window.RequisitanteEventoValueChange = function ()
             data: { id: requisitanteid },
             success: function (res)
             {
-                document.getElementById("ddtSetorEvento").ej2_instances[0].value = [res.data];
+                const ddtSetorEvt = window.getSyncfusionInstance ? window.getSyncfusionInstance("ddtSetorEvento") : null;
+                if (ddtSetorEvt)
+                {
+                    ddtSetorEvt.value = [res.data];
+                    ddtSetorEvt.dataBind();
+                }
             },
             error: function (jqXHR, textStatus, errorThrown)
             {
@@ -806,11 +805,11 @@ function inicializarEventoSelect()
             return;
         }
 
-        const lstEventos = ej.base.getComponent(lstEventosElement, 'combobox');
+        const lstEventos = window.getSyncfusionInstance ? window.getSyncfusionInstance('lstEventos') : null;
 
         if (!lstEventos)
         {
-            console.warn("⚠️ Instância do ComboBox lstEventos não encontrada");
+            console.warn("⚠️ Instância do ComboBox lstEventos não encontrada via getSyncfusionInstance");
             return;
         }
 
@@ -910,14 +909,14 @@ function preencherCamposEvento(dados)
     {
         console.log("📝 Preenchendo campos com:", dados);
 
-        // Preencher Data Início
+        // Preencher Data Início (Kendo DatePicker)
         const dataInicial = dados.DataInicial || dados.dataInicial || dados.DataInicialEvento;
         if (dataInicial)
         {
-            const dtInicio = ej.base.getComponent(document.getElementById('txtDataInicioEvento'), 'datepicker');
+            const dtInicio = $("#txtDataInicioEvento").data("kendoDatePicker");
             if (dtInicio)
             {
-                dtInicio.value = new Date(dataInicial);
+                dtInicio.value(new Date(dataInicial));
                 console.log("✅ Data Início preenchida:", dataInicial);
             }
         } else
@@ -925,14 +924,14 @@ function preencherCamposEvento(dados)
             console.warn("⚠️ Data Inicial não encontrada no objeto");
         }
 
-        // Preencher Data Fim
+        // Preencher Data Fim (Kendo DatePicker)
         const dataFinal = dados.DataFinal || dados.dataFinal || dados.DataFinalEvento;
         if (dataFinal)
         {
-            const dtFim = ej.base.getComponent(document.getElementById('txtDataFimEvento'), 'datepicker');
+            const dtFim = $("#txtDataFimEvento").data("kendoDatePicker");
             if (dtFim)
             {
-                dtFim.value = new Date(dataFinal);
+                dtFim.value(new Date(dataFinal));
                 console.log("✅ Data Fim preenchida:", dataFinal);
             }
         } else
@@ -940,20 +939,20 @@ function preencherCamposEvento(dados)
             console.warn("⚠️ Data Final não encontrada no objeto");
         }
 
-        // Preencher Quantidade de Participantes
+        // Preencher Quantidade de Participantes (Kendo NumericTextBox)
         const qtdParticipantes = dados.QtdParticipantes || dados.qtdParticipantes;
         console.log("🔍 Tentando preencher QtdParticipantes com valor:", qtdParticipantes);
 
         if (qtdParticipantes !== undefined && qtdParticipantes !== null)
         {
-            const numParticipantes = ej.base.getComponent(document.getElementById('txtQtdParticipantesEvento'), 'numerictextbox');
+            const numParticipantes = $("#txtQtdParticipantesEvento").data("kendoNumericTextBox");
             if (numParticipantes)
             {
-                numParticipantes.value = qtdParticipantes;
+                numParticipantes.value(qtdParticipantes);
                 console.log("✅ Qtd Participantes preenchida:", qtdParticipantes);
             } else
             {
-                console.error("❌ Componente NumericTextBox não encontrado!");
+                console.error("❌ Componente kendoNumericTextBox não encontrado!");
             }
         } else
         {
@@ -985,25 +984,25 @@ function ocultarDadosEvento()
             divDados.style.display = 'none';
         }
 
-        // Limpar Data Início
-        const dtInicio = ej.base.getComponent(document.getElementById('txtDataInicioEvento'), 'datepicker');
+        // Limpar Data Início (Kendo DatePicker)
+        const dtInicio = $("#txtDataInicioEvento").data("kendoDatePicker");
         if (dtInicio)
         {
-            dtInicio.value = null;
+            dtInicio.value(null);
         }
 
-        // Limpar Data Fim
-        const dtFim = ej.base.getComponent(document.getElementById('txtDataFimEvento'), 'datepicker');
+        // Limpar Data Fim (Kendo DatePicker)
+        const dtFim = $("#txtDataFimEvento").data("kendoDatePicker");
         if (dtFim)
         {
-            dtFim.value = null;
+            dtFim.value(null);
         }
 
-        // Limpar Quantidade de Participantes
-        const numParticipantes = ej.base.getComponent(document.getElementById('txtQtdParticipantesEvento'), 'numerictextbox');
+        // Limpar Quantidade de Participantes (Kendo NumericTextBox)
+        const numParticipantes = $("#txtQtdParticipantesEvento").data("kendoNumericTextBox");
         if (numParticipantes)
         {
-            numParticipantes.value = null;
+            numParticipantes.value(null);
         }
 
         console.log("✅ Dados do evento limpos");
@@ -1024,15 +1023,13 @@ window.onLstMotoristaCreated = function ()
     {
         console.log('🎯 onLstMotoristaCreated chamado');
 
-        const combo = document.getElementById('lstMotorista');
+        const comboInstance = window.getSyncfusionInstance ? window.getSyncfusionInstance('lstMotorista') : null;
 
-        if (!combo || !combo.ej2_instances || !combo.ej2_instances[0])
+        if (!comboInstance)
         {
-            console.warn('❌ lstMotorista não encontrado');
+            console.warn('❌ lstMotorista não encontrado via getSyncfusionInstance');
             return;
         }
-
-        const comboInstance = combo.ej2_instances[0];
 
         // Template para itens da lista
         comboInstance.itemTemplate = function (data)

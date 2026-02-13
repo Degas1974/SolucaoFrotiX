@@ -123,11 +123,11 @@ function getComboValue(comboId)
 {
     try
     {
-        const el = document.getElementById(comboId);
-        if (el && el.ej2_instances && el.ej2_instances.length > 0)
+        var combo = $("#" + comboId).data("kendoComboBox");
+        if (combo)
         {
-            const inst = el.ej2_instances[0];
-            if (inst && inst.value != null && inst.value !== "") return inst.value;
+            var val = combo.value();
+            if (val != null && val !== "") return val;
         }
         return "";
     }

@@ -489,17 +489,7 @@
                                         <div class="row g-4">
                                             <div class="col-12 col-md-6 col-xl-4">
                                                 <label class="fw-bold">Veículo Reserva</label>
-                                                <ejs-combobox id="lstVeiculoReserva"
-                                                              placeholder="Selecione um Veículo"
-                                                              allowFiltering="true"
-                                                              filterType="Contains"
-                                                              dataSource="@ViewData["dataVeiculoReserva"]"
-                                                              popupHeight="200px"
-                                                              width="100%"
-                                                              showClearButton="true"
-                                                              ejs-for="@Model.ManutencaoObj.Manutencao.VeiculoReservaId">
-                                                    <e-combobox-fields text="Descricao" value="VeiculoId"></e-combobox-fields>
-                                                </ejs-combobox>
+                                                <input id="lstVeiculoReserva" name="ManutencaoObj.Manutencao.VeiculoReservaId" style="width: 100%;" />
                                             </div>
 
                                             <div class="col-12 col-md-3 col-xl-2">
@@ -535,18 +525,7 @@
                             <div class="row g-4" id="LinhaVeiculo">
                                 <div class="col-12 col-md-6 col-xl-4">
                                     <label class="fw-bold">Veículo</label>
-                                    <ejs-combobox id="lstVeiculo"
-                                                  placeholder="Selecione um Veículo"
-                                                  allowFiltering="true"
-                                                  filterType="Contains"
-                                                  dataSource="@ViewData["dataVeiculo"]"
-                                                  popupHeight="200px"
-                                                  width="100%"
-                                                  showClearButton="true"
-                                                  ejs-for="@Model.ManutencaoObj.Manutencao.VeiculoId"
-                                                  change="VeiculoChange">
-                                        <e-combobox-fields text="Descricao" value="VeiculoId"></e-combobox-fields>
-                                    </ejs-combobox>
+                                    <input id="lstVeiculo" name="ManutencaoObj.Manutencao.VeiculoId" style="width: 100%;" />
                                 </div>
                             </div>
 
@@ -747,16 +726,7 @@
                     <div class="row g-4">
                         <div class="col-12">
                             <label class="fw-bold">Motorista</label>
-                            <ejs-combobox id="lstMotorista"
-                                          placeholder="Selecione um Motorista"
-                                          allowFiltering="true"
-                                          filterType="Contains"
-                                          dataSource="@ViewData["dataMotorista"]"
-                                          popupHeight="200px"
-                                          width="100%"
-                                          showClearButton="true">
-                                <e-combobox-fields text="Nome" value="MotoristaId"></e-combobox-fields>
-                            </ejs-combobox>
+                            <input id="lstMotorista" name="lstMotorista" style="width: 100%;" />
                         </div>
                     </div>
 
@@ -882,6 +852,43 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
     <!-- Kendo UI: usa versão global 2025.2.520 de _ScriptsBasePlugins (cultura pt-BR já configurada) -->
+
+    <script>
+        // Kendo ComboBox init - dados serializados do ViewData
+        var dataVeiculo = @Html.Raw(Json.Serialize(ViewData["dataVeiculo"]));
+        var dataVeiculoReserva = @Html.Raw(Json.Serialize(ViewData["dataVeiculoReserva"]));
+        var dataMotorista = @Html.Raw(Json.Serialize(ViewData["dataMotorista"]));
+
+        $("#lstVeiculo").kendoComboBox({
+            dataTextField: "descricao",
+            dataValueField: "veiculoId",
+            placeholder: "Selecione um Ve\u00edculo",
+            filter: "contains",
+            dataSource: dataVeiculo,
+            height: 200,
+            value: "@(Model.ManutencaoObj.Manutencao?.VeiculoId != null && Model.ManutencaoObj.Manutencao.VeiculoId != default ? Model.ManutencaoObj.Manutencao.VeiculoId.ToString() : "")",
+            change: function () { VeiculoChange(); }
+        });
+
+        $("#lstVeiculoReserva").kendoComboBox({
+            dataTextField: "descricao",
+            dataValueField: "veiculoId",
+            placeholder: "Selecione um Ve\u00edculo",
+            filter: "contains",
+            dataSource: dataVeiculoReserva,
+            height: 200,
+            value: "@(Model.ManutencaoObj.Manutencao?.VeiculoReservaId?.ToString() ?? "")"
+        });
+
+        $("#lstMotorista").kendoComboBox({
+            dataTextField: "nome",
+            dataValueField: "motoristaId",
+            placeholder: "Selecione um Motorista",
+            filter: "contains",
+            dataSource: dataMotorista,
+            height: 200
+        });
+    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.2/pdf.js"></script>
     <script>window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.2/pdf.worker.js';</script>

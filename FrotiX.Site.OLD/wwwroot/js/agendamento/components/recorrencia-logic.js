@@ -22,8 +22,8 @@
  *                   recorrencia.js (inicializarDropdownPeriodos), modal-viagem-novo.js
  *                   (inicializarCamposModal → set ignorarEventosRecorrencia flag),
  *                   Syncfusion change events (lstRecorrente, lstPeriodos, calDatasSelecionadas)
- * 🔄 CHAMA        : Syncfusion EJ2 API (ej2_instances[0], value setter, dataBind(), refresh(),
- *                   destroy(), appendTo(), Calendar constructor, DropDownList.change),
+ * 🔄 CHAMA        : Kendo UI jQuery API ($.data("kendoDropDownList"), $.data("kendoMultiSelect"),
+ *                   value(), unbind/bind("change"), dataSource.data()),
  *                   ej.base.Ajax (CLDR files load), ej.base.loadCldr, ej.base.setCulture,
  *                   ej.base.L10n.load, window.inicializarDropdownPeriodos (recorrencia.js),
  *                   window.inicializarLstDias/inicializarLstDiasMes (recorrencia.js popula
@@ -594,43 +594,35 @@ window.inicializarLogicaRecorrencia = function ()
             // SEGUNDO: Definir valor padrío "Não" para lstRecorrente
             setTimeout(() =>
             {
-                const lstRecorrenteElement = document.getElementById("lstRecorrente");
-                if (lstRecorrenteElement && lstRecorrenteElement.ej2_instances)
+                // [KENDO] Obter widget Kendo DropDownList
+                const lstRecorrente = $("#lstRecorrente").data("kendoDropDownList");
+                if (lstRecorrente)
                 {
-                    const lstRecorrente = lstRecorrenteElement.ej2_instances[0];
-                    if (lstRecorrente)
+                    // Verificar qual valor usar para "Não"
+                    const dsData = lstRecorrente.dataSource.data();
+                    console.log("DataSource de lstRecorrente:", dsData);
+                
+                    // Tentar encontrar o item "Não" (camelCase - JSON serialization)
+                    const itemNao = dsData.find(item =>
+                        item.descricao === "Não" ||
+                        item.descricao === "Nao" ||
+                        item.recorrenteId === "N"
+                    );
+                
+                    if (itemNao)
                     {
-                        // Verificar qual valor usar para "Não"
-                        console.log("ðŸ” DataSource de lstRecorrente:", lstRecorrente.dataSource);
-
-                        // Tentar encontrar o item "Não"
-                        const itemNao = lstRecorrente.dataSource?.find(item =>
-                            item.Descricao === "Não" ||
-                            item.Descricao === "Nao" ||
-                            item.RecorrenteId === "N"
-                        );
-
-                        if (itemNao)
-                        {
-                            console.log("ðŸ“‹ Item 'Não' encontrado:", itemNao);
-                            lstRecorrente.value = itemNao.RecorrenteId;
-                            lstRecorrente.dataBind();
-                            // lstRecorrente.refresh(); // Comentado - causa evento change indesejado
-                            console.log("âœ… lstRecorrente definido como 'Não' (padrío)");
-                        }
-                        else
-                        {
-                            console.warn("âš ï¸ Item 'Não' não encontrado no dataSource");
-                        }
+                        console.log("Item Não encontrado:", itemNao);
+                        lstRecorrente.value(itemNao.recorrenteId);
+                        console.log("lstRecorrente definido como Não");
                     }
                     else
                     {
-                        console.warn("âš ï¸ Instância lstRecorrente não encontrada");
+                        console.warn("Item Não não encontrado no dataSource");
                     }
                 }
                 else
                 {
-                    console.warn("âš ï¸ lstRecorrente não encontrado no DOM");
+                    console.warn("lstRecorrente não encontrado ou não inicializado");
                 }
             }, 200);
 
@@ -662,16 +654,12 @@ window.inicializarLogicaRecorrencia = function ()
         // Definir valor padrío "Não" para lstRecorrente
         setTimeout(() =>
         {
-            const lstRecorrenteElement = document.getElementById("lstRecorrente");
-            if (lstRecorrenteElement && lstRecorrenteElement.ej2_instances)
+            // [KENDO] Obter widget Kendo DropDownList
+            const lstRecorrente = $("#lstRecorrente").data("kendoDropDownList");
+            if (lstRecorrente)
             {
-                const lstRecorrente = lstRecorrenteElement.ej2_instances[0];
-                if (lstRecorrente)
-                {
-                    lstRecorrente.value = "N";
-                    lstRecorrente.dataBind();
-                    console.log("âœ… lstRecorrente definido como 'Não'");
-                }
+                lstRecorrente.value("N");
+                console.log("âœ… lstRecorrente definido como 'Não'");
             }
         }, 100);
 
@@ -733,29 +721,29 @@ function configurarEventHandlerRecorrente()
 {
     try
     {
-        const lstRecorrenteElement = document.getElementById("lstRecorrente");
-
-        if (!lstRecorrenteElement || !lstRecorrenteElement.ej2_instances)
-        {
-            console.warn("âš ï¸ lstRecorrente não encontrado");
-            return;
-        }
-
-        const lstRecorrente = lstRecorrenteElement.ej2_instances[0];
+        // [KENDO] Obter widget Kendo DropDownList
+        const lstRecorrente = $("#lstRecorrente").data("kendoDropDownList");
 
         if (!lstRecorrente)
         {
-            console.warn("âš ï¸ Instância lstRecorrente não encontrada");
+            console.warn("lstRecorrente não encontrado ou não inicializado");
             return;
         }
 
-        // Configurar evento de mudança
-        lstRecorrente.change = function (args)
+        // [KENDO] Configurar evento de mudança (unbind anterior + bind novo)
+        lstRecorrente.unbind("change");
+        lstRecorrente.bind("change", function (e)
         {
+            // [KENDO] Adapter: mapear evento Kendo para formato esperado
+            const dataItem = lstRecorrente.dataItem();
+            const args = {
+                value: lstRecorrente.value(),
+                itemData: dataItem ? { recorrenteId: dataItem.recorrenteId, descricao: dataItem.descricao } : null
+            };
             aoMudarRecorrente(args);
-        };
+        });
 
-        console.log("âœ… Event handler lstRecorrente configurado");
+        console.log("Event handler lstRecorrente configurado");
 
     } catch (error)
     {
@@ -774,8 +762,8 @@ function aoMudarRecorrente(args)
         console.log("   - args completo:", args);
         console.log("   - args.value:", args.value);
         console.log("   - args.itemData:", args.itemData);
-        console.log("   - args.itemData?.RecorrenteId:", args.itemData?.RecorrenteId);
-        console.log("   - args.itemData?.Descricao:", args.itemData?.Descricao);
+        console.log("   - args.itemData?.recorrenteId:", args.itemData?.recorrenteId);
+        console.log("   - args.itemData?.descricao:", args.itemData?.descricao);
 
         // ADICIONAR VERIFICAÇÃO DA FLAG
         if (window.ignorarEventosRecorrencia)
@@ -785,8 +773,8 @@ function aoMudarRecorrente(args)
         }
 
         // Tentar múltiplas formas de pegar o valor
-        const valor = args.value || args.itemData?.RecorrenteId || args.itemData?.Value;
-        const descricao = args.itemData?.Descricao || args.itemData?.Text || "";
+        const valor = args.value || args.itemData?.recorrenteId || args.itemData?.value;
+        const descricao = args.itemData?.descricao || args.itemData?.text || "";
 
         console.log("   - Valor extraÃ­do:", valor);
         console.log("   - Descrição extraÃ­da:", descricao);
@@ -816,16 +804,11 @@ function aoMudarRecorrente(args)
                 divPeriodo.style.setProperty('display', 'block', 'important');
                 console.log("   â†’ Display aplicado. Valor atual:", window.getComputedStyle(divPeriodo).display);
 
-                // Limpar valor do lstPeriodos
-                const lstPeriodosElement = document.getElementById("lstPeriodos");
-                if (lstPeriodosElement && lstPeriodosElement.ej2_instances)
+                // [KENDO] Limpar valor do lstPeriodos
+                const lstPeriodos = $("#lstPeriodos").data("kendoDropDownList");
+                if (lstPeriodos)
                 {
-                    const lstPeriodos = lstPeriodosElement.ej2_instances[0];
-                    if (lstPeriodos)
-                    {
-                        lstPeriodos.value = null;
-                        lstPeriodos.dataBind();
-                    }
+                    lstPeriodos.value("");
                 }
             }
             else
@@ -880,13 +863,16 @@ function configurarEventHandlerPeriodo()
                 return;
             }
 
-            if (!lstPeriodosElement.ej2_instances || !lstPeriodosElement.ej2_instances[0])
+            // [KENDO] Obter widget Kendo DropDownList
+            const lstPeriodos = $("#lstPeriodos").data("kendoDropDownList");
+
+            if (!lstPeriodos)
             {
-                console.warn(`   âš ï¸ lstPeriodos não inicializado ainda (tentativa ${tentativas})`);
+                console.warn(`   lstPeriodos não inicializado ainda (tentativa ${tentativas})`);
                 if (tentativas >= maxTentativas)
                 {
                     clearInterval(intervalo);
-                    console.error("   âŒ lstPeriodos não inicializado após todas tentativas");
+                    console.error("   lstPeriodos não inicializado após todas tentativas");
                 }
                 return;
             }
@@ -894,22 +880,24 @@ function configurarEventHandlerPeriodo()
             // Encontrou! Configurar o evento
             clearInterval(intervalo);
 
-            const lstPeriodos = lstPeriodosElement.ej2_instances[0];
+            console.log("   lstPeriodos encontrado! Configurando evento...");
+            console.log("   DataSource atual:", lstPeriodos.dataSource.data());
 
-            console.log("   âœ… lstPeriodos encontrado! Configurando evento...");
-            console.log("   ðŸ“‹ DataSource atual:", lstPeriodos.dataSource);
-
-            // Remover evento anterior se existir
-            lstPeriodos.change = null;
-
-            // Configurar novo evento de mudança
-            lstPeriodos.change = function (args)
+            // [KENDO] Remover evento anterior e configurar novo (unbind + bind)
+            lstPeriodos.unbind("change");
+            lstPeriodos.bind("change", function (e)
             {
-                console.log("ðŸŽ¯ EVENT HANDLER CHAMADO! lstPeriodos mudou!");
+                console.log("EVENT HANDLER CHAMADO! lstPeriodos mudou!");
+                // [KENDO] Adapter: mapear evento Kendo para formato esperado
+                const dataItem = lstPeriodos.dataItem();
+                const args = {
+                    value: lstPeriodos.value(),
+                    itemData: dataItem ? dataItem.toJSON() : null
+                };
                 aoMudarPeriodo(args);
-            };
+            });
 
-            console.log("   âœ… Event handler lstPeriodos configurado com sucesso!");
+            console.log("   Event handler lstPeriodos configurado com sucesso!");
 
         }, 200); // Tentar a cada 200ms
 
@@ -939,8 +927,8 @@ function aoMudarPeriodo(args)
         }
 
         // Tentar múltiplas formas de pegar o valor
-        const valor = args.value || args.itemData?.Value || args.itemData?.PeriodoId;
-        const texto = args.itemData?.Text || args.itemData?.Periodo || "";
+        const valor = args.value || args.itemData?.value || args.itemData?.PeriodoId;
+        const texto = args.itemData?.text || args.itemData?.Periodo || "";
 
         console.log("   ðŸ“‹ Valor extraÃ­do:", valor);
         console.log("   ðŸ“‹ Texto extraÃ­do:", texto);
@@ -1766,16 +1754,17 @@ function configurarAtualizacaoBadge()
             return;
         }
 
-        if (!calDatasSelecionadasElement.ej2_instances || !calDatasSelecionadasElement.ej2_instances[0])
+        // [KENDO/BRIDGE] Obter calendário via bridge (Syncfusion Calendar permanece via bridge)
+        const calendario = window.getSyncfusionInstance("calDatasSelecionadas");
+
+        if (!calendario)
         {
-            console.warn("âš ï¸ Calendário calDatasSelecionadas não está inicializado");
-            console.log("ðŸ’¡ Isso é normal se o calendário ainda não foi renderizado");
+            console.warn("Calendário calDatasSelecionadas não está inicializado");
+            console.log("Isso é normal se o calendário ainda não foi renderizado");
             return;
         }
 
-        const calendario = calDatasSelecionadasElement.ej2_instances[0];
-
-        console.log("âœ… Calendário encontrado! Tipo:", calendario.getModuleName());
+        console.log("Calendário encontrado!");
 
         // Interceptar o evento de mudança do calendário
         const changeOriginal = calendario.change;
@@ -1816,20 +1805,18 @@ function atualizarBadgeContador()
             return;
         }
 
-        if (!calDatasSelecionadasElement || !calDatasSelecionadasElement.ej2_instances)
-        {
-            console.warn("âš ï¸ Calendário não encontrado para atualizar badge");
-            badge.textContent = "0";
-            return;
-        }
-
-        const calendario = calDatasSelecionadasElement.ej2_instances[0];
+        // [KENDO/BRIDGE] Obter calendário via bridge (Syncfusion Calendar permanece via bridge)
+        const calendario = calDatasSelecionadasElement
+            ? window.getSyncfusionInstance("calDatasSelecionadas")
+            : null;
 
         if (!calendario)
         {
+            console.warn("Calendário não encontrado para atualizar badge");
             badge.textContent = "0";
             return;
         }
+
 
         // Contar datas selecionadas
         const datasSelecionadas = calendario.values || [];
@@ -1853,55 +1840,38 @@ function limparCamposRecorrenciaAoMudar()
 {
     try
     {
-        // Limpar lstPeriodos
-        const lstPeriodosElement = document.getElementById("lstPeriodos");
-        if (lstPeriodosElement && lstPeriodosElement.ej2_instances)
+        // [KENDO] Limpar lstPeriodos (DropDownList)
+        const lstPeriodos = $("#lstPeriodos").data("kendoDropDownList");
+        if (lstPeriodos)
         {
-            const lstPeriodos = lstPeriodosElement.ej2_instances[0];
-            if (lstPeriodos)
-            {
-                lstPeriodos.value = null;
-                lstPeriodos.dataBind();
-            }
+            lstPeriodos.value("");
         }
 
-        // Limpar lstDias
-        const lstDiasElement = document.getElementById("lstDias");
-        if (lstDiasElement && lstDiasElement.ej2_instances)
+        // [KENDO] Limpar lstDias (MultiSelect)
+        const lstDias = $("#lstDias").data("kendoMultiSelect");
+        if (lstDias)
         {
-            const lstDias = lstDiasElement.ej2_instances[0];
-            if (lstDias)
-            {
-                lstDias.value = [];
-                lstDias.dataBind();
-            }
+            lstDias.value([]);
         }
 
-        // Limpar lstDiasMes
-        const lstDiasMesElement = document.getElementById("lstDiasMes");
-        if (lstDiasMesElement && lstDiasMesElement.ej2_instances)
+        // [KENDO] Limpar lstDiasMes (DropDownList)
+        const lstDiasMes = $("#lstDiasMes").data("kendoDropDownList");
+        if (lstDiasMes)
         {
-            const lstDiasMes = lstDiasMesElement.ej2_instances[0];
-            if (lstDiasMes)
-            {
-                lstDiasMes.value = null;
-                lstDiasMes.dataBind();
-            }
+            lstDiasMes.value("");
         }
 
         // Limpar txtFinalRecorrencia
         window.setKendoDateValue("txtFinalRecorrencia", null);
 
-        // Limpar calendário
-        const calDatasSelecionadasElement = document.getElementById("calDatasSelecionadas");
-        if (calDatasSelecionadasElement && calDatasSelecionadasElement.ej2_instances)
+        // [KENDO/BRIDGE] Limpar calendario (Syncfusion Calendar via bridge)
+        const calendario = window.getSyncfusionInstance
+            ? window.getSyncfusionInstance("calDatasSelecionadas")
+            : null;
+        if (calendario)
         {
-            const calendario = calDatasSelecionadasElement.ej2_instances[0];
-            if (calendario)
-            {
-                calendario.values = [];
-                calendario.dataBind();
-            }
+            calendario.values = [];
+            calendario.dataBind();
         }
 
         // Resetar badge
@@ -1913,10 +1883,9 @@ function limparCamposRecorrenciaAoMudar()
 
     } catch (error)
     {
-        console.error("âŒ Erro ao limpar campos:", error);
+        console.error("Erro ao limpar campos:", error);
     }
 }
-
 // ====================================================================
 // INICIALIZAÇÃO AUTOMÃTICA
 // ====================================================================

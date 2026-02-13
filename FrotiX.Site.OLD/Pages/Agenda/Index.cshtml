@@ -74,13 +74,7 @@
  ======================================================================================== *@
 
 @using FrotiX.Repository.IRepository
-@using Syncfusion.EJ2
 @using Stimulsoft.Report.Mvc;
-@using Syncfusion.EJ2.DropDowns
-@using Syncfusion.EJ2.Navigations
-@using Syncfusion.EJ2.Base
-@using Syncfusion.EJ2.Popups
-@using Kendo.Mvc.UI
 @using FrotiX.Helpers;
 
 @model FrotiX.Models.Agenda
@@ -880,9 +874,7 @@
                                         <i class="fa-duotone fa-calendar-day field-icon"
                                             style="font-size: 1.25em; cursor: pointer;"></i>
                                     </label>
-                                    <ejs-datepicker id="txtDataInicial" format="dd/MM/yyyy"
-                                        placeholder="Selecione a data" min="@DateTime.Today">
-                                    </ejs-datepicker>
+                                    <input id="txtDataInicial" style="width: 100%;" />
                                 </div>
                             </div>
 
@@ -898,7 +890,7 @@
                                         <i class="fa-duotone fa-clock field-icon"
                                             style="font-size: 1.25em; cursor: pointer;"></i>
                                     </label>
-                                    <input id="txtHoraInicial" class="form-control form-control-xs" type="time" />
+                                    <input id="txtHoraInicial" style="width: 100%;" />
                                 </div>
                             </div>
 
@@ -914,9 +906,7 @@
                                         <i class="fa-duotone fa-calendar-check field-icon"
                                             style="font-size: 1.25em; cursor: pointer;"></i>
                                     </label>
-                                    <ejs-datepicker id="txtDataFinal" format="dd/MM/yyyy" placeholder="Selecione a data"
-                                        min="@DateTime.Today">
-                                    </ejs-datepicker>
+                                    <input id="txtDataFinal" style="width: 100%;" />
                                 </div>
                             </div>
 
@@ -932,7 +922,7 @@
                                         <i class="fa-duotone fa-stopwatch field-icon"
                                             style="font-size: 1.25em; cursor: pointer;"></i>
                                     </label>
-                                    <input id="txtHoraFinal" class="form-control form-control-xs" type="time" />
+                                    <input id="txtHoraFinal" style="width: 100%;" />
                                 </div>
                             </div>
 
@@ -948,10 +938,8 @@
                                         <i class="fa-duotone fa-hourglass-half field-icon"
                                             style="font-size: 1.25em; cursor: pointer;"></i>
                                     </label>
-                                    <ejs-numerictextbox id="txtDuracao" Enabled="false" format="n0" Readonly="true"
-                                        showSpinButton="false"
-                                        data-ejtip="Se a <strong>Duração</strong> estiver alta, revise o horário e datas">
-                                    </ejs-numerictextbox>
+                                    <input id="txtDuracao" style="width: 100%;" readonly
+                                        data-ejtip="Se a <strong>Duração</strong> estiver alta, revise o horário e datas" />
                                 </div>
                             </div>
 
@@ -987,15 +975,7 @@
                                         </div>
 
                                         <div class="dropdown-wrapper">
-                                            <ejs-dropdowntree id="lstFinalidade"
-                                                placeholder="Selecione uma Finalidade..." showCheckBox="false"
-                                                allowMultiSelection="false" allowFiltering="true" filterType="Contains"
-                                                filterBarPlaceholder="Procurar..." popupHeight="200px"
-                                                sortOrder="Ascending" showClearButton="true">
-                                                <e-dropdowntree-fields dataSource="@ViewData["dataFinalidade"]"
-                                                    value="FinalidadeId" text="Descricao">
-                                                </e-dropdowntree-fields>
-                                            </ejs-dropdowntree>
+                                            <input id="lstFinalidade" style="width: 100%;" />
                                         </div>
                                     </div>
                                 </div>
@@ -1081,12 +1061,8 @@
                                     <i class="fa-duotone fa-tent-circus field-icon"
                                         style="font-size: 1.25em; cursor: pointer;"></i>
                                 </label>
-                                <ejs-combobox id="lstEventos" placeholder="Selecione um evento..." allowFiltering="true"
-                                    filterType="Contains" dataSource="@ViewData["dataEvento"]" popupHeight="200px"
-                                    showClearButton="true"
-                                    data-ejtip="Selecione um evento existente ou cadastre um novo">
-                                    <e-combobox-fields text="Evento" value="EventoId"></e-combobox-fields>
-                                </ejs-combobox>
+                                <input id="lstEventos" style="width: 100%;"
+                                    data-ejtip="Selecione um evento existente ou cadastre um novo" />
                             </div>
 
                             <!-- ===================================
@@ -1118,9 +1094,7 @@
                                     <i class="fa-duotone fa-calendar-day field-icon"
                                         style="font-size: 1.25em; cursor: pointer;"></i>
                                 </label>
-                                <ejs-datepicker id="txtDataInicioEvento" format="dd/MM/yyyy" placeholder="Data Início"
-                                    locale="pt-BR" enabled="false">
-                                </ejs-datepicker>
+                                <input id="txtDataInicioEvento" style="width: 100%;" />
                             </div>
 
                             <!-- Data Fim -->
@@ -1130,9 +1104,7 @@
                                     <i class="fa-duotone fa-calendar-check field-icon"
                                         style="font-size: 1.25em; cursor: pointer;"></i>
                                 </label>
-                                <ejs-datepicker id="txtDataFimEvento" format="dd/MM/yyyy" placeholder="Data Fim"
-                                    locale="pt-BR" enabled="false">
-                                </ejs-datepicker>
+                                <input id="txtDataFimEvento" style="width: 100%;" />
                             </div>
 
                             <!-- Quantidade de Participantes -->
@@ -1142,9 +1114,7 @@
                                     <i class="fa-duotone fa-users field-icon"
                                         style="font-size: 1.25em; cursor: pointer;"></i>
                                 </label>
-                                <ejs-numerictextbox id="txtQtdParticipantesEvento" format="N0" min="0"
-                                    placeholder="Quantidade" enabled="false">
-                                </ejs-numerictextbox>
+                                <input id="txtQtdParticipantesEvento" style="width: 100%;" />
                             </div>
 
                         </div>
@@ -1180,13 +1150,8 @@
                                         <i id="icoMotorista" class="fa-duotone fa-person-biking field-icon"
                                             style="font-size: 1.25em; cursor: pointer;"></i>
                                     </div>
-                                    <ejs-combobox id="lstMotorista" placeholder="Selecione um Motorista"
-                                        allowFiltering="true" filterType="Contains" popupHeight="200px" width="100%"
-                                        showClearButton="true" dataSource="@ViewData["dataMotorista"]"
-                                        data-ejtip="Motorista não aparece? Talvez esteja inativo">
-                                        <e-combobox-fields text="Nome" value="MotoristaId"
-                                            imageUrl="FotoBase64"></e-combobox-fields>
-                                    </ejs-combobox>
+                                    <input id="lstMotorista" style="width: 100%;"
+                                        data-ejtip="Motorista não aparece? Talvez esteja inativo" />
                                 </div>
                             </div>
 
@@ -1202,12 +1167,8 @@
                                         <i class="fa-duotone fa-truck-bolt field-icon"
                                             style="font-size: 1.25em; cursor: pointer;"></i>
                                     </div>
-                                    <ejs-combobox id="lstVeiculo" placeholder="Selecione um Veí­culo"
-                                        allowFiltering="true" filterType="Contains"
-                                        dataSource="@ViewData["dataVeiculo"]" popupHeight="200px" width="100%"
-                                        showClearButton="true" data-ejtip="Veí­culo não aparece? Talvez esteja inativo">
-                                        <e-combobox-fields text="Descricao" value="VeiculoId"></e-combobox-fields>
-                                    </ejs-combobox>
+                                    <input id="lstVeiculo" style="width: 100%;"
+                                        data-ejtip="Veículo não aparece? Talvez esteja inativo" />
                                 </div>
                             </div>
 
@@ -1276,12 +1237,7 @@
                                             style="font-size: 1.25em; cursor: pointer;"></i>
                                     </label>
                                     <!-- DropDownTree com imagens dos níveis -->
-                                    <ejs-dropdowntree id="ddtCombustivelInicial" popupHeight="200px"
-                                        showClearButton="true">
-                                        <e-dropdowntree-fields dataSource="@ViewData["dataCombustivel"]" value="Nivel"
-                                            text="Descricao" imageURL="Imagem">
-                                        </e-dropdowntree-fields>
-                                    </ejs-dropdowntree>
+                                    <input id="ddtCombustivelInicial" style="width: 100%;" />
                                 </div>
                             </div>
 
@@ -1294,12 +1250,7 @@
                                             style="font-size: 1.25em; cursor: pointer;"></i>
                                     </label>
                                     <!-- DropDownTree com imagens dos níveis -->
-                                    <ejs-dropdowntree id="ddtCombustivelFinal" popupHeight="200px"
-                                        showClearButton="true">
-                                        <e-dropdowntree-fields dataSource="@ViewData["dataCombustivel"]" value="Nivel"
-                                            text="Descricao" imageURL="Imagem">
-                                        </e-dropdowntree-fields>
-                                    </ejs-dropdowntree>
+                                    <input id="ddtCombustivelFinal" style="width: 100%;" />
                                 </div>
                             </div>
 
@@ -1397,15 +1348,7 @@
                                         </div>
 
                                         <!-- DropDownTree com estrutura hierárquica -->
-                                        <ejs-dropdowntree id="lstSetorRequisitanteAgendamento" allowFiltering="true"
-                                            placeholder="Selecione um setor..." sortOrder="Ascending"
-                                            showCheckBox="false" filterType="Contains"
-                                            filterBarPlaceholder="Procurar setor..." popupHeight="200px">
-                                            <e-dropdowntree-fields dataSource="@ViewData["dataSetor"]"
-                                                value="SetorSolicitanteId" parentValue="SetorPaiId"
-                                                hasChildren="HasChild" text="Nome">
-                                            </e-dropdowntree-fields>
-                                        </ejs-dropdowntree>
+                                        <input id="lstSetorRequisitanteAgendamento" style="width: 100%;" />
                                     </div>
                                 </div>
                             </div>
@@ -1438,11 +1381,7 @@
                                             <i class="fa-duotone fa-arrows-spin field-icon"
                                                 style="font-size: 1.25em; cursor: pointer;"></i>
                                         </label>
-                                        <ejs-dropdownlist id="lstRecorrente" popupHeight="200px"
-                                            cssClass="e-outline text-center" floatLabelType="Never">
-                                            <e-dropdownlist-fields text="Descricao"
-                                                value="RecorrenteId"></e-dropdownlist-fields>
-                                        </ejs-dropdownlist>
+                                        <input id="lstRecorrente" style="width: 100%;" />
                                     </div>
                                 </div>
 
@@ -1472,13 +1411,7 @@
                                             <i class="fa-duotone fa-calendar-week field-icon"
                                                 style="font-size: 1.25em; cursor: pointer;"></i>
                                         </label>
-                                        <ejs-multiselect id="lstDias" placeholder="Selecione os dias..." mode="Box"
-                                            showSelectAll="true" selectAllText="Selecionar todos"
-                                            unSelectAllText="Desmarcar todos" showDropDownIcon="true"
-                                            allowFiltering="false" readonly="false" cssClass="multiselect-dias-semana"
-                                            popupHeight="250px">
-                                            <e-multiselect-fields value="Value" text="Text"></e-multiselect-fields>
-                                        </ejs-multiselect>
+                                        <select id="lstDias" style="width: 100%;"></select>
                                     </div>
                                 </div>
 
@@ -1490,10 +1423,7 @@
                                             <i class="fa-duotone fa-calendar-clock field-icon"
                                                 style="font-size: 1.25em; cursor: pointer;"></i>
                                         </label>
-                                        <ejs-dropdownlist id="lstDiasMes" placeholder="Selecione o dia..."
-                                            popupHeight="250px" cssClass="e-outline">
-                                            <e-dropdownlist-fields value="Value" text="Text"></e-dropdownlist-fields>
-                                        </ejs-dropdownlist>
+                                        <input id="lstDiasMes" style="width: 100%;" />
                                     </div>
                                 </div>
 
@@ -1505,10 +1435,7 @@
                                             <i class="fa-duotone fa-calendar-check field-icon"
                                                 style="font-size: 1.25em; cursor: pointer;"></i>
                                         </label>
-                                        <ejs-datepicker id="txtFinalRecorrencia" format="dd/MM/yyyy"
-                                            placeholder="Selecione a data final" locale="pt-BR" min="@DateTime.Today"
-                                            cssClass="e-outline">
-                                        </ejs-datepicker>
+                                        <input id="txtFinalRecorrencia" style="width: 100%;" />
                                         <!-- Campo de texto para exibir data em modo de edição (substituição do DatePicker) -->
                                         <input type="text" id="txtFinalRecorrenciaTexto"
                                             class="form-control e-outline ftx-final-recorrencia-texto"
@@ -1747,9 +1674,7 @@
                             <label for="txtQtdParticipantesEventoCadastro" class="font-weight-bold">
                                 Quantidade de Participantes <span class="text-danger">*</span>
                             </label>
-                            <ejs-numerictextbox id="txtQtdParticipantesEventoCadastro" format="N0" min="1"
-                                placeholder="Quantidade de participantes">
-                            </ejs-numerictextbox>
+                            <input id="txtQtdParticipantesEventoCadastro" style="width: 100%;" />
                         </div>
                     </div>
 
@@ -1856,12 +1781,7 @@
 
                             <div
                                 style="border: 1px solid #ced4da; border-radius: 0.375rem; padding: 0.5rem; background: #fff; max-height: 250px; overflow-y: auto;">
-                                <ejs-treeview id="treeSetorRequisitante" allowDragAndDrop="false" showCheckBox="false"
-                                    nodeSelected="onSetorSelected">
-                                    <e-treeview-fields dataSource="@ViewData["dataSetor"]" id="SetorSolicitanteId"
-                                        text="Nome" parentID="SetorPaiId" hasChildren="HasChild">
-                                    </e-treeview-fields>
-                                </ejs-treeview>
+                                <div id="treeSetorRequisitante"></div>
                             </div>
 
                             <!-- Campo oculto para armazenar o ID do setor selecionado -->
@@ -1915,6 +1835,13 @@
         window.dataPeriodos = @Html.Raw(Json.Serialize(ViewData["dataPeriodos"]));
         window.dataOrigem = @Html.Raw(Json.Serialize(ViewData["ListaOrigem"]));
         window.dataDestino = @Html.Raw(Json.Serialize(ViewData["ListaDestino"]));
+        window.dataMotorista = @Html.Raw(Json.Serialize(ViewData["dataMotorista"]));
+        window.dataVeiculo = @Html.Raw(Json.Serialize(ViewData["dataVeiculo"]));
+        window.dataCombustivel = @Html.Raw(Json.Serialize(ViewData["dataCombustivel"]));
+        window.dataSetor = @Html.Raw(Json.Serialize(ViewData["dataSetor"]));
+        window.dataEvento = @Html.Raw(Json.Serialize(ViewData["dataEvento"]));
+        window.dataRecorrente = @Html.Raw(Json.Serialize(ViewData["dataRecorrente"]));
+        window.dataRequisitante = @Html.Raw(Json.Serialize(ViewData["dataRequisitante"]));
 
         window.FrotiXConfig = window.FrotiXConfig || {};
         window.FrotiXConfig.recorrencia = {
@@ -1941,11 +1868,6 @@
     @* REMOVIDO: locales-all.js (arquivo não existe, FullCalendar v6 já inclui locales) *@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
     <script src="/api/reports/resources/js/telerikReportViewer-18.1.24.514.min.js"></script>
-
-    @* ============================================
-       LOCALIZATION - Inicialização CLDR para Syncfusion pt-BR
-       ============================================ *@
-    <script src="~/js/localization-init.js" asp-append-version="true"></script>
 
     @* ============================================
        CORE - Camada Base
@@ -2038,9 +1960,9 @@
 
         $(document).ready(function () {
             $('#modalNovoRequisitante').on('hidden.bs.modal', function () {
-                const treeObj = document.getElementById('treeSetorRequisitante');
-                if (treeObj && treeObj.ej2_instances && treeObj.ej2_instances[0]) {
-                    treeObj.ej2_instances[0].selectedNodes = [];
+                var treeView = $("#treeSetorRequisitante").data("kendoTreeView");
+                if (treeView) {
+                    treeView.select($());
                 }
                 $("#hiddenSetorId").val('');
                 $("#setorSelecionadoDisplay").hide();
@@ -2056,9 +1978,188 @@
     <script>
         (function () {
             try {
+                // ═══════════════════════════════════════════════════════════════════════
+                // DADOS DO SERVIDOR (ViewData → JavaScript)
+                // ═══════════════════════════════════════════════════════════════════════
                 var dataRequisitante = @Html.Raw(Json.Serialize(ViewData["dataRequisitante"]));
+                var dataMotorista = @Html.Raw(Json.Serialize(ViewData["dataMotorista"]));
+                var dataVeiculo = @Html.Raw(Json.Serialize(ViewData["dataVeiculo"]));
+                var dataCombustivel = @Html.Raw(Json.Serialize(ViewData["dataCombustivel"]));
+                var dataSetor = @Html.Raw(Json.Serialize(ViewData["dataSetor"]));
+                var dataEvento = @Html.Raw(Json.Serialize(ViewData["dataEvento"]));
+                var dataRecorrente = @Html.Raw(Json.Serialize(ViewData["dataRecorrente"]));
+                var dataDiasMes = [];
+                for (var i = 1; i <= 31; i++) { dataDiasMes.push({ value: i.toString(), text: i.toString() }); }
+                var dataDiasSemana = [
+                    { value: "0", text: "Domingo" },
+                    { value: "1", text: "Segunda-feira" },
+                    { value: "2", text: "Terça-feira" },
+                    { value: "3", text: "Quarta-feira" },
+                    { value: "4", text: "Quinta-feira" },
+                    { value: "5", text: "Sexta-feira" },
+                    { value: "6", text: "Sábado" }
+                ];
 
-                // ComboBox principal - Requisitante (form de agendamento)
+                // ═══════════════════════════════════════════════════════════════════════
+                // SEÇÃO 1: DATAS E HORÁRIOS
+                // ═══════════════════════════════════════════════════════════════════════
+
+                // DatePicker - Data Inicial
+                $("#txtDataInicial").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    min: new Date(),
+                    dateInput: {
+                        format: "dd/MM/yyyy",
+                        messages: { year: "yyyy", month: "MM", day: "dd" }
+                    },
+                    placeholder: "dd/MM/yyyy"
+                });
+
+                // TimePicker - Hora Inicial
+                $("#txtHoraInicial").kendoTimePicker({
+                    format: "HH:mm",
+                    culture: "pt-BR",
+                    interval: 15,
+                    dateInput: {
+                        format: "HH:mm",
+                        messages: { hour: "HH", minute: "mm" }
+                    },
+                    placeholder: "HH:mm"
+                });
+
+                // DatePicker - Data Final
+                $("#txtDataFinal").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    min: new Date(),
+                    dateInput: {
+                        format: "dd/MM/yyyy",
+                        messages: { year: "yyyy", month: "MM", day: "dd" }
+                    },
+                    placeholder: "dd/MM/yyyy"
+                });
+
+                // TimePicker - Hora Final
+                $("#txtHoraFinal").kendoTimePicker({
+                    format: "HH:mm",
+                    culture: "pt-BR",
+                    interval: 15,
+                    dateInput: {
+                        format: "HH:mm",
+                        messages: { hour: "HH", minute: "mm" }
+                    },
+                    placeholder: "HH:mm"
+                });
+
+                // NumericTextBox - Duração (readonly)
+                $("#txtDuracao").kendoNumericTextBox({
+                    format: "n0",
+                    min: 0,
+                    spinners: false,
+                    enable: false
+                });
+
+                // ═══════════════════════════════════════════════════════════════════════
+                // SEÇÃO 2: ROTEIRO (Finalidade)
+                // ═══════════════════════════════════════════════════════════════════════
+
+                // DropDownList - Finalidade (era DropDownTree, mapeado para DDL plano)
+                $("#lstFinalidade").kendoDropDownList({
+                    dataTextField: "descricao",
+                    dataValueField: "finalidadeId",
+                    optionLabel: "Selecione uma Finalidade...",
+                    dataSource: window.dataFinalidade || [],
+                    filter: "contains",
+                    height: 200
+                });
+
+                // ═══════════════════════════════════════════════════════════════════════
+                // SEÇÃO 3: EVENTO
+                // ═══════════════════════════════════════════════════════════════════════
+
+                // ComboBox - Eventos
+                $("#lstEventos").kendoComboBox({
+                    dataTextField: "evento",
+                    dataValueField: "eventoId",
+                    placeholder: "Selecione um evento...",
+                    filter: "contains",
+                    dataSource: dataEvento,
+                    height: 200
+                });
+
+                // DatePicker - Data Início Evento (disabled - apenas exibição)
+                $("#txtDataInicioEvento").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    placeholder: "Data Início",
+                    enable: false
+                });
+
+                // DatePicker - Data Fim Evento (disabled - apenas exibição)
+                $("#txtDataFimEvento").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    placeholder: "Data Fim",
+                    enable: false
+                });
+
+                // NumericTextBox - Qtd Participantes Evento (disabled)
+                $("#txtQtdParticipantesEvento").kendoNumericTextBox({
+                    format: "n0",
+                    min: 0,
+                    spinners: false,
+                    enable: false,
+                    placeholder: "Quantidade"
+                });
+
+                // ═══════════════════════════════════════════════════════════════════════
+                // SEÇÃO 4: TRANSPORTE (Motorista, Veículo, Combustível)
+                // ═══════════════════════════════════════════════════════════════════════
+
+                // ComboBox - Motorista
+                $("#lstMotorista").kendoComboBox({
+                    dataTextField: "nome",
+                    dataValueField: "motoristaId",
+                    placeholder: "Selecione um Motorista",
+                    filter: "contains",
+                    dataSource: dataMotorista,
+                    height: 200
+                });
+
+                // ComboBox - Veículo
+                $("#lstVeiculo").kendoComboBox({
+                    dataTextField: "descricao",
+                    dataValueField: "veiculoId",
+                    placeholder: "Selecione um Veículo",
+                    filter: "contains",
+                    dataSource: dataVeiculo,
+                    height: 200
+                });
+
+                // DropDownList - Combustível Inicial
+                $("#ddtCombustivelInicial").kendoDropDownList({
+                    dataTextField: "descricao",
+                    dataValueField: "nivel",
+                    optionLabel: "Selecione...",
+                    dataSource: dataCombustivel,
+                    height: 200
+                });
+
+                // DropDownList - Combustível Final
+                $("#ddtCombustivelFinal").kendoDropDownList({
+                    dataTextField: "descricao",
+                    dataValueField: "nivel",
+                    optionLabel: "Selecione...",
+                    dataSource: dataCombustivel,
+                    height: 200
+                });
+
+                // ═══════════════════════════════════════════════════════════════════════
+                // SEÇÃO 5: REQUISITANTE E SETOR
+                // ═══════════════════════════════════════════════════════════════════════
+
+                // ComboBox - Requisitante (form de agendamento)
                 $("#lstRequisitante").kendoComboBox({
                     dataTextField: "requisitante",
                     dataValueField: "requisitanteId",
@@ -2068,7 +2169,7 @@
                     height: 200
                 });
 
-                // ComboBox evento - Requisitante (modal de evento)
+                // ComboBox - Requisitante (modal de evento)
                 $("#lstRequisitanteEvento").kendoComboBox({
                     dataTextField: "requisitante",
                     dataValueField: "requisitanteId",
@@ -2078,15 +2179,121 @@
                     height: 200
                 });
 
-                // DatePickers - Evento
+                // DropDownList - Setor do Requisitante (hierárquico flat)
+                $("#lstSetorRequisitanteAgendamento").kendoDropDownList({
+                    dataTextField: "nome",
+                    dataValueField: "setorSolicitanteId",
+                    optionLabel: "Selecione um setor...",
+                    dataSource: dataSetor,
+                    filter: "contains",
+                    height: 200
+                });
+
+                // ═══════════════════════════════════════════════════════════════════════
+                // SEÇÃO 6: RECORRÊNCIA
+                // ═══════════════════════════════════════════════════════════════════════
+
+                // DropDownList - Recorrente? (S/N)
+                $("#lstRecorrente").kendoDropDownList({
+                    dataTextField: "descricao",
+                    dataValueField: "recorrenteId",
+                    dataSource: dataRecorrente,
+                    height: 200
+                });
+
+                // MultiSelect - Dias da Semana
+                $("#lstDias").kendoMultiSelect({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    dataSource: dataDiasSemana,
+                    placeholder: "Selecione os dias...",
+                    autoClose: false
+                });
+
+                // DropDownList - Dia do Mês
+                $("#lstDiasMes").kendoDropDownList({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    optionLabel: "Selecione o dia...",
+                    dataSource: dataDiasMes,
+                    height: 250
+                });
+
+                // DatePicker - Data Final Recorrência
+                $("#txtFinalRecorrencia").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    min: new Date(),
+                    dateInput: {
+                        format: "dd/MM/yyyy",
+                        messages: { year: "yyyy", month: "MM", day: "dd" }
+                    },
+                    placeholder: "dd/MM/yyyy"
+                });
+
+                // ═══════════════════════════════════════════════════════════════════════
+                // SEÇÃO 7: MODAL EVENTO (Cadastro)
+                // ═══════════════════════════════════════════════════════════════════════
+
+                // DatePickers - Evento (modal cadastro) - JÁ EXISTIAM
                 $("#txtDataInicialEvento").kendoDatePicker({
                     format: "dd/MM/yyyy",
+                    culture: "pt-BR",
                     placeholder: "Data Inicial"
                 });
 
                 $("#txtDataFinalEvento").kendoDatePicker({
                     format: "dd/MM/yyyy",
+                    culture: "pt-BR",
                     placeholder: "Data Final"
+                });
+
+                // NumericTextBox - Qtd Participantes (modal cadastro evento)
+                $("#txtQtdParticipantesEventoCadastro").kendoNumericTextBox({
+                    format: "n0",
+                    min: 1,
+                    placeholder: "Quantidade de participantes"
+                });
+
+                // ═══════════════════════════════════════════════════════════════════════
+                // SEÇÃO 8: TREEVIEW - Setor Requisitante (modal novo requisitante)
+                // ═══════════════════════════════════════════════════════════════════════
+
+                // TreeView - Setor do Requisitante (inline no modal)
+                $("#treeSetorRequisitante").kendoTreeView({
+                    dataSource: new kendo.data.HierarchicalDataSource({
+                        data: dataSetor,
+                        schema: {
+                            model: {
+                                id: "setorSolicitanteId",
+                                hasChildren: "hasChild",
+                                children: {
+                                    schema: {
+                                        model: {
+                                            id: "setorSolicitanteId",
+                                            hasChildren: "hasChild"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }),
+                    dataTextField: "nome",
+                    select: function (e) {
+                        try {
+                            var dataItem = this.dataItem(e.node);
+                            if (dataItem) {
+                                onSetorSelected({
+                                    nodeData: {
+                                        id: dataItem.setorSolicitanteId,
+                                        text: dataItem.nome
+                                    }
+                                });
+                            }
+                        } catch (error) {
+                            Alerta.TratamentoErroComLinha("Agenda/Index.cshtml", "treeSetorRequisitante.select", error);
+                        }
+                    }
                 });
 
                 // ═══════════════════════════════════════════════════════════════════════

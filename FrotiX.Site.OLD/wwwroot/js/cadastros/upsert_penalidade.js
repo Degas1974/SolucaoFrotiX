@@ -575,21 +575,21 @@ function lstOrgaoChange()
     {
         console.log('🔄 lstOrgaoChange disparado');
 
-        const lstEmpenhos = document.getElementById("lstEmpenhos")?.ej2_instances?.[0];
-        const lstOrgao = document.getElementById("lstOrgao")?.ej2_instances?.[0];
+        const lstEmpenhos = $("#lstEmpenhos").data("kendoDropDownList");
+        const lstOrgao = $("#lstOrgao").data("kendoComboBox");
 
         // Limpa dropdown de empenhos
         if (lstEmpenhos)
         {
-            lstEmpenhos.dataSource = [];
-            lstEmpenhos.dataBind();
-            lstEmpenhos.text = "";
+            lstEmpenhos.setDataSource(new kendo.data.DataSource({ data: [] }));
+            lstEmpenhos.value("");
+            lstEmpenhos.text("");
             console.log('🧹 lstEmpenhos limpo');
         }
 
         $('#txtEmpenhoSaldo').val('');
 
-        const orgaoId = lstOrgao?.value;
+        const orgaoId = lstOrgao ? lstOrgao.value() : null;
         console.log('🏢 Órgão selecionado:', orgaoId);
 
         if (!orgaoId)
@@ -626,8 +626,7 @@ function lstOrgaoChange()
                             console.log(`📝 Empenho ${i}:`, empenho);
                         }
 
-                        lstEmpenhos.dataSource = EmpenhoList;
-                        lstEmpenhos.dataBind();
+                        lstEmpenhos.setDataSource(new kendo.data.DataSource({ data: EmpenhoList }));
 
                         console.log('✅ lstEmpenhos atualizado com sucesso');
 
@@ -660,14 +659,14 @@ function lstEmpenhosChange()
 {
     try
     {
-        const lstEmpenhos = document.getElementById("lstEmpenhos")?.ej2_instances?.[0];
-        if (!lstEmpenhos || !lstEmpenhos.value)
+        const lstEmpenhos = $("#lstEmpenhos").data("kendoDropDownList");
+        if (!lstEmpenhos || !lstEmpenhos.value())
         {
             $('#txtEmpenhoSaldo').val('');
             return;
         }
 
-        const empenhoid = String(lstEmpenhos.value);
+        const empenhoid = String(lstEmpenhos.value());
         console.log('💰 lstEmpenhos changed:', empenhoid);
 
         $.ajax({
@@ -709,20 +708,20 @@ function lstVeiculo_Change()
 {
     try
     {
-        const cmp = document.getElementById("lstVeiculo")?.ej2_instances?.[0];
-        if (!cmp || !cmp.value) return;
+        const cmp = $("#lstVeiculo").data("kendoComboBox");
+        if (!cmp || !cmp.value()) return;
 
         // ✅ CORREÇÃO: Chama API PegaInstrumentoVeiculo igual ao UpsertAutuacao
         $.ajax({
             url: "/api/Multa/PegaInstrumentoVeiculo",
             method: "GET",
-            data: { Id: cmp.value },
+            data: { Id: cmp.value() },
             success: function (data)
             {
                 try
                 {
-                    const cVeic = document.getElementById("lstContratoVeiculo")?.ej2_instances?.[0];
-                    const aVeic = document.getElementById("lstAtaVeiculo")?.ej2_instances?.[0];
+                    const cVeic = $("#lstContratoVeiculo").data("kendoComboBox");
+                    const aVeic = $("#lstAtaVeiculo").data("kendoComboBox");
 
                     console.log('📦 Resposta PegaInstrumentoVeiculo:', data);
 
@@ -730,21 +729,21 @@ function lstVeiculo_Change()
                     {
                         if (data.instrumento === "contrato")
                         {
-                            if (cVeic) cVeic.value = data.instrumentoid;
-                            if (aVeic) aVeic.value = '';
+                            if (cVeic) cVeic.value(data.instrumentoid ? data.instrumentoid.toString() : "");
+                            if (aVeic) { aVeic.value(""); aVeic.text(""); }
                             console.log('✅ Contrato definido:', data.instrumentoid);
                         }
                         else if (data.instrumento === "ata")
                         {
-                            if (aVeic) aVeic.value = data.instrumentoid;
-                            if (cVeic) cVeic.value = '';
+                            if (aVeic) aVeic.value(data.instrumentoid ? data.instrumentoid.toString() : "");
+                            if (cVeic) { cVeic.value(""); cVeic.text(""); }
                             console.log('✅ Ata definida:', data.instrumentoid);
                         }
                     }
                     else
                     {
-                        if (cVeic) cVeic.value = '';
-                        if (aVeic) aVeic.value = '';
+                        if (cVeic) { cVeic.value(""); cVeic.text(""); }
+                        if (aVeic) { aVeic.value(""); aVeic.text(""); }
                         AppToast.show('Amarelo', 'O veículo escolhido não possui contrato ou ata', 3000);
                     }
                 } catch (innerError)
@@ -773,11 +772,13 @@ function lstContratoVeiculo_Change()
             return;
         }
 
-        const aVeic = document.getElementById("lstAtaVeiculo")?.ej2_instances?.[0];
-        if (aVeic) aVeic.value = '';
+        const aVeic = $("#lstAtaVeiculo").data("kendoComboBox");
+        if (aVeic) { aVeic.value(""); aVeic.text(""); }
 
-        const v = document.getElementById("lstVeiculo")?.ej2_instances?.[0]?.value;
-        const c = document.getElementById("lstContratoVeiculo")?.ej2_instances?.[0]?.value;
+        const cmpVeiculo = $("#lstVeiculo").data("kendoComboBox");
+        const cmpContrato = $("#lstContratoVeiculo").data("kendoComboBox");
+        const v = cmpVeiculo ? cmpVeiculo.value() : null;
+        const c = cmpContrato ? cmpContrato.value() : null;
         if (!v || !c) return;
 
         $.ajax({
@@ -789,8 +790,8 @@ function lstContratoVeiculo_Change()
                 if (data.success === false)
                 {
                     AppToast.show('Vermelho', 'O veículo escolhido não pertence a esse contrato', 3000);
-                    const lstV = document.getElementById("lstVeiculo")?.ej2_instances?.[0];
-                    if (lstV) lstV.value = '';
+                    const lstV = $("#lstVeiculo").data("kendoComboBox");
+                    if (lstV) { lstV.value(""); lstV.text(""); }
                 }
             },
             error: function (xhr, status, error)
@@ -814,11 +815,13 @@ function lstAtaVeiculo_Change()
             return;
         }
 
-        const cVeic = document.getElementById("lstContratoVeiculo")?.ej2_instances?.[0];
-        if (cVeic) cVeic.value = '';
+        const cVeic = $("#lstContratoVeiculo").data("kendoComboBox");
+        if (cVeic) { cVeic.value(""); cVeic.text(""); }
 
-        const v = document.getElementById("lstVeiculo")?.ej2_instances?.[0]?.value;
-        const a = document.getElementById("lstAtaVeiculo")?.ej2_instances?.[0]?.value;
+        const cmpVeiculo = $("#lstVeiculo").data("kendoComboBox");
+        const cmpAta = $("#lstAtaVeiculo").data("kendoComboBox");
+        const v = cmpVeiculo ? cmpVeiculo.value() : null;
+        const a = cmpAta ? cmpAta.value() : null;
         if (!v || !a) return;
 
         $.ajax({
@@ -830,8 +833,8 @@ function lstAtaVeiculo_Change()
                 if (data.success === false)
                 {
                     AppToast.show('Vermelho', 'O veículo escolhido não pertence a essa ata', 3000);
-                    const lstV = document.getElementById("lstVeiculo")?.ej2_instances?.[0];
-                    if (lstV) lstV.value = '';
+                    const lstV = $("#lstVeiculo").data("kendoComboBox");
+                    if (lstV) { lstV.value(""); lstV.text(""); }
                 }
             },
             error: function (xhr, status, error)
@@ -853,7 +856,8 @@ function lstMotorista_Change()
 {
     try
     {
-        const m = document.getElementById("lstMotorista")?.ej2_instances?.[0]?.value;
+        const cmpMotorista = $("#lstMotorista").data("kendoComboBox");
+        const m = cmpMotorista ? cmpMotorista.value() : null;
         if (!m) return;
 
         // ✅ CORREÇÃO: Chama API PegaContratoMotorista igual ao UpsertAutuacao
@@ -863,15 +867,15 @@ function lstMotorista_Change()
             data: { Id: m },
             success: function (data)
             {
-                const c = document.getElementById("lstContratoMotorista")?.ej2_instances?.[0];
+                const c = $("#lstContratoMotorista").data("kendoComboBox");
 
                 if (data.contratoid)
                 {
-                    if (c) c.value = data.contratoid;
+                    if (c) c.value(data.contratoid ? data.contratoid.toString() : "");
                     console.log('✅ Contrato do motorista definido:', data.contratoid);
                 } else
                 {
-                    if (c) c.value = '';
+                    if (c) { c.value(""); c.text(""); }
                     AppToast.show('Amarelo', 'O motorista escolhido não possui contrato', 3000);
                 }
             },
@@ -896,8 +900,10 @@ function lstContratoMotorista_Change()
             return;
         }
 
-        const m = document.getElementById("lstMotorista")?.ej2_instances?.[0]?.value;
-        const c = document.getElementById("lstContratoMotorista")?.ej2_instances?.[0]?.value;
+        const cmpMotorista = $("#lstMotorista").data("kendoComboBox");
+        const cmpContratoMot = $("#lstContratoMotorista").data("kendoComboBox");
+        const m = cmpMotorista ? cmpMotorista.value() : null;
+        const c = cmpContratoMot ? cmpContratoMot.value() : null;
         if (!m || !c) return;
 
         $.ajax({
@@ -909,8 +915,8 @@ function lstContratoMotorista_Change()
                 if (data.success === false)
                 {
                     AppToast.show('Vermelho', 'O motorista escolhido não pertence a esse contrato', 3000);
-                    const lstM = document.getElementById("lstMotorista")?.ej2_instances?.[0];
-                    if (lstM) lstM.value = '';
+                    const lstM = $("#lstMotorista").data("kendoComboBox");
+                    if (lstM) { lstM.value(""); lstM.text(""); }
                 }
             },
             error: function (xhr, status, error)
@@ -932,14 +938,14 @@ $("#btnViagem").on("click", function ()
 {
     try
     {
-        const lstVeiculo = document.getElementById("lstVeiculo")?.ej2_instances?.[0];
-        if (!lstVeiculo || !lstVeiculo.value)
+        const lstVeiculo = $("#lstVeiculo").data("kendoComboBox");
+        if (!lstVeiculo || !lstVeiculo.value())
         {
             Alerta.Warning("Atenção", "Selecione um veículo primeiro");
             return;
         }
 
-        ViagemId = lstVeiculo.value;
+        ViagemId = lstVeiculo.value();
         const modalViagem = new bootstrap.Modal(document.getElementById('modalViagem'));
         modalViagem.show();
     } catch (error)
@@ -1259,30 +1265,30 @@ $(document).ready(function ()
                 loadPdfInViewer(comprovantePdfExistente, 'pdfviewerComprovante');
             }
 
-            // Eventos de Change para Dropdowns
-            const lstOrgao = document.getElementById("lstOrgao")?.ej2_instances?.[0];
-            if (lstOrgao) lstOrgao.change = lstOrgaoChange;
+            // Eventos de Change para Dropdowns (Kendo UI)
+            var kdOrgao = $("#lstOrgao").data("kendoComboBox");
+            if (kdOrgao) kdOrgao.bind("change", lstOrgaoChange);
 
-            const lstEmpenhos = document.getElementById("lstEmpenhos")?.ej2_instances?.[0];
-            if (lstEmpenhos) lstEmpenhos.change = lstEmpenhosChange;
+            var kdEmpenhos = $("#lstEmpenhos").data("kendoDropDownList");
+            if (kdEmpenhos) kdEmpenhos.bind("change", lstEmpenhosChange);
 
-            const lstVeiculo = document.getElementById("lstVeiculo")?.ej2_instances?.[0];
-            if (lstVeiculo) lstVeiculo.change = lstVeiculo_Change;
+            var kdVeiculo = $("#lstVeiculo").data("kendoComboBox");
+            if (kdVeiculo) kdVeiculo.bind("change", lstVeiculo_Change);
 
-            const lstContratoVeiculo = document.getElementById("lstContratoVeiculo")?.ej2_instances?.[0];
-            if (lstContratoVeiculo) lstContratoVeiculo.change = lstContratoVeiculo_Change;
+            var kdContratoVeiculo = $("#lstContratoVeiculo").data("kendoComboBox");
+            if (kdContratoVeiculo) kdContratoVeiculo.bind("change", lstContratoVeiculo_Change);
 
-            const lstAtaVeiculo = document.getElementById("lstAtaVeiculo")?.ej2_instances?.[0];
-            if (lstAtaVeiculo) lstAtaVeiculo.change = lstAtaVeiculo_Change;
+            var kdAtaVeiculo = $("#lstAtaVeiculo").data("kendoComboBox");
+            if (kdAtaVeiculo) kdAtaVeiculo.bind("change", lstAtaVeiculo_Change);
 
-            const lstMotorista = document.getElementById("lstMotorista")?.ej2_instances?.[0];
-            if (lstMotorista) lstMotorista.change = lstMotorista_Change;
+            var kdMotorista = $("#lstMotorista").data("kendoComboBox");
+            if (kdMotorista) kdMotorista.bind("change", lstMotorista_Change);
 
-            const lstContratoMotorista = document.getElementById("lstContratoMotorista")?.ej2_instances?.[0];
-            if (lstContratoMotorista) lstContratoMotorista.change = lstContratoMotorista_Change;
+            var kdContratoMotorista = $("#lstContratoMotorista").data("kendoComboBox");
+            if (kdContratoMotorista) kdContratoMotorista.bind("change", lstContratoMotorista_Change);
 
             // Carrega saldo no modo EDIÇÃO
-            if (lstEmpenhos && lstEmpenhos.value)
+            if (kdEmpenhos && kdEmpenhos.value())
             {
                 console.log('💰 Modo EDIÇÃO - carregando saldo do empenho');
                 lstEmpenhosChange();

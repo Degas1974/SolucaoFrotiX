@@ -589,16 +589,16 @@ function carregarDadosMovimentacao(id)
                         {
                             try
                             {
-                                var cmbPatrimonio = document.getElementById('cmbPatrimonio')?.ej2_instances?.[0];
+                                var cmbPatrimonio = $('#cmbPatrimonio').data('kendoComboBox');
                                 if (cmbPatrimonio && data.patrimonioId)
                                 {
-                                    cmbPatrimonio.value = data.patrimonioId;
+                                    cmbPatrimonio.value(data.patrimonioId);
                                 }
 
-                                var cmbSetorDestino = document.getElementById('cmbSetorDestino')?.ej2_instances?.[0];
+                                var cmbSetorDestino = $('#cmbSetorDestino').data('kendoComboBox');
                                 if (cmbSetorDestino && data.setorDestinoId)
                                 {
-                                    cmbSetorDestino.value = data.setorDestinoId;
+                                    cmbSetorDestino.value(data.setorDestinoId);
 
                                     // Carregar seções do setor destino
                                     if (data.setorDestinoId)
@@ -667,22 +667,22 @@ function salvarMovimentacao()
     {
         console.log("=== Iniciando salvamento de movimentação ===");
 
-        // Coletar dados dos componentes EJ2
-        var cmbPatrimonio = document.getElementById('cmbPatrimonio')?.ej2_instances?.[0];
-        var cmbSetorDestino = document.getElementById('cmbSetorDestino')?.ej2_instances?.[0];
-        var cmbSecaoDestino = document.getElementById('cmbSecoesDestino')?.ej2_instances?.[0];
+        // Coletar dados dos componentes (Kendo ComboBox + EJ2 DatePicker/Checkbox)
+        var cmbPatrimonio = $('#cmbPatrimonio').data('kendoComboBox');
+        var cmbSetorDestino = $('#cmbSetorDestino').data('kendoComboBox');
+        var cmbSecaoDestino = $('#cmbSecoesDestino').data('kendoComboBox');
         var datePicker = document.getElementById('dataMov')?.ej2_instances?.[0];
         var statusCheckbox = document.getElementById('StatusCheckbox')?.ej2_instances?.[0];
 
         // Montar objeto de dados
         var dados = {
             movimentacaoPatrimonioId: $('#MovimentacaoPatrimonioId').val(),
-            patrimonioId: cmbPatrimonio?.value || $('#PatrimonioId').val(),
+            patrimonioId: cmbPatrimonio?.value() || $('#PatrimonioId').val(),
             dataMovimentacao: datePicker?.value ? datePicker.value.toISOString() : null,
             setorOrigemId: $('#SetorOrigemId').val(),
             secaoOrigemId: $('#SecaoOrigemId').val(),
-            setorDestinoId: cmbSetorDestino?.value,
-            secaoDestinoId: cmbSecaoDestino?.value,
+            setorDestinoId: cmbSetorDestino?.value(),
+            secaoDestinoId: cmbSecaoDestino?.value(),
             statusPatrimonio: statusCheckbox?.checked || false
         };
 
@@ -840,13 +840,13 @@ function getComboBoxInstance(elementId, callback)
         {
             try
             {
-                var element = document.getElementById(elementId);
-                if (element && element.ej2_instances && element.ej2_instances[0])
+                var widget = $("#" + elementId).data("kendoComboBox");
+                if (widget)
                 {
                     clearInterval(checkInterval);
                     try
                     {
-                        callback(element.ej2_instances[0]);
+                        callback(widget);
                     }
                     catch (error)
                     {
@@ -906,8 +906,8 @@ function loadListaPatrimonios()
         {
             try
             {
-                comboBox.value = null;
-                comboBox.text = "";
+                comboBox.value("");
+                comboBox.text("");
 
                 $.ajax({
                     type: "get",
@@ -918,18 +918,18 @@ function loadListaPatrimonios()
                         {
                             if (res != null && res.data && res.data.length)
                             {
-                                comboBox.dataSource = res.data;
+                                comboBox.setDataSource(new kendo.data.DataSource({ data: res.data }));
 
                                 if (!comboBox.hasPatrimonioListener)
                                 {
-                                    comboBox.change = onPatrimonioChange;
+                                    comboBox.bind("change", onPatrimonioChange);
                                     comboBox.hasPatrimonioListener = true;
                                 }
                             }
                             else
                             {
                                 console.log("Nenhum patrimônio encontrado.");
-                                comboBox.dataSource = [];
+                                comboBox.setDataSource(new kendo.data.DataSource({ data: [] }));
                             }
                         }
                         catch (error)
@@ -987,8 +987,8 @@ function loadListaSetoresDestino()
         {
             try
             {
-                comboBox.value = null;
-                comboBox.text = "";
+                comboBox.value("");
+                comboBox.text("");
 
                 $.ajax({
                     type: "get",
@@ -999,18 +999,18 @@ function loadListaSetoresDestino()
                         {
                             if (res != null && res.data && res.data.length)
                             {
-                                comboBox.dataSource = res.data;
+                                comboBox.setDataSource(new kendo.data.DataSource({ data: res.data }));
 
                                 if (!comboBox.hasSetorListener)
                                 {
-                                    comboBox.change = onSetorChangeDestino;
+                                    comboBox.bind("change", onSetorChangeDestino);
                                     comboBox.hasSetorListener = true;
                                 }
                             }
                             else
                             {
                                 console.log("Nenhum setor encontrado.");
-                                comboBox.dataSource = [];
+                                comboBox.setDataSource(new kendo.data.DataSource({ data: [] }));
                             }
                         }
                         catch (error)
@@ -1068,8 +1068,8 @@ function loadListaSecoes(setorSelecionado, secaoIdToSelect)
         {
             try
             {
-                comboBox.value = null;
-                comboBox.text = "";
+                comboBox.value("");
+                comboBox.text("");
 
                 $.ajax({
                     type: "get",
@@ -1099,7 +1099,7 @@ function loadListaSecoes(setorSelecionado, secaoIdToSelect)
                                     }
                                 });
 
-                                comboBox.dataSource = processedData;
+                                comboBox.setDataSource(new kendo.data.DataSource({ data: processedData }));
 
                                 // Se houver uma seção para selecionar (edição)
                                 if (secaoIdToSelect)
@@ -1108,7 +1108,7 @@ function loadListaSecoes(setorSelecionado, secaoIdToSelect)
                                     {
                                         try
                                         {
-                                            comboBox.value = secaoIdToSelect;
+                                            comboBox.value(secaoIdToSelect);
                                         }
                                         catch (error)
                                         {
@@ -1124,7 +1124,7 @@ function loadListaSecoes(setorSelecionado, secaoIdToSelect)
                             else
                             {
                                 console.log("Nenhuma seção encontrada.");
-                                comboBox.dataSource = [];
+                                comboBox.setDataSource(new kendo.data.DataSource({ data: [] }));
                             }
                         }
                         catch (error)
@@ -1443,18 +1443,15 @@ function carregarResponsaveisMovimentacoes()
                     console.log("📦 Resposta responsáveis:", response);
                     if (response.success && response.data)
                     {
-                        var element = document.getElementById('cmbResponsavel');
-                        if (element && element.ej2_instances && element.ej2_instances[0])
+                        var cmbInstance = $('#cmbResponsavel').data('kendoComboBox');
+                        if (cmbInstance)
                         {
-                            var cmbInstance = element.ej2_instances[0];
-                            cmbInstance.dataSource = response.data;
-                            cmbInstance.fields = { text: 'text', value: 'value' };
-                            cmbInstance.dataBind();
+                            cmbInstance.setDataSource(new kendo.data.DataSource({ data: response.data }));
                             console.log(`✅ Responsáveis carregados: ${response.data.length} registros`);
                         }
                         else
                         {
-                            console.error("❌ Elemento cmbResponsavel ou instância EJ2 não encontrado");
+                            console.error("❌ Kendo ComboBox cmbResponsavel não encontrado");
                         }
                     }
                     else
@@ -1533,10 +1530,11 @@ function aplicarFiltrosMovimentacoes()
             }
         }
 
-        // Obter valor do ComboBox Responsável
-        if (cmbResponsavel && cmbResponsavel.ej2_instances && cmbResponsavel.ej2_instances[0])
+        // Obter valor do ComboBox Responsável (Kendo)
+        var cmbResponsavelWidget = $('#cmbResponsavel').data('kendoComboBox');
+        if (cmbResponsavelWidget)
         {
-            responsavel = cmbResponsavel.ej2_instances[0].value || "";
+            responsavel = cmbResponsavelWidget.value() || "";
         }
 
         console.log("Filtros de movimentações aplicados:", {

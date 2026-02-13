@@ -318,8 +318,8 @@
             escolhendoData = false;
             escolhendoLavador = false;
 
-            var veiculos = document.getElementById('lstVeiculos').ej2_instances[0];
-            if (veiculos.value === null) {
+            var veiculos = $("#lstVeiculos").data("kendoComboBox");
+            if (veiculos && veiculos.value() === "") {
                 //ListaTodasLavagens();
             }
         } catch (error) {
@@ -334,8 +334,8 @@
             escolhendoData = false;
             escolhendoLavador = false;
 
-            var motoristas = document.getElementById('lstMotorista').ej2_instances[0];
-            if (motoristas.value === null) {
+            var motoristas = $("#lstMotorista").data("kendoComboBox");
+            if (motoristas && motoristas.value() === "") {
                 //ListaTodasLavagens();
             }
         } catch (error) {
@@ -361,8 +361,8 @@
             escolhendoData = false;
             escolhendoLavador = true;
 
-            var lavador = document.getElementById('lstLavador').ej2_instances[0];
-            if (lavador.value === null) {
+            var lavador = $("#lstLavador").data("kendoComboBox");
+            if (lavador && lavador.value() === "") {
                 //ListaTodasLavagens();
             }
         } catch (error) {
@@ -388,13 +388,13 @@
             FtxSpin.show("Carregando Lavagens");
 
             $("#txtData").val('');
-            var motoristas = document.getElementById('lstMotorista').ej2_instances[0]; motoristas.value = "";
-            var lavador = document.getElementById('lstLavador').ej2_instances[0]; lavador.value = "";
+            var motoristas = $("#lstMotorista").data("kendoComboBox"); if (motoristas) motoristas.value("");
+            var lavador = $("#lstLavador").data("kendoComboBox"); if (lavador) lavador.value("");
 
-            var veiculos = document.getElementById('lstVeiculos').ej2_instances[0];
-            if (veiculos.value === null) { ListaTodasLavagens(); return; }
+            var veiculos = $("#lstVeiculos").data("kendoComboBox");
+            if (!veiculos || veiculos.value() === "") { ListaTodasLavagens(); return; }
 
-            var veiculoId = veiculos.value.toString();
+            var veiculoId = veiculos.value().toString();
             ListaTblLavagens("/api/manutencao/ListaLavagemVeiculos", veiculoId);
         } catch (error) {
             FtxSpin.hide();
@@ -409,13 +409,13 @@
             FtxSpin.show("Carregando Lavagens");
 
             $("#txtData").val('');
-            var veiculo = document.getElementById('lstVeiculos').ej2_instances[0]; veiculo.value = "";
-            var lavador = document.getElementById('lstLavador').ej2_instances[0]; lavador.value = "";
+            var veiculo = $("#lstVeiculos").data("kendoComboBox"); if (veiculo) veiculo.value("");
+            var lavador = $("#lstLavador").data("kendoComboBox"); if (lavador) lavador.value("");
 
-            var motoristas = document.getElementById('lstMotorista').ej2_instances[0];
-            if (motoristas.value === null) { ListaTodasLavagens(); return; }
+            var motoristas = $("#lstMotorista").data("kendoComboBox");
+            if (!motoristas || motoristas.value() === "") { ListaTodasLavagens(); return; }
 
-            var motoristaId = motoristas.value.toString();
+            var motoristaId = motoristas.value().toString();
             ListaTblLavagens("/api/manutencao/ListaLavagemMotoristas", motoristaId);
         } catch (error) {
             FtxSpin.hide();
@@ -430,13 +430,13 @@
             FtxSpin.show("Carregando Lavagens");
 
             $("#txtData").val('');
-            var veiculo = document.getElementById('lstVeiculos').ej2_instances[0]; veiculo.value = "";
-            var motorista = document.getElementById('lstMotorista').ej2_instances[0]; motorista.value = "";
+            var veiculo = $("#lstVeiculos").data("kendoComboBox"); if (veiculo) veiculo.value("");
+            var motorista = $("#lstMotorista").data("kendoComboBox"); if (motorista) motorista.value("");
 
-            var lavador = document.getElementById('lstLavador').ej2_instances[0];
-            if (lavador.value === null) { ListaTodasLavagens(); return; }
+            var lavador = $("#lstLavador").data("kendoComboBox");
+            if (!lavador || lavador.value() === "") { ListaTodasLavagens(); return; }
 
-            var lavadorId = lavador.value.toString();
+            var lavadorId = lavador.value().toString();
             ListaTblLavagens("/api/manutencao/ListaLavagemLavadores", lavadorId);
         } catch (error) {
             FtxSpin.hide();
@@ -479,29 +479,11 @@
                                         </div>
                                         <div class="col-md-4">
                                             <label class="ftx-label">Veículo Lavado</label>
-                                            <ejs-combobox id="lstVeiculoLavagem"
-                                                          placeholder="Selecione um Veículo"
-                                                          allowFiltering="true"
-                                                          filterType="Contains"
-                                                          dataSource="@ViewData["lstVeiculos"]"
-                                                          popupHeight="250px"
-                                                          width="100%"
-                                                          showClearButton="true">
-                                                <e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-                                            </ejs-combobox>
+                                            <input id="lstVeiculoLavagem" name="lstVeiculoLavagem" style="width: 100%;" />
                                         </div>
                                         <div class="col-md-4">
                                             <label class="ftx-label">Condutor do Veículo</label>
-                                            <ejs-combobox id="lstMotoristaLavagem"
-                                                          placeholder="Selecione um Motorista"
-                                                          allowFiltering="true"
-                                                          filterType="Contains"
-                                                          dataSource="@ViewData["lstMotorista"]"
-                                                          popupHeight="250px"
-                                                          width="100%"
-                                                          showClearButton="true">
-                                                <e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-                                            </ejs-combobox>
+                                            <input id="lstMotoristaLavagem" name="lstMotoristaLavagem" style="width: 100%;" />
                                         </div>
                                         <div class="col-12">
                                             <label class="ftx-label">Lavadores Participantes</label>
@@ -537,48 +519,15 @@
                                         </div>
                                         <div class="col-md-3">
                                             <label class="ftx-label">Veículo</label>
-                                            <ejs-combobox id="lstVeiculos"
-                                                          placeholder="Selecione um Veículo"
-                                                          allowFiltering="true"
-                                                          filterType="Contains"
-                                                          dataSource="@ViewData["lstVeiculos"]"
-                                                          popupHeight="250px"
-                                                          change="DefineEscolhaVeiculo"
-                                                          width="100%"
-                                                          showClearButton="true"
-                                                          close="VeiculosValueChange">
-                                                <e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-                                            </ejs-combobox>
+                                            <input id="lstVeiculos" name="lstVeiculos" style="width: 100%;" />
                                         </div>
                                         <div class="col-md-3">
                                             <label class="ftx-label">Motorista</label>
-                                            <ejs-combobox id="lstMotorista"
-                                                          placeholder="Selecione um Motorista"
-                                                          allowFiltering="true"
-                                                          filterType="Contains"
-                                                          dataSource="@ViewData["lstMotorista"]"
-                                                          popupHeight="250px"
-                                                          change="DefineEscolhaMotorista"
-                                                          width="100%"
-                                                          showClearButton="true"
-                                                          close="MotoristaValueChange">
-                                                <e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-                                            </ejs-combobox>
+                                            <input id="lstMotorista" name="lstMotorista" style="width: 100%;" />
                                         </div>
                                         <div class="col-md-3">
                                             <label class="ftx-label">Lavador</label>
-                                            <ejs-combobox id="lstLavador"
-                                                          placeholder="Selecione um Lavador"
-                                                          allowFiltering="true"
-                                                          filterType="Contains"
-                                                          dataSource="@ViewData["lstLavadores"]"
-                                                          popupHeight="250px"
-                                                          width="100%"
-                                                          showClearButton="true"
-                                                          change="DefineEscolhaLavador"
-                                                          close="LavadorValueChange">
-                                                <e-combobox-fields text="Nome" value="LavadorId"></e-combobox-fields>
-                                            </ejs-combobox>
+                                            <input id="lstLavador" name="lstLavador" style="width: 100%;" />
                                         </div>
                                     </div>
                                 </div>
@@ -618,6 +567,64 @@
     <!-- Kendo UI: usa versão global 2025.2.520 de _ScriptsBasePlugins (cultura pt-BR já configurada) -->
 
     <script>
+        // Kendo ComboBox init - dados serializados do ViewData
+        var dataVeiculos = @Html.Raw(Json.Serialize(ViewData["lstVeiculos"]));
+        var dataMotorista = @Html.Raw(Json.Serialize(ViewData["lstMotorista"]));
+        var dataLavadores = @Html.Raw(Json.Serialize(ViewData["lstLavadores"]));
+
+        $("#lstVeiculoLavagem").kendoComboBox({
+            dataTextField: "descricao",
+            dataValueField: "id",
+            placeholder: "Selecione um Ve\u00edculo",
+            filter: "contains",
+            dataSource: dataVeiculos,
+            height: 250
+        });
+
+        $("#lstMotoristaLavagem").kendoComboBox({
+            dataTextField: "descricao",
+            dataValueField: "id",
+            placeholder: "Selecione um Motorista",
+            filter: "contains",
+            dataSource: dataMotorista,
+            height: 250
+        });
+
+        $("#lstVeiculos").kendoComboBox({
+            dataTextField: "descricao",
+            dataValueField: "id",
+            placeholder: "Selecione um Ve\u00edculo",
+            filter: "contains",
+            dataSource: dataVeiculos,
+            height: 250,
+            change: function () { DefineEscolhaVeiculo(); },
+            close: function () { VeiculosValueChange(); }
+        });
+
+        $("#lstMotorista").kendoComboBox({
+            dataTextField: "descricao",
+            dataValueField: "id",
+            placeholder: "Selecione um Motorista",
+            filter: "contains",
+            dataSource: dataMotorista,
+            height: 250,
+            change: function () { DefineEscolhaMotorista(); },
+            close: function () { MotoristaValueChange(); }
+        });
+
+        $("#lstLavador").kendoComboBox({
+            dataTextField: "nome",
+            dataValueField: "lavadorId",
+            placeholder: "Selecione um Lavador",
+            filter: "contains",
+            dataSource: dataLavadores,
+            height: 250,
+            change: function () { DefineEscolhaLavador(); },
+            close: function () { LavadorValueChange(); }
+        });
+    </script>
+
+    <script>
         // ==================== LISTA TODAS LAVAGENS ====================
         function ListaTodasLavagens() {
             try {
@@ -653,9 +660,9 @@
                     FtxSpin.show("Carregando Lavagens");
 
                     // zera filtros de combos
-                    var veiculos = document.getElementById('lstVeiculos').ej2_instances[0]; veiculos.value = "";
-                    var lavadores = document.getElementById('lstLavador').ej2_instances[0]; lavadores.value = "";
-                    var motoristas = document.getElementById('lstMotorista').ej2_instances[0]; motoristas.value = "";
+                    var veiculos = $("#lstVeiculos").data("kendoComboBox"); if (veiculos) veiculos.value("");
+                    var lavadores = $("#lstLavador").data("kendoComboBox"); if (lavadores) lavadores.value("");
+                    var motoristas = $("#lstMotorista").data("kendoComboBox"); if (motoristas) motoristas.value("");
 
                     var date = $('#txtData').val().split("-");
                     if (date.length === 3) {
@@ -852,8 +859,8 @@
                 var objLavagem = JSON.stringify({
                     "Data": DataLavagem,
                     "HorarioLavagem": HoraLavagem,
-                    "VeiculoId": veiculo.value,
-                    "MotoristaId": motorista.value
+                    "VeiculoId": veiculo.value(),
+                    "MotoristaId": motorista.value()
                 });
 
                 $.ajax({
@@ -913,8 +920,8 @@
                 $("#txtDataLavagem").val("");
                 $("#txtHoraLavagem").val("");
 
-                var veiculo = document.getElementById('lstVeiculoLavagem').ej2_instances[0]; veiculo.value = null;
-                var motorista = document.getElementById('lstMotoristaLavagem').ej2_instances[0]; motorista.value = null;
+                var veiculo = $("#lstVeiculoLavagem").data("kendoComboBox"); if (veiculo) veiculo.value("");
+                var motorista = $("#lstMotoristaLavagem").data("kendoComboBox"); if (motorista) motorista.value("");
 
                 var multi = $("#lstLavadores").data("kendoMultiSelect");
                 if (multi) multi.value([]);

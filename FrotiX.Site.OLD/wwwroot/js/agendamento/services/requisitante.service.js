@@ -33,7 +33,7 @@
  *                   (ajax-helper.js), Alerta (frotix-core.js), AppToast/toastr (toast
  *                   notifications), Bootstrap 5 Modal (bootstrap.Modal, data-bs-toggle,
  *                   shown.bs.modal event), Syncfusion EJ2 DropDownTree (ej.dropdowns.
- *                   DropDownTree, ej2_instances), Kendo UI ComboBox (lstRequisitante,
+ *                   DropDownTree, getSyncfusionInstance bridge), Kendo UI ComboBox (lstRequisitante,
  *                   getRequisitanteCombo function), DOM elements (#txtPonto, #txtNome,
  *                   #txtRamal, #txtEmail, #ddtSetorNovoRequisitante, #hiddenSetorId,
  *                   #lstSetorRequisitanteAgendamento, #lstSetorRequisitanteEvento,
@@ -122,8 +122,8 @@
  * │                                                                     │
  * │ 1. capturarDadosSetores()                                           │
  * │    → Captura dados de setores de outros dropdowns já carregados    │
- * │    → Tenta lstSetorRequisitanteAgendamento.ej2_instances[0].fields.│
- * │      dataSource primeiro                                            │
+ * │    → Tenta lstSetorRequisitanteAgendamento via getSyncfusionInstance│
+ * │      bridge, acessa .fields.dataSource                              │
  * │    → Fallback: lstSetorRequisitanteEvento                           │
  * │    → Popula window.SETORES_DATA (global array)                     │
  * │    → returns boolean (true se capturado, false se falhou)          │
@@ -160,7 +160,7 @@
  * │      5. shown.bs.modal event listener:                              │
  * │         a. setTimeout 100ms                                         │
  * │         b. capturarDadosSetores() se window.SETORES_DATA vazio      │
- * │         c. Destroy old ddtSetorNovoRequisitante.ej2_instances[0]    │
+ * │         c. Destroy old ddtSetorNovoRequisitante via bridge          │
  * │         d. new ej.dropdowns.DropDownTree com 8 event handlers       │
  * │            (open ajusta z-index 1060, select stopPropagation,       │
  * │             blur, close, created, dataBound)                        │
@@ -177,7 +177,7 @@
  * │                                                                     │
  * │ 6. limparCamposCadastroRequisitante()                               │
  * │    → Limpa campos #txtPonto, #txtNome, #txtRamal, #txtEmail        │
- * │    → Limpa #ddtSetorNovoRequisitante.ej2_instances[0].value = null  │
+ * │    → Limpa #ddtSetorNovoRequisitante via getSyncfusionInstance      │
  * │    → dataBind() para refresh                                        │
  * │    → Console logging detalhado (stack trace, dataSource length)     │
  * │    → Try-catch (sem throw, apenas console.error)                    │
@@ -274,7 +274,7 @@
  * │             - setDataSource(dataSource)                             │
  * │             - value(requisitanteId)                                 │
  * │          c. Atualizar #txtRamalRequisitanteSF.value                 │
- * │          d. Atualizar #lstSetorRequisitanteAgendamento.ej2_instances│
+ * │          d. Atualizar lstSetorRequisitanteAgendamento via bridge    │
  * │             [0].value = [setorValue] (array), dataBind()            │
  * │          e. bootstrap.Modal.getInstance().hide()                    │
  * │          f. limparCamposCadastroRequisitante()                      │
@@ -307,7 +307,7 @@
  * │     → Cria DropDownTree no elemento fornecido                       │
  * │     → param elemento: DOM element para appendTo                     │
  * │     → Fluxo:                                                        │
- * │       1. if ej2_instances[0] exists: destroy()                      │
+ * │       1. if getSyncfusionInstance(id) exists: destroy()             │
  * │       2. new ej.dropdowns.DropDownTree({                            │
  * │          fields: {dataSource: SETORES_DATA, value: 'SetorSolicitanteId',│
  * │            text: 'Nome', parentValue: 'SetorPaiId', hasChildren:    │
@@ -616,12 +616,12 @@
     {
         try
         {
-            // Tentar pegar dos controles já existentes
-            const lstSetorAgendamento = document.getElementById("lstSetorRequisitanteAgendamento");
+            // Tentar pegar dos controles já existentes (via bridge getSyncfusionInstance)
+            const ddtSetorAgendamento = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstSetorRequisitanteAgendamento") : null;
 
-            if (lstSetorAgendamento && lstSetorAgendamento.ej2_instances && lstSetorAgendamento.ej2_instances[0])
+            if (ddtSetorAgendamento)
             {
-                const dados = lstSetorAgendamento.ej2_instances[0].fields?.dataSource;
+                const dados = ddtSetorAgendamento.fields?.dataSource;
                 if (dados && dados.length > 0)
                 {
                     window.SETORES_DATA = dados;
@@ -630,11 +630,11 @@
                 }
             }
 
-            // Tentar do lstSetorRequisitanteEvento
-            const lstSetorEvento = document.getElementById("lstSetorRequisitanteEvento");
-            if (lstSetorEvento && lstSetorEvento.ej2_instances && lstSetorEvento.ej2_instances[0])
+            // Tentar do lstSetorRequisitanteEvento (via bridge getSyncfusionInstance)
+            const ddtSetorEvento = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstSetorRequisitanteEvento") : null;
+            if (ddtSetorEvento)
             {
-                const dados = lstSetorEvento.ej2_instances[0].fields?.dataSource;
+                const dados = ddtSetorEvento.fields?.dataSource;
                 if (dados && dados.length > 0)
                 {
                     window.SETORES_DATA = dados;
@@ -925,13 +925,14 @@
 
                 console.log(`📦 Dados de setores disponíveis: ${window.SETORES_DATA?.length || 0} itens`);
 
-                // Destruir instância antiga se existir
-                if (ddtSetor.ej2_instances && ddtSetor.ej2_instances[0])
+                // Destruir instância antiga se existir (via bridge getSyncfusionInstance)
+                const ddtSetorInstanciaAntiga = window.getSyncfusionInstance ? window.getSyncfusionInstance("ddtSetorNovoRequisitante") : null;
+                if (ddtSetorInstanciaAntiga)
                 {
                     console.log("🗑️ Destruindo instância antiga de ddtSetorNovoRequisitante...");
                     try
                     {
-                        ddtSetor.ej2_instances[0].destroy();
+                        ddtSetorInstanciaAntiga.destroy();
                     }
                     catch (error)
                     {
@@ -1079,11 +1080,12 @@
 
             if (ddtSetor)
             {
-                console.log("🔍 ej2_instances:", ddtSetor.ej2_instances ? "existe" : "NÃO EXISTE");
+                // Obter instância via bridge getSyncfusionInstance
+                const dropdown = window.getSyncfusionInstance ? window.getSyncfusionInstance("ddtSetorNovoRequisitante") : null;
+                console.log("🔍 getSyncfusionInstance:", dropdown ? "existe" : "NÃO EXISTE");
 
-                if (ddtSetor.ej2_instances && ddtSetor.ej2_instances[0])
+                if (dropdown)
                 {
-                    const dropdown = ddtSetor.ej2_instances[0];
                     console.log(`🔍 DataSource: ${dropdown.fields?.dataSource?.length || 0} itens`);
                     console.log("🔍 Campos configurados:", {
                         value: dropdown.fields.value,
@@ -1677,11 +1679,10 @@
                                 console.log("✅ Campo Ramal atualizado:", txtRamal.value.trim());
                             }
 
-                            // ===== ATUALIZAR SETOR =====
-                            const lstSetorRequisitanteAgendamento = document.getElementById("lstSetorRequisitanteAgendamento");
-                            if (lstSetorRequisitanteAgendamento && lstSetorRequisitanteAgendamento.ej2_instances && lstSetorRequisitanteAgendamento.ej2_instances[0])
+                            // ===== ATUALIZAR SETOR (via bridge getSyncfusionInstance) =====
+                            const comboSetor = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstSetorRequisitanteAgendamento") : null;
+                            if (comboSetor)
                             {
-                                const comboSetor = lstSetorRequisitanteAgendamento.ej2_instances[0];
                                 console.log("🔍 Atualizando Setor:");
                                 console.log("  - setorValue (closure):", setorValue);
                                 console.log("  - Tipo:", typeof setorValue);
@@ -1856,13 +1857,14 @@
         {
             console.log("🔧 Criando DropDownTree...");
 
-            // Destruir instância antiga se existir
-            if (elemento.ej2_instances && elemento.ej2_instances[0])
+            // Destruir instância antiga se existir (via bridge getSyncfusionInstance)
+            const instanciaAntiga = (elemento.id && window.getSyncfusionInstance) ? window.getSyncfusionInstance(elemento.id) : null;
+            if (instanciaAntiga)
             {
                 console.log("🗑️ Destruindo instância antiga...");
                 try
                 {
-                    elemento.ej2_instances[0].destroy();
+                    instanciaAntiga.destroy();
                 }
                 catch (error)
                 {

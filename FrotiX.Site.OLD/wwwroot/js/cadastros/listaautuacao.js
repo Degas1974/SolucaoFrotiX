@@ -77,17 +77,17 @@ function ListaTodasNotificacoes()
         mostrarLoadingAutuacao();
 
         // ===== Coleta filtros =====
-        const veiculos = document.getElementById('lstVeiculos')?.ej2_instances?.[0];
-        const tipos = document.getElementById('lstTiposMulta')?.ej2_instances?.[0];
-        const motoristas = document.getElementById('lstMotorista')?.ej2_instances?.[0];
-        const orgaos = document.getElementById('lstOrgao')?.ej2_instances?.[0];
-        const statusCb = document.getElementById('lstStatus')?.ej2_instances?.[0];
+        const veiculos = $("#lstVeiculos").data("kendoComboBox");
+        const tipos = $("#lstTiposMulta").data("kendoComboBox");
+        const motoristas = $("#lstMotorista").data("kendoComboBox");
+        const orgaos = $("#lstOrgao").data("kendoComboBox");
+        const statusCb = $("#lstStatus").data("kendoComboBox");
 
-        const veiculoId = veiculos?.value ?? "";
-        const tipoMultaId = (tipos?.value !== null && tipos?.value !== "") ? tipos.value : "";
-        const motoristaId = motoristas?.value ?? "";
-        const orgaoAutuanteId = orgaos?.value ?? "";
-        const statusId = statusCb?.value ?? "";
+        const veiculoId = veiculos ? veiculos.value() : "";
+        const tipoMultaId = tipos ? (tipos.value() || "") : "";
+        const motoristaId = motoristas ? motoristas.value() : "";
+        const orgaoAutuanteId = orgaos ? orgaos.value() : "";
+        const statusId = statusCb ? statusCb.value() : "";
 
         // ===== Erros melhores (fila + dedupe + logs) =====
         DTBetterErrors.setGlobalOptions({
@@ -393,10 +393,10 @@ $(document).on('click', '.btn-status', function (e)
                     $("#txtStatusAtual").html(status || '-');
 
                     // Define o status atual no dropdown
-                    const lstStatus = document.getElementById('lstStatusAlterado')?.ej2_instances?.[0];
-                    if (lstStatus)
+                    var cbStatusAlt = $("#lstStatusAlterado").data("kendoComboBox");
+                    if (cbStatusAlt)
                     {
-                        lstStatus.value = status;
+                        cbStatusAlt.value(status ? status.toString() : "");
                     }
 
                     // Abre o modal

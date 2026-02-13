@@ -30,9 +30,9 @@ $(document).ready(function ()
         // Preenchimento inicial dos DDTs ao editar
         if (eventoId !== '00000000-0000-0000-0000-000000000000' && eventoId !== null)
         {
-            const ddtReq = document.getElementById("lstRequisitanteEvento")?.ej2_instances?.[0];
+            const ddtReq = $("#lstRequisitanteEvento").data("kendoComboBox");
             const ddtSet = document.getElementById("ddtSetorRequisitanteEvento")?.ej2_instances?.[0];
-            if (ddtReq) ddtReq.value = requisitanteId;
+            if (ddtReq) ddtReq.value(requisitanteId);
             if (ddtSet) ddtSet.value = setorsolicitanteId;
         } else
         {
@@ -427,12 +427,12 @@ $(document).ready(function ()
         // Preenchimento inicial ao editar
         if (eventoId !== '00000000-0000-0000-0000-000000000000' && eventoId !== null)
         {
-            const ddtReq = document.getElementById("lstRequisitanteEvento")?.ej2_instances?.[0];
+            const ddtReq = $("#lstRequisitanteEvento").data("kendoComboBox");
             const ddlSetor = document.getElementById('ddlSetorRequisitanteEvento');
 
             if (ddtReq && requisitanteId)
             {
-                ddtReq.value = [requisitanteId];
+                ddtReq.value(requisitanteId);
             }
 
             if (ddlSetor && setorsolicitanteId)

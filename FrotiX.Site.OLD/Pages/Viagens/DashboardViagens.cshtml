@@ -1244,9 +1244,7 @@
                                 <div class="col-6">
                                     <div class="form-group">
                                         <label class="label font-weight-bold">Finalidade da Viagem</label>
-                                        <ejs-combobox id="lstFinalidadeAlteradaDashboard" placeholder="Selecione uma Finalidade" allowFiltering="true" filterType="Contains" dataSource="@ViewData["lstFinalidade"]" popupHeight="250px" width="100%" showClearButton="true" change="FinalidadeChangeDashboard">
-                                            <e-combobox-fields text="Descricao" value="FinalidadeId"></e-combobox-fields>
-                                        </ejs-combobox>
+                                        <input id="lstFinalidadeAlteradaDashboard" name="lstFinalidadeAlteradaDashboard" style="width: 100%;" />
                                     </div>
                                 </div>
                                 <div class="col-6 esconde-diveventos-dashboard">
@@ -1306,24 +1304,18 @@
                     <div class="row">
                         <div class="col-6">
                             <label class="label font-weight-bold">Motorista</label>
-                            <ejs-combobox id="lstMotoristaAlteradoDashboard" placeholder="Selecione um Motorista" allowFiltering="true" filterType="Contains" dataSource="@ViewData["lstMotorista"]" popupHeight="250px" width="100%" showClearButton="true">
-                                <e-combobox-fields text="Nome" value="MotoristaId"></e-combobox-fields>
-                            </ejs-combobox>
+                            <input id="lstMotoristaAlteradoDashboard" name="lstMotoristaAlteradoDashboard" style="width: 100%;" />
                         </div>
                         <div class="col-6">
                             <label class="label font-weight-bold">Veículo</label>
-                            <ejs-combobox id="lstVeiculoAlteradoDashboard" placeholder="Selecione um Veículo" allowFiltering="true" filterType="Contains" dataSource="@ViewData["lstVeiculos"]" popupHeight="250px" width="100%" showClearButton="true">
-                                <e-combobox-fields text="Descricao" value="VeiculoId"></e-combobox-fields>
-                            </ejs-combobox>
+                            <input id="lstVeiculoAlteradoDashboard" name="lstVeiculoAlteradoDashboard" style="width: 100%;" />
                         </div>
                     </div>
 
                     <div class="row mt-3">
                         <div class="col-5">
                             <label class="label font-weight-bold">Solicitante</label>
-                            <ejs-combobox id="lstRequisitanteAlteradoDashboard" placeholder="Selecione um Solicitante" allowFiltering="true" filterType="Contains" dataSource="@ViewData["lstRequisitante"]" popupHeight="250px" width="100%" showClearButton="true">
-                                <e-combobox-fields text="Requisitante" value="RequisitanteId"></e-combobox-fields>
-                            </ejs-combobox>
+                            <input id="lstRequisitanteAlteradoDashboard" name="lstRequisitanteAlteradoDashboard" style="width: 100%;" />
                         </div>
                         <div class="col-2">
                             <label class="label font-weight-bold">Ramal</label>
@@ -1366,5 +1358,68 @@
     <script src="https://cdn.syncfusion.com/ej2/23.1.36/ej2-file-utils/dist/global/ej2-file-utils.min.js"></script>
     <script src="https://cdn.syncfusion.com/ej2/23.1.36/ej2-compression/dist/global/ej2-compression.min.js"></script>
     <script src="https://cdn.syncfusion.com/ej2/23.1.36/ej2-charts/dist/global/ej2-charts.min.js"></script>
+    <script>
+        (function () {
+            try {
+                // [KENDO] Dados para ComboBoxes do modal de ajuste
+                var dataFinalidade = @Html.Raw(Json.Serialize(ViewData["lstFinalidade"]));
+                var dataMotorista = @Html.Raw(Json.Serialize(ViewData["lstMotorista"]));
+                var dataVeiculos = @Html.Raw(Json.Serialize(ViewData["lstVeiculos"]));
+                var dataRequisitante = @Html.Raw(Json.Serialize(ViewData["lstRequisitante"]));
+
+                // Finalidade
+                $("#lstFinalidadeAlteradaDashboard").kendoComboBox({
+                    dataTextField: "descricao",
+                    dataValueField: "finalidadeId",
+                    placeholder: "Selecione uma Finalidade",
+                    filter: "contains",
+                    dataSource: dataFinalidade,
+                    height: 250,
+                    clearButton: true,
+                    change: function (e) {
+                        try { FinalidadeChangeDashboard(e); }
+                        catch (err) { console.error("FinalidadeChangeDashboard:", err); }
+                    }
+                });
+
+                // Motorista
+                $("#lstMotoristaAlteradoDashboard").kendoComboBox({
+                    dataTextField: "nome",
+                    dataValueField: "motoristaId",
+                    placeholder: "Selecione um Motorista",
+                    filter: "contains",
+                    dataSource: dataMotorista,
+                    height: 250,
+                    clearButton: true
+                });
+
+                // Veiculo
+                $("#lstVeiculoAlteradoDashboard").kendoComboBox({
+                    dataTextField: "descricao",
+                    dataValueField: "veiculoId",
+                    placeholder: "Selecione um Veículo",
+                    filter: "contains",
+                    dataSource: dataVeiculos,
+                    height: 250,
+                    clearButton: true
+                });
+
+                // Requisitante
+                $("#lstRequisitanteAlteradoDashboard").kendoComboBox({
+                    dataTextField: "requisitante",
+                    dataValueField: "requisitanteId",
+                    placeholder: "Selecione um Solicitante",
+                    filter: "contains",
+                    dataSource: dataRequisitante,
+                    height: 250,
+                    clearButton: true
+                });
+
+                console.log("[KENDO] DashboardViagens: 4 ComboBoxes inicializados");
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("DashboardViagens.cshtml", "kendoComboBox.init", error);
+            }
+        })();
+    </script>
     <script src="~/js/dashboards/dashboard-viagens.js" asp-append-version="true"></script>
 }

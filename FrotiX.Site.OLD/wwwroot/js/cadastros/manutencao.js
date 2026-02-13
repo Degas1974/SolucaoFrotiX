@@ -1528,8 +1528,8 @@ $("#modalManutencao")
             var descricao = document.getElementById("rteManutencao").ej2_instances[0];
             descricao.value = "";
 
-            var motorista = document.getElementById("lstMotorista").ej2_instances[0];
-            motorista.value = "";
+            var motorista = $("#lstMotorista").data("kendoComboBox");
+            if (motorista) motorista.value("");
 
             // Limpa o Upload (sem quebrar se não estiver inicializado)
             var $file = $("#txtFileItem");
@@ -1606,7 +1606,7 @@ $("#btnInsereItem").click(function (e)
         }
 
         var Descricao = document.getElementById("rteManutencao").ej2_instances[0];
-        var Motorista = document.getElementById("lstMotorista").ej2_instances[0];
+        var Motorista = $("#lstMotorista").data("kendoComboBox");
 
         // Verifica se tem foto (incluindo semimagem.jpg como "sem foto")
         const img = ImagemOcorrencia || '';
@@ -1689,7 +1689,7 @@ $("#btnInsereItem").click(function (e)
                 itemManutencaoId: "",
                 descricao: removeHTML(Descricao.value),
                 resumo: Resumo,
-                motoristaId: Motorista.value,
+                motoristaId: Motorista ? Motorista.value() : "",
                 imagemOcorrencia: ImagemOcorrencia,
                 viagemId: "",
             })
@@ -2330,9 +2330,9 @@ $(document).ready(function ()
             //Pega ID da Manutenção
             ManutencaoId = manutencaoId;
 
-            //Impede mudança do Veículo (Syncfusion)
-            var lstVeiculo = document.getElementById("lstVeiculo").ej2_instances[0];
-            lstVeiculo.enabled = false;
+            //Impede mudanca do Veiculo (Kendo)
+            var lstVeiculo = $("#lstVeiculo").data("kendoComboBox");
+            if (lstVeiculo) lstVeiculo.enable(false);
 
             //Preenche a Lista de Itens da OS
             VeiculoChange();
@@ -2892,8 +2892,9 @@ function PreenchePagina()
 {
     try
     {
-        // Obtém VeiculoId do componente Syncfusion
-        VeiculoId = document.getElementById("lstVeiculo").ej2_instances[0].value;
+        // Obtem VeiculoId do componente Kendo
+        var lstVeiculoWidget = $("#lstVeiculo").data("kendoComboBox");
+        VeiculoId = lstVeiculoWidget ? lstVeiculoWidget.value() : "";
 
         if (VeiculoId != "" && VeiculoId != null)
         {
@@ -2918,7 +2919,8 @@ function PreenchePagina()
                         DataOS.substring(8, 10) +
                         "-";
                     console.log("DataOS 2: " + DataOS);
-                    let VeiculoPlaca = document.getElementById("lstVeiculo").ej2_instances[0].text;
+                    let lstVeiculoWidgetOS = $("#lstVeiculo").data("kendoComboBox");
+                    let VeiculoPlaca = lstVeiculoWidgetOS ? lstVeiculoWidgetOS.text() : "";
                     let indiceEspaco = VeiculoPlaca.indexOf(" ");
                     VeiculoPlaca = VeiculoPlaca.substring(0, indiceEspaco);
                     VeiculoPlaca = VeiculoPlaca.replace("-", "").replace(" ", "");
@@ -3630,8 +3632,8 @@ function InsereRegistro()
         $("#btnEdita").prop("disabled", true);
         $("#btnAdiciona").prop("disabled", true);
 
-        var veiculo = document.getElementById("lstVeiculo").ej2_instances[0];
-        var veiculoreserva = document.getElementById("lstVeiculoReserva").ej2_instances[0];
+        var veiculo = $("#lstVeiculo").data("kendoComboBox");
+        var veiculoreserva = $("#lstVeiculoReserva").data("kendoComboBox");
 
         if (manutencaoId === null || manutencaoId === "00000000-0000-0000-0000-000000000000")
         {
@@ -3644,12 +3646,12 @@ function InsereRegistro()
             DataSolicitacao: $("#txtDataSolicitacao").val(),
             DataDisponibilidade: $("#txtDataDisponibilidade").val(),
             DataEntrega: $("#txtDataEntrega").val(),
-            VeiculoId: veiculo.value,
+            VeiculoId: veiculo ? veiculo.value() : "",
             ResumoOS: $("#txtResumoOS").val(),
             DataDevolucao: $("#txtDataDevolucao").val(),
             StatusOS: $("#lstStatus").val(),
             ReservaEnviado: parseInt($("#lstReserva").val()),
-            VeiculoReservaId: veiculoreserva.value,
+            VeiculoReservaId: veiculoreserva ? veiculoreserva.value() : "",
             DataRecebimentoReserva: $("#txtDataRecebimentoReserva").val(),
             DataDevolucaoReserva: $("#txtDataDevolucaoReserva").val(),
             //    "ManutencaoPreventiva": document.getElementById("chkManutencaoPreventiva").checked,

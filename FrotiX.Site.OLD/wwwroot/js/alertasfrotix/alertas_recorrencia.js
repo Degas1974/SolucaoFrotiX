@@ -207,50 +207,39 @@ function inicializarControlesRecorrenciaAlerta() {
  */
 function configurarEventosRecorrenciaAlerta() {
     try {
-        // Event handler para mudança no TipoExibicao (Syncfusion dropdown)
-        // CORREÇÃO: O ID correto é "TipoExibicao", não "lstTipoExibicao"
-        var tipoExibicaoElement = document.getElementById('TipoExibicao');
+        // Event handler para mudanca no TipoExibicao (Kendo DropDownList)
+        var ddlTipoExibicao = $("#TipoExibicao").data("kendoDropDownList");
         
-        if (tipoExibicaoElement && tipoExibicaoElement.ej2_instances && tipoExibicaoElement.ej2_instances[0]) {
-            var dropdown = tipoExibicaoElement.ej2_instances[0];
-            
-            // Guardar referência do handler original se existir
-            var originalChangeHandler = dropdown.change;
-            
-            // Adicionar handler para controles de recorrência
-            dropdown.change = function(args) {
+        if (ddlTipoExibicao) {
+            // Bind handler para controles de recorrencia
+            ddlTipoExibicao.bind("change", function(e) {
                 try {
-                    // Chamar handler original se existir
-                    if (originalChangeHandler && typeof originalChangeHandler === 'function') {
-                        originalChangeHandler.call(this, args);
-                    }
-                    
-                    // Processar controles de recorrência
-                    var tipoExibicao = parseInt(args.value);
+                    // Processar controles de recorrencia
+                    var tipoExibicao = parseInt(this.value());
                     mostrarCamposPorTipoExibicao(tipoExibicao);
                 } catch (error) {
                     Alerta.TratamentoErroComLinha(error, 'TipoExibicao.change.recorrencia');
                 }
-            };
+            });
             
-            console.log('✅ Event handler de recorrência configurado para TipoExibicao');
+            console.log('Event handler de recorrencia configurado para TipoExibicao (Kendo)');
         } else {
-            console.warn('⚠️ Dropdown TipoExibicao não encontrado ou não inicializado');
+            console.warn('Dropdown TipoExibicao nao encontrado (Kendo)');
             
-            // Fallback: tentar novamente após um delay
+            // Fallback: tentar novamente apos um delay
             setTimeout(function() {
                 try {
-                    var el = document.getElementById('TipoExibicao');
-                    if (el && el.ej2_instances && el.ej2_instances[0]) {
-                        el.ej2_instances[0].change = function(args) {
+                    var ddl = $("#TipoExibicao").data("kendoDropDownList");
+                    if (ddl) {
+                        ddl.bind("change", function(e) {
                             try {
-                                var tipoExibicao = parseInt(args.value);
+                                var tipoExibicao = parseInt(this.value());
                                 mostrarCamposPorTipoExibicao(tipoExibicao);
                             } catch (error) {
                                 Alerta.TratamentoErroComLinha(error, 'TipoExibicao.change.fallback');
                             }
-                        };
-                        console.log('✅ Event handler de recorrência configurado (fallback)');
+                        });
+                        console.log('Event handler de recorrencia configurado (fallback Kendo)');
                     }
                 } catch (err) {
                     console.error('Erro no fallback:', err);
@@ -267,10 +256,10 @@ function configurarEventosRecorrenciaAlerta() {
  */
 function verificarEstadoRecorrenciaAlerta() {
     try {
-        var tipoExibicaoElement = document.getElementById('TipoExibicao');
+        var ddlTipoExibicao = $("#TipoExibicao").data("kendoDropDownList");
         
-        if (tipoExibicaoElement && tipoExibicaoElement.ej2_instances && tipoExibicaoElement.ej2_instances[0]) {
-            var valor = tipoExibicaoElement.ej2_instances[0].value;
+        if (ddlTipoExibicao) {
+            var valor = ddlTipoExibicao.value();
             if (valor) {
                 var tipoExibicao = parseInt(valor);
                 console.log('Estado inicial - TipoExibicao:', tipoExibicao);
@@ -435,11 +424,12 @@ function atualizarCampoHidden() {
  */
 function coletarDadosRecorrenciaAlerta() {
     try {
-        var tipoExibicaoElement = document.getElementById('TipoExibicao');
+        // Obter TipoExibicao via Kendo
+        var ddlTipoExibicao = $("#TipoExibicao").data("kendoDropDownList");
         var tipoExibicao = 1;
         
-        if (tipoExibicaoElement && tipoExibicaoElement.ej2_instances && tipoExibicaoElement.ej2_instances[0]) {
-            tipoExibicao = parseInt(tipoExibicaoElement.ej2_instances[0].value) || 1;
+        if (ddlTipoExibicao) {
+            tipoExibicao = parseInt(ddlTipoExibicao.value()) || 1;
         }
 
         var dados = {
@@ -464,10 +454,10 @@ function coletarDadosRecorrenciaAlerta() {
                 }
                 break;
 
-            case 7: // Mensal
-                var lstDiasMes = document.getElementById('lstDiasMesAlerta');
-                if (lstDiasMes && lstDiasMes.ej2_instances && lstDiasMes.ej2_instances[0]) {
-                    dados.DiaMesRecorrencia = parseInt(lstDiasMes.ej2_instances[0].value);
+            case 7: // Mensal (Kendo)
+                var ddlDiaMes = $("#lstDiasMesAlerta").data("kendoDropDownList");
+                if (ddlDiaMes) {
+                    dados.DiaMesRecorrencia = parseInt(ddlDiaMes.value());
                 }
                 break;
 
@@ -514,12 +504,11 @@ function preencherCamposRecorrenciaAlerta(alerta) {
                 }
                 break;
 
-            case 7: // Mensal
+            case 7: // Mensal (Kendo)
                 if (alerta.DiaMesRecorrencia) {
-                    var lstDiasMes = document.getElementById('lstDiasMesAlerta');
-                    if (lstDiasMes && lstDiasMes.ej2_instances && lstDiasMes.ej2_instances[0]) {
-                        lstDiasMes.ej2_instances[0].value = alerta.DiaMesRecorrencia;
-                        lstDiasMes.ej2_instances[0].dataBind();
+                    var ddlDiaMes = $("#lstDiasMesAlerta").data("kendoDropDownList");
+                    if (ddlDiaMes) {
+                        ddlDiaMes.value(String(alerta.DiaMesRecorrencia));
                     }
                 }
                 break;

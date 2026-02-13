@@ -385,14 +385,7 @@
 						</div>
 						<div class="row">
 							<div class="col-12 col-md-6">
-								<ejs-combobox id="lstOrgaosAutuantes"
-											  placeholder="Selecione um Órgão"
-											  allowFiltering="true" filterType="Contains"
-											  dataSource="@ViewData["lstOrgaoAutuante"]"
-											  popupHeight="250px" width="100%" showClearButton="true"
-											  change="OrgaoValueChange">
-									<e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-								</ejs-combobox>
+								<input id="lstOrgaosAutuantes" style="width: 100%;" />
 							</div>
 						</div>
 					</div>
@@ -583,8 +576,31 @@
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
 	<script>
+		// ====== Kendo ComboBox Init (migrado de Syncfusion EJ2) ======
+		(function () {
+			try {
+				var dataOrgao = @Html.Raw(Json.Serialize(ViewData["lstOrgaoAutuante"]));
+
+				$("#lstOrgaosAutuantes").kendoComboBox({
+					dataTextField: "descricao",
+					dataValueField: "id",
+					placeholder: "Selecione um \u00d3rg\u00e3o",
+					filter: "contains",
+					clearButton: true,
+					dataSource: dataOrgao,
+					height: 250,
+					change: function (e) {
+						try { OrgaoValueChange(); }
+						catch (err) { Alerta.TratamentoErroComLinha("ListaEmpenhosMulta.cshtml", "lstOrgaosAutuantes.change", err); }
+					}
+				});
+			} catch (error) {
+				Alerta.TratamentoErroComLinha("ListaEmpenhosMulta.cshtml", "kendoComboBox.init", error);
+			}
+		})();
+
 		// ============================================================================
-		// ComboBox Change (Órgão) -> Carrega DataTable de Empenhos
+		// ComboBox Change (Orgao) -> Carrega DataTable de Empenhos
 		// ============================================================================
 		function OrgaoValueChange() {
 			try {
@@ -592,10 +608,10 @@
 				table.destroy();
 				$('#tblEmpenho tbody').empty();
 
-				const orgao = document.getElementById('lstOrgaosAutuantes').ej2_instances[0];
-				if (!orgao || orgao.value === null) return;
+				var orgao = $("#lstOrgaosAutuantes").data("kendoComboBox");
+				if (!orgao || !orgao.value()) return;
 
-				const orgaoId = orgao.value.toString();
+				const orgaoId = orgao.value().toString();
 				$('#divEmpenho').prop('hidden', false);
 
 				let dataTableEmpenho = $('#tblEmpenho').DataTable({

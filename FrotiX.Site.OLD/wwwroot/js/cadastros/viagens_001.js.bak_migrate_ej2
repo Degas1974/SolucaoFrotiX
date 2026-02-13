@@ -705,25 +705,25 @@ function ListaTodasViagens() {
         });
 
         var veiculoId = "";
-        var veiculos = $("#lstVeiculos").data("kendoComboBox");
-        if (veiculos.value() != null) veiculoId = veiculos.value();
+        var veiculos = document.getElementById("lstVeiculos").ej2_instances[0];
+        if (veiculos.value != null) veiculoId = veiculos.value;
 
         var motoristaId = "";
-        var motoristas = $("#lstMotorista").data("kendoComboBox");
-        if (motoristas.value() != null) motoristaId = motoristas.value();
+        var motoristas = document.getElementById("lstMotorista").ej2_instances[0];
+        if (motoristas.value != null) motoristaId = motoristas.value;
 
         var eventoId = "";
-        var eventos = $("#lstEventos").data("kendoComboBox");
-        if (eventos.value() != null) eventoId = eventos.value();
+        var eventos = document.getElementById("lstEventos").ej2_instances[0];
+        if (eventos.value != null) eventoId = eventos.value;
 
-        var status = $("#lstStatus").data("kendoComboBox");
+        var status = document.getElementById("lstStatus").ej2_instances[0];
         var statusId = "Aberta";
 
-        if (status.value() === "" || status.value() === null) {
+        if (status.value === "" || status.value === null) {
             if (
-                motoristas.value() != null ||
-                veiculos.value() != null ||
-                eventos.value() != null ||
+                motoristas.value != null ||
+                veiculos.value != null ||
+                eventos.value != null ||
                 ($("#txtData").val() != null && $("#txtData").val() != "")
             ) {
                 statusId = "Todas";
@@ -731,13 +731,13 @@ function ListaTodasViagens() {
         }
 
         if (
-            motoristas.value() == null &&
-            veiculos.value() == null &&
-            eventos.value() == null &&
+            motoristas.value == null &&
+            veiculos.value == null &&
+            eventos.value == null &&
             ($("#txtData").val() === null || $("#txtData").val() === "")
         ) {
-            if (status.value() != null) {
-                statusId = status.value();
+            if (status.value != null) {
+                statusId = status.value;
             }
         }
 

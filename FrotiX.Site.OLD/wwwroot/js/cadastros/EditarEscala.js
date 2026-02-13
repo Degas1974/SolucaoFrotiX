@@ -65,20 +65,20 @@ function inicializarSubmitEscala() {
                 var dataEscalaPicker = document.getElementById('dataEscala')?.ej2_instances?.[0];
                 var horaInicioPicker = document.getElementById('horaInicio')?.ej2_instances?.[0];
                 var horaFimPicker = document.getElementById('horaFim')?.ej2_instances?.[0];
-                var turnoDropdown = document.getElementById('turnoId')?.ej2_instances?.[0];
-                var veiculoDropdown = document.getElementById('veiculoId')?.ej2_instances?.[0];
-                var tipoServicoDropdown = document.getElementById('tipoServicoId')?.ej2_instances?.[0];
-                var lotacaoDropdown = document.getElementById('lotacao')?.ej2_instances?.[0];
-                var requisitanteDropdown = document.getElementById('requisitanteId')?.ej2_instances?.[0];
+                var turnoDropdown = $("#turnoId").data("kendoDropDownList");
+                var veiculoDropdown = $("#veiculoId").data("kendoDropDownList");
+                var tipoServicoDropdown = $("#tipoServicoId").data("kendoDropDownList");
+                var lotacaoDropdown = $("#lotacao").data("kendoDropDownList");
+                var requisitanteDropdown = $("#requisitanteId").data("kendoDropDownList");
                 var observacoesTextbox = document.getElementById('observacoes')?.ej2_instances?.[0];
 
                 // =====================================================
                 // COMPONENTES DE INDISPONIBILIDADE
                 // =====================================================
-                var categoriaDropdown = document.getElementById('categoriaIndisponibilidade')?.ej2_instances?.[0];
+                var categoriaDropdown = $("#categoriaIndisponibilidade").data("kendoDropDownList");
                 var dataInicioIndispPicker = document.getElementById('dataInicioIndisponibilidade')?.ej2_instances?.[0];
                 var dataFimIndispPicker = document.getElementById('dataFimIndisponibilidade')?.ej2_instances?.[0];
-                var motoristaCobertorDropdown = document.getElementById('motoristaCobertorId')?.ej2_instances?.[0];
+                var motoristaCobertorDropdown = $("#motoristaCobertorId").data("kendoDropDownList");
 
                 console.log("Componentes Syncfusion:");
                 console.log("- dataEscalaPicker:", dataEscalaPicker ? "OK" : "NULL");
@@ -101,16 +101,16 @@ function inicializarSubmitEscala() {
                 var dados = {
                     EscalaDiaId: escalaDiaId,
                     MotoristaId: $("#hiddenMotoristaId").val(),
-                    VeiculoId: veiculoNaoDefinido ? '' : (veiculoDropdown?.value || ''),
+                    VeiculoId: veiculoNaoDefinido ? '' : (veiculoDropdown ? veiculoDropdown.value() : ''),
                     VeiculoNaoDefinido: veiculoNaoDefinido,
                     NumeroSaidas: $("#hiddenNumeroSaidas").val() || 0,
                     DataEscala: formatarData(dataEscalaPicker),
                     HoraInicio: formatarHora(horaInicioPicker),
                     HoraFim: formatarHora(horaFimPicker),
-                    TurnoId: turnoDropdown?.value || '',
-                    TipoServicoId: tipoServicoDropdown?.value || '',
-                    Lotacao: lotacaoDropdown?.value || '',
-                    RequisitanteId: requisitanteDropdown?.value || null,
+                    TurnoId: turnoDropdown ? turnoDropdown.value() : '',
+                    TipoServicoId: tipoServicoDropdown ? tipoServicoDropdown.value() : '',
+                    Lotacao: lotacaoDropdown ? lotacaoDropdown.value() : '',
+                    RequisitanteId: requisitanteDropdown ? requisitanteDropdown.value() : null,
                     Observacoes: observacoesTextbox?.value || '',
                     MotoristaIndisponivel: isIndisponivel,
                     MotoristaEconomildo: $("#MotoristaEconomildo").is(":checked"),
@@ -120,10 +120,10 @@ function inicializarSubmitEscala() {
                     // =====================================================
                     // CAMPOS DE INDISPONIBILIDADE
                     // =====================================================
-                    CategoriaIndisponibilidade: isIndisponivel ? (categoriaDropdown?.value || '') : '',
+                    CategoriaIndisponibilidade: isIndisponivel ? (categoriaDropdown ? categoriaDropdown.value() : '') : '',
                     DataInicioIndisponibilidade: isIndisponivel ? formatarData(dataInicioIndispPicker) : '',
                     DataFimIndisponibilidade: isIndisponivel ? formatarData(dataFimIndispPicker) : '',
-                    MotoristaCobertorId: isIndisponivel ? (motoristaCobertorDropdown?.value || '') : '',
+                    MotoristaCobertorId: isIndisponivel ? (motoristaCobertorDropdown ? motoristaCobertorDropdown.value() : '') : '',
 
                     // =====================================================
                     // DIAS DA SEMANA
@@ -280,13 +280,13 @@ function inicializarEventosEditarEscala() {
         setTimeout(function() {
             try {
                 var checkbox = document.getElementById('veiculoNaoDefinido');
-                var veiculoDropdown = document.getElementById('veiculoId')?.ej2_instances?.[0];
+                var veiculoDropdown = $("#veiculoId").data("kendoDropDownList");
                 
                 if (checkbox && veiculoDropdown) {
                     // Se checkbox está marcada, desabilitar dropdown
                     if (checkbox.checked) {
-                        veiculoDropdown.enabled = false;
-                        veiculoDropdown.value = null;
+                        veiculoDropdown.enable(false);
+                        veiculoDropdown.value("");
                     }
                 }
             } catch (error) {
@@ -296,16 +296,15 @@ function inicializarEventosEditarEscala() {
 
         $('#veiculoNaoDefinido').change(function() {
             try {
-                var veiculoDropdown = document.getElementById('veiculoId')?.ej2_instances?.[0];
+                var veiculoDropdown = $("#veiculoId").data("kendoDropDownList");
                 if (veiculoDropdown) {
                     if (this.checked) {
                         // Desabilitar dropdown e limpar valor
-                        veiculoDropdown.enabled = false;
-                        veiculoDropdown.value = null;
-                        veiculoDropdown.text = '';
+                        veiculoDropdown.enable(false);
+                        veiculoDropdown.value("");
                     } else {
                         // Habilitar dropdown
-                        veiculoDropdown.enabled = true;
+                        veiculoDropdown.enable(true);
                     }
                 }
             } catch (error) {
@@ -320,15 +319,16 @@ function inicializarEventosEditarEscala() {
         // Aguardar componentes Syncfusion carregarem
         setTimeout(function() {
             try {
-                var tipoServicoDropdown = document.getElementById('tipoServicoId')?.ej2_instances?.[0];
+                var tipoServicoDropdown = $("#tipoServicoId").data("kendoDropDownList");
                 
                 if (tipoServicoDropdown) {
                     // Evento quando TipoServico muda
-                    tipoServicoDropdown.change = function(args) {
+                    tipoServicoDropdown.bind("change", function(e) {
                         try {
-                            if (!args.itemData) return;
+                            var dataItem = this.dataItem();
+                            if (!dataItem) return;
                             
-                            var textoSelecionado = args.itemData.Text || '';
+                            var textoSelecionado = dataItem.Text || '';
                             
                             // Se selecionou "Economildo", marca a checkbox
                             if (textoSelecionado.toLowerCase() === 'economildo') {
@@ -339,7 +339,7 @@ function inicializarEventosEditarEscala() {
                         } catch (error) {
                             Alerta.TratamentoErroComLinha('EditarEscala.js', 'tipoServicoDropdown.change', error);
                         }
-                    };
+                    });
                 }
             } catch (error) {
                 Alerta.TratamentoErroComLinha('EditarEscala.js', 'tipoServico.setTimeout', error);
@@ -397,7 +397,7 @@ function inicializarEventosEditarEscala() {
 
         $('#MotoristaEconomildo').change(function () {
             try {
-                var tipoServicoDropdown = document.getElementById('tipoServicoId')?.ej2_instances?.[0];
+                var tipoServicoDropdown = $("#tipoServicoId").data("kendoDropDownList");
                 
                 if (this.checked) {
                     $('#economildoSection').slideDown();
@@ -415,11 +415,11 @@ function inicializarEventosEditarEscala() {
                     
                     // Selecionar "Economildo" no dropdown TipoServico
                     if (tipoServicoDropdown) {
-                        var items = tipoServicoDropdown.dataSource;
+                        var items = tipoServicoDropdown.dataSource.data();
                         if (items && items.length > 0) {
                             for (var i = 0; i < items.length; i++) {
                                 if (items[i].Text && items[i].Text.toLowerCase() === 'economildo') {
-                                    tipoServicoDropdown.value = items[i].Value;
+                                    tipoServicoDropdown.value(items[i].Value ? items[i].Value.toString() : "");
                                     break;
                                 }
                             }

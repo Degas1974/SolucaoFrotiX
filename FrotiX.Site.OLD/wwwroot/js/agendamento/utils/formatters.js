@@ -269,27 +269,28 @@ window.removeDate = function (timestamp)
     {
         window.selectedDates = window.selectedDates.filter(d => d.Timestamp !== timestamp);
 
-        const listBox = document.getElementById("lstDiasCalendario");
-        if (listBox && listBox.ej2_instances && listBox.ej2_instances[0])
-        {
-            listBox.ej2_instances[0].dataSource = window.selectedDates;
-            listBox.ej2_instances[0].dataBind();
+        // [LOGICA] Atualizar ListBox com datas filtradas (via bridge ej2_instances ou widget Kendo)
+        var listBoxWidget = window.getSyncfusionInstance("lstDiasCalendario");
+        if (listBoxWidget) {
+            if (typeof listBoxWidget.dataSource === 'function') {
+                // Kendo widget
+                listBoxWidget.dataSource(window.selectedDates);
+            } else if (listBoxWidget.dataSource !== undefined) {
+                // Syncfusion/bridge compat
+                listBoxWidget.dataSource = window.selectedDates;
+                if (typeof listBoxWidget.dataBind === 'function') listBoxWidget.dataBind();
+            }
         }
 
-        const calendarObj = document.getElementById("calDatasSelecionadas");
-        if (calendarObj && calendarObj.ej2_instances && calendarObj.ej2_instances[0])
-        {
-            const cal = calendarObj.ej2_instances[0];
-            const dateToRemove = new Date(timestamp);
-
-            let currentSelectedDates = cal.values || [];
-            currentSelectedDates = currentSelectedDates.filter(date =>
-            {
-                const normalizedDate = new Date(date).setHours(0, 0, 0, 0);
+        // [LOGICA] Remover data do calendário multi-select
+        var calWidget = window.getSyncfusionInstance("calDatasSelecionadas");
+        if (calWidget) {
+            var currentSelectedDates = calWidget.values || [];
+            currentSelectedDates = currentSelectedDates.filter(function(date) {
+                var normalizedDate = new Date(date).setHours(0, 0, 0, 0);
                 return normalizedDate !== timestamp;
             });
-
-            cal.values = currentSelectedDates;
+            calWidget.values = currentSelectedDates;
         }
     } catch (error)
     {
@@ -408,11 +409,15 @@ window.syncListBoxAndBadges = function ()
 {
     try
     {
-        const listBox = document.getElementById("lstDiasCalendario");
-        if (listBox && listBox.ej2_instances && listBox.ej2_instances[0] && window.selectedDates)
-        {
-            listBox.ej2_instances[0].dataSource = window.selectedDates;
-            listBox.ej2_instances[0].dataBind();
+        // [LOGICA] Atualizar ListBox com datas selecionadas (via bridge)
+        var listBoxWidget = window.getSyncfusionInstance("lstDiasCalendario");
+        if (listBoxWidget && window.selectedDates) {
+            if (typeof listBoxWidget.dataSource === 'function') {
+                listBoxWidget.dataSource(window.selectedDates);
+            } else if (listBoxWidget.dataSource !== undefined) {
+                listBoxWidget.dataSource = window.selectedDates;
+                if (typeof listBoxWidget.dataBind === 'function') listBoxWidget.dataBind();
+            }
         }
 
         const totalItems = window.selectedDates ? window.selectedDates.length : 0;

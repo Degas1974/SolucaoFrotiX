@@ -109,13 +109,7 @@
 
 							<div class="col-md-4">
 								<label class="label required-field">Prioridade</label>
-								<ejs-dropdownlist id="Prioridade" name="Prioridade"
-												  placeholder="Selecione a prioridade"
-												  dataSource="@Model.PrioridadesList"
-												  value="@((int)Model.Prioridade)"
-												  floatLabelType="Never">
-									<e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-								</ejs-dropdownlist>
+								<input id="Prioridade" name="Prioridade" style="width: 100%;" />
 								<span class="text-danger field-validation-valid" data-valmsg-for="Prioridade"></span>
 							</div>
 						</div>
@@ -199,54 +193,16 @@
 							<div class="row">
 								<div class="col-md-6" id="divViagem" style="display: none;">
 									<label class="label">Agendamento Relacionado</label>
-									<ejs-dropdownlist id="ViagemId"
-													  name="ViagemId"
-													  placeholder="Selecione o agendamento"
-													  dataSource="@Model.ViagensListCompleta"
-													  value="@Model.ViagemId"
-													  allowFiltering="true"
-													  filterType="Contains"
-													  floatLabelType="Never"
-													  popupHeight="400px"
-													  popupWidth="600px">
-										<e-dropdownlist-fields text="DataInicial" value="ViagemId"></e-dropdownlist-fields>
-									</ejs-dropdownlist>
-								</div>
-
+								<input id="ViagemId" name="ViagemId" style="width: 100%;" />
 								<div class="col-md-6" id="divManutencao" style="display: none;">
 									<label class="label">Manutenção Relacionada</label>
-									<ejs-dropdownlist id="ManutencaoId" name="ManutencaoId"
-													  placeholder="Selecione a manutenção"
-													  dataSource="@Model.ManutencoesListCompleta"
-													  value="@Model.ManutencaoId"
-													  allowFiltering="true"
-													  floatLabelType="Never">
-										<e-dropdownlist-fields text="NumOS" value="ManutencaoId"></e-dropdownlist-fields>
-									</ejs-dropdownlist>
-								</div>
-
+								<input id="ManutencaoId" name="ManutencaoId" style="width: 100%;" />
 								<div class="col-md-6" id="divMotorista" style="display: none;">
 									<label class="label">Motorista Relacionado</label>
-									<ejs-dropdownlist id="MotoristaId" name="MotoristaId"
-													  placeholder="Selecione o motorista"
-													  dataSource="@Model.MotoristasList"
-													  value="@Model.MotoristaId"
-													  allowFiltering="true"
-													  floatLabelType="Never">
-										<e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-									</ejs-dropdownlist>
-								</div>
-
+								<input id="MotoristaId" name="MotoristaId" style="width: 100%;" />
 								<div class="col-md-6" id="divVeiculo" style="display: none;">
 									<label class="label">Veículo Relacionado</label>
-									<ejs-dropdownlist id="VeiculoId" name="VeiculoId"
-													  placeholder="Selecione o veículo"
-													  dataSource="@Model.VeiculosList"
-													  value="@Model.VeiculoId"
-													  allowFiltering="true"
-													  floatLabelType="Never">
-										<e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-									</ejs-dropdownlist>
+								<input id="VeiculoId" name="VeiculoId" style="width: 100%;" />
 								</div>
 							</div>
 						</div>
@@ -261,16 +217,7 @@
 						<div class="row">
 							<div class="col-md-4">
 								<label class="label required-field">Tipo de Exibição</label>
-								<ejs-dropdownlist id="TipoExibicao"
-												  placeholder="Quando exibir o alerta"
-												  dataSource="@Model.TipoExibicaoList"
-												  value="@((int)Model.TipoExibicao)"
-												  allowFiltering="true"
-												  floatLabelType="Never"
-												  popupHeight="300px"
-												  zIndex="1000">
-									<e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-								</ejs-dropdownlist>
+								<input id="TipoExibicao" style="width: 100%;" />
 							</div>
 						</div>
 
@@ -352,15 +299,7 @@
 									Dia do Mês
 									<i class="fa-duotone fa-calendar-clock field-icon" style="font-size: 1.25em; cursor: pointer;"></i>
 								</label>
-								<ejs-dropdownlist id="lstDiasMesAlerta"
-												name="DiaMesRecorrencia"
-												placeholder="Selecione..."
-												value="@Model.DiaMesRecorrencia"
-												popupHeight="250px"
-												floatLabelType="Never"
-												cssClass="e-outline">
-									<e-dropdownlist-fields value="Value" text="Text"></e-dropdownlist-fields>
-								</ejs-dropdownlist>
+								<input id="lstDiasMesAlerta" name="DiaMesRecorrencia" style="width: 100%;" />
 							</div>
 						</div>
 
@@ -453,14 +392,109 @@
 	<script src="~/js/alertasfrotix/alertas_recorrencia.js" asp-append-version="true"></script>
 
 	<script>
+		(function () {
+			try {
+				// ================================================================
+				// KENDO DROPDOWNLIST INIT - Migrado de Syncfusion ejs-dropdownlist
+				// ================================================================
+
+				var dataPrioridade = @Html.Raw(Json.Serialize(Model.PrioridadesList));
+				var dataViagens = @Html.Raw(Json.Serialize(Model.ViagensListCompleta));
+				var dataManutencoes = @Html.Raw(Json.Serialize(Model.ManutencoesListCompleta));
+				var dataMotoristas = @Html.Raw(Json.Serialize(Model.MotoristasList));
+				var dataVeiculos = @Html.Raw(Json.Serialize(Model.VeiculosList));
+				var dataTipoExibicao = @Html.Raw(Json.Serialize(Model.TipoExibicaoList));
+
+				// Prioridade
+				$("#Prioridade").kendoDropDownList({
+					dataTextField: "text",
+					dataValueField: "value",
+					optionLabel: "Selecione a prioridade",
+					dataSource: dataPrioridade,
+					value: "@((int)Model.Prioridade)"
+				});
+
+				// ViagemId (Agendamento Relacionado)
+				$("#ViagemId").kendoDropDownList({
+					dataTextField: "dataInicial",
+					dataValueField: "viagemId",
+					optionLabel: "Selecione o agendamento",
+					dataSource: dataViagens,
+					filter: "contains",
+					height: 400,
+					value: "@(Model.ViagemId?.ToString() ?? "")"
+				});
+
+				// ManutencaoId
+				$("#ManutencaoId").kendoDropDownList({
+					dataTextField: "numOS",
+					dataValueField: "manutencaoId",
+					optionLabel: "Selecione a manutenção",
+					dataSource: dataManutencoes,
+					filter: "contains",
+					value: "@(Model.ManutencaoId?.ToString() ?? "")"
+				});
+
+				// MotoristaId
+				$("#MotoristaId").kendoDropDownList({
+					dataTextField: "text",
+					dataValueField: "value",
+					optionLabel: "Selecione o motorista",
+					dataSource: dataMotoristas,
+					filter: "contains",
+					value: "@(Model.MotoristaId?.ToString() ?? "")"
+				});
+
+				// VeiculoId
+				$("#VeiculoId").kendoDropDownList({
+					dataTextField: "text",
+					dataValueField: "value",
+					optionLabel: "Selecione o veículo",
+					dataSource: dataVeiculos,
+					filter: "contains",
+					value: "@(Model.VeiculoId?.ToString() ?? "")"
+				});
+
+				// TipoExibicao
+				$("#TipoExibicao").kendoDropDownList({
+					dataTextField: "text",
+					dataValueField: "value",
+					optionLabel: "Quando exibir o alerta",
+					dataSource: dataTipoExibicao,
+					filter: "contains",
+					height: 300,
+					value: "@((int)Model.TipoExibicao)"
+				});
+
+				// lstDiasMesAlerta (Dia do Mes - datasource gerado localmente)
+				var dataDiasMes = [];
+				for (var i = 1; i <= 31; i++) {
+					dataDiasMes.push({ text: i.toString(), value: i });
+				}
+				$("#lstDiasMesAlerta").kendoDropDownList({
+					dataTextField: "text",
+					dataValueField: "value",
+					optionLabel: "Selecione...",
+					dataSource: dataDiasMes,
+					height: 250,
+					value: "@(Model.DiaMesRecorrencia?.ToString() ?? "")"
+				});
+
+			} catch (error) {
+				console.error('Erro na inicializacao Kendo DropDownLists:', error);
+				Alerta.TratamentoErroComLinha("Upsert.cshtml", "kendoDropDownList.init", error);
+			}
+		})();
+	</script>
+
+	<script>
 		document.addEventListener('DOMContentLoaded', function() {
 			try {
 				// ================================================================
-				// INICIALIZAÇÃO DOS DROPDOWNS DE RECORRÊNCIA V2
-				// Controle via TipoExibicao (não há mais Recorrente e Período)
+				// INICIALIZACAO DOS CONTROLES DE RECORRENCIA V2
 				// ================================================================
 
-				// DataSource para dias da semana
+				// DataSource para dias da semana (MultiSelect - ainda Syncfusion)
 				var dataDiasSemana = [
 					{ Text: 'Domingo', Value: 0 },
 					{ Text: 'Segunda-Feira', Value: 1 },
@@ -471,13 +505,7 @@
 					{ Text: 'Sábado', Value: 6 }
 				];
 
-				// DataSource para dias do mês (1-31)
-				var dataDiasMes = [];
-				for (var i = 1; i <= 31; i++) {
-					dataDiasMes.push({ Text: i.toString(), Value: i });
-				}
-
-				// Configurar lstDiasAlerta (MultiSelect)
+				// Configurar lstDiasAlerta (MultiSelect - ainda Syncfusion)
 				var lstDiasAlerta = document.getElementById('lstDiasAlerta');
 				if (lstDiasAlerta && lstDiasAlerta.ej2_instances && lstDiasAlerta.ej2_instances[0]) {
 					var diasMultiSelect = lstDiasAlerta.ej2_instances[0];
@@ -486,23 +514,12 @@
 					diasMultiSelect.dataBind();
 				}
 
-				// Configurar lstDiasMesAlerta
-				var lstDiasMesAlerta = document.getElementById('lstDiasMesAlerta');
-				if (lstDiasMesAlerta && lstDiasMesAlerta.ej2_instances && lstDiasMesAlerta.ej2_instances[0]) {
-					var diasMesDropdown = lstDiasMesAlerta.ej2_instances[0];
-					diasMesDropdown.dataSource = dataDiasMes;
-					diasMesDropdown.fields = { text: 'Text', value: 'Value' };
-					diasMesDropdown.value = @(Model.DiaMesRecorrencia ?? 0);
-					diasMesDropdown.dataBind();
-				}
-
-				// Inicializar Calendário para datas variadas
+				// Inicializar Calendario para datas variadas
 				if (typeof initCalendarioAlerta === 'function') {
 					initCalendarioAlerta();
 				}
 
-				// Verificar estado inicial (modo edição)
-				// O script alertas_recorrencia.js detecta TipoExibicao automaticamente
+				// Verificar estado inicial (modo edicao)
 				if (typeof verificarEstadoRecorrenciaAlerta === 'function') {
 					verificarEstadoRecorrenciaAlerta();
 				}

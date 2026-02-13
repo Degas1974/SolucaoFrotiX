@@ -223,8 +223,8 @@ window.showDialogDiasSemana = function ()
                 {
                     click: function ()
                     {
-                        const diasSelect = document.getElementById('lstDias').ej2_instances[0];
-                        if (diasSelect instanceof ej.dropdowns.MultiSelect)
+                        const diasSelect = window.getSyncfusionInstance('lstDias');
+                        if (diasSelect)
                         {
                             diasSelect.value = [];
                         }

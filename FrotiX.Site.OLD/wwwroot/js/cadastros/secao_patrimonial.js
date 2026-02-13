@@ -331,7 +331,7 @@ if (path == "/secaopatrimonial/index" || path == "/secaopatrimonial")
                 try
                 {
                     // Verifica se o nome está preenchido
-                    var setorId = document.getElementById("cmbSetor").ej2_instances[0].value;
+                    var setorId = $("#cmbSetor").data("kendoComboBox")?.value();
 
                     if (setorId === "" || setorId == null)
                     {
@@ -359,16 +359,16 @@ if (path == "/secaopatrimonial/index" || path == "/secaopatrimonial")
     {
         try
         {
-            var comboBox = document.getElementById("cmbSetor").ej2_instances[0];
+            var comboBox = $("#cmbSetor").data("kendoComboBox");
             var secaoId = document.getElementsByName("SecaoObj.SecaoId");
             var setorId;
             if (secaoId.length <= 0)
             {
-                comboBox.value = "";
+                if (comboBox) comboBox.value("");
                 console.log(secaoId > 0);
             } else
             {
-                setorId = document.getElementById("cmbSetor").ej2_instances[0].value;
+                setorId = comboBox?.value();
             }
 
             $.ajax({
@@ -381,31 +381,31 @@ if (path == "/secaopatrimonial/index" || path == "/secaopatrimonial")
                     {
                         if (res != null && res.data.length)
                         {
-                            // Inicialize o ComboBox da Syncfusion
-
-                            comboBox.fields = { text: "text", value: "value" }; // define os campos da comboBox
-
-                            comboBox.dataSource = res.data; // Carrega os dados recebidos na comboBox
-
-                            if (setorId)
+                            // Atualizar dataSource do Kendo ComboBox
+                            if (comboBox)
                             {
-                                // Isso aqui vai trocar o id que aparece por causa do razor para o nome correto do id representado
-                                var item = comboBox.dataSource.find((item) =>
+                                comboBox.setDataSource(new kendo.data.DataSource({ data: res.data }));
+
+                                if (setorId)
                                 {
-                                    try
+                                    // Isso aqui vai trocar o id que aparece por causa do razor para o nome correto do id representado
+                                    var item = res.data.find((item) =>
                                     {
-                                        return item.value.toLowerCase() == setorId.toString();
-                                    }
-                                    catch (error)
+                                        try
+                                        {
+                                            return item.value.toLowerCase() == setorId.toString();
+                                        }
+                                        catch (error)
+                                        {
+                                            Alerta.TratamentoErroComLinha("secao_patrimonial.js", "loadListaSetores.find", error);
+                                            return false;
+                                        }
+                                    });
+                                    console.log("item: ", item);
+                                    if (item)
                                     {
-                                        Alerta.TratamentoErroComLinha("secao_patrimonial.js", "loadListaSetores.find", error);
-                                        return false;
+                                        comboBox.value(item.value);
                                     }
-                                });
-                                console.log("item: ", item);
-                                if (item)
-                                {
-                                    comboBox.value = item.value;
                                 }
                             }
                         } else

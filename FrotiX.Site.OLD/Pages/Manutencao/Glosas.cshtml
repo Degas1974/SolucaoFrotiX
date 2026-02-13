@@ -55,35 +55,17 @@
 			<div class="row g-3 align-items-end">
 				<div class="col-lg-4 col-md-6">
 					<label class="form-label">Contrato</label>
-					<ejs-dropdownlist id="ContratoId"
-									  locale="pt-BR"
-									  dataSource="@Model.ContratoList"
-									  placeholder="Selecione um contrato"
-									  allowFiltering="true"
-									  popupHeight="300px">
-						<e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-					</ejs-dropdownlist>
+					<input id="ContratoId" name="ContratoId" style="width: 100%;" />
 				</div>
 
 				<div class="col-lg-2 col-md-3">
 					<label class="form-label">Ano</label>
-					<ejs-dropdownlist id="Ano"
-									  locale="pt-BR"
-									  dataSource="@Model.Anos"
-									  value="@Model.AnoSelecionado"
-									  placeholder="Ano">
-					</ejs-dropdownlist>
+					<input id="Ano" name="Ano" style="width: 100%;" />
 				</div>
 
 				<div class="col-lg-2 col-md-3">
 					<label class="form-label">Mês</label>
-					<ejs-dropdownlist id="Mes"
-									  locale="pt-BR"
-									  dataSource="@Model.Meses"
-									  value="@Model.MesSelecionado"
-									  placeholder="Mês">
-						<e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-					</ejs-dropdownlist>
+					<input id="Mes" name="Mes" style="width: 100%;" />
 				</div>
 
 				<!-- Botões na mesma linha dos combos -->
@@ -188,8 +170,37 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
-	<!-- Renderizador dos scripts EJ2 -->
-	<ejs-scripts></ejs-scripts>
+	<!-- Kendo DropDownList init para filtros -->
+	<script>
+		var dataContratoList = @Html.Raw(Json.Serialize(Model.ContratoList));
+		var dataAnosList = @Html.Raw(Json.Serialize(Model.Anos));
+		var dataMesesList = @Html.Raw(Json.Serialize(Model.Meses));
+
+		$("#ContratoId").kendoDropDownList({
+			dataTextField: "text",
+			dataValueField: "value",
+			optionLabel: "Selecione um contrato",
+			filter: "contains",
+			dataSource: dataContratoList,
+			height: 300
+		});
+
+		$("#Ano").kendoDropDownList({
+			optionLabel: "Ano",
+			dataSource: dataAnosList,
+			height: 200,
+			value: "@Model.AnoSelecionado"
+		});
+
+		$("#Mes").kendoDropDownList({
+			dataTextField: "text",
+			dataValueField: "value",
+			optionLabel: "M\u00eas",
+			dataSource: dataMesesList,
+			height: 200,
+			value: "@Model.MesSelecionado"
+		});
+	</script>
 
 	<script>
 		// ========== FUNÇÕES DE LOADING - PADRÃO FROTIX ==========
@@ -322,7 +333,11 @@
 				}, 100);
 
 				// --- Helpers / atalhos ---
-				const $ej = (id) => document.getElementById(id)?.ej2_instances?.[0];
+				// Helper: get Kendo widget value
+				const $kv = (id) => {
+					var w = $("#" + id).data("kendoDropDownList");
+					return w ? w.value() : "";
+				};
 				const toCurrency = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v || 0));
 				const getArrayFromData = (payload) => {
 					if (Array.isArray(payload)) return payload;
@@ -333,9 +348,9 @@
 
 				function buildQuery() {
 					try {
-						const contratoId = $ej('ContratoId')?.value;
-						const ano = $ej('Ano')?.value;
-						const mes = $ej('Mes')?.value;
+						const contratoId = $kv('ContratoId');
+						const ano = $kv('Ano');
+						const mes = $kv('Mes');
 
 						return new ej.data.Query()
 							.addParams('contratoId', contratoId || '')
@@ -384,9 +399,9 @@
 				if (btnExport) {
 					btnExport.addEventListener('click', function () {
 						try {
-							const contratoId = $ej('ContratoId')?.value || '';
-							const ano = $ej('Ano')?.value || '';
-							const mes = $ej('Mes')?.value || '';
+							const contratoId = $kv('ContratoId');
+							const ano = $kv('Ano');
+							const mes = $kv('Mes');
 							const url = `/glosa/export?contratoId=${encodeURIComponent(contratoId)}&ano=${encodeURIComponent(ano)}&mes=${encodeURIComponent(mes)}`;
 							window.location.href = url;
 						} catch (error) {
@@ -397,9 +412,9 @@
 
 				async function updateCardTotals() {
 					try {
-						const contratoId = $ej('ContratoId')?.value || '';
-						const ano = $ej('Ano')?.value || '';
-						const mes = $ej('Mes')?.value || '';
+						const contratoId = $kv('ContratoId');
+						const ano = $kv('Ano');
+						const mes = $kv('Mes');
 						if (!contratoId || !ano || !mes) return;
 
 						const qs = new URLSearchParams({ contratoId, ano, mes });

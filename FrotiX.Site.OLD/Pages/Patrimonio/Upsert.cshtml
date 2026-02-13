@@ -29,7 +29,6 @@
  ======================================================================================== *@
 
 @model FrotiX.Pages.Patrimonio.UpsertModel
-@using Syncfusion.Blazor.Inputs
 
 @{
 	ViewData["Title"] = "Patrimônio";
@@ -144,13 +143,7 @@
 										<span class="text-danger font-weight-light"
 											asp-validation-for="PatrimonioObj.Patrimonio.Marca"></span>
 										<div class="d-flex align-items-center">
-											<ejs-combobox id="cmbMarcas" placeholder="Selecione/Insira uma Marca"
-												allowFiltering="true" filterType="Contains" popupHeight="200px"
-												width="100%" showClearButton="true" allowCustom="true"
-												change="onMarcaChange" ejs-for="PatrimonioObj.Patrimonio.Marca"
-												style="flex: 1;">
-												<e-combobox-fields text="text" value="value"></e-combobox-fields>
-											</ejs-combobox>
+											<input id="cmbMarcas" name="PatrimonioObj.Patrimonio.Marca" style="width: 100%; flex: 1;" />
 											<button type="button" id="btnAddMarca" class="btn btn-azul btn-sm ml-2"
 												style="width: 35px; height: 35px; padding: 0;">
 												<i class="fa-duotone fa-rectangle-history-circle-plus"></i>
@@ -165,12 +158,7 @@
 										<span class="text-danger font-weight-light"
 											asp-validation-for="PatrimonioObj.Patrimonio.Modelo"></span>
 										<div class="d-flex align-items-center">
-											<ejs-combobox id="cmbModelos" placeholder="Selecione/Insira um Modelo"
-												allowFiltering="true" filterType="Contains" popupHeight="200px"
-												width="100%" showClearButton="true" allowCustom="true"
-												ejs-for="PatrimonioObj.Patrimonio.Modelo" style="flex: 1;">
-												<e-combobox-fields text="text" value="value"></e-combobox-fields>
-											</ejs-combobox>
+											<input id="cmbModelos" name="PatrimonioObj.Patrimonio.Modelo" style="width: 100%; flex: 1;" />
 											<button type="button" id="btnAddModelo" class="btn btn-azul btn-sm ml-2"
 												style="width: 35px; height: 35px; padding: 0;" disabled>
 												<i class="fa-duotone fa-rectangle-history-circle-plus"></i>
@@ -184,20 +172,12 @@
 								<div class="col-4">
 									<label class="label font-weight-bold label-required"
 										asp-for="PatrimonioObj.Patrimonio.SetorId">Setor</label>
-									<ejs-combobox id="cmbSetores" placeholder="Selecione um Setor" allowFiltering="true"
-										filterType="Contains" popupHeight="200px" width="100%" showClearButton="true"
-										ejs-for="PatrimonioObj.Patrimonio.SetorId">
-										<e-combobox-fields text="text" value="value"></e-combobox-fields>
-									</ejs-combobox>
+							<input id="cmbSetores" name="PatrimonioObj.Patrimonio.SetorId" style="width: 100%;" />
 								</div>
 
 								<div class="col-4 form-group" id="divSecao">
 									<label class="label font-weight-bold label-required">Seção</label>
-									<ejs-combobox id="cmbSecoes" placeholder="Selecione uma Seção" allowFiltering="true"
-										filterType="Contains" popupHeight="200px" width="100%" showClearButton="true"
-										ejs-for="PatrimonioObj.Patrimonio.SecaoId">
-										<e-combobox-fields text="text" value="value"></e-combobox-fields>
-									</ejs-combobox>
+							<input id="cmbSecoes" name="PatrimonioObj.Patrimonio.SecaoId" style="width: 100%;" />
 								</div>
 
 								<div class="col-2">
@@ -244,11 +224,7 @@
 											asp-for="PatrimonioObj.Patrimonio.Situacao">Situação</label>
 										<span class="text-danger font-weight-light"
 											asp-validation-for="PatrimonioObj.Patrimonio.Situacao"></span>
-										<ejs-dropdownlist id="cmbSituacao" placeholder="Selecione a Situação"
-											popupHeight="200px" width="100%" showClearButton="true"
-											ejs-for="PatrimonioObj.Patrimonio.Situacao">
-											<e-dropdownlist-fields text="text" value="value"></e-dropdownlist-fields>
-										</ejs-dropdownlist>
+									<input id="cmbSituacao" name="PatrimonioObj.Patrimonio.Situacao" style="width: 100%;" />
 									</div>
 								</div>
 							</div>
@@ -425,6 +401,63 @@
 		crossorigin="anonymous"></script>
 
 	<script src="~/js/dropify.min.js"></script>
+
+	<script>
+		(function () {
+			try {
+				$("#cmbMarcas").kendoComboBox({
+					dataTextField: "text",
+					dataValueField: "value",
+					placeholder: "Selecione/Insira uma Marca",
+					filter: "contains",
+					height: 200,
+					clearButton: true,
+					value: "@(Model.PatrimonioObj?.Patrimonio?.Marca ?? "")"
+				});
+
+				$("#cmbModelos").kendoComboBox({
+					dataTextField: "text",
+					dataValueField: "value",
+					placeholder: "Selecione/Insira um Modelo",
+					filter: "contains",
+					height: 200,
+					clearButton: true,
+					value: "@(Model.PatrimonioObj?.Patrimonio?.Modelo ?? "")"
+				});
+
+				$("#cmbSetores").kendoComboBox({
+					dataTextField: "text",
+					dataValueField: "value",
+					placeholder: "Selecione um Setor",
+					filter: "contains",
+					height: 200,
+					clearButton: true,
+					value: "@(Model.PatrimonioObj?.Patrimonio?.SetorId != null && Model.PatrimonioObj.Patrimonio.SetorId != Guid.Empty ? Model.PatrimonioObj.Patrimonio.SetorId.ToString() : "")"
+				});
+
+				$("#cmbSecoes").kendoComboBox({
+					dataTextField: "text",
+					dataValueField: "value",
+					placeholder: "Selecione uma Se\u00e7\u00e3o",
+					filter: "contains",
+					height: 200,
+					clearButton: true,
+					value: "@(Model.PatrimonioObj?.Patrimonio?.SecaoId != null && Model.PatrimonioObj.Patrimonio.SecaoId != Guid.Empty ? Model.PatrimonioObj.Patrimonio.SecaoId.ToString() : "")"
+				});
+
+				$("#cmbSituacao").kendoDropDownList({
+					dataTextField: "text",
+					dataValueField: "value",
+					optionLabel: "Selecione a Situa\u00e7\u00e3o",
+					height: 200,
+					value: "@(Model.PatrimonioObj?.Patrimonio?.Situacao ?? "")"
+				});
+			} catch (error) {
+				Alerta.TratamentoErroComLinha("Upsert.cshtml", "kendoControls.init", error);
+			}
+		})();
+	</script>
+
 	<script src="~/js/cadastros/patrimonio.js" asp-append-version="true"></script>
 	<script src="~/css/patrimonio.css" asp-append-version="true"></script>
 

@@ -39,16 +39,15 @@ function inicializarEventosEscala() {
         
         $('#veiculoNaoDefinido').change(function() {
             try {
-                var veiculoDropdown = document.getElementById('veiculoId')?.ej2_instances?.[0];
+                var veiculoDropdown = $("#veiculoId").data("kendoDropDownList");
                 if (veiculoDropdown) {
                     if (this.checked) {
                         // Desabilitar dropdown e limpar valor
-                        veiculoDropdown.enabled = false;
-                        veiculoDropdown.value = null;
-                        veiculoDropdown.text = '';
+                        veiculoDropdown.enable(false);
+                        veiculoDropdown.value("");
                     } else {
                         // Habilitar dropdown
-                        veiculoDropdown.enabled = true;
+                        veiculoDropdown.enable(true);
                     }
                 }
             } catch (error) {
@@ -63,15 +62,16 @@ function inicializarEventosEscala() {
         // Aguardar componentes Syncfusion carregarem
         setTimeout(function() {
             try {
-                var tipoServicoDropdown = document.getElementById('tipoServicoId')?.ej2_instances?.[0];
+                var tipoServicoDropdown = $("#tipoServicoId").data("kendoDropDownList");
                 
                 if (tipoServicoDropdown) {
                     // Evento quando TipoServico muda
-                    tipoServicoDropdown.change = function(args) {
+                    tipoServicoDropdown.bind("change", function(e) {
                         try {
-                            if (!args.itemData) return;
+                            var dataItem = this.dataItem();
+                            if (!dataItem) return;
                             
-                            var textoSelecionado = args.itemData.Text || '';
+                            var textoSelecionado = dataItem.Text || '';
                             
                             // Se selecionou "Economildo", marca a checkbox
                             if (textoSelecionado.toLowerCase() === 'economildo') {
@@ -82,7 +82,7 @@ function inicializarEventosEscala() {
                         } catch (error) {
                             Alerta.TratamentoErroComLinha('CriarEscala.js', 'tipoServicoDropdown.change', error);
                         }
-                    };
+                    });
                 }
             } catch (error) {
                 Alerta.TratamentoErroComLinha('CriarEscala.js', 'tipoServico.setTimeout', error);
@@ -143,7 +143,7 @@ function inicializarEventosEscala() {
 
         $('#MotoristaEconomildo').change(function () {
             try {
-                var tipoServicoDropdown = document.getElementById('tipoServicoId')?.ej2_instances?.[0];
+                var tipoServicoDropdown = $("#tipoServicoId").data("kendoDropDownList");
                 
                 if (this.checked) {
                     $('#economildoSection').slideDown();
@@ -161,11 +161,11 @@ function inicializarEventosEscala() {
                     
                     // Selecionar "Economildo" no dropdown TipoServico
                     if (tipoServicoDropdown) {
-                        var items = tipoServicoDropdown.dataSource;
+                        var items = tipoServicoDropdown.dataSource.data();
                         if (items && items.length > 0) {
                             for (var i = 0; i < items.length; i++) {
                                 if (items[i].Text && items[i].Text.toLowerCase() === 'economildo') {
-                                    tipoServicoDropdown.value = items[i].Value;
+                                    tipoServicoDropdown.value(items[i].Value ? items[i].Value.toString() : "");
                                     break;
                                 }
                             }
@@ -220,22 +220,21 @@ function inicializarEventosEscala() {
  */
 function inicializarEventosTurno() {
     try {
-        const turnoElement = document.getElementById('turnoId');
+        const turnoDropdown = $("#turnoId").data("kendoDropDownList");
 
-        if (!turnoElement || !turnoElement.ej2_instances || turnoElement.ej2_instances.length === 0) {
+        if (!turnoDropdown) {
             console.warn('[CriarEscala.js] Controle turnoId não encontrado ou não inicializado');
             return;
         }
 
-        const turnoDropdown = turnoElement.ej2_instances[0];
-
-        turnoDropdown.change = function (args) {
+        turnoDropdown.bind("change", function (e) {
             try {
-                if (!args.itemData || !args.itemData.Text) {
+                var dataItem = this.dataItem();
+                if (!dataItem || !dataItem.Text) {
                     return;
                 }
 
-                const turnoText = args.itemData.Text;
+                const turnoText = dataItem.Text;
 
                 // Verificar se os controles de hora existem
                 const horaInicioElement = document.getElementById('horaInicio');
@@ -271,7 +270,7 @@ function inicializarEventosTurno() {
             } catch (error) {
                 Alerta.TratamentoErroComLinha('CriarEscala.js', 'turnoDropdown.change', error);
             }
-        };
+        });
 
     } catch (error) {
         Alerta.TratamentoErroComLinha('CriarEscala.js', 'inicializarEventosTurno', error);
@@ -284,22 +283,21 @@ function inicializarEventosTurno() {
  */
 function inicializarEventosMotorista() {
     try {
-        const motoristaElement = document.getElementById('motoristaId');
+        const motoristaDropdown = $("#motoristaId").data("kendoDropDownList");
 
-        if (!motoristaElement || !motoristaElement.ej2_instances || motoristaElement.ej2_instances.length === 0) {
+        if (!motoristaDropdown) {
             console.warn('[CriarEscala.js] Controle motoristaId não encontrado ou não inicializado');
             return;
         }
 
-        const motoristaDropdown = motoristaElement.ej2_instances[0];
-
-        motoristaDropdown.change = function (args) {
+        motoristaDropdown.bind("change", function (e) {
             try {
-                if (!args.value) {
+                var selectedValue = this.value();
+                if (!selectedValue) {
                     return;
                 }
 
-                const motoristaId = args.value;
+                const motoristaId = selectedValue;
 
                 const dataInicioElement = document.getElementById('dataInicio');
 
@@ -340,7 +338,7 @@ function inicializarEventosMotorista() {
             } catch (error) {
                 Alerta.TratamentoErroComLinha('CriarEscala.js', 'motoristaDropdown.change', error);
             }
-        };
+        });
 
     } catch (error) {
         Alerta.TratamentoErroComLinha('CriarEscala.js', 'inicializarEventosMotorista', error);

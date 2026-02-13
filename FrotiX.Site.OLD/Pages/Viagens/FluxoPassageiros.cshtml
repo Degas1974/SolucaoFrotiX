@@ -283,7 +283,7 @@
 	//==================================================
 	function DefineEscolhaVeiculo() {
 		try {
-			var veiculos = document.getElementById('lstVeiculos').ej2_instances?.[0];
+			var veiculos = $("#lstVeiculos").data("kendoComboBox");
 			return veiculos;
 		} catch (error) {
 			Alerta.TratamentoErroComLinha("FluxoPassageiros.cshtml", "DefineEscolhaVeiculo", error);
@@ -335,46 +335,9 @@
 							<script>
 								document.addEventListener('DOMContentLoaded', function () {
 									try {
-										var veiculosCombobox = document.getElementById('lstVeiculos')?.ej2_instances?.[0];
-										var motoristasCombobox = document.getElementById('lstMotoristas')?.ej2_instances?.[0];
-
-										if (veiculosCombobox) {
-											veiculosCombobox.focusIn = function () {
-												try {
-													this.showPopup();
-												}
-												catch (error) {
-													Alerta.TratamentoErroComLinha("FluxoPassageiros.cshtml", "veiculos.focusIn", error);
-												}
-											};
-											veiculosCombobox.element.addEventListener('focus', function () {
-												try {
-													veiculosCombobox.focusIn();
-												}
-												catch (error) {
-													Alerta.TratamentoErroComLinha("FluxoPassageiros.cshtml", "veiculos.focus.addEventListener", error);
-												}
-											});
-										}
-
-										if (motoristasCombobox) {
-											motoristasCombobox.focusIn = function () {
-												try {
-													this.showPopup();
-												}
-												catch (error) {
-													Alerta.TratamentoErroComLinha("FluxoPassageiros.cshtml", "motoristas.focusIn", error);
-												}
-											};
-											motoristasCombobox.element.addEventListener('focus', function () {
-												try {
-													motoristasCombobox.focusIn();
-												}
-												catch (error) {
-													Alerta.TratamentoErroComLinha("FluxoPassageiros.cshtml", "motoristas.focus.addEventListener", error);
-												}
-											});
-										}
+										// [KENDO] Popup-on-focus é configurado via Kendo events no init block (ScriptsBlock)
+										// Nenhuma configuração Syncfusion necessária aqui
+										console.log('[KENDO] FluxoPassageiros: ComboBoxes inicializados via ScriptsBlock');
 									} catch (error) {
 										Alerta.TratamentoErroComLinha("FluxoPassageiros.cshtml", "DOMContentLoaded", error);
 									}
@@ -389,32 +352,12 @@
 
 								<div class="col-4">
 									<label class="label font-weight-bold color-black">Placa do Economildo</label>
-									<ejs-combobox id="lstVeiculos"
-												  placeholder="Selecione um Veículo"
-												  allowFiltering="true"
-												  filterType="Contains"
-												  dataSource="@ViewData["lstVeiculos"]"
-												  popupHeight="250px"
-												  width="100%"
-												  cssClass="e-small"
-												  showClearButton="true">
-										<e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-									</ejs-combobox>
+									<input id="lstVeiculos" name="lstVeiculos" style="width: 100%;" />
 								</div>
 
 								<div class="col-4">
 									<label class="label font-weight-bold color-black">Motorista do Economildo</label>
-									<ejs-combobox id="lstMotoristas"
-												  placeholder="Selecione um Motorista"
-												  allowFiltering="true"
-												  filterType="Contains"
-												  dataSource="@ViewData["lstMotoristas"]"
-												  popupHeight="250px"
-												  width="100%"
-												  cssClass="e-small"
-												  showClearButton="true">
-										<e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-									</ejs-combobox>
+									<input id="lstMotoristas" name="lstMotoristas" style="width: 100%;" />
 								</div>
 
 								<div class="col-2">
@@ -588,5 +531,39 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" crossorigin="anonymous" />
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
+	<script>
+		(function () {
+			try {
+				var dataVeiculos = @Html.Raw(Json.Serialize(ViewData["lstVeiculos"]));
+				var dataMotoristas = @Html.Raw(Json.Serialize(ViewData["lstMotoristas"]));
+
+				$("#lstVeiculos").kendoComboBox({
+					dataTextField: "descricao",
+					dataValueField: "id",
+					placeholder: "Selecione um Veículo",
+					filter: "contains",
+					dataSource: dataVeiculos,
+					height: 250,
+					clearButton: true,
+					open: function(e) { /* popup-on-focus via Kendo event */ }
+				});
+
+				$("#lstMotoristas").kendoComboBox({
+					dataTextField: "descricao",
+					dataValueField: "id",
+					placeholder: "Selecione um Motorista",
+					filter: "contains",
+					dataSource: dataMotoristas,
+					height: 250,
+					clearButton: true,
+					open: function(e) { /* popup-on-focus via Kendo event */ }
+				});
+
+				console.log("[KENDO] FluxoPassageiros: 2 ComboBoxes inicializados");
+			} catch (error) {
+				Alerta.TratamentoErroComLinha("FluxoPassageiros.cshtml", "kendoComboBox.init", error);
+			}
+		})();
+	</script>
 	<script src="/js/cadastros/fluxopassageiros.js" asp-append-version="true"></script>
 }

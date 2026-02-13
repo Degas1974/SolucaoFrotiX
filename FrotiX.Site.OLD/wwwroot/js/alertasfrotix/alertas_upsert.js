@@ -305,21 +305,21 @@ function configurarEventHandlers()
             }
         });
 
-        // Mudança no tipo de exibição
-        var tipoExibicaoDropdown = document.querySelector("#TipoExibicao");
-        if (tipoExibicaoDropdown && tipoExibicaoDropdown.ej2_instances) 
+        // Mudanca no tipo de exibicao (Kendo DropDownList)
+        var ddlTipoExibicao = $("#TipoExibicao").data("kendoDropDownList");
+        if (ddlTipoExibicao) 
         {
-            tipoExibicaoDropdown.ej2_instances[0].change = function (args) 
+            ddlTipoExibicao.bind("change", function (e) 
             {
                 try
                 {
-                    configurarCamposExibicao(args.value);
+                    configurarCamposExibicao(this.value());
                 }
                 catch (error)
                 {
                     TratamentoErroComLinha("alertas_upsert.js", "TipoExibicao.change", error);
                 }
-            };
+            });
         }
 
         // Submit do formulário
@@ -371,23 +371,15 @@ function configurarCamposRelacionados(tipo)
         $('#divViagem, #divManutencao, #divMotorista, #divVeiculo').hide();
         $('#secaoVinculos').hide();
 
-        // Limpar valores
-        if (document.querySelector("#ViagemId")?.ej2_instances) 
-        {
-            document.querySelector("#ViagemId").ej2_instances[0].value = null;
-        }
-        if (document.querySelector("#ManutencaoId")?.ej2_instances) 
-        {
-            document.querySelector("#ManutencaoId").ej2_instances[0].value = null;
-        }
-        if (document.querySelector("#MotoristaId")?.ej2_instances) 
-        {
-            document.querySelector("#MotoristaId").ej2_instances[0].value = null;
-        }
-        if (document.querySelector("#VeiculoId")?.ej2_instances) 
-        {
-            document.querySelector("#VeiculoId").ej2_instances[0].value = null;
-        }
+        // Limpar valores (Kendo DropDownList)
+        var ddlViagem = $("#ViagemId").data("kendoDropDownList");
+        if (ddlViagem) { ddlViagem.value(""); }
+        var ddlManutencao = $("#ManutencaoId").data("kendoDropDownList");
+        if (ddlManutencao) { ddlManutencao.value(""); }
+        var ddlMotorista = $("#MotoristaId").data("kendoDropDownList");
+        if (ddlMotorista) { ddlMotorista.value(""); }
+        var ddlVeiculo = $("#VeiculoId").data("kendoDropDownList");
+        if (ddlVeiculo) { ddlVeiculo.value(""); }
 
         // Mostrar campo específico baseado no tipo
         switch (parseInt(tipo)) 
@@ -555,11 +547,11 @@ function aplicarSelecaoInicial()
             configurarCamposRelacionados(tipoAtual);
         }
 
-        // Aplicar configuração inicial do tipo de exibição
-        var tipoExibicaoDropdown = document.querySelector("#TipoExibicao");
-        if (tipoExibicaoDropdown && tipoExibicaoDropdown.ej2_instances) 
+        // Aplicar configuracao inicial do tipo de exibicao (Kendo)
+        var ddlTipoExibicao = $("#TipoExibicao").data("kendoDropDownList");
+        if (ddlTipoExibicao) 
         {
-            var tipoExibicaoAtual = tipoExibicaoDropdown.ej2_instances[0].value;
+            var tipoExibicaoAtual = ddlTipoExibicao.value();
             if (tipoExibicaoAtual) 
             {
                 configurarCamposExibicao(tipoExibicaoAtual);
@@ -712,11 +704,13 @@ function validarFormulario()
         }
 
         // Validar campos de exibição conforme o tipo
-        var tipoExibicao = parseInt(document.querySelector("#TipoExibicao")?.ej2_instances?.[0]?.value || 1);
+        // Obter TipoExibicao via Kendo
+        var ddlTipoExibicaoVal = $("#TipoExibicao").data("kendoDropDownList");
+        var tipoExibicao = parseInt(ddlTipoExibicaoVal ? ddlTipoExibicaoVal.value() : 1);
 
         switch (tipoExibicao)
         {
-            case 2: // Horário específico
+            case 2: // Horario especifico
                 var horario = document.querySelector("#HorarioExibicao")?.ej2_instances?.[0]?.value;
                 if (!horario) 
                 {
@@ -725,7 +719,7 @@ function validarFormulario()
                 }
                 break;
 
-            case 3: // Data/Hora específica
+            case 3: // Data/Hora especifica
                 var dataExib = document.querySelector("#DataExibicao")?.ej2_instances?.[0]?.value;
                 if (!dataExib) 
                 {
@@ -734,7 +728,7 @@ function validarFormulario()
                 }
                 break;
 
-            case 4: // Recorrente Diário
+            case 4: // Recorrente Diario
             case 5: // Recorrente Semanal
             case 6: // Recorrente Quinzenal
             case 7: // Recorrente Mensal
@@ -760,10 +754,11 @@ function validarFormulario()
                         valido = false;
                     }
                 }
-                // Validar dia do mês para Mensal
+                // Validar dia do mes para Mensal (Kendo)
                 if (tipoExibicao === 7)
                 {
-                    var diaMes = document.querySelector("#lstDiasMesAlerta")?.ej2_instances?.[0]?.value;
+                    var ddlDiaMes = $("#lstDiasMesAlerta").data("kendoDropDownList");
+                    var diaMes = ddlDiaMes ? ddlDiaMes.value() : null;
                     if (!diaMes)
                     {
                         AppToast.show("Amarelo", "Selecione o dia do mês", 2000);
@@ -898,14 +893,17 @@ function obterDadosFormulario()
 {
     try
     {
-        var tipoExibicao = parseInt(document.querySelector("#TipoExibicao")?.ej2_instances?.[0]?.value || 1);
+        // Obter TipoExibicao e Prioridade via Kendo
+        var ddlTipoExib = $("#TipoExibicao").data("kendoDropDownList");
+        var tipoExibicao = parseInt(ddlTipoExib ? ddlTipoExib.value() : 1);
+        var ddlPrioridade = $("#Prioridade").data("kendoDropDownList");
 
         var dados = {
             AlertasFrotiXId: $('#AlertasFrotiXId').val(),
             Titulo: document.querySelector("#Titulo")?.ej2_instances?.[0]?.value || '',
             Descricao: document.querySelector("#Descricao")?.ej2_instances?.[0]?.value || '',
             TipoAlerta: parseInt($('#TipoAlerta').val()),
-            Prioridade: parseInt(document.querySelector("#Prioridade")?.ej2_instances?.[0]?.value || 1),
+            Prioridade: parseInt(ddlPrioridade ? ddlPrioridade.value() : 1),
             TipoExibicao: tipoExibicao,
             UsuariosIds: document.querySelector("#UsuariosIds")?.ej2_instances?.[0]?.value || []
         };
@@ -915,36 +913,40 @@ function obterDadosFormulario()
         // ===================================================================
         var tipoAlerta = dados.TipoAlerta;
 
-        if (tipoAlerta === 1) // Agendamento
+        if (tipoAlerta === 1) // Agendamento (Kendo)
         {
-            var viagemId = document.querySelector("#ViagemId")?.ej2_instances?.[0]?.value;
+            var ddlViagem = $("#ViagemId").data("kendoDropDownList");
+            var viagemId = ddlViagem ? ddlViagem.value() : null;
             if (viagemId)
             {
                 viagemId = String(viagemId).trim().replace(/[^a-f0-9\-]/gi, '');
                 if (viagemId.length > 0) dados.ViagemId = viagemId;
             }
         }
-        else if (tipoAlerta === 2) // Manutenção
+        else if (tipoAlerta === 2) // Manutencao (Kendo)
         {
-            var manutencaoId = document.querySelector("#ManutencaoId")?.ej2_instances?.[0]?.value;
+            var ddlManutencao = $("#ManutencaoId").data("kendoDropDownList");
+            var manutencaoId = ddlManutencao ? ddlManutencao.value() : null;
             if (manutencaoId)
             {
                 manutencaoId = String(manutencaoId).trim().replace(/[^a-f0-9\-]/gi, '');
                 if (manutencaoId.length > 0) dados.ManutencaoId = manutencaoId;
             }
         }
-        else if (tipoAlerta === 3) // Motorista
+        else if (tipoAlerta === 3) // Motorista (Kendo)
         {
-            var motoristaId = document.querySelector("#MotoristaId")?.ej2_instances?.[0]?.value;
+            var ddlMotorista = $("#MotoristaId").data("kendoDropDownList");
+            var motoristaId = ddlMotorista ? ddlMotorista.value() : null;
             if (motoristaId)
             {
                 motoristaId = String(motoristaId).trim().replace(/[^a-f0-9\-]/gi, '');
                 if (motoristaId.length > 0) dados.MotoristaId = motoristaId;
             }
         }
-        else if (tipoAlerta === 4) // Veículo
+        else if (tipoAlerta === 4) // Veiculo (Kendo)
         {
-            var veiculoId = document.querySelector("#VeiculoId")?.ej2_instances?.[0]?.value;
+            var ddlVeiculo = $("#VeiculoId").data("kendoDropDownList");
+            var veiculoId = ddlVeiculo ? ddlVeiculo.value() : null;
             if (veiculoId)
             {
                 veiculoId = String(veiculoId).trim().replace(/[^a-f0-9\-]/gi, '');
@@ -988,10 +990,11 @@ function obterDadosFormulario()
             }
         }
 
-        // Dia do Mês (tipo 7)
+        // Dia do Mes (tipo 7) - Kendo
         if (tipoExibicao === 7)
         {
-            var diaMes = document.querySelector("#lstDiasMesAlerta")?.ej2_instances?.[0]?.value;
+            var ddlDiaMes = $("#lstDiasMesAlerta").data("kendoDropDownList");
+            var diaMes = ddlDiaMes ? ddlDiaMes.value() : null;
             if (diaMes)
             {
                 dados.DiaMesRecorrencia = parseInt(diaMes);
@@ -1033,56 +1036,36 @@ function configurarDropdownMotoristaComFoto()
 {
     try
     {
-        const motoristaDropdown = document.getElementById('MotoristaId');
-        if (!motoristaDropdown?.ej2_instances?.[0])
+        var ddl = $("#MotoristaId").data("kendoDropDownList");
+        if (!ddl)
         {
-            console.log('Dropdown de motoristas não encontrado');
+            console.log('Dropdown de motoristas nao encontrado (Kendo)');
             return;
         }
 
-        const dropdown = motoristaDropdown.ej2_instances[0];
+        // Template para itens da lista (Kendo template syntax)
+        ddl.setOptions({
+            template: function (dataItem) {
+                if (!dataItem || !dataItem.text) return '';
+                var foto = (dataItem.group && dataItem.group.name) || '/images/placeholder-user.png';
+                var texto = dataItem.text || '';
+                return '<div class="motorista-item-alerta">' +
+                    '<img src="' + foto + '" class="motorista-foto-alerta-item" alt="Foto" onerror="this.src=\'/images/placeholder-user.png\'" />' +
+                    '<span class="motorista-nome-alerta">' + texto + '</span>' +
+                    '</div>';
+            },
+            valueTemplate: function (dataItem) {
+                if (!dataItem || !dataItem.text) return '';
+                var foto = (dataItem.group && dataItem.group.name) || '/images/placeholder-user.png';
+                var texto = dataItem.text || '';
+                return '<div class="motorista-selected-alerta">' +
+                    '<img src="' + foto + '" class="motorista-foto-alerta-selected" alt="Foto" onerror="this.src=\'/images/placeholder-user.png\'" />' +
+                    '<span class="motorista-nome-alerta">' + texto + '</span>' +
+                    '</div>';
+            }
+        });
 
-        // Template para itens da lista (dropdown aberta)
-        dropdown.itemTemplate = function (data)
-        {
-            if (!data) return '';
-
-            // A foto está armazenada no campo Group.Name (hack do backend)
-            const foto = data.Group?.Name || '/images/placeholder-user.png';
-            const texto = data.Text || '';
-
-            return `
-                <div class="motorista-item-alerta">
-                    <img src="${foto}" 
-                         class="motorista-foto-alerta-item" 
-                         alt="Foto" 
-                         onerror="this.src='/images/placeholder-user.png'" />
-                    <span class="motorista-nome-alerta">${texto}</span>
-                </div>`;
-        };
-
-        // Template para valor selecionado
-        dropdown.valueTemplate = function (data)
-        {
-            if (!data) return '';
-
-            const foto = data.Group?.Name || '/images/placeholder-user.png';
-            const texto = data.Text || '';
-
-            return `
-                <div class="motorista-selected-alerta">
-                    <img src="${foto}" 
-                         class="motorista-foto-alerta-selected" 
-                         alt="Foto"
-                         onerror="this.src='/images/placeholder-user.png'" />
-                    <span class="motorista-nome-alerta">${texto}</span>
-                </div>`;
-        };
-
-        // Força re-render
-        dropdown.dataBind();
-
-        console.log('Dropdown de motoristas configurada com foto');
+        console.log('Dropdown de motoristas configurada com foto (Kendo)');
     } catch (error)
     {
         console.error('Erro ao configurar dropdown motorista:', error);
@@ -1110,93 +1093,48 @@ function configurarDropdownAgendamentoRico()
 {
     try
     {
-        const viagemDropdown = document.getElementById('ViagemId');
-        if (!viagemDropdown?.ej2_instances?.[0])
+        var ddl = $("#ViagemId").data("kendoDropDownList");
+        if (!ddl)
         {
-            console.log('Dropdown de viagens não encontrado');
+            console.log('Dropdown de viagens nao encontrado (Kendo)');
             return;
         }
 
-        const dropdown = viagemDropdown.ej2_instances[0];
+        var dropdown = ddl;
 
-        // Template RICO para itens da lista (cards com detalhes)
-        dropdown.itemTemplate = function (data)
-        {
-            if (!data) return '';
+        // Templates ricos para Kendo DropDownList (ViagemId)
+        // Nota: Kendo DDL templates usam camelCase dos campos JSON
+        ddl.setOptions({
+            template: function (dataItem) {
+                if (!dataItem || !dataItem.dataInicial) return '';
+                return '<div class="agendamento-card-item">' +
+                    '<div class="agendamento-card-header">' +
+                    '<div class="agendamento-card-title">' +
+                    '<i class="fa-duotone fa-calendar-check"></i> ' +
+                    '<strong>' + (dataItem.dataInicial || 'N/A') + '</strong> ' +
+                    '<span class="agendamento-hora"><i class="fa-duotone fa-clock"></i> <strong>' + (dataItem.horaInicio || '') + '</strong></span>' +
+                    '</div>' +
+                    '<span class="agendamento-badge">' + (dataItem.finalidade || 'Diversos') + '</span>' +
+                    '</div>' +
+                    '<div class="agendamento-card-body">' +
+                    '<div class="agendamento-rota">' +
+                    '<span class="agendamento-origem"><i class="fa-duotone fa-location-dot"></i> ' + (dataItem.origem || 'N/A') + '</span>' +
+                    ' <i class="fa-duotone fa-arrow-right agendamento-seta"></i> ' +
+                    '<span class="agendamento-destino"><i class="fa-duotone fa-flag-checkered"></i> ' + (dataItem.destino || 'N/A') + '</span>' +
+                    '</div>' +
+                    '<div class="agendamento-requisitante"><i class="fa-duotone fa-user"></i> <span>' + (dataItem.requisitante || 'Nao informado') + '</span></div>' +
+                    '</div></div>';
+            },
+            valueTemplate: function (dataItem) {
+                if (!dataItem || !dataItem.dataInicial) return '';
+                return '<div class="agendamento-selected">' +
+                    '<i class="fa-duotone fa-calendar-check"></i> ' +
+                    '<span class="agendamento-selected-text"><strong>' + (dataItem.dataInicial || 'N/A') + '</strong> - ' +
+                    (dataItem.origem || 'N/A') + ' -> ' + (dataItem.destino || 'N/A') + '</span></div>';
+            }
+        });
 
-            return `
-                <div class="agendamento-card-item">
-                    <div class="agendamento-card-header">
-                        <div class="agendamento-card-title">
-                            <i class="fa-duotone fa-calendar-check"></i>
-                            <strong>${data.DataInicial || 'N/A'}</strong>
-                            <span class="agendamento-hora">
-                              <i class="fa-duotone fa-clock"></i>
-                              <strong>${data.HoraInicio || ''}</strong>
-                            </span>
-                        </div>
-                        <span class="agendamento-badge">${data.Finalidade || 'Diversos'}</span>
-                    </div>
-                    
-                    <div class="agendamento-card-body">
-                        <div class="agendamento-rota">
-                            <span class="agendamento-origem">
-                                <i class="fa-duotone fa-location-dot"></i>
-                                ${data.Origem || 'N/A'}
-                            </span>
-                            <i class="fa-duotone fa-arrow-right agendamento-seta"></i>
-                            <span class="agendamento-destino">
-                                <i class="fa-duotone fa-flag-checkered"></i>
-                                ${data.Destino || 'N/A'}
-                            </span>
-                        </div>
-                        
-                        <div class="agendamento-requisitante">
-                            <i class="fa-duotone fa-user"></i>
-                            <span>${data.Requisitante || 'Não informado'}</span>
-                        </div>
-                    </div>
-                </div>`;
-        };
-
-        // Template SIMPLES para valor selecionado
-        dropdown.valueTemplate = function (data)
-        {
-            if (!data) return '';
-
-            return `
-                <div class="agendamento-selected">
-                    <i class="fa-duotone fa-calendar-check"></i>
-                    <span class="agendamento-selected-text">
-                        <strong>${data.DataInicial || 'N/A'}</strong> - 
-                        ${data.Origem || 'N/A'} → ${data.Destino || 'N/A'}
-                    </span>
-                </div>`;
-        };
-
-        // Customizar o filtro para buscar em múltiplos campos
-        dropdown.filtering = function (e)
-        {
-            if (!e.text) return;
-
-            const query = e.text.toLowerCase();
-            const filtered = dropdown.dataSource.filter(item =>
-            {
-                return (
-                    (item.DataInicial && item.DataInicial.toLowerCase().includes(query)) ||
-                    (item.Origem && item.Origem.toLowerCase().includes(query)) ||
-                    (item.Destino && item.Destino.toLowerCase().includes(query)) ||
-                    (item.Requisitante && item.Requisitante.toLowerCase().includes(query)) ||
-                    (item.Finalidade && item.Finalidade.toLowerCase().includes(query))
-                );
-            });
-
-            e.updateData(filtered);
-        };
-
-        dropdown.dataBind();
-
-        console.log('Dropdown de agendamentos configurada com cards ricos');
+        console.log('Dropdown de agendamentos configurada com cards ricos (Kendo)');
     } catch (error)
     {
         console.error('Erro ao configurar dropdown agendamento:', error);
@@ -1217,94 +1155,74 @@ function configurarDropdownManutencaoRico()
 {
     try
     {
-        const el = document.getElementById('ManutencaoId');
-        const ddl = el?.ej2_instances?.[0];
-        if (!ddl) return;
-
-        // Se o dataSource for só Text/Value, reatribui para o dataset completo (se disponível)
-        if (ddl.dataSource?.length && ddl.dataSource[0].Text !== undefined && window.__manutencoesDS)
+        var ddl = $("#ManutencaoId").data("kendoDropDownList");
+        if (!ddl)
         {
-            ddl.dataSource = window.__manutencoesDS;
-            ddl.fields = { text: 'NumOS', value: 'ManutencaoId' };
-            ddl.dataBind();
+            console.log('Dropdown de manutencoes nao encontrado (Kendo)');
+            return;
         }
 
-        // CARD do item (popup)
-        ddl.itemTemplate = function (data)
+        // Se havia dataset completo via window.__manutencoesDS, reconfigurar datasource
+        if (window.__manutencoesDS)
         {
-            if (!data) return '';
+            ddl.setDataSource(new kendo.data.DataSource({ data: window.__manutencoesDS }));
+            ddl.setOptions({
+                dataTextField: "numOS",
+                dataValueField: "manutencaoId"
+            });
+        }
 
-            // mantém seu helper simples p/ campos não datados
-            const linha = (icon, val) =>
-                `<span class="manutencao-dado"><i class="fa-duotone ${icon}"></i>${val || '—'}</span>`;
+        // Helpers para templates
+        function linhaSimples(icon, val) {
+            return '<span class="manutencao-dado"><i class="fa-duotone ' + icon + '"></i>' + (val || '\u2014') + '</span>';
+        }
+        function linhaData(icon, rotulo, val) {
+            return '<span class="manutencao-dado">' +
+                '<i class="fa-duotone ' + icon + '" aria-hidden="true"></i>' +
+                '<span class="manutencao-legenda">' + rotulo + ':</span>' +
+                '<span class="manutencao-valor">' + (val || '\u2014') + '</span></span>';
+        }
 
-            // novo helper com legenda para datas
-            const linhaData = (icon, rotulo, val) =>
-                `<span class="manutencao-dado">
-       <i class="fa-duotone ${icon}" aria-hidden="true"></i>
-       <span class="manutencao-legenda">${rotulo}:</span>
-       <span class="manutencao-valor">${val || '—'}</span>
-     </span>`;
+        // Templates ricos para Kendo DropDownList (ManutencaoId)
+        // Nota: Kendo DDL data items usam camelCase dos campos JSON
+        ddl.setOptions({
+            template: function (dataItem) {
+                if (!dataItem || !dataItem.numOS) return '';
+                var reservaTxt = (dataItem.reservaEnviado === 'Sim')
+                    ? (dataItem.carroReserva || 'Reserva enviada')
+                    : 'Reserva nao enviada';
+                return '<div class="manutencao-card-item">' +
+                    '<div class="manutencao-card-header">' +
+                    '<div class="manutencao-card-title">' +
+                    '<i class="fa-duotone fa-screwdriver-wrench"></i> ' +
+                    '<strong>OS ' + (dataItem.numOS || '\u2014') + '</strong>' +
+                    '</div></div>' +
+                    '<div class="manutencao-card-body">' +
+                    '<div class="manutencao-linha">' +
+                    linhaData('fa-calendar-plus', 'Solicitacao', dataItem.dataSolicitacao) +
+                    linhaData('fa-calendar-lines-pen', 'Disponibilizacao', dataItem.dataDisponibilidade) +
+                    '</div>' +
+                    '<div class="manutencao-linha">' +
+                    linhaData('fa-calendar-arrow-up', 'Entrega', dataItem.dataEntrega) +
+                    linhaData('fa-calendar-arrow-down', 'Devolucao', dataItem.dataDevolucao) +
+                    '</div>' +
+                    '<div class="manutencao-linha">' +
+                    linhaSimples('fa-car-side', dataItem.veiculo) +
+                    linhaSimples('fa-key', reservaTxt) +
+                    '</div></div></div>';
+            },
+            valueTemplate: function (dataItem) {
+                if (!dataItem || !dataItem.numOS) return '';
+                return '<div class="manutencao-selected">' +
+                    '<i class="fa-duotone fa-screwdriver-wrench"></i> ' +
+                    '<span class="manutencao-selected-text"><strong>OS ' + (dataItem.numOS || '') + '</strong> \u2014 ' + (dataItem.veiculo || '') + '</span></div>';
+            }
+        });
 
-            const reservaTxt = (data.ReservaEnviado === 'Sim')
-                ? (data.CarroReserva || 'Reserva enviada')
-                : 'Reserva não enviada';
-
-            return `
-                    <div class="manutencao-card-item">
-                        <div class="manutencao-card-header">
-                        <div class="manutencao-card-title">
-                            <i class="fa-duotone fa-screwdriver-wrench"></i>
-                            <strong>OS ${data.NumOS || '—'}</strong>
-                        </div>
-                        </div>
-
-                        <div class="manutencao-card-body">
-                        <div class="manutencao-linha">
-                            ${linhaData('fa-calendar-plus', 'Solicitação', data.DataSolicitacao)}
-                            ${linhaData('fa-calendar-lines-pen', 'Disponibilização', data.DataDisponibilidade)}
-                        </div>
-                        <div class="manutencao-linha">
-                            ${linhaData('fa-calendar-arrow-up', 'Entrega', data.DataEntrega)}
-                            ${linhaData('fa-calendar-arrow-down', 'Devolução', data.DataDevolucao)}
-                        </div>
-                        <div class="manutencao-linha">
-                            ${linha('fa-car-side', data.Veiculo)}
-                            ${linha('fa-key', reservaTxt)}
-                        </div>
-                        </div>
-                    </div>`;
-        };
-
-        // Valor selecionado (compacto)
-        ddl.valueTemplate = function (data)
-        {
-            if (!data) return '';
-            return `
-<div class="manutencao-selected">
-  <i class="fa-duotone fa-screwdriver-wrench"></i>
-  <span class="manutencao-selected-text"><strong>OS ${data.NumOS || ''}</strong> — ${data.Veiculo || ''}</span>
-</div>`;
-        };
-
-        // Filtro por múltiplos campos
-        ddl.filtering = function (e)
-        {
-            const q = (e.text || '').toLowerCase();
-            if (!q) return;
-            const src = ddl.dataSource || [];
-            e.updateData(src.filter(d =>
-                (d.NumOS || '').toLowerCase().includes(q) ||
-                (d.Veiculo || '').toLowerCase().includes(q) ||
-                (d.CarroReserva || '').toLowerCase().includes(q)
-            ));
-        };
-
-        ddl.dataBind();
-        console.log('ManutencaoId com cards ricos ✅');
+        console.log('ManutencaoId com cards ricos (Kendo)');
     } catch (err)
     {
-        console.error('Erro ao configurar dropdown manutenção:', err);
+        console.error('Erro ao configurar dropdown manutencao:', err);
         if (typeof Alerta !== 'undefined')
         {
             Alerta.TratamentoErroComLinha("alertas_upsert.js", "configurarDropdownManutencaoRico", err);
@@ -1312,8 +1230,8 @@ function configurarDropdownManutencaoRico()
     }
 }
 
-// chame junto com as outras inicializações
-document.addEventListener('DOMContentLoaded', () =>
+// chame junto com as outras inicializacoes
+document.addEventListener('DOMContentLoaded', function ()
 {
     setTimeout(configurarDropdownManutencaoRico, 300);
 });

@@ -801,11 +801,19 @@ window.refreshComponenteSafe = function (elementId)
 {
     try
     {
-        const elemento = document.getElementById(elementId);
-        if (elemento && elemento.ej2_instances && elemento.ej2_instances[0])
-        {
-            const instancia = elemento.ej2_instances[0];
-
+        // Try Kendo widgets first
+        var kendoTypes = ['kendoDropDownList', 'kendoComboBox', 'kendoMultiSelect', 'kendoDatePicker', 'kendoTimePicker', 'kendoNumericTextBox', 'kendoEditor'];
+        var $el = $('#' + elementId);
+        for (var i = 0; i < kendoTypes.length; i++) {
+            var widget = $el.data(kendoTypes[i]);
+            if (widget) {
+                if (typeof widget.refresh === 'function') { widget.refresh(); }
+                return true;
+            }
+        }
+        // Fallback to Syncfusion bridge
+        var instancia = window.getSyncfusionInstance ? window.getSyncfusionInstance(elementId) : null;
+        if (instancia) {
             // Verificar se o método existe antes de chamar
             if (typeof instancia.refresh === 'function')
             {
@@ -837,26 +845,27 @@ window.criarAgendamentoNovo = function ()
         console.log("ðŸ“ [criarAgendamentoNovo] === INICIANDO ===");
 
         // Obter instâncias dos componentes Syncfusion
-        const rteDescricao = document.getElementById("rteDescricao")?.ej2_instances?.[0];
-        const lstMotorista = document.getElementById("lstMotorista")?.ej2_instances?.[0];
-        const lstVeiculo = document.getElementById("lstVeiculo")?.ej2_instances?.[0];
+        // KENDO: rteDescricao accessed via helpers (getEditorUpsertValue/setEditorUpsertValue/clearEditorUpsert)
+        const rteDescricao = null; // Kendo Editor - use helper functions
+        const lstMotorista = $('#lstMotorista').data('kendoComboBox');
+        const lstVeiculo = $('#lstVeiculo').data('kendoComboBox');
         // Telerik Kendo: usa $(element).data("kendoComboBox")
         const lstRequisitanteEl = document.getElementById("lstRequisitante");
         const lstRequisitante = lstRequisitanteEl ? $(lstRequisitanteEl).data("kendoComboBox") : null;
-        const lstSetorRequisitanteAgendamento = document.getElementById("lstSetorRequisitanteAgendamento")?.ej2_instances?.[0];
+        const lstSetorRequisitanteAgendamento = window.getSyncfusionInstance ? window.getSyncfusionInstance('lstSetorRequisitanteAgendamento') : null;
         // ✅ KENDO: Origem e Destino agora usam Kendo ComboBox
         const cmbOrigem = $("#cmbOrigem").data("kendoComboBox");
         const cmbDestino = $("#cmbDestino").data("kendoComboBox");
-        const lstFinalidade = document.getElementById("lstFinalidade")?.ej2_instances?.[0];
-        const ddtCombustivelInicial = document.getElementById("ddtCombustivelInicial")?.ej2_instances?.[0];
-        const ddtCombustivelFinal = document.getElementById("ddtCombustivelFinal")?.ej2_instances?.[0];
-        const lstEventos = document.getElementById("lstEventos")?.ej2_instances?.[0];
-        const lstRecorrente = document.getElementById("lstRecorrente")?.ej2_instances?.[0];
-        const lstPeriodos = document.getElementById("lstPeriodos")?.ej2_instances?.[0];
+        const lstFinalidade = $('#lstFinalidade').data('kendoDropDownList');
+        const ddtCombustivelInicial = $('#ddtCombustivelInicial').data('kendoDropDownList');
+        const ddtCombustivelFinal = $('#ddtCombustivelFinal').data('kendoDropDownList');
+        const lstEventos = $('#lstEventos').data('kendoComboBox');
+        const lstRecorrente = $('#lstRecorrente').data('kendoDropDownList');
+        const lstPeriodos = window.getSyncfusionInstance ? window.getSyncfusionInstance('lstPeriodos') : null;
         const txtFinalRecorrencia = window.getKendoDateValue("txtFinalRecorrencia");
-        const lstDias = document.getElementById("lstDias")?.ej2_instances?.[0];
-        const calDatasSelecionadas = document.getElementById("calDatasSelecionadas")?.ej2_instances?.[0];
-        const lstDiasMes = document.getElementById("lstDiasMes")?.ej2_instances?.[0];
+        const lstDias = window.getSyncfusionInstance ? window.getSyncfusionInstance('lstDias') : null;
+        const calDatasSelecionadas = window.getSyncfusionInstance ? window.getSyncfusionInstance('calDatasSelecionadas') : null;
+        const lstDiasMes = window.getSyncfusionInstance ? window.getSyncfusionInstance('lstDiasMes') : null;
 
         // Extrair valores
         const dataInicialValue = window.getKendoDateValue("txtDataInicial");
@@ -866,13 +875,13 @@ window.criarAgendamentoNovo = function ()
 
         // DEPOIS da linha 60, adicione este debug:
         console.log("ðŸ” [DEBUG] Valores capturados:");
-        console.log("   - lstMotorista?.value:", lstMotorista?.value);
-        console.log("   - lstVeiculo?.value:", lstVeiculo?.value);
+        console.log("   - lstMotorista value:", lstMotorista ? lstMotorista.value() : null);
+        console.log("   - lstVeiculo value:", lstVeiculo ? lstVeiculo.value() : null);
         //console.log("   - typeof motoristaId:", typeof motoristaId);
         //console.log("   - typeof veiculoId:", typeof veiculoId);
 
-        const motoristaId = lstMotorista?.value;
-        const veiculoId = lstVeiculo?.value;
+        const motoristaId = lstMotorista ? lstMotorista.value() : null;
+        const veiculoId = lstVeiculo ? lstVeiculo.value() : null;
 
         // CORREÇÃO: Garantir que os valores sejam strings válidas ou null
         const motoristaIdFinal = (motoristaId && motoristaId !== "null" && motoristaId !== "undefined")
@@ -886,14 +895,14 @@ window.criarAgendamentoNovo = function ()
         // ✅ KENDO: Precisa chamar value() com parênteses!
         const requisitanteId = lstRequisitante?.value();
 
-        const setorId = lstSetorRequisitanteAgendamento.value[0];
+        const setorId = lstSetorRequisitanteAgendamento && lstSetorRequisitanteAgendamento.value ? lstSetorRequisitanteAgendamento.value[0] : null;
         // ✅ KENDO: Precisa chamar value() com parênteses!
         const origem = cmbOrigem?.value();
         const destino = cmbDestino?.value();
         const finalidade = window.getSfValue0(lstFinalidade);
         const combustivelInicial = window.getSfValue0(ddtCombustivelInicial);
         const combustivelFinal = window.getSfValue0(ddtCombustivelFinal);
-        const descricaoHtml = rteDescricao?.getHtml() ?? "";
+        const descricaoHtml = typeof getEditorUpsertValue === 'function' ? getEditorUpsertValue() : '';
         const ramal = $("#txtRamalRequisitanteSF").val();
         const kmAtual = window.parseIntSafe($("#txtKmAtual").val());
         const kmInicial = window.parseIntSafe($("#txtKmInicial").val());
@@ -903,9 +912,9 @@ window.criarAgendamentoNovo = function ()
         // Processar evento
         let eventoId = null;
 
-        if (lstEventos?.value)
+        if (lstEventos)
         {
-            const eventosVal = lstEventos.value;
+            const eventosVal = lstEventos.value();
 
             // ✅ Tratar tanto array (MultiSelect) quanto valor único (ComboBox)
             if (Array.isArray(eventosVal) && eventosVal.length > 0)
@@ -942,7 +951,7 @@ window.criarAgendamentoNovo = function ()
         }
 
         // Processar recorrência
-        const recorrente = lstRecorrente?.value ?? "N";
+        const recorrente = lstRecorrente ? (lstRecorrente.value() || "N") : "N";
         const intervalo = window.getSfValue0(lstPeriodos) ?? "";
 
         let dataFinalRecorrencia = null;
@@ -1194,19 +1203,20 @@ window.criarAgendamentoEdicao = function (agendamentoOriginal)
     try
     {
         // Obter instâncias dos componentes
-        const rteDescricao = document.getElementById("rteDescricao")?.ej2_instances?.[0];
-        const lstMotorista = document.getElementById("lstMotorista")?.ej2_instances?.[0];
-        const lstVeiculo = document.getElementById("lstVeiculo")?.ej2_instances?.[0];
-        const ddtSetor = document.getElementById("lstSetorRequisitanteAgendamento")?.ej2_instances?.[0];
-        const ddtFinalidade = document.getElementById("lstFinalidade")?.ej2_instances?.[0];
-        const ddtCombIniInst = document.getElementById("ddtCombustivelInicial")?.ej2_instances?.[0];
-        const ddtCombFimInst = document.getElementById("ddtCombustivelFinal")?.ej2_instances?.[0];
-        const lstEventosInst = document.getElementById("lstEventos")?.ej2_instances?.[0];
-        const rteDescricaoHtmlContent = rteDescricao?.getHtml() ?? "";
+        // KENDO: rteDescricao accessed via helper
+        const rteDescricao = null; // Kendo Editor - use getEditorUpsertValue()
+        const lstMotorista = $('#lstMotorista').data('kendoComboBox');
+        const lstVeiculo = $('#lstVeiculo').data('kendoComboBox');
+        const ddtSetor = window.getSyncfusionInstance ? window.getSyncfusionInstance('lstSetorRequisitanteAgendamento') : null;
+        const ddtFinalidade = $('#lstFinalidade').data('kendoDropDownList');
+        const ddtCombIniInst = $('#ddtCombustivelInicial').data('kendoDropDownList');
+        const ddtCombFimInst = $('#ddtCombustivelFinal').data('kendoDropDownList');
+        const lstEventosInst = $('#lstEventos').data('kendoComboBox');
+        const rteDescricaoHtmlContent = typeof getEditorUpsertValue === 'function' ? getEditorUpsertValue() : '';
 
         // Extrair valores dos componentes
-        const motoristaId = lstMotorista?.value ?? null;
-        const veiculoId = lstVeiculo?.value ?? null;
+        const motoristaId = lstMotorista ? lstMotorista.value() : null;
+        const veiculoId = lstVeiculo ? lstVeiculo.value() : null;
         const setorId = window.getSfValue0(ddtSetor);
         // Kendo ComboBox - obter valor
         const lstReqEl = document.getElementById("lstRequisitante");
@@ -1240,9 +1250,9 @@ window.criarAgendamentoEdicao = function (agendamentoOriginal)
         // Processar evento
         let eventoId = null;
 
-        if (lstEventosInst?.value)
+        if (lstEventosInst)
         {
-            const eventosVal = lstEventosInst.value;
+            const eventosVal = lstEventosInst.value();
 
             // ✅ Tratar tanto array (MultiSelect) quanto valor único (ComboBox)
             if (Array.isArray(eventosVal) && eventosVal.length > 0)
@@ -1405,19 +1415,19 @@ window.criarAgendamentoViagem = function (agendamentoUnicoAlterado)
 {
     try
     {
-        const rteDescricao = document.getElementById("rteDescricao").ej2_instances[0];
-        const rteDescricaoHtmlContent = rteDescricao.getHtml();
+        // KENDO: rteDescricao accessed via helper function
+        const rteDescricaoHtmlContent = typeof getEditorUpsertValue === 'function' ? getEditorUpsertValue() : '';
 
-        let motoristaId = document.getElementById("lstMotorista").ej2_instances[0].value;
-        let veiculoId = document.getElementById("lstVeiculo").ej2_instances[0].value;
+        let motoristaId = $('#lstMotorista').data('kendoComboBox') ? $('#lstMotorista').data('kendoComboBox').value() : null;
+        let veiculoId = $('#lstVeiculo').data('kendoComboBox') ? $('#lstVeiculo').data('kendoComboBox').value() : null;
 
         // Processar evento
         let eventoId = null;
-        const lstEventosInst = document.getElementById("lstEventos")?.ej2_instances?.[0];
+        const lstEventosInst = $('#lstEventos').data('kendoComboBox');
 
-        if (lstEventosInst?.value)
+        if (lstEventosInst)
         {
-            const eventosVal = lstEventosInst.value;
+            const eventosVal = lstEventosInst.value();
 
             // ✅ Tratar tanto array (MultiSelect) quanto valor único (ComboBox)
             if (Array.isArray(eventosVal) && eventosVal.length > 0)
@@ -1431,7 +1441,7 @@ window.criarAgendamentoViagem = function (agendamentoUnicoAlterado)
 
         console.log("🎪 EventoId capturado:", eventoId);
 
-        let setorId = document.getElementById("lstSetorRequisitanteAgendamento").ej2_instances[0].value[0];
+        let setorId = (function() { var inst = window.getSyncfusionInstance ? window.getSyncfusionInstance('lstSetorRequisitanteAgendamento') : null; return inst && inst.value ? inst.value[0] : null; })();
         let ramal = $("#txtRamalRequisitanteSF").val();
         // Kendo ComboBox - obter valor
         const lstReqElement = document.getElementById("lstRequisitante");
@@ -1448,18 +1458,19 @@ window.criarAgendamentoViagem = function (agendamentoUnicoAlterado)
         // ✅ KENDO: Origem e Destino agora usam Kendo ComboBox
         let destino = $("#cmbDestino").data("kendoComboBox").value();
         let origem = $("#cmbOrigem").data("kendoComboBox").value();
-        let finalidade = document.getElementById("lstFinalidade").ej2_instances[0].value[0];
-        let combustivelInicial = document.getElementById("ddtCombustivelInicial").ej2_instances[0].value[0];
+        let finalidade = (function() { var ddl = $('#lstFinalidade').data('kendoDropDownList'); return ddl ? ddl.value() : null; })();
+        let combustivelInicial = (function() { var ddl = $('#ddtCombustivelInicial').data('kendoDropDownList'); return ddl ? ddl.value() : null; })();
 
         // Combustí­vel final (opcional)
         let combustivelFinal = "";
-        if (document.getElementById("ddtCombustivelFinal").ej2_instances[0].value[0] === null ||
-            document.getElementById("ddtCombustivelFinal").ej2_instances[0].value[0] === undefined)
+        var _ddlCombFinal = $('#ddtCombustivelFinal').data('kendoDropDownList');
+        var _combFinalVal = _ddlCombFinal ? _ddlCombFinal.value() : null;
+        if (_combFinalVal === null || _combFinalVal === undefined || _combFinalVal === '')
         {
             combustivelFinal = null;
         } else
         {
-            combustivelFinal = document.getElementById("ddtCombustivelFinal").ej2_instances[0].value[0];
+            combustivelFinal = _combFinalVal;
         }
 
         // Data final (opcional)
@@ -3237,11 +3248,25 @@ window.inicializarComponentesEJ2 = function ()
         {
             try
             {
-                const elemento = document.getElementById(id);
-                if (elemento && elemento.ej2_instances && elemento.ej2_instances[0])
-                {
-                    const componente = elemento.ej2_instances[0];
-                    Object.assign(componente, propriedades);
+                // Try Kendo widgets first
+                var kendoTypes = ['kendoDropDownList', 'kendoComboBox', 'kendoMultiSelect', 'kendoDatePicker', 'kendoTimePicker', 'kendoNumericTextBox', 'kendoEditor'];
+                var $el = $('#' + id);
+                var kendoFound = false;
+                for (var ki = 0; ki < kendoTypes.length; ki++) {
+                    var kWidget = $el.data(kendoTypes[ki]);
+                    if (kWidget) {
+                        if (propriedades.value !== undefined) { kWidget.value(propriedades.value || ''); }
+                        if (propriedades.enabled !== undefined) { kWidget.enable(propriedades.enabled); }
+                        kendoFound = true;
+                        break;
+                    }
+                }
+                // Fallback to Syncfusion bridge
+                if (!kendoFound) {
+                    var sfInst = window.getSyncfusionInstance ? window.getSyncfusionInstance(id) : null;
+                    if (sfInst) {
+                        Object.assign(sfInst, propriedades);
+                    }
                 }
             } catch (error)
             {
@@ -3280,20 +3305,22 @@ window.limparCamposRecorrencia = function ()
                 return;
             }
             const elemento = document.getElementById(id);
-            if (elemento && elemento.ej2_instances && elemento.ej2_instances[0])
-            {
-                elemento.ej2_instances[0].value = valor;
-            } else if (elemento)
-            {
+            // Try Syncfusion bridge (recurrence components stay Syncfusion)
+            var sfInst = window.getSyncfusionInstance ? window.getSyncfusionInstance(id) : null;
+            if (sfInst) {
+                sfInst.value = valor;
+                if (typeof sfInst.dataBind === 'function') sfInst.dataBind();
+            } else if (elemento) {
                 elemento.value = valor;
             }
         });
 
         // Limpar lista de dias selecionados
         const listBox = document.getElementById("lstDiasCalendario");
-        if (listBox && listBox.ej2_instances && listBox.ej2_instances[0])
-        {
-            listBox.ej2_instances[0].dataSource = [];
+        var listBoxInst = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstDiasCalendario") : null;
+        if (listBoxInst) {
+            listBoxInst.dataSource = [];
+            if (typeof listBoxInst.dataBind === 'function') listBoxInst.dataBind();
         }
 
         // Resetar badge de contagem
@@ -3366,9 +3393,10 @@ window.limparCamposModalViagens = function ()
 
         // Limpar setor
         const lstSetor = document.getElementById("lstSetorRequisitanteAgendamento");
-        if (lstSetor && lstSetor.ej2_instances && lstSetor.ej2_instances[0])
-        {
-            lstSetor.ej2_instances[0].value = null;
+        var lstSetorInst = window.getSyncfusionInstance ? window.getSyncfusionInstance('lstSetorRequisitanteAgendamento') : null;
+        if (lstSetorInst) {
+            lstSetorInst.value = null;
+            if (typeof lstSetorInst.dataBind === 'function') lstSetorInst.dataBind();
             window.refreshComponenteSafe("lstSetorRequisitanteAgendamento");
         }
 
@@ -3378,12 +3406,18 @@ window.limparCamposModalViagens = function ()
             try
             {
                 const elemento = document.getElementById(id);
-                if (elemento && elemento.ej2_instances && elemento.ej2_instances[0])
-                {
-                    const instance = elemento.ej2_instances[0];
-                    instance.value = null;
-                    window.refreshComponenteSafe(id);
+                // Try Kendo first, then Syncfusion bridge
+                var kendoTypes2 = ['kendoNumericTextBox', 'kendoDropDownList', 'kendoComboBox'];
+                var found2 = false;
+                for (var ki2 = 0; ki2 < kendoTypes2.length; ki2++) {
+                    var kw2 = $(elemento).data(kendoTypes2[ki2]);
+                    if (kw2) { kw2.value(''); found2 = true; break; }
                 }
+                if (!found2) {
+                    var sf2 = window.getSyncfusionInstance ? window.getSyncfusionInstance(id) : null;
+                    if (sf2) { sf2.value = null; }
+                }
+                window.refreshComponenteSafe(id);
             } catch (error)
             {
                 Alerta.TratamentoErroComLinha("modal-viagem.js", "limparCamposModalViagens_forEach1", error);
@@ -3424,15 +3458,33 @@ window.limparCamposModalViagens = function ()
             try
             {
                 const elemento = document.getElementById(id);
-                if (elemento && elemento.ej2_instances && elemento.ej2_instances[0])
-                {
-                    const instance = elemento.ej2_instances[0];
-
-                    // âœ… LIMPEZA COMPLETA
-                    instance.value = null;
-                    instance.text = '';
-
-                    // ✅ SEMPRE HABILITAR todos os componentes (incluindo lstEventos)
+                // Try Kendo widgets first
+                var kendoTypesClear = ['kendoDropDownList', 'kendoComboBox', 'kendoMultiSelect', 'kendoDatePicker', 'kendoTimePicker', 'kendoNumericTextBox'];
+                var kendoCleared = false;
+                if (elemento) {
+                    for (var kci = 0; kci < kendoTypesClear.length; kci++) {
+                        var kwc = $(elemento).data(kendoTypesClear[kci]);
+                        if (kwc) {
+                            kwc.value('');
+                            kwc.enable(true);
+                            kendoCleared = true;
+                            break;
+                        }
+                    }
+                }
+                // Fallback to Syncfusion bridge
+                if (!kendoCleared) {
+                    var sfClear = window.getSyncfusionInstance ? window.getSyncfusionInstance(id) : null;
+                    if (sfClear) {
+                        sfClear.value = null;
+                        sfClear.text = '';
+                        if (typeof sfClear.enabled !== "undefined") { sfClear.enabled = true; }
+                        if (typeof sfClear.dataBind === 'function') { sfClear.dataBind(); }
+                        if (typeof sfClear.refresh === 'function') { sfClear.refresh(); }
+                    }
+                }
+                // âœ… NOTE: Hybrid Kendo/Syncfusion cleanup applied above
+                // ✅ SEMPRE HABILITAR todos os componentes (incluindo lstEventos)
                     if (typeof instance.enabled !== "undefined")
                     {
                         instance.enabled = true;
@@ -3466,45 +3518,21 @@ window.limparCamposModalViagens = function ()
         console.log("ðŸ§¹ [Limpeza Extra] Garantindo limpeza de Motorista e Veí­culo...");
 
         // Motorista
-        const lstMotorista = document.getElementById("lstMotorista");
-        if (lstMotorista && lstMotorista.ej2_instances && lstMotorista.ej2_instances[0])
-        {
-            const motoristaInst = lstMotorista.ej2_instances[0];
-            motoristaInst.value = null;
-            motoristaInst.text = '';
-            motoristaInst.index = null;
-
-            if (typeof motoristaInst.dataBind === 'function')
-            {
-                motoristaInst.dataBind();
-            }
-
-            if (typeof motoristaInst.clear === 'function')
-            {
-                motoristaInst.clear();
-            }
+        const lstMotoristaClear = document.getElementById("lstMotorista");
+        var motoristaKendo = lstMotoristaClear ? $(lstMotoristaClear).data('kendoComboBox') : null;
+        if (motoristaKendo) {
+            motoristaKendo.value('');
+            motoristaKendo.text('');
 
             console.log("âœ… Motorista limpo completamente");
         }
 
         // Veí­culo
-        const lstVeiculo = document.getElementById("lstVeiculo");
-        if (lstVeiculo && lstVeiculo.ej2_instances && lstVeiculo.ej2_instances[0])
-        {
-            const veiculoInst = lstVeiculo.ej2_instances[0];
-            veiculoInst.value = null;
-            veiculoInst.text = '';
-            veiculoInst.index = null;
-
-            if (typeof veiculoInst.dataBind === 'function')
-            {
-                veiculoInst.dataBind();
-            }
-
-            if (typeof veiculoInst.clear === 'function')
-            {
-                veiculoInst.clear();
-            }
+        const lstVeiculoClear = document.getElementById("lstVeiculo");
+        var veiculoKendo = lstVeiculoClear ? $(lstVeiculoClear).data('kendoComboBox') : null;
+        if (veiculoKendo) {
+            veiculoKendo.value('');
+            veiculoKendo.text('');
 
             console.log("âœ… Veí­culo limpo completamente");
         }
@@ -3523,11 +3551,11 @@ window.limparCamposModalViagens = function ()
         });
 
         // Limpar finalidade
-        const lstFinalidade = document.getElementById("lstFinalidade");
-        if (lstFinalidade && lstFinalidade.ej2_instances && lstFinalidade.ej2_instances[0])
-        {
-            lstFinalidade.ej2_instances[0].value = null;
-            lstFinalidade.ej2_instances[0].enabled = true;
+        const lstFinalidadeClear = document.getElementById("lstFinalidade");
+        var finalidadeKendo = lstFinalidadeClear ? $(lstFinalidadeClear).data('kendoDropDownList') : null;
+        if (finalidadeKendo) {
+            finalidadeKendo.value('');
+            finalidadeKendo.enable(true);
             window.refreshComponenteSafe("lstFinalidade");
         }
 
@@ -3544,29 +3572,13 @@ window.limparCamposModalViagens = function ()
         setTimeout(() =>
         {
             const elRecorrente = document.getElementById("lstRecorrente");
-            if (elRecorrente && elRecorrente.ej2_instances && elRecorrente.ej2_instances[0])
-            {
+            var recorrenteKendo = elRecorrente ? $(elRecorrente).data('kendoDropDownList') : null;
+            if (recorrenteKendo) {
                 window.ignorarEventosRecorrencia = true;
 
-                // Garantir que tem dataSource antes de definir valor
-                const instance = elRecorrente.ej2_instances[0];
-                if (!instance.dataSource || instance.dataSource.length === 0)
-                {
-                    instance.dataSource = [
-                        { RecorrenteId: "N", Descricao: "Não" },
-                        { RecorrenteId: "S", Descricao: "Sim" }
-                    ];
-                    instance.fields = { text: 'Descricao', value: 'RecorrenteId' };
-                }
-
-                instance.value = "N";
-                instance.enabled = true;
-
-                // Usar dataBind para aplicar valor
-                if (typeof instance.dataBind === 'function')
-                {
-                    instance.dataBind();
-                }
+                // Kendo DropDownList - set value directly
+                recorrenteKendo.value("Nã);
+                recorrenteKendo.enable(true);
 
                 console.log("✅ [limparCampos] lstRecorrente definido como 'Não' (com timeout)");
                 window.ignorarEventosRecorrencia = false;
@@ -3575,10 +3587,11 @@ window.limparCamposModalViagens = function ()
 
         // Limpar perí­odo - VERSÃO CORRIGIDA
         const elPeriodos = document.getElementById("lstPeriodos");
-        if (elPeriodos && elPeriodos.ej2_instances && elPeriodos.ej2_instances[0])
-        {
-            elPeriodos.ej2_instances[0].value = null;
-            elPeriodos.ej2_instances[0].enabled = true;
+        var periodosInst = window.getSyncfusionInstance ? window.getSyncfusionInstance('lstPeriodos') : null;
+        if (periodosInst) {
+            periodosInst.value = null;
+            periodosInst.enabled = true;
+            if (typeof periodosInst.dataBind === 'function') periodosInst.dataBind();
             window.refreshComponenteSafe("lstPeriodos");
         } else if (typeof window.rebuildLstPeriodos === "function")
         {
@@ -3586,12 +3599,11 @@ window.limparCamposModalViagens = function ()
         }
 
         // Limpar editor de texto rico
-        const rteDescricao = document.getElementById("rteDescricao");
-        if (rteDescricao && rteDescricao.ej2_instances && rteDescricao.ej2_instances[0])
-        {
-            rteDescricao.ej2_instances[0].value = "";
-            window.refreshComponenteSafe("rteDescricao");
+        // KENDO: Clear editor via helper
+        if (typeof clearEditorUpsert === 'function') {
+            clearEditorUpsert();
         }
+        window.refreshComponenteSafe("rteDescricao");
 
         // Limpar campos de evento/requisitante
         const idsToReset = ["lstRequisitanteEvento", "lstSetorRequisitanteEvento", "ddtSetorRequisitante"];
@@ -3600,10 +3612,11 @@ window.limparCamposModalViagens = function ()
             try
             {
                 const elemento = document.getElementById(id);
-                if (elemento && elemento.ej2_instances && elemento.ej2_instances[0])
-                {
-                    const instance = elemento.ej2_instances[0];
-                    instance.value = null;
+                // These stay Syncfusion (DropDownTree etc.)
+                var sfReset = window.getSyncfusionInstance ? window.getSyncfusionInstance(id) : null;
+                if (sfReset) {
+                    sfReset.value = null;
+                    if (typeof sfReset.dataBind === 'function') sfReset.dataBind();
                     window.refreshComponenteSafe(id);
                 }
             } catch (error)
@@ -3623,9 +3636,9 @@ window.limparCamposModalViagens = function ()
 
         // Limpar calendário de datas selecionadas
         const calInstance = document.getElementById("calDatasSelecionadas");
-        if (calInstance && calInstance.ej2_instances && calInstance.ej2_instances[0])
-        {
-            const calendario = calInstance.ej2_instances[0];
+        var calInst = window.getSyncfusionInstance ? window.getSyncfusionInstance('calDatasSelecionadas') : null;
+        if (calInst) {
+            const calendario = calInst;
             if ("values" in calendario) calendario.values = [];
             if ("value" in calendario) calendario.value = null;
             window.refreshComponenteSafe("calDatasSelecionadas");
@@ -3636,10 +3649,11 @@ window.limparCamposModalViagens = function ()
         if (lstDiasHTML) lstDiasHTML.innerHTML = "";
 
         // Limpar lista de dias selecionados
-        const listBox = document.getElementById("lstDiasCalendario");
-        if (listBox && listBox.ej2_instances && listBox.ej2_instances[0])
-        {
-            listBox.ej2_instances[0].dataSource = [];
+        const listBox2 = document.getElementById("lstDiasCalendario");
+        var listBoxInst2 = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstDiasCalendario") : null;
+        if (listBoxInst2) {
+            listBoxInst2.dataSource = [];
+            if (typeof listBoxInst2.dataBind === 'function') listBoxInst2.dataBind();
         }
 
         // Resetar badge de contagem
@@ -3772,10 +3786,25 @@ window.desabilitarTodosControles = function ()
         {
             try
             {
-                const elemento = document.getElementById(id);
-                if (elemento && elemento.ej2_instances && elemento.ej2_instances[0])
-                {
-                    elemento.ej2_instances[0].enabled = false;
+                // Try Kendo widgets first
+                var kendoTypesDisable = ['kendoDropDownList', 'kendoComboBox', 'kendoMultiSelect', 'kendoDatePicker', 'kendoTimePicker', 'kendoNumericTextBox', 'kendoEditor'];
+                var $elDis = $('#' + id);
+                var kendoDisabled = false;
+                for (var kdi = 0; kdi < kendoTypesDisable.length; kdi++) {
+                    var kwDis = $elDis.data(kendoTypesDisable[kdi]);
+                    if (kwDis) {
+                        kwDis.enable(false);
+                        kendoDisabled = true;
+                        break;
+                    }
+                }
+                // Fallback to Syncfusion bridge
+                if (!kendoDisabled) {
+                    var sfDis = window.getSyncfusionInstance ? window.getSyncfusionInstance(id) : null;
+                    if (sfDis) {
+                        sfDis.enabled = false;
+                        if (typeof sfDis.dataBind === 'function') sfDis.dataBind();
+                    }
                 }
             } catch (error)
             {

@@ -5,10 +5,12 @@
  *                   ValidadorAgendamento orquestra todas as validações de campos
  *                   obrigatórios, regras de negócio (km, datas, recorrência), e
  *                   confirmações de usuário. Suporta validação condicional (agendamento
- *                   vs viagem realizada), múltiplos componentes UI (Syncfusion, Kendo,
- *                   jQuery), e flags de confirmação para evitar prompts repetidos.
- * 📥 ENTRADAS     : viagemId (string, opcional), valores de campos DOM (Syncfusion
- *                   ej2_instances, Kendo data(), jQuery val()), flags globais
+ *                   vs viagem realizada), múltiplos componentes UI (Kendo UI,
+ *                   Syncfusion bridge, jQuery), e flags de confirmação para evitar
+ *                   prompts repetidos.
+ * 📥 ENTRADAS     : viagemId (string, opcional), valores de campos DOM (Kendo
+ *                   $(el).data("kendoXxx"), Syncfusion bridge getSyncfusionInstance,
+ *                   jQuery val()), flags globais
  *                   (window.transformandoEmViagem, window.CarregandoAgendamento),
  *                   texto de botão (#btnConfirma)
  * 📤 SAÍDAS       : Promises<boolean> (true=válido, false=inválido), arrays this.erros,
@@ -16,11 +18,14 @@
  *                   de campos (val(""))
  * 🔗 CHAMADA POR  : Formulários de agendamento (main.js, dialogs.js), botões de submit,
  *                   event handlers de campos
- * 🔄 CHAMA        : document.getElementById, jQuery ($), Syncfusion ej2_instances,
- *                   Kendo $(el).data("kendoComboBox"), moment.js, Alerta.Erro/Confirmar,
- *                   window.parseDate, Alerta.TratamentoErroComLinha
- * 📦 DEPENDÊNCIAS : Syncfusion EJ2 (DatePicker, DropDownList, Calendar), Kendo UI
- *                   (ComboBox), jQuery, moment.js, Alerta.js, window.parseDate
+ * 🔄 CHAMA        : jQuery ($), Kendo $(el).data("kendoDropDownList/ComboBox/MultiSelect"),
+ *                   window.getSyncfusionInstance (bridge para controles ainda Syncfusion),
+ *                   moment.js, Alerta.Erro/Confirmar, window.parseDate,
+ *                   Alerta.TratamentoErroComLinha
+ * 📦 DEPENDÊNCIAS : Kendo UI (DropDownList, ComboBox, MultiSelect, DatePicker),
+ *                   Syncfusion EJ2 bridge (lstPeriodos, calDatasSelecionadas,
+ *                   lstSetorRequisitanteAgendamento), jQuery, moment.js, Alerta.js,
+ *                   window.parseDate, syncfusion.utils.js
  * 📝 OBSERVAÇÕES  : Exporta window.ValidadorAgendamento (instância global) e 3 funções
  *                   legacy (ValidaCampos, validarDatas, validarDatasInicialFinal).
  *                   Todos os métodos async retornam Promises<boolean>. Flags de
@@ -68,7 +73,7 @@
  * │    → returns true sempre (corrige automaticamente)                  │
  * │                                                                       │
  * │ 4. async validarFinalidade()                                         │
- * │    → Valida lstFinalidade (Syncfusion DropDownList)                 │
+ * │    → Valida lstFinalidade (Kendo DropDownList)                      │
  * │    → Se vazio/null: Alerta.Erro + retorna false                     │
  * │                                                                       │
  * │ 5. async validarOrigem()                                             │
@@ -85,23 +90,20 @@
  * │    → Se vazio/null: Alerta.Erro + retorna false                     │
  * │                                                                       │
  * │ 8. async validarRamal()                                              │
- * │    → Valida txtRamalRequisitanteSF (Syncfusion) ou txtRamalRequisitante (HTML)│
- * │    → Tenta Syncfusion primeiro: ej2_instances[0] + .value           │
- * │    → Fallback HTML: $("#txtRamalRequisitante").val()                │
- * │    → console.log em ambos os casos (produção!)                       │
+ * │    → Valida txtRamalRequisitanteSF via jQuery val()                  │
+ * │    → Fallback: $("#txtRamalRequisitante").val()                     │
  * │    → Se vazio/null: Alerta.Erro + retorna false                     │
  * │                                                                       │
  * │ 9. async validarSetor()                                              │
- * │    → Valida lstSetorRequisitanteAgendamento (Syncfusion)             │
+ * │    → Valida lstSetorRequisitanteAgendamento (Syncfusion bridge)      │
  * │    → Verifica visibilidade: offsetWidth>0 && offsetHeight>0          │
  * │    → Se oculto: retorna true (pula validação)                        │
- * │    → Verifica ej2_instances inicializado                             │
+ * │    → Usa window.getSyncfusionInstance() para obter widget            │
  * │    → Valida valor (pode ser array ou string): !== "" && length>0    │
- * │    → console.log/error em vários pontos (produção!)                  │
  * │    → Se vazio/null: Alerta.Erro + retorna false                     │
  * │                                                                       │
  * │ 10. async validarEvento()                                            │
- * │     → Se finalidade[0]==="Evento": valida lstEventos (Syncfusion)    │
+ * │     → Se finalidade[0]==="Evento": valida lstEventos (Kendo ComboBox)│
  * │     → Se vazio/null: Alerta.Erro + retorna false                    │
  * └───────────────────────────────────────────────────────────────────────┘
  *
@@ -239,10 +241,11 @@
  *    - txtFinalRecorrencia obrigatório (data final da recorrência)
  *
  * 📌 COMPONENTES UI SUPORTADOS:
- * - Syncfusion EJ2: ej2_instances[0].value, .dataBind(), .values (Calendar)
- * - Kendo UI: $(element).data("kendoComboBox").value()
+ * - Kendo UI: $("#el").data("kendoDropDownList/ComboBox/MultiSelect").value()
+ * - Syncfusion bridge: window.getSyncfusionInstance("id").value (lstPeriodos,
+ *   calDatasSelecionadas, lstSetorRequisitanteAgendamento)
  * - jQuery: $("#element").val()
- * - HTML native: document.getElementById("element").value
+ * - Kendo helpers: window.getKendoDateValue(), window.setKendoDateValue()
  *
  * 📌 FLAGS DE CONTROLE:
  * - this._kmConfirmado: evita re-prompt de confirmação de km > 100
@@ -278,12 +281,13 @@
  * - Comparação de datas sempre com setHours(0,0,0,0) para ignorar hora
  * - this.erros array inicializado mas nunca populado (possível uso futuro)
  * - Ficha de Vistoria removida como obrigatória (comentário line 286)
- * - Kendo ComboBox usa pattern diferente ($.data) vs Syncfusion (ej2_instances)
- * - validarRamal tem fallback HTML para compatibilidade
+ * - Kendo widgets acessados via $("#id").data("kendoXxx").value()
+ * - Syncfusion widgets restantes acessados via window.getSyncfusionInstance()
+ * - validarRamal usa jQuery val() com fallback para campo HTML padrão
  * - toLocaleString('pt-BR') para formatação de números (linha 630)
  *
- * 🔌 VERSÃO: 1.0
- * 📌 ÚLTIMA ATUALIZAÇÃO: 01/02/2026
+ * 🔌 VERSÃO: 2.0
+ * 📌 ÚLTIMA ATUALIZAÇÃO: 13/02/2026
  **************************************************************************************** */
 
 /**
@@ -415,7 +419,9 @@ class ValidadorAgendamento
     {
         try
         {
-            const finalidade = document.getElementById("lstFinalidade").ej2_instances[0].value;
+            // ✅ KENDO: lstFinalidade agora usa Kendo DropDownList
+            const ddlFinalidade = $("#lstFinalidade").data("kendoDropDownList");
+            const finalidade = ddlFinalidade ? ddlFinalidade.value() : null;
 
             if (finalidade === "" || finalidade === null)
             {
@@ -488,7 +494,9 @@ class ValidadorAgendamento
         {
             const dataFinal = $("#txtDataFinal").val();
             const horaFinal = $("#txtHoraFinal").val();
-            const combustivelFinal = document.getElementById("ddtCombustivelFinal").ej2_instances[0].value;
+            // ✅ KENDO: ddtCombustivelFinal agora usa Kendo DropDownList
+            const ddlCombFinal = $("#ddtCombustivelFinal").data("kendoDropDownList");
+            const combustivelFinal = ddlCombFinal ? ddlCombFinal.value() : null;
             const kmFinal = $("#txtKmFinal").val();
 
             return dataFinal || horaFinal || combustivelFinal || kmFinal;
@@ -508,7 +516,9 @@ class ValidadorAgendamento
         {
             const dataFinal = $("#txtDataFinal").val();
             const horaFinal = $("#txtHoraFinal").val();
-            const combustivelFinal = document.getElementById("ddtCombustivelFinal")?.ej2_instances?.[0]?.value;
+            // ✅ KENDO: ddtCombustivelFinal agora usa Kendo DropDownList
+            const ddlCombFinalVal = $("#ddtCombustivelFinal").data("kendoDropDownList");
+            const combustivelFinal = ddlCombFinalVal ? ddlCombFinalVal.value() : null;
             const kmFinal = $("#txtKmFinal").val();
 
             const todosFinalPreenchidos = dataFinal && horaFinal && combustivelFinal && kmFinal;
@@ -570,17 +580,19 @@ class ValidadorAgendamento
             // REMOVIDO: Ficha de Vistoria não é mais obrigatória
             // Se não informada, será gravada como 0
 
-            // Validar motorista
-            const lstMotorista = document.getElementById("lstMotorista").ej2_instances[0];
-            if (lstMotorista.value === null || lstMotorista.value === "")
+            // ✅ KENDO: lstMotorista agora usa Kendo ComboBox
+            const cmbMotorista = $("#lstMotorista").data("kendoComboBox");
+            const motorista = cmbMotorista ? cmbMotorista.value() : null;
+            if (motorista === null || motorista === "")
             {
                 await Alerta.Erro("Informação Ausente", "O Motorista é obrigatório");
                 return false;
             }
 
-            // Validar veículo
-            const lstVeiculo = document.getElementById("lstVeiculo").ej2_instances[0];
-            if (lstVeiculo.value === null || lstVeiculo.value === "")
+            // ✅ KENDO: lstVeiculo agora usa Kendo ComboBox
+            const cmbVeiculo = $("#lstVeiculo").data("kendoComboBox");
+            const veiculo = cmbVeiculo ? cmbVeiculo.value() : null;
+            if (veiculo === null || veiculo === "")
             {
                 await Alerta.Erro("Informação Ausente", "O Veículo é obrigatório");
                 return false;
@@ -590,9 +602,10 @@ class ValidadorAgendamento
             const kmOk = await this.validarKmInicialFinal();
             if (!kmOk) return false;
 
-            // Validar combustível inicial
-            const ddtCombustivelInicial = document.getElementById("ddtCombustivelInicial").ej2_instances[0];
-            if (ddtCombustivelInicial.value === "" || ddtCombustivelInicial.value === null)
+            // ✅ KENDO: ddtCombustivelInicial agora usa Kendo DropDownList
+            const ddlCombInicial = $("#ddtCombustivelInicial").data("kendoDropDownList");
+            const combInicial = ddlCombInicial ? ddlCombInicial.value() : null;
+            if (combInicial === "" || combInicial === null)
             {
                 await Alerta.Erro("Informação Ausente", "O Combustível Inicial é obrigatório");
                 return false;
@@ -641,34 +654,22 @@ class ValidadorAgendamento
     {
         try
         {
-            // Tentar validar o componente Syncfusion primeiro
-            const ramalSFElement = document.getElementById("txtRamalRequisitanteSF");
+            // ✅ KENDO: Ramal usa jQuery val() (input de texto simples)
+            // Tenta campo Syncfusion primeiro, depois fallback para campo HTML padrão
+            let valorRamal = $("#txtRamalRequisitanteSF").val();
 
-            if (ramalSFElement && ramalSFElement.ej2_instances && ramalSFElement.ej2_instances[0])
+            if (!valorRamal)
             {
-                // É um componente Syncfusion
-                const ramalSF = ramalSFElement.ej2_instances[0];
-                const valorRamalSF = document.getElementById("txtRamalRequisitanteSF").value;
-
-                if (!valorRamalSF || valorRamalSF === "" || valorRamalSF === null)
-                {
-                    await Alerta.Erro("Informação Ausente", "O Ramal do Requisitante é obrigatório");
-                    return false;
-                }
-
-                console.log("✅ Ramal validado (Syncfusion):", valorRamalSF);
-                return true;
+                // Fallback: tentar validar o input HTML padrão
+                valorRamal = $("#txtRamalRequisitante").val();
             }
 
-            // Fallback: tentar validar o input HTML padrío
-            const valorRamal = $("#txtRamalRequisitante").val();
-            if (!valorRamal || valorRamal === "" || valorRamal === null)
+            if (!valorRamal || valorRamal === "")
             {
                 await Alerta.Erro("Informação Ausente", "O Ramal do Requisitante é obrigatório");
                 return false;
             }
 
-            console.log("✅ Ramal validado (HTML):", valorRamal);
             return true;
 
         } catch (error)
@@ -701,19 +702,17 @@ class ValidadorAgendamento
             const isVisible = lstSetorElement.offsetWidth > 0 && lstSetorElement.offsetHeight > 0;
             if (!isVisible)
             {
-                console.log("ℹ️ lstSetorRequisitanteAgendamento está oculto - pulando validação");
                 return true; // Se está oculto, não valida
             }
 
-            // Verificar se ej2_instances existe e tem elementos
-            if (!lstSetorElement.ej2_instances || lstSetorElement.ej2_instances.length === 0)
+            // ✅ SYNCFUSION BRIDGE: lstSetorRequisitanteAgendamento usa DropDownTree (Syncfusion)
+            const lstSetor = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstSetorRequisitanteAgendamento") : null;
+            if (!lstSetor)
             {
-                console.error("❌ lstSetorRequisitanteAgendamento não está inicializado como componente EJ2");
                 await Alerta.Erro("Informação Ausente", "O Setor do Requisitante é obrigatório");
                 return false;
             }
 
-            const lstSetor = lstSetorElement.ej2_instances[0];
             const valorSetor = lstSetor.value;
 
             // Validar o valor (pode ser array ou valor único)
@@ -744,11 +743,15 @@ class ValidadorAgendamento
     {
         try
         {
-            const finalidade = document.getElementById("lstFinalidade").ej2_instances[0].value;
+            // ✅ KENDO: lstFinalidade agora usa Kendo DropDownList
+            const ddlFin = $("#lstFinalidade").data("kendoDropDownList");
+            const finalidade = ddlFin ? ddlFin.value() : null;
 
             if (finalidade && finalidade[0] === "Evento")
             {
-                const evento = document.getElementById("lstEventos").ej2_instances[0].value;
+                // ✅ KENDO: lstEventos agora usa Kendo ComboBox
+                const cmbEventos = $("#lstEventos").data("kendoComboBox");
+                const evento = cmbEventos ? cmbEventos.value() : null;
 
                 if (evento === "" || evento === null)
                 {
@@ -772,8 +775,13 @@ class ValidadorAgendamento
     {
         try
         {
-            const recorrente = document.getElementById("lstRecorrente").ej2_instances[0].value;
-            const periodo = document.getElementById("lstPeriodos").ej2_instances[0].value;
+            // ✅ KENDO: lstRecorrente agora usa Kendo DropDownList
+            const ddlRecorrente = $("#lstRecorrente").data("kendoDropDownList");
+            const recorrente = ddlRecorrente ? ddlRecorrente.value() : null;
+
+            // ✅ SYNCFUSION BRIDGE: lstPeriodos ainda usa Syncfusion DropDownList
+            const sfPeriodos = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstPeriodos") : null;
+            const periodo = sfPeriodos ? sfPeriodos.value : null;
 
             // Validação 1: Se recorrente = Sim, Período é obrigatório
             if (recorrente === "S" && (!periodo || periodo === ""))
@@ -785,7 +793,9 @@ class ValidadorAgendamento
             // Validação 2: Semanal/Quinzenal → Dias da Semana obrigatório
             if (periodo === "S" || periodo === "Q")
             {
-                const diasSelecionados = document.getElementById("lstDias").ej2_instances[0].value;
+                // ✅ KENDO: lstDias agora usa Kendo MultiSelect
+                const mseDias = $("#lstDias").data("kendoMultiSelect");
+                const diasSelecionados = mseDias ? mseDias.value() : [];
 
                 if (!diasSelecionados || diasSelecionados.length === 0)
                 {
@@ -797,7 +807,9 @@ class ValidadorAgendamento
             // Validação 3: Mensal → Dia do Mês obrigatório
             if (periodo === "M")
             {
-                const diaMes = document.getElementById("lstDiasMes").ej2_instances[0].value;
+                // ✅ KENDO: lstDiasMes agora usa Kendo DropDownList
+                const ddlDiasMes = $("#lstDiasMes").data("kendoDropDownList");
+                const diaMes = ddlDiasMes ? ddlDiasMes.value() : null;
 
                 if (!diaMes || diaMes === "" || diaMes === null)
                 {
@@ -821,7 +833,9 @@ class ValidadorAgendamento
     {
         try
         {
-            const periodo = document.getElementById("lstPeriodos").ej2_instances[0].value;
+            // ✅ SYNCFUSION BRIDGE: lstPeriodos ainda usa Syncfusion DropDownList
+            const sfPeriodos = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstPeriodos") : null;
+            const periodo = sfPeriodos ? sfPeriodos.value : null;
 
             if ((periodo === "D" || periodo === "S" || periodo === "Q" || periodo === "M"))
             {
@@ -849,22 +863,22 @@ class ValidadorAgendamento
     {
         try
         {
-            const periodo = document.getElementById("lstPeriodos").ej2_instances[0].value;
+            // ✅ SYNCFUSION BRIDGE: lstPeriodos ainda usa Syncfusion DropDownList
+            const sfPeriodosV = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstPeriodos") : null;
+            const periodo = sfPeriodosV ? sfPeriodosV.value : null;
 
             if (periodo === "V")
             {
-                // Verificar se o calendário existe e está disponível
-                const calendarElement = document.getElementById("calDatasSelecionadas");
+                // ✅ SYNCFUSION BRIDGE: calDatasSelecionadas usa Syncfusion Calendar
+                const calendarObj = window.getSyncfusionInstance ? window.getSyncfusionInstance("calDatasSelecionadas") : null;
 
-                if (!calendarElement || !calendarElement.ej2_instances || !calendarElement.ej2_instances[0])
+                if (!calendarObj)
                 {
                     // Calendário não disponível (provavelmente está editando agendamento existente)
                     // Neste caso, a validação não se aplica pois os dias já estão definidos
-                    console.log("ℹ️ Calendário não disponível - pulando validação de dias variados");
                     return true;
                 }
 
-                const calendarObj = calendarElement.ej2_instances[0];
                 const selectedDates = calendarObj.values;
 
                 if (!selectedDates || selectedDates.length === 0)
@@ -980,7 +994,9 @@ class ValidadorAgendamento
         {
             const dataFinal = $("#txtDataFinal").val();
             const horaFinal = $("#txtHoraFinal").val();
-            const combustivelFinal = document.getElementById("ddtCombustivelFinal").ej2_instances[0].value;
+            // ✅ KENDO: ddtCombustivelFinal agora usa Kendo DropDownList
+            const ddlCombFinalConf = $("#ddtCombustivelFinal").data("kendoDropDownList");
+            const combustivelFinal = ddlCombFinalConf ? ddlCombFinalConf.value() : null;
             const kmFinal = $("#txtKmFinal").val();
 
             const todosFinalPreenchidos = dataFinal && horaFinal && combustivelFinal && kmFinal;

@@ -450,18 +450,14 @@
 								<div class="col-10">
 									<div class="form-group">
 										<label class="label font-weight-bold">Infração</label>
-										<ejs-dropdownlist id="lstInfracao" dataSource="@ViewData["dataInfracao"]" placeholder="Selecione uma Infração..." allowFiltering="true" filterType="Contains" popupHeight="220px" ejs-for="@Model.MultaObj.Multa.TipoMultaId">
-											<e-dropdownlist-fields text="Descricao" value="TipoMultaId"></e-dropdownlist-fields>
-										</ejs-dropdownlist>
+										<input id="lstInfracao" name="MultaObj.Multa.TipoMultaId" style="width: 100%;" />
 									</div>
 								</div>
 								<div class="col-2">
 									<div class="form-group">
 										<label class="label font-weight-bold" asp-for="MultaObj.Multa.Status"></label>
 										<span class="text-danger font-weight-light" asp-validation-for="MultaObj.Multa.Status"></span>
-										<ejs-combobox id="lstStatus" placeholder="Status..." allowFiltering="true" filterType="Contains" dataSource="@ViewData["dataStatus"]" popupHeight="200px" width="100%" showClearButton="true" ejs-for="@Model.MultaObj.Multa.Status">
-											<e-combobox-fields text="Descricao" value="StatusId"></e-combobox-fields>
-										</ejs-combobox>
+										<input id="lstStatus" name="MultaObj.Multa.Status" style="width: 100%;" />
 									</div>
 								</div>
 							</div>
@@ -493,15 +489,11 @@
 							<div class="row">
 								<div class="col-12 col-md-6 col-xl-4">
 									<label class="label font-weight-bold">Órgão Autuante</label>
-									<ejs-combobox id="lstOrgao" placeholder="Selecione um Órgão Autuante" allowFiltering="true" filterType="Contains" dataSource="@ViewData["dataOrgao"]" popupHeight="200px" width="100%" showClearButton="true" ejs-for="@Model.MultaObj.Multa.OrgaoAutuanteId">
-										<e-combobox-fields text="Descricao" value="OrgaoId"></e-combobox-fields>
-									</ejs-combobox>
+									<input id="lstOrgao" name="MultaObj.Multa.OrgaoAutuanteId" style="width: 100%;" />
 								</div>
 								<div class="col-12 col-md-6 col-xl-4">
 									<label class="label font-weight-bold">Empenho</label>
-									<ejs-combobox id="lstEmpenhos" placeholder="Selecione um Empenho" allowFiltering="true" filterType="Contains" dataSource="@ViewData["dataTodosEmpenhos"]" popupHeight="200px" width="100%" showClearButton="true" ejs-for="@Model.MultaObj.Multa.EmpenhoMultaId">
-										<e-combobox-fields text="NotaEmpenho" value="EmpenhoMultaId"></e-combobox-fields>
-									</ejs-combobox>
+									<input id="lstEmpenhos" name="MultaObj.Multa.EmpenhoMultaId" style="width: 100%;" />
 								</div>
 								<div class="col-12 col-md-6 col-xl-4">
 									<label class="label font-weight-bold">Saldo do Empenho</label>
@@ -514,36 +506,26 @@
 							<div class="row">
 								<div class="col-12 col-md-6 col-xl-4">
 									<label class="label font-weight-bold">Veículo</label>
-									<ejs-combobox id="lstVeiculo" placeholder="Selecione um Veículo" allowFiltering="true" filterType="Contains" dataSource="@ViewData["dataVeiculo"]" popupHeight="200px" width="100%" showClearButton="true" ejs-for="@Model.MultaObj.Multa.VeiculoId">
-										<e-combobox-fields text="Descricao" value="VeiculoId"></e-combobox-fields>
-									</ejs-combobox>
+									<input id="lstVeiculo" name="MultaObj.Multa.VeiculoId" style="width: 100%;" />
 								</div>
 								<div class="col-12 col-md-6 col-xl-4">
 									<label class="label font-weight-bold">Contrato do Veículo</label>
-									<ejs-combobox id="lstContratoVeiculo" placeholder="Selecione um Contrato" allowFiltering="true" filterType="Contains" dataSource="@ViewData["dataContratoVeiculos"]" popupHeight="200px" width="100%" showClearButton="true" ejs-for="@Model.MultaObj.Multa.ContratoVeiculoId" enabled="false">
-										<e-combobox-fields text="Descricao" value="ContratoId"></e-combobox-fields>
-									</ejs-combobox>
+									<input id="lstContratoVeiculo" name="MultaObj.Multa.ContratoVeiculoId" style="width: 100%;" />
 								</div>
 								<div class="col-12 col-md-6 col-xl-4">
 									<label class="label font-weight-bold">Ata do Veículo</label>
-									<ejs-combobox id="lstAtaVeiculo" placeholder="Selecione uma Ata" allowFiltering="true" filterType="Contains" dataSource="@ViewData["dataAtaVeiculos"]" popupHeight="200px" width="100%" showClearButton="true" ejs-for="@Model.MultaObj.Multa.AtaVeiculoId" enabled="false">
-										<e-combobox-fields text="Descricao" value="AtaId"></e-combobox-fields>
-									</ejs-combobox>
+									<input id="lstAtaVeiculo" name="MultaObj.Multa.AtaVeiculoId" style="width: 100%;" />
 								</div>
 							</div>
 
 							<div class="row">
 								<div class="col-12 col-md-6 col-xl-4">
 									<label class="label font-weight-bold">Motorista</label>
-									<ejs-combobox id="lstMotorista" placeholder="Selecione um Motorista" allowFiltering="true" filterType="Contains" dataSource="@ViewData["dataMotorista"]" popupHeight="200px" width="100%" showClearButton="true" ejs-for="@Model.MultaObj.Multa.MotoristaId">
-										<e-combobox-fields text="Nome" value="MotoristaId"></e-combobox-fields>
-									</ejs-combobox>
+									<input id="lstMotorista" name="MultaObj.Multa.MotoristaId" style="width: 100%;" />
 								</div>
 								<div class="col-12 col-md-6 col-xl-4">
 									<label class="label font-weight-bold">Contrato do Motorista</label>
-									<ejs-combobox id="lstContratoMotorista" placeholder="Selecione um Contrato" allowFiltering="true" filterType="Contains" dataSource="@ViewData["dataContratoMotoristas"]" popupHeight="200px" width="100%" showClearButton="true" ejs-for="@Model.MultaObj.Multa.ContratoMotoristaId" enabled="false">
-										<e-combobox-fields text="Descricao" value="ContratoId"></e-combobox-fields>
-									</ejs-combobox>
+									<input id="lstContratoMotorista" name="MultaObj.Multa.ContratoMotoristaId" style="width: 100%;" />
 								</div>
 							</div>
 
@@ -787,6 +769,143 @@
 		// Configura locale brasileiro para Syncfusion
 		ej.base.setCulture('pt-BR');
 		ej.base.setCurrencyCode('BRL');
+	</script>
+
+	<script>
+		/****************************************************************************************
+		 * [KENDO] Inicialização dos controles DropDownList e ComboBox migrados de Syncfusion EJ2
+		 * ------------------------------------------------------------------------------
+		 * 🎯 MOTIVO       : Migração Syncfusion → Kendo UI jQuery
+		 * 📥 DADOS        : ViewData serializado via Html.Raw(Json.Serialize())
+		 * 📤 CONTROLES    : 1 DropDownList (lstInfracao) + 8 ComboBoxes
+		 ****************************************************************************************/
+		(function () {
+			try {
+				// [DADOS] Serializar dados do ViewData para os controles Kendo
+				var dataInfracao = @Html.Raw(Json.Serialize(ViewData["dataInfracao"]));
+				var dataStatus = @Html.Raw(Json.Serialize(ViewData["dataStatus"]));
+				var dataOrgao = @Html.Raw(Json.Serialize(ViewData["dataOrgao"]));
+				var dataTodosEmpenhos = @Html.Raw(Json.Serialize(ViewData["dataTodosEmpenhos"]));
+				var dataVeiculo = @Html.Raw(Json.Serialize(ViewData["dataVeiculo"]));
+				var dataContratoVeiculos = @Html.Raw(Json.Serialize(ViewData["dataContratoVeiculos"]));
+				var dataAtaVeiculos = @Html.Raw(Json.Serialize(ViewData["dataAtaVeiculos"]));
+				var dataMotorista = @Html.Raw(Json.Serialize(ViewData["dataMotorista"]));
+				var dataContratoMotoristas = @Html.Raw(Json.Serialize(ViewData["dataContratoMotoristas"]));
+
+				// ── 1. lstInfracao (DropDownList - seleção única, sem digitação livre) ──
+				$("#lstInfracao").kendoDropDownList({
+					dataTextField: "descricao",
+					dataValueField: "tipoMultaId",
+					optionLabel: "Selecione uma Infração...",
+					filter: "contains",
+					dataSource: dataInfracao,
+					height: 220,
+					value: "@(Model.MultaObj.Multa?.TipoMultaId?.ToString() ?? "")"
+				});
+
+				// ── 2. lstStatus (ComboBox - permite digitação/filtro) ──
+				$("#lstStatus").kendoComboBox({
+					dataTextField: "descricao",
+					dataValueField: "statusId",
+					placeholder: "Status...",
+					filter: "contains",
+					clearButton: true,
+					dataSource: dataStatus,
+					height: 200,
+					value: "@(Model.MultaObj.Multa?.Status?.ToString() ?? "")"
+				});
+
+				// ── 3. lstOrgao (ComboBox) ──
+				$("#lstOrgao").kendoComboBox({
+					dataTextField: "descricao",
+					dataValueField: "orgaoId",
+					placeholder: "Selecione um Órgão Autuante",
+					filter: "contains",
+					clearButton: true,
+					dataSource: dataOrgao,
+					height: 200,
+					value: "@(Model.MultaObj.Multa?.OrgaoAutuanteId?.ToString() ?? "")"
+				});
+
+				// ── 4. lstEmpenhos (ComboBox) ──
+				$("#lstEmpenhos").kendoComboBox({
+					dataTextField: "notaEmpenho",
+					dataValueField: "empenhoMultaId",
+					placeholder: "Selecione um Empenho",
+					filter: "contains",
+					clearButton: true,
+					dataSource: dataTodosEmpenhos,
+					height: 200,
+					value: "@(Model.MultaObj.Multa?.EmpenhoMultaId?.ToString() ?? "")"
+				});
+
+				// ── 5. lstVeiculo (ComboBox) ──
+				$("#lstVeiculo").kendoComboBox({
+					dataTextField: "descricao",
+					dataValueField: "veiculoId",
+					placeholder: "Selecione um Veículo",
+					filter: "contains",
+					clearButton: true,
+					dataSource: dataVeiculo,
+					height: 200,
+					value: "@(Model.MultaObj.Multa?.VeiculoId?.ToString() ?? "")"
+				});
+
+				// ── 6. lstContratoVeiculo (ComboBox - desabilitado por padrão) ──
+				$("#lstContratoVeiculo").kendoComboBox({
+					dataTextField: "descricao",
+					dataValueField: "contratoId",
+					placeholder: "Selecione um Contrato",
+					filter: "contains",
+					clearButton: true,
+					dataSource: dataContratoVeiculos,
+					height: 200,
+					value: "@(Model.MultaObj.Multa?.ContratoVeiculoId?.ToString() ?? "")",
+					enable: false
+				});
+
+				// ── 7. lstAtaVeiculo (ComboBox - desabilitado por padrão) ──
+				$("#lstAtaVeiculo").kendoComboBox({
+					dataTextField: "descricao",
+					dataValueField: "ataId",
+					placeholder: "Selecione uma Ata",
+					filter: "contains",
+					clearButton: true,
+					dataSource: dataAtaVeiculos,
+					height: 200,
+					value: "@(Model.MultaObj.Multa?.AtaVeiculoId?.ToString() ?? "")",
+					enable: false
+				});
+
+				// ── 8. lstMotorista (ComboBox) ──
+				$("#lstMotorista").kendoComboBox({
+					dataTextField: "nome",
+					dataValueField: "motoristaId",
+					placeholder: "Selecione um Motorista",
+					filter: "contains",
+					clearButton: true,
+					dataSource: dataMotorista,
+					height: 200,
+					value: "@(Model.MultaObj.Multa?.MotoristaId?.ToString() ?? "")"
+				});
+
+				// ── 9. lstContratoMotorista (ComboBox - desabilitado por padrão) ──
+				$("#lstContratoMotorista").kendoComboBox({
+					dataTextField: "descricao",
+					dataValueField: "contratoId",
+					placeholder: "Selecione um Contrato",
+					filter: "contains",
+					clearButton: true,
+					dataSource: dataContratoMotoristas,
+					height: 200,
+					value: "@(Model.MultaObj.Multa?.ContratoMotoristaId?.ToString() ?? "")",
+					enable: false
+				});
+
+			} catch (error) {
+				Alerta.TratamentoErroComLinha("UpsertPenalidade.cshtml", "kendoControls.init", error);
+			}
+		})();
 	</script>
 
 	<script>

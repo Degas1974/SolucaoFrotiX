@@ -330,15 +330,7 @@
                                             <label class="ftx-label ftx-required">Veículo</label>
                                             <div class="d-flex align-items-center gap-2">
                                                 <div class="flex-grow-1">
-                                                    <ejs-combobox id="cmbVeiculo" placeholder="Selecione um Veículo"
-                                                        allowFiltering="true" filterType="Contains"
-                                                        dataSource="@ViewData["dataVeiculo"]" popupHeight="200px"
-                                                        width="100%" showClearButton="true"
-                                                        ejs-for="@Model.ViagemObj.Viagem.VeiculoId"
-                                                        change="VeiculoValueChange">
-                                                        <e-combobox-fields text="Descricao"
-                                                            value="VeiculoId"></e-combobox-fields>
-                                                    </ejs-combobox>
+                                                    <input id="cmbVeiculo" name="ViagemObj.Viagem.VeiculoId" style="width: 100%;" />
                                                 </div>
                                                 <!-- Botão Ocorrências - QUADRADO 42x42 -->
                                                 <button type="button" id="btnOcorrenciasVeiculo"
@@ -594,15 +586,7 @@
                                             <label class="ftx-label ftx-required">Requisitante</label>
                                             <div class="d-flex align-items-center gap-2">
                                                 <div class="flex-grow-1">
-                                                    <ejs-combobox id="cmbRequisitante"
-                                                        placeholder="Selecione um Requisitante..." allowFiltering="true"
-                                                        filterType="Contains" dataSource="@ViewData["dataRequisitante"]"
-                                                        popupHeight="200px" width="100%" showClearButton="true"
-                                                        change="RequisitanteValueChange"
-                                                        ejs-for="@Model.ViagemObj.Viagem.RequisitanteId">
-                                                        <e-combobox-fields text="Requisitante"
-                                                            value="RequisitanteId"></e-combobox-fields>
-                                                    </ejs-combobox>
+                                                    <input id="cmbRequisitante" name="ViagemObj.Viagem.RequisitanteId" style="width: 100%;" />
                                                 </div>
                                                 <a class="btn btn-sm fundo-chocolate text-white" id="btnRequisitante"
                                                     style="height: 38px; display: flex; align-items: center;"
@@ -1602,6 +1586,8 @@
                     dataCombustivel: @Html.Raw(Json.Serialize(ViewData["dataCombustivel"])),
                     dataEvento: @Html.Raw(Json.Serialize(ViewData["dataEvento"])),
                     dataMotorista: @Html.Raw(Json.Serialize(ViewData["dataMotorista"])),
+                    dataVeiculo: @Html.Raw(Json.Serialize(ViewData["dataVeiculo"])),
+                    dataRequisitante: @Html.Raw(Json.Serialize(ViewData["dataRequisitante"])),
                     listaOrigem: @Html.Raw(Json.Serialize(ViewData["ListaOrigem"])),
                     listaDestino: @Html.Raw(Json.Serialize(ViewData["ListaDestino"])),
                     valores: {
@@ -1610,6 +1596,8 @@
                         finalidade: "@(Model.ViagemObj?.Viagem?.Finalidade ?? "")",
                         eventoId: "@(Model.ViagemObj?.Viagem?.EventoId?.ToString() ?? "")",
                         motoristaId: "@(Model.ViagemObj?.Viagem?.MotoristaId?.ToString() ?? "")",
+                        veiculoId: "@(Model.ViagemObj?.Viagem?.VeiculoId?.ToString() ?? "")",
+                        requisitanteId: "@(Model.ViagemObj?.Viagem?.RequisitanteId?.ToString() ?? "")",
                         combustivelInicial: "@(Model.ViagemObj?.Viagem?.CombustivelInicial ?? "")",
                         combustivelFinal: "@(Model.ViagemObj?.Viagem?.CombustivelFinal ?? "")",
                         origem: "@(Model.ViagemObj?.Viagem?.Origem ?? "")",
@@ -1812,6 +1800,50 @@
                     console.log('[Upsert] ✅ Kendo ComboBox cmbDestino inicializado');
                 } catch (kendoError) {
                     console.error('[Upsert] Erro ao inicializar Kendo ComboBox:', kendoError);
+                }
+
+                // 🎯 Inicializar Kendo ComboBox para Veículo
+                try {
+                    $("#cmbVeiculo").kendoComboBox({
+                        dataSource: context.dataVeiculo || [],
+                        dataTextField: "descricao",
+                        dataValueField: "veiculoId",
+                        filter: "contains",
+                        placeholder: "Selecione um Veículo",
+                        height: 200,
+                        suggest: false,
+                        clearButton: true,
+                        value: context.valores.veiculoId,
+                        change: function (e) {
+                            try { if (typeof VeiculoValueChange === "function") VeiculoValueChange(e); }
+                            catch (err) { Alerta.TratamentoErroComLinha("Upsert.cshtml", "cmbVeiculo.change", err); }
+                        }
+                    });
+                    console.log('[Upsert] ✅ Kendo ComboBox cmbVeiculo inicializado');
+                } catch (veiculoError) {
+                    console.error('[Upsert] Erro ao inicializar Kendo ComboBox cmbVeiculo:', veiculoError);
+                }
+
+                // 🎯 Inicializar Kendo ComboBox para Requisitante
+                try {
+                    $("#cmbRequisitante").kendoComboBox({
+                        dataSource: context.dataRequisitante || [],
+                        dataTextField: "requisitante",
+                        dataValueField: "requisitanteId",
+                        filter: "contains",
+                        placeholder: "Selecione um Requisitante...",
+                        height: 200,
+                        suggest: false,
+                        clearButton: true,
+                        value: context.valores.requisitanteId,
+                        change: function (e) {
+                            try { if (typeof RequisitanteValueChange === "function") RequisitanteValueChange(e); }
+                            catch (err) { Alerta.TratamentoErroComLinha("Upsert.cshtml", "cmbRequisitante.change", err); }
+                        }
+                    });
+                    console.log('[Upsert] ✅ Kendo ComboBox cmbRequisitante inicializado');
+                } catch (reqError) {
+                    console.error('[Upsert] Erro ao inicializar Kendo ComboBox cmbRequisitante:', reqError);
                 }
 
                 // ✨ Inicializar Sistema de Validação Fuzzy (v2.0)

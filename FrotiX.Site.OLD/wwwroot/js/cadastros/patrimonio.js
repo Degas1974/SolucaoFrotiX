@@ -345,9 +345,9 @@ function setupAddModeloButton()
                     e.preventDefault();
                     console.log('Botão adicionar modelo clicado');
 
-                    // Verificar se há marca selecionada
-                    var cmbMarcas = getComboboxInstance('cmbMarcas');
-                    if (!cmbMarcas || !cmbMarcas.value)
+                    // Verificar se ha marca selecionada
+                    var cmbMarcasWidget = $("#cmbMarcas").data("kendoComboBox");
+                    if (!cmbMarcasWidget || !cmbMarcasWidget.value())
                     {
                         AppToast.show('Amarelo', 'Por favor, selecione uma marca primeiro.', 2000);
                         return;
@@ -359,10 +359,10 @@ function setupAddModeloButton()
                         try
                         {
                             var campoMarca = document.getElementById('marcaSelecionadaModelo');
-                            if (campoMarca && cmbMarcas.value)
+                            if (campoMarca && cmbMarcasWidget.value())
                             {
-                                campoMarca.value = cmbMarcas.value;
-                                console.log('Marca preenchida no modal:', cmbMarcas.value);
+                                campoMarca.value = cmbMarcasWidget.value();
+                                console.log('Marca preenchida no modal:', cmbMarcasWidget.value());
                             }
                         } catch (error)
                         {
@@ -401,26 +401,23 @@ function cleanupEmptyGuids()
 {
     try
     {
-        var cmbSetores = document.getElementById('cmbSetores');
-        var cmbSecoes = document.getElementById('cmbSecoes');
-
-        if (cmbSetores && cmbSetores.ej2_instances && cmbSetores.ej2_instances[0])
+        var setorCombo = $("#cmbSetores").data("kendoComboBox");
+        if (setorCombo)
         {
-            var setorCombo = cmbSetores.ej2_instances[0];
-            if (setorCombo.text === "00000000-0000-0000-0000-000000000000")
+            if (setorCombo.text() === "00000000-0000-0000-0000-000000000000")
             {
-                setorCombo.text = null;
-                setorCombo.value = null;
+                setorCombo.text("");
+                setorCombo.value("");
             }
         }
 
-        if (cmbSecoes && cmbSecoes.ej2_instances && cmbSecoes.ej2_instances[0])
+        var secaoCombo = $("#cmbSecoes").data("kendoComboBox");
+        if (secaoCombo)
         {
-            var secaoCombo = cmbSecoes.ej2_instances[0];
-            if (secaoCombo.text === "00000000-0000-0000-0000-000000000000")
+            if (secaoCombo.text() === "00000000-0000-0000-0000-000000000000")
             {
-                secaoCombo.text = null;
-                secaoCombo.value = null;
+                secaoCombo.text("");
+                secaoCombo.value("");
             }
         }
     } catch (error)
@@ -463,12 +460,9 @@ function getComboboxInstance(elementId)
 {
     try
     {
-        const element = document.getElementById(elementId);
-        if (element && element.ej2_instances && element.ej2_instances.length > 0)
-        {
-            return element.ej2_instances[0];
-        }
-        return null;
+        var widget = $("#" + elementId).data("kendoComboBox")
+                  || $("#" + elementId).data("kendoDropDownList");
+        return widget || null;
     } catch (error)
     {
         Alerta.TratamentoErroComLinha("patrimonio.js", "getComboboxInstance", error);
@@ -657,12 +651,10 @@ if (path == "/patrimonio/index" || path == "/patrimonio")
                     {
                         if (result && result.success && result.data)
                         {
-                            var cmbSituacao = document.getElementById('cmbSituacao');
-                            if (cmbSituacao && cmbSituacao.ej2_instances && cmbSituacao.ej2_instances[0])
+                            var cmbSituacao = $("#cmbSituacao").data("kendoComboBox");
+                            if (cmbSituacao)
                             {
-                                cmbSituacao.ej2_instances[0].dataSource = result.data;
-                                cmbSituacao.ej2_instances[0].fields = { text: 'text', value: 'value' };
-                                cmbSituacao.ej2_instances[0].dataBind();
+                                cmbSituacao.setDataSource(new kendo.data.DataSource({ data: result.data }));
                                 console.log("✅ Situações carregadas:", result.data.length, "itens");
                             }
                         }
@@ -734,10 +726,11 @@ if (path == "/patrimonio/index" || path == "/patrimonio")
                 }
             }
 
-            // Obter valor selecionado do ComboBox Situação
-            if (cmbSituacao && cmbSituacao.ej2_instances && cmbSituacao.ej2_instances[0])
+            // Obter valor selecionado do ComboBox Situacao
+            var cmbSitWidget = $("#cmbSituacao").data("kendoComboBox");
+            if (cmbSitWidget)
             {
-                situacao = cmbSituacao.ej2_instances[0].value || "";
+                situacao = cmbSitWidget.value() || "";
             }
 
             console.log("Filtros aplicados:", {
@@ -1054,7 +1047,7 @@ else if (path == "/patrimonio/upsert")
         {
             console.log("Inicializando Situação");
 
-            var dropdownSituacao = getComboboxInstance("cmbSituacao");
+            var dropdownSituacao = $("#cmbSituacao").data("kendoDropDownList");
 
             if (!dropdownSituacao)
             {
@@ -1072,9 +1065,7 @@ else if (path == "/patrimonio/upsert")
                 { text: "Transferido (baixado)", value: "Transferido (baixado)" }
             ];
 
-            dropdownSituacao.dataSource = listaSituacoes;
-            dropdownSituacao.fields = { text: "text", value: "value" };
-            dropdownSituacao.dataBind();
+            dropdownSituacao.setDataSource(new kendo.data.DataSource({ data: listaSituacoes }));
 
             // Se for edição, carregar valor atual
             var situacaoAtual = document.getElementById("SituacaoId")?.value || "";
@@ -1084,7 +1075,7 @@ else if (path == "/patrimonio/upsert")
                 {
                     try
                     {
-                        dropdownSituacao.value = situacaoAtual;
+                        dropdownSituacao.value(situacaoAtual);
                         console.log("Situação carregada:", situacaoAtual);
                     } catch (error)
                     {
@@ -1110,8 +1101,8 @@ else if (path == "/patrimonio/upsert")
             var marcaAtual = document.getElementById("MarcaId")?.value || "";
             var modeloAtual = document.getElementById("ModeloId")?.value || "";
 
-            var comboBoxMarcas = getComboboxInstance("cmbMarcas");
-            var comboBoxModelos = getComboboxInstance("cmbModelos");
+            var comboBoxMarcas = $("#cmbMarcas").data("kendoComboBox");
+            var comboBoxModelos = $("#cmbModelos").data("kendoComboBox");
 
             if (!comboBoxMarcas || !comboBoxModelos)
             {
@@ -1130,7 +1121,7 @@ else if (path == "/patrimonio/upsert")
                 {
                     try
                     {
-                        comboBoxMarcas.value = marcaAtual;
+                        comboBoxMarcas.value(marcaAtual);
                         loadListaModelos(marcaAtual, modeloAtual);
                     } catch (error)
                     {
@@ -1139,8 +1130,10 @@ else if (path == "/patrimonio/upsert")
                 }, 1000);
             }
 
-            // Configurar evento change
-            comboBoxMarcas.addEventListener("change", onMarcaChange);
+            // Configurar evento change via Kendo
+            comboBoxMarcas.bind("change", function (e) {
+                onMarcaChange({ value: comboBoxMarcas.value() });
+            });
 
             // Desabilitar botão de adicionar modelo inicialmente
             var btnAddModelo = document.getElementById("btnAddModelo");
@@ -1158,7 +1151,7 @@ else if (path == "/patrimonio/upsert")
     {
         try
         {
-            var comboBoxModelos = getComboboxInstance("cmbModelos");
+            var comboBoxModelos = $("#cmbModelos").data("kendoComboBox");
             var marcaSelecionada = args.value;
             console.log("Marca selecionada:", marcaSelecionada);
 
@@ -1177,9 +1170,8 @@ else if (path == "/patrimonio/upsert")
                 // Limpar modelos
                 if (comboBoxModelos)
                 {
-                    comboBoxModelos.dataSource = [];
-                    comboBoxModelos.value = null;
-                    comboBoxModelos.dataBind();
+                    comboBoxModelos.setDataSource(new kendo.data.DataSource({ data: [] }));
+                    comboBoxModelos.value("");
                 }
             }
         } catch (error)
@@ -1192,7 +1184,7 @@ else if (path == "/patrimonio/upsert")
     {
         try
         {
-            var comboBox = getComboboxInstance("cmbMarcas");
+            var comboBox = $("#cmbMarcas").data("kendoComboBox");
             if (!comboBox) return;
 
             $.ajax({
@@ -1204,9 +1196,7 @@ else if (path == "/patrimonio/upsert")
                     {
                         if (res && res.data && res.data.length > 0)
                         {
-                            comboBox.fields = { text: "text", value: "value" };
-                            comboBox.dataSource = res.data;
-                            comboBox.dataBind();
+                            comboBox.setDataSource(new kendo.data.DataSource({ data: res.data }));
                         }
                     } catch (error)
                     {
@@ -1235,7 +1225,7 @@ else if (path == "/patrimonio/upsert")
     {
         try
         {
-            var comboBoxModelos = getComboboxInstance("cmbModelos");
+            var comboBoxModelos = $("#cmbModelos").data("kendoComboBox");
             if (!comboBoxModelos) return;
 
             $.ajax({
@@ -1248,24 +1238,19 @@ else if (path == "/patrimonio/upsert")
                     {
                         if (res && res.data && res.data.length > 0)
                         {
-                            comboBoxModelos.fields = { text: "text", value: "value" };
-                            comboBoxModelos.dataSource = res.data;
+                            comboBoxModelos.setDataSource(new kendo.data.DataSource({ data: res.data }));
 
                             if (modeloAtual)
                             {
-                                comboBoxModelos.dataBound = function ()
-                                {
-                                    comboBoxModelos.value = modeloAtual;
-                                };
+                                setTimeout(function () {
+                                    comboBoxModelos.value(modeloAtual);
+                                }, 200);
                             }
-
-                            comboBoxModelos.dataBind();
                         } else
                         {
                             // Limpar combobox quando não há modelos
-                            comboBoxModelos.dataSource = [];
-                            comboBoxModelos.value = null;
-                            comboBoxModelos.dataBind();
+                            comboBoxModelos.setDataSource(new kendo.data.DataSource({ data: [] }));
+                            comboBoxModelos.value("");
 
                             // Toast amarelo apenas se não for primeira carga
                             if (!modeloAtual)
@@ -1286,9 +1271,8 @@ else if (path == "/patrimonio/upsert")
                         // Limpar combobox em caso de erro
                         if (comboBoxModelos)
                         {
-                            comboBoxModelos.dataSource = [];
-                            comboBoxModelos.value = null;
-                            comboBoxModelos.dataBind();
+                            comboBoxModelos.setDataSource(new kendo.data.DataSource({ data: [] }));
+                            comboBoxModelos.value("");
                         }
                         AppToast.show('Amarelo', 'Nenhum modelo encontrado para esta marca', 2000);
                     } catch (err)
@@ -1310,8 +1294,8 @@ else if (path == "/patrimonio/upsert")
         {
             console.log("Inicializando Setor e Seção");
 
-            var comboBoxSetores = getComboboxInstance("cmbSetores");
-            var comboBoxSecoes = getComboboxInstance("cmbSecoes");
+            var comboBoxSetores = $("#cmbSetores").data("kendoComboBox");
+            var comboBoxSecoes = $("#cmbSecoes").data("kendoComboBox");
 
             if (!comboBoxSetores || !comboBoxSecoes)
             {
@@ -1321,13 +1305,15 @@ else if (path == "/patrimonio/upsert")
             }
 
             // Limpar valores iniciais se forem Guid.Empty
-            if (comboBoxSetores.value === "00000000-0000-0000-0000-000000000000")
+            if (comboBoxSetores.value() === "00000000-0000-0000-0000-000000000000")
             {
-                comboBoxSetores.value = null;
+                comboBoxSetores.value("");
+                comboBoxSetores.text("");
             }
-            if (comboBoxSecoes.value === "00000000-0000-0000-0000-000000000000")
+            if (comboBoxSecoes.value() === "00000000-0000-0000-0000-000000000000")
             {
-                comboBoxSecoes.value = null;
+                comboBoxSecoes.value("");
+                comboBoxSecoes.text("");
             }
 
             var setorAtual = document.getElementById("SetorId")?.value || "";
@@ -1340,7 +1326,7 @@ else if (path == "/patrimonio/upsert")
                 {
                     if (setorAtual && setorAtual !== "00000000-0000-0000-0000-000000000000")
                     {
-                        comboBoxSetores.value = setorAtual;
+                        comboBoxSetores.value(setorAtual);
                         loadListaSecoes(setorAtual, secaoAtual);
                     }
                 } catch (error)
@@ -1350,18 +1336,18 @@ else if (path == "/patrimonio/upsert")
             });
 
             // Configurar evento change
-            comboBoxSetores.change = onSetorChange;
+            comboBoxSetores.bind("change", function (e) { onSetorChange(e); });
         } catch (error)
         {
             Alerta.TratamentoErroComLinha("patrimonio.js", "initSetorSecao", error);
         }
     }
 
-    function onSetorChange(args)
+    function onSetorChange(e)
     {
         try
         {
-            var setorSelecionado = args.value;
+            var setorSelecionado = e.sender ? e.sender.value() : (e.value || "");
             console.log("Setor selecionado:", setorSelecionado);
 
             document.getElementById("divSecao").style.display = "block";
@@ -1371,12 +1357,12 @@ else if (path == "/patrimonio/upsert")
                 loadListaSecoes(setorSelecionado);
             } else
             {
-                var comboBoxSecoes = getComboboxInstance("cmbSecoes");
+                var comboBoxSecoes = $("#cmbSecoes").data("kendoComboBox");
                 if (comboBoxSecoes)
                 {
-                    comboBoxSecoes.dataSource = [];
-                    comboBoxSecoes.value = null;
-                    comboBoxSecoes.dataBind();
+                    comboBoxSecoes.setDataSource(new kendo.data.DataSource({ data: [] }));
+                    comboBoxSecoes.value("");
+                    comboBoxSecoes.text("");
                 }
             }
         } catch (error)
@@ -1389,7 +1375,7 @@ else if (path == "/patrimonio/upsert")
     {
         try
         {
-            var comboBoxSetores = getComboboxInstance("cmbSetores");
+            var comboBoxSetores = $("#cmbSetores").data("kendoComboBox");
             if (!comboBoxSetores) return;
 
             $.ajax({
@@ -1402,15 +1388,12 @@ else if (path == "/patrimonio/upsert")
                         if (res && res.data && res.data.length > 0)
                         {
                             // Limpar texto anterior se for Guid
-                            if (comboBoxSetores.text === "00000000-0000-0000-0000-000000000000")
+                            if (comboBoxSetores.text() === "00000000-0000-0000-0000-000000000000")
                             {
-                                comboBoxSetores.text = null;
+                                comboBoxSetores.text("");
                             }
 
-                            comboBoxSetores.dataSource = res.data;
-                            comboBoxSetores.fields = { text: "text", value: "value" };
-                            comboBoxSetores.placeholder = "Selecione um Setor";
-                            comboBoxSetores.dataBind();
+                            comboBoxSetores.setDataSource(new kendo.data.DataSource({ data: res.data }));
 
                             if (callback) callback();
                         }
@@ -1441,7 +1424,7 @@ else if (path == "/patrimonio/upsert")
     {
         try
         {
-            var comboBoxSecoes = getComboboxInstance("cmbSecoes");
+            var comboBoxSecoes = $("#cmbSecoes").data("kendoComboBox");
             if (!comboBoxSecoes) return;
 
             $.ajax({
@@ -1455,31 +1438,27 @@ else if (path == "/patrimonio/upsert")
                         if (res && res.data && res.data.length > 0)
                         {
                             // Limpar texto anterior se for Guid
-                            if (comboBoxSecoes.text === "00000000-0000-0000-0000-000000000000")
+                            if (comboBoxSecoes.text() === "00000000-0000-0000-0000-000000000000")
                             {
-                                comboBoxSecoes.text = null;
+                                comboBoxSecoes.text("");
                             }
 
-                            comboBoxSecoes.dataSource = res.data;
-                            comboBoxSecoes.fields = { text: "text", value: "value" };
-                            comboBoxSecoes.placeholder = "Selecione uma Seção";
+                            comboBoxSecoes.setDataSource(new kendo.data.DataSource({ data: res.data }));
 
                             if (secaoAtual && secaoAtual !== "00000000-0000-0000-0000-000000000000")
                             {
-                                comboBoxSecoes.value = secaoAtual;
+                                comboBoxSecoes.value(secaoAtual);
                             } else
                             {
-                                comboBoxSecoes.value = null;
+                                comboBoxSecoes.value("");
+                                comboBoxSecoes.text("");
                             }
-
-                            comboBoxSecoes.dataBind();
                         } else
                         {
                             // Limpar combobox quando não há seções
-                            comboBoxSecoes.dataSource = [];
-                            comboBoxSecoes.value = null;
-                            comboBoxSecoes.text = null;
-                            comboBoxSecoes.dataBind();
+                            comboBoxSecoes.setDataSource(new kendo.data.DataSource({ data: [] }));
+                            comboBoxSecoes.value("");
+                            comboBoxSecoes.text("");
 
                             // Toast amarelo apenas se não for primeira carga
                             if (!secaoAtual)
@@ -1500,10 +1479,9 @@ else if (path == "/patrimonio/upsert")
                         // Limpar combobox em caso de erro
                         if (comboBoxSecoes)
                         {
-                            comboBoxSecoes.dataSource = [];
-                            comboBoxSecoes.value = null;
-                            comboBoxSecoes.text = null;
-                            comboBoxSecoes.dataBind();
+                            comboBoxSecoes.setDataSource(new kendo.data.DataSource({ data: [] }));
+                            comboBoxSecoes.value("");
+                            comboBoxSecoes.text("");
                         }
                         AppToast.show('Amarelo', 'Nenhuma seção encontrada para este setor', 2000);
                     } catch (err)
@@ -1535,12 +1513,12 @@ else if (path == "/patrimonio/upsert")
                     {
                         console.log('Modal de novo modelo abrindo...');
 
-                        var cmbMarcas = getComboboxInstance('cmbMarcas');
+                        var cmbMarcas = $("#cmbMarcas").data("kendoComboBox");
                         if (cmbMarcas)
                         {
-                            var marcaSelecionada = cmbMarcas.text || cmbMarcas.value;
-                            console.log('Marca selecionada (text):', cmbMarcas.text);
-                            console.log('Marca selecionada (value):', cmbMarcas.value);
+                            var marcaSelecionada = cmbMarcas.text() || cmbMarcas.value();
+                            console.log('Marca selecionada (text):', cmbMarcas.text());
+                            console.log('Marca selecionada (value):', cmbMarcas.value());
                             console.log('Marca final:', marcaSelecionada);
 
                             if (marcaSelecionada)
@@ -1606,8 +1584,10 @@ else if (path == "/patrimonio/upsert")
 
                     if (!edicao)
                     {
-                        setorId = getComboboxInstance("cmbSetores")?.value;
-                        secaoId = getComboboxInstance("cmbSecoes")?.value;
+                        var _cmbSetores = $("#cmbSetores").data("kendoComboBox");
+                        var _cmbSecoes = $("#cmbSecoes").data("kendoComboBox");
+                        setorId = _cmbSetores ? _cmbSetores.value() : null;
+                        secaoId = _cmbSecoes ? _cmbSecoes.value() : null;
                     } else
                     {
                         setorId = document.getElementById("SetorId")?.value;
@@ -1670,7 +1650,7 @@ else if (path == "/patrimonio/upsert")
             }
 
             // Obter combobox
-            var cmbMarcas = getComboboxInstance('cmbMarcas');
+            var cmbMarcas = $("#cmbMarcas").data("kendoComboBox");
             if (!cmbMarcas)
             {
                 AppToast.show('Vermelho', 'Erro ao adicionar marca. Recarregue a página.', 2000);
@@ -1679,9 +1659,10 @@ else if (path == "/patrimonio/upsert")
 
             // Verificar duplicatas
             var marcaExiste = false;
-            if (cmbMarcas.dataSource && Array.isArray(cmbMarcas.dataSource))
+            var dsDataMarcas = cmbMarcas.dataSource.data();
+            if (dsDataMarcas && dsDataMarcas.length > 0)
             {
-                marcaExiste = cmbMarcas.dataSource.some(function (m)
+                marcaExiste = dsDataMarcas.toJSON().some(function (m)
                 {
                     return m.text && m.text.toLowerCase() === novaMarca.toLowerCase();
                 });
@@ -1694,21 +1675,14 @@ else if (path == "/patrimonio/upsert")
                 return;
             }
 
-            // Adicionar nova marca
-            if (!cmbMarcas.dataSource)
-            {
-                cmbMarcas.dataSource = [];
-            }
-
+            // Adicionar nova marca ao dataSource
             console.log('Adicionando marca:', novaMarca);
 
-            cmbMarcas.dataSource.push({ text: novaMarca, value: novaMarca });
-            cmbMarcas.dataBind();
+            cmbMarcas.dataSource.add({ text: novaMarca, value: novaMarca });
 
             // IMPORTANTE: Definir tanto text quanto value
-            cmbMarcas.text = novaMarca;
-            cmbMarcas.value = novaMarca;
-            cmbMarcas.dataBind();
+            cmbMarcas.text(novaMarca);
+            cmbMarcas.value(novaMarca);
 
             // Habilitar botão de adicionar modelo
             var btnAddModelo = document.getElementById('btnAddModelo');
@@ -1718,12 +1692,12 @@ else if (path == "/patrimonio/upsert")
             }
 
             // Limpar combobox de modelos (marca nova não tem modelos ainda)
-            var comboBoxModelos = getComboboxInstance("cmbModelos");
+            var comboBoxModelos = $("#cmbModelos").data("kendoComboBox");
             if (comboBoxModelos)
             {
-                comboBoxModelos.dataSource = [];
-                comboBoxModelos.value = null;
-                comboBoxModelos.dataBind();
+                comboBoxModelos.setDataSource(new kendo.data.DataSource({ data: [] }));
+                comboBoxModelos.value("");
+                comboBoxModelos.text("");
             }
 
             // Limpar campo
@@ -1749,15 +1723,15 @@ else if (path == "/patrimonio/upsert")
             var novoModelo = inputModelo.value.trim();
 
             // Obter marca selecionada
-            var cmbMarcas = getComboboxInstance('cmbMarcas');
-            if (!cmbMarcas || !cmbMarcas.value)
+            var cmbMarcas = $("#cmbMarcas").data("kendoComboBox");
+            if (!cmbMarcas || !cmbMarcas.value())
             {
                 AppToast.show('Amarelo', 'Selecione uma marca primeiro.', 2000);
                 closeModal('modalNovoModelo');
                 return;
             }
 
-            var marcaSelecionada = cmbMarcas.value;
+            var marcaSelecionada = cmbMarcas.value();
 
             // Validações
             if (!novoModelo)
@@ -1775,7 +1749,7 @@ else if (path == "/patrimonio/upsert")
             }
 
             // Obter combobox de modelos
-            var cmbModelos = getComboboxInstance('cmbModelos');
+            var cmbModelos = $("#cmbModelos").data("kendoComboBox");
             if (!cmbModelos)
             {
                 AppToast.show('Vermelho', 'Erro ao adicionar modelo.', 2000);
@@ -1784,9 +1758,10 @@ else if (path == "/patrimonio/upsert")
 
             // Verificar duplicatas
             var modeloExiste = false;
-            if (cmbModelos.dataSource && Array.isArray(cmbModelos.dataSource))
+            var dsDataModelos = cmbModelos.dataSource.data();
+            if (dsDataModelos && dsDataModelos.length > 0)
             {
-                modeloExiste = cmbModelos.dataSource.some(function (m)
+                modeloExiste = dsDataModelos.toJSON().some(function (m)
                 {
                     return m.text && m.text.toLowerCase() === novoModelo.toLowerCase();
                 });
@@ -1799,18 +1774,11 @@ else if (path == "/patrimonio/upsert")
                 return;
             }
 
-            // Adicionar novo modelo
-            if (!cmbModelos.dataSource)
-            {
-                cmbModelos.dataSource = [];
-            }
-
+            // Adicionar novo modelo ao dataSource
             console.log('Adicionando modelo:', novoModelo);
 
-            cmbModelos.dataSource.push({ text: novoModelo, value: novoModelo });
-            cmbModelos.dataBind();
-            cmbModelos.value = novoModelo;
-            cmbModelos.dataBind();
+            cmbModelos.dataSource.add({ text: novoModelo, value: novoModelo });
+            cmbModelos.value(novoModelo);
 
             // Limpar campo
             inputModelo.value = '';

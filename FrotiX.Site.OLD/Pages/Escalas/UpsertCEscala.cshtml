@@ -92,13 +92,7 @@
                         <label asp-for="MotoristaId" class="control-label required">
                             <i class="fas fa-user"></i> Motorista
                         </label>
-                        <ejs-dropdownlist id="motoristaId" name="MotoristaId" 
-                                         dataSource="@Model.MotoristaList" 
-                                         placeholder="Selecione o motorista"
-                                         allowFiltering="true"
-                                         floatLabelType="Auto">
-                            <e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-                        </ejs-dropdownlist>
+                        <input id="motoristaId" name="MotoristaId" style="width: 100%;" />
                         <span asp-validation-for="MotoristaId" class="text-danger"></span>
                     </div>
                 </div>
@@ -107,13 +101,7 @@
                         <label asp-for="VeiculoId" class="control-label">
                             <i class="fas fa-car"></i> Veículo
                         </label>
-                        <ejs-dropdownlist id="veiculoId" name="VeiculoId" 
-                                         dataSource="@Model.VeiculoList" 
-                                         placeholder="Selecione o veículo"
-                                         allowFiltering="true"
-                                         floatLabelType="Auto">
-                            <e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-                        </ejs-dropdownlist>
+                        <input id="veiculoId" name="VeiculoId" style="width: 100%;" />
                         <div class="form-check mt-2">
                             <input type="checkbox" class="form-check-input" id="veiculoNaoDefinido" name="VeiculoNaoDefinido" />
                             <label class="form-check-label" for="veiculoNaoDefinido">
@@ -210,12 +198,7 @@
                         <label asp-for="TurnoId" class="control-label required">
                             <i class="fas fa-clock"></i> Turno
                         </label>
-                        <ejs-dropdownlist id="turnoId" name="TurnoId" 
-                                         dataSource="@Model.TurnoList" 
-                                         placeholder="Selecione o turno"
-                                         floatLabelType="Auto">
-                            <e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-                        </ejs-dropdownlist>
+                        <input id="turnoId" name="TurnoId" style="width: 100%;" />
                         <span asp-validation-for="TurnoId" class="text-danger"></span>
                     </div>
                 </div>
@@ -224,12 +207,7 @@
                         <label asp-for="TipoServicoId" class="control-label required">
                             <i class="fas fa-briefcase"></i> Tipo de Serviço
                         </label>
-                        <ejs-dropdownlist id="tipoServicoId" name="TipoServicoId" 
-                                         dataSource="@Model.TipoServicoList" 
-                                         placeholder="Selecione o tipo de serviço"
-                                         floatLabelType="Auto">
-                            <e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-                        </ejs-dropdownlist>
+                        <input id="tipoServicoId" name="TipoServicoId" style="width: 100%;" />
                         <span asp-validation-for="TipoServicoId" class="text-danger"></span>
                     </div>
                 </div>
@@ -335,15 +313,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label asp-for="CategoriaIndisponibilidade"></label>
-                            <ejs-dropdownlist id="categoriaIndisponibilidade" name="CategoriaIndisponibilidade"
-                                             dataSource='@(new List<object> { 
-                                                 new { text = "Folga", value = "Folga" },
-                                                 new { text = "Férias", value = "Férias" },
-                                                 new { text = "Recesso", value = "Recesso" }
-                                             })'
-                                             placeholder="Selecione a categoria">
-                                <e-dropdownlist-fields text="text" value="value"></e-dropdownlist-fields>
-                            </ejs-dropdownlist>
+                            <input id="categoriaIndisponibilidade" name="CategoriaIndisponibilidade" style="width: 100%;" />
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -365,12 +335,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label asp-for="MotoristaCobertorId"></label>
-                            <ejs-dropdownlist id="motoristaCobertorId" name="MotoristaCobertorId"
-                                             dataSource="@Model.MotoristaList"
-                                             placeholder="Selecione o cobertor"
-                                             allowFiltering="true">
-                                <e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-                            </ejs-dropdownlist>
+                            <input id="motoristaCobertorId" name="MotoristaCobertorId" style="width: 100%;" />
                         </div>
                     </div>
                 </div>
@@ -386,13 +351,7 @@
                             <label asp-for="Lotacao" class="control-label">
                                 <i class="fas fa-map-marker-alt"></i> Lotação
                             </label>
-                            <ejs-dropdownlist id="lotacao" name="Lotacao"
-                                              dataSource="@Model.LotacaoList"
-                                              value="@Model.Lotacao"
-                                              placeholder="Selecione a lotação"
-                                              floatLabelType="Auto">
-                                <e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-                            </ejs-dropdownlist>
+                            <input id="lotacao" name="Lotacao" style="width: 100%;" />
                         </div>
                     </div>
                 </div>
@@ -405,12 +364,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label asp-for="RequisitanteId"></label>
-                            <ejs-dropdownlist id="requisitanteId" name="RequisitanteId"
-                                             dataSource="@Model.RequisitanteList"
-                                             placeholder="Selecione o requisitante"
-                                             allowFiltering="true">
-                                <e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
-                            </ejs-dropdownlist>
+                            <input id="requisitanteId" name="RequisitanteId" style="width: 100%;" />
                         </div>
                     </div>
                 </div>
@@ -449,7 +403,95 @@
 
 @section ScriptsBlock {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    
+
+    <script>
+        (function () {
+            try {
+                var dataMotorista = @Html.Raw(Json.Serialize(Model.MotoristaList));
+                var dataVeiculo = @Html.Raw(Json.Serialize(Model.VeiculoList));
+                var dataTurno = @Html.Raw(Json.Serialize(Model.TurnoList));
+                var dataTipoServico = @Html.Raw(Json.Serialize(Model.TipoServicoList));
+                var dataLotacao = @Html.Raw(Json.Serialize(Model.LotacaoList));
+                var dataRequisitante = @Html.Raw(Json.Serialize(Model.RequisitanteList));
+                var dataCategoriaIndisponibilidade = [
+                    { text: "Folga", value: "Folga" },
+                    { text: "F\u00e9rias", value: "F\u00e9rias" },
+                    { text: "Recesso", value: "Recesso" }
+                ];
+
+                $("#motoristaId").kendoDropDownList({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    optionLabel: "Selecione o motorista",
+                    filter: "contains",
+                    dataSource: dataMotorista,
+                    value: "@(Model.MotoristaId?.ToString() ?? "")"
+                });
+
+                $("#veiculoId").kendoDropDownList({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    optionLabel: "Selecione o ve\u00edculo",
+                    filter: "contains",
+                    dataSource: dataVeiculo,
+                    value: "@(Model.VeiculoId?.ToString() ?? "")"
+                });
+
+                $("#turnoId").kendoDropDownList({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    optionLabel: "Selecione o turno",
+                    dataSource: dataTurno,
+                    value: "@(Model.TurnoId != default ? Model.TurnoId.ToString() : "")"
+                });
+
+                $("#tipoServicoId").kendoDropDownList({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    optionLabel: "Selecione o tipo de servi\u00e7o",
+                    dataSource: dataTipoServico,
+                    value: "@(Model.TipoServicoId != default ? Model.TipoServicoId.ToString() : "")"
+                });
+
+                $("#categoriaIndisponibilidade").kendoDropDownList({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    optionLabel: "Selecione a categoria",
+                    dataSource: dataCategoriaIndisponibilidade,
+                    value: "@(Model.CategoriaIndisponibilidade ?? "")"
+                });
+
+                $("#motoristaCobertorId").kendoDropDownList({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    optionLabel: "Selecione o cobertor",
+                    filter: "contains",
+                    dataSource: dataMotorista,
+                    value: "@(Model.MotoristaCobertorId?.ToString() ?? "")"
+                });
+
+                $("#lotacao").kendoDropDownList({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    optionLabel: "Selecione a lota\u00e7\u00e3o",
+                    dataSource: dataLotacao,
+                    value: "@(Model.Lotacao ?? "")"
+                });
+
+                $("#requisitanteId").kendoDropDownList({
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    optionLabel: "Selecione o requisitante",
+                    filter: "contains",
+                    dataSource: dataRequisitante,
+                    value: "@(Model.RequisitanteId?.ToString() ?? "")"
+                });
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("UpsertCEscala.cshtml", "kendoDropDownList.init", error);
+            }
+        })();
+    </script>
+
     <script src="~/js/cadastros/CriarEscala.js" asp-append-version="true"></script>
 
     <script>

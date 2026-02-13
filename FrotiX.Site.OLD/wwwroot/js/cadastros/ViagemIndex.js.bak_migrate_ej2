@@ -1711,44 +1711,44 @@ function ListaTodasViagens()
     try
     {
         let veiculoId = "";
-        const veiculosComboKendo = $("#lstVeiculos").data("kendoComboBox");
-        if (veiculosComboKendo)
+        const veiculosCombo = document.getElementById("lstVeiculos");
+        if (veiculosCombo && veiculosCombo.ej2_instances && veiculosCombo.ej2_instances.length > 0)
         {
-            const val = veiculosComboKendo.value();
-            if (val != null && val !== "")
+            const combo = veiculosCombo.ej2_instances[0];
+            if (combo.value != null && combo.value !== "")
             {
-                veiculoId = val;
+                veiculoId = combo.value;
             }
         }
 
         let motoristaId = "";
-        const motoristasComboKendo = $("#lstMotorista").data("kendoComboBox");
-        if (motoristasComboKendo)
+        const motoristasCombo = document.getElementById("lstMotorista");
+        if (motoristasCombo && motoristasCombo.ej2_instances && motoristasCombo.ej2_instances.length > 0)
         {
-            const val = motoristasComboKendo.value();
-            if (val != null && val !== "")
+            const combo = motoristasCombo.ej2_instances[0];
+            if (combo.value != null && combo.value !== "")
             {
-                motoristaId = val;
+                motoristaId = combo.value;
             }
         }
 
         let eventoId = "";
-        const eventosComboKendo = $("#lstEventos").data("kendoComboBox");
-        if (eventosComboKendo)
+        const eventosCombo = document.getElementById("lstEventos");
+        if (eventosCombo && eventosCombo.ej2_instances && eventosCombo.ej2_instances.length > 0)
         {
-            const val = eventosComboKendo.value();
-            if (val != null && val !== "")
+            const combo = eventosCombo.ej2_instances[0];
+            if (combo.value != null && combo.value !== "")
             {
-                eventoId = val;
+                eventoId = combo.value;
             }
         }
 
         let statusId = "Aberta";
-        const statusComboKendo = $("#lstStatus").data("kendoComboBox");
-        if (statusComboKendo)
+        const statusCombo = document.getElementById("lstStatus");
+        if (statusCombo && statusCombo.ej2_instances && statusCombo.ej2_instances.length > 0)
         {
-            const statusVal = statusComboKendo.value();
-            if (statusVal === "" || statusVal === null)
+            const status = statusCombo.ej2_instances[0];
+            if (status.value === "" || status.value === null)
             {
                 if (motoristaId || veiculoId || eventoId || ($("#txtData").val() != null && $("#txtData").val() !== ""))
                 {
@@ -1756,7 +1756,7 @@ function ListaTodasViagens()
                 }
             } else
             {
-                statusId = statusVal;
+                statusId = status.value;
             }
         }
 

@@ -12,7 +12,6 @@
 @page
 
 @using FrotiX.Repository.IRepository
-@using Syncfusion.EJ2
 
 @inject IUnitOfWork _unitOfWork
 
@@ -611,19 +610,11 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label label-required">Veículo</label>
-                            <ejs-combobox id="cmbVeiculo" dataSource="@ViewData["lstVeiculos"]"
-                                placeholder="Selecione o Veículo" allowFiltering="true" filterType="Contains"
-                                popupHeight="250px" width="100%" showClearButton="true" allowCustom="true">
-                                <e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-                            </ejs-combobox>
+                            <input id="cmbVeiculo" style="width: 100%;" />
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label label-required">Motorista</label>
-                            <ejs-combobox id="cmbMotorista" dataSource="@ViewData["lstMotorista"]"
-                                placeholder="Selecione o Motorista" allowFiltering="true" filterType="Contains"
-                                popupHeight="250px" width="100%" showClearButton="true" allowCustom="true">
-                                <e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-                            </ejs-combobox>
+                            <input id="cmbMotorista" style="width: 100%;" />
                         </div>
                     </div>
 
@@ -634,11 +625,7 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label label-required">Combustível</label>
-                            <ejs-combobox id="cmbCombustivel" dataSource="@ViewData["lstCombustivel"]"
-                                placeholder="Selecione o Combustível" allowFiltering="true" filterType="Contains"
-                                popupHeight="250px" width="100%" showClearButton="true" allowCustom="true">
-                                <e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-                            </ejs-combobox>
+                            <input id="cmbCombustivel" style="width: 100%;" />
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label label-required">Litros</label>
@@ -761,6 +748,48 @@
         var tblPendencias = null;
         var pendenciaAtual = null;
         var filtroAtivo = 'total';
+
+        // Kendo ComboBox - Dados serializados do servidor
+        var dataVeiculosPend = @Html.Raw(Json.Serialize(ViewData["lstVeiculos"]));
+        var dataMotoristaPend = @Html.Raw(Json.Serialize(ViewData["lstMotorista"]));
+        var dataCombustivelPend = @Html.Raw(Json.Serialize(ViewData["lstCombustivel"]));
+
+        // Kendo ComboBox - Inicializacao
+        (function () {
+            try {
+                $("#cmbVeiculo").kendoComboBox({
+                    dataTextField: "descricao",
+                    dataValueField: "id",
+                    placeholder: "Selecione o Veículo",
+                    filter: "contains",
+                    dataSource: dataVeiculosPend,
+                    height: 250,
+                    clearButton: true
+                });
+
+                $("#cmbMotorista").kendoComboBox({
+                    dataTextField: "descricao",
+                    dataValueField: "id",
+                    placeholder: "Selecione o Motorista",
+                    filter: "contains",
+                    dataSource: dataMotoristaPend,
+                    height: 250,
+                    clearButton: true
+                });
+
+                $("#cmbCombustivel").kendoComboBox({
+                    dataTextField: "descricao",
+                    dataValueField: "id",
+                    placeholder: "Selecione o Combustível",
+                    filter: "contains",
+                    dataSource: dataCombustivelPend,
+                    height: 250,
+                    clearButton: true
+                });
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("Pendencias.cshtml", "kendoComboBox.init", error);
+            }
+        })();
 
         // ====== FUNÇÕES DE LOADING OVERLAY ======
         function mostrarLoading() {
@@ -1131,14 +1160,14 @@
                                 $("#txtCodMotorista").val(data.codMotorista);
                                 $("#txtDescricaoPendencia").text(data.descricaoPendencia);
 
-                                // Preencher combos (limpar primeiro, depois setar)
-                                var cmbVeiculo = document.getElementById('cmbVeiculo').ej2_instances[0];
-                                var cmbMotorista = document.getElementById('cmbMotorista').ej2_instances[0];
-                                var cmbCombustivel = document.getElementById('cmbCombustivel').ej2_instances[0];
+                                // Preencher combos via Kendo API
+                                var cmbVeiculo = $("#cmbVeiculo").data("kendoComboBox");
+                                var cmbMotorista = $("#cmbMotorista").data("kendoComboBox");
+                                var cmbCombustivel = $("#cmbCombustivel").data("kendoComboBox");
 
-                                cmbVeiculo.value = data.veiculoId || null;
-                                cmbMotorista.value = data.motoristaId || null;
-                                cmbCombustivel.value = data.combustivelId || null;
+                                if (cmbVeiculo) cmbVeiculo.value(data.veiculoId || "");
+                                if (cmbMotorista) cmbMotorista.value(data.motoristaId || "");
+                                if (cmbCombustivel) cmbCombustivel.value(data.combustivelId || "");
 
                                 // Mostrar/ocultar card de sugestão
                                 if (data.temSugestao) {
@@ -1199,9 +1228,9 @@
             try {
                 setButtonLoading("#btnSalvarPendencia", true);
 
-                var cmbVeiculo = document.getElementById('cmbVeiculo').ej2_instances[0];
-                var cmbMotorista = document.getElementById('cmbMotorista').ej2_instances[0];
-                var cmbCombustivel = document.getElementById('cmbCombustivel').ej2_instances[0];
+                var cmbVeiculo = $("#cmbVeiculo").data("kendoComboBox");
+                var cmbMotorista = $("#cmbMotorista").data("kendoComboBox");
+                var cmbCombustivel = $("#cmbCombustivel").data("kendoComboBox");
 
                 var dados = {
                     AbastecimentoPendenteId: $("#txtPendenciaId").val(),
@@ -1213,9 +1242,9 @@
                     ValorUnitario: parseFloat($("#txtValorUnitario").val()) || null,
                     KmAnterior: parseInt($("#txtKmAnterior").val()) || null,
                     Km: parseInt($("#txtKm").val()) || null,
-                    VeiculoId: cmbVeiculo.value,
-                    MotoristaId: cmbMotorista.value,
-                    CombustivelId: cmbCombustivel.value
+                    VeiculoId: cmbVeiculo ? cmbVeiculo.value() : null,
+                    MotoristaId: cmbMotorista ? cmbMotorista.value() : null,
+                    CombustivelId: cmbCombustivel ? cmbCombustivel.value() : null
                 };
 
                 $.ajax({
@@ -1259,9 +1288,9 @@
             try {
                 setButtonLoading("#btnSalvarImportar", true);
 
-                var cmbVeiculo = document.getElementById('cmbVeiculo').ej2_instances[0];
-                var cmbMotorista = document.getElementById('cmbMotorista').ej2_instances[0];
-                var cmbCombustivel = document.getElementById('cmbCombustivel').ej2_instances[0];
+                var cmbVeiculo = $("#cmbVeiculo").data("kendoComboBox");
+                var cmbMotorista = $("#cmbMotorista").data("kendoComboBox");
+                var cmbCombustivel = $("#cmbCombustivel").data("kendoComboBox");
 
                 var dados = {
                     AbastecimentoPendenteId: $("#txtPendenciaId").val(),
@@ -1273,9 +1302,9 @@
                     ValorUnitario: parseFloat($("#txtValorUnitario").val()) || null,
                     KmAnterior: parseInt($("#txtKmAnterior").val()) || null,
                     Km: parseInt($("#txtKm").val()) || null,
-                    VeiculoId: cmbVeiculo.value,
-                    MotoristaId: cmbMotorista.value,
-                    CombustivelId: cmbCombustivel.value
+                    VeiculoId: cmbVeiculo ? cmbVeiculo.value() : null,
+                    MotoristaId: cmbMotorista ? cmbMotorista.value() : null,
+                    CombustivelId: cmbCombustivel ? cmbCombustivel.value() : null
                 };
 
                 $.ajax({
@@ -1467,13 +1496,13 @@
                 pendenciaAtual = null;
                 $("#frmEditarPendencia")[0].reset();
 
-                var cmbVeiculo = document.getElementById('cmbVeiculo').ej2_instances[0];
-                var cmbMotorista = document.getElementById('cmbMotorista').ej2_instances[0];
-                var cmbCombustivel = document.getElementById('cmbCombustivel').ej2_instances[0];
+                var cmbVeiculo = $("#cmbVeiculo").data("kendoComboBox");
+                var cmbMotorista = $("#cmbMotorista").data("kendoComboBox");
+                var cmbCombustivel = $("#cmbCombustivel").data("kendoComboBox");
 
-                cmbVeiculo.value = null;
-                cmbMotorista.value = null;
-                cmbCombustivel.value = null;
+                if (cmbVeiculo) { cmbVeiculo.value(""); cmbVeiculo.text(""); }
+                if (cmbMotorista) { cmbMotorista.value(""); cmbMotorista.text(""); }
+                if (cmbCombustivel) { cmbCombustivel.value(""); cmbCombustivel.text(""); }
 
                 $("#cardSugestao").addClass('d-none');
             } catch (error) {

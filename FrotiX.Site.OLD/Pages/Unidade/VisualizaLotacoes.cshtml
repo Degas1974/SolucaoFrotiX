@@ -436,9 +436,9 @@
 
     function onCategoriaChange() {
         try {
-            const categorias = document.getElementById('lstCategorias').ej2_instances[0];
-            if (categorias && categorias.value) {
-                categoriaId = categorias.value;
+            var categorias = $("#lstCategorias").data("kendoComboBox");
+            if (categorias && categorias.value()) {
+                categoriaId = categorias.value();
                 ListaTblLotacoes(categoriaId);
             } else {
                 // Destruir DataTable de forma segura
@@ -484,17 +484,7 @@
                         <div class="ftx-filter-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <ejs-combobox id="lstCategorias"
-                                                  placeholder="Selecione uma Categoria"
-                                                  allowFiltering="true"
-                                                  filterType="Contains"
-                                                  dataSource="@ViewData["lstCategoria"]"
-                                                  popupHeight="250px"
-                                                  width="100%"
-                                                  showClearButton="true"
-                                                  change="onCategoriaChange">
-                                        <e-combobox-fields text="Categoria" value="CategoriaId"></e-combobox-fields>
-                                    </ejs-combobox>
+                                    <input id="lstCategorias" style="width: 100%;" />
                                 </div>
                             </div>
                         </div>
@@ -558,16 +548,7 @@
                                     <i class="fa-duotone fa-user-tie"></i>
                                     Motorista
                                 </label>
-                                <ejs-combobox id="lstMotoristaEditaLotacao"
-                                              placeholder="Selecione um Motorista"
-                                              allowFiltering="true"
-                                              filterType="Contains"
-                                              dataSource="@ViewData["lstMotorista"]"
-                                              popupHeight="250px"
-                                              width="100%"
-                                              showClearButton="true">
-                                    <e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-                                </ejs-combobox>
+                                <input id="lstMotoristaEditaLotacao" style="width: 100%;" />
                             </div>
                         </div>
                     </div>
@@ -579,16 +560,7 @@
                                     <i class="fa-duotone fa-building"></i>
                                     Unidade
                                 </label>
-                                <ejs-combobox id="lstUnidadeEditaLotacao"
-                                              placeholder="Selecione uma Unidade"
-                                              allowFiltering="true"
-                                              filterType="Contains"
-                                              dataSource="@ViewData["lstUnidade"]"
-                                              popupHeight="250px"
-                                              width="100%"
-                                              showClearButton="true">
-                                    <e-combobox-fields text="Descricao" value="UnidadeId"></e-combobox-fields>
-                                </ejs-combobox>
+                                <input id="lstUnidadeEditaLotacao" style="width: 100%;" />
                             </div>
                         </div>
                     </div>
@@ -660,16 +632,7 @@
                                     <i class="fa-duotone fa-user-tie"></i>
                                     Motorista
                                 </label>
-                                <ejs-combobox id="lstMotoristaFinalizaLotacao"
-                                              placeholder="Selecione um Motorista"
-                                              allowFiltering="true"
-                                              filterType="Contains"
-                                              dataSource="@ViewData["lstMotorista"]"
-                                              popupHeight="250px"
-                                              width="100%"
-                                              showClearButton="true">
-                                    <e-combobox-fields text="Descricao" value="Id"></e-combobox-fields>
-                                </ejs-combobox>
+                                <input id="lstMotoristaFinalizaLotacao" style="width: 100%;" />
                             </div>
                         </div>
                         <div class="col-md-6" id="divUnidadeFinalizacao">
@@ -678,16 +641,7 @@
                                     <i class="fa-duotone fa-building"></i>
                                     Unidade Atual
                                 </label>
-                                <ejs-combobox id="lstUnidadeFinalizaLotacao"
-                                              placeholder="Selecione uma Unidade"
-                                              allowFiltering="true"
-                                              filterType="Contains"
-                                              dataSource="@ViewData["lstUnidade"]"
-                                              popupHeight="250px"
-                                              width="100%"
-                                              showClearButton="true">
-                                    <e-combobox-fields text="Descricao" value="UnidadeId"></e-combobox-fields>
-                                </ejs-combobox>
+                                <input id="lstUnidadeFinalizaLotacao" style="width: 100%;" />
                             </div>
                         </div>
                     </div>
@@ -722,16 +676,7 @@
                                     <i class="fa-duotone fa-building-circle-arrow-right"></i>
                                     Nova Lotação (se necessário)
                                 </label>
-                                <ejs-combobox id="lstUnidadeNovaLotacao"
-                                              placeholder="Selecione uma Unidade"
-                                              allowFiltering="true"
-                                              filterType="Contains"
-                                              dataSource="@ViewData["lstUnidade"]"
-                                              popupHeight="250px"
-                                              width="100%"
-                                              showClearButton="true">
-                                    <e-combobox-fields text="Descricao" value="UnidadeId"></e-combobox-fields>
-                                </ejs-combobox>
+                                <input id="lstUnidadeNovaLotacao" style="width: 100%;" />
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -762,7 +707,91 @@
 
 @section ScriptsBlock {
     <script>
-        // Funções auxiliares para loading - Padrão FrotiX (Overlay)
+        // Kendo ComboBox Initialization - Migrated from Syncfusion EJ2 TagHelpers
+        (function () {
+            try {
+                var dataCategoria = @Html.Raw(Json.Serialize(ViewData["lstCategoria"]));
+                var dataMotorista = @Html.Raw(Json.Serialize(ViewData["lstMotorista"]));
+                var dataUnidade = @Html.Raw(Json.Serialize(ViewData["lstUnidade"]));
+
+                // lstCategorias - Filter card principal
+                $("#lstCategorias").kendoComboBox({
+                    dataTextField: "categoria",
+                    dataValueField: "categoriaId",
+                    placeholder: "Selecione uma Categoria",
+                    filter: "contains",
+                    dataSource: dataCategoria,
+                    height: 250,
+                    clearButton: true,
+                    change: function (e) {
+                        try { onCategoriaChange(); }
+                        catch (err) { Alerta.TratamentoErroComLinha("VisualizaLotacoes.cshtml", "lstCategorias.change", err); }
+                    }
+                });
+
+                // lstMotoristaEditaLotacao - Modal Editar Lotacao
+                $("#lstMotoristaEditaLotacao").kendoComboBox({
+                    dataTextField: "descricao",
+                    dataValueField: "id",
+                    placeholder: "Selecione um Motorista",
+                    filter: "contains",
+                    dataSource: dataMotorista,
+                    height: 250,
+                    clearButton: true
+                });
+
+                // lstUnidadeEditaLotacao - Modal Editar Lotacao
+                $("#lstUnidadeEditaLotacao").kendoComboBox({
+                    dataTextField: "descricao",
+                    dataValueField: "unidadeId",
+                    placeholder: "Selecione uma Unidade",
+                    filter: "contains",
+                    dataSource: dataUnidade,
+                    height: 250,
+                    clearButton: true
+                });
+
+                // lstMotoristaFinalizaLotacao - Modal Finalizar Lotacao
+                $("#lstMotoristaFinalizaLotacao").kendoComboBox({
+                    dataTextField: "descricao",
+                    dataValueField: "id",
+                    placeholder: "Selecione um Motorista",
+                    filter: "contains",
+                    dataSource: dataMotorista,
+                    height: 250,
+                    clearButton: true
+                });
+
+                // lstUnidadeFinalizaLotacao - Modal Finalizar Lotacao
+                $("#lstUnidadeFinalizaLotacao").kendoComboBox({
+                    dataTextField: "descricao",
+                    dataValueField: "unidadeId",
+                    placeholder: "Selecione uma Unidade",
+                    filter: "contains",
+                    dataSource: dataUnidade,
+                    height: 250,
+                    clearButton: true
+                });
+
+                // lstUnidadeNovaLotacao - Modal Finalizar (nova lotacao)
+                $("#lstUnidadeNovaLotacao").kendoComboBox({
+                    dataTextField: "descricao",
+                    dataValueField: "unidadeId",
+                    placeholder: "Selecione uma Unidade",
+                    filter: "contains",
+                    dataSource: dataUnidade,
+                    height: 250,
+                    clearButton: true
+                });
+
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("VisualizaLotacoes.cshtml", "kendoComboBox.init", error);
+            }
+        })();
+    </script>
+
+    <script>
+        // Funcoes auxiliares para loading - Padrao FrotiX (Overlay)
         function mostrarLoading(mensagem) {
             try {
                 $('#txtLoadingMessage').text(mensagem || 'Carregando...');
@@ -951,7 +980,8 @@
         $(document).on('click', '.btn-apagar', function () {
             try {
                 const id = $(this).data('id');
-                const catAtual = document.getElementById('lstCategorias').ej2_instances[0].value;
+                var cboCat = $("#lstCategorias").data("kendoComboBox");
+                const catAtual = cboCat ? cboCat.value() : null;
 
                 Alerta.Confirmar(
                     "Confirmar Exclusão",
@@ -1000,10 +1030,13 @@
             try {
                 event.preventDefault();
 
-                const catAtual   = document.getElementById('lstCategorias').ej2_instances[0].value;
+                var cboCat = $("#lstCategorias").data("kendoComboBox");
+                const catAtual   = cboCat ? cboCat.value() : null;
                 const lotacaoId  = $('#txtIdEdita').val();
-                const motorista  = document.getElementById('lstMotoristaEditaLotacao').ej2_instances[0].value;
-                const unidade    = document.getElementById('lstUnidadeEditaLotacao').ej2_instances[0].value;
+                var cboMotEd = $("#lstMotoristaEditaLotacao").data("kendoComboBox");
+                const motorista  = cboMotEd ? cboMotEd.value() : null;
+                var cboUnEd = $("#lstUnidadeEditaLotacao").data("kendoComboBox");
+                const unidade    = cboUnEd ? cboUnEd.value() : null;
                 const dataInicio = $('#txtDataInicioEdicao').val();
                 const dataFim    = $('#txtDataFimEdicao').val();
                 const lotado     = document.getElementById("chkLotadoEdicao").checked;
@@ -1050,10 +1083,13 @@
             try {
                 event.preventDefault();
 
-                const catAtual      = document.getElementById('lstCategorias').ej2_instances[0].value;
+                var cboCat = $("#lstCategorias").data("kendoComboBox");
+                const catAtual      = cboCat ? cboCat.value() : null;
                 const lotacaoId     = $('#txtIdFinaliza').val();
-                const motorista     = document.getElementById('lstMotoristaFinalizaLotacao').ej2_instances[0].value;
-                const unidadeNovaId = document.getElementById('lstUnidadeNovaLotacao').ej2_instances[0].value;
+                var cboMotFin = $("#lstMotoristaFinalizaLotacao").data("kendoComboBox");
+                const motorista     = cboMotFin ? cboMotFin.value() : null;
+                var cboUnNova = $("#lstUnidadeNovaLotacao").data("kendoComboBox");
+                const unidadeNovaId = cboUnNova ? cboUnNova.value() : null;
 
                 if (!$('#txtDataFimFinaliza').val()) {
                     Alerta.Erro("Informação Ausente", "A Data de Fim da Lotação é obrigatória", "OK");
@@ -1117,8 +1153,10 @@
                 $('#txtIdEdita').val(lotacaoMotoristaId);
                 $('#btnEditaLotacao').attr("data-id", lotacaoMotoristaId);
 
-                document.getElementById('lstMotoristaEditaLotacao').ej2_instances[0].value = motoristaId;
-                document.getElementById('lstUnidadeEditaLotacao').ej2_instances[0].value  = unidadeId;
+                var cboMotEd = $("#lstMotoristaEditaLotacao").data("kendoComboBox");
+                if (cboMotEd) cboMotEd.value(motoristaId);
+                var cboUnEd = $("#lstUnidadeEditaLotacao").data("kendoComboBox");
+                if (cboUnEd) cboUnEd.value(unidadeId);
 
                 if (data['dataInicio']) {
                     const di = data['dataInicio'].split("/");
@@ -1141,8 +1179,10 @@
         }).on("hide.bs.modal", function () {
             try {
                 $('#txtIdEdita').val("");
-                document.getElementById('lstMotoristaEditaLotacao').ej2_instances[0].value = null;
-                document.getElementById('lstUnidadeEditaLotacao').ej2_instances[0].value  = null;
+                var cboMotEd = $("#lstMotoristaEditaLotacao").data("kendoComboBox");
+                if (cboMotEd) { cboMotEd.value(""); cboMotEd.text(""); }
+                var cboUnEd = $("#lstUnidadeEditaLotacao").data("kendoComboBox");
+                if (cboUnEd) { cboUnEd.value(""); cboUnEd.text(""); }
                 $('#txtDataInicioEdicao').val("");
                 $('#txtDataFimEdicao').val("");
                 document.getElementById("chkLotadoEdicao").checked = false;
@@ -1178,8 +1218,10 @@
                 $('#txtIdFinaliza').val(lotacaoMotoristaId);
                 $('#btnFinalizaLotacao').attr("data-id", lotacaoMotoristaId);
 
-                document.getElementById('lstMotoristaFinalizaLotacao').ej2_instances[0].value = motoristaId;
-                document.getElementById('lstUnidadeFinalizaLotacao').ej2_instances[0].value   = unidadeId;
+                var cboMotFin = $("#lstMotoristaFinalizaLotacao").data("kendoComboBox");
+                if (cboMotFin) cboMotFin.value(motoristaId);
+                var cboUnFin = $("#lstUnidadeFinalizaLotacao").data("kendoComboBox");
+                if (cboUnFin) cboUnFin.value(unidadeId);
 
                 if (data['dataInicio']) {
                     const di = data['dataInicio'].split("/");
@@ -1190,18 +1232,22 @@
 
                 $('#txtDataFimFinaliza').val("");
                 $('#txtDataInicioNova').val("");
-                document.getElementById('lstUnidadeNovaLotacao').ej2_instances[0].value = null;
+                var cboUnNovaShown = $("#lstUnidadeNovaLotacao").data("kendoComboBox");
+                if (cboUnNovaShown) { cboUnNovaShown.value(""); cboUnNovaShown.text(""); }
             } catch (error) {
                 Alerta.TratamentoErroComLinha("VisualizaLotacoes.cshtml", "modalFinalizaLotacao.shown", error);
             }
         }).on("hide.bs.modal", function () {
             try {
                 $('#txtIdFinaliza').val("");
-                document.getElementById('lstMotoristaFinalizaLotacao').ej2_instances[0].value = null;
-                document.getElementById('lstUnidadeFinalizaLotacao').ej2_instances[0].value   = null;
+                var cboMotFin = $("#lstMotoristaFinalizaLotacao").data("kendoComboBox");
+                if (cboMotFin) { cboMotFin.value(""); cboMotFin.text(""); }
+                var cboUnFin = $("#lstUnidadeFinalizaLotacao").data("kendoComboBox");
+                if (cboUnFin) { cboUnFin.value(""); cboUnFin.text(""); }
                 $('#txtDataInicioFinaliza').val("");
                 $('#txtDataFimFinaliza').val("");
-                document.getElementById('lstUnidadeNovaLotacao').ej2_instances[0].value = null;
+                var cboUnNova = $("#lstUnidadeNovaLotacao").data("kendoComboBox");
+                if (cboUnNova) { cboUnNova.value(""); cboUnNova.text(""); }
                 $('#txtDataInicioNova').val("");
             } catch (error) {
                 Alerta.TratamentoErroComLinha("VisualizaLotacoes.cshtml", "modalFinalizaLotacao.hide", error);

@@ -359,7 +359,7 @@ if (path == "/setorpatrimonial/index" || path == "/setorpatrimonial")
     {
         try
         {
-            var comboBox = document.getElementById("cmbDetentores").ej2_instances[0];
+            var comboBox = $("#cmbDetentores").data("kendoComboBox");
 
             $.ajax({
                 type: "get",
@@ -371,11 +371,11 @@ if (path == "/setorpatrimonial/index" || path == "/setorpatrimonial")
                     {
                         if (res != null && res.data.length)
                         {
-                            // Inicialize o ComboBox da Syncfusion
-
-                            comboBox.dataSource = res.data;
-
-                            comboBox.fields = { text: "nomeCompleto", value: "usuarioId" };
+                            // Atualizar dataSource do Kendo ComboBox
+                            if (comboBox)
+                            {
+                                comboBox.setDataSource(new kendo.data.DataSource({ data: res.data }));
+                            }
                         } else
                         {
                             console.log("Nenhum setor encontrado.");

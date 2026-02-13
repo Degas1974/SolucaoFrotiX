@@ -6,7 +6,7 @@
  *                   inicialização (monitoramento de finalidade, botão "Novo Evento",
  *                   formulário cadastro), Bootstrap Modal management com fallbacks (Bootstrap
  *                   5 + jQuery), integração Kendo DatePicker (Telerik para datas),
- *                   Syncfusion DropDownList (eventos, requisitante evento), validações
+ *                   Kendo DropDownList/ComboBox (eventos, requisitante evento), validações
  *                   completas (nome, descrição, datas, quantidade participantes, setor,
  *                   requisitante), 2 AJAX calls paralelos (POST criar evento, GET buscar
  *                   setores), retry pattern (5 tentativas 300ms para inicialização),
@@ -30,9 +30,9 @@
  *                   (funções de teste/diagnóstico)
  * 🔄 CHAMA        : document.getElementById (13+ IDs), bootstrap.Modal.getOrCreateInstance/
  *                   show/hide, jQuery.modal("show"/"hide"), $(input).data("kendoDatePicker"),
- *                   Kendo DatePicker.value getter/setter, Syncfusion DropDownList methods
- *                   (ej2_instances[0], select/change event setters, dataSource setter,
- *                   dataBind, value setter), $.ajax (2 calls: POST /api/Viagem/AdicionarEvento,
+ *                   Kendo DatePicker.value getter/setter, Kendo DropDownList/ComboBox methods
+ *                   ($("#id").data("kendoXxx"), bind/unbind events, dataSource.data(),
+ *                   value() getter/setter), $.ajax (2 calls: POST /api/Viagem/AdicionarEvento,
  *                   GET /Viagens/Upsert?handler=PegaSetor e AJAXPreencheListaSetores),
  *                   setTimeout (5 retries pattern 300ms + 250ms/100ms delays), moment().format,
  *                   Array methods (some, find, sort, push), String methods (trim, toLowerCase,
@@ -42,9 +42,9 @@
  *                   (Kendo ComboBox getter), element.cloneNode + replaceChild (remove old listeners)
  * 📦 DEPENDÊNCIAS : Bootstrap 5 Modal (window.bootstrap.Modal), jQuery ($.ajax, $.modal,
  *                   $.data), Kendo UI Telerik (DatePicker: data("kendoDatePicker"),
- *                   ComboBox: getRequisitanteEventoCombo), Syncfusion EJ2 (DropDownList,
- *                   NumericTextBox: ej2_instances, select/change events, dataSource/dataBind/
- *                   value), moment.js (moment().format("MM-DD-YYYY")), Alerta (Alerta.Alerta,
+ *                   ComboBox: getRequisitanteEventoCombo, DropDownList: $("#id").data("kendoDropDownList")),
+ *                   jQuery ($("#txtQuantidade").val() para inputs simples),
+ *                   moment.js (moment().format("MM-DD-YYYY")), Alerta (Alerta.Alerta,
  *                   Alerta.TratamentoErroComLinha), AppToast (AppToast.show), DOM elements
  *                   (13 elements: #lstFinalidade, #sectionEvento, #btnEvento, #modalEvento,
  *                   #lstEventos, #txtNomeEvento, #txtDescricaoEvento, #txtDataInicialEvento,
@@ -143,7 +143,7 @@
  * │ → Fluxo:                                                             │
  * │   1. const lstFinalidade = getElementById("lstFinalidade")          │
  * │   2. if !lstFinalidade: console.warn + return                        │
- * │   3. if ej2_instances[0]:                                            │
+ * │   3. if $("#lstFinalidade").data("kendoDropDownList"):                 │
  * │      a. dropdown.select = function(args) {                           │
  * │           controlarVisibilidadeSecaoEvento(args.itemData.text) }     │
  * │      b. dropdown.change = function(args) {                           │
@@ -156,7 +156,7 @@
  * [Continuação no próximo bloco devido ao limite de espaço...]
  *
  * 📌 OBSERVAÇÕES TÉCNICAS IMPORTANTES:
- * - Kendo DatePicker: acessado via jQuery $(el).data("kendoDatePicker"), não Syncfusion
+ * - Kendo UI: todos controles acessados via jQuery $("#id").data("kendoXxx") (migrado de Syncfusion)
  * - Bootstrap Modal: getOrCreateInstance é Bootstrap 5, jQuery fallback para Bootstrap 3/4
  * - Retry pattern: 5 tentativas x 300ms = 1500ms timeout para DOM initialization
  * - Fallback chain: permite migração gradual Bootstrap 3→4→5 sem breaking changes
@@ -166,7 +166,7 @@
  *   #btnCancelarEvento) para garantir single event listener
  * - AJAX double call pattern: PegaSetor retorna ID, AJAXPreencheListaSetores busca lista
  *   completa, find by ID para obter nome (nested AJAX dentro de success callback)
- * - DataSource manipulation: clear ([]) + reload + sort pattern para Syncfusion DropDownList
+ * - DataSource manipulation: dataSource.data() + sort pattern para Kendo DropDownList/ComboBox
  * - Moment.js format: "MM-DD-YYYY" é US format (mês-dia-ano), backend ASP.NET espera isso
  * - Status: "1" hardcoded (string) no POST body (enum ou flag de status ativo)
  * - Int32.MaxValue: 2147483647 (validação explícita para quantidade participantes)
@@ -258,8 +258,8 @@ function fecharModalFallback(modalId)
 }
 
 /**
- * Telerik DatePicker - Não precisa de rebuild como Syncfusion
- * Componentes Telerik são mais estáveis dentro de modais
+ * Kendo UI DatePicker - Não precisa de rebuild
+ * Componentes Kendo/Telerik são estáveis dentro de modais Bootstrap
  */
 
 function obterValorDataEvento(input)
@@ -323,41 +323,43 @@ function configurarMonitoramentoFinalidade()
         return;
     }
 
-    // Verifica se é componente Syncfusion
-    if (lstFinalidade.ej2_instances && lstFinalidade.ej2_instances[0])
+    // Verifica se é componente Kendo DropDownList
+    const dropdown = $("#lstFinalidade").data("kendoDropDownList");
+    if (dropdown)
     {
-        const dropdown = lstFinalidade.ej2_instances[0];
-
         // Adiciona listener para SELECT (dispara imediatamente ao clicar)
-        dropdown.select = function (args)
+        dropdown.unbind("select");
+        dropdown.bind("select", function (e)
         {
-            console.log("🎯 Finalidade SELECIONADA (select event):", args.itemData);
+            var dataItem = e.dataItem;
+            console.log("🎯 Finalidade SELECIONADA (select event):", dataItem);
 
             // Pega o texto da finalidade
-            const finalidade = args.itemData?.text || args.itemData?.Descricao || args.itemData?.FinalidadeId || "";
+            const finalidade = dataItem?.descricao || dataItem?.finalidadeId || "";
 
             console.log("🔍 Processando:", finalidade);
             controlarVisibilidadeSecaoEvento(finalidade);
-        };
+        });
 
         // TAMBÉM adiciona listener para CHANGE (backup para casos de programático)
-        dropdown.change = function (args)
+        dropdown.unbind("change");
+        dropdown.bind("change", function (e)
         {
-            console.log("🔄 Finalidade mudou (change event):", args.value);
-            controlarVisibilidadeSecaoEvento(args.value);
-        };
+            console.log("🔄 Finalidade mudou (change event):", e.sender.value());
+            controlarVisibilidadeSecaoEvento(e.sender.value());
+        });
 
         console.log("✅ Listener de Finalidade configurado (SELECT + CHANGE)");
 
         // Verifica estado inicial
-        const valorAtual = dropdown.value;
+        const valorAtual = dropdown.value();
         if (valorAtual)
         {
             controlarVisibilidadeSecaoEvento(valorAtual);
         }
     } else
     {
-        console.warn("⚠️ lstFinalidade não é componente EJ2");
+        console.warn("⚠️ lstFinalidade não é componente Kendo");
     }
 }
 
@@ -394,44 +396,36 @@ function configurarRequisitanteEvento()
 
         console.log('✅ Elemento lstRequisitanteEvento encontrado');
 
-        // Verifica se é componente Syncfusion
-        if (lstRequisitanteEvento.ej2_instances && lstRequisitanteEvento.ej2_instances[0])
+        // Verifica se é componente Kendo ComboBox
+        const dropdown = $("#lstRequisitanteEvento").data("kendoComboBox");
+        if (dropdown)
         {
-            const dropdown = lstRequisitanteEvento.ej2_instances[0];
+            console.log('✅ Componente Kendo ComboBox encontrado:');
+            console.log('   - Value atual:', dropdown.value());
+            console.log('   - Text atual:', dropdown.text());
+            console.log('   - DataSource:', dropdown.dataSource.data());
 
-            console.log('✅ Componente Syncfusion encontrado:');
-            console.log('   - Tipo:', dropdown.constructor.name);
-            console.log('   - Value atual:', dropdown.value);
-            console.log('   - Text atual:', dropdown.text);
-            console.log('   - DataSource:', dropdown.dataSource);
-
-            // Verifica se já tem um listener
-            if (dropdown.select)
+            // Configura o listener select (remove anterior se existir)
+            dropdown.unbind("select");
+            dropdown.bind("select", function (e)
             {
-                console.log('⚠️ Listener select já existe, será substituído');
-            }
-
-            // Configura o listener select
-            dropdown.select = function (args)
-            {
+                var dataItem = e.dataItem;
                 console.log('🔔 [LISTENER] Select disparado no lstRequisitanteEvento:');
-                console.log('   - isInteraction:', args.isInteraction);
-                console.log('   - itemData:', args.itemData);
-                console.log('   - value:', args.e?.target?.value);
+                console.log('   - dataItem:', dataItem);
 
-                // Chama a função global
+                // Chama a função global com formato compatível
                 if (typeof window.onSelectRequisitanteEvento === 'function')
                 {
-                    window.onSelectRequisitanteEvento(args);
+                    window.onSelectRequisitanteEvento({ itemData: dataItem });
                 }
-            };
+            });
 
             console.log('✅ Listener de select configurado com sucesso!');
             console.log('🔧 === FIM configurarRequisitanteEvento ===');
         }
         else
         {
-            console.warn(`⚠️ lstRequisitanteEvento não é componente Syncfusion (tentativa ${tentativa})`);
+            console.warn(`⚠️ lstRequisitanteEvento não é componente Kendo (tentativa ${tentativa})`);
 
             if (tentativa < 5)
             {
@@ -790,11 +784,11 @@ function limparCamposCadastroEvento()
         const txtDataFinal = document.getElementById("txtDataFinalEvento");
         limparValorDataEvento(txtDataFinal);
 
-        // NumericTextBox (quantidade)
+        // NumericTextBox (quantidade) - jQuery simples
         const txtQuantidade = document.getElementById("txtQtdParticipantesEventoCadastro");
-        if (txtQuantidade?.ej2_instances?.[0])
+        if (txtQuantidade)
         {
-            txtQuantidade.ej2_instances[0].value = 0;
+            $("#txtQtdParticipantesEventoCadastro").val(0);
         }
 
         // ComboBox Telerik (requisitante)
@@ -849,7 +843,7 @@ function inserirNovoEvento()
             Alerta.Alerta("Atenção", "A Descrição do Evento é obrigatória!");
             return;
         }
-        // Pega as datas (Syncfusion ou input nativo)
+        // Pega as datas (Kendo DatePicker ou input nativo)
         const dataInicial = obterValorDataEvento(txtDataInicial);
         const dataFinal = obterValorDataEvento(txtDataFinal);
 
@@ -868,20 +862,21 @@ function inserirNovoEvento()
         if (dataInicial > dataFinal)
         {
             Alerta.Alerta("Atencao", "A Data Inicial nao pode ser maior que a Data Final!");
-            if (txtDataFinal?.ej2_instances?.[0])
+            // Limpa data final via Kendo helper ou fallback nativo
+            if (window.setKendoDateValue)
             {
-                txtDataFinal.ej2_instances[0].value = null;
+                window.setKendoDateValue("txtDataFinalEvento", null);
             }
             else if (txtDataFinal)
             {
-                txtDataFinal.value = "";
+                limparValorDataEvento(txtDataFinal);
             }
             return;
         }
 
-        // Pega quantidade
-        const quantidadePicker = txtQuantidade?.ej2_instances?.[0];
-        const quantidade = quantidadePicker?.value || 0;
+        // Pega quantidade - jQuery simples
+        const quantidadeRaw = $("#txtQtdParticipantesEventoCadastro").val();
+        const quantidade = parseInt(quantidadeRaw, 10) || 0;
 
         if (!quantidade || quantidade <= 0)
         {
@@ -894,7 +889,7 @@ function inserirNovoEvento()
         {
             Alerta.Alerta("Atenção", "A Quantidade de Participantes deve ser um número inteiro válido (máximo: 2.147.483.647)!");
             // Limpa o campo de quantidade
-            quantidadePicker.value = null;
+            $("#txtQtdParticipantesEventoCadastro").val("");
             return;
         }
 
@@ -1009,26 +1004,25 @@ function atualizarListaEventos(eventoId, eventoText)
         console.log("   EventoId:", eventoId);
         console.log("   EventoText:", eventoText);
 
-        const lstEventos = document.getElementById("lstEventos");
+        // Kendo ComboBox para lstEventos
+        const comboBox = $("#lstEventos").data("kendoComboBox") || $("#lstEventos").data("kendoDropDownList");
 
-        if (!lstEventos || !lstEventos.ej2_instances || !lstEventos.ej2_instances[0])
+        if (!comboBox)
         {
-            console.error("❌ lstEventos não encontrado ou não é componente EJ2");
+            console.error("❌ lstEventos não encontrado ou não é componente Kendo");
             return;
         }
 
-        const comboBox = lstEventos.ej2_instances[0];
-
-        // Cria o novo item com a estrutura correta
+        // Cria o novo item com a estrutura correta (camelCase para Kendo JSON)
         const novoItem = {
-            EventoId: eventoId,
-            Evento: eventoText
+            eventoId: eventoId,
+            evento: eventoText
         };
 
         console.log("📦 Novo item a ser adicionado:", novoItem);
 
-        // Obter dataSource atual
-        let dataSource = comboBox.dataSource || [];
+        // Obter dataSource atual (Kendo DataSource)
+        let dataSource = comboBox.dataSource.data().toJSON();
 
         if (!Array.isArray(dataSource))
         {
@@ -1036,7 +1030,7 @@ function atualizarListaEventos(eventoId, eventoText)
         }
 
         // Verificar se já existe
-        const jaExiste = dataSource.some(item => item.EventoId === eventoId);
+        const jaExiste = dataSource.some(item => item.eventoId === eventoId);
 
         if (!jaExiste)
         {
@@ -1046,19 +1040,14 @@ function atualizarListaEventos(eventoId, eventoText)
 
             // Ordena alfabeticamente por nome do evento
             dataSource.sort((a, b) => {
-                const nomeA = (a.Evento || '').toString().toLowerCase();
-                const nomeB = (b.Evento || '').toString().toLowerCase();
+                const nomeA = (a.evento || '').toString().toLowerCase();
+                const nomeB = (b.evento || '').toString().toLowerCase();
                 return nomeA.localeCompare(nomeB);
             });
             console.log("🔄 Lista ordenada alfabeticamente");
 
-            // Limpa o dataSource
-            comboBox.dataSource = [];
-            comboBox.dataBind();
-
-            // Recarrega com a lista ordenada
-            comboBox.dataSource = dataSource;
-            comboBox.dataBind();
+            // Atualiza o dataSource do Kendo com a lista ordenada
+            comboBox.dataSource.data(dataSource);
 
             console.log("✅ Lista atualizada e ordenada com sucesso");
         }
@@ -1072,15 +1061,12 @@ function atualizarListaEventos(eventoId, eventoText)
         {
             console.log("🔄 Selecionando novo evento...");
 
-            // Define o valor
-            comboBox.value = eventoId;
-
-            // Força a atualização visual
-            comboBox.dataBind();
+            // Define o valor (Kendo usa getter/setter function)
+            comboBox.value(eventoId);
 
             console.log("✅ Evento selecionado");
-            console.log("   Value:", comboBox.value);
-            console.log("   Text:", comboBox.text);
+            console.log("   Value:", comboBox.value());
+            console.log("   Text:", comboBox.text());
 
             // Aguarda mais um pouco antes de buscar dados
             setTimeout(() =>
@@ -1143,19 +1129,21 @@ function diagnosticarSistemaEvento()
 
     const lstFinalidade = document.getElementById("lstFinalidade");
     console.log("3. lstFinalidade existe?", !!lstFinalidade);
-    if (lstFinalidade?.ej2_instances)
+    const ddlFinalidade = $("#lstFinalidade").data("kendoDropDownList");
+    if (ddlFinalidade)
     {
-        console.log("   - É componente EJ2?", true);
-        console.log("   - Valor atual:", lstFinalidade.ej2_instances[0].value);
+        console.log("   - É componente Kendo?", true);
+        console.log("   - Valor atual:", ddlFinalidade.value());
     }
 
     const lstEventos = document.getElementById("lstEventos");
     console.log("4. lstEventos existe?", !!lstEventos);
-    if (lstEventos?.ej2_instances)
+    const cmbEventos = $("#lstEventos").data("kendoComboBox") || $("#lstEventos").data("kendoDropDownList");
+    if (cmbEventos)
     {
-        console.log("   - É componente EJ2?", true);
-        console.log("   - DataSource:", lstEventos.ej2_instances[0].dataSource);
-        console.log("   - Quantidade de itens:", lstEventos.ej2_instances[0].dataSource?.length || 0);
+        console.log("   - É componente Kendo?", true);
+        console.log("   - DataSource:", cmbEventos.dataSource.data());
+        console.log("   - Quantidade de itens:", cmbEventos.dataSource.data().length || 0);
     }
 
     const btnEvento = document.getElementById("btnEvento");

@@ -268,7 +268,7 @@
                             const HoraFinal = window.getKendoTimeValue("txtHoraFinal");
                             const KmInicial = parseInt($("#txtKmInicial").val()) || 0;
                             const KmFinal = parseInt($("#txtKmFinal").val()) || 0;
-                            const veiculoId = document.getElementById("lstVeiculo")?.ej2_instances?.[0]?.value || '';
+                            const veiculoId = (function(){ var _v = $('#lstVeiculo').data('kendoComboBox'); return _v ? _v.value() : ''; })();
 
                             // Só valida se temos dados de finalização
                             if (DataFinal && HoraFinal && KmFinal > 0)
@@ -295,7 +295,7 @@
                         FtxSpin.show("Gravando Agendamento(s)");
 
                         window.dataInicial = moment(window.getKendoDateValue("txtDataInicial")).toISOString().split("T")[0];
-                        const periodoRecorrente = document.getElementById("lstPeriodos").ej2_instances[0].value;
+                        const periodoRecorrente = (function(){ var _p = window.getSyncfusionInstance("lstPeriodos"); return _p ? _p.value : null; })();
 
                         if (!viagemId)
                         {
@@ -484,7 +484,7 @@
             } else if (periodoRecorrente === "S" || periodoRecorrente === "Q")
             {
                 // SEMANAL ou QUINZENAL: Repete nos dias da semana selecionados
-                const lstDias = document.getElementById("lstDias")?.ej2_instances?.[0];
+                const lstDias = window.getSyncfusionInstance("lstDias");
                 const diasSelecionados = lstDias?.value || [];
 
                 if (diasSelecionados.length === 0)
@@ -508,7 +508,7 @@
             } else if (periodoRecorrente === "M")
             {
                 // MENSAL: Repete no mesmo dia do mês
-                const diaMes = document.getElementById("lstDiasMes")?.ej2_instances?.[0]?.value;
+                const diaMes = (function(){ var _d = window.getSyncfusionInstance("lstDiasMes"); return _d ? _d.value : null; })();
                 const dataInicial = window.getKendoDateValue("txtDataInicial");
                 const dataFinalRecorrencia = window.getKendoDateValue("txtFinalRecorrencia");
 
@@ -534,7 +534,7 @@
             } else if (periodoRecorrente === "V")
             {
                 // VARIADA: Usa as datas específicas selecionadas no calendário
-                const calDatasSelecionadas = document.getElementById("calDatasSelecionadas")?.ej2_instances?.[0];
+                const calDatasSelecionadas = window.getSyncfusionInstance("calDatasSelecionadas");
                 const datasSelecionadas = calDatasSelecionadas?.values || [];
 
                 if (datasSelecionadas.length === 0)
@@ -704,9 +704,10 @@
 
                     // Buscar Km do veículo selecionado
                     const lstVeiculo = document.getElementById("lstVeiculo");
-                    if (lstVeiculo && lstVeiculo.ej2_instances && lstVeiculo.ej2_instances[0])
+                    var _lstVeiculoKendo = $('#lstVeiculo').data('kendoComboBox');
+                    if (_lstVeiculoKendo)
                     {
-                        const veiculoId = lstVeiculo.ej2_instances[0].value;
+                        const veiculoId = _lstVeiculoKendo.value();
                         if (veiculoId)
                         {
                             $.ajax({
@@ -1219,7 +1220,7 @@
                         const validador = ValidadorFinalizacaoIA.obterInstancia();
 
                         // Obter veiculoId do modal
-                        const veiculoId = document.getElementById("lstVeiculo")?.ej2_instances?.[0]?.value || '';
+                        const veiculoId = (function(){ var _v = $('#lstVeiculo').data('kendoComboBox'); return _v ? _v.value() : ''; })();
 
                         if (veiculoId && kmInicial > 0 && kmFinal > 0)
                         {
@@ -1363,13 +1364,12 @@
                             }
 
                             // Verificação robusta
-                            if (!el.ej2_instances || !Array.isArray(el.ej2_instances) || el.ej2_instances.length === 0)
+                            var inst = window.getSyncfusionInstance(c.id);
+                            if (!inst)
                             {
                                 console.warn(`⚠️ ${c.id} não tem instância Syncfusion inicializada`);
                                 return;
                             }
-
-                            var inst = el.ej2_instances[0];
 
                             if (!inst)
                             {
@@ -1582,13 +1582,12 @@
                                     setTimeout(() =>
                                     {
                                         const lstRecorrenteElement = document.getElementById("lstRecorrente");
-                                        if (lstRecorrenteElement && lstRecorrenteElement.ej2_instances)
+                                        var _lstRecorrenteKendo = $('#lstRecorrente').data('kendoDropDownList');
+                                        if (_lstRecorrenteKendo)
                                         {
-                                            const lstRecorrente = lstRecorrenteElement.ej2_instances[0];
-                                            if (lstRecorrente)
+                                            // lstRecorrente migrated to Kendo DropDownList
                                             {
-                                                lstRecorrente.value = "N"; // Padrío: Não
-                                                lstRecorrente.dataBind?.();
+                                                _lstRecorrenteKendo.value("N"); // Padrío: Não
                                                 console.log("✅ Recorrente definido como 'Não' (padrío)");
 
                                                 // Reforça largura/compacto após setar o valor
@@ -1762,8 +1761,8 @@
             {
                 try
                 {
-                    const setores = document.getElementById("ddtSetorRequisitante").ej2_instances[0];
-                    setores.value = "";
+                    var setoresInst = window.getSyncfusionInstance("ddtSetorRequisitante");
+                    if (setoresInst) { setoresInst.value = []; setoresInst.dataBind(); }
                     $("#txtPonto, #txtNome, #txtRamal, #txtEmail").val("");
                 } catch (error)
                 {
@@ -1860,8 +1859,8 @@
                     isAnimating = false;
                     try
                     {
-                        const setores = document.getElementById("ddtSetorRequisitante").ej2_instances[0];
-                        if (setores) setores.value = "";
+                        var setoresInst = window.getSyncfusionInstance("ddtSetorRequisitante");
+                        if (setoresInst) setoresInst.value = "";
                         $("#txtPonto, #txtNome, #txtRamal, #txtEmail").val("");
                     } catch (error)
                     {
@@ -1941,8 +1940,8 @@
                         return;
                     }
 
-                    const setores = document.getElementById("ddtSetorRequisitante").ej2_instances[0];
-                    if (setores.value.toString() === "")
+                    var setoresInst2 = window.getSyncfusionInstance("ddtSetorRequisitante");
+                    if (!setoresInst2 || setoresInst2.value.toString() === "")
                     {
                         Alerta.Erro("Atenção", "O Setor do Requisitante é obrigatório");
                         return;
@@ -1953,7 +1952,7 @@
                         Ponto: $("#txtPonto").val(),
                         Ramal: $("#txtRamal").val(),
                         Email: $("#txtEmail").val(),
-                        SetorSolicitanteId: setores.value.toString()
+                        SetorSolicitanteId: setoresInst2.value.toString()
                     };
 
                     window.RequisitanteService.adicionar(objRequisitante).then(result =>
@@ -1962,7 +1961,8 @@
                         {
                             AppToast.show("Verde", result.message, 2000);
 
-                            document.getElementById("lstRequisitante").ej2_instances[0].addItem({
+                            var lstReqInst = window.getSyncfusionInstance("lstRequisitante");
+                            if (lstReqInst) lstReqInst.addItem({
                                 RequisitanteId: result.requisitanteId,
                                 Requisitante: $("#txtNome").val() + " - " + $("#txtPonto").val()
                             }, 0);
@@ -1973,9 +1973,11 @@
                                 window.bootstrap.Modal.getOrCreateInstance(modalReq).hide();
                             }
 
-                            const comboBoxInstance = document.getElementById("lstRequisitante").ej2_instances[0];
-                            comboBoxInstance.value = result.requisitanteId;
-                            comboBoxInstance.dataBind();
+                            var comboBoxInstance = window.getSyncfusionInstance("lstRequisitante");
+                            if (comboBoxInstance) {
+                                comboBoxInstance.value = result.requisitanteId;
+                                comboBoxInstance.dataBind();
+                            }
                         } else
                         {
                             AppToast.show("Vermelho", result.message, 2000);
@@ -2036,15 +2038,15 @@
                         return;
                     }
 
-                    const setores = document.getElementById("ddtSetorEvento");
-                    if (!setores || !setores.ej2_instances || !setores.ej2_instances[0] || setores.ej2_instances[0].value === null)
+                    const setoresEvtInst = window.getSyncfusionInstance("ddtSetorEvento");
+                    if (!setoresEvtInst || setoresEvtInst.value === null)
                     {
                         Alerta.Erro("Atenção", "O Setor do Requisitante é obrigatório");
                         return;
                     }
 
-                    const requisitantes = document.getElementById("lstRequisitanteEvento");
-                    if (!requisitantes || !requisitantes.ej2_instances || !requisitantes.ej2_instances[0] || requisitantes.ej2_instances[0].value === null)
+                    const requisitanteEvtInst = window.getSyncfusionInstance("lstRequisitanteEvento");
+                    if (!requisitanteEvtInst || requisitanteEvtInst.value === null)
                     {
                         Alerta.Erro("Atenção", "O Requisitante é obrigatório");
                         return;
@@ -2053,8 +2055,8 @@
                     const objEvento = {
                         Nome: $("#txtNomeEvento").val(),
                         Descricao: $("#txtDescricaoEvento").val(),
-                        SetorSolicitanteId: setores.ej2_instances[0].value.toString(),
-                        RequisitanteId: requisitantes.ej2_instances[0].value.toString(),
+                        SetorSolicitanteId: (setoresEvtInst ? (Array.isArray(setoresEvtInst.value) ? setoresEvtInst.value[0] : setoresEvtInst.value) : "").toString(),
+                        RequisitanteId: (requisitanteEvtInst ? requisitanteEvtInst.value : "").toString(),
                         QtdParticipantes: $("#txtQtdPessoas").val(),
                         DataInicial: moment($("#txtDataInicialEvento").val()).format("MM-DD-YYYY"),
                         DataFinal: moment($("#txtDataFinalEvento").val()).format("MM-DD-YYYY"),
@@ -2125,16 +2127,18 @@
                     const ddtSetor = document.getElementById("ddtSetor");
                     const ddtSetorReq = document.getElementById("ddtSetorRequisitante");
 
-                    if (ddtSetor && ddtSetor.ej2_instances && ddtSetor.ej2_instances[0])
+                    var ddtSetorInst = window.getSyncfusionInstance("ddtSetor");
+                    if (ddtSetorInst)
                     {
-                        ddtSetor.ej2_instances[0].fields.dataSource = result.data;
-                        ddtSetor.ej2_instances[0].refresh();
+                        ddtSetorInst.fields.dataSource = result.data;
+                        ddtSetorInst.refresh();
                     }
 
-                    if (ddtSetorReq && ddtSetorReq.ej2_instances && ddtSetorReq.ej2_instances[0])
+                    var ddtSetorReqInst = window.getSyncfusionInstance("ddtSetorRequisitante");
+                    if (ddtSetorReqInst)
                     {
-                        ddtSetorReq.ej2_instances[0].fields.dataSource = result.data;
-                        ddtSetorReq.ej2_instances[0].refresh();
+                        ddtSetorReqInst.fields.dataSource = result.data;
+                        ddtSetorReqInst.refresh();
                     }
                 }
             });
@@ -2145,10 +2149,11 @@
                 if (result.success)
                 {
                     const lstEventos = document.getElementById("lstEventos");
-                    if (lstEventos && lstEventos.ej2_instances && lstEventos.ej2_instances[0])
+                    var lstEventosInst = window.getSyncfusionInstance("lstEventos");
+                    if (lstEventosInst)
                     {
-                        lstEventos.ej2_instances[0].fields.dataSource = result.data;
-                        lstEventos.ej2_instances[0].refresh();
+                        lstEventosInst.fields.dataSource = result.data;
+                        lstEventosInst.refresh();
                     }
                 }
             });
@@ -2264,13 +2269,14 @@
         {
             const lstDiasMesElement = document.getElementById("lstDiasMes");
 
-            if (!lstDiasMesElement || !lstDiasMesElement.ej2_instances || !lstDiasMesElement.ej2_instances[0])
+            var lstDiasMesInst = window.getSyncfusionInstance("lstDiasMes");
+            if (!lstDiasMesInst)
             {
                 console.warn("⚠️ lstDiasMes não inicializado");
                 return;
             }
 
-            const lstDiasMesObj = lstDiasMesElement.ej2_instances[0];
+            const lstDiasMesObj = lstDiasMesInst;
 
             // Criar array com dias de 1 a 31
             const diasDoMes = [];
@@ -2303,13 +2309,14 @@
         {
             const lstDiasElement = document.getElementById("lstDias");
 
-            if (!lstDiasElement || !lstDiasElement.ej2_instances || !lstDiasElement.ej2_instances[0])
+            var lstDiasInst = window.getSyncfusionInstance("lstDias");
+            if (!lstDiasInst)
             {
                 console.warn("⚠️ lstDias não inicializado");
                 return;
             }
 
-            const lstDiasObj = lstDiasElement.ej2_instances[0];
+            const lstDiasObj = lstDiasInst;
 
             // Dias da semana
             const diasDaSemana = [
@@ -2407,9 +2414,10 @@ function inicializarRamalTextBox()
     }
 
     // Destruir instância anterior se existir
-    if (ramalElement.ej2_instances && ramalElement.ej2_instances[0])
+    var ramalInst = window.getSyncfusionInstance("txtRamalRequisitanteSF");
+    if (ramalInst)
     {
-        ramalElement.ej2_instances[0].destroy();
+        ramalInst.destroy();
     }
 
     // Criar novo TextBox Syncfusion
