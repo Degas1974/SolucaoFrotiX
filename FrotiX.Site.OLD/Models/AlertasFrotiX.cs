@@ -67,14 +67,14 @@ namespace FrotiX.Models
 
         // Tipo de alerta.
         [Required(ErrorMessage = "O tipo de alerta é obrigatório")]
-        public TipoAlerta TipoAlerta
+        public int TipoAlerta
         {
             get; set;
         }
 
         // Prioridade do alerta.
         [Required(ErrorMessage = "A prioridade é obrigatória")]
-        public PrioridadeAlerta Prioridade
+        public int Prioridade
         {
             get; set;
         }
@@ -170,7 +170,7 @@ namespace FrotiX.Models
         }
 
         // Tipo de exibição do alerta (1-3: única, 4-8: recorrente).
-        public TipoExibicaoAlerta TipoExibicao
+        public int TipoExibicao
         {
             get; set;
         }
@@ -238,6 +238,17 @@ namespace FrotiX.Models
         }
 
         public string DiasSemana { get; set; }           // Ex: "1,2,3,4,5"
+
+        // Flag de recorrência (S/N) - char(1) no banco.
+        [StringLength(1)]
+        public string? Recorrente { get; set; }
+
+        // Intervalo de recorrência (D=Diário, S=Semanal, M=Mensal) - char(1) no banco.
+        [StringLength(1)]
+        public string? Intervalo { get; set; }
+
+        // Data final da série recorrente.
+        public DateTime? DataFinalRecorrencia { get; set; }
 
         // =====================================================================
         // FIM DOS CAMPOS DE RECORRÊNCIA

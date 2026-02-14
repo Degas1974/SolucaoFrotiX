@@ -165,6 +165,14 @@ namespace FrotiX.Models
         [ForeignKey("FornecedorId")]
         public virtual Fornecedor Fornecedor { get; set; }
 
+        // Usuário que fez a última alteração.
+        [StringLength(100)]
+        [Display(Name = "Usuário Alteração")]
+        public string? UsuarioIdAlteracao { get; set; }
+
+        // Data da última alteração.
+        [Display(Name = "Data Alteração")]
+        public DateTime? DataAlteracao { get; set; }
 
         }
 

@@ -89,10 +89,10 @@ namespace FrotiX.Repository
             if (objFromDb != null)
             {
                 objFromDb.TipoUso = veiculoPadraoViagem.TipoUso;
-                objFromDb.TotalViagens = veiculoPadraoViagem.TotalViagens;
-                objFromDb.MediaDuracaoMinutos = veiculoPadraoViagem.MediaDuracaoMinutos;
-                objFromDb.MediaKmPorViagem = veiculoPadraoViagem.MediaKmPorViagem;
-                objFromDb.MediaKmPorDia = veiculoPadraoViagem.MediaKmPorDia;
+                objFromDb.TotalViagensAnalisadas = veiculoPadraoViagem.TotalViagensAnalisadas;
+                objFromDb.AvgDuracaoMinutos = veiculoPadraoViagem.AvgDuracaoMinutos;
+                objFromDb.AvgKmPorViagem = veiculoPadraoViagem.AvgKmPorViagem;
+                objFromDb.AvgKmPorDia = veiculoPadraoViagem.AvgKmPorDia;
                 objFromDb.MediaKmEntreAbastecimentos = veiculoPadraoViagem.MediaKmEntreAbastecimentos;
                 objFromDb.MediaDiasEntreAbastecimentos = veiculoPadraoViagem.MediaDiasEntreAbastecimentos;
                 objFromDb.TotalAbastecimentosAnalisados = veiculoPadraoViagem.TotalAbastecimentosAnalisados;

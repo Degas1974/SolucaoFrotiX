@@ -64,7 +64,7 @@ namespace FrotiX.Models
         [Key]
         public Guid CorridaId { get; set; }
 
-        public string? QRU { get; set; }
+        public int? QRU { get; set; }
 
         public string? Origem { get; set; }
 
@@ -111,5 +111,7 @@ namespace FrotiX.Models
         public bool Glosa { get; set; }
 
         public double? ValorGlosa { get; set; }
+
+        public double? Valor { get; set; }
         }
     }

@@ -103,6 +103,13 @@ namespace FrotiX.Models
             get; set;
         }
 
+        // ID do condutor (auxiliar/alternativo).
+        [Display(Name = "ID Condutor")]
+        public Guid? CondutorId
+        {
+            get; set;
+        }
+
         // Nome do motorista.
         [StringLength(100 , ErrorMessage = "o Nome não pode exceder 100 caracteres")]
         [Required(ErrorMessage = "(O Nome é obrigatório)")]

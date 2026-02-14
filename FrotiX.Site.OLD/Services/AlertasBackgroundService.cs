@@ -15,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using FrotiX.Hubs;
+using FrotiX.Models;
 using FrotiX.Repository.IRepository;
 
 using Microsoft.AspNetCore.SignalR;
@@ -138,9 +139,9 @@ namespace FrotiX.Services
                                         descricao = alerta.Descricao ,
                                         tipo = alerta.TipoAlerta ,
                                         prioridade = alerta.Prioridade ,
-                                        iconeCss = ObterIconePorTipo(alerta.TipoAlerta) ,
-                                        corBadge = ObterCorPorTipo(alerta.TipoAlerta) ,
-                                        textoBadge = ObterTextoPorTipo(alerta.TipoAlerta) ,
+                                        iconeCss = ObterIconePorTipo((TipoAlerta)alerta.TipoAlerta) ,
+                                        corBadge = ObterCorPorTipo((TipoAlerta)alerta.TipoAlerta) ,
+                                        textoBadge = ObterTextoPorTipo((TipoAlerta)alerta.TipoAlerta) ,
                                         dataInsercao = alerta.DataInsercao
                                         });
 

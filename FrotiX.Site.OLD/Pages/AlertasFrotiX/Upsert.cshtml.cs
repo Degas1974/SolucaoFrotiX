@@ -243,9 +243,9 @@ namespace FrotiX.Pages.AlertasFrotiX
                     AlertasFrotiXId = alerta.AlertasFrotiXId;
                     Titulo = alerta.Titulo;
                     Descricao = alerta.Descricao;
-                    TipoAlerta = alerta.TipoAlerta;
-                    Prioridade = alerta.Prioridade;
-                    TipoExibicao = alerta.TipoExibicao;
+                    TipoAlerta = (TipoAlerta)alerta.TipoAlerta;
+                    Prioridade = (PrioridadeAlerta)alerta.Prioridade;
+                    TipoExibicao = (TipoExibicaoAlerta)alerta.TipoExibicao;
                     DataExibicao = alerta.DataExibicao;
                     HorarioExibicao = alerta.HorarioExibicao;
                     DataExpiracao = alerta.DataExpiracao;
@@ -380,9 +380,9 @@ namespace FrotiX.Pages.AlertasFrotiX
                     AlertasFrotiXId = alertaId,
                     Titulo = Titulo,
                     Descricao = Descricao,
-                    TipoAlerta = TipoAlerta,
-                    Prioridade = Prioridade,
-                    TipoExibicao = TipoExibicao,
+                    TipoAlerta = (int)TipoAlerta,
+                    Prioridade = (int)Prioridade,
+                    TipoExibicao = (int)TipoExibicao,
                     DataExibicao = DataExibicao,
                     HorarioExibicao = HorarioExibicao,
                     DataExpiracao = DataExpiracao, // V2: Serve para ambos: único e recorrente
@@ -485,9 +485,9 @@ namespace FrotiX.Pages.AlertasFrotiX
             {
                 alerta.Titulo = Titulo;
                 alerta.Descricao = Descricao;
-                alerta.TipoAlerta = TipoAlerta;
-                alerta.Prioridade = Prioridade;
-                alerta.TipoExibicao = TipoExibicao;
+                alerta.TipoAlerta = (int)TipoAlerta;
+                alerta.Prioridade = (int)Prioridade;
+                alerta.TipoExibicao = (int)TipoExibicao;
                 alerta.DataExibicao = DataExibicao;
                 alerta.HorarioExibicao = HorarioExibicao;
                 alerta.DataExpiracao = DataExpiracao; // V2: Usado para recorrências também

@@ -430,8 +430,8 @@ namespace FrotiX.Controllers
                     prioridade = (int)a.Prioridade ,
                     dataInsercao = a.DataInsercao ,
                     usuarioCriadorId = a.UsuarioCriadorId ,
-                    iconeCss = Alerta.GetIconePrioridade(a.Prioridade) ,
-                    corBadge = Alerta.GetCorHexPrioridade(a.Prioridade) ,
+                    iconeCss = Alerta.GetIconePrioridade((PrioridadeAlerta)a.Prioridade) ,
+                    corBadge = Alerta.GetCorHexPrioridade((PrioridadeAlerta)a.Prioridade) ,
                     textoBadge = a.Prioridade.ToString() ,
                     severidade = a.Prioridade.ToString()
                 }).ToList();
@@ -716,9 +716,9 @@ namespace FrotiX.Controllers
 
                     alertaUnico.Titulo = dto.Titulo;
                     alertaUnico.Descricao = dto.Descricao;
-                    alertaUnico.TipoAlerta = (TipoAlerta)dto.TipoAlerta;
-                    alertaUnico.Prioridade = (PrioridadeAlerta)dto.Prioridade;
-                    alertaUnico.TipoExibicao = (TipoExibicaoAlerta)dto.TipoExibicao;
+                    alertaUnico.TipoAlerta = (int)dto.TipoAlerta;
+                    alertaUnico.Prioridade = (int)dto.Prioridade;
+                    alertaUnico.TipoExibicao = (int)dto.TipoExibicao;
                     alertaUnico.DataExibicao = dto.DataExibicao;
                     alertaUnico.HorarioExibicao = dto.HorarioExibicao;
                     alertaUnico.DataExpiracao = dto.DataExpiracao;
@@ -769,9 +769,9 @@ namespace FrotiX.Controllers
                         AlertasFrotiXId = Guid.NewGuid() ,
                         Titulo = dto.Titulo ,
                         Descricao = dto.Descricao ,
-                        TipoAlerta = (TipoAlerta)dto.TipoAlerta ,
-                        Prioridade = (PrioridadeAlerta)dto.Prioridade ,
-                        TipoExibicao = (TipoExibicaoAlerta)dto.TipoExibicao ,
+                        TipoAlerta = (int)dto.TipoAlerta ,
+                        Prioridade = (int)dto.Prioridade ,
+                        TipoExibicao = (int)dto.TipoExibicao ,
                         DataExibicao = dto.DataExibicao ,
                         HorarioExibicao = dto.HorarioExibicao ,
                         DataExpiracao = dto.DataExpiracao ,
@@ -851,9 +851,9 @@ namespace FrotiX.Controllers
                 AlertasFrotiXId = Guid.NewGuid() ,
                 Titulo = dto.Titulo ,
                 Descricao = dto.Descricao ,
-                TipoAlerta = (TipoAlerta)dto.TipoAlerta ,
-                Prioridade = (PrioridadeAlerta)dto.Prioridade ,
-                TipoExibicao = (TipoExibicaoAlerta)dto.TipoExibicao ,
+                TipoAlerta = (int)dto.TipoAlerta ,
+                Prioridade = (int)dto.Prioridade ,
+                TipoExibicao = (int)dto.TipoExibicao ,
                 DataExibicao = dto.DataExibicao ,
                 HorarioExibicao = dto.HorarioExibicao ,
                 DataExpiracao = dto.DataExpiracao ,
@@ -1084,9 +1084,9 @@ namespace FrotiX.Controllers
                     descricao = alerta.Descricao ,
                     tipo = alerta.TipoAlerta ,
                     prioridade = alerta.Prioridade ,
-                    iconeCss = ObterIconePorTipo(alerta.TipoAlerta) ,
-                    corBadge = ObterCorPorTipo(alerta.TipoAlerta) ,
-                    textoBadge = ObterTextoPorTipo(alerta.TipoAlerta) ,
+                    iconeCss = ObterIconePorTipo((TipoAlerta)alerta.TipoAlerta) ,
+                    corBadge = ObterCorPorTipo((TipoAlerta)alerta.TipoAlerta) ,
+                    textoBadge = ObterTextoPorTipo((TipoAlerta)alerta.TipoAlerta) ,
                     dataInsercao = alerta.DataInsercao
                 };
 
@@ -1136,11 +1136,11 @@ namespace FrotiX.Controllers
                         alertaId = a.AlertasFrotiXId ,
                         titulo = a.Titulo ,
                         descricao = a.Descricao ,
-                        tipo = ObterTextoPorTipo(a.TipoAlerta) ,
+                        tipo = ObterTextoPorTipo((TipoAlerta)a.TipoAlerta) ,
                         prioridade = a.Prioridade.ToString() ,
                         dataInsercao = a.DataInsercao.HasValue ? a.DataInsercao.Value.ToString("dd/MM/yyyy HH:mm") : "-" ,
                         dataLeitura = ultimaLeitura?.DataLeitura?.ToString("dd/MM/yyyy HH:mm") ?? "" ,
-                        icone = ObterIconePorTipo(a.TipoAlerta) ,
+                        icone = ObterIconePorTipo((TipoAlerta)a.TipoAlerta) ,
                         totalLeituras = a.AlertasUsuarios.Count(au => au.Lido) ,
                         totalUsuarios = a.AlertasUsuarios.Count
                     };
@@ -1214,7 +1214,7 @@ namespace FrotiX.Controllers
                         alertaId = a.AlertasFrotiXId ,
                         titulo = a.Titulo ,
                         descricao = a.Descricao ,
-                        tipo = ObterTextoPorTipo(a.TipoAlerta) ,
+                        tipo = ObterTextoPorTipo((TipoAlerta)a.TipoAlerta) ,
                         prioridade = a.Prioridade.ToString() ,
                         dataInsercao = a.DataInsercao ,
                         dataFinalizacao = a.DataDesativacao ,
@@ -1374,8 +1374,8 @@ namespace FrotiX.Controllers
                         alertaId = au.AlertasFrotiXId ,
                         titulo = au.AlertasFrotiX.Titulo ,
                         descricao = au.AlertasFrotiX.Descricao ,
-                        tipo = ObterTextoPorTipo(au.AlertasFrotiX.TipoAlerta) ,
-                        icone = ObterIconePorTipo(au.AlertasFrotiX.TipoAlerta) ,
+                        tipo = ObterTextoPorTipo((TipoAlerta)au.AlertasFrotiX.TipoAlerta) ,
+                        icone = ObterIconePorTipo((TipoAlerta)au.AlertasFrotiX.TipoAlerta) ,
                         notificado = au.Notificado ,
                         notificadoTexto = au.Notificado ? "Sim" : "Não" ,
                         dataNotificacao = au.DataNotificacao?.ToString("dd/MM/yyyy HH:mm") ?? "-" ,
@@ -1448,11 +1448,11 @@ namespace FrotiX.Controllers
                             alertaId = a.AlertasFrotiXId ,
                             titulo = a.Titulo ,
                             descricao = a.Descricao ,
-                            tipo = ObterTextoPorTipo(a.TipoAlerta) ,
+                            tipo = ObterTextoPorTipo((TipoAlerta)a.TipoAlerta) ,
                             prioridade = a.Prioridade.ToString() ,
                             dataInsercao = a.DataInsercao?.ToString("dd/MM/yyyy HH:mm") ,
                             dataDesativacao = a.DataDesativacao?.ToString("dd/MM/yyyy HH:mm") ?? "-" ,
-                            icone = ObterIconePorTipo(a.TipoAlerta) ,
+                            icone = ObterIconePorTipo((TipoAlerta)a.TipoAlerta) ,
                             percentualLeitura = percentualLeitura ,
                             totalUsuarios = totalUsuarios ,
                             totalNotificados = totalNotificados ,
@@ -1521,8 +1521,8 @@ namespace FrotiX.Controllers
                         usuarioCriadorId = a.UsuarioCriadorId ,
                         totalUsuarios = totalUsuarios ,
                         usuariosLeram = usuariosLeram ,
-                        iconeCss = Alerta.GetIconePrioridade(a.Prioridade) ,
-                        corBadge = Alerta.GetCorHexPrioridade(a.Prioridade) ,
+                        iconeCss = Alerta.GetIconePrioridade((PrioridadeAlerta)a.Prioridade) ,
+                        corBadge = Alerta.GetCorHexPrioridade((PrioridadeAlerta)a.Prioridade) ,
                         textoBadge = a.Prioridade.ToString() ,
                         severidade = a.Prioridade.ToString()
                     };

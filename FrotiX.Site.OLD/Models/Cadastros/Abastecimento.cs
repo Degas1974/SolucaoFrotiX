@@ -134,5 +134,24 @@ namespace FrotiX.Models
         [ForeignKey("MotoristaId")]
         public virtual Motorista Motorista { get; set; }
 
+        // =====================================================================
+        // CAMPOS DE NORMALIZAÇÃO - Sistema de detecção de outliers
+        // =====================================================================
+
+        // Quilometragem normalizada (após remoção de outliers).
+        public int? KmRodadoNormalizado { get; set; }
+
+        // Litros normalizado (após remoção de outliers).
+        public double? LitrosNormalizado { get; set; }
+
+        // Consumo calculado (Km/Litros).
+        public decimal? ConsumoCalculado { get; set; }
+
+        // Consumo normalizado (após remoção de outliers).
+        public decimal? ConsumoNormalizado { get; set; }
+
+        // Indica se o abastecimento foi identificado como outlier.
+        public bool? EhOutlier { get; set; }
+
         }
     }

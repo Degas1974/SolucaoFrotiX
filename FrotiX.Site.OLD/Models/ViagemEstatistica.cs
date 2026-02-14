@@ -88,6 +88,22 @@ namespace FrotiX.Models
         // Quilometragem média.
         public decimal QuilometragemMedia { get; set; }
 
+        // Quilometragem total (inteiro).
+        public int? KmTotal { get; set; }
+
+        // Quilometragem média (decimal preciso).
+        public decimal? KmMedio { get; set; }
+
+        // ========================================
+        // TEMPO/DURAÇÃO
+        // ========================================
+
+        // Minutos totais de todas as viagens.
+        public int? MinutosTotal { get; set; }
+
+        // Minutos médios por viagem.
+        public int? MinutosMedio { get; set; }
+
         // ========================================
         // DADOS AGREGADOS (JSON)
         // ========================================

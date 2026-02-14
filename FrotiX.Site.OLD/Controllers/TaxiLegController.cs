@@ -293,7 +293,7 @@ namespace FrotiX.Controllers
 
                             var TaxiLegObj = new CorridasTaxiLeg();
 
-                            TaxiLegObj.QRU = row.GetCell(0)?.ToString() ?? "";
+                            TaxiLegObj.QRU = int.TryParse(row.GetCell(0)?.ToString(), out var qru) ? qru : (int?)null;
                             TaxiLegObj.DescSetor = row.GetCell(1)?.ToString() ?? "";
                             TaxiLegObj.Setor = row.GetCell(2)?.ToString() ?? "";
                             TaxiLegObj.Unidade = row.GetCell(3)?.ToString() ?? "";

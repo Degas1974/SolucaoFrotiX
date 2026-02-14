@@ -266,16 +266,16 @@ namespace FrotiX.Repository
                     .Where(a => a.Ativo &&
                            (
                                // Alertas que devem ser exibidos ao abrir o sistema
-                               (a.TipoExibicao == TipoExibicaoAlerta.AoAbrir) ||
+                               (a.TipoExibicao == (int)TipoExibicaoAlerta.AoAbrir) ||
 
                                // Alertas com horário específico (verifica se chegou a hora hoje)
-                               (a.TipoExibicao == TipoExibicaoAlerta.Horario &&
+                               (a.TipoExibicao == (int)TipoExibicaoAlerta.Horario &&
                                 a.HorarioExibicao.HasValue &&
                                 agora.TimeOfDay >= a.HorarioExibicao.Value &&
                                 agora.TimeOfDay <= a.HorarioExibicao.Value.Add(TimeSpan.FromMinutes(5))) ||
 
                                // Alertas com data/hora específica
-                               (a.TipoExibicao == TipoExibicaoAlerta.DataHora &&
+                               (a.TipoExibicao == (int)TipoExibicaoAlerta.DataHora &&
                                 a.DataExibicao.HasValue &&
                                 a.DataExibicao.Value <= agora &&
                                 (!a.DataExpiracao.HasValue || a.DataExpiracao.Value >= agora))

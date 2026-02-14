@@ -53,6 +53,10 @@ namespace FrotiX.Models
         [Display(Name = "Horário da Lavagem")]
         public DateTime? HorarioLavagem { get; set; }
 
+        // Horário (coluna adicional no banco).
+        [Display(Name = "Horário")]
+        public DateTime? Horario { get; set; }
+
         // Veículo lavado.
         [Display(Name = "Veículo Lavado")]
         public Guid VeiculoId { get; set; }

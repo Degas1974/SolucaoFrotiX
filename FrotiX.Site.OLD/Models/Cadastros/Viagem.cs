@@ -620,6 +620,101 @@ namespace FrotiX.Models
         public int? KmFinalNormalizado { get; set; }
 
         // ================================================================
+        // CAMPOS DE OCORRÊNCIAS E MANUTENÇÃO
+        // ================================================================
+
+        /// <summary>
+        /// Resumo da ocorrência (se houver).
+        /// </summary>
+        [StringLength(500)]
+        public string? ResumoOcorrencia { get; set; }
+
+        /// <summary>
+        /// Descrição detalhada da ocorrência.
+        /// </summary>
+        [Column(TypeName = "varchar(max)")]
+        public string? DescricaoOcorrencia { get; set; }
+
+        /// <summary>
+        /// Status da ocorrência (Aberta, Em Andamento, Resolvida, etc.).
+        /// </summary>
+        [StringLength(50)]
+        public string? StatusOcorrencia { get; set; }
+
+        /// <summary>
+        /// Descrição da solução aplicada à ocorrência.
+        /// </summary>
+        [Column(TypeName = "varchar(max)")]
+        public string? DescricaoSolucaoOcorrencia { get; set; }
+
+        /// <summary>
+        /// ID do item de manutenção relacionado (se gerou manutenção).
+        /// </summary>
+        public Guid? ItemManutencaoId { get; set; }
+
+        // ================================================================
+        // CAMPOS TEMPORÁRIOS E AVARIAS
+        // ================================================================
+
+        /// <summary>
+        /// Campo temporário para agendamento (uso interno).
+        /// </summary>
+        [Column(TypeName = "varchar(max)")]
+        public string? AgendamentoTMP { get; set; }
+
+        /// <summary>
+        /// Descrição de danos/avarias no início da viagem.
+        /// </summary>
+        [Column(TypeName = "varchar(max)")]
+        public string? DanoAvaria { get; set; }
+
+        /// <summary>
+        /// Descrição de danos/avarias no fim da viagem.
+        /// </summary>
+        [Column(TypeName = "varchar(max)")]
+        public string? DanoAvariaFinal { get; set; }
+
+        // ================================================================
+        // CAMPOS DE MÍDIA (FOTOS/VÍDEOS)
+        // ================================================================
+
+        /// <summary>
+        /// Fotos (Base64) do início da viagem.
+        /// </summary>
+        [Column(TypeName = "varbinary(max)")]
+        public byte[]? FotosBase64 { get; set; }
+
+        /// <summary>
+        /// Vídeos (Base64) do início da viagem.
+        /// </summary>
+        [Column(TypeName = "varbinary(max)")]
+        public byte[]? VideosBase64 { get; set; }
+
+        /// <summary>
+        /// Fotos (Base64) do fim da viagem.
+        /// </summary>
+        [Column(TypeName = "varbinary(max)")]
+        public byte[]? FotosFinaisBase64 { get; set; }
+
+        /// <summary>
+        /// Vídeos (Base64) do fim da viagem.
+        /// </summary>
+        [Column(TypeName = "varbinary(max)")]
+        public byte[]? VideosFinaisBase64 { get; set; }
+
+        // ================================================================
+        // ID ADICIONAL (IDENTITY INT)
+        // ================================================================
+
+        /// <summary>
+        /// ID sequencial adicional (int identity) - usado em alguns relatórios legados.
+        /// ATENÇÃO: ViagemId (Guid) continua sendo a PK principal.
+        /// </summary>
+        [Column("Id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        // ================================================================
 
         /****************************************************************************************
          * ⚡ FUNÇÃO: AtualizarDados

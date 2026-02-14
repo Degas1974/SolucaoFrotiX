@@ -557,10 +557,10 @@ FROM dbo.Viagem v
 CROSS JOIN #MapeamentoOrigemDestino m
 WHERE v.Origem IS NOT NULL
     AND v.Origem <> ''
-    AND NOT EXISTS (SELECT 1 FROM #MapeamentoOrigemDestino WHERE ValorAntigo = v.Origem)
+    AND NOT EXISTS (SELECT 1 FROM #MapeamentoOrigemDestino WHERE ValorAntigo COLLATE DATABASE_DEFAULT = v.Origem COLLATE DATABASE_DEFAULT)
     AND CAST((1.0 - CAST(dbo.LevenshteinDistance(LOWER(LTRIM(RTRIM(v.Origem))), LOWER(m.ValorCanonico)) AS FLOAT) /
         CAST(CASE WHEN LEN(v.Origem) > LEN(m.ValorCanonico) THEN LEN(v.Origem) ELSE LEN(m.ValorCanonico) END AS FLOAT)) * 100 AS DECIMAL(5, 2)) >= 85.00
-    AND v.Origem <> m.ValorCanonico;
+    AND v.Origem COLLATE DATABASE_DEFAULT <> m.ValorCanonico COLLATE DATABASE_DEFAULT;
 
 -- Buscar Destino não mapeadas
 INSERT INTO #FuzzyMatches (ValorOriginal, ValorCanonico, Similaridade, Razao)
@@ -574,10 +574,10 @@ FROM dbo.Viagem v
 CROSS JOIN #MapeamentoOrigemDestino m
 WHERE v.Destino IS NOT NULL
     AND v.Destino <> ''
-    AND NOT EXISTS (SELECT 1 FROM #MapeamentoOrigemDestino WHERE ValorAntigo = v.Destino)
+    AND NOT EXISTS (SELECT 1 FROM #MapeamentoOrigemDestino WHERE ValorAntigo COLLATE DATABASE_DEFAULT = v.Destino COLLATE DATABASE_DEFAULT)
     AND CAST((1.0 - CAST(dbo.LevenshteinDistance(LOWER(LTRIM(RTRIM(v.Destino))), LOWER(m.ValorCanonico)) AS FLOAT) /
         CAST(CASE WHEN LEN(v.Destino) > LEN(m.ValorCanonico) THEN LEN(v.Destino) ELSE LEN(m.ValorCanonico) END AS FLOAT)) * 100 AS DECIMAL(5, 2)) >= 85.00
-    AND v.Destino <> m.ValorCanonico;
+    AND v.Destino COLLATE DATABASE_DEFAULT <> m.ValorCanonico COLLATE DATABASE_DEFAULT;
 
 -- Adicionar fuzzy matches à tabela de mapeamento (escolhendo o de maior similaridade)
 INSERT INTO #MapeamentoOrigemDestino (ValorAntigo, ValorCanonico, Razao)
@@ -591,7 +591,7 @@ INNER JOIN (
     FROM #FuzzyMatches
     GROUP BY ValorOriginal
 ) maxf ON f.ValorOriginal = maxf.ValorOriginal AND f.Similaridade = maxf.MaxSimilaridade
-WHERE NOT EXISTS (SELECT 1 FROM #MapeamentoOrigemDestino WHERE ValorAntigo = f.ValorOriginal);
+WHERE NOT EXISTS (SELECT 1 FROM #MapeamentoOrigemDestino WHERE ValorAntigo COLLATE DATABASE_DEFAULT = f.ValorOriginal COLLATE DATABASE_DEFAULT);
 
 -- Contar fuzzy matches e armazenar
 DECLARE @FuzzyCountTemp INT;
@@ -619,7 +619,7 @@ BEGIN TRANSACTION;
 UPDATE v
 SET v.Origem = m.ValorCanonico
 FROM dbo.Viagem v
-INNER JOIN #MapeamentoOrigemDestino m ON v.Origem = m.ValorAntigo
+INNER JOIN #MapeamentoOrigemDestino m ON v.Origem COLLATE DATABASE_DEFAULT = m.ValorAntigo COLLATE DATABASE_DEFAULT
 WHERE v.Origem IS NOT NULL AND v.Origem <> '';
 
 SET @OrigemAtualizadasTemp = @@ROWCOUNT;
@@ -628,7 +628,7 @@ SET @OrigemAtualizadasTemp = @@ROWCOUNT;
 UPDATE v
 SET v.Destino = m.ValorCanonico
 FROM dbo.Viagem v
-INNER JOIN #MapeamentoOrigemDestino m ON v.Destino = m.ValorAntigo
+INNER JOIN #MapeamentoOrigemDestino m ON v.Destino COLLATE DATABASE_DEFAULT = m.ValorAntigo COLLATE DATABASE_DEFAULT
 WHERE v.Destino IS NOT NULL AND v.Destino <> '';
 
 SET @DestinoAtualizadasTemp = @@ROWCOUNT;
