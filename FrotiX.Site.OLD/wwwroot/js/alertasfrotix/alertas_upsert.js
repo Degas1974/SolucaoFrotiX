@@ -4,7 +4,7 @@
  * 🎯 OBJETIVO     : Formulário de cadastro e edição de Alertas FrotiX com suporte completo
  *                   a recorrência (TipoExibicao 1-8), validação, dropdowns customizados
  *                   (motorista com foto, agendamento com cards), e integração com API.
- * 📥 ENTRADAS     : Clicks em tipo-alerta-cards, mudanças em dropdowns Syncfusion,
+ * 📥 ENTRADAS     : Clicks em tipo-alerta-cards, mudanças em dropdowns Kendo,
  *                   submit do #formAlerta, dados de edição (backend)
  * 📤 SAÍDAS       : POST /api/AlertasFrotiX/Salvar, validações UI, toasts, SweetAlert,
  *                   redirect para /AlertasFrotiX após sucesso
@@ -12,7 +12,7 @@
  * 🔄 CHAMA        : $.ajax, Swal.fire, AppToast.show, Alerta.Confirmar,
  *                   coletarDadosRecorrenciaAlerta (alertas_recorrencia.js),
  *                   initCalendarioAlerta, TratamentoErroComLinha
- * 📦 DEPENDÊNCIAS : jQuery, Syncfusion EJ2 (DropDownList, TextBox, DatePicker, etc.),
+ * 📦 DEPENDÊNCIAS : jQuery, Kendo UI (DropDownList, DatePicker, TimePicker, MultiSelect),
  *                   SweetAlert2, AppToast, Alerta.js, alertas_recorrencia.js (para tipo 8)
  * 📝 OBSERVAÇÕES  : TipoAlerta 1-6 (Agendamento, Manutenção, Motorista, Veículo, Anúncio,
  *                   Diversos). TipoExibicao 1-8 (não recorrente 1-3, recorrente 4-8).
@@ -76,12 +76,12 @@
  *
  * ┌─ VALIDAÇÃO ───────────────────────────────────────────────────────────────┐
  * │ 7. configurarValidacao()                                                │
- * │    → Adiciona blur handlers customizados aos inputs Syncfusion         │
+ * │    → Adiciona blur handlers customizados aos inputs nativos             │
  * │    → #Titulo.blur → validarCampo('Titulo', 'Título é obrigatório')    │
  * │    → #Descricao.blur → validarCampo('Descricao', 'Descrição é obrigatória')│
  * │                                                                          │
  * │ 8. validarCampo(campoId, mensagemErro)                                  │
- * │    → Obtém campo via ej2_instances[0].value                            │
+ * │    → Obtém valor do campo via jQuery .val()                             │
  * │    → Se vazio: mostra mensagem em [data-valmsg-for], retorna false    │
  * │    → Se válido: esconde mensagem, retorna true                         │
  * │                                                                          │
@@ -202,7 +202,7 @@
  * 📝 OBSERVAÇÕES ADICIONAIS:
  * - Previne submit duplo com flag global window.salvandoAlerta
  * - Usuários opcional: se vazio, alerta para todos (aviso visual azul)
- * - Dropdowns customizados: 300ms delay na init para Syncfusion carregar
+ * - Dropdowns customizados: 300ms delay na init para Kendo carregar
  * - Foto de motorista: hack usando Group.Name para armazenar URL
  * - Agendamento cards: busca em 5 campos diferentes (multi-field filtering)
  * - Manutenção cards: 4 datas com legendas legíveis (Solicitação, etc.)
@@ -568,24 +568,14 @@ function configurarValidacao()
 {
     try
     {
-        // Adicionar validação customizada aos campos Syncfusion
-        var tituloInput = document.querySelector("#Titulo");
-        if (tituloInput && tituloInput.ej2_instances) 
-        {
-            tituloInput.ej2_instances[0].blur = function () 
-            {
-                validarCampo('Titulo', 'Título é obrigatório');
-            };
-        }
+        // Adicionar validação customizada aos campos de texto (inputs nativos)
+        $('#Titulo').on('blur', function () {
+            validarCampo('Titulo', 'Título é obrigatório');
+        });
 
-        var descricaoInput = document.querySelector("#Descricao");
-        if (descricaoInput && descricaoInput.ej2_instances) 
-        {
-            descricaoInput.ej2_instances[0].blur = function () 
-            {
-                validarCampo('Descricao', 'Descrição é obrigatória');
-            };
-        }
+        $('#Descricao').on('blur', function () {
+            validarCampo('Descricao', 'Descrição é obrigatória');
+        });
     }
     catch (error)
     {
@@ -597,22 +587,20 @@ function configurarAvisoUsuarios()
 {
     try
     {
-        var usuariosSelect = document.querySelector("#UsuariosIds");
-        if (usuariosSelect && usuariosSelect.ej2_instances)
+        var kendoMultiUsuarios = $('#UsuariosIds').data('kendoMultiSelect');
+        if (kendoMultiUsuarios)
         {
-            var multiselect = usuariosSelect.ej2_instances[0];
-
             // Criar div de aviso se não existir
             if (!$('#avisoTodosUsuarios').length)
             {
                 var avisoHtml = '<div id="avisoTodosUsuarios" style="display:none; margin-top: 8px; padding: 8px 12px; background-color: #e0f2fe; border-left: 3px solid #0ea5e9; border-radius: 4px; font-size: 0.85rem; color: #0c4a6e;"><i class="fa-duotone fa-info-circle" style="margin-right: 6px;"></i>Nenhum usuário selecionado. O alerta será exibido para <strong>todos os usuários</strong>.</div>';
-                $(usuariosSelect).closest('.col-md-12').append(avisoHtml);
+                $('#UsuariosIds').closest('.col-md-12').append(avisoHtml);
             }
 
-            // Evento de mudança no multiselect
-            multiselect.change = function (args)
+            // Evento de mudança no multiselect Kendo
+            kendoMultiUsuarios.bind('change', function (e)
             {
-                var usuarios = multiselect.value;
+                var usuarios = kendoMultiUsuarios.value();
                 if (!usuarios || usuarios.length === 0)
                 {
                     $('#avisoTodosUsuarios').slideDown(200);
@@ -622,10 +610,10 @@ function configurarAvisoUsuarios()
                 {
                     $('#avisoTodosUsuarios').slideUp(200);
                 }
-            };
+            });
 
             // Verificar estado inicial
-            var valoresIniciais = multiselect.value;
+            var valoresIniciais = kendoMultiUsuarios.value();
             if (!valoresIniciais || valoresIniciais.length === 0)
             {
                 $('#avisoTodosUsuarios').show();
@@ -642,12 +630,12 @@ function validarCampo(campoId, mensagemErro)
 {
     try
     {
-        var campo = document.querySelector(`#${campoId}`);
+        var $campo = $(`#${campoId}`);
         var spanErro = $(`[data-valmsg-for="${campoId}"]`);
 
-        if (campo && campo.ej2_instances) 
+        if ($campo.length)
         {
-            var valor = campo.ej2_instances[0].value;
+            var valor = $campo.val();
 
             if (!valor || valor.trim() === '') 
             {
@@ -697,8 +685,8 @@ function validarFormulario()
         }
 
         // Usuários agora são opcionais (se vazio = todos os usuários)
-        var usuariosSelect = document.querySelector("#UsuariosIds");
-        if (usuariosSelect && usuariosSelect.ej2_instances) 
+        var kendoUsuarios = $('#UsuariosIds').data('kendoMultiSelect');
+        if (kendoUsuarios) 
         {
             $('[data-valmsg-for="UsuariosIds"]').text('').hide();
         }
@@ -711,7 +699,8 @@ function validarFormulario()
         switch (tipoExibicao)
         {
             case 2: // Horario especifico
-                var horario = document.querySelector("#HorarioExibicao")?.ej2_instances?.[0]?.value;
+                var tpHorario = $('#HorarioExibicao').data('kendoTimePicker');
+                var horario = tpHorario ? tpHorario.value() : null;
                 if (!horario) 
                 {
                     AppToast.show("Amarelo", "Selecione o horário de exibição", 2000);
@@ -720,7 +709,8 @@ function validarFormulario()
                 break;
 
             case 3: // Data/Hora especifica
-                var dataExib = document.querySelector("#DataExibicao")?.ej2_instances?.[0]?.value;
+                var dpExib = $('#DataExibicao').data('kendoDatePicker');
+                var dataExib = dpExib ? dpExib.value() : null;
                 if (!dataExib) 
                 {
                     AppToast.show("Amarelo", "Selecione a data de exibição", 2000);
@@ -732,8 +722,10 @@ function validarFormulario()
             case 5: // Recorrente Semanal
             case 6: // Recorrente Quinzenal
             case 7: // Recorrente Mensal
-                var dataInicial = document.querySelector("#DataExibicao")?.ej2_instances?.[0]?.value;
-                var dataFinal = document.querySelector("#DataExpiracao")?.ej2_instances?.[0]?.value;
+                var dpInicial = $('#DataExibicao').data('kendoDatePicker');
+                var dpFinal = $('#DataExpiracao').data('kendoDatePicker');
+                var dataInicial = dpInicial ? dpInicial.value() : null;
+                var dataFinal = dpFinal ? dpFinal.value() : null;
                 if (!dataInicial) 
                 {
                     AppToast.show("Amarelo", "Selecione a data inicial da recorrência", 2000);
@@ -747,7 +739,8 @@ function validarFormulario()
                 // Validar dias da semana para Semanal/Quinzenal
                 if (tipoExibicao === 5 || tipoExibicao === 6)
                 {
-                    var diasSemana = document.querySelector("#lstDiasAlerta")?.ej2_instances?.[0]?.value;
+                    var msDias = $('#lstDiasAlerta').data('kendoMultiSelect');
+                    var diasSemana = msDias ? msDias.value() : [];
                     if (!diasSemana || diasSemana.length === 0)
                     {
                         AppToast.show("Amarelo", "Selecione pelo menos um dia da semana", 2000);
@@ -900,12 +893,12 @@ function obterDadosFormulario()
 
         var dados = {
             AlertasFrotiXId: $('#AlertasFrotiXId').val(),
-            Titulo: document.querySelector("#Titulo")?.ej2_instances?.[0]?.value || '',
-            Descricao: document.querySelector("#Descricao")?.ej2_instances?.[0]?.value || '',
+            Titulo: $('#Titulo').val() || '',
+            Descricao: $('#Descricao').val() || '',
             TipoAlerta: parseInt($('#TipoAlerta').val()),
             Prioridade: parseInt(ddlPrioridade ? ddlPrioridade.value() : 1),
             TipoExibicao: tipoExibicao,
-            UsuariosIds: document.querySelector("#UsuariosIds")?.ej2_instances?.[0]?.value || []
+            UsuariosIds: (function() { var ms = $('#UsuariosIds').data('kendoMultiSelect'); return ms ? ms.value() : []; })()
         };
 
         // ===================================================================
@@ -961,19 +954,22 @@ function obterDadosFormulario()
         // Data de Exibição (tipos 3, 4, 5, 6, 7)
         if (tipoExibicao >= 3 && tipoExibicao <= 7)
         {
-            var dataExibicao = document.querySelector("#DataExibicao")?.ej2_instances?.[0]?.value;
+            var dpExibicao = $('#DataExibicao').data('kendoDatePicker');
+            var dataExibicao = dpExibicao ? dpExibicao.value() : null;
             if (dataExibicao) dados.DataExibicao = dataExibicao;
         }
 
         // Horário de Exibição (tipos 2, 3, 4, 5, 6, 7, 8)
         if (tipoExibicao >= 2)
         {
-            var horario = document.querySelector("#HorarioExibicao")?.ej2_instances?.[0]?.value;
+            var tpHorario = $('#HorarioExibicao').data('kendoTimePicker');
+            var horario = tpHorario ? tpHorario.value() : null;
             if (horario) dados.HorarioExibicao = horario;
         }
 
         // Data de Expiração (todos os tipos)
-        var dataExpiracao = document.querySelector("#DataExpiracao")?.ej2_instances?.[0]?.value;
+        var dpExpiracao = $('#DataExpiracao').data('kendoDatePicker');
+        var dataExpiracao = dpExpiracao ? dpExpiracao.value() : null;
         if (dataExpiracao) dados.DataExpiracao = dataExpiracao;
 
         // ===================================================================
@@ -983,7 +979,8 @@ function obterDadosFormulario()
         // Dias da Semana (tipos 5 e 6)
         if (tipoExibicao === 5 || tipoExibicao === 6)
         {
-            var diasSemana = document.querySelector("#lstDiasAlerta")?.ej2_instances?.[0]?.value;
+            var msDiasSemana = $('#lstDiasAlerta').data('kendoMultiSelect');
+            var diasSemana = msDiasSemana ? msDiasSemana.value() : [];
             if (diasSemana && diasSemana.length > 0)
             {
                 dados.DiasSemana = diasSemana;

@@ -120,11 +120,7 @@
                         <label asp-for="DataInicio" class="control-label required">
                             <i class="fas fa-calendar-day"></i> Data Início
                         </label>
-                        <ejs-datepicker id="dataInicio" name="DataInicio" 
-                                       value="@Model.DataInicio" 
-                                       format="dd/MM/yyyy"
-                                       placeholder="Selecione a data de início"
-                                       floatLabelType="Auto"></ejs-datepicker>
+                        <input id="dataInicio" name="DataInicio" style="width: 100%;" />
                         <span asp-validation-for="DataInicio" class="text-danger"></span>
                         <small class="form-text text-muted">
                             Data inicial do período de vigência da escala
@@ -136,11 +132,7 @@
                         <label asp-for="DataFim" class="control-label required">
                             <i class="fas fa-calendar-day"></i> Data Fim
                         </label>
-                        <ejs-datepicker id="dataFim" name="DataFim" 
-                                       value="@Model.DataFim" 
-                                       format="dd/MM/yyyy"
-                                       placeholder="Selecione a data fim"
-                                       floatLabelType="Auto"></ejs-datepicker>
+                        <input id="dataFim" name="DataFim" style="width: 100%;" />
                         <span asp-validation-for="DataFim" class="text-danger"></span>
                         <small class="form-text text-muted">
                             Data final do período de vigência da escala
@@ -220,12 +212,7 @@
                         <label asp-for="HoraInicio" class="control-label required">
                             <i class="fas fa-hourglass-start"></i> Hora Início
                         </label>
-                        <ejs-timepicker id="horaInicio" name="HoraInicio" 
-                                       value="@Model.HoraInicio"
-                                       placeholder="Hora início"
-                                       format="HH:mm"
-                                       step="30"
-                                       floatLabelType="Auto"></ejs-timepicker>
+                        <input id="horaInicio" name="HoraInicio" style="width: 100%;" />
                         <span asp-validation-for="HoraInicio" class="text-danger"></span>
                     </div>
                 </div>
@@ -234,12 +221,7 @@
                         <label asp-for="HoraFim" class="control-label required">
                             <i class="fas fa-hourglass-end"></i> Hora Fim
                         </label>
-                        <ejs-timepicker id="horaFim" name="HoraFim" 
-                                       value="@Model.HoraFim"
-                                       placeholder="Hora fim"
-                                       format="HH:mm"
-                                       step="30"
-                                       floatLabelType="Auto"></ejs-timepicker>
+                        <input id="horaFim" name="HoraFim" style="width: 100%;" />
                         <span asp-validation-for="HoraFim" class="text-danger"></span>
                     </div>
                 </div>
@@ -319,17 +301,13 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label asp-for="DataInicioIndisponibilidade"></label>
-                            <ejs-datepicker id="dataInicioIndisponibilidade" name="DataInicioIndisponibilidade"
-                                           format="dd/MM/yyyy"
-                                           placeholder="Data início"></ejs-datepicker>
+                            <input id="dataInicioIndisponibilidade" name="DataInicioIndisponibilidade" style="width: 100%;" />
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label asp-for="DataFimIndisponibilidade"></label>
-                            <ejs-datepicker id="dataFimIndisponibilidade" name="DataFimIndisponibilidade"
-                                           format="dd/MM/yyyy"
-                                           placeholder="Data fim"></ejs-datepicker>
+                            <input id="dataFimIndisponibilidade" name="DataFimIndisponibilidade" style="width: 100%;" />
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -380,10 +358,8 @@
         <div class="card-body">
             <div class="form-group">
                 <label asp-for="Observacoes" class="control-label"></label>
-                <ejs-textbox id="observacoes" name="Observacoes" 
-                            multiline="true" 
-                            placeholder="Digite as observações..."
-                            floatLabelType="Auto"></ejs-textbox>
+                <textarea id="observacoes" name="Observacoes" class="form-control" rows="3"
+                          placeholder="Digite as observações...">@Model.Observacoes</textarea>
             </div>
         </div>
     </div>
@@ -486,8 +462,65 @@
                     dataSource: dataRequisitante,
                     value: "@(Model.RequisitanteId?.ToString() ?? "")"
                 });
+
+                // ================================================================
+                // KENDO DATEPICKER INIT - Migrado de Syncfusion ejs-datepicker
+                // ================================================================
+
+                $("#dataInicio").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    dateInput: { format: "dd/MM/yyyy", messages: { year: "yyyy", month: "MM", day: "dd" } },
+                    placeholder: "Selecione a data de início",
+                    value: @Html.Raw(Model.DataInicio != default(DateTime) ? "new Date(\"" + Model.DataInicio.ToString("yyyy-MM-dd") + "\")" : "null")
+                });
+
+                $("#dataFim").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    dateInput: { format: "dd/MM/yyyy", messages: { year: "yyyy", month: "MM", day: "dd" } },
+                    placeholder: "Selecione a data fim",
+                    value: @Html.Raw(Model.DataFim != default(DateTime) ? "new Date(\"" + Model.DataFim.ToString("yyyy-MM-dd") + "\")" : "null")
+                });
+
+                $("#dataInicioIndisponibilidade").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    dateInput: { format: "dd/MM/yyyy", messages: { year: "yyyy", month: "MM", day: "dd" } },
+                    placeholder: "Data início"
+                });
+
+                $("#dataFimIndisponibilidade").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    dateInput: { format: "dd/MM/yyyy", messages: { year: "yyyy", month: "MM", day: "dd" } },
+                    placeholder: "Data fim"
+                });
+
+                // ================================================================
+                // KENDO TIMEPICKER INIT - Migrado de Syncfusion ejs-timepicker
+                // ================================================================
+
+                $("#horaInicio").kendoTimePicker({
+                    format: "HH:mm",
+                    culture: "pt-BR",
+                    interval: 30,
+                    dateInput: { format: "HH:mm", messages: { hour: "HH", minute: "mm" } },
+                    placeholder: "Hora início",
+                    value: @Html.Raw(!string.IsNullOrEmpty(Model.HoraInicio) && TimeSpan.TryParse(Model.HoraInicio, out var _hiC) ? "new Date(0,0,0," + TimeSpan.Parse(Model.HoraInicio).Hours + "," + TimeSpan.Parse(Model.HoraInicio).Minutes + ")" : "null")
+                });
+
+                $("#horaFim").kendoTimePicker({
+                    format: "HH:mm",
+                    culture: "pt-BR",
+                    interval: 30,
+                    dateInput: { format: "HH:mm", messages: { hour: "HH", minute: "mm" } },
+                    placeholder: "Hora fim",
+                    value: @Html.Raw(!string.IsNullOrEmpty(Model.HoraFim) && TimeSpan.TryParse(Model.HoraFim, out var _hfC) ? "new Date(0,0,0," + TimeSpan.Parse(Model.HoraFim).Hours + "," + TimeSpan.Parse(Model.HoraFim).Minutes + ")" : "null")
+                });
+
             } catch (error) {
-                Alerta.TratamentoErroComLinha("UpsertCEscala.cshtml", "kendoDropDownList.init", error);
+                Alerta.TratamentoErroComLinha("UpsertCEscala.cshtml", "kendoControls.init", error);
             }
         })();
     </script>

@@ -25,7 +25,7 @@
  * │    → Console.log de inicialização                                      │
  * │                                                                         │
  * │ 2. configurarEventosRecorrenciaAlerta()                                │
- * │    → Obtém dropdown #TipoExibicao via ej2_instances                   │
+ * │    → Obtém dropdown #TipoExibicao via Kendo DropDownList               │
  * │    → Guarda handler original (se existir)                             │
  * │    → Override .change para chamar mostrarCamposPorTipoExibicao       │
  * │    → Fallback: setTimeout 500ms se dropdown ainda não inicializado   │
@@ -55,7 +55,7 @@
  * ┌─ CALENDÁRIO SYNCFUSION ──────────────────────────────────────────────────┐
  * │ 6. initCalendarioAlerta()                                              │
  * │    → Obtém container #calDatasSelecionadasAlerta                       │
- * │    → Se já existe instância ej2_instances[0]: reutiliza               │
+ * │    → Se já existe instância Syncfusion Calendar: reutiliza              │
  * │    → Cria new ej.calendars.Calendar({ isMultiSelection: true })       │
  * │    → change event: atualiza datasAlertaSelecionadas, badge, hidden    │
  * │    → appendTo('#calDatasSelecionadasAlerta')                           │
@@ -448,9 +448,9 @@ function coletarDadosRecorrenciaAlerta() {
 
             case 5: // Semanal
             case 6: // Quinzenal
-                var lstDias = document.getElementById('lstDiasAlerta');
-                if (lstDias && lstDias.ej2_instances && lstDias.ej2_instances[0]) {
-                    dados.DiasSemana = lstDias.ej2_instances[0].value || [];
+                var msDias = $('#lstDiasAlerta').data('kendoMultiSelect');
+                if (msDias) {
+                    dados.DiasSemana = msDias.value() || [];
                 }
                 break;
 
@@ -496,10 +496,9 @@ function preencherCamposRecorrenciaAlerta(alerta) {
             case 5: // Semanal
             case 6: // Quinzenal
                 if (alerta.DiasSemana && alerta.DiasSemana.length > 0) {
-                    var lstDias = document.getElementById('lstDiasAlerta');
-                    if (lstDias && lstDias.ej2_instances && lstDias.ej2_instances[0]) {
-                        lstDias.ej2_instances[0].value = alerta.DiasSemana;
-                        lstDias.ej2_instances[0].dataBind();
+                    var msDias = $('#lstDiasAlerta').data('kendoMultiSelect');
+                    if (msDias) {
+                        msDias.value(alerta.DiasSemana);
                     }
                 }
                 break;

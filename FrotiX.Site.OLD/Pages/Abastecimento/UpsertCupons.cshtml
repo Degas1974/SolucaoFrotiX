@@ -3,15 +3,14 @@
  * --------------------------------------------------------------------------------------
  * 🎯 OBJETIVO     : Criar/editar registros de cupons de abastecimento com upload de PDF
  * 📥 ENTRADAS     : @page, @model UpsertCuponsModel, id do registro (query string para edição)
- * 📤 SAÍDAS       : Form com upload Kendo, preview PDF, Syncfusion RichTextEditor para observações
+ * 📤 SAÍDAS       : Form com upload Kendo, preview PDF, Kendo Editor para observações
  * 🔗 CHAMADA POR  : Menu "Cadastros > Cupons", botão "Novo" da lista RegistraCupons
  * 🔄 CHAMA        : /api/Abastecimento/SavePDF (POST), /api/Abastecimento/RemovePDF (DELETE)
- * 📦 DEPENDÊNCIAS : Kendo Upload, Syncfusion EJ2 (RichTextEditor), tiraacento_001.js, jQuery
- * 📝 OBSERVAÇÕES  : Total: 398 linhas. ISSUES: Validação de campos obrigatórios apenas client-side, sem tratamento de erro no SavePDF, RTE sem configuração de tamanho máximo
+ * 📦 DEPENDÊNCIAS : Kendo Upload, Kendo Editor, Kendo PDFViewer, tiraacento_001.js, jQuery
+ * 📝 OBSERVAÇÕES  : Migrado Syncfusion RTE → Kendo Editor em 13/02/2026
  **************************************************************************************** *@
 @page
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@using Syncfusion.EJ2
 @model FrotiX.Pages.Abastecimento.UpsertCuponsModel
 
 @{
@@ -124,13 +123,8 @@
 										<div>
 											<label class="label font-weight-bold">Observações a respeito do
 												Registro</label>
-											<ejs-richtexteditor
-												ejs-for="@Model.RegistroCupomAbastecimentoObj.RegistroCupomAbastecimento.Observacoes"
-												id="rte" toolbarClick="toolbarClick" locale="pt-BR" height="150px">
-												<e-richtexteditor-insertimagesettings saveUrl="api/Viagem/SaveImage"
-													path="./DadosEditaveis/ImagensViagens/">
-												</e-richtexteditor-insertimagesettings>
-											</ejs-richtexteditor>
+									<textarea id="rte" name="RegistroCupomAbastecimentoObj.RegistroCupomAbastecimento.Observacoes"
+										style="height: 150px;">@(Model.RegistroCupomAbastecimentoObj?.RegistroCupomAbastecimento?.Observacoes ?? "")</textarea>
 											<div id="errorMessage">
 												<span
 													asp-validation-for="@Model.RegistroCupomAbastecimentoObj.RegistroCupomAbastecimento.Observacoes"></span>
@@ -268,24 +262,6 @@
 	</script>
 
 	<script>
-		function toolbarClick(e) {
-			try {
-				if (e.item.id === "rte_toolbar_Image") {
-					var element = document.getElementById('rte_upload');
-					if (element && element.ej2_instances && element.ej2_instances[0]) {
-						element.ej2_instances[0].uploading = function upload(args) {
-							var tokenField = document.getElementsByName('__RequestVerificationToken')[0];
-							if (tokenField) {
-								args.currentRequest.setRequestHeader('XSRF-TOKEN', tokenField.value);
-							}
-						};
-					}
-				}
-			} catch (error) {
-				Alerta.TratamentoErroComLinha("UpsertCupons.cshtml", "toolbarClick", error);
-			}
-		}
-
 		$(document).ready(function () {
 			try {
 				if ('@Model.RegistroCupomAbastecimentoObj.RegistroCupomAbastecimento.RegistroCupomId' !== '00000000-0000-0000-0000-000000000000') {
@@ -307,6 +283,67 @@
 				Alerta.TratamentoErroComLinha("UpsertCupons.cshtml", "document.ready", error);
 			}
 		});
+	</script>
+
+	<script>
+		/****************************************************************************************
+		 * ⚡ INICIALIZAÇÃO: Kendo Editor para Observações
+		 * --------------------------------------------------------------------------------------
+		 * 🎯 OBJETIVO     : Inicializar Kendo Editor no textarea #rte para observações do cupom
+		 * 📥 ENTRADAS     : Elemento textarea#rte
+		 * 📤 SAÍDAS       : Widget Kendo Editor configurado com toolbar completa
+		 * 🔗 CHAMADA POR  : Carregamento da página
+		 ****************************************************************************************/
+		(function () {
+			try {
+				$("#rte").kendoEditor({
+					tools: [
+						"bold", "italic", "underline", "strikethrough",
+						"separator",
+						"justifyLeft", "justifyCenter", "justifyRight", "justifyFull",
+						"separator",
+						"insertUnorderedList", "insertOrderedList",
+						"separator",
+						"indent", "outdent",
+						"separator",
+						"createLink", "unlink",
+						"separator",
+						"fontName", "fontSize",
+						"separator",
+						"foreColor", "backColor",
+						"separator",
+						"cleanFormatting",
+						"separator",
+						"viewHtml"
+					],
+					resizable: { content: true, toolbar: false },
+					messages: {
+						bold: "Negrito",
+						italic: "Itálico",
+						underline: "Sublinhado",
+						strikethrough: "Tachado",
+						justifyLeft: "Alinhar à esquerda",
+						justifyCenter: "Centralizar",
+						justifyRight: "Alinhar à direita",
+						justifyFull: "Justificar",
+						insertUnorderedList: "Lista",
+						insertOrderedList: "Lista numerada",
+						indent: "Aumentar recuo",
+						outdent: "Diminuir recuo",
+						createLink: "Inserir link",
+						unlink: "Remover link",
+						fontName: "Fonte",
+						fontSize: "Tamanho",
+						foreColor: "Cor do texto",
+						backColor: "Cor de fundo",
+						cleanFormatting: "Limpar formatação",
+						viewHtml: "Ver HTML"
+					}
+				});
+			} catch (error) {
+				Alerta.TratamentoErroComLinha("UpsertCupons.cshtml", "kendoEditor.init", error);
+			}
+		})();
 	</script>
 
 	<script>

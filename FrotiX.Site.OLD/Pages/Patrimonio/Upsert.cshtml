@@ -183,17 +183,10 @@
 								<div class="col-2">
 									<label class="label font-weight-bold"
 										asp-for="PatrimonioObj.Patrimonio.DataEntrada">Data de Entrada</label>
-									<ejs-datepicker id="txtDataEntrada" ejs-for="PatrimonioObj.Patrimonio.DataEntrada"
-										format="dd/MM/yyyy" placeholder="dd/mm/aaaa" locale="pt-BR"
-										width="100%"></ejs-datepicker>
-								</div>
-
-								<div class="col-2">
+									<input id="txtDataEntrada" name="PatrimonioObj.Patrimonio.DataEntrada" style="width: 100%;" />
 									<label class="label font-weight-bold"
 										asp-for="PatrimonioObj.Patrimonio.DataSaida">Data de Baixa</label>
-									<ejs-datepicker id="txtDataBaixa" ejs-for="PatrimonioObj.Patrimonio.DataSaida"
-										format="dd/MM/yyyy" placeholder="dd/mm/aaaa" locale="pt-BR" width="100%"
-										max="@DateTime.Today.AddYears(5)"></ejs-datepicker>
+									<input id="txtDataBaixa" name="PatrimonioObj.Patrimonio.DataSaida" style="width: 100%;" />
 								</div>
 							</div>
 
@@ -237,10 +230,10 @@
 											Atual</label>
 										<span class="text-danger font-weight-light"
 											asp-validation-for="PatrimonioObj.Patrimonio.LocalizacaoAtual"></span>
-										<ejs-textbox id="localizacaoAtual" cssClass="my-syncfusion-input--small"
-											ejs-for="@Model.PatrimonioObj.Patrimonio.LocalizacaoAtual"
-											placeholder="Digite a Localização Atual do Patrimônio">
-										</ejs-textbox>
+									<input type="text" id="localizacaoAtual" name="PatrimonioObj.Patrimonio.LocalizacaoAtual"
+										   class="form-control form-control-sm"
+										   value="@Model.PatrimonioObj.Patrimonio.LocalizacaoAtual"
+										   placeholder="Digite a Localização Atual do Patrimônio" />
 									</div>
 								</div>
 							</div>
@@ -452,7 +445,26 @@
 					height: 200,
 					value: "@(Model.PatrimonioObj?.Patrimonio?.Situacao ?? "")"
 				});
-			} catch (error) {
+				// ================================================================
+				// KENDO DATEPICKER INIT - Migrado de Syncfusion ejs-datepicker
+				// ================================================================
+
+				$("#txtDataEntrada").kendoDatePicker({
+					format: "dd/MM/yyyy",
+					culture: "pt-BR",
+					dateInput: { format: "dd/MM/yyyy", messages: { year: "yyyy", month: "MM", day: "dd" } },
+					placeholder: "dd/mm/aaaa",
+					value: @Html.Raw(Model.PatrimonioObj?.Patrimonio?.DataEntrada != null ? "new Date(\"" + Model.PatrimonioObj.Patrimonio.DataEntrada.Value.ToString("yyyy-MM-dd") + "\")" : "null")
+				});
+
+				$("#txtDataBaixa").kendoDatePicker({
+					format: "dd/MM/yyyy",
+					culture: "pt-BR",
+					dateInput: { format: "dd/MM/yyyy", messages: { year: "yyyy", month: "MM", day: "dd" } },
+					placeholder: "dd/mm/aaaa",
+					max: new Date(@DateTime.Today.AddYears(5).Year, @(DateTime.Today.AddYears(5).Month - 1), @DateTime.Today.AddYears(5).Day),
+					value: @Html.Raw(Model.PatrimonioObj?.Patrimonio?.DataSaida != null ? "new Date(\"" + Model.PatrimonioObj.Patrimonio.DataSaida.Value.ToString("yyyy-MM-dd") + "\")" : "null")
+				});			} catch (error) {
 				Alerta.TratamentoErroComLinha("Upsert.cshtml", "kendoControls.init", error);
 			}
 		})();

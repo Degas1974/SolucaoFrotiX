@@ -175,10 +175,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label asp-for="Filtro.DataFiltro"></label>
-                        <ejs-datepicker id="DataEscala" 
-                                        asp-for="Filtro.DataFiltro" 
-                                        format="dd/MM/yyyy" 
-                                        placeholder="Selecione a data"></ejs-datepicker>
+                        <input id="DataEscala" name="Filtro.DataFiltro" style="width: 100%;" />
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -222,7 +219,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label asp-for="Filtro.TextoPesquisa"></label>
-                        <ejs-textbox id="textoPesquisa" asp-for="Filtro.TextoPesquisa" placeholder="Pesquisar..."></ejs-textbox>
+                        <input type="text" id="textoPesquisa" asp-for="Filtro.TextoPesquisa" class="form-control" placeholder="Pesquisar..." />
                     </div>
                 </div>
             </div>
@@ -447,11 +444,11 @@
             <div class="modal-body">
                 <div class="form-group mb-3">
                     <label>Título</label>
-                    <ejs-textbox id="obsTitle" placeholder="Título da observação"></ejs-textbox>
+                    <input type="text" id="obsTitle" class="form-control" placeholder="Título da observação" />
                 </div>
                 <div class="form-group mb-3">
                     <label>Descrição</label>
-                    <ejs-textbox id="obsDescription" multiline="true" placeholder="Descrição da observação"></ejs-textbox>
+                    <textarea id="obsDescription" class="form-control" rows="3" placeholder="Descrição da observação"></textarea>
                 </div>
                 <div class="form-group mb-3">
                     <label>Prioridade</label>
@@ -461,13 +458,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Exibir De</label>
-                            <ejs-datepicker id="obsDateFrom" format="dd/MM/yyyy"></ejs-datepicker>
+                            <input id="obsDateFrom" style="width: 100%;" />
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Exibir Até</label>
-                            <ejs-datepicker id="obsDateTo" format="dd/MM/yyyy"></ejs-datepicker>
+                            <input id="obsDateTo" style="width: 100%;" />
                         </div>
                     </div>
                 </div>
@@ -556,6 +553,32 @@
                     dataValueField: "value",
                     dataSource: dataObsPriority,
                     value: "Normal"
+                });
+
+                // ================================================================
+                // KENDO DATEPICKER INIT - Migrado de Syncfusion ejs-datepicker
+                // ================================================================
+
+                $("#DataEscala").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    dateInput: { format: "dd/MM/yyyy", messages: { year: "yyyy", month: "MM", day: "dd" } },
+                    placeholder: "Selecione a data",
+                    value: @Html.Raw(Model.Filtro.DataFiltro.HasValue ? "new Date(\"" + Model.Filtro.DataFiltro.Value.ToString("yyyy-MM-dd") + "\")" : "null")
+                });
+
+                $("#obsDateFrom").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    dateInput: { format: "dd/MM/yyyy", messages: { year: "yyyy", month: "MM", day: "dd" } },
+                    placeholder: "Data início"
+                });
+
+                $("#obsDateTo").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    dateInput: { format: "dd/MM/yyyy", messages: { year: "yyyy", month: "MM", day: "dd" } },
+                    placeholder: "Data fim"
                 });
             } catch (error) {
                 Alerta.TratamentoErroComLinha("ListaEscala.cshtml", "kendoDropDownList.init", error);

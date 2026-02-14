@@ -99,11 +99,9 @@
 						<div class="row">
 							<div class="col-md-8">
 								<label class="label required-field">Título do Alerta</label>
-								<ejs-textbox id="Titulo" name="Titulo" placeholder="Digite o título do alerta"
-											 value="@Model.Titulo"
-											 floatLabelType="Never"
-											 cssClass="e-outline">
-								</ejs-textbox>
+								<input type="text" id="Titulo" name="Titulo" class="form-control"
+									   placeholder="Digite o título do alerta"
+									   value="@Model.Titulo" />
 								<span class="text-danger field-validation-valid" data-valmsg-for="Titulo"></span>
 							</div>
 
@@ -117,14 +115,8 @@
 						<div class="row mt-3">
 							<div class="col-md-12">
 								<label class="label required-field">Descrição</label>
-								<ejs-textbox id="Descricao" name="Descricao"
-											 placeholder="Digite a descrição detalhada do alerta"
-											 value="@Model.Descricao"
-											 multiline="true"
-											 rows="3"
-											 floatLabelType="Never"
-											 cssClass="e-outline">
-								</ejs-textbox>
+								<textarea id="Descricao" name="Descricao" class="form-control" rows="3"
+										  placeholder="Digite a descrição detalhada do alerta">@Model.Descricao</textarea>
 								<span class="text-danger field-validation-valid" data-valmsg-for="Descricao"></span>
 							</div>
 						</div>
@@ -226,43 +218,20 @@
 							<!-- Data de Exibição (TipoExibicao 3, 4, 5, 6, 7, 8) -->
 							<div class="col-md-2" id="divDataExibicao" style="display: none;">
 								<label class="label" id="lblDataExibicao">Data de Exibição</label>
-								<ejs-datepicker id="DataExibicao"
-												name="DataExibicao"
-												placeholder="Selecione"
-												value="@Model.DataExibicao"
-												format="dd/MM/yyyy"
-												floatLabelType="Never"
-												locale="pt-BR">
-								</ejs-datepicker>
+								<input id="DataExibicao" name="DataExibicao" style="width: 100%;" />
 							</div>
 
 							<!-- Horário de Exibição (TipoExibicao 2, 3, 4, 5, 6, 7, 8) -->
 							<div class="col-md-2" id="divHorarioExibicao" style="display: none;">
 								<label class="label" id="lblHorarioExibicao">Horário de Exibição</label>
-								<ejs-timepicker id="HorarioExibicao"
-												name="HorarioExibicao"
-												value="@Model.HorarioExibicao?.ToString(@"hh\:mm")"
-												format="HH:mm"
-												step="15"
-												floatLabelType="Never"
-												locale="pt-BR"
-												allowEdit="false"
-												placeholder="Selecione">
-								</ejs-timepicker>
+								<input id="HorarioExibicao" name="HorarioExibicao" style="width: 100%;" />
 								<span class="text-danger field-validation-valid" data-valmsg-for="HorarioExibicao"></span>
 							</div>
 
 							<!-- Data de Expiração (Todos os tipos) -->
 							<div class="col-md-2" id="divDataExpiracao" style="display: none;">
 								<label class="label">Data de Expiração</label>
-								<ejs-datepicker id="DataExpiracao"
-												name="DataExpiracao"
-												placeholder="Selecione"
-												value="@Model.DataExpiracao"
-												format="dd/MM/yyyy"
-												floatLabelType="Never"
-												locale="pt-BR">
-								</ejs-datepicker>
+								<input id="DataExpiracao" name="DataExpiracao" style="width: 100%;" />
 							</div>
 						</div>
 
@@ -280,17 +249,7 @@
 									Dias da Semana
 									<i class="fa-duotone fa-calendar-week field-icon" style="font-size: 1.25em; cursor: pointer;"></i>
 								</label>
-								<ejs-multiselect id="lstDiasAlerta"
-												name="DiasSemana"
-												placeholder="Selecione os dias..."
-												mode="CheckBox"
-												showSelectAll="true"
-												selectAllText="Selecionar todos"
-												unSelectAllText="Desmarcar todos"
-												popupHeight="250px"
-												floatLabelType="Never">
-									<e-multiselect-fields value="Value" text="Text"></e-multiselect-fields>
-								</ejs-multiselect>
+								<select id="lstDiasAlerta" name="DiasSemana" multiple="multiple" style="width: 100%;"></select>
 							</div>
 
 							<!-- lstDiasMesAlerta - Dia do Mês (TipoExibicao = 7 Mensal) -->
@@ -350,20 +309,7 @@
 						<div class="row">
 							<div class="col-md-12">
 								<label class="label required-field">Usuários</label>
-								<ejs-multiselect id="UsuariosIds" name="UsuariosIds"
-												 placeholder="Selecione os usuários"
-												 dataSource="@Model.UsuariosList"
-												 value="@Model.UsuariosIds"
-												 mode="Box"
-												 showSelectAll="true"
-												 selectAllText="Selecionar Todos"
-												 unSelectAllText="Desmarcar Todos"
-												 floatLabelType="Never"
-												 cssClass="multiselect-usuarios"
-												 closePopupOnSelect="false"
-												 appendTo="body">
-									<e-multiselect-fields text="Text" value="Value"></e-multiselect-fields>
-								</ejs-multiselect>
+								<select id="UsuariosIds" name="UsuariosIds" multiple="multiple" style="width: 100%;"></select>
 								<span class="text-danger field-validation-valid" data-valmsg-for="UsuariosIds"></span>
 							</div>
 						</div>
@@ -491,10 +437,39 @@
 		document.addEventListener('DOMContentLoaded', function() {
 			try {
 				// ================================================================
-				// INICIALIZACAO DOS CONTROLES DE RECORRENCIA V2
+				// KENDO DATEPICKER / TIMEPICKER / MULTISELECT INIT
+				// Migrado de Syncfusion ejs-datepicker, ejs-timepicker, ejs-multiselect
 				// ================================================================
 
-				// DataSource para dias da semana (MultiSelect - ainda Syncfusion)
+				// DataExibicao
+				$("#DataExibicao").kendoDatePicker({
+					format: "dd/MM/yyyy",
+					culture: "pt-BR",
+					dateInput: { format: "dd/MM/yyyy", messages: { year: "yyyy", month: "MM", day: "dd" } },
+					placeholder: "Selecione",
+					value: @Html.Raw(Model.DataExibicao.HasValue ? "new Date(\"" + Model.DataExibicao.Value.ToString("yyyy-MM-dd") + "\")" : "null")
+				});
+
+				// DataExpiracao
+				$("#DataExpiracao").kendoDatePicker({
+					format: "dd/MM/yyyy",
+					culture: "pt-BR",
+					dateInput: { format: "dd/MM/yyyy", messages: { year: "yyyy", month: "MM", day: "dd" } },
+					placeholder: "Selecione",
+					value: @Html.Raw(Model.DataExpiracao.HasValue ? "new Date(\"" + Model.DataExpiracao.Value.ToString("yyyy-MM-dd") + "\")" : "null")
+				});
+
+				// HorarioExibicao
+				$("#HorarioExibicao").kendoTimePicker({
+					format: "HH:mm",
+					culture: "pt-BR",
+					interval: 15,
+					dateInput: { format: "HH:mm", messages: { hour: "HH", minute: "mm" } },
+					placeholder: "Selecione",
+					value: @Html.Raw(Model.HorarioExibicao.HasValue ? "new Date(0,0,0," + Model.HorarioExibicao.Value.Hours + "," + Model.HorarioExibicao.Value.Minutes + ")" : "null")
+				});
+
+				// DataSource para dias da semana
 				var dataDiasSemana = [
 					{ Text: 'Domingo', Value: 0 },
 					{ Text: 'Segunda-Feira', Value: 1 },
@@ -505,14 +480,28 @@
 					{ Text: 'Sábado', Value: 6 }
 				];
 
-				// Configurar lstDiasAlerta (MultiSelect - ainda Syncfusion)
-				var lstDiasAlerta = document.getElementById('lstDiasAlerta');
-				if (lstDiasAlerta && lstDiasAlerta.ej2_instances && lstDiasAlerta.ej2_instances[0]) {
-					var diasMultiSelect = lstDiasAlerta.ej2_instances[0];
-					diasMultiSelect.dataSource = dataDiasSemana;
-					diasMultiSelect.fields = { text: 'Text', value: 'Value' };
-					diasMultiSelect.dataBind();
-				}
+				// lstDiasAlerta (MultiSelect)
+				$("#lstDiasAlerta").kendoMultiSelect({
+					dataTextField: "Text",
+					dataValueField: "Value",
+					placeholder: "Selecione os dias...",
+					dataSource: dataDiasSemana,
+					autoClose: false,
+					height: 250
+				});
+
+				// UsuariosIds (MultiSelect)
+				var dataUsuarios = @Html.Raw(Json.Serialize(Model.UsuariosList));
+				var usuariosPreSelecionados = @Html.Raw(Json.Serialize(Model.UsuariosIds));
+
+				$("#UsuariosIds").kendoMultiSelect({
+					dataTextField: "Text",
+					dataValueField: "Value",
+					placeholder: "Selecione os usuários",
+					dataSource: dataUsuarios,
+					autoClose: false,
+					value: usuariosPreSelecionados
+				});
 
 				// Inicializar Calendario para datas variadas
 				if (typeof initCalendarioAlerta === 'function') {
@@ -526,84 +515,12 @@
 
 			} catch (error) {
 				console.error('Erro na inicialização:', error);
-				Alerta.TratamentoErroComLinha("Upsert.cshtml", "DOMContentLoaded.recorrencia", error);
+				Alerta.TratamentoErroComLinha("Upsert.cshtml", "DOMContentLoaded.kendoControls", error);
 			}
 		});
 	</script>
 
-	<script>
-		document.addEventListener('DOMContentLoaded', function() {
-			try {
-				var timePicker = document.getElementById('HorarioExibicao').ej2_instances[0];
+	<!-- TimePicker Kendo init já feito acima - bloco ej2_instances removido -->
 
-				if (timePicker) {
-					timePicker.locale = 'pt-BR';
-					timePicker.format = 'HH:mm';
-					timePicker.step = 15;
-					timePicker.dataBind();
-				}
-
-				timePicker.popupCreated = function(args) {
-					try {
-						console.log('Popup criado com sucesso');
-					} catch (error) {
-						Alerta.TratamentoErroComLinha("Upsert.cshtml", "timePicker.popupCreated", error);
-					}
-				};
-
-				timePicker.open = function(args) {
-					try {
-						if (args && args.popup) {
-							args.popup.position = { X: 'left', Y: 'bottom' };
-						}
-					} catch (error) {
-						Alerta.TratamentoErroComLinha("Upsert.cshtml", "timePicker.open", error);
-					}
-				};
-
-				timePicker.beforeOpen = function(args) {
-					try {
-						if (!args || !args.popup) {
-							args.cancel = true;
-							console.error('Popup não pode ser criado');
-						}
-					} catch (error) {
-						Alerta.TratamentoErroComLinha("Upsert.cshtml", "timePicker.beforeOpen", error);
-					}
-				};
-
-				timePicker.inputElement.addEventListener('click', function(e) {
-					try {
-						if (!timePicker.isPopupOpen()) {
-							timePicker.show();
-						}
-					} catch (error) {
-						console.error('Erro ao abrir TimePicker:', error);
-						Alerta.TratamentoErroComLinha("Upsert.cshtml", "timePicker.inputElement.click", error);
-						e.preventDefault();
-					}
-				});
-
-			} catch (error) {
-				console.error('Erro na inicialização:', error);
-				Alerta.TratamentoErroComLinha("Upsert.cshtml", "DOMContentLoaded.timePicker", error);
-			}
-		});
-	</script>
-
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			try {
-				flatpickr("#dtpHorarioExibicao", {
-					enableTime: true,
-					noCalendar: true,
-					dateFormat: "H:i",
-					time_24hr: true,
-					minuteIncrement: 15
-				});
-			} catch (error) {
-				Alerta.TratamentoErroComLinha("Upsert.cshtml", "DOMContentLoaded.flatpickr", error);
-			}
-		});
-	</script>
+	<!-- flatpickr bloco removido - TimePicker agora é Kendo -->
 }

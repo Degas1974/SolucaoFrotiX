@@ -166,12 +166,7 @@
                                 <div class="col-12 col-md-4">
                                     <div class="form-group">
                                         <label class="label" for="dataMov">Data da Movimentação *</label>
-                                        <ejs-datepicker id="dataMov"
-                                                        format="dd/MM/yyyy"
-                                                        floatLabelType="Never"
-                                                        placeholder="dd/mm/aaaa"
-                                                        width="100%">
-                                        </ejs-datepicker>
+                                        <input id="dataMov" name="DataMovimentacao" style="width: 100%;" />
                                     </div>
                                 </div>
 
@@ -306,6 +301,17 @@
                 placeholder: "Primeiro selecione o Setor de Destino",
                 filter: "contains",
                 height: 200
+            });
+
+            // ================================================================
+            // KENDO DATEPICKER INIT - Migrado de Syncfusion ejs-datepicker
+            // ================================================================
+
+            $("#dataMov").kendoDatePicker({
+                format: "dd/MM/yyyy",
+                culture: "pt-BR",
+                dateInput: { format: "dd/MM/yyyy", messages: { year: "yyyy", month: "MM", day: "dd" } },
+                placeholder: "dd/mm/aaaa"
             });
         } catch (error) {
             Alerta.TratamentoErroComLinha("MovimentacaoPatrimonio/Upsert.cshtml", "kendoControls.init", error);

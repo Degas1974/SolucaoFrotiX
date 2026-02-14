@@ -160,11 +160,7 @@
                         <label asp-for="DataEscala" class="control-label required">
                             <i class="fas fa-calendar-day"></i> Data
                         </label>
-                        <ejs-datepicker id="dataEscala" name="DataEscala"
-                                        value="@Model.DataEscala"
-                                        format="dd/MM/yyyy"
-                                        placeholder="Selecione a data"
-                                        floatLabelType="Auto"></ejs-datepicker>
+                        <input id="dataEscala" name="DataEscala" style="width: 100%;" />
                         <span asp-validation-for="DataEscala" class="text-danger"></span>
                     </div>
                 </div>
@@ -186,12 +182,7 @@
                         <label asp-for="HoraInicio" class="control-label required">
                             <i class="fas fa-hourglass-start"></i> Hora Início
                         </label>
-                        <ejs-timepicker id="horaInicio" name="HoraInicio"
-                                       value="@Model.HoraInicio"
-                                       placeholder="Hora início"
-                                       format="HH:mm"
-                                       step="30"
-                                       floatLabelType="Auto"></ejs-timepicker>
+                        <input id="horaInicio" name="HoraInicio" style="width: 100%;" />
                         <span asp-validation-for="HoraInicio" class="text-danger"></span>
                     </div>
                 </div>
@@ -200,12 +191,7 @@
                         <label asp-for="HoraFim" class="control-label required">
                             <i class="fas fa-hourglass-end"></i> Hora Fim
                         </label>
-                        <ejs-timepicker id="horaFim" name="HoraFim"
-                                       value="@Model.HoraFim"
-                                       placeholder="Hora fim"
-                                       format="HH:mm"
-                                       step="30"
-                                       floatLabelType="Auto"></ejs-timepicker>
+                        <input id="horaFim" name="HoraFim" style="width: 100%;" />
                         <span asp-validation-for="HoraFim" class="text-danger"></span>
                     </div>
                 </div>
@@ -355,10 +341,7 @@
                             <label asp-for="DataInicioIndisponibilidade">
                                 <i class="fas fa-calendar-day"></i> Data Inicial
                             </label>
-                            <ejs-datepicker id="dataInicioIndisponibilidade" name="DataInicioIndisponibilidade"
-                                            value="@Model.DataInicioIndisponibilidade"
-                                            format="dd/MM/yyyy"
-                                            placeholder="Data início"></ejs-datepicker>
+                            <input id="dataInicioIndisponibilidade" name="DataInicioIndisponibilidade" style="width: 100%;" />
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -366,10 +349,7 @@
                             <label asp-for="DataFimIndisponibilidade">
                                 <i class="fas fa-calendar-day"></i> Data Final
                             </label>
-                            <ejs-datepicker id="dataFimIndisponibilidade" name="DataFimIndisponibilidade"
-                                            value="@Model.DataFimIndisponibilidade"
-                                            format="dd/MM/yyyy"
-                                            placeholder="Data fim"></ejs-datepicker>
+                            <input id="dataFimIndisponibilidade" name="DataFimIndisponibilidade" style="width: 100%;" />
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -427,11 +407,8 @@
                 <label asp-for="Observacoes" class="control-label">
                     <i class="fas fa-comment"></i> Observações
                 </label>
-                <ejs-textbox id="observacoes" name="Observacoes"
-                             value="@Model.Observacoes"
-                             multiline="true"
-                             placeholder="Digite as observações..."
-                             floatLabelType="Auto"></ejs-textbox>
+                <textarea id="observacoes" name="Observacoes" class="form-control" rows="3"
+                          placeholder="Digite as observações...">@Model.Observacoes</textarea>
             </div>
         </div>
     </div>
@@ -543,8 +520,59 @@
                     dataSource: dataRequisitante,
                     value: "@(Model.RequisitanteId?.ToString() ?? "")"
                 });
+
+                // ================================================================
+                // KENDO DATEPICKER INIT - Migrado de Syncfusion ejs-datepicker
+                // ================================================================
+
+                $("#dataEscala").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    dateInput: { format: "dd/MM/yyyy", messages: { year: "yyyy", month: "MM", day: "dd" } },
+                    placeholder: "Selecione a data",
+                    value: @Html.Raw(Model.DataEscala != default(DateTime) ? "new Date(\"" + Model.DataEscala.ToString("yyyy-MM-dd") + "\")" : "null")
+                });
+
+                $("#dataInicioIndisponibilidade").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    dateInput: { format: "dd/MM/yyyy", messages: { year: "yyyy", month: "MM", day: "dd" } },
+                    placeholder: "Data início",
+                    value: @Html.Raw(Model.DataInicioIndisponibilidade.HasValue ? "new Date(\"" + Model.DataInicioIndisponibilidade.Value.ToString("yyyy-MM-dd") + "\")" : "null")
+                });
+
+                $("#dataFimIndisponibilidade").kendoDatePicker({
+                    format: "dd/MM/yyyy",
+                    culture: "pt-BR",
+                    dateInput: { format: "dd/MM/yyyy", messages: { year: "yyyy", month: "MM", day: "dd" } },
+                    placeholder: "Data fim",
+                    value: @Html.Raw(Model.DataFimIndisponibilidade.HasValue ? "new Date(\"" + Model.DataFimIndisponibilidade.Value.ToString("yyyy-MM-dd") + "\")" : "null")
+                });
+
+                // ================================================================
+                // KENDO TIMEPICKER INIT - Migrado de Syncfusion ejs-timepicker
+                // ================================================================
+
+                $("#horaInicio").kendoTimePicker({
+                    format: "HH:mm",
+                    culture: "pt-BR",
+                    interval: 30,
+                    dateInput: { format: "HH:mm", messages: { hour: "HH", minute: "mm" } },
+                    placeholder: "Hora início",
+                    value: @Html.Raw(!string.IsNullOrEmpty(Model.HoraInicio) && TimeSpan.TryParse(Model.HoraInicio, out var _hiE) ? "new Date(0,0,0," + TimeSpan.Parse(Model.HoraInicio).Hours + "," + TimeSpan.Parse(Model.HoraInicio).Minutes + ")" : "null")
+                });
+
+                $("#horaFim").kendoTimePicker({
+                    format: "HH:mm",
+                    culture: "pt-BR",
+                    interval: 30,
+                    dateInput: { format: "HH:mm", messages: { hour: "HH", minute: "mm" } },
+                    placeholder: "Hora fim",
+                    value: @Html.Raw(!string.IsNullOrEmpty(Model.HoraFim) && TimeSpan.TryParse(Model.HoraFim, out var _hfE) ? "new Date(0,0,0," + TimeSpan.Parse(Model.HoraFim).Hours + "," + TimeSpan.Parse(Model.HoraFim).Minutes + ")" : "null")
+                });
+
             } catch (error) {
-                Alerta.TratamentoErroComLinha("UpsertEEscala.cshtml", "kendoDropDownList.init", error);
+                Alerta.TratamentoErroComLinha("UpsertEEscala.cshtml", "kendoControls.init", error);
             }
         })();
     </script>
