@@ -1467,6 +1467,108 @@ namespace FrotiX.Controllers
             }
         }
 
+        /// <summary>
+        /// ⚠️ ENDPOINT DE DIAGNÓSTICO - Teste simplificado de RecuperaViagem
+        /// Use: /api/Agenda/TesteRecuperaViagem?id=95d94e8d-23ae-4c77-231a-08de68505d0f
+        /// </summary>
+        [HttpGet("TesteRecuperaViagem")]
+        public ActionResult TesteRecuperaViagem(Guid id)
+        {
+            try
+            {
+                _logger.LogInformation($"[TesteRecuperaViagem] Iniciando teste para ID: {id}");
+
+                // Teste 1: Viagem existe?
+                var existe = _context.Viagem.Any(v => v.ViagemId == id);
+                _logger.LogInformation($"[TesteRecuperaViagem] Viagem existe? {existe}");
+
+                if (!existe)
+                {
+                    return Ok(new
+                    {
+                        sucesso = false,
+                        mensagem = "Viagem não encontrada no banco",
+                        viagemId = id
+                    });
+                }
+
+                // Teste 2: Buscar SEM tracking
+                var viagem = _context.Viagem
+                    .AsNoTracking()
+                    .Where(v => v.ViagemId == id)
+                    .FirstOrDefault();
+
+                _logger.LogInformation($"[TesteRecuperaViagem] Viagem carregada? {viagem != null}");
+
+                if (viagem == null)
+                {
+                    return Ok(new
+                    {
+                        sucesso = false,
+                        mensagem = "Erro ao carregar viagem",
+                        viagemId = id
+                    });
+                }
+
+                // Teste 3: Dados básicos
+                var dadosBasicos = new
+                {
+                    viagemId = viagem.ViagemId,
+                    status = viagem.Status,
+                    dataInicial = viagem.DataInicial,
+                    motorista = viagem.MotoristaId,
+                    veiculo = viagem.VeiculoId,
+                    requisitante = viagem.RequisitanteId
+                };
+
+                _logger.LogInformation($"[TesteRecuperaViagem] Dados básicos OK");
+
+                // Teste 4: Tentar serializar objeto completo
+                string jsonCompleto = null;
+                try
+                {
+                    jsonCompleto = System.Text.Json.JsonSerializer.Serialize(viagem, new System.Text.Json.JsonSerializerOptions
+                    {
+                        ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles,
+                        WriteIndented = true
+                    });
+                    _logger.LogInformation($"[TesteRecuperaViagem] Serialização completa OK - {jsonCompleto.Length} bytes");
+                }
+                catch (Exception serError)
+                {
+                    _logger.LogError(serError, "[TesteRecuperaViagem] ERRO na serialização");
+                    return Ok(new
+                    {
+                        sucesso = false,
+                        mensagem = "Erro ao serializar viagem completa",
+                        erro = serError.Message,
+                        dadosBasicos = dadosBasicos
+                    });
+                }
+
+                return Ok(new
+                {
+                    sucesso = true,
+                    mensagem = "Todos os testes passaram!",
+                    dadosBasicos = dadosBasicos,
+                    jsonSize = jsonCompleto.Length,
+                    viagemCompleta = viagem
+                });
+            }
+            catch (Exception error)
+            {
+                _logger.LogError(error, $"[TesteRecuperaViagem] ERRO GERAL - ID: {id}");
+                return Ok(new
+                {
+                    sucesso = false,
+                    mensagem = "Erro durante teste",
+                    erro = error.Message,
+                    errorType = error.GetType().Name,
+                    innerException = error.InnerException?.Message
+                });
+            }
+        }
+
         [HttpGet("RecuperaUsuario")]
         public IActionResult RecuperaUsuario(string Id)
         {
@@ -1518,8 +1620,11 @@ namespace FrotiX.Controllers
                     });
                 }
 
-                // Buscar viagem no banco
-                var viagemObj = _unitOfWork.Viagem.GetFirstOrDefault(v => v.ViagemId == Id);
+                // Buscar viagem no banco - SEM tracking e SEM includes para evitar ciclos
+                var viagemObj = _context.Viagem
+                    .AsNoTracking()
+                    .Where(v => v.ViagemId == Id)
+                    .FirstOrDefault();
 
                 // Validar se a viagem foi encontrada
                 if (viagemObj == null)
@@ -1535,6 +1640,23 @@ namespace FrotiX.Controllers
 
                 _logger.LogInformation($"[RecuperaViagem] Viagem encontrada: {viagemObj.ViagemId} - Status: {viagemObj.Status}");
 
+                // ✅ CORREÇÃO CRÍTICA: Usar JsonSerializer com ReferenceHandler para evitar ciclos
+                // Tenta serializar antes de retornar para detectar problemas
+                try
+                {
+                    var jsonTest = System.Text.Json.JsonSerializer.Serialize(viagemObj, new System.Text.Json.JsonSerializerOptions
+                    {
+                        ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles,
+                        WriteIndented = false
+                    });
+                    _logger.LogInformation($"[RecuperaViagem] Serialização OK - {jsonTest.Length} bytes");
+                }
+                catch (Exception serError)
+                {
+                    _logger.LogError(serError, $"[RecuperaViagem] ERRO DE SERIALIZAÇÃO para viagem {Id}");
+                    throw new InvalidOperationException($"Erro ao serializar viagem: {serError.Message}", serError);
+                }
+
                 return Ok(new
                 {
                     data = viagemObj
@@ -1543,6 +1665,15 @@ namespace FrotiX.Controllers
             catch (Exception error)
             {
                 _logger.LogError(error , $"[RecuperaViagem] Erro ao recuperar viagem ID: {Id}");
+                _logger.LogError($"[RecuperaViagem] Tipo de exceção: {error.GetType().Name}");
+                _logger.LogError($"[RecuperaViagem] StackTrace: {error.StackTrace}");
+
+                if (error.InnerException != null)
+                {
+                    _logger.LogError($"[RecuperaViagem] InnerException: {error.InnerException.Message}");
+                    _logger.LogError($"[RecuperaViagem] InnerException StackTrace: {error.InnerException.StackTrace}");
+                }
+
                 Alerta.TratamentoErroComLinha("AgendaController.cs" , "RecuperaViagem" , error);
                 return StatusCode(
                     500 ,
@@ -1550,8 +1681,10 @@ namespace FrotiX.Controllers
                     {
                         success = false ,
                         error = error.Message ,
+                        errorType = error.GetType().Name,
                         stackTrace = error.StackTrace ,
                         innerException = error.InnerException?.Message ,
+                        innerExceptionType = error.InnerException?.GetType().Name,
                         viagemId = Id
                     }
                 );
