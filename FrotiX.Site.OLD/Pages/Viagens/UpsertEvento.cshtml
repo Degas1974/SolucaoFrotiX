@@ -851,23 +851,7 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
                             <label class="form-label mb-1 small fw-bold">
                                 <i class="fa-duotone fa-user"></i> Requisitante do Evento <span class="required-asterisk">*</span>
                             </label>
-                            <ejs-dropdowntree id="lstRequisitanteEvento"
-                                              class="form-select"
-                                              placeholder="Selecione um Requisitante"
-                                              showCheckBox="false"
-                                              allowMultiSelection="false"
-                                              allowFiltering="true"
-                                              filterType="Contains"
-                                              filterBarPlaceholder="Procurar..."
-                                              popupHeight="200px"
-                                              select="RequisitanteEventoValueChange"
-                                              change="RequisitanteEventoValueChange"
-                                              ejs-for="@Model.EventoObj.Evento.RequisitanteId">
-                                <e-dropdowntree-fields dataSource="@ViewData["dataRequisitante"]"
-                                                       value="RequisitanteId"
-                                                       text="Requisitante">
-                                </e-dropdowntree-fields>
-                            </ejs-dropdowntree>
+                            <input id="lstRequisitanteEvento" name="EventoObj.Evento.RequisitanteId" style="width: 100%;" />
                             <span class="text-danger small"
                                   asp-validation-for="EventoObj.Evento.RequisitanteId"></span>
                         </div>
@@ -1282,6 +1266,31 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
     }
 </script>
 
+<script>
+    // [KENDO] Init DropDownTree: lstRequisitanteEvento (flat - Requisitante)
+    (function() {
+        try {
+            var dataRequisitante = @Html.Raw(Json.Serialize(ViewData["dataRequisitante"]));
+            var requisitanteIdAtual = @Html.Raw(Json.Serialize(Model.EventoObj.Evento?.RequisitanteId.ToString()));
+
+            KendoDDTHelper.initFlat({
+                selector: '#lstRequisitanteEvento',
+                data: dataRequisitante,
+                textField: 'requisitante',
+                valueField: 'requisitanteId',
+                placeholder: 'Selecione um Requisitante',
+                value: requisitanteIdAtual && requisitanteIdAtual !== '00000000-0000-0000-0000-000000000000' ? requisitanteIdAtual : null,
+                change: function(e) {
+                    try { window.RequisitanteEventoValueChange(e); }
+                    catch(err) { Alerta.TratamentoErroComLinha("UpsertEvento.cshtml", "lstRequisitanteEvento.change", err); }
+                }
+            });
+        } catch (error) {
+            Alerta.TratamentoErroComLinha("UpsertEvento.cshtml", "kendoDDT.init", error);
+        }
+    })();
+</script>
+
 <script type="text/javascript" src="~/js/cadastros/eventoupsert.js" asp-append-version="true"></script>
 
 <script>
@@ -1507,12 +1516,9 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
                 }
             }
 
-            // TENTATIVA 2: Pega do Componente (se o evento falhou ou veio vazio)
+            // TENTATIVA 2: Pega do Componente Kendo (se o evento falhou ou veio vazio)
             if (!requisitanteId) {
-                const ddTreeObj = document.getElementById("lstRequisitanteEvento")?.ej2_instances?.[0];
-                if (ddTreeObj && ddTreeObj.value) {
-                    requisitanteId = Array.isArray(ddTreeObj.value) ? ddTreeObj.value[0] : ddTreeObj.value;
-                }
+                requisitanteId = KendoDDTHelper.getValue('#lstRequisitanteEvento');
             }
 
             console.log('ID Identificado:', requisitanteId);
@@ -1592,10 +1598,12 @@ ViewData["PageIcon"] = "fa-duotone fa-calendar-users";
     // Garante bind dos eventos do DropDownTree
     $(document).ready(function () {
         try {
-            const ddtReq = document.getElementById("lstRequisitanteEvento")?.ej2_instances?.[0];
+            // [KENDO] Bind change event on Kendo DropDownTree
+            var ddtReq = KendoDDTHelper.getInstance('#lstRequisitanteEvento');
             if (ddtReq) {
-                ddtReq.select = window.RequisitanteEventoValueChange;
-                ddtReq.change = window.RequisitanteEventoValueChange;
+                ddtReq.bind('change', function(e) {
+                    window.RequisitanteEventoValueChange(e);
+                });
             }
         } catch (error) {
             console.error('Erro ao bindar eventos do requisitante:', error);

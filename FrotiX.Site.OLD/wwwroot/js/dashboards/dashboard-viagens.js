@@ -3644,19 +3644,19 @@ function carregarDadosViagemParaAjuste(viagemId)
                             lstFinalidadeKendo.value(viagem.finalidade || "");
                         }
 
-                        // Evento
-                        const lstEvento = document.getElementById('lstEventoDashboard');
-                        if (lstEvento && lstEvento.ej2_instances)
+                        // KENDO: Evento (DropDownTree)
+                        var kendoEventoDDT = $('#lstEventoDashboard').data('kendoDropDownTree');
+                        if (kendoEventoDDT)
                         {
                             if (viagem.finalidade === 'Evento' && viagem.eventoId)
                             {
-                                lstEvento.ej2_instances[0].enabled = true;
-                                lstEvento.ej2_instances[0].value = [viagem.eventoId.toString()];
+                                kendoEventoDDT.enable(true);
+                                kendoEventoDDT.value([viagem.eventoId.toString()]);
                                 $('.esconde-diveventos-dashboard').show();
                             } else
                             {
-                                lstEvento.ej2_instances[0].enabled = false;
-                                lstEvento.ej2_instances[0].value = null;
+                                kendoEventoDDT.enable(false);
+                                kendoEventoDDT.value([]);
                                 $('.esconde-diveventos-dashboard').hide();
                             }
                         }
@@ -3698,11 +3698,11 @@ function carregarDadosViagemParaAjuste(viagemId)
                                     lstRequisitanteKendo.value(viagem.requisitanteId.toString());
                                 }
 
-                                // Setor Solicitante (DropDownTree - precisa de array)
-                                const lstSetor = document.getElementById('lstSetorSolicitanteAlteradoDashboard');
-                                if (lstSetor && lstSetor.ej2_instances && viagem.setorSolicitanteId)
+                                // KENDO: Setor Solicitante (DropDownTree)
+                                var kendoSetorDDT = $('#lstSetorSolicitanteAlteradoDashboard').data('kendoDropDownTree');
+                                if (kendoSetorDDT && viagem.setorSolicitanteId)
                                 {
-                                    lstSetor.ej2_instances[0].value = [viagem.setorSolicitanteId];
+                                    kendoSetorDDT.value([viagem.setorSolicitanteId]);
                                 }
                             } catch (error) {
                                 console.error('Erro ao setar valores dos combos:', error);
@@ -3737,18 +3737,18 @@ function FinalidadeChangeDashboard()
     try
     {
         var finalidadeCb = $("#lstFinalidadeAlteradaDashboard").data("kendoComboBox");
-        var eventoDdt = document.getElementById('lstEventoDashboard').ej2_instances[0];
+        var eventoDdt = $('#lstEventoDashboard').data('kendoDropDownTree');
 
         if (finalidadeCb && eventoDdt)
         {
             if (finalidadeCb.value() === 'Evento')
             {
-                eventoDdt.enabled = true;
+                eventoDdt.enable(true);
                 $('.esconde-diveventos-dashboard').show();
             } else
             {
-                eventoDdt.enabled = false;
-                eventoDdt.value = null;
+                eventoDdt.enable(false);
+                eventoDdt.value([]);
                 $('.esconde-diveventos-dashboard').hide();
             }
         }
@@ -3772,12 +3772,12 @@ function gravarViagemDashboard()
         const lstFinalidadeK = $("#lstFinalidadeAlteradaDashboard").data("kendoComboBox");
         const finalidade = lstFinalidadeK ? lstFinalidadeK.value() : null;
 
-        // Evento
-        const lstEvento = document.getElementById('lstEventoDashboard');
+        // KENDO: Evento (DropDownTree)
+        var kendoEventoSubmit = $('#lstEventoDashboard').data('kendoDropDownTree');
         let eventoId = null;
-        if (lstEvento && lstEvento.ej2_instances)
+        if (kendoEventoSubmit)
         {
-            const eventoValue = lstEvento.ej2_instances[0].value;
+            const eventoValue = kendoEventoSubmit.value();
             if (eventoValue && eventoValue.length > 0)
             {
                 eventoId = eventoValue[0];
@@ -3802,12 +3802,12 @@ function gravarViagemDashboard()
         const lstVeiculoK = $("#lstVeiculoAlteradoDashboard").data("kendoComboBox");
         const veiculoId = lstVeiculoK ? lstVeiculoK.value() : null;
 
-        // Setor Solicitante
-        const lstSetor = document.getElementById('lstSetorSolicitanteAlteradoDashboard');
+        // KENDO: Setor Solicitante (DropDownTree)
+        var kendoSetorSubmit = $('#lstSetorSolicitanteAlteradoDashboard').data('kendoDropDownTree');
         let setorSolicitanteId = null;
-        if (lstSetor && lstSetor.ej2_instances)
+        if (kendoSetorSubmit)
         {
-            const setorValue = lstSetor.ej2_instances[0].value;
+            const setorValue = kendoSetorSubmit.value();
             if (setorValue && setorValue.length > 0)
             {
                 setorSolicitanteId = setorValue[0];

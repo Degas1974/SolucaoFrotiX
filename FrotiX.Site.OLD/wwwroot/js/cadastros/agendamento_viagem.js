@@ -430,21 +430,21 @@ function criarAgendamentoNovo()
 {
     try
     {
-        const rteDescricao = document.getElementById("rteDescricao")?.ej2_instances?.[0];
+        // KENDO: rteDescricao via KendoEditorHelper (migrado de Syncfusion ej2_instances)
+        const rteDescricaoHtmlContent = window.KendoEditorHelper ? window.KendoEditorHelper.getHtml() : "";
         const wMotorista = $("#lstMotorista").data("kendoComboBox");
         const wVeiculo = $("#lstVeiculo").data("kendoComboBox");
-        const ddtSetor = document.getElementById("ddtSetor")?.ej2_instances?.[0];
+        const ddtSetorKendo = $('#ddtSetor').data('kendoDropDownTree');
         const wFinalidade = $("#lstFinalidade").data("kendoDropDownList");
         const wCombIni = $("#ddtCombustivelInicial").data("kendoDropDownList");
         const wCombFim = $("#ddtCombustivelFinal").data("kendoDropDownList");
         const wEventos = $("#lstEventos").data("kendoComboBox");
         const txtDataInicial = document.getElementById("txtDataInicial")?.ej2_instances?.[0];
         const txtDataFinal = document.getElementById("txtDataFinal")?.ej2_instances?.[0];
-        const rteDescricaoHtmlContent = rteDescricao?.getHtml() ?? "";
 
         const motoristaId = wMotorista ? wMotorista.value() || null : null;
         const veiculoId = wVeiculo ? wVeiculo.value() || null : null;
-        const setorId = getSfValue0(ddtSetor);
+        const setorId = ddtSetorKendo ? KendoDDTHelper.getValue('#ddtSetor') : null;
         const wRequisitante = $("#lstRequisitante").data("kendoComboBox");
         const requisitanteId = wRequisitante ? wRequisitante.value() || null : null;
         const wDestino = $("#cmbDestino").data("kendoComboBox");
@@ -1829,8 +1829,9 @@ async function ValidaCampos(viagemId)
             await Alerta.Erro("Informação Ausente", "O Ramal do Requisitante é obrigatório");
             return false;
         }
-        const ddtSetor = document.getElementById("ddtSetor").ej2_instances[0];
-        if (ddtSetor.value === "" || ddtSetor.value === null)
+        var kendoDdtSetorValidar = $('#ddtSetor').data('kendoDropDownTree');
+        var ddtSetorVal = kendoDdtSetorValidar ? kendoDdtSetorValidar.value() : null;
+        if (!ddtSetorVal || ddtSetorVal.length === 0)
         {
             await Alerta.Erro("Informação Ausente", "O Setor do Requisitante é obrigatório");
             return false;
@@ -1952,12 +1953,12 @@ function criarAgendamento(viagemId, viagemIdRecorrente, dataInicial)
 {
     try
     {
-        const rteDescricao = document.getElementById("rteDescricao").ej2_instances[0];
-        const rteDescricaoHtmlContent = rteDescricao.getHtml();
+        // KENDO: rteDescricao via KendoEditorHelper (migrado de Syncfusion ej2_instances)
+        const rteDescricaoHtmlContent = window.KendoEditorHelper ? window.KendoEditorHelper.getHtml() : "";
 
         const wMotorista = $("#lstMotorista").data("kendoComboBox");
         const wVeiculo = $("#lstVeiculo").data("kendoComboBox");
-        const ddtSetor = document.getElementById("ddtSetor").ej2_instances[0];
+        var kendoDdtSetorRecorrente = $('#ddtSetor').data('kendoDropDownTree');
 
         const dataFinalInput = document.getElementById("txtFinalRecorrencia").ej2_instances[0].value;
         const momentDate = moment(dataFinalInput);
@@ -2003,7 +2004,7 @@ function criarAgendamento(viagemId, viagemIdRecorrente, dataInicial)
             KmAtual: parseInt($("#txtKmAtual").val(), 10) || null,
             RequisitanteId: wRequisitante ? wRequisitante.value() || null : null,
             RamalRequisitante: $("#txtRamalRequisitante").val(),
-            SetorSolicitanteId: ddtSetor.value[0] || null,
+            SetorSolicitanteId: KendoDDTHelper.getValue('#ddtSetor') || null,
             Descricao: rteDescricaoHtmlContent,
             StatusAgendamento: true,
             FoiAgendamento: true,
@@ -2063,12 +2064,12 @@ function criarAgendamentoUnico()
 {
     try
     {
-        const rteDescricao = document.getElementById("rteDescricao").ej2_instances[0];
-        const rteDescricaoHtmlContent = rteDescricao.getHtml();
+        // KENDO: rteDescricao via KendoEditorHelper (migrado de Syncfusion ej2_instances)
+        const rteDescricaoHtmlContent = window.KendoEditorHelper ? window.KendoEditorHelper.getHtml() : "";
 
         const wMotorista = $("#lstMotorista").data("kendoComboBox");
         const wVeiculo = $("#lstVeiculo").data("kendoComboBox");
-        const ddtSetor = document.getElementById("ddtSetor").ej2_instances[0];
+        var kendoDdtSetorGravar = $('#ddtSetor').data('kendoDropDownTree');
         let motoristaId = wMotorista ? wMotorista.value() || null : null;
         let veiculoId = wVeiculo ? wVeiculo.value() || null : null;
         let eventoId = "";
@@ -2082,7 +2083,7 @@ function criarAgendamentoUnico()
         {
             eventoId = null;
         }
-        let setorId = document.getElementById("ddtSetor").ej2_instances[0].value[0];
+        let setorId = KendoDDTHelper.getValue('#ddtSetor') || null;
         let ramal = $("#txtRamalRequisitante").val();
         const wRequisitante = $("#lstRequisitante").data("kendoComboBox");
         let requisitanteId = wRequisitante ? wRequisitante.value() || null : null;
@@ -2125,20 +2126,20 @@ function criarAgendamentoEdicao(agendamentoOriginal)
 {
     try
     {
-        const rteDescricao = document.getElementById("rteDescricao")?.ej2_instances?.[0];
+        // KENDO: rteDescricao via KendoEditorHelper (migrado de Syncfusion ej2_instances)
+        const rteDescricaoHtmlContent = window.KendoEditorHelper ? window.KendoEditorHelper.getHtml() : "";
         const wMotorista = $("#lstMotorista").data("kendoComboBox");
         const wVeiculo = $("#lstVeiculo").data("kendoComboBox");
-        const ddtSetor = document.getElementById("ddtSetor")?.ej2_instances?.[0];
+        const ddtSetorKendo2 = $('#ddtSetor').data('kendoDropDownTree');
         const wFinalidade = $("#lstFinalidade").data("kendoDropDownList");
         const wCombIni = $("#ddtCombustivelInicial").data("kendoDropDownList");
         const wCombFim = $("#ddtCombustivelFinal").data("kendoDropDownList");
         const wEventos = $("#lstEventos").data("kendoComboBox");
         const txtDataFinal = document.getElementById("txtDataFinal")?.ej2_instances?.[0];
-        const rteDescricaoHtmlContent = rteDescricao?.getHtml() ?? "";
 
         const motoristaId = wMotorista ? wMotorista.value() || null : null;
         const veiculoId = wVeiculo ? wVeiculo.value() || null : null;
-        const setorId = getSfValue0(ddtSetor);
+        const setorId = ddtSetorKendo2 ? KendoDDTHelper.getValue('#ddtSetor') : null;
         const wRequisitante = $("#lstRequisitante").data("kendoComboBox");
         const requisitanteId = wRequisitante ? wRequisitante.value() || null : null;
         const wDestino = $("#cmbDestino").data("kendoComboBox");
@@ -2219,12 +2220,12 @@ function criarAgendamentoViagem(agendamentoUnicoAlterado)
 {
     try
     {
-        const rteDescricao = document.getElementById("rteDescricao").ej2_instances[0];
-        const rteDescricaoHtmlContent = rteDescricao.getHtml();
+        // KENDO: rteDescricao via KendoEditorHelper (migrado de Syncfusion ej2_instances)
+        const rteDescricaoHtmlContent = window.KendoEditorHelper ? window.KendoEditorHelper.getHtml() : "";
 
         const wMotorista = $("#lstMotorista").data("kendoComboBox");
         const wVeiculo = $("#lstVeiculo").data("kendoComboBox");
-        const ddtSetor = document.getElementById("ddtSetor").ej2_instances[0];
+        var kendoDdtSetorViagem = $('#ddtSetor').data('kendoDropDownTree');
         let motoristaId = wMotorista ? wMotorista.value() || null : null;
         let veiculoId = wVeiculo ? wVeiculo.value() || null : null;
         let eventoId = "";
@@ -2237,7 +2238,7 @@ function criarAgendamentoViagem(agendamentoUnicoAlterado)
         {
             eventoId = null;
         }
-        let setorId = document.getElementById("ddtSetor").ej2_instances[0].value[0];
+        let setorId = KendoDDTHelper.getValue('#ddtSetor') || null;
         let ramal = $("#txtRamalRequisitante").val();
         const wRequisitante = $("#lstRequisitante").data("kendoComboBox");
         let requisitanteId = wRequisitante ? wRequisitante.value() || null : null;
@@ -2399,8 +2400,8 @@ $(document).ready(function ()
                 // Limpar campos após fechar
                 try
                 {
-                    var setores = document.getElementById("ddtSetorRequisitante").ej2_instances[0];
-                    if (setores) setores.value = "";
+                    var kendoSetorReqAccordion = $('#ddtSetorRequisitante').data('kendoDropDownTree');
+                    if (kendoSetorReqAccordion) kendoSetorReqAccordion.value([]);
                     $("#txtPonto, #txtNome, #txtRamal, #txtEmail").val("");
                 } catch (error)
                 {
@@ -3023,8 +3024,8 @@ $(document).ready(function ()
         {
             try
             {
-                var setores = document.getElementById("ddtSetorRequisitante").ej2_instances[0];
-                setores.value = "";
+                var kendoSetorReqModal = $('#ddtSetorRequisitante').data('kendoDropDownTree');
+                if (kendoSetorReqModal) kendoSetorReqModal.value([]);
                 $("#txtPonto").val("");
                 $("#txtNome").val("");
                 $("#txtRamal").val("");
@@ -3403,10 +3404,11 @@ function salvarNovoEvento()
             requisitanteId = wReqEvento.value();
         }
 
-        const ddtSetor = document.getElementById("ddtSetorEvento");
-        if (ddtSetor && ddtSetor.ej2_instances && ddtSetor.ej2_instances[0])
+        var kendoDdtSetorEvento = $('#ddtSetorEvento').data('kendoDropDownTree');
+        if (kendoDdtSetorEvento)
         {
-            setorId = ddtSetor.ej2_instances[0].value;
+            var setorEvtVal = kendoDdtSetorEvento.value();
+            setorId = setorEvtVal && setorEvtVal.length > 0 ? setorEvtVal[0] : null;
         }
 
         // Monta objeto
@@ -3704,9 +3706,11 @@ function inicializarComponentesEJ2()
 
     // --- Syncfusion controls: keep ej2_instances ---
     var sfControles = [
-        { id: "rteDescricao", propriedades: { enabled: true, value: "" } },
         { id: "ddtSetor", propriedades: { enabled: true, value: "" } }
     ];
+
+    // KENDO: rteDescricao — limpar via KendoEditorHelper (migrado de Syncfusion)
+    if (window.KendoEditorHelper) { window.KendoEditorHelper.clear(); }
 
     sfControles.forEach(function(item) {
         try {
@@ -4014,11 +4018,9 @@ function preencherCamposBasicos(viagem)
             }
         }
 
-        // Descrição
-        const rteDescricao = document.getElementById("rteDescricao");
-        if (rteDescricao && rteDescricao.ej2_instances && rteDescricao.ej2_instances[0])
-        {
-            rteDescricao.ej2_instances[0].value = viagem.descricao;
+        // KENDO: rteDescricao — set via KendoEditorHelper (migrado de Syncfusion ej2_instances)
+        if (window.KendoEditorHelper) {
+            window.KendoEditorHelper.setHtml(viagem.descricao || "");
         }
     }
     catch (error)
@@ -4530,7 +4532,14 @@ function desabilitarTodosControles()
         });
 
         // Desabilita controles Syncfusion (ej2_instances)
-        var sfDisable = ["txtDataInicial", "txtDataFinal", "ddtSetor", "rteDescricao"];
+        var sfDisable = ["txtDataInicial", "txtDataFinal", "ddtSetor"];
+
+        // KENDO: rteDescricao — desabilitar via Kendo API (migrado de Syncfusion)
+        var editorInst = $("#rteDescricao").data("kendoEditor");
+        if (editorInst) {
+            editorInst.body.contentEditable = false;
+            $("#rteDescricao").closest(".k-editor").addClass("k-disabled");
+        }
 
         sfDisable.forEach(function(id) {
             var el = document.getElementById(id);
@@ -5252,7 +5261,7 @@ $("#btnApaga").click(async function (event)
     {
         var viagemId = document.getElementById("txtViagemId").value;
         var recorrenciaViagemId = document.getElementById("txtRecorrenciaViagemId").value;
-        var rteDescricao = document.getElementById("rteDescricao").ej2_instances[0];
+        // KENDO: rteDescricao via KendoEditorHelper (migrado de Syncfusion ej2_instances)
         let titulo = "";
         if (recorrenciaViagemId != null && recorrenciaViagemId != "" || recorrenciaViagemId != "00000000-0000-0000-0000-000000000000")
         {
@@ -5361,7 +5370,8 @@ $("#btnCancela").click(async function (event)
     {
         var viagemId = document.getElementById("txtViagemId").value;
         var recorrenciaViagemId = document.getElementById("txtRecorrenciaViagemId").value;
-        var rteDescricao = document.getElementById("rteDescricao").ej2_instances[0];
+        // KENDO: rteDescricao via KendoEditorHelper (migrado de Syncfusion ej2_instances)
+        var rteDescricaoValue = window.KendoEditorHelper ? window.KendoEditorHelper.getHtml() : "";
         let titulo = "";
 
         // Verificar se é recorrente
@@ -5398,7 +5408,7 @@ $("#btnCancela").click(async function (event)
 
                 for (const agendamento of agendamentosRecorrentes)
                 {
-                    await cancelarAgendamento(agendamento.viagemId, rteDescricao.value, false);
+                    await cancelarAgendamento(agendamento.viagemId, rteDescricaoValue, false);
                     cancelados++;
                     await delay(200);
                 }
@@ -5434,7 +5444,7 @@ $("#btnCancela").click(async function (event)
                     : "O agendamento foi cancelado com sucesso!";
 
                 // Cancelar usando a função padrío mas SEM mostrar toast
-                await cancelarAgendamento(viagemId, rteDescricao.value, false);
+                await cancelarAgendamento(viagemId, rteDescricaoValue, false);
 
                 // Mostrar toast personalizado
                 AppToast.show("Verde", mensagemPersonalizada, 2000);
@@ -5987,16 +5997,16 @@ function PreencheListaSetores()
                         SetorList.push(setor);
                     }
                     console.log(SetorList);
-                    document.getElementById("ddtSetor").ej2_instances[0].fields.dataSource = SetorList;
-                    document.getElementById("ddtSetorRequisitante").ej2_instances[0].fields.dataSource = SetorList;
+                    // KENDO: Atualizar dataSource dos DropDownTree de setores
+                    KendoDDTHelper.setFlatDataSource('#ddtSetor', SetorList, 'SetorSolicitanteId', 'SetorPaiId', 'Nome');
+                    KendoDDTHelper.setFlatDataSource('#ddtSetorRequisitante', SetorList, 'SetorSolicitanteId', 'SetorPaiId', 'Nome');
                 } catch (error)
                 {
                     Alerta.TratamentoErroComLinha("agendamento_viagem.js", "success", error);
                 }
             }
         });
-        document.getElementById("ddtSetor").ej2_instances[0].refresh();
-        document.getElementById("ddtSetorRequisitante").ej2_instances[0].refresh();
+        // KENDO: refresh desnecessario — KendoDDTHelper.setFlatDataSource já recria o widget
     } catch (error)
     {
         Alerta.TratamentoErroComLinha("agendamento_viagem.js", "PreencheListaSetores", error);
@@ -6198,13 +6208,14 @@ $("#btnInserirRequisitante").click(function (e)
             Alerta.Erro("Atenção", "O Ramal do Requisitante é obrigatório");
             return;
         }
-        var setores = document.getElementById("ddtSetorRequisitante").ej2_instances[0];
-        if (setores.value.toString() === "")
+        var kendoSetorReqVal = $('#ddtSetorRequisitante').data('kendoDropDownTree');
+        var setorReqArr = kendoSetorReqVal ? kendoSetorReqVal.value() : [];
+        if (!setorReqArr || setorReqArr.length === 0)
         {
             Alerta.Erro("Atenção", "O Setor do Requisitante é obrigatório");
             return;
         }
-        var setorSolicitanteId = setores.value.toString();
+        var setorSolicitanteId = setorReqArr[0].toString();
         var objRequisitante = JSON.stringify({
             Nome: $("#txtNome").val(),
             Ponto: $("#txtPonto").val(),
@@ -6421,52 +6432,63 @@ var data = [{
     value: "V"
 }];
 
-let rteDescricao = document.getElementById("rteDescricao").ej2_instances[0];
+// KENDO: Paste handler migrado de Syncfusion ej2_instances para Kendo Editor
+// O evento paste é capturado no body do iframe do Kendo Editor
+(function setupEditorPasteHandler() {
+    try {
+        // Aguardar inicialização do editor (pode demorar por estar dentro de modal)
+        var pasteInterval = setInterval(function () {
+            try {
+                var editorInstance = $("#rteDescricao").data("kendoEditor");
+                if (editorInstance && editorInstance.body) {
+                    clearInterval(pasteInterval);
+                    $(editorInstance.body).on("paste", function (event) {
+                        try {
+                            var clipboardData = event.originalEvent.clipboardData;
 
-rteDescricao.addEventListener("paste", function (event)
-{
-    try
-    {
-        var clipboardData = event.clipboardData;
+                            if (clipboardData && clipboardData.items) {
+                                var items = clipboardData.items;
 
-        if (clipboardData && clipboardData.items)
-        {
-            var items = clipboardData.items;
+                                for (var i = 0; i < items.length; i++) {
+                                    var item = items[i];
 
-            for (var i = 0; i < items.length; i++)
-            {
-                var item = items[i];
+                                    if (item.type.indexOf("image") !== -1) {
+                                        var blob = item.getAsFile();
+                                        var reader = new FileReader();
 
-                if (item.type.indexOf("image") !== -1)
-                {
-                    var blob = item.getAsFile();
-                    var reader = new FileReader();
+                                        reader.onloadend = function () {
+                                            try {
+                                                var base64Image = reader.result.split(",")[1];
+                                                var pastedHtml = '<img src="data:image/png;base64,' + base64Image + '" />';
+                                                var editor = $("#rteDescricao").data("kendoEditor");
+                                                if (editor) {
+                                                    editor.exec("inserthtml", { value: pastedHtml });
+                                                }
+                                            } catch (error) {
+                                                Alerta.TratamentoErroComLinha("agendamento_viagem.js", "onloadend", error);
+                                            }
+                                        };
 
-                    reader.onloadend = function ()
-                    {
-                        try
-                        {
-                            var base64Image = reader.result.split(",")[1];
-
-                            var pastedHtml = `<img src="data:image/png;base64,${base64Image}" />`;
-
-                            editor.insertHtml(pastedHtml);
-                        } catch (error)
-                        {
-                            Alerta.TratamentoErroComLinha("agendamento_viagem.js", "onloadend", error);
+                                        reader.readAsDataURL(blob);
+                                        event.preventDefault();
+                                        break;
+                                    }
+                                }
+                            }
+                        } catch (error) {
+                            Alerta.TratamentoErroComLinha("agendamento_viagem.js", "kendoEditor:paste_callback", error);
                         }
-                    };
-
-                    reader.readAsDataURL(blob);
-                    break;
+                    });
                 }
-            }
-        }
-    } catch (error)
-    {
-        Alerta.TratamentoErroComLinha("agendamento_viagem.js", "addEventListener:paste_callback", error);
+            } catch (e) { /* editor ainda não existe, continuar tentando */ }
+        }, 500);
+
+        // Safety: parar de tentar após 30 segundos
+        setTimeout(function () { clearInterval(pasteInterval); }, 30000);
+    } catch (error) {
+        Alerta.TratamentoErroComLinha("agendamento_viagem.js", "setupEditorPasteHandler", error);
     }
-});
+})();
 
 async function validarDatas()
 {
@@ -6873,11 +6895,9 @@ function limparCamposModalViagens()
             rebuildLstPeriodos();
         }
 
-        var rteDescricao = getSyncfusionInstance("rteDescricao");
-        if (rteDescricao)
-        {
-            rteDescricao.value = "";
-            rteDescricao.dataBind && rteDescricao.dataBind();
+        // KENDO: rteDescricao — limpar via KendoEditorHelper (migrado de Syncfusion getSyncfusionInstance)
+        if (window.KendoEditorHelper) {
+            window.KendoEditorHelper.clear();
         }
 
         // lstRequisitanteEvento — Kendo ComboBox

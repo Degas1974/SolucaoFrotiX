@@ -105,7 +105,8 @@ function ExibeViagem(viagem) {
 
     // document.getElementById("txtRamalRequisitante").value = viagem.ramalRequisitante;
 
-    getComboEJ2("ddtSetor").value = [viagem.setorSolicitanteId];
+    var ddtSetorWidget = $("#ddtSetor").data("kendoDropDownTree");
+    if (ddtSetorWidget && viagem.setorSolicitanteId) ddtSetorWidget.value([viagem.setorSolicitanteId.toString()]);
 
 
     // rte.value = viagem.descricao;
@@ -214,22 +215,21 @@ function ExibeViagem(viagem) {
         });
 
 
-        var rte = getComboEJ2("rte");
-        rte.enabled = false; // To disable
+        // [KENDO] Desabilitar Kendo Editor
+        disableEditorUpsert();
         var cmbMotorista = $("#cmbMotorista").data("kendoComboBox");
         cmbMotorista.enable(false); // To disable
         var cmbVeiculo = $("#cmbVeiculo").data("kendoComboBox");
         cmbVeiculo.enable(false); // To disable
         var cmbRequisitante = $("#cmbRequisitante").data("kendoComboBox");
         cmbRequisitante.enable(false); // To disable
-        var ddtSetor = getComboEJ2("ddtSetor");
-        ddtSetor.enabled = false; // To disable
+        // [KENDO] Desabilitar DDT Setor
+        var ddtSetorW = $("#ddtSetor").data("kendoDropDownTree");
+        if (ddtSetorW) ddtSetorW.enable(false);
         var ddtCombustivelInicial = $("#ddlCombustivelInicial").data("kendoDropDownList");
         ddtCombustivelInicial.enable(false); // To disable
         var ddtCombustivelFinal = $("#ddlCombustivelFinal").data("kendoDropDownList");
         ddtCombustivelFinal.enable(false); // To disable
-        var ddtSetor = getComboEJ2("ddtSetor");
-        ddtSetor.enabled = false; // To disable
         $("#ddlFinalidade").data("kendoDropDownList").enable(false);
         $("#ddlEvento").data("kendoDropDownList").enable(false);
         var cmdRequisitante = document.getElementById("btnRequisitante");
@@ -274,10 +274,11 @@ function ExibeViagem(viagem) {
         show: false,
     }).on("show.bs.modal", function (event) {
     }).on("hide.bs.modal", function (event) {
-        var setores = getComboEJ2("ddtSetorRequisitanteEvento");
-        setores.value = "";
-        var requisitantes = getComboEJ2("lstRequisitanteEvento");
-        requisitantes.value = "";
+        // [KENDO] Limpar DDTs do modal de evento
+        var ddtSetorReqEv = $("#ddtSetorRequisitanteEvento").data("kendoDropDownTree");
+        if (ddtSetorReqEv) ddtSetorReqEv.value([]);
+        var ddtReqEvento = $("#lstRequisitanteEvento").data("kendoDropDownTree");
+        if (ddtReqEvento) ddtReqEvento.value([]);
         $("#txtNome").val('');
         $("#txtDescricao").val('');
         $("#txtDataInicial").val('');
@@ -295,8 +296,9 @@ function ExibeViagem(viagem) {
         show: false,
     }).on("show.bs.modal", function (event) {
     }).on("hide.bs.modal", function (event) {
-        var setores = getComboEJ2("ddtSetorRequisitante");
-    setores.value = "";
+        // [KENDO] Limpar DDT Setor Requisitante
+        var ddtSetorReq = $("#ddtSetorRequisitante").data("kendoDropDownTree");
+        if (ddtSetorReq) ddtSetorReq.value([]);
         $("#txtPonto").val('');
         $("#txtNome").val('');
         $("#txtRamal").val('');
@@ -313,8 +315,9 @@ function ExibeViagem(viagem) {
         show: false,
     }).on("show.bs.modal", function (event) {
     }).on("hide.bs.modal", function (event) {
-        var setores = getComboEJ2("ddtSetorPai");
-        setores.value = "";
+        // [KENDO] Limpar DDT Setor Pai
+        var ddtSetorPai = $("#ddtSetorPai").data("kendoDropDownTree");
+        if (ddtSetorPai) ddtSetorPai.value([]);
         $("#txtSigla").val('');
         $("#txtNomeSetor").val('');
         $("#txtRamalSetor").val('');
@@ -813,14 +816,15 @@ function ExibeViagem(viagem) {
 
                 console.log(SetorList);
 
-                getComboEJ2("ddtSetor").fields.dataSource = SetorList;
+                // [KENDO] Recarregar DDT com SetorList
+                KendoDDTHelper.setFlatDataSource("#ddtSetor", SetorList, "SetorSolicitanteId", "SetorPaiId", "Nome");
 
             }
         })
 
-        getComboEJ2("ddtSetor").refresh();
+        // [KENDO] Selecionar setor no DDT (refresh já feito em setFlatDataSource)
         var strSetor = String(SetorSolicitanteId);
-        getComboEJ2("ddtSetor").value = [strSetor];
+        KendoDDTHelper.setValue("#ddtSetor", [strSetor]);
     }
 
     //Escolheu um Requisitante
@@ -841,7 +845,7 @@ function ExibeViagem(viagem) {
             datatype: "json",
             data: { id: requisitanteid },
             success: function (res) {
-                getComboEJ2("ddtSetor").value = [res.data];
+                KendoDDTHelper.setValue("#ddtSetor", [res.data.toString()]);
             }
         })
 
@@ -865,13 +869,14 @@ function ExibeViagem(viagem) {
 //Escolheu um Requisitante
 function RequisitanteEventoValueChange() {
 
-    var ddTreeObj = getComboEJ2("lstRequisitanteEvento");
+    // [KENDO] Obter valor do DDT lstRequisitanteEvento
+    var reqEvVal = KendoDDTHelper.getValue("#lstRequisitanteEvento");
 
-    if (ddTreeObj.value === null) {
+    if (!reqEvVal) {
         return;
     }
 
-    var requisitanteid = String(ddTreeObj.value);
+    var requisitanteid = String(reqEvVal);
 
     //Pega Setor Padrão do Requisitante
     $.ajax({
@@ -880,7 +885,7 @@ function RequisitanteEventoValueChange() {
         datatype: "json",
         data: { id: requisitanteid },
         success: function (res) {
-            getComboEJ2("ddtSetorRequisitanteEvento").value = [res.data];
+            KendoDDTHelper.setValue("#ddtSetorRequisitanteEvento", [res.data.toString()]);
         }
     })
 
@@ -1075,8 +1080,9 @@ function RequisitanteEventoValueChange() {
             return
         };
 
-        var setores = getComboEJ2("ddtSetorRequisitanteEvento");
-        if ((setores.value === null)) {
+        // [KENDO] Validar DDT Setor Requisitante Evento
+        var setorReqEvVal = KendoDDTHelper.getValue("#ddtSetorRequisitanteEvento");
+        if (!setorReqEvVal) {
             swal({
                 title: 'Atenção',
                 text: "O Setor do Requisitante é obrigatório!",
@@ -1089,10 +1095,11 @@ function RequisitanteEventoValueChange() {
             });
             return
         };
-        var setorSolicitanteId = setores.value.toString();
+        var setorSolicitanteId = setorReqEvVal.toString();
 
-        var requisitantes = getComboEJ2("lstRequisitanteEvento");
-        if ((requisitantes.value === null)) {
+        // [KENDO] Validar DDT Requisitante Evento
+        var reqEvVal = KendoDDTHelper.getValue("#lstRequisitanteEvento");
+        if (!reqEvVal) {
             swal({
                 title: 'Atenção',
                 text: "O Requisitante é obrigatório!",
@@ -1105,7 +1112,7 @@ function RequisitanteEventoValueChange() {
             });
             return
         };
-        var requisitanteId = requisitantes.value.toString();
+        var requisitanteId = reqEvVal.toString();
 
         var objEvento = JSON.stringify({ "Nome": $('#txtNomeDoEvento').val(), "Descricao": $('#txtDescricaoEvento').val(), "SetorSolicitanteId": setorSolicitanteId, "RequisitanteId": requisitanteId, "QtdParticipantes": $('#txtQtdPessoas').val(), "DataInicial": moment(document.getElementById('txtDataInicialEvento').value).format("MM-DD-YYYY"), "DataFinal": moment(document.getElementById('txtDataFinalEvento').value).format("MM-DD-YYYY"), "Status": "1" });
 
@@ -1180,8 +1187,9 @@ function RequisitanteEventoValueChange() {
             return
         };
 
-        var setores = getComboEJ2("ddtSetorRequisitante");
-        if ((setores.value === null)) {
+        // [KENDO] Validar DDT Setor Requisitante
+        var setorReqVal = KendoDDTHelper.getValue("#ddtSetorRequisitante");
+        if (!setorReqVal) {
             swal({
                 title: 'Atenção',
                 text: "O Setor do Requisitante é obrigatório!",
@@ -1195,7 +1203,7 @@ function RequisitanteEventoValueChange() {
             return
         };
 
-        var setorSolicitanteId = setores.value.toString();
+        var setorSolicitanteId = setorReqVal.toString();
 
         var objRequisitante = JSON.stringify({ "Nome": $('#txtNome').val(), "Ponto": $('#txtPonto').val(), "Ramal": $('#txtRamal').val(), "Email": $('#txtEmail').val(), "SetorSolicitanteId": setorSolicitanteId })
 
@@ -1272,8 +1280,10 @@ function RequisitanteEventoValueChange() {
 
         setorPaiId = null;
 
-        if (getComboEJ2("ddtSetorPai").value !== '' && getComboEJ2("ddtSetorPai").value !== null) {
-            setorPaiId = getComboEJ2("ddtSetorPai").value.toString();
+        // [KENDO] Obter valor do DDT Setor Pai
+        var setorPaiVal = KendoDDTHelper.getValue("#ddtSetorPai");
+        if (setorPaiVal) {
+            setorPaiId = setorPaiVal.toString();
         }
 
         if ((setorPaiId === null)) {
@@ -1498,8 +1508,9 @@ function RequisitanteEventoValueChange() {
             return;
         }
 
-        var ddtSetor = getComboEJ2("ddtSetor");
-        if (ddtSetor.value === null) {
+        // [KENDO] Validar DDT Setor Solicitante
+        var setorVal = KendoDDTHelper.getValue("#ddtSetor");
+        if (!setorVal) {
             swal({
                 title: "Informação Ausente",
                 text: "O Setor Solicitante é obrigatório",

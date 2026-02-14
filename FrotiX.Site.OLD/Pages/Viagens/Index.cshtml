@@ -643,14 +643,6 @@
 			Alerta.TratamentoErroComLinha("Index.cshtml", "onCreate", error);
 		}
 	}
-
-	function onCreateDescricao() {
-		try {
-			defaultRTEDescricao = this;
-		} catch (error) {
-			Alerta.TratamentoErroComLinha("Index.cshtml", "onCreateDescricao", error);
-		}
-	}
 </script>
 
 @*=========================================================================
@@ -840,17 +832,7 @@
 								<i class="fa-duotone fa-gas-pump"></i>
 								Combustível Inicial
 							</label>
-							<ejs-dropdowntree id="ddtCombustivelInicial" 
-											  popupHeight="200px" 
-											  showClearButton="true" 
-											  class="form-control" 
-											  enabled="false">
-								<e-dropdowntree-fields dataSource="@ViewData["dataCombustivel"]" 
-													   value="Nivel" 
-													   text="Descricao" 
-													   imageURL="Imagem">
-								</e-dropdowntree-fields>
-							</ejs-dropdowntree>
+							<input id="ddtCombustivelInicial" style="width: 100%;" />
 						</div>
 					</div>
 
@@ -885,16 +867,7 @@
 								<i class="fa-duotone fa-gas-pump"></i>
 								Combustível Final <span class="text-danger">*</span>
 							</label>
-							<ejs-dropdowntree id="ddtCombustivelFinal" 
-											  popupHeight="200px" 
-											  showClearButton="true" 
-											  class="form-control">
-								<e-dropdowntree-fields dataSource="@ViewData["dataCombustivel"]" 
-													   value="Nivel" 
-													   text="Descricao" 
-													   imageURL="Imagem">
-								</e-dropdowntree-fields>
-							</ejs-dropdowntree>
+							<input id="ddtCombustivelFinal" style="width: 100%;" />
 						</div>
 					</div>
 
@@ -943,11 +916,9 @@
 								<i class="fa-duotone fa-align-left"></i>
 								Descrição / Observações
 							</label>
-							<ejs-richtexteditor id="rteDescricao" 
-												placeholder="Digite observações sobre a viagem..." 
-												height="150px"
-												created="onCreateDescricao">
-							</ejs-richtexteditor>
+							<textarea id="rteDescricao" name="rteDescricao"
+									  placeholder="Digite observações sobre a viagem..."
+									  style="width: 100%; height: 150px;"></textarea>
 						</div>
 					</div>
 
@@ -1295,6 +1266,26 @@
 				var dataMotorista = @Html.Raw(Json.Serialize(ViewData["lstMotorista"]));
 				var dataStatus = @Html.Raw(Json.Serialize(ViewData["lstStatus"]));
 				var dataEventos = @Html.Raw(Json.Serialize(ViewData["lstEventos"]));
+				var dataCombustivel = @Html.Raw(Json.Serialize(ViewData["dataCombustivel"]));
+
+				// [KENDO] Init DDT flat: ddtCombustivelInicial (disabled by default)
+				KendoDDTHelper.initFlat({
+					selector: '#ddtCombustivelInicial',
+					data: dataCombustivel,
+					textField: 'descricao',
+					valueField: 'nivel',
+					placeholder: 'Combustível Inicial',
+					enabled: false
+				});
+
+				// [KENDO] Init DDT flat: ddtCombustivelFinal
+				KendoDDTHelper.initFlat({
+					selector: '#ddtCombustivelFinal',
+					data: dataCombustivel,
+					textField: 'descricao',
+					valueField: 'nivel',
+					placeholder: 'Combustível Final'
+				});
 
 				$("#lstVeiculos").kendoComboBox({
 					dataSource: dataVeiculos || [],
@@ -1346,6 +1337,49 @@
 
 			} catch (error) {
 				Alerta.TratamentoErroComLinha("Index.cshtml", "kendoComboBox.init", error);
+			}
+		})();
+	</script>
+
+	<!-- 🎯 Kendo Editor: rteDescricao no modal Finalizar Viagem -->
+	<script>
+		(function () {
+			try {
+				// Inicializar Kendo Editor quando o modal abrir (elemento precisa estar visível)
+				$("#modalFinalizaViagem").on("shown.bs.modal", function () {
+					try {
+						var existingEditor = $("#rteDescricao").data("kendoEditor");
+						if (!existingEditor) {
+							$("#rteDescricao").kendoEditor({
+								tools: [
+									"bold", "italic", "underline", "strikethrough",
+									"separator",
+									"justifyLeft", "justifyCenter", "justifyRight", "justifyFull",
+									"separator",
+									"insertUnorderedList", "insertOrderedList",
+									"separator",
+									"indent", "outdent",
+									"separator",
+									"createLink", "unlink",
+									"separator",
+									"fontName", "fontSize",
+									"separator",
+									"foreColor", "backColor",
+									"separator",
+									"cleanFormatting",
+									"separator",
+									"viewHtml"
+								],
+								resizable: { content: true, toolbar: false }
+							});
+							console.log('[Index] ✅ Kendo Editor rteDescricao inicializado');
+						}
+					} catch (error) {
+						Alerta.TratamentoErroComLinha("Index.cshtml", "kendoEditor.init", error);
+					}
+				});
+			} catch (error) {
+				Alerta.TratamentoErroComLinha("Index.cshtml", "kendoEditor.setup", error);
 			}
 		})();
 	</script>

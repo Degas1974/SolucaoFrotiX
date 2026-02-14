@@ -409,6 +409,7 @@ window.getSyncfusionInstance = function (id)
 
         // Mapeamento de tipos de widget Kendo por ID (known controls)
         const kendoWidgetTypes = [
+            "kendoDropDownTree",
             "kendoDropDownList",
             "kendoComboBox",
             "kendoMultiSelect",

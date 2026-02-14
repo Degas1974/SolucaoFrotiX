@@ -930,12 +930,11 @@ $(document).ready(function ()
             $('#txtFile').val('').trigger('click');
         });
 
-        // Inicialização dos componentes Syncfusion
-        if (document.getElementById("ddtCombustivelInicial") &&
-            document.getElementById("ddtCombustivelInicial").ej2_instances)
-        {
-            document.getElementById("ddtCombustivelInicial").ej2_instances[0].showPopup();
-            document.getElementById("ddtCombustivelInicial").ej2_instances[0].hidePopup();
+        // KENDO: Inicialização dos componentes DropDownTree
+        var kendoDDTInicial = $('#ddtCombustivelInicial').data('kendoDropDownTree');
+        if (kendoDDTInicial) {
+            kendoDDTInicial.open();
+            kendoDDTInicial.close();
             console.log("Mostrei/Escondi Popup");
         }
     } catch (error)
@@ -1053,14 +1052,13 @@ $("#modalFinalizaViagem").on("shown.bs.modal", function (event)
         $("#txtHoraInicial").val(horaInicio).prop("disabled", true);
         $("#txtKmInicial").val(data.kmInicial).prop("disabled", true);
 
-        const combInicial = document.getElementById("ddtCombustivelInicial");
-        const combFinal = document.getElementById("ddtCombustivelFinal");
-        const rteDescricao = document.getElementById("rteDescricao");
+        // KENDO: DropDownTree - Combustível Inicial/Final
+        var kendoCombInicial = $('#ddtCombustivelInicial').data('kendoDropDownTree');
+        var kendoCombFinal = $('#ddtCombustivelFinal').data('kendoDropDownTree');
 
-        if (combInicial?.ej2_instances?.length)
-        {
-            combInicial.ej2_instances[0].value = [data.combustivelInicial];
-            combInicial.ej2_instances[0].enabled = false;
+        if (kendoCombInicial) {
+            kendoCombInicial.value([data.combustivelInicial]);
+            kendoCombInicial.enable(false);
         }
 
         $("#h3Titulo").html("Finalizar a Viagem - Ficha nº " + data.noFichaVistoria + " de " + data.nomeMotorista);
@@ -1094,15 +1092,16 @@ $("#modalFinalizaViagem").on("shown.bs.modal", function (event)
 
             $("#txtKmFinal").val(data.kmFinal).attr("readonly", true);
 
-            if (combFinal?.ej2_instances?.length)
-            {
-                combFinal.ej2_instances[0].value = [data.combustivelFinal];
-                combFinal.ej2_instances[0].enabled = false;
+            if (kendoCombFinal) {
+                kendoCombFinal.value([data.combustivelFinal]);
+                kendoCombFinal.enable(false);
             }
-            if (rteDescricao?.ej2_instances?.length)
-            {
-                rteDescricao.ej2_instances[0].value = data.descricao;
-                rteDescricao.ej2_instances[0].readonly = true;
+            // KENDO: rteDescricao — Kendo Editor API (migrado de Syncfusion ej2_instances)
+            var kendoEditor = $("#rteDescricao").data("kendoEditor");
+            if (kendoEditor) {
+                kendoEditor.value(data.descricao || "");
+                kendoEditor.body.contentEditable = false;
+                $("#rteDescricao").closest(".k-editor").addClass("k-disabled");
             }
 
             $("#chkStatusDocumento").prop("checked", data.documentoEntregue === true).prop("disabled", true);
@@ -1124,15 +1123,16 @@ $("#modalFinalizaViagem").on("shown.bs.modal", function (event)
 
             calcularDuracaoViagem();
 
-            if (combFinal?.ej2_instances?.length)
-            {
-                combFinal.ej2_instances[0].value = "";
-                combFinal.ej2_instances[0].enabled = true;
+            if (kendoCombFinal) {
+                kendoCombFinal.value([]);
+                kendoCombFinal.enable(true);
             }
-            if (rteDescricao?.ej2_instances?.length)
-            {
-                rteDescricao.ej2_instances[0].value = data.descricao || "";
-                rteDescricao.ej2_instances[0].readonly = false;
+            // KENDO: rteDescricao — Kendo Editor API (migrado de Syncfusion ej2_instances)
+            var kendoEditorEdit = $("#rteDescricao").data("kendoEditor");
+            if (kendoEditorEdit) {
+                kendoEditorEdit.value(data.descricao || "");
+                kendoEditorEdit.body.contentEditable = true;
+                $("#rteDescricao").closest(".k-editor").removeClass("k-disabled");
             }
 
             $("#chkStatusDocumento").prop("checked", true).attr("readonly", false);
@@ -1160,32 +1160,28 @@ $("#modalFinalizaViagem").on("hide.bs.modal", function ()
             .removeAttr("readonly");
         $("#txtDataFinal").attr("type", "date");
 
-        const combInicial = document.getElementById("ddtCombustivelInicial");
-        if (combInicial && combInicial.ej2_instances && combInicial.ej2_instances.length > 0)
-        {
-            combInicial.ej2_instances[0].value = "";
-            combInicial.ej2_instances[0].enabled = true;
+        // KENDO: Limpar DropDownTree Combustíveis no hide do modal
+        var kendoCombInicialReset = $('#ddtCombustivelInicial').data('kendoDropDownTree');
+        if (kendoCombInicialReset) {
+            kendoCombInicialReset.value([]);
+            kendoCombInicialReset.enable(true);
         }
 
-        const combFinal = document.getElementById("ddtCombustivelFinal");
-        if (combFinal && combFinal.ej2_instances && combFinal.ej2_instances.length > 0)
-        {
-            combFinal.ej2_instances[0].value = "";
-            combFinal.ej2_instances[0].enabled = true;
+        var kendoCombFinalReset = $('#ddtCombustivelFinal').data('kendoDropDownTree');
+        if (kendoCombFinalReset) {
+            kendoCombFinalReset.value([]);
+            kendoCombFinalReset.enable(true);
         }
 
-        const combKm = document.getElementById("txtKmPercorrido");
-        if (combKm && combKm.ej2_instances && combKm.ej2_instances.length > 0)
-        {
-            combKm.ej2_instances[0].value = "";
-            combKm.ej2_instances[0].enabled = true;
-        }
+        // txtKmPercorrido - reset simples (input text, não é DDT)
+        $("#txtKmPercorrido").val("").prop("disabled", false);
 
-        const rteDescricao = document.getElementById("rteDescricao");
-        if (rteDescricao && rteDescricao.ej2_instances && rteDescricao.ej2_instances.length > 0)
-        {
-            rteDescricao.ej2_instances[0].value = "";
-            rteDescricao.ej2_instances[0].readonly = false;
+        // KENDO: rteDescricao — Kendo Editor API (migrado de Syncfusion ej2_instances)
+        var kendoEditorReset = $("#rteDescricao").data("kendoEditor");
+        if (kendoEditorReset) {
+            kendoEditorReset.value("");
+            kendoEditorReset.body.contentEditable = true;
+            $("#rteDescricao").closest(".k-editor").removeClass("k-disabled");
         }
 
         document.getElementById("txtKmPercorrido").value = "";
@@ -2200,37 +2196,29 @@ $("#btnFinalizarViagem").click(async function (e)
             console.log("✅ Validação consolidada IA passou!");
         }
 
-        // VALIDAÇÃO 5: Nível de Combustível Final
+        // VALIDAÇÃO 5: Nível de Combustível Final (KENDO DropDownTree)
         console.log("🔵 [6/7] Verificando nível de combustível...");
-        var niveisElement = document.getElementById("ddtCombustivelFinal");
-        console.log("🔵 [6/7] Elemento ddtCombustivelFinal:", niveisElement);
+        var kendoCombFinalValidar = $('#ddtCombustivelFinal').data('kendoDropDownTree');
+        console.log("🔵 [6/7] Kendo DropDownTree ddtCombustivelFinal:", kendoCombFinalValidar);
 
-        if (!niveisElement)
+        if (!kendoCombFinalValidar)
         {
-            console.log("❌ ERRO CRÍTICO: Elemento ddtCombustivelFinal não encontrado no DOM!");
-            Alerta.Erro("Erro", "Componente de combustível não foi encontrado. Recarregue a página.");
-            return;
-        }
-
-        var niveis = niveisElement.ej2_instances?.[0];
-        console.log("🔵 [6/7] Instância Syncfusion niveis:", niveis);
-        console.log("🔵 [6/7] Valor do nível:", niveis?.value);
-
-        if (!niveis)
-        {
-            console.log("❌ ERRO CRÍTICO: Componente Syncfusion ddtCombustivelFinal não está inicializado!");
+            console.log("❌ ERRO CRÍTICO: Kendo DropDownTree ddtCombustivelFinal não está inicializado!");
             Alerta.Erro("Erro", "Componente de combustível não está inicializado. Recarregue a página.");
             return;
         }
 
-        if (niveis.value === null || niveis.value === undefined || niveis.value === "")
+        var niveisValue = kendoCombFinalValidar.value();
+        console.log("🔵 [6/7] Valor do nível (Kendo):", niveisValue);
+
+        if (!niveisValue || niveisValue.length === 0)
         {
             console.log("❌ Nível de combustível vazio - parando execução");
             Alerta.Erro("Atenção", "O nível final de combustível é obrigatório!");
             return;
         }
 
-        var nivelcombustivel = niveis.value.toString();
+        var nivelcombustivel = niveisValue[0].toString();
         console.log("🔵 [6/7] Nível de combustível validado:", nivelcombustivel);
 
         // ✅ VALIDAÇÃO 6: Ocorrências Múltiplas
@@ -2253,12 +2241,13 @@ $("#btnFinalizarViagem").click(async function (e)
         const cartaoAbastecimentoEntregue = $("#chkStatusCartaoAbastecimento").prop("checked") === true;
         const cartaoAbastecimentoDevolvido = !cartaoAbastecimentoEntregue;
 
-        var descricaoElement = document.getElementById("rteDescricao");
-        var descricao = descricaoElement?.ej2_instances?.[0];
+        // KENDO: rteDescricao — Kendo Editor API (migrado de Syncfusion ej2_instances)
+        var kendoEditorDesc = $("#rteDescricao").data("kendoEditor");
+        var descricaoValor = kendoEditorDesc ? kendoEditorDesc.value() : "";
 
-        if (!descricao)
+        if (!kendoEditorDesc)
         {
-            console.log("⚠️ Componente rteDescricao não inicializado, usando valor vazio");
+            console.log("⚠️ Kendo Editor rteDescricao não inicializado, usando valor vazio");
         }
 
         // ✅ Coletar ocorrências múltiplas (se houver)
@@ -2279,7 +2268,7 @@ $("#btnFinalizarViagem").click(async function (e)
             DocumentoDevolvido: documentoDevolvido,
             CartaoAbastecimentoEntregue: cartaoAbastecimentoEntregue,
             CartaoAbastecimentoDevolvido: cartaoAbastecimentoDevolvido,
-            Descricao: descricao?.value || "",
+            Descricao: descricaoValor || "",
             Ocorrencias: ocorrenciasParaEnviar  // ✅ NOVO: Lista de ocorrências
         };
 

@@ -926,17 +926,7 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label for="ddlPosicao">Posicionar abaixo de...</label>
-                                <ejs-dropdowntree id="ddlPosicao"
-                                                 placeholder="Selecione a posição na estrutura..."
-                                                 popupHeight="350px"
-                                                 showCheckBox="false"
-                                                 showClearButton="true"
-                                                 allowFiltering="true"
-                                                 filterType="Contains"
-                                                 ignoreCase="true"
-                                                 cssClass="e-outline"
-                                                 change="onPosicaoChange">
-                                </ejs-dropdowntree>
+                                <input id="ddlPosicao" style="width: 100%;" />
                                 <small class="form-text text-muted mt-1">
                                     O item será posicionado logo após o item selecionado
                                 </small>
@@ -970,17 +960,7 @@
                             <div class="form-group">
                                 <label for="ddlPagina">Selecione a Página do Sistema<span class="required-asterisk">*</span></label>
 
-                                <ejs-dropdowntree id="ddlPagina"
-                                                 placeholder="Busque ou selecione uma página..."
-                                                 popupHeight="400px"
-                                                 showCheckBox="false"
-                                                 showClearButton="true"
-                                                 allowFiltering="true"
-                                                 filterType="Contains"
-                                                 ignoreCase="true"
-                                                 cssClass="e-outline ddl-pagina-border"
-                                                 created="onPaginaDropdownCreated">
-                                </ejs-dropdowntree>
+                                <input id="ddlPagina" style="width: 100%;" />
 
                                 <small class="form-text text-muted mt-1">
                                     Ao selecionar uma página, a URL será preenchida automaticamente
@@ -999,19 +979,7 @@
                             <div class="form-group">
                                 <label for="ddlIcone">Selecione o Ícone (FontAwesome 7 Pro)<span class="required-asterisk">*</span></label>
 
-                                <!-- DropDownTree para seleção hierárquica -->
-                                <ejs-dropdowntree id="ddlIcone"
-                                                 placeholder="Busque ou selecione um ícone..."
-                                                 popupHeight="400px"
-                                                 showCheckBox="false"
-                                                 showClearButton="true"
-                                                 allowFiltering="true"
-                                                 filterType="Contains"
-                                                 ignoreCase="true"
-                                                 cssClass="e-outline ddl-icone-border"
-                                                 created="onIconeDropdownCreated"
-                                                 change="onIconeChange">
-                                </ejs-dropdowntree>
+                                <input id="ddlIcone" style="width: 100%;" />
 
                                 <!-- Campo bloqueado exibindo a classe CSS completa do ícone selecionado -->
                                 <small class="form-text text-muted mt-1">Classe CSS:</small>
@@ -1086,12 +1054,37 @@
     var treeDataOriginal = null;  // Estado original antes das alterações
     var alteracoesPendentes = false;  // Flag para indicar se há alterações não salvas
 
+    // [UI] Dados globais dos DropDownTrees (para buscas sem depender do widget)
+    window._gestaoIconeData = [];
+    window._gestaoPaginaData = [];
+
+    // [UI] Kendo DropDownTree – Posição na estrutura
+    $("#ddlPosicao").kendoDropDownTree({
+        placeholder: "Selecione a posição na estrutura...",
+        filter: "contains",
+        height: 350
+    });
+
+    // [UI] Kendo DropDownTree – Página do sistema
+    $("#ddlPagina").kendoDropDownTree({
+        placeholder: "Busque ou selecione uma página...",
+        filter: "contains",
+        height: 400
+    });
+
+    // [UI] Kendo DropDownTree – Ícone FontAwesome
+    $("#ddlIcone").kendoDropDownTree({
+        placeholder: "Busque ou selecione um ícone...",
+        filter: "contains",
+        height: 400,
+        change: onIconeChange
+    });
+
     // Helper para achar ícone no dataSource do DropDownTree
     function findIconById(iconId) {
         try {
-            var ddlIconeObj = document.getElementById('ddlIcone')?.ej2_instances?.[0];
-            if (!ddlIconeObj || !ddlIconeObj.fields || !ddlIconeObj.fields.dataSource) return null;
-            var ds = ddlIconeObj.fields.dataSource;
+            var ds = window._gestaoIconeData || [];
+            if (!ds || ds.length === 0) return null;
             for (var i = 0; i < ds.length; i++) {
                 var cat = ds[i];
                 if (cat.child && cat.child.length > 0) {
@@ -1111,82 +1104,13 @@
     var ultimoIconeSelecionado = null;
     var ultimaPaginaSelecionada = null;
 
-    // Callback APÓS o DropDownTree de ícones ser criado
+    // Callback APÓS o DropDownTree de ícones ser criado (Kendo DDT)
+    // NOTA: No Kendo, templates e eventos são configurados durante a inicialização.
+    // Esta função é chamada após carregarIconesFontAwesome() popular os dados e
+    // re-inicializar o widget com templates. Mantida para compatibilidade de chamada.
     function onIconeDropdownCreated() {
-        try {
-            var ddlIconeObj = document.getElementById('ddlIcone').ej2_instances[0];
-            if (ddlIconeObj) {
-                ddlIconeObj.itemTemplate = function(data) {
-                    if (data.isCategory) {
-                        return '<div style="font-weight: 600; padding: 4px 0; color: #3D5771;">' + data.text + '</div>';
-                    }
-                    // ✅ Garante que seja duotone e aplica cores padrão FrotiX
-                    var iconClass = data.id || '';
-                    if (iconClass && !iconClass.includes('fa-duotone')) {
-                        iconClass = iconClass.replace(/fa-(regular|solid|light)/g, 'fa-duotone');
-                    }
-                    return '<div style="display: flex; align-items: center; gap: 8px;">' +
-                           '<i class="' + iconClass + '" style="font-size: 16px; width: 20px; --fa-primary-color: #ff6b35; --fa-secondary-color: #6c757d;"></i>' +
-                           '<span style="color: #5f6b7a;">' + data.text + '</span>' +
-                           '</div>';
-                };
-
-                ddlIconeObj.valueTemplate = function(data) {
-                    if (!data || data.isCategory) return '';
-                    // ✅ Garante que seja duotone e aplica cores padrão FrotiX
-                    var iconClass = data.id || '';
-                    if (iconClass && !iconClass.includes('fa-duotone')) {
-                        iconClass = iconClass.replace(/fa-(regular|solid|light)/g, 'fa-duotone');
-                    }
-                    return '<div style="display: flex; align-items: center; gap: 8px;">' +
-                           '<i class="' + iconClass + '" style="font-size: 14px; width: 18px; --fa-primary-color: #ff6b35; --fa-secondary-color: #6c757d;"></i>' +
-                           '<span style="color: #5f6b7a;">' + data.text + '</span>' +
-                           '</div>';
-                };
-
-                // Eventos alinhados ao comportamento de páginas (aplica no primeiro clique)
-                ddlIconeObj.selecting = function(args) {
-                    if (args.nodeData && !args.nodeData.isCategory) {
-                        ultimoIconeSelecionado = args.nodeData.id;
-                        var txtIconClass = document.getElementById('txtIconClass');
-                        if (txtIconClass) {
-                            txtIconClass.value = args.nodeData.id;
-                        }
-                    }
-                };
-
-                ddlIconeObj.select = function(args) {
-                    console.log('=== SELECT ícone ===', args);
-                    if (args.nodeData && !args.nodeData.isCategory) {
-                        ultimoIconeSelecionado = args.nodeData.id;
-                        var txtIconClass = document.getElementById('txtIconClass');
-                        if (txtIconClass) {
-                            txtIconClass.value = args.nodeData.id;
-                        }
-                        // ✅ Define o valor e fecha o popup IMEDIATAMENTE
-                        ddlIconeObj.value = [args.nodeData.id];
-                        ddlIconeObj.dataBind();
-                        setTimeout(function() {
-                            ddlIconeObj.hidePopup();
-                            // ✅ Dispara change manualmente após fechar
-                            onIconeChange({ itemData: args.nodeData, value: [args.nodeData.id] });
-                            // ✅ Atualiza estado dos botões de ordenação
-                            atualizarEstadoBotoesOrdenacao();
-                        }, 50);
-                    }
-                };
-
-                ddlIconeObj.change = function(args) {
-                    onIconeChange(args);
-                };
-
-                ddlIconeObj.changeOnBlur = false;
-
-                console.log('Templates e eventos de ícone configurados');
-            }
-        } catch (error) {
-            console.error('Erro ao configurar template do DropDownTree:', error);
-        }
+        // Templates e eventos já foram configurados durante a re-inicialização em carregarIconesFontAwesome()
+        console.log('Templates e eventos de ícone configurados (Kendo DDT)');
     }
 
     // ========== FUNÇÕES DE CODIFICAÇÃO/DECODIFICAÇÃO HTML ==========
@@ -1357,19 +1281,20 @@
             
             extrairItensHierarquicos(treeData, 0);
             
-            // Popula o DropDownTree
-            var ddlPosicao = document.getElementById('ddlPosicao');
-            if (ddlPosicao && ddlPosicao.ej2_instances && ddlPosicao.ej2_instances[0]) {
-                var ddl = ddlPosicao.ej2_instances[0];
-                ddl.fields = {
-                    dataSource: itens,
-                    value: 'id',
-                    text: 'text',
-                    hasChildren: 'hasChildren'
-                };
-                ddl.dataBind();
-                console.log('✅ Dropdown de posição populado com', itens.length, 'itens');
+            // Popula o DropDownTree (Kendo DDT - destroy/reinit)
+            var ddlPosicaoWidget = $('#ddlPosicao').data('kendoDropDownTree');
+            if (ddlPosicaoWidget) {
+                ddlPosicaoWidget.destroy();
             }
+            $('#ddlPosicao').kendoDropDownTree({
+                dataSource: itens,
+                dataTextField: 'text',
+                dataValueField: 'id',
+                placeholder: 'Selecione a posição na estrutura...',
+                filter: 'contains',
+                height: 350
+            });
+            console.log('✅ Dropdown de posição populado com', itens.length, 'itens');
         } catch (erro) {
             Alerta.TratamentoErroComLinha("GestaoRecursosNavegacao.cshtml", "popularDropdownPosicao", erro);
         }
@@ -1618,13 +1543,12 @@
     // Monta HTML do <select> de páginas com ícones personalizados da treeData
     function montarSelectPaginasParaSwal(itemIdExcluir) {
         try {
-            var ddlPaginaObj = document.getElementById('ddlPagina');
-            if (!ddlPaginaObj || !ddlPaginaObj.ej2_instances || !ddlPaginaObj.ej2_instances[0]) {
+            var ddl = $('#ddlPagina').data('kendoDropDownTree');
+            if (!ddl) {
                 return '<p style="color:#ff6b35;">Erro ao carregar páginas</p>';
             }
             
-            var ddl = ddlPaginaObj.ej2_instances[0];
-            var dataSource = ddl.fields && ddl.fields.dataSource ? ddl.fields.dataSource : [];
+            var dataSource = window._gestaoPaginaData || [];
             
             if (!dataSource || dataSource.length === 0) {
                 return '<p style="color:#ff6b35; padding:20px; text-align:center;">⚠️ Nenhuma página disponível. Aguarde o carregamento das páginas do sistema.</p>';
@@ -3026,9 +2950,8 @@
             var iconClass = selectedItem.icon || 'fa-duotone fa-file';
             if (txtIconClass) txtIconClass.value = iconClass;
 
-            var ddlIconeObj = document.getElementById('ddlIcone');
-            if (ddlIconeObj && ddlIconeObj.ej2_instances && ddlIconeObj.ej2_instances[0]) {
-                var ddlIcone = ddlIconeObj.ej2_instances[0];
+            var ddlIcone = $('#ddlIcone').data('kendoDropDownTree');
+            if (ddlIcone) {
                 
                 // ✅ Converte fa-regular/fa-solid/fa-light para fa-duotone se necessário
                 var iconClassNormalizado = iconClass;
@@ -3042,13 +2965,12 @@
                 }
                 
                 // Limpa seleção anterior
-                ddlIcone.value = null;
-                ddlIcone.dataBind();
+                ddlIcone.value([]);
                 
                 // Define novo valor após um pequeno delay para garantir que o componente está pronto
                 setTimeout(function() {
-                    if (ddlIcone.fields && ddlIcone.fields.dataSource) {
-                        var dataSource = ddlIcone.fields.dataSource;
+                    var dataSource = window._gestaoIconeData || [];
+                    if (dataSource.length > 0) {
                         var iconEncontrado = null;
                         
                         // Busca em todas as categorias
@@ -3079,8 +3001,7 @@
                         }
                         
                         if (iconEncontrado) {
-                            ddlIcone.value = [iconEncontrado.id];
-                            ddlIcone.dataBind();
+                            ddlIcone.value([iconEncontrado.id]);
                             console.log('✅ DropDownTree de ícone atualizado para:', iconEncontrado.id);
                         } else {
                             console.warn('Ícone não encontrado no dataSource. Tentando:', iconClassNormalizado, 'ou', iconClass);
@@ -3095,14 +3016,13 @@
             console.log('URL do item (href):', href);
 
             if (href && href.endsWith('.html')) {
-                var ddlPaginaObj = document.getElementById('ddlPagina');
-                if (ddlPaginaObj && ddlPaginaObj.ej2_instances && ddlPaginaObj.ej2_instances[0]) {
-                    var ddlPagina = ddlPaginaObj.ej2_instances[0];
+                var ddlPagina = $('#ddlPagina').data('kendoDropDownTree');
+                if (ddlPagina) {
 
                     // Busca o item pela paginaRef no dataSource
                     var pageId = null;
-                    if (ddlPagina.fields && ddlPagina.fields.dataSource) {
-                        var dataSource = ddlPagina.fields.dataSource;
+                    var dataSource = window._gestaoPaginaData || [];
+                    if (dataSource.length > 0) {
                         console.log('Buscando página com paginaRef:', href);
 
                         // Itera todas as categorias (módulos)
@@ -3125,10 +3045,10 @@
 
                     if (pageId) {
                         // Limpa seleção anterior
-                        ddlPagina.value = null;
+                        ddlPagina.value([]);
                         // Define novo valor
                         setTimeout(function() {
-                            ddlPagina.value = [pageId];
+                            ddlPagina.value([pageId]);
                             console.log('✅ DropDownTree de página atualizado para:', pageId);
                         }, 100);
                     } else {
@@ -3245,20 +3165,49 @@
                 .then(result => {
                     console.log('Ícones FontAwesome carregados:', result);
                     if (result.success && result.data) {
-                        var ddlIconeObj = document.getElementById('ddlIcone').ej2_instances[0];
-                        if (ddlIconeObj) {
-                            // Configura os fields do DropDownTree
-                            ddlIconeObj.fields = {
-                                dataSource: result.data,
-                                value: 'id',
-                                text: 'text',
-                                parentValue: 'parentId',
-                                hasChildren: 'hasChild',
-                                child: 'child'
-                            };
-                            ddlIconeObj.dataBind();
-                            console.log('DropDownTree de ícones populado com', result.data.length, 'categorias');
-                        }
+                        // [DADOS] Armazena dados globalmente para buscas sem depender do widget
+                        window._gestaoIconeData = result.data;
+
+                        // [UI] Destroy widget existente e re-inicializa com dados + templates
+                        var existente = $('#ddlIcone').data('kendoDropDownTree');
+                        if (existente) existente.destroy();
+
+                        $('#ddlIcone').kendoDropDownTree({
+                            dataSource: result.data,
+                            dataTextField: 'text',
+                            dataValueField: 'id',
+                            placeholder: 'Busque ou selecione um ícone...',
+                            filter: 'contains',
+                            height: 400,
+                            template: function(data) {
+                                var item = data.item || data;
+                                if (item.isCategory) {
+                                    return '<div style="font-weight: 600; padding: 4px 0; color: #3D5771;">' + item.text + '</div>';
+                                }
+                                var iconCls = item.id || '';
+                                if (iconCls && !iconCls.includes('fa-duotone')) {
+                                    iconCls = iconCls.replace(/fa-(regular|solid|light)/g, 'fa-duotone');
+                                }
+                                return '<div style="display: flex; align-items: center; gap: 8px;">' +
+                                       '<i class="' + iconCls + '" style="font-size: 16px; width: 20px; --fa-primary-color: #ff6b35; --fa-secondary-color: #6c757d;"></i>' +
+                                       '<span style="color: #5f6b7a;">' + item.text + '</span>' +
+                                       '</div>';
+                            },
+                            valueTemplate: function(data) {
+                                var item = data.item || data;
+                                if (!item || item.isCategory) return '';
+                                var iconCls = item.id || '';
+                                if (iconCls && !iconCls.includes('fa-duotone')) {
+                                    iconCls = iconCls.replace(/fa-(regular|solid|light)/g, 'fa-duotone');
+                                }
+                                return '<div style="display: flex; align-items: center; gap: 8px;">' +
+                                       '<i class="' + iconCls + '" style="font-size: 14px; width: 18px; --fa-primary-color: #ff6b35; --fa-secondary-color: #6c757d;"></i>' +
+                                       '<span style="color: #5f6b7a;">' + item.text + '</span>' +
+                                       '</div>';
+                            },
+                            change: onIconeChange
+                        });
+                        console.log('DropDownTree de ícones populado com', result.data.length, 'categorias');
                     }
                 })
                 .catch(erro => {
@@ -3310,8 +3259,8 @@
 
             if (!itemData && args.value && args.value.length > 0) {
                 console.log('itemData undefined - buscando no dataSource...');
-                var ddlIconeObj = document.getElementById('ddlIcone').ej2_instances[0];
-                if (ddlIconeObj && ddlIconeObj.fields && ddlIconeObj.fields.dataSource) {
+                var iconeData = window._gestaoIconeData || [];
+                if (iconeData.length > 0) {
                     var iconId = args.value[0];
                     console.log('Buscando iconId:', iconId);
 
@@ -3360,19 +3309,42 @@
                 .then(result => {
                     console.log('Páginas carregadas:', result);
                     if (result.success && result.data) {
-                        var ddlPaginaObj = document.getElementById('ddlPagina').ej2_instances[0];
-                        if (ddlPaginaObj) {
-                            ddlPaginaObj.fields = {
-                                dataSource: result.data,
-                                value: 'id',
-                                text: 'text',
-                                parentValue: 'parentId',
-                                hasChildren: 'hasChild',
-                                child: 'child'
-                            };
-                            ddlPaginaObj.dataBind();
-                            console.log('DropDownTree de páginas populado com', result.data.length, 'módulos');
-                        }
+                        // [DADOS] Armazena dados globalmente para buscas sem depender do widget
+                        window._gestaoPaginaData = result.data;
+
+                        // [UI] Destroy widget existente e re-inicializa com dados + templates
+                        var existente = $('#ddlPagina').data('kendoDropDownTree');
+                        if (existente) existente.destroy();
+
+                        $('#ddlPagina').kendoDropDownTree({
+                            dataSource: result.data,
+                            dataTextField: 'text',
+                            dataValueField: 'id',
+                            placeholder: 'Busque ou selecione uma página...',
+                            filter: 'contains',
+                            height: 400,
+                            template: function(data) {
+                                var item = data.item || data;
+                                if (item.isCategory) {
+                                    return '<div style="font-weight: 600; padding: 4px 0; color: #3D5771;">' + item.text + '</div>';
+                                }
+                                return '<div style="display: flex; align-items: center; gap: 8px;">' +
+                                       '<i class="fa-duotone fa-file-lines" style="font-size: 16px; width: 20px; --fa-primary-color: #ff6b35; --fa-secondary-color: #6c757d;"></i>' +
+                                       '<span>' + item.text + '</span>' +
+                                       '</div>';
+                            },
+                            valueTemplate: function(data) {
+                                var item = data.item || data;
+                                if (!item || item.isCategory) return '';
+                                var displayText = item.displayText || item.text;
+                                return '<div style="display: flex; align-items: center; gap: 8px;">' +
+                                       '<i class="fa-duotone fa-file-lines" style="font-size: 14px; width: 18px; --fa-primary-color: #ff6b35; --fa-secondary-color: #6c757d;"></i>' +
+                                       '<span>' + displayText + '</span>' +
+                                       '</div>';
+                            },
+                            change: onPaginaChange
+                        });
+                        console.log('DropDownTree de páginas populado com', result.data.length, 'módulos');
                     }
                 })
                 .catch(erro => {
@@ -3383,131 +3355,11 @@
         }
     }
 
+    // Callback APÓS o DropDownTree de páginas ser criado (Kendo DDT)
+    // NOTA: No Kendo, templates e eventos são configurados durante a inicialização
+    // em carregarPaginasSistema(). Esta função é mantida para compatibilidade de chamada.
     function onPaginaDropdownCreated() {
-        try {
-            var ddlPaginaObj = document.getElementById('ddlPagina').ej2_instances[0];
-            if (ddlPaginaObj) {
-                ddlPaginaObj.itemTemplate = function(data) {
-                    if (data.isCategory) {
-                        return '<div style="font-weight: 600; padding: 4px 0; color: #3D5771;">' + data.text + '</div>';
-                    }
-                    return '<div style="display: flex; align-items: center; gap: 8px;">' +
-                           '<i class="fa-duotone fa-file-lines" style="font-size: 16px; width: 20px; --fa-primary-color: #ff6b35; --fa-secondary-color: #6c757d;"></i>' +
-                           '<span>' + data.text + '</span>' +
-                           '</div>';
-                };
-
-                ddlPaginaObj.valueTemplate = function(data) {
-                    if (!data || data.isCategory) return '';
-                    var displayText = data.displayText || data.text;
-                    return '<div style="display: flex; align-items: center; gap: 8px;">' +
-                           '<i class="fa-duotone fa-file-lines" style="font-size: 14px; width: 18px; --fa-primary-color: #ff6b35; --fa-secondary-color: #6c757d;"></i>' +
-                           '<span>' + displayText + '</span>' +
-                           '</div>';
-                };
-
-                // ✅ Evento SELECTING: dispara ANTES de confirmar seleção (mais confiável)
-                ddlPaginaObj.selecting = function(args) {
-                    console.log('=== SELECTING página (ANTES) ===', args);
-                    if (args.nodeData && !args.nodeData.isCategory) {
-                        // Armazena a seleção na variável global IMEDIATAMENTE
-                        ultimaPaginaSelecionada = {
-                            id: args.nodeData.id,
-                            paginaRef: args.nodeData.paginaRef
-                        };
-
-                        var txtHref = document.getElementById('txtHref');
-                        if (txtHref && args.nodeData.paginaRef) {
-                            txtHref.value = args.nodeData.paginaRef;
-                            console.log('✅ URL atualizada via SELECTING:', args.nodeData.paginaRef);
-                        }
-                    }
-                };
-
-                // ✅ Evento SELECT: dispara ao selecionar item
-                ddlPaginaObj.select = function(args) {
-                    console.log('=== SELECT página ===', args);
-                    if (args.nodeData && !args.nodeData.isCategory) {
-                        // Armazena a seleção na variável global
-                        ultimaPaginaSelecionada = {
-                            id: args.nodeData.id,
-                            paginaRef: args.nodeData.paginaRef
-                        };
-
-                        var txtHref = document.getElementById('txtHref');
-                        if (txtHref && args.nodeData.paginaRef) {
-                            txtHref.value = args.nodeData.paginaRef;
-                            console.log('✅ URL atualizada via SELECT:', args.nodeData.paginaRef);
-                        }
-
-                        // força valor e dispara change manual para refletir na primeira escolha
-                        ddlPaginaObj.value = [args.nodeData.id];
-                        onPaginaChange({ itemData: args.nodeData, value: [args.nodeData.id] });
-                        ddlPaginaObj.hidePopup();
-                    }
-                };
-
-                // ✅ Evento CHANGE: backup
-                ddlPaginaObj.change = function(args) {
-                    onPaginaChange(args);
-                };
-
-                // Não depende de blur para aplicar mudança
-                ddlPaginaObj.changeOnBlur = false;
-
-                // ✅ Evento CLOSE do popup: garante atualização ao fechar
-                ddlPaginaObj.close = function(args) {
-                    console.log('=== CLOSE página ===');
-
-                    var paginaRef = null;
-                    var pageId = null;
-
-                    // Tenta pegar o valor atual do componente
-                    var valor = ddlPaginaObj.value;
-                    if (valor && valor.length > 0) {
-                        pageId = valor[0];
-                        console.log('Valor do componente:', pageId);
-
-                        // Busca a paginaRef no dataSource
-                        if (ddlPaginaObj.fields && ddlPaginaObj.fields.dataSource) {
-                            var dataSource = ddlPaginaObj.fields.dataSource;
-                            for (var i = 0; i < dataSource.length; i++) {
-                                var modulo = dataSource[i];
-                                if (modulo.child && modulo.child.length > 0) {
-                                    for (var j = 0; j < modulo.child.length; j++) {
-                                        var page = modulo.child[j];
-                                        if (page.id === pageId && page.paginaRef) {
-                                            paginaRef = page.paginaRef;
-                                            break;
-                                        }
-                                    }
-                                }
-                                if (paginaRef) break;
-                            }
-                        }
-                    }
-
-                    // Se não encontrou, usa a última seleção armazenada
-                    if (!paginaRef && ultimaPaginaSelecionada) {
-                        paginaRef = ultimaPaginaSelecionada.paginaRef;
-                        console.log('Usando última página selecionada:', paginaRef);
-                    }
-
-                    // Atualiza o campo se tiver uma URL válida
-                    if (paginaRef) {
-                        var txtHref = document.getElementById('txtHref');
-                        if (txtHref) {
-                            txtHref.value = paginaRef;
-                            console.log('✅ URL atualizada via CLOSE:', paginaRef);
-                        }
-                    }
-                };
-
-                console.log('DropDownTree de páginas configurado');
-            }
-        } catch (error) {
-            console.error('Erro ao configurar DropDownTree de páginas:', error);
-        }
+        console.log('DropDownTree de páginas configurado (Kendo DDT)');
     }
 
     // ✅ EVENTO SELECT: Dispara AO CLICAR no item (não precisa clicar fora)
@@ -3551,13 +3403,13 @@
 
             if (!itemData && args.value && args.value.length > 0) {
                 console.log('itemData undefined - buscando no dataSource...');
-                var ddlPaginaObj = document.getElementById('ddlPagina').ej2_instances[0];
-                if (ddlPaginaObj && ddlPaginaObj.fields && ddlPaginaObj.fields.dataSource) {
+                var paginaData = window._gestaoPaginaData || [];
+                if (paginaData.length > 0) {
                     var pageId = args.value[0];
                     console.log('Buscando pageId:', pageId);
 
                     // Busca em todas as categorias
-                    var dataSource = ddlPaginaObj.fields.dataSource;
+                    var dataSource = paginaData;
                     for (var i = 0; i < dataSource.length; i++) {
                         var category = dataSource[i];
                         if (category.child && category.child.length > 0) {
@@ -3689,12 +3541,12 @@
                     }
                 }
             
-            // ✅ Obtém posição selecionada no dropdown
+            // ✅ Obtém posição selecionada no dropdown (Kendo DDT API)
             var posicaoSelecionada = null;
-            var ddlPosicaoObj = document.getElementById('ddlPosicao');
-            if (ddlPosicaoObj && ddlPosicaoObj.ej2_instances && ddlPosicaoObj.ej2_instances[0]) {
-                var ddlPosicao = ddlPosicaoObj.ej2_instances[0];
-                posicaoSelecionada = ddlPosicao.value && ddlPosicao.value.length > 0 ? ddlPosicao.value[0] : null;
+            var ddlPosicaoKendo = $('#ddlPosicao').data('kendoDropDownTree');
+            if (ddlPosicaoKendo) {
+                var posVal = ddlPosicaoKendo.value();
+                posicaoSelecionada = posVal && posVal.length > 0 ? posVal[0] : null;
             }
             console.log('[SALVAR] Posição selecionada:', posicaoSelecionada);
             
@@ -3890,8 +3742,8 @@
     function validarCamposObrigatorios() {
         var nome = document.getElementById('txtNome').value.trim();
         var nomeMenu = document.getElementById('txtNomeMenu').value.trim();
-        var pagina = document.getElementById('ddlPagina')?.ej2_instances?.[0]?.value;
-        var icone = document.getElementById('ddlIcone')?.ej2_instances?.[0]?.value;
+        var pagina = KendoDDTHelper.getValue('#ddlPagina');
+        var icone = KendoDDTHelper.getValue('#ddlIcone');
         
         return nome && nomeMenu && pagina && pagina.length > 0 && icone && icone.length > 0;
     }
@@ -4433,18 +4285,16 @@
             document.getElementById('txtIconClass').value = '';
             document.getElementById('selectedItemName').textContent = 'Nenhum item selecionado';
 
-            // Limpa DropDownTree de ícones
-            var ddlIconeObj = document.getElementById('ddlIcone').ej2_instances[0];
-            if (ddlIconeObj) {
-                ddlIconeObj.value = [];
-                ddlIconeObj.text = '';
-                ddlIconeObj.refresh();
+            // Limpa DropDownTree de ícones (Kendo DDT API)
+            var ddlIconeKendo = $('#ddlIcone').data('kendoDropDownTree');
+            if (ddlIconeKendo) {
+                ddlIconeKendo.value([]);
             }
 
-            // Limpa DropDownTree de páginas
-            var ddlPaginaObj = document.getElementById('ddlPagina').ej2_instances[0];
-            if (ddlPaginaObj) {
-                ddlPaginaObj.value = null;
+            // Limpa DropDownTree de páginas (Kendo DDT API)
+            var ddlPaginaKendo = $('#ddlPagina').data('kendoDropDownTree');
+            if (ddlPaginaKendo) {
+                ddlPaginaKendo.value([]);
             }
 
             // ✅ Limpa campo oculto parentId (dropdown foi removido)

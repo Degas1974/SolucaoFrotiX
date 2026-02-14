@@ -567,19 +567,20 @@ if (path == "/patrimonio/index" || path == "/patrimonio")
                     {
                         if (result && result.success && result.data)
                         {
-                            var ddtMarcaModelo = document.getElementById('ddtMarcaModelo');
-                            if (ddtMarcaModelo && ddtMarcaModelo.ej2_instances && ddtMarcaModelo.ej2_instances[0])
-                            {
-                                ddtMarcaModelo.ej2_instances[0].fields = {
-                                    dataSource: result.data,
-                                    text: 'text',
-                                    value: 'value',
-                                    parentValue: 'parentValue',
-                                    hasChildren: 'hasChildren'
-                                };
-                                ddtMarcaModelo.ej2_instances[0].dataBind();
-                                console.log("✅ Marca/Modelo carregado:", result.data.length, "itens");
+                            var ddtWidget = $('#ddtMarcaModelo').data('kendoDropDownTree');
+                            if (ddtWidget) {
+                                ddtWidget.destroy();
                             }
+                            $('#ddtMarcaModelo').kendoDropDownTree({
+                                placeholder: "Selecione Marca/Modelo",
+                                checkboxes: { checkChildren: true },
+                                autoClose: false,
+                                height: 350,
+                                dataSource: KendoDDTHelper.flatToTree(result.data, 'value', 'parentValue', 'text'),
+                                dataTextField: 'text',
+                                dataValueField: 'value'
+                            });
+                            console.log("✅ Marca/Modelo carregado:", result.data.length, "itens");
                         }
                     } catch (error)
                     {
@@ -609,19 +610,20 @@ if (path == "/patrimonio/index" || path == "/patrimonio")
                     {
                         if (result && result.success && result.data)
                         {
-                            var ddtSetorSecao = document.getElementById('ddtSetorSecao');
-                            if (ddtSetorSecao && ddtSetorSecao.ej2_instances && ddtSetorSecao.ej2_instances[0])
-                            {
-                                ddtSetorSecao.ej2_instances[0].fields = {
-                                    dataSource: result.data,
-                                    text: 'text',
-                                    value: 'value',
-                                    parentValue: 'parentValue',
-                                    hasChildren: 'hasChildren'
-                                };
-                                ddtSetorSecao.ej2_instances[0].dataBind();
-                                console.log("✅ Setor/Seção carregado:", result.data.length, "itens");
+                            var ddtWidget = $('#ddtSetorSecao').data('kendoDropDownTree');
+                            if (ddtWidget) {
+                                ddtWidget.destroy();
                             }
+                            $('#ddtSetorSecao').kendoDropDownTree({
+                                placeholder: "Selecione Setor/Seção",
+                                checkboxes: { checkChildren: true },
+                                autoClose: false,
+                                height: 350,
+                                dataSource: KendoDDTHelper.flatToTree(result.data, 'value', 'parentValue', 'text'),
+                                dataTextField: 'text',
+                                dataValueField: 'value'
+                            });
+                            console.log("✅ Setor/Seção carregado:", result.data.length, "itens");
                         }
                     } catch (error)
                     {
@@ -707,9 +709,10 @@ if (path == "/patrimonio/index" || path == "/patrimonio")
             // [LOGICA] Coletar valores de 3 filtros Syncfusion e montar query string
             // Fluxo: DropDownTree (marca/modelo) → DropDownTree (setor/seção) → ComboBox (situação)
             // Obter valores selecionados do DropDownTree Marca/Modelo
-            if (ddtMarcaModelo && ddtMarcaModelo.ej2_instances && ddtMarcaModelo.ej2_instances[0])
+            var ddtMarcaModeloWidget = $('#ddtMarcaModelo').data('kendoDropDownTree');
+            if (ddtMarcaModeloWidget)
             {
-                var valoresSelecionados = ddtMarcaModelo.ej2_instances[0].value;
+                var valoresSelecionados = ddtMarcaModeloWidget.value();
                 if (valoresSelecionados && valoresSelecionados.length > 0)
                 {
                     marcasModelos = valoresSelecionados;
@@ -717,9 +720,10 @@ if (path == "/patrimonio/index" || path == "/patrimonio")
             }
 
             // Obter valores selecionados do DropDownTree Setor/Seção
-            if (ddtSetorSecao && ddtSetorSecao.ej2_instances && ddtSetorSecao.ej2_instances[0])
+            var ddtSetorSecaoWidget = $('#ddtSetorSecao').data('kendoDropDownTree');
+            if (ddtSetorSecaoWidget)
             {
-                var valoresSelecionados = ddtSetorSecao.ej2_instances[0].value;
+                var valoresSelecionados = ddtSetorSecaoWidget.value();
                 if (valoresSelecionados && valoresSelecionados.length > 0)
                 {
                     setoresSecoes = valoresSelecionados;

@@ -1250,9 +1250,7 @@
                                 <div class="col-6 esconde-diveventos-dashboard">
                                     <div class="form-group">
                                         <label class="label font-weight-bold">Nome do Evento</label>
-                                        <ejs-dropdowntree id="lstEventoDashboard" placeholder="Selecione um Evento..." showCheckBox="false" allowMultiSelection="false" allowFiltering="true" filterType="Contains" filterBarPlaceholder="Procurar..." popupHeight="200px">
-                                            <e-dropdowntree-fields dataSource="@ViewData["lstEvento"]" value="EventoId" text="Evento"></e-dropdowntree-fields>
-                                        </ejs-dropdowntree>
+<input id="lstEventoDashboard" style="width: 100%;" />
                                     </div>
                                 </div>
                             </div>
@@ -1323,9 +1321,7 @@
                         </div>
                         <div class="col-5">
                             <label class="label font-weight-bold">Setor Solicitante</label>
-                            <ejs-dropdowntree id="lstSetorSolicitanteAlteradoDashboard" placeholder="Selecione um Setor" sortOrder="Ascending" showCheckBox="false" allowMultiSelection="false" allowFiltering="true" filterType="Contains" filterBarPlaceholder="Procurar...">
-                                <e-dropdowntree-fields dataSource="@ViewData["lstSetor"]" value="SetorSolicitanteId" text="Nome" parentValue="SetorPaiId" hasChildren="HasChild"></e-dropdowntree-fields>
-                            </ejs-dropdowntree>
+                            <input id="lstSetorSolicitanteAlteradoDashboard" style="width: 100%;" />
                         </div>
                     </div>
 
@@ -1366,6 +1362,25 @@
                 var dataMotorista = @Html.Raw(Json.Serialize(ViewData["lstMotorista"]));
                 var dataVeiculos = @Html.Raw(Json.Serialize(ViewData["lstVeiculos"]));
                 var dataRequisitante = @Html.Raw(Json.Serialize(ViewData["lstRequisitante"]));
+                var dataEvento = @Html.Raw(Json.Serialize(ViewData["lstEvento"]));
+                var dataSetor = @Html.Raw(Json.Serialize(ViewData["lstSetor"]));
+
+                // [KENDO] Init DDT flat: lstEventoDashboard (Evento)
+                KendoDDTHelper.initFlat({
+                    selector: '#lstEventoDashboard',
+                    data: dataEvento,
+                    textField: 'evento',
+                    valueField: 'eventoId',
+                    placeholder: 'Selecione um Evento...',
+                    enabled: false
+                });
+
+                // [KENDO] Init DDT hierarchical: lstSetorSolicitanteAlteradoDashboard (Setor)
+                KendoDDTHelper.initHierarchical({
+                    selector: '#lstSetorSolicitanteAlteradoDashboard',
+                    flatData: dataSetor,
+                    placeholder: 'Selecione um Setor'
+                });
 
                 // Finalidade
                 $("#lstFinalidadeAlteradaDashboard").kendoComboBox({

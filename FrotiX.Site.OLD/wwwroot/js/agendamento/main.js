@@ -1761,8 +1761,9 @@
             {
                 try
                 {
-                    var setoresInst = window.getSyncfusionInstance("ddtSetorRequisitante");
-                    if (setoresInst) { setoresInst.value = []; setoresInst.dataBind(); }
+                    // [KENDO] Limpar DDT Setor Requisitante
+                    var ddtSetorReqW = $("#ddtSetorRequisitante").data("kendoDropDownTree");
+                    if (ddtSetorReqW) ddtSetorReqW.value([]);
                     $("#txtPonto, #txtNome, #txtRamal, #txtEmail").val("");
                 } catch (error)
                 {
@@ -1859,8 +1860,9 @@
                     isAnimating = false;
                     try
                     {
-                        var setoresInst = window.getSyncfusionInstance("ddtSetorRequisitante");
-                        if (setoresInst) setoresInst.value = "";
+                        // [KENDO] Limpar DDT Setor Requisitante
+                        var ddtSetorReqW = $("#ddtSetorRequisitante").data("kendoDropDownTree");
+                        if (ddtSetorReqW) ddtSetorReqW.value([]);
                         $("#txtPonto, #txtNome, #txtRamal, #txtEmail").val("");
                     } catch (error)
                     {
@@ -1940,8 +1942,9 @@
                         return;
                     }
 
-                    var setoresInst2 = window.getSyncfusionInstance("ddtSetorRequisitante");
-                    if (!setoresInst2 || setoresInst2.value.toString() === "")
+                    // [KENDO] Validar DDT Setor Requisitante
+                    var setorReqVal = KendoDDTHelper.getValue("#ddtSetorRequisitante");
+                    if (!setorReqVal)
                     {
                         Alerta.Erro("Atenção", "O Setor do Requisitante é obrigatório");
                         return;
@@ -1952,7 +1955,7 @@
                         Ponto: $("#txtPonto").val(),
                         Ramal: $("#txtRamal").val(),
                         Email: $("#txtEmail").val(),
-                        SetorSolicitanteId: setoresInst2.value.toString()
+                        SetorSolicitanteId: setorReqVal.toString()
                     };
 
                     window.RequisitanteService.adicionar(objRequisitante).then(result =>
@@ -2038,15 +2041,18 @@
                         return;
                     }
 
-                    const setoresEvtInst = window.getSyncfusionInstance("ddtSetorEvento");
-                    if (!setoresEvtInst || setoresEvtInst.value === null)
+                    // [KENDO] Validar DDT Setor Evento (pode não existir na página)
+                    var setorEvtVal = KendoDDTHelper.getValue("#ddtSetorEvento");
+                    if (!setorEvtVal)
                     {
                         Alerta.Erro("Atenção", "O Setor do Requisitante é obrigatório");
                         return;
                     }
 
-                    const requisitanteEvtInst = window.getSyncfusionInstance("lstRequisitanteEvento");
-                    if (!requisitanteEvtInst || requisitanteEvtInst.value === null)
+                    // [KENDO] Validar lstRequisitanteEvento (ComboBox ou DDT)
+                    var reqEvtWidget = $("#lstRequisitanteEvento").data("kendoComboBox") || $("#lstRequisitanteEvento").data("kendoDropDownTree");
+                    var reqEvtVal = reqEvtWidget ? (typeof reqEvtWidget.value === "function" ? reqEvtWidget.value() : reqEvtWidget.value) : null;
+                    if (!reqEvtVal || (Array.isArray(reqEvtVal) && reqEvtVal.length === 0))
                     {
                         Alerta.Erro("Atenção", "O Requisitante é obrigatório");
                         return;
@@ -2055,8 +2061,8 @@
                     const objEvento = {
                         Nome: $("#txtNomeEvento").val(),
                         Descricao: $("#txtDescricaoEvento").val(),
-                        SetorSolicitanteId: (setoresEvtInst ? (Array.isArray(setoresEvtInst.value) ? setoresEvtInst.value[0] : setoresEvtInst.value) : "").toString(),
-                        RequisitanteId: (requisitanteEvtInst ? requisitanteEvtInst.value : "").toString(),
+                        SetorSolicitanteId: (setorEvtVal || "").toString(),
+                        RequisitanteId: (Array.isArray(reqEvtVal) ? reqEvtVal[0] : reqEvtVal || "").toString(),
                         QtdParticipantes: $("#txtQtdPessoas").val(),
                         DataInicial: moment($("#txtDataInicialEvento").val()).format("MM-DD-YYYY"),
                         DataFinal: moment($("#txtDataFinalEvento").val()).format("MM-DD-YYYY"),
@@ -2124,22 +2130,11 @@
             {
                 if (result.success)
                 {
-                    const ddtSetor = document.getElementById("ddtSetor");
-                    const ddtSetorReq = document.getElementById("ddtSetorRequisitante");
+                    // [KENDO] Recarregar DDT Setor com dados do servidor
+                    KendoDDTHelper.setFlatDataSource("#ddtSetor", result.data, "SetorSolicitanteId", "SetorPaiId", "Nome");
 
-                    var ddtSetorInst = window.getSyncfusionInstance("ddtSetor");
-                    if (ddtSetorInst)
-                    {
-                        ddtSetorInst.fields.dataSource = result.data;
-                        ddtSetorInst.refresh();
-                    }
-
-                    var ddtSetorReqInst = window.getSyncfusionInstance("ddtSetorRequisitante");
-                    if (ddtSetorReqInst)
-                    {
-                        ddtSetorReqInst.fields.dataSource = result.data;
-                        ddtSetorReqInst.refresh();
-                    }
+                    // [KENDO] Recarregar DDT Setor Requisitante com os mesmos dados
+                    KendoDDTHelper.setFlatDataSource("#ddtSetorRequisitante", result.data, "SetorSolicitanteId", "SetorPaiId", "Nome");
                 }
             });
 
@@ -2148,12 +2143,11 @@
             {
                 if (result.success)
                 {
-                    const lstEventos = document.getElementById("lstEventos");
-                    var lstEventosInst = window.getSyncfusionInstance("lstEventos");
-                    if (lstEventosInst)
+                    // [KENDO] Atualizar dataSource do ComboBox lstEventos
+                    var lstEventosWidget = $("#lstEventos").data("kendoComboBox");
+                    if (lstEventosWidget)
                     {
-                        lstEventosInst.fields.dataSource = result.data;
-                        lstEventosInst.refresh();
+                        lstEventosWidget.dataSource.data(result.data);
                     }
                 }
             });

@@ -4,8 +4,8 @@
  * 🎯 OBJETIVO     : Service completo para gerenciamento de Requisitantes (solicitantes
  *                   de viagens) do sistema FrotiX. Combina SERVICE LAYER (RequisitanteService
  *                   class com 2 métodos CRUD: adicionar POST, listar GET) e UI LAYER
- *                   completa (Bootstrap Modal para cadastro, validações de campos, Syncfusion
- *                   DropDownTree para setores). Total de 17 funções: 2 service methods +
+ *                   completa (Bootstrap Modal para cadastro, validações de campos, Kendo
+ *                   DropDownTree para setores via KendoDDTHelper). Total de 17 funções: 2 service methods +
  *                   15 UI functions (modal open/close, form validation, field sanitization,
  *                   AJAX save). IIFE wrapper com "use strict". Debug logging extensivo.
  * 📥 ENTRADAS     : adicionar(dados: {Nome, Ponto, Ramal, Email, SetorSolicitanteId}),
@@ -23,7 +23,7 @@
  *                   (salvarNovoRequisitante), criarErroAjax, Alerta.TratamentoErroComLinha,
  *                   Alerta.Alerta, Alerta.Warning, Alerta.Erro, AppToast.show, toastr,
  *                   bootstrap.Modal (show/hide/getInstance), Syncfusion DropDownTree
- *                   (new ej.dropdowns.DropDownTree, destroy, dataBind, value setter),
+ *                   (new ej.dropdowns.DropDownTree → migrado para Kendo DropDownTree via KendoDDTHelper),
  *                   Kendo ComboBox (getRequisitanteCombo, setDataSource, value), DOM
  *                   methods (getElementById, querySelector, addEventListener, classList,
  *                   cloneNode, replaceChild), Array methods (map, push, sort, some, slice),
@@ -33,7 +33,7 @@
  *                   (ajax-helper.js), Alerta (frotix-core.js), AppToast/toastr (toast
  *                   notifications), Bootstrap 5 Modal (bootstrap.Modal, data-bs-toggle,
  *                   shown.bs.modal event), Syncfusion EJ2 DropDownTree (ej.dropdowns.
- *                   DropDownTree, getSyncfusionInstance bridge), Kendo UI ComboBox (lstRequisitante,
+ *                   DropDownTree → Kendo DropDownTree via KendoDDTHelper), Kendo UI ComboBox (lstRequisitante,
  *                   getRequisitanteCombo function), DOM elements (#txtPonto, #txtNome,
  *                   #txtRamal, #txtEmail, #ddtSetorNovoRequisitante, #hiddenSetorId,
  *                   #lstSetorRequisitanteAgendamento, #lstSetorRequisitanteEvento,
@@ -487,8 +487,8 @@
  * - dataType: "json" para auto-parse response
  * - data: JSON.stringify para body serialization
  *
- * 🔌 VERSÃO: 1.2
- * 📌 ÚLTIMA ATUALIZAÇÃO: 01/02/2026
+ * 🔌 VERSÃO: 1.3
+ * 📌 ÚLTIMA ATUALIZAÇÃO: 13/02/2026 — Migração Syncfusion DDT → Kendo DropDownTree
  **************************************************************************************** */
 
 /* eslint-disable no-undef */
@@ -616,12 +616,14 @@
     {
         try
         {
-            // Tentar pegar dos controles já existentes (via bridge getSyncfusionInstance)
-            const ddtSetorAgendamento = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstSetorRequisitanteAgendamento") : null;
+            // [LOGICA] Tentar pegar dados de setores dos Kendo DropDownTree já inicializados
+            const ddtSetorAgendamento = $("#lstSetorRequisitanteAgendamento").data("kendoDropDownTree");
 
             if (ddtSetorAgendamento)
             {
-                const dados = ddtSetorAgendamento.fields?.dataSource;
+                const dados = ddtSetorAgendamento.dataSource && ddtSetorAgendamento.dataSource.data
+                    ? ddtSetorAgendamento.dataSource.data()
+                    : null;
                 if (dados && dados.length > 0)
                 {
                     window.SETORES_DATA = dados;
@@ -630,11 +632,13 @@
                 }
             }
 
-            // Tentar do lstSetorRequisitanteEvento (via bridge getSyncfusionInstance)
-            const ddtSetorEvento = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstSetorRequisitanteEvento") : null;
+            // [LOGICA] Fallback: tentar do lstSetorRequisitanteEvento
+            const ddtSetorEvento = $("#lstSetorRequisitanteEvento").data("kendoDropDownTree");
             if (ddtSetorEvento)
             {
-                const dados = ddtSetorEvento.fields?.dataSource;
+                const dados = ddtSetorEvento.dataSource && ddtSetorEvento.dataSource.data
+                    ? ddtSetorEvento.dataSource.data()
+                    : null;
                 if (dados && dados.length > 0)
                 {
                     window.SETORES_DATA = dados;
@@ -925,84 +929,50 @@
 
                 console.log(`📦 Dados de setores disponíveis: ${window.SETORES_DATA?.length || 0} itens`);
 
-                // Destruir instância antiga se existir (via bridge getSyncfusionInstance)
-                const ddtSetorInstanciaAntiga = window.getSyncfusionInstance ? window.getSyncfusionInstance("ddtSetorNovoRequisitante") : null;
-                if (ddtSetorInstanciaAntiga)
-                {
-                    console.log("🗑️ Destruindo instância antiga de ddtSetorNovoRequisitante...");
-                    try
-                    {
-                        ddtSetorInstanciaAntiga.destroy();
-                    }
-                    catch (error)
-                    {
-                        console.warn("⚠️ Erro ao destruir instância antiga:", error);
-                    }
-                }
+                // Destruir instância antiga se existir (Kendo DropDownTree)
+                KendoDDTHelper.destroy("#ddtSetorNovoRequisitante");
 
-                // Recriar o controle
-                console.log("🔧 Recriando ddtSetorNovoRequisitante...");
+                // Recriar o controle com Kendo DropDownTree
+                console.log("🔧 Recriando ddtSetorNovoRequisitante (Kendo)...");
 
                 try
                 {
-                    const novoDropdown = new ej.dropdowns.DropDownTree({
-                        fields: {
-                            dataSource: window.SETORES_DATA || [],
-                            value: 'SetorSolicitanteId',
-                            text: 'Nome',
-                            parentValue: 'SetorPaiId',
-                            hasChildren: 'HasChild'
-                        },
-                        allowFiltering: true,
-                        placeholder: 'Selecione o setor...',
-                        sortOrder: 'Ascending',
-                        showCheckBox: false,
-                        filterType: 'Contains',
-                        filterBarPlaceholder: 'Procurar...',
-                        popupHeight: '200px',
-                        popupWidth: '100%',
-
-                        // 🔥 EVENTOS CRÍTICOS PARA GARANTIR BOA EXPERIÊNCIA NO MODAL
-                        open: function(args) {
-                            console.log("🔓 DropDownTree ABERTO (popup)");
-                            // Garantir z-index correto do popup
-                            if (args && args.popup && args.popup.element) {
-                                args.popup.element.style.zIndex = '1060'; // Acima do modal (1055)
+                    KendoDDTHelper.initFlat({
+                        selector: "#ddtSetorNovoRequisitante",
+                        flatData: window.SETORES_DATA || [],
+                        idField: "SetorSolicitanteId",
+                        parentField: "SetorPaiId",
+                        textField: "Nome",
+                        placeholder: "Selecione o setor...",
+                        checkboxes: false,
+                        filtering: true,
+                        height: "200px",
+                        change: function(e) {
+                            // [UI] Atualizar hiddenSetorId com valor selecionado
+                            var hiddenSetorId = document.getElementById("hiddenSetorId");
+                            if (hiddenSetorId) {
+                                var val = KendoDDTHelper.getValue("#ddtSetorNovoRequisitante");
+                                hiddenSetorId.value = val || "";
                             }
-                        },
-
-                        select: function(args) {
-                            console.log("✅ Item SELECIONADO no DropDownTree:", args.nodeData?.text);
-                            // Prevenir propagação que pode disparar fechamento
-                            if (args.event) {
-                                args.event.stopPropagation();
-                            }
-                        },
-
-                        blur: function(args) {
-                            console.log("👁️ DropDownTree BLUR (perdeu foco)");
-                            // Não fechar accordion ao perder foco
-                        },
-
-                        close: function(args) {
-                            console.log("🔒 DropDownTree FECHADO (popup)");
-                            // Modal permanece aberto naturalmente - não precisa forçar reabertura
-                        },
-
-                        created: function() {
-                            console.log("✅ DropDownTree CREATED disparado");
-                        },
-
-                        dataBound: function() {
-                            console.log("✅ DropDownTree DATA BOUND disparado");
-                            console.log(`   Total de itens: ${this.treeData?.length || 0}`);
                         }
                     });
 
-                    novoDropdown.appendTo(ddtSetor);
+                    // [UI] Ajustar z-index do popup para ficar acima do modal
+                    var ddtWidget = KendoDDTHelper.getInstance("#ddtSetorNovoRequisitante");
+                    if (ddtWidget) {
+                        ddtWidget.bind("open", function(e) {
+                            console.log("🔓 DropDownTree ABERTO (popup)");
+                            // Kendo popup auto-ajusta z-index, mas forçar se necessário
+                            setTimeout(function() {
+                                var popup = $(".k-animation-container:visible").last();
+                                if (popup.length) {
+                                    popup.css("z-index", "1060");
+                                }
+                            }, 50);
+                        });
+                    }
 
-                    console.log(`✅ ddtSetorNovoRequisitante recriado - ${window.SETORES_DATA?.length || 0} itens carregados`);
-                    console.log("🔍 Instância criada:", novoDropdown);
+                    console.log(`✅ ddtSetorNovoRequisitante recriado (Kendo) - ${window.SETORES_DATA?.length || 0} itens carregados`);
                 }
                 catch (error)
                 {
@@ -1080,28 +1050,22 @@
 
             if (ddtSetor)
             {
-                // Obter instância via bridge getSyncfusionInstance
-                const dropdown = window.getSyncfusionInstance ? window.getSyncfusionInstance("ddtSetorNovoRequisitante") : null;
-                console.log("🔍 getSyncfusionInstance:", dropdown ? "existe" : "NÃO EXISTE");
+                // Obter instância Kendo DropDownTree
+                const dropdown = $("#ddtSetorNovoRequisitante").data("kendoDropDownTree");
+                console.log("🔍 kendoDropDownTree:", dropdown ? "existe" : "NÃO EXISTE");
 
                 if (dropdown)
                 {
-                    console.log(`🔍 DataSource: ${dropdown.fields?.dataSource?.length || 0} itens`);
-                    console.log("🔍 Campos configurados:", {
-                        value: dropdown.fields.value,
-                        text: dropdown.fields.text,
-                        parentValue: dropdown.fields.parentValue,
-                        hasChildren: dropdown.fields.hasChildren
-                    });
-                    console.log("🔍 Primeiros 3 itens:", dropdown.fields?.dataSource?.slice(0, 3));
-
-                    dropdown.value = null;
-                    dropdown.dataBind();
+                    dropdown.value([]);
                     console.log("✅ ddtSetorNovoRequisitante limpo");
                 } else
                 {
                     console.warn("⚠️ ddtSetorNovoRequisitante não está inicializado");
                 }
+
+                // Limpar também o hiddenSetorId
+                const hiddenSetorId = document.getElementById("hiddenSetorId");
+                if (hiddenSetorId) hiddenSetorId.value = "";
             }
 
             console.log("✅ Campos limpos");
@@ -1679,21 +1643,20 @@
                                 console.log("✅ Campo Ramal atualizado:", txtRamal.value.trim());
                             }
 
-                            // ===== ATUALIZAR SETOR (via bridge getSyncfusionInstance) =====
-                            const comboSetor = window.getSyncfusionInstance ? window.getSyncfusionInstance("lstSetorRequisitanteAgendamento") : null;
-                            if (comboSetor)
+                            // ===== ATUALIZAR SETOR (via Kendo DropDownTree) =====
+                            const ddtSetorAgendamento = $("#lstSetorRequisitanteAgendamento").data("kendoDropDownTree");
+                            if (ddtSetorAgendamento)
                             {
                                 console.log("🔍 Atualizando Setor:");
                                 console.log("  - setorValue (closure):", setorValue);
                                 console.log("  - Tipo:", typeof setorValue);
 
-                                // DropDownTree espera array como value
-                                comboSetor.value = [setorValue.toString()];
-                                comboSetor.dataBind();
+                                // Kendo DropDownTree .value() espera array
+                                ddtSetorAgendamento.value([setorValue.toString()]);
                                 console.log("✅ Campo Setor atualizado para:", setorValue);
                             } else
                             {
-                                console.error("❌ lstSetorRequisitanteAgendamento não encontrado ou não é Syncfusion");
+                                console.error("❌ lstSetorRequisitanteAgendamento Kendo DropDownTree não encontrado");
                             }
 
                             // ===== FECHAR MODAL =====
@@ -1855,56 +1818,33 @@
     {
         try
         {
-            console.log("🔧 Criando DropDownTree...");
+            console.log("🔧 Criando DropDownTree (Kendo)...");
 
-            // Destruir instância antiga se existir (via bridge getSyncfusionInstance)
-            const instanciaAntiga = (elemento.id && window.getSyncfusionInstance) ? window.getSyncfusionInstance(elemento.id) : null;
-            if (instanciaAntiga)
-            {
-                console.log("🗑️ Destruindo instância antiga...");
-                try
-                {
-                    instanciaAntiga.destroy();
-                }
-                catch (error)
-                {
-                    console.warn("⚠️ Erro ao destruir:", error);
-                }
-            }
+            // Destruir instância antiga se existir
+            KendoDDTHelper.destroy("#" + elemento.id);
 
-            // Criar nova instância
-            const dropdown = new ej.dropdowns.DropDownTree({
-                fields: {
-                    dataSource: window.SETORES_DATA || [],
-                    value: 'SetorSolicitanteId',
-                    text: 'Nome',
-                    parentValue: 'SetorPaiId',
-                    hasChildren: 'HasChild'
-                },
-                allowFiltering: true,
-                placeholder: 'Selecione o setor...',
-                sortOrder: 'Ascending',
-                showCheckBox: false,
-                filterType: 'Contains',
-                filterBarPlaceholder: 'Procurar...',
-                popupHeight: '200px',
-                popupWidth: '100%',
-                width: '100%',
-
-                created: function ()
-                {
-                    console.log("✅ DropDownTree CREATED");
-                },
-
-                dataBound: function ()
-                {
-                    console.log("✅ DropDownTree DATA BOUND");
-                    console.log(`   Itens carregados: ${this.treeData?.length || 0}`);
+            // Criar nova instância via KendoDDTHelper
+            KendoDDTHelper.initFlat({
+                selector: "#" + elemento.id,
+                flatData: window.SETORES_DATA || [],
+                idField: "SetorSolicitanteId",
+                parentField: "SetorPaiId",
+                textField: "Nome",
+                placeholder: "Selecione o setor...",
+                checkboxes: false,
+                filtering: true,
+                height: "200px",
+                change: function(e) {
+                    // [UI] Atualizar hiddenSetorId com valor selecionado
+                    var hiddenSetorId = document.getElementById("hiddenSetorId");
+                    if (hiddenSetorId) {
+                        var val = KendoDDTHelper.getValue("#" + elemento.id);
+                        hiddenSetorId.value = val || "";
+                    }
                 }
             });
 
-            dropdown.appendTo(elemento);
-            console.log(`✅ DropDownTree criado com sucesso - ${window.SETORES_DATA?.length || 0} itens`);
+            console.log(`✅ DropDownTree criado com sucesso (Kendo) - ${window.SETORES_DATA?.length || 0} itens`);
         }
         catch (error)
         {

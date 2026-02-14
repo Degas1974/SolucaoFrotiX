@@ -608,16 +608,7 @@
                                             <label class="ftx-label ftx-required">Setor Solicitante</label>
                                             <div class="d-flex align-items-center gap-2">
                                                 <div class="flex-grow-1">
-                                                    <ejs-dropdowntree id="ddtSetor" placeholder="Selecione um Setor"
-                                                        enabled="false" sortOrder="Ascending" showCheckBox="false"
-                                                        allowMultiSelection="false" allowFiltering="true"
-                                                        filterType="Contains" filterBarPlaceholder="Procurar..."
-                                                        ejs-for="@Model.ViagemObj.Viagem.SetorSolicitanteId">
-                                                        <e-dropdowntree-fields dataSource="@ViewData["dataSetor"]"
-                                                            value="SetorSolicitanteId" text="Nome"
-                                                            parentValue="SetorPaiId"
-                                                            hasChildren="HasChild"></e-dropdowntree-fields>
-                                                    </ejs-dropdowntree>
+                                                    <input id="ddtSetor" name="ViagemObj.Viagem.SetorSolicitanteId" style="width: 100%;" />
                                                 </div>
                                                 <a hidden class="btn btn-verde btn-sm text-white" id="btnSetor"
                                                     style="height: 38px; display: flex; align-items: center;"
@@ -1071,24 +1062,11 @@
                     <div class="row">
                         <div class="col-5 form-control-xs" style="margin: 10px; width: 200px;">
                             <label class="label font-weight-bold">Requisitante do Evento</label>
-                            <ejs-dropdowntree id="lstRequisitanteEvento" placeholder="Selecione um Requisitante"
-                                showCheckBox="false" allowMultiSelection="false" allowFiltering="true"
-                                filterType="Contains" filterBarPlaceholder="Procurar..." popupHeight="200px"
-                                change="RequisitanteEventoValueChange">
-                                <e-dropdowntree-fields dataSource="@ViewData["dataRequisitante"]" value="RequisitanteId"
-                                    text="Requisitante">
-                                </e-dropdowntree-fields>
-                            </ejs-dropdowntree>
+                            <input id="lstRequisitanteEvento" style="width: 100%;" />
                         </div>
                         <div class="col-5 form-control-xs" style="margin: 10px; width: 200px;">
                             <label class="label font-weight-bold">Setor do Requisitante</label>
-                            <ejs-dropdowntree id="ddtSetorRequisitanteEvento" placeholder="Selecione um Setor"
-                                sortOrder="Ascending" showCheckBox="false" allowMultiSelection="false"
-                                allowFiltering="true" filterType="Contains" filterBarPlaceholder="Procurar...">
-                                <e-dropdowntree-fields dataSource="@ViewData["dataSetor"]" value="SetorSolicitanteId"
-                                    text="Nome" parentValue="SetorPaiId" hasChildren="HasChild">
-                                </e-dropdowntree-fields>
-                            </ejs-dropdowntree>
+                            <input id="ddtSetorRequisitanteEvento" style="width: 100%;" />
                         </div>
                     </div>
                     <br /><br /><br />
@@ -1158,13 +1136,7 @@
                     <div class="form-row mb-4">
                         <div class="col-md-6">
                             <label for="ddtSetorRequisitante" class="font-weight-bold">Setor do Requisitante</label>
-                            <ejs-dropdowntree id="ddtSetorRequisitante" placeholder="Selecione um Setor"
-                                sortOrder="Ascending" showCheckBox="false" allowMultiSelection="false"
-                                allowFiltering="true" filterType="Contains" filterBarPlaceholder="Procurar...">
-                                <e-dropdowntree-fields dataSource="@ViewData["dataSetor"]" value="SetorSolicitanteId"
-                                    text="Nome" parentValue="SetorPaiId" hasChildren="HasChild">
-                                </e-dropdowntree-fields>
-                            </ejs-dropdowntree>
+                            <input id="ddtSetorRequisitante" style="width: 100%;" />
                         </div>
                     </div>
 
@@ -1228,13 +1200,7 @@
                     <div class="form-row mb-4">
                         <div class="col-md-6">
                             <label for="ddtSetorPai" class="font-weight-bold">Setor Pai (se houver)</label>
-                            <ejs-dropdowntree id="ddtSetorPai" placeholder="Selecione um Setor" sortOrder="Ascending"
-                                showCheckBox="false" allowMultiSelection="false" allowFiltering="true"
-                                filterType="Contains" filterBarPlaceholder="Procurar...">
-                                <e-dropdowntree-fields dataSource="@ViewData["dataSetor"]" value="SetorSolicitanteId"
-                                    text="Nome" parentValue="SetorPaiId" hasChildren="HasChild">
-                                </e-dropdowntree-fields>
-                            </ejs-dropdowntree>
+                            <input id="ddtSetorPai" style="width: 100%;" />
                         </div>
                     </div>
 
@@ -1898,6 +1864,66 @@
                         console.error('[Upsert] Erro ao inicializar Fuzzy Validator:', fuzzyError);
                     }
                 }, 300);
+
+                // ═══════════════════════════════════════════════════════════════
+                // INICIALIZAR KENDO DROPDOWNTREE (Setor/Requisitante hierárquico)
+                // ═══════════════════════════════════════════════════════════════
+                try {
+                    var dataSetor = @Html.Raw(Json.Serialize(ViewData["dataSetor"]));
+                    var setorSolicitanteId = "@(Model.ViagemObj?.Viagem?.SetorSolicitanteId?.ToString() ?? "")";
+
+                    // ddtSetor - Setor solicitante principal (desabilitado, preenchido via requisitante)
+                    KendoDDTHelper.initHierarchical({
+                        selector: "#ddtSetor",
+                        flatData: dataSetor,
+                        placeholder: "Selecione um Setor",
+                        value: setorSolicitanteId,
+                        enabled: false
+                    });
+
+                    // ddtSetorRequisitanteEvento - Setor no modal de evento
+                    KendoDDTHelper.initHierarchical({
+                        selector: "#ddtSetorRequisitanteEvento",
+                        flatData: dataSetor,
+                        placeholder: "Selecione um Setor"
+                    });
+
+                    // ddtSetorRequisitante - Setor no modal de requisitante
+                    KendoDDTHelper.initHierarchical({
+                        selector: "#ddtSetorRequisitante",
+                        flatData: dataSetor,
+                        placeholder: "Selecione um Setor"
+                    });
+
+                    // ddtSetorPai - Setor pai no modal de setor
+                    KendoDDTHelper.initHierarchical({
+                        selector: "#ddtSetorPai",
+                        flatData: dataSetor,
+                        placeholder: "Selecione um Setor"
+                    });
+
+                    // lstRequisitanteEvento - Requisitante no modal de evento (flat, sem hierarquia)
+                    KendoDDTHelper.initFlat({
+                        selector: "#lstRequisitanteEvento",
+                        data: context.dataRequisitante || [],
+                        textField: "requisitante",
+                        valueField: "requisitanteId",
+                        placeholder: "Selecione um Requisitante",
+                        change: function (e) {
+                            try {
+                                if (typeof RequisitanteEventoValueChange === "function") {
+                                    RequisitanteEventoValueChange(e);
+                                }
+                            } catch (err) {
+                                Alerta.TratamentoErroComLinha("Upsert.cshtml", "lstRequisitanteEvento.change", err);
+                            }
+                        }
+                    });
+
+                    console.log('[Upsert] ✅ Kendo DropDownTree (5 instâncias) inicializados');
+                } catch (ddtError) {
+                    console.error('[Upsert] Erro ao inicializar Kendo DropDownTree:', ddtError);
+                }
 
             } catch (error) {
                 Alerta.TratamentoErroComLinha("Upsert.cshtml", "initViagemUpsertContext", error);

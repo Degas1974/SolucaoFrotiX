@@ -3516,10 +3516,10 @@ function ExibeViagem(viagem)
             limparDetalhesEventoSelecionado();
         }
 
-        if (viagem.setorSolicitanteId)
-            getComboEJ2("ddtSetor").value = [
-                viagem.setorSolicitanteId,
-            ];
+        if (viagem.setorSolicitanteId) {
+            var ddtSetorWidget = $("#ddtSetor").data("kendoDropDownTree");
+            if (ddtSetorWidget) ddtSetorWidget.value([viagem.setorSolicitanteId.toString()]);
+        }
 
         if (viagem.combustivelInicial) {
             var ddlCombInicial = $("#ddlCombustivelInicial").data("kendoDropDownList");
@@ -3614,10 +3614,10 @@ function ExibeViagem(viagem)
                 Alerta.TratamentoErroComLinha("ViagemUpsert.js", "cmbMotorista.disable", error);
             }
 
-            // Syncfusion: ddtSetor
+            // Kendo: ddtSetor
             try {
-                const setorCtrl = getComboEJ2("ddtSetor");
-                if (setorCtrl) setorCtrl.enabled = false;
+                var ddtSetorWidget = $("#ddtSetor").data("kendoDropDownTree");
+                if (ddtSetorWidget) ddtSetorWidget.enable(false);
             } catch (error) {
                 Alerta.TratamentoErroComLinha("ViagemUpsert.js", "ddtSetor.disable", error);
             }
@@ -4032,9 +4032,8 @@ function BuscarSetoresPorMotorista(motoristaId)
             {
                 try
                 {
-                    const ddtSetor = getComboEJ2("ddtSetor");
-                    ddtSetor.dataSource = data;
-                    ddtSetor.refresh();
+                    // [LOGICA] Recarregar DDT com novos setores (Kendo)
+                    KendoDDTHelper.setFlatDataSource("#ddtSetor", data, "SetorSolicitanteId", "SetorPaiId", "Nome");
                 }
                 catch (error)
                 {
@@ -4246,8 +4245,8 @@ function PreencheListaSetores(SetorSolicitanteId)
                         }
                     });
 
-                    getComboEJ2("ddtSetor").fields.dataSource =
-                        SetorList;
+                    // [LOGICA] Recarregar DDT com SetorList (Kendo)
+                    KendoDDTHelper.setFlatDataSource("#ddtSetor", SetorList, "SetorSolicitanteId", "SetorPaiId", "Nome");
                 }
                 catch (error)
                 {
@@ -4260,9 +4259,9 @@ function PreencheListaSetores(SetorSolicitanteId)
             },
         });
 
-        getComboEJ2("ddtSetor").refresh();
+        // [LOGICA] Selecionar setor no DDT (Kendo) — refresh já feito em setFlatDataSource acima
         var strSetor = String(SetorSolicitanteId);
-        getComboEJ2("ddtSetor").value = [strSetor];
+        KendoDDTHelper.setValue("#ddtSetor", [strSetor]);
     }
     catch (error)
     {
@@ -4287,7 +4286,7 @@ function RequisitanteValueChange()
             {
                 try
                 {
-                    getComboEJ2("ddtSetor").value = [res.data];
+                    KendoDDTHelper.setValue("#ddtSetor", [res.data.toString()]);
                 }
                 catch (error)
                 {
@@ -4846,8 +4845,8 @@ $("#btnSubmit").click(async function (event)
             return;
         }
 
-        const setor = getComboEJ2("ddtSetor");
-        if (!setor.value)
+        var setorVal = KendoDDTHelper.getValue("#ddtSetor");
+        if (!setorVal)
         {
             Alerta.Erro("Informação Ausente", "O Setor Solicitante é obrigatório");
             return;

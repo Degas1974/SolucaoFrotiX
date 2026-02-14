@@ -136,9 +136,7 @@
                         <div id="ControlRegion">
                             <div class="form-control-xs" style="margin: 0 auto; width: 400px;">
                                 <label class="label font-weight-bold">Setor do Requisitante</label>
-                                <ejs-dropdowntree id="ddtSetorRequisitante" placeholder="Selecione um Setor" sortOrder="Ascending" showCheckBox="false" allowMultiSelection="false" allowFiltering="true" filterType="Contains" filterBarPlaceholder="Procurar...">
-                                    <e-dropdowntree-fields dataSource="@ViewData["dataSetor"]" value="SetorSolicitanteId" text="Nome" parentValue="SetorPaiId" hasChildren="HasChild"></e-dropdowntree-fields>
-                                </ejs-dropdowntree>
+                                <input id="ddtSetorRequisitante" style="width: 100%;" />
                             </div>
                         </div>
                     </div>
@@ -194,9 +192,7 @@
                         <div id="ControlRegion">
                             <div class="form-control-xs" style="margin: 0 auto; width: 400px;">
                                 <label class="label font-weight-bold">Setor Pai (se houver)</label>
-                                <ejs-dropdowntree id="ddtSetorPai" placeholder="Selecione um Setor" sortOrder="Ascending" showCheckBox="false" allowMultiSelection="false" allowFiltering="true" filterType="Contains" filterBarPlaceholder="Procurar...">
-                                    <e-dropdowntree-fields dataSource="@ViewData["dataSetor"]" value="SetorSolicitanteId" text="Nome" parentValue="SetorPaiId" hasChildren="HasChild"></e-dropdowntree-fields>
-                                </ejs-dropdowntree>
+                                <input id="ddtSetorPai" style="width: 100%;" />
                             </div>
                         </div>
                     </div>
@@ -215,23 +211,42 @@
 
 @section ScriptsBlock
 {
-
     <script type="text/javascript">
+        // Inicializar Kendo DropDownTree para Setor
+        (function () {
+            try {
+                var dataSetor = @Html.Raw(Json.Serialize(ViewData["dataSetor"]));
 
+                KendoDDTHelper.initHierarchical({
+                    selector: "#ddtSetorRequisitante",
+                    flatData: dataSetor,
+                    placeholder: "Selecione um Setor"
+                });
+
+                KendoDDTHelper.initHierarchical({
+                    selector: "#ddtSetorPai",
+                    flatData: dataSetor,
+                    placeholder: "Selecione um Setor"
+                });
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("PBI.cshtml", "kendoDDT.init", error);
+            }
+        })();
 
         window.onload = function () {
-            if ('@Model.ViagemObj.Viagem.CombustivelInicial' != null) {
-                var ddtCombustivelInicial = document.getElementById("ddtCombustivelInicial").ej2_instances[0];
-                ddtCombustivelInicial.value = '@Model.ViagemObj.Viagem.CombustivelInicial';
+            try {
+                if ('@Model.ViagemObj.Viagem.CombustivelInicial' != null) {
+                    var ddlCombInicial = $("#ddtCombustivelInicial").data("kendoDropDownList");
+                    if (ddlCombInicial) ddlCombInicial.value('@Model.ViagemObj.Viagem.CombustivelInicial');
+                }
+                if ('@Model.ViagemObj.Viagem.ViagemId' === '00000000-0000-0000-0000-000000000000') {
+                    document.getElementById("txtDataInicial").value = moment(Date()).format("YYYY-MM-DD");
+                    // document.getElementById("txtHoraInicial").value = moment(Date()).format("HH:mm");
+                }
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("PBI.cshtml", "onload", error);
             }
-
-            if ('@Model.ViagemObj.Viagem.ViagemId' === '00000000-0000-0000-0000-000000000000')
-            {
-                document.getElementById("txtDataInicial").value = moment(Date()).format("YYYY-MM-DD");
-                //document.getElementById("txtHoraInicial").value = moment(Date()).format("HH:mm");
-            }
-
-        }
+        };
 
 
         //Controla o Submit do formulário através de botões escondidos (permite a validação via javascript)
@@ -283,8 +298,8 @@
                 return;
             }
 
-            var lstFinalidade = document.getElementById("lstFinalidade").ej2_instances[0];
-            if (lstFinalidade.value === null) {
+            var ddlFinalidade = $("#lstFinalidade").data("kendoDropDownList");
+            if (!ddlFinalidade || !ddlFinalidade.value()) {
                 swal({
                     title: "Informação Ausente",
                     text: "A Finalidade é obrigatória",
@@ -312,8 +327,8 @@
                 return;
             }
 
-            var lstMotorista = document.getElementById("lstMotorista").ej2_instances[0];
-            if (lstMotorista.value === null) {
+            var cmbMotorista = $("#lstMotorista").data("kendoComboBox");
+            if (!cmbMotorista || !cmbMotorista.value()) {
                 swal({
                     title: "Informação Ausente",
                     text: "O Motorista é obrigatório",
@@ -327,8 +342,8 @@
                 return;
             }
 
-            var lstVeiculo = document.getElementById("lstVeiculo").ej2_instances[0];
-            if (lstVeiculo.value === null) {
+            var cmbVeiculo = $("#lstVeiculo").data("kendoComboBox");
+            if (!cmbVeiculo || !cmbVeiculo.value()) {
                 swal({
                     title: "Informação Ausente",
                     text: "O Veículo é obrigatório",
@@ -356,15 +371,15 @@
                 return;
             }
 
-            var ddtCombustivelInicial = document.getElementById("ddtCombustivelInicial").ej2_instances[0];
+            var ddlCombInicial = $("#ddtCombustivelInicial").data("kendoDropDownList");
 
-            console.log(ddtCombustivelInicial.value);
+            console.log(ddlCombInicial ? ddlCombInicial.value() : null);
 
-            if (ddtCombustivelInicial.value != "tanquevazio" && ddtCombustivelInicial.value != "tanqueumquarto" && ddtCombustivelInicial.value != "tanquemeiotanque" && ddtCombustivelInicial.value != "tanquetresquartos" && ddtCombustivelInicial.value != "tanquecheio") {
-                console.log("Compustível Inicial: " + ddtCombustivelInicial.value);
+            if (ddlCombInicial && ddlCombInicial.value() != "tanquevazio" && ddlCombInicial.value() != "tanqueumquarto" && ddlCombInicial.value() != "tanquemeiotanque" && ddlCombInicial.value() != "tanquetresquartos" && ddlCombInicial.value() != "tanquecheio") {
+                console.log("Compustível Inicial: " + ddlCombInicial.value());
             }
 
-            if (ddtCombustivelInicial.value === null) {
+            if (!ddlCombInicial || !ddlCombInicial.value()) {
                 swal({
                     title: "Informação Ausente",
                     text: "O Nível de Combustível Inicial é obrigatório",
@@ -378,8 +393,8 @@
                 return;
             }
 
-            var ddtRequisitante = document.getElementById("ddtRequisitante").ej2_instances[0];
-            if (ddtRequisitante.value === null) {
+            var cmbRequisitante = $("#ddtRequisitante").data("kendoComboBox");
+            if (!cmbRequisitante || !cmbRequisitante.value()) {
                 swal({
                     title: "Informação Ausente",
                     text: "O Requisitante é obrigatório",
@@ -407,8 +422,8 @@
                 return;
             }
 
-            var ddtSetor = document.getElementById("ddtSetor").ej2_instances[0];
-            if (ddtSetor.value === null) {
+            var setorVal = KendoDDTHelper.getValue("#ddtSetor");
+            if (!setorVal) {
                 swal({
                     title: "Informação Ausente",
                     text: "O Setor Solicitante é obrigatório",
@@ -446,22 +461,21 @@
                     node.disabled = true;
                 }
 
-                var rte = document.getElementById("rte").ej2_instances[0];
-                rte.enabled = false; // To disable
-                var lstMotorista = document.getElementById("lstMotorista").ej2_instances[0];
-                lstMotorista.enabled = false; // To disable
-                var lstVeiculo = document.getElementById("lstVeiculo").ej2_instances[0];
-                lstVeiculo.enabled = false; // To disable
-                var ddtRequisitante = document.getElementById("ddtRequisitante").ej2_instances[0];
-                ddtRequisitante.enabled = false; // To disable
-                var ddtSetor = document.getElementById("ddtSetor").ej2_instances[0];
-                ddtSetor.enabled = false; // To disable
-                var ddtCombustivelInicial = document.getElementById("ddtCombustivelInicial").ej2_instances[0];
-                ddtCombustivelInicial.enabled = false; // To disable
-                var ddtCombustivelFinal = document.getElementById("ddtCombustivelFinal").ej2_instances[0];
-                ddtCombustivelFinal.enabled = false; // To disable
-                var lstFinalidade = document.getElementById("lstFinalidade").ej2_instances[0];
-                lstFinalidade.enabled = false; // To disable
+                var rteEditor = $("#rte").data("kendoEditor");
+                if (rteEditor) { rteEditor.body.contentEditable = false; }
+                var cmbMot = $("#lstMotorista").data("kendoComboBox");
+                if (cmbMot) cmbMot.enable(false);
+                var cmbVeic = $("#lstVeiculo").data("kendoComboBox");
+                if (cmbVeic) cmbVeic.enable(false);
+                var cmbReq = $("#ddtRequisitante").data("kendoComboBox");
+                if (cmbReq) cmbReq.enable(false);
+                KendoDDTHelper.enable("#ddtSetor", false);
+                var ddlCombI = $("#ddtCombustivelInicial").data("kendoDropDownList");
+                if (ddlCombI) ddlCombI.enable(false);
+                var ddlCombF = $("#ddtCombustivelFinal").data("kendoDropDownList");
+                if (ddlCombF) ddlCombF.enable(false);
+                var ddlFin = $("#lstFinalidade").data("kendoDropDownList");
+                if (ddlFin) ddlFin.enable(false);
 
                 document.getElementById("divSubmit").style.display = 'none';
                 $("#btnSubmit").hide();
@@ -469,18 +483,18 @@
             }
 
 
-            //Atualiza Controles SYNCFUSION da Página
+            //Atualiza Controles Kendo da Página
             if ('@Model.ViagemObj.Viagem.CombustivelInicial' != null) {
 
-                var ddtCombustivelInicial = document.getElementById("ddtCombustivelInicial").ej2_instances[0];
-                ddtCombustivelInicial.value = ['@Model.ViagemObj.Viagem.CombustivelInicial'];
+                var ddlCI = $("#ddtCombustivelInicial").data("kendoDropDownList");
+                if (ddlCI) ddlCI.value('@Model.ViagemObj.Viagem.CombustivelInicial');
 
             }
 
             if ('@Model.ViagemObj.Viagem.CombustivelFinal' != null) {
 
-                var ddtCombustivelFinal = document.getElementById("ddtCombustivelFinal").ej2_instances[0];
-                ddtCombustivelFinal.value = ['@Model.ViagemObj.Viagem.CombustivelFinal'];
+                var ddlCF = $("#ddtCombustivelFinal").data("kendoDropDownList");
+                if (ddlCF) ddlCF.value('@Model.ViagemObj.Viagem.CombustivelFinal');
 
             }
 
@@ -820,19 +834,20 @@
 
 
         function toolbarClick(e) {
-            if (e.item.id == "rte_toolbar_Image") {
-                var element = document.getElementById('rte_upload')
-                element.ej2_instances[0].uploading = function upload(args) {
-                    args.currentRequest.setRequestHeader('XSRF-TOKEN', document.getElementsByName('__RequestVerificationToken')[0].value);
-                }
+            try {
+            // Kendo Editor não usa rte_upload/ej2_instances — upload via imageBrowser
+            // (mantido como stub para compatibilidade)
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("PBI.cshtml", "toolbarClick", error);
             }
         }
 
         $(document).ready(function () {
 
 
-            document.getElementById("ddtSetor").ej2_instances[0].value = ["@Model.ViagemObj.Viagem.SetorSolicitanteId"];
-            document.getElementById("ddtRequisitante").ej2_instances[0].value = ["@Model.ViagemObj.Viagem.RequisitanteId"];
+            KendoDDTHelper.setValue("#ddtSetor", "@Model.ViagemObj.Viagem.SetorSolicitanteId");
+            var cmbReqMain = $("#ddtRequisitante").data("kendoComboBox");
+            if (cmbReqMain) cmbReqMain.value("@Model.ViagemObj.Viagem.RequisitanteId");
 
             //Configura a Exibição do Modal de Requisitantes
             //==============================================
@@ -845,8 +860,7 @@
 
 
             }).on("hide.bs.modal", function (event) {
-                var setores = document.getElementById('ddtSetorRequisitante').ej2_instances[0];
-                setores.value = "";
+                KendoDDTHelper.setValue("#ddtSetorRequisitante", null);
                 $("#txtPonto").val('');
                 $("#txtNome").val('');
                 $("#txtRamal").val('');
@@ -864,8 +878,7 @@
 
 
             }).on("hide.bs.modal", function (event) {
-                var setores = document.getElementById('ddtSetorPai').ej2_instances[0];
-                setores.value = "";
+                KendoDDTHelper.setValue("#ddtSetorPai", null);
                 $("#txtSigla").val('');
                 $("#txtNomeSetor").val('');
                 $("#txtRamalSetor").val('');
@@ -880,205 +893,152 @@
 
         //Preenche Lista de Requisitantes Após Inserção de um novo
         function PreencheListaRequisitantes() {
+            try {
+                $.ajax({
+                    url: "/Viagens/Upsert?handler=AJAXPreencheListaRequisitantes",
+                    method: "GET",
+                    datatype: "json",
+                    success: function (res) {
+                        var RequisitanteList = res.data.map(function(item) {
+                            return { requisitanteId: item.requisitanteId, requisitante: item.requisitante };
+                        });
 
-            $.ajax({
-                url: "/Viagens/Upsert?handler=AJAXPreencheListaRequisitantes",
-                method: "GET",
-                datatype: "json",
-                success: function (res) {
-
-                    var requisitanteid = res.data[0].requisitanteId;
-                    var nomerequisitante = res.data[0].requisitante;
-
-                    let RequisitanteList = [{ "RequisitanteId": requisitanteid, "Requisitante": nomerequisitante }];
-
-                    for (var i = 1; i < res.data.length; ++i) {
-                        console.log(res.data[i].requisitanteId + res.data[i].requisitante);
-
-                        requisitanteid = res.data[i].requisitanteId;
-                        nomerequisitante = res.data[i].requisitante;
-
-                        let requisitante = { RequisitanteId: requisitanteid, Requisitante: nomerequisitante }
-                        RequisitanteList.push(requisitante);
-
+                        var cmbReq = $("#ddtRequisitante").data("kendoComboBox");
+                        if (cmbReq) {
+                            cmbReq.setDataSource(new kendo.data.DataSource({ data: RequisitanteList }));
+                        }
                     }
-
-                    console.log(RequisitanteList);
-
-                    document.getElementById("ddtRequisitante").ej2_instances[0].fields.dataSource = RequisitanteList;
-
-                }
-            })
-
-            document.getElementById("ddtRequisitante").ej2_instances[0].refresh();
+                });
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("PBI.cshtml", "PreencheListaRequisitantes", error);
+            }
         }
 
         //Preenche Lista de Setores Após Inserção de um novo
         function PreencheListaSetores() {
-
-            $.ajax({
-                url: "/Viagens/Upsert?handler=AJAXPreencheListaSetores",
-                method: "GET",
-                datatype: "json",
-                success: function (res) {
-
-
-                    var setorSolicitanteId = res.data[0].setorSolicitanteId;
-                    var setorPaiId = res.data[0].setorPaiId;
-                    var nome = res.data[0].nome;
-                    var hasChild = res.data[0].hasChild;
-
-                    let SetorList = [{ "SetorSolicitanteId": setorSolicitanteId, "SetorPaiId": setorPaiId, "Nome": nome, "HasChild": hasChild }];
-
-                    for (var i = 1; i < res.data.length; ++i) {
-                        console.log(res.data[i].requisitanteId + res.data[i].requisitante);
-
-                        setorSolicitanteId = res.data[i].setorSolicitanteId;
-                        setorPaiId = res.data[i].setorPaiId;
-                        nome = res.data[i].nome;
-                        hasChild = res.data[i].hasChild;
-
-                        let setor = { "SetorSolicitanteId": setorSolicitanteId, "SetorPaiId": setorPaiId, "Nome": nome, "HasChild": hasChild }
-                        SetorList.push(setor);
+            try {
+                $.ajax({
+                    url: "/Viagens/Upsert?handler=AJAXPreencheListaSetores",
+                    method: "GET",
+                    datatype: "json",
+                    success: function (res) {
+                        // Atualizar o DropDownTree principal com dados novos do servidor
+                        KendoDDTHelper.setDataSource("#ddtSetor", res.data);
+                        // Atualizar também os DDTs nos modais
+                        KendoDDTHelper.setDataSource("#ddtSetorRequisitante", res.data);
+                        KendoDDTHelper.setDataSource("#ddtSetorPai", res.data);
                     }
-
-                    console.log(SetorList);
-
-                    document.getElementById("ddtSetor").ej2_instances[0].fields.dataSource = SetorList;
-
-                }
-            })
-
-            document.getElementById("ddtSetor").ej2_instances[0].refresh();
+                });
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("PBI.cshtml", "PreencheListaSetores", error);
+            }
         }
 
         //Escolheu um Requisitante
         function RequisitanteValueChange() {
+            try {
+                var cmbReq = $("#ddtRequisitante").data("kendoComboBox");
+                if (!cmbReq || !cmbReq.value()) return;
 
-            var ddTreeObj = document.getElementById("ddtRequisitante").ej2_instances[0];
+                var requisitanteid = String(cmbReq.value());
 
-            if (ddTreeObj.value === null) {
-                return;
+                //Pega Setor Padrío do Requisitante
+                $.ajax({
+                    url: "/Viagens/Upsert?handler=PegaSetor",
+                    method: "GET",
+                    datatype: "json",
+                    data: { id: requisitanteid },
+                    success: function (res) {
+                        KendoDDTHelper.setValue("#ddtSetor", res.data);
+                    }
+                });
+
+                //Pega Ramal do Requisitante
+                $.ajax({
+                    url: "/Viagens/Upsert?handler=PegaRamal",
+                    method: "GET",
+                    datatype: "json",
+                    data: { id: requisitanteid },
+                    success: function (res) {
+                        var s = document.getElementById("txtRamalRequisitante");
+                        s.value = res.data;
+                    }
+                });
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("PBI.cshtml", "RequisitanteValueChange", error);
             }
-
-            var requisitanteid = String(ddTreeObj.value);
-
-            //Pega Setor Padrío do Requisitante
-            $.ajax({
-                url: "/Viagens/Upsert?handler=PegaSetor",
-                method: "GET",
-                datatype: "json",
-                data: { id: requisitanteid },
-                success: function (res) {
-                    document.getElementById("ddtSetor").ej2_instances[0].value = [res.data];
-                }
-            })
-
-            //Pega Ramal do Requisitante
-            $.ajax({
-                url: "/Viagens/Upsert?handler=PegaRamal",
-                method: "GET",
-                datatype: "json",
-                data: { id: requisitanteid },
-                success: function (res) {
-                    var ramal = res.data;
-                    var s = document.getElementById("txtRamalRequisitante");
-                    s.value = ramal;
-                }
-            })
         }
 
         //Escolheu um Motorista
         function MotoristaValueChange() {
+            try {
+                var cmbMot = $("#lstMotorista").data("kendoComboBox");
+                if (!cmbMot || !cmbMot.value()) return;
 
-            var ddTreeObj = document.getElementById("lstMotorista").ej2_instances[0];
+                var motoristaid = String(cmbMot.value());
 
-            console.log("Objeto Requisitante: " + ddTreeObj);
-
-            if (ddTreeObj.value === null) {
-                return;
-            }
-
-            var motoristaid = String(ddTreeObj.value);
-
-            //Verifica se Motorista está em alguma viagem
-            $.ajax({
-                url: "/Viagens/Upsert?handler=VerificaMotoristaViagem",
-                method: "GET",
-                datatype: "json",
-                data: { id: motoristaid },
-                success: function (res) {
-
-                    var viajando = res.data;
-
-                    console.log(viajando);
-
-                    if (viajando) {
-                        swal({
-                            title: "Motorista em Viagem",
-                            text: "Este motorista encontra-se em uma viagem não terminada!",
-                            icon: "warning",
-                            buttons: true,
-                            
-                            buttons: {
-                                ok: "Ok"
-                            }
-                        })
+                //Verifica se Motorista está em alguma viagem
+                $.ajax({
+                    url: "/Viagens/Upsert?handler=VerificaMotoristaViagem",
+                    method: "GET",
+                    datatype: "json",
+                    data: { id: motoristaid },
+                    success: function (res) {
+                        if (res.data) {
+                            swal({
+                                title: "Motorista em Viagem",
+                                text: "Este motorista encontra-se em uma viagem não terminada!",
+                                icon: "warning",
+                                buttons: { ok: "Ok" }
+                            });
+                        }
                     }
-                }
-            })
+                });
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("PBI.cshtml", "MotoristaValueChange", error);
+            }
         }
 
         //Escolheu um Veículo
         function VeiculoValueChange() {
+            try {
+                var cmbVeic = $("#lstVeiculo").data("kendoComboBox");
+                if (!cmbVeic || !cmbVeic.value()) return;
 
-            var ddTreeObj = document.getElementById("lstVeiculo").ej2_instances[0];
+                var veiculoid = String(cmbVeic.value());
 
-            console.log("Objeto Requisitante: " + ddTreeObj);
-
-            if (ddTreeObj.value === null) {
-                return;
-            }
-
-            var veiculoid = String(ddTreeObj.value);
-
-            //Verifica se o veículo está em alguma viagem
-            $.ajax({
-                url: "/Viagens/Upsert?handler=VerificaVeiculoViagem",
-                method: "GET",
-                datatype: "json",
-                data: { id: veiculoid },
-                success: function (res) {
-                    var viajando = res.data;
-                    console.log(viajando);
-                    if (viajando) {
-                        swal({
-                            title: "Veículo em Viagem",
-                            text: "Este veículo encontra-se em uma viagem não terminada!",
-                            icon: "warning",
-                            buttons: true,
-                            
-                            buttons: {
-                                ok: "Ok"
-                            }
-                        })
+                //Verifica se o veículo está em alguma viagem
+                $.ajax({
+                    url: "/Viagens/Upsert?handler=VerificaVeiculoViagem",
+                    method: "GET",
+                    datatype: "json",
+                    data: { id: veiculoid },
+                    success: function (res) {
+                        if (res.data) {
+                            swal({
+                                title: "Veículo em Viagem",
+                                text: "Este veículo encontra-se em uma viagem não terminada!",
+                                icon: "warning",
+                                buttons: { ok: "Ok" }
+                            });
+                        }
                     }
-                }
-            })
+                });
 
-            //Pega Km Atual do Veículo
-            $.ajax({
-                url: "/Viagens/Upsert?handler=PegaKmAtualVeiculo",
-                method: "GET",
-                datatype: "json",
-                data: { id: veiculoid },
-                success: function (res) {
-                    var km = res.data;
-                    var kmAtual = document.getElementById("txtKmAtual");
-                    kmAtual.value = km;
-                }
-            })
-
+                //Pega Km Atual do Veículo
+                $.ajax({
+                    url: "/Viagens/Upsert?handler=PegaKmAtualVeiculo",
+                    method: "GET",
+                    datatype: "json",
+                    data: { id: veiculoid },
+                    success: function (res) {
+                        var kmAtual = document.getElementById("txtKmAtual");
+                        kmAtual.value = res.data;
+                    }
+                });
+            } catch (error) {
+                Alerta.TratamentoErroComLinha("PBI.cshtml", "VeiculoValueChange", error);
+            }
         }
 
         function valueChange() {
@@ -1150,8 +1110,8 @@
                 return
             };
 
-            var setores = document.getElementById('ddtSetorRequisitante').ej2_instances[0];
-            if ((setores.value === null)) {
+            var setorVal = KendoDDTHelper.getValue("#ddtSetorRequisitante");
+            if (!setorVal) {
                 swal({
                     title: 'Atenção',
                     text: "O Setor do Requisitante é obrigatório!",
@@ -1165,7 +1125,7 @@
                 return
             };
 
-            var setorSolicitanteId = setores.value.toString();
+            var setorSolicitanteId = String(setorVal);
 
             var objRequisitante = JSON.stringify({ "Nome": $('#txtNome').val(), "Ponto": $('#txtPonto').val(), "Ramal": $('#txtRamal').val(), "Email": $('#txtEmail').val(), "SetorSolicitanteId": setorSolicitanteId })
 
@@ -1224,10 +1184,11 @@
                 return
             };
 
-            setorPaiId = null;
+            var setorPaiId = null;
+            var ddtPaiVal = KendoDDTHelper.getValue("#ddtSetorPai");
 
-            if (document.getElementById('ddtSetorPai').ej2_instances[0].value != '' && document.getElementById('ddtSetorPai').ej2_instances[0].value != null ) {
-                setorPaiId = document.getElementById('ddtSetorPai').ej2_instances[0].value.toString();
+            if (ddtPaiVal) {
+                setorPaiId = String(ddtPaiVal);
             }
 
             if ((setorPaiId === null)) {
@@ -1261,151 +1222,7 @@
         });
 
 
-        ej.base.L10n.load({
-            "pt-BR": {
-                "richtexteditor": {
-                    "alignments": "Alinhamentos",
-                    "justifyLeft": "Alinhar à Esquerda",
-                    "justifyCenter": "Centralizar",
-                    "justifyRight": "Alinhar à Direita",
-                    "justifyFull": "Justificar",
-                    "fontName": "Nome da Fonte",
-                    "fontSize": "Tamanho da Fonte",
-                    "fontColor": "Cor da Fonte",
-                    "backgroundColor": "Cor de Fundo",
-                    "bold": "Negrito",
-                    "italic": "Itálico",
-                    "underline": "Sublinhado",
-                    "strikethrough": "Tachado",
-                    "clearFormat": "Limpa Formatação",
-                    "clearAll": "Limpa Tudo",
-                    "cut": "Cortar",
-                    "copy": "Copiar",
-                    "paste": "Colar",
-                    "unorderedList": "Lista com Marcadores",
-                    "orderedList": "Lista Numerada",
-                    "indent": "Aumentar Identação",
-                    "outdent": "Diminuir Identação",
-                    "undo": "Desfazer",
-                    "redo": "Refazer",
-                    "superscript": "Sobrescrito",
-                    "subscript": "Subscrito",
-                    "createLink": "Inserir Link",
-                    "openLink": "Abrir Link",
-                    "editLink": "Editar Link",
-                    "removeLink": "Remover Link",
-                    "image": "Inserir Imagem",
-                    "replace": "Substituir",
-                    "align": "Alinhar",
-                    "caption": "Título da Imagem",
-                    "remove": "Remover",
-                    "insertLink": "Inserir Link",
-                    "display": "Exibir",
-                    "altText": "Texto Alternativo",
-                    "dimension": "Mudar Tamanho",
-                    "fullscreen": "Maximizar",
-                    "maximize": "Maximizar",
-                    "minimize": "Minimizar",
-                    "lowerCase": "Caixa Baixa",
-                    "upperCase": "Caixa Alta",
-                    "print": "Imprimir",
-                    "formats": "Formatos",
-                    "sourcecode": "Visualizar Código",
-                    "preview": "Exibir",
-                    "viewside": "ViewSide",
-                    "insertCode": "Inserir Código",
-                    "linkText": "Exibir Texto",
-                    "linkTooltipLabel": "Título",
-                    "linkWebUrl": "Endereço Web",
-                    "linkTitle": "Entre com um título",
-                    "linkurl": "http://exemplo.com",
-                    "linkOpenInNewWindow": "Abrir Link em Nova Janela",
-                    "linkHeader": "Inserir Link",
-                    "dialogInsert": "Inserir",
-                    "dialogCancel": "Cancelar",
-                    "dialogUpdate": "Atualizar",
-                    "imageHeader": "Inserir Imagem",
-                    "imageLinkHeader": "Você pode proporcionar um link da web",
-                    "mdimageLink": "Favor proporcionar uma URL para sua imagem",
-                    "imageUploadMessage": "Solte a imagem aqui ou busque para o upload",
-                    "imageDeviceUploadMessage": "Clique aqui para o upload",
-                    "imageAlternateText": "Texto Alternativo",
-                    "alternateHeader": "Texto Alternativo",
-                    "browse": "Procurar",
-                    "imageUrl": "http://exemplo.com/imagem.png",
-                    "imageCaption": "Título",
-                    "imageSizeHeader": "Tamanho da Imagem",
-                    "imageHeight": "Altura",
-                    "imageWidth": "Largura",
-                    "textPlaceholder": "Entre com um Texto",
-                    "inserttablebtn": "Inserir Tabela",
-                    "tabledialogHeader": "Inserir Tabela",
-                    "tableWidth": "Largura",
-                    "cellpadding": "Espaçamento de célula",
-                    "cellspacing": "Espaçamento de célula",
-                    "columns": "Número de colunas",
-                    "rows": "Número de linhas",
-                    "tableRows": "Linhas da Tabela",
-                    "tableColumns": "Colunas da Tabela",
-                    "tableCellHorizontalAlign": "Alinhamento Horizontal da Célular",
-                    "tableCellVerticalAlign": "Alinhamento Vertical da Célular",
-                    "createTable": "Criar Tabela",
-                    "removeTable": "Remover Tabela",
-                    "tableHeader": "Cabeçalho da Tabela",
-                    "tableRemove": "Remover Tabela",
-                    "tableCellBackground": "Fundo da Célula",
-                    "tableEditProperties": "Editar Propriedades da Tabela",
-                    "styles": "Estilos",
-                    "insertColumnLeft": "Inserir Coluna à Esquerda",
-                    "insertColumnRight": "Inserir Coluna à Direita",
-                    "deleteColumn": "Apagar Coluna",
-                    "insertRowBefore": "Inserir Linha Antes",
-                    "insertRowAfter": "Inserir Linha Depois",
-                    "deleteRow": "Apagar Linha",
-                    "tableEditHeader": "Edita Tabela",
-                    "TableHeadingText": "Cabeçãlho",
-                    "TableColText": "Col",
-                    "imageInsertLinkHeader": "Inserir Link",
-                    "editImageHeader": "Edita Imagem",
-                    "alignmentsDropDownLeft": "Alinhar à Esquerda",
-                    "alignmentsDropDownCenter": "Centralizar",
-                    "alignmentsDropDownRight": "Alinhar à Direita",
-                    "alignmentsDropDownJustify": "Justificar",
-                    "imageDisplayDropDownInline": "Inline",
-                    "imageDisplayDropDownBreak": "Break",
-                    "tableInsertRowDropDownBefore": "Inserir linha antes",
-                    "tableInsertRowDropDownAfter": "Inserir linha depois",
-                    "tableInsertRowDropDownDelete": "Apagar linha",
-                    "tableInsertColumnDropDownLeft": "Inserir coluna à esquerda",
-                    "tableInsertColumnDropDownRight": "Inserir coluna à direita",
-                    "tableInsertColumnDropDownDelete": "Apagar Coluna",
-                    "tableVerticalAlignDropDownTop": "Alinhar no Topo",
-                    "tableVerticalAlignDropDownMiddle": "Alinhar no Meio",
-                    "tableVerticalAlignDropDownBottom": "Alinhar no Fundo",
-                    "tableStylesDropDownDashedBorder": "Bordas Pontilhadas",
-                    "tableStylesDropDownAlternateRows": "Linhas Alternadas",
-                    "pasteFormat": "Colar Formato",
-                    "pasteFormatContent": "Escolha a ação de formatação",
-                    "plainText": "Texto Simples",
-                    "cleanFormat": "Limpar",
-                    "keepFormat": "Manter",
-                    "formatsDropDownParagraph": "Parágrafo",
-                    "formatsDropDownCode": "Código",
-                    "formatsDropDownQuotation": "Citação",
-                    "formatsDropDownHeading1": "Cabeçalho 1",
-                    "formatsDropDownHeading2": "Cabeçalho 2",
-                    "formatsDropDownHeading3": "Cabeçalho 3",
-                    "formatsDropDownHeading4": "Cabeçalho 4",
-                    "fontNameSegoeUI": "SegoeUI",
-                    "fontNameArial": "Arial",
-                    "fontNameGeorgia": "Georgia",
-                    "fontNameImpact": "Impact",
-                    "fontNameTahoma": "Tahoma",
-                    "fontNameTimesNewRoman": "Times New Roman",
-                    "fontNameVerdana": "Verdana"
-                }
-            }
-        })
+        // Syncfusion L10n.load removido — Kendo Editor usa localização própria via kendo-editor-upsert.js
 
 
         //Carrega a foto no controle e redimensiona o painel

@@ -97,22 +97,10 @@
 						<div class="col-12">
 							<div class="form-group row">
 								<div class="col-3">
-									<ejs-dropdowntree id="ddtMarcaModelo"
-													  placeholder="Selecione Marca/Modelo"
-													  showCheckBox="true"
-													  showClearButton="true"
-													  treeSettings="@(new Syncfusion.EJ2.DropDowns.DropDownTreeTreeSettings { AutoCheck = true })">
-										<e-dropdowntree-fields dataSource="new List<object>()" text="text" value="value" parentValue="parentValue" hasChildren="hasChildren"></e-dropdowntree-fields>
-									</ejs-dropdowntree>
+									<input id="ddtMarcaModelo" style="width: 100%;" />
 								</div>
 								<div class="col-3">
-									<ejs-dropdowntree id="ddtSetorSecao"
-													  placeholder="Selecione Setor/Seção"
-													  showCheckBox="true"
-													  showClearButton="true"
-													  treeSettings="@(new Syncfusion.EJ2.DropDowns.DropDownTreeTreeSettings { AutoCheck = true })">
-										<e-dropdowntree-fields dataSource="new List<object>()" text="text" value="value" parentValue="parentValue" hasChildren="hasChildren"></e-dropdowntree-fields>
-									</ejs-dropdowntree>
+									<input id="ddtSetorSecao" style="width: 100%;" />
 								</div>
 								<div class="col-3">
 											<input id="cmbSituacao" style="width: 100%;" />
@@ -171,6 +159,7 @@
 	<script>
 		(function () {
 			try {
+				// [UI] Kendo ComboBox - Situação
 				$("#cmbSituacao").kendoComboBox({
 					dataTextField: "text",
 					dataValueField: "value",
@@ -179,8 +168,24 @@
 					height: 250,
 					clearButton: true
 				});
+
+				// [UI] Kendo DropDownTree - Marca/Modelo (checkbox, dados carregados por patrimonio.js)
+				$("#ddtMarcaModelo").kendoDropDownTree({
+					placeholder: "Selecione Marca/Modelo",
+					checkboxes: { checkChildren: true },
+					autoClose: false,
+					height: 350
+				});
+
+				// [UI] Kendo DropDownTree - Setor/Seção (checkbox, dados carregados por patrimonio.js)
+				$("#ddtSetorSecao").kendoDropDownTree({
+					placeholder: "Selecione Setor/Seção",
+					checkboxes: { checkChildren: true },
+					autoClose: false,
+					height: 350
+				});
 			} catch (error) {
-				Alerta.TratamentoErroComLinha("Index.cshtml", "kendoComboBox.init", error);
+				Alerta.TratamentoErroComLinha("Patrimonio/Index.cshtml", "kendoControls.init", error);
 			}
 		})();
 	</script>

@@ -1382,22 +1382,27 @@ function carregarSetoresSecoesMovimentacoes(elementId)
                     if (response.success && response.data)
                     {
                         var element = document.getElementById(elementId);
-                        if (element && element.ej2_instances && element.ej2_instances[0])
-                        {
-                            var ddtInstance = element.ej2_instances[0];
-                            ddtInstance.fields = {
+                        if (element) {
+                            var ddtWidget = $(element).data('kendoDropDownTree');
+                            if (ddtWidget) {
+                                ddtWidget.destroy();
+                            }
+                            $(element).kendoDropDownTree({
+                                placeholder: elementId === 'ddtSetorSecaoOrigem' ? "Selecione Setor/Seção Origem" : "Selecione Setor/Seção Destino",
+                                checkboxes: { checkChildren: true },
+                                autoClose: false,
+                                filter: "contains",
+                                height: 300,
                                 dataSource: response.data,
-                                value: 'id',
-                                text: 'name',
-                                child: 'children',
-                                hasChildren: 'hasChildren'
-                            };
-                            ddtInstance.dataBind();
+                                dataTextField: 'name',
+                                dataValueField: 'id',
+                                loadOnDemand: false
+                            });
                             console.log(`✅ ${elementId} carregado com ${response.data.length} setores`);
                         }
                         else
                         {
-                            console.error(`❌ Elemento ${elementId} ou instância EJ2 não encontrado`);
+                            console.error(`❌ Elemento ${elementId} não encontrado`);
                         }
                     }
                     else
@@ -1511,9 +1516,10 @@ function aplicarFiltrosMovimentacoes()
         }
 
         // Obter valores do DropDownTree Setor/Seção Origem
-        if (ddtSetorSecaoOrigem && ddtSetorSecaoOrigem.ej2_instances && ddtSetorSecaoOrigem.ej2_instances[0])
+        var ddtOrigemWidget = $('#ddtSetorSecaoOrigem').data('kendoDropDownTree');
+        if (ddtOrigemWidget)
         {
-            var valoresSelecionados = ddtSetorSecaoOrigem.ej2_instances[0].value;
+            var valoresSelecionados = ddtOrigemWidget.value();
             if (valoresSelecionados && valoresSelecionados.length > 0)
             {
                 setoresSecoesOrigem = valoresSelecionados;
@@ -1521,9 +1527,10 @@ function aplicarFiltrosMovimentacoes()
         }
 
         // Obter valores do DropDownTree Setor/Seção Destino
-        if (ddtSetorSecaoDestino && ddtSetorSecaoDestino.ej2_instances && ddtSetorSecaoDestino.ej2_instances[0])
+        var ddtDestinoWidget = $('#ddtSetorSecaoDestino').data('kendoDropDownTree');
+        if (ddtDestinoWidget)
         {
-            var valoresSelecionados = ddtSetorSecaoDestino.ej2_instances[0].value;
+            var valoresSelecionados = ddtDestinoWidget.value();
             if (valoresSelecionados && valoresSelecionados.length > 0)
             {
                 setoresSecoesDestino = valoresSelecionados;

@@ -353,24 +353,9 @@
 								<div class="row g-3 mt-2">
 									<div class="col-12 col-md-6">
 										<label class="ftx-label">Setor Solicitante</label>
-										<ejs-dropdowntree id="ddtree"
-														  placeholder="Selecione um Setor"
-														  sortOrder="Ascending"
-														  showCheckBox="false"
-														  allowMultiSelection="false"
-														  allowFiltering="true"
-														  filterType="Contains"
-														  filterBarPlaceholder="Procurar..."
-														  select="select"
-														  change="valueChange"
-														  ejs-for="@Model.RequisitanteObj.Requisitante.SetorSolicitanteId">
-											<e-dropdowntree-fields dataSource="@ViewData["dataSource"]"
-																   value="SetorSolicitanteId"
-																   text="Nome"
-																   parentValue="SetorPaiId"
-																   hasChildren="HasChild">
-											</e-dropdowntree-fields>
-										</ejs-dropdowntree>
+										<input id="ddtree"
+											   name="RequisitanteObj.Requisitante.SetorSolicitanteId"
+											   style="width: 100%;" />
 									</div>
 								</div>
 							</div>
@@ -430,36 +415,33 @@
 
 @section ScriptsBlock {
 	<script type="text/javascript">
-		$(document).ready(function () {
+		(function () {
 			try {
-				// Pré-seleciona o Setor, se existir
+				var dataSource = @Html.Raw(Json.Serialize(ViewData["dataSource"]));
 				var setorId = "@Model.RequisitanteObj.Requisitante.SetorSolicitanteId";
-				if (setorId && setorId !== "00000000-0000-0000-0000-000000000000") {
-					document.getElementById("ddtree").ej2_instances[0].value = [setorId];
-				}
-			} catch (error) {
-				Alerta.TratamentoErroComLinha("Upsert.cshtml", "document.ready", error);
-			}
-		});
-	</script>
 
-	<script type="text/javascript">
-		function valueChange() {
-			try {
-				var ddTreeObj = document.getElementById("ddtree").ej2_instances[0];
-				console.info(ddTreeObj.value + " - " + ddTreeObj.text);
+				KendoDDTHelper.initHierarchical({
+					selector: "#ddtree",
+					flatData: dataSource,
+					idField: "setorSolicitanteId",
+					parentField: "setorPaiId",
+					textField: "nome",
+					valueField: "setorSolicitanteId",
+					placeholder: "Selecione um Setor",
+					value: setorId,
+					change: function (e) {
+						try {
+							var ddt = KendoDDTHelper.getInstance("#ddtree");
+							if (ddt) {
+								console.info(ddt.value() + " - " + ddt.text());
+							}
+						} catch (error) {
+							Alerta.TratamentoErroComLinha("Upsert.cshtml", "valueChange", error);
+						}
+					}
+				});
 			} catch (error) {
-				Alerta.TratamentoErroComLinha("Upsert.cshtml", "valueChange", error);
+				Alerta.TratamentoErroComLinha("Upsert.cshtml", "kendoDDT.init", error);
 			}
-		}
-
-		function select(args) {
-			try {
-				var ddTreeObj = document.getElementById("ddtree").ej2_instances[0];
-				console.info(ddTreeObj.value + " - " + ddTreeObj.text);
-			} catch (error) {
-				Alerta.TratamentoErroComLinha("Upsert.cshtml", "select", error);
-			}
-		}
-	</script>
+		})();	</script>
 }

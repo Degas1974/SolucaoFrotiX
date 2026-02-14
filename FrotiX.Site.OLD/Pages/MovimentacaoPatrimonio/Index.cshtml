@@ -106,15 +106,7 @@
 										<i class="fa-duotone fa-building"></i>
 										Setor/Seção Origem
 									</label>
-									<ejs-dropdowntree id="ddtSetorSecaoOrigem"
-										placeholder="Selecione Setor/Seção Origem"
-										popupHeight="300px"
-										showCheckBox="true"
-										mode="Delimiter"
-										allowFiltering="true"
-										filterBarPlaceholder="Buscar..."
-										cssClass="e-outline">
-									</ejs-dropdowntree>
+									<input id="ddtSetorSecaoOrigem" style="width: 100%;" />
 								</div>
 
 								<div class="col-sm-3">
@@ -122,15 +114,7 @@
 										<i class="fa-duotone fa-building"></i>
 										Setor/Seção Destino
 									</label>
-									<ejs-dropdowntree id="ddtSetorSecaoDestino"
-										placeholder="Selecione Setor/Seção Destino"
-										popupHeight="300px"
-										showCheckBox="true"
-										mode="Delimiter"
-										allowFiltering="true"
-										filterBarPlaceholder="Buscar..."
-										cssClass="e-outline">
-									</ejs-dropdowntree>
+									<input id="ddtSetorSecaoDestino" style="width: 100%;" />
 								</div>
 
 								<div class="col-sm-3">
@@ -186,10 +170,29 @@
 	<script>
 	(function () {
 		try {
+			// [UI] Kendo ComboBox - Responsável
 			$("#cmbResponsavel").kendoComboBox({
 				placeholder: "Selecione o Responsável",
 				filter: "contains",
 				height: 200
+			});
+
+			// [UI] Kendo DropDownTree - Setor/Seção Origem (checkbox, dados carregados por movimentacaopatrimonio.js)
+			$("#ddtSetorSecaoOrigem").kendoDropDownTree({
+				placeholder: "Selecione Setor/Seção Origem",
+				checkboxes: { checkChildren: true },
+				autoClose: false,
+				filter: "contains",
+				height: 300
+			});
+
+			// [UI] Kendo DropDownTree - Setor/Seção Destino (checkbox, dados carregados por movimentacaopatrimonio.js)
+			$("#ddtSetorSecaoDestino").kendoDropDownTree({
+				placeholder: "Selecione Setor/Seção Destino",
+				checkboxes: { checkChildren: true },
+				autoClose: false,
+				filter: "contains",
+				height: 300
 			});
 		} catch (error) {
 			Alerta.TratamentoErroComLinha("MovimentacaoPatrimonio/Index.cshtml", "kendoControls.init", error);

@@ -138,17 +138,14 @@
 <script>
 	function FinalidadeChange(e) {
 		try {
-			var ddlFinalidade = $("#lstFinalidadeAlterada").data("kendoDropDownList");
-			var eventoDdt = document.getElementById('lstEvento');
-			var eventoDdtEj2 = eventoDdt && eventoDdt.ej2_instances ? eventoDdt.ej2_instances[0] : null;
-
-			if (ddlFinalidade && eventoDdtEj2) {
+	var ddlFinalidade = $("#lstFinalidadeAlterada").data("kendoDropDownList");
+			if (ddlFinalidade) {
 				if (ddlFinalidade.value() === 'Evento') {
-					eventoDdtEj2.enabled = true;
+					KendoDDTHelper.enable('#lstEvento', true);
 					$(".esconde-diveventos").show();
 				} else {
-					eventoDdtEj2.enabled = false;
-					eventoDdtEj2.value = null;
+					KendoDDTHelper.enable('#lstEvento', false);
+					KendoDDTHelper.setValue('#lstEvento', null);
 					$(".esconde-diveventos").hide();
 				}
 			}
@@ -251,9 +248,7 @@
 								<div class="col-6">
 									<div class="form-group">
 										<label class="label font-weight-bold">Nome do Evento</label>
-										<ejs-dropdowntree id="lstEvento" placeholder="Selecione um Evento..." showCheckBox="false" allowMultiSelection="false" allowFiltering="true" filterType="Contains" filterBarPlaceholder="Procurar..." popupHeight="200px">
-											<e-dropdowntree-fields dataSource="@ViewData["lstEvento"]" value="EventoId" text="Evento"></e-dropdowntree-fields>
-										</ejs-dropdowntree>
+<input id="lstEvento" style="width: 100%;" />
 									</div>
 								</div>
 							</div>
@@ -324,9 +319,7 @@
 						</div>
 						<div class="col-5">
 							<label class="label font-weight-bold">Setor Solicitante</label>
-							<ejs-dropdowntree id="lstSetorSolicitanteAlterado" placeholder="Selecione um Setor" sortOrder="Ascending" showCheckBox="false" allowMultiSelection="false" allowFiltering="true" filterType="Contains" filterBarPlaceholder="Procurar...">
-								<e-dropdowntree-fields dataSource="@ViewData["lstSetor"]" value="SetorSolicitanteId" text="Nome" parentValue="SetorPaiId" hasChildren="HasChild"></e-dropdowntree-fields>
-							</ejs-dropdowntree>
+<input id="lstSetorSolicitanteAlterado" style="width: 100%;" />
 						</div>
 					</div>
 
@@ -390,6 +383,25 @@
 			var dataMotorista = @Html.Raw(Json.Serialize(ViewData["lstMotorista"]));
 			var dataVeiculos = @Html.Raw(Json.Serialize(ViewData["lstVeiculos"]));
 			var dataRequisitante = @Html.Raw(Json.Serialize(ViewData["lstRequisitante"]));
+			var dataEvento = @Html.Raw(Json.Serialize(ViewData["lstEvento"]));
+			var dataSetor = @Html.Raw(Json.Serialize(ViewData["lstSetor"]));
+
+			// [KENDO] Init DDT flat: lstEvento (Evento)
+			KendoDDTHelper.initFlat({
+				selector: '#lstEvento',
+				data: dataEvento,
+				textField: 'evento',
+				valueField: 'eventoId',
+				placeholder: 'Selecione um Evento...',
+				enabled: false
+			});
+
+			// [KENDO] Init DDT hierarchical: lstSetorSolicitanteAlterado (Setor)
+			KendoDDTHelper.initHierarchical({
+				selector: '#lstSetorSolicitanteAlterado',
+				flatData: dataSetor,
+				placeholder: 'Selecione um Setor'
+			});
 
 			$("#lstFinalidadeAlterada").kendoDropDownList({
 				dataTextField: "descricao",
