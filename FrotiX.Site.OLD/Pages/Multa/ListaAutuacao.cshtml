@@ -849,9 +849,7 @@
 						<div class="col-12">
 							<div class="form-group">
 								<label class="label font-weight-bold">Observações a respeito da Multa</label>
-								<ejs-richtexteditor id="rte" toolbarClick="toolbarClick" locale="pt-BR" height="150px" created="onCreate">
-									<e-richtexteditor-insertimagesettings saveUrl="api/Viagem/SaveImage" path="./DadosEditaveis/ImagensViagens/"></e-richtexteditor-insertimagesettings>
-								</ejs-richtexteditor>
+								<textarea id="rte" name="rte" placeholder="Observações..." style="width: 100%; height: 150px;"></textarea>
 							</div>
 						</div>
 					</div>
@@ -990,76 +988,10 @@
 			}
 		})();
 
-		// Ajusta funcionamento do RTE no Modal
-		var defaultRTE;
 
-		function onCreate() {
-			try {
-				defaultRTE = this;
-			}
-			catch (error) {
-				Alerta.TratamentoErroComLinha("ListaAutuacao.cshtml", "onCreate", error);
-			}
-		}
-
-		// Necessário para upload com antiforgery no RTE
-		function toolbarClick(e) {
-			try {
-				if (e.item.id === "rte_toolbar_Image") {
-					var element = document.getElementById('rte_upload');
-					element.ej2_instances[0].uploading = function (args) {
-						args.currentRequest.setRequestHeader('XSRF-TOKEN', document.getElementsByName('__RequestVerificationToken')[0].value);
-					}
-				}
-			}
-			catch (error) {
-				Alerta.TratamentoErroComLinha("ListaAutuacao.cshtml", "toolbarClick", error);
-			}
-		}
 	</script>
 
-	<script>
-		// Localização do RTE (pt-BR)
-		ej.base.L10n.load({
-			"pt-BR": {
-				"richtexteditor": {
-					"alignments": "Alinhamentos", "justifyLeft": "Alinhar à Esquerda", "justifyCenter": "Centralizar", "justifyRight": "Alinhar à Direita", "justifyFull": "Justificar",
-					"fontName": "Nome da Fonte", "fontSize": "Tamanho da Fonte", "fontColor": "Cor da Fonte", "backgroundColor": "Cor de Fundo",
-					"bold": "Negrito", "italic": "Itálico", "underline": "Sublinhado", "strikethrough": "Tachado", "clearFormat": "Limpa Formatação", "clearAll": "Limpa Tudo",
-					"cut": "Cortar", "copy": "Copiar", "paste": "Colar", "unorderedList": "Lista com Marcadores", "orderedList": "Lista Numerada",
-					"indent": "Aumentar Identação", "outdent": "Diminuir Identação", "undo": "Desfazer", "redo": "Refazer",
-					"superscript": "Sobrescrito", "subscript": "Subscrito", "createLink": "Inserir Link", "openLink": "Abrir Link", "editLink": "Editar Link", "removeLink": "Remover Link",
-					"image": "Inserir Imagem", "replace": "Substituir", "align": "Alinhar", "caption": "Título da Imagem", "remove": "Remover",
-					"display": "Exibir", "altText": "Texto Alternativo", "dimension": "Mudar Tamanho", "fullscreen": "Maximizar", "maximize": "Maximizar", "minimize": "Minimizar",
-					"lowerCase": "Caixa Baixa", "upperCase": "Caixa Alta", "print": "Imprimir", "formats": "Formatos", "sourcecode": "Visualizar Código", "preview": "Exibir",
-					"viewside": "ViewSide", "insertCode": "Inserir Código", "linkText": "Exibir Texto", "linkTooltipLabel": "Título", "linkWebUrl": "Endereço Web",
-					"linkTitle": "Entre com um título", "linkurl": "http://exemplo.com", "linkOpenInNewWindow": "Abrir Link em Nova Janela", "linkHeader": "Inserir Link",
-					"dialogInsert": "Inserir", "dialogCancel": "Cancelar", "dialogUpdate": "Atualizar", "imageHeader": "Inserir Imagem",
-					"imageLinkHeader": "Você pode proporcionar um link da web", "mdimageLink": "Favor proporcionar uma URL para sua imagem",
-					"imageUploadMessage": "Solte a imagem aqui ou busque para o upload", "imageDeviceUploadMessage": "Clique aqui para o upload",
-					"imageAlternateText": "Texto Alternativo", "alternateHeader": "Texto Alternativo", "browse": "Procurar",
-					"imageUrl": "http://exemplo.com/imagem.png", "imageCaption": "Título", "imageSizeHeader": "Tamanho da Imagem", "imageHeight": "Altura", "imageWidth": "Largura",
-					"textPlaceholder": "Entre com um Texto", "inserttablebtn": "Inserir Tabela", "tabledialogHeader": "Inserir Tabela", "tableWidth": "Largura",
-					"cellpadding": "Espaçamento de célula", "cellspacing": "Espaçamento de célula", "columns": "Número de colunas", "rows": "Número de linhas",
-					"tableRows": "Linhas da Tabela", "tableColumns": "Colunas da Tabela", "tableCellHorizontalAlign": "Alinhamento Horizontal da Célula",
-					"tableCellVerticalAlign": "Alinhamento Vertical da Célula", "createTable": "Criar Tabela", "removeTable": "Remover Tabela", "tableHeader": "Cabeçalho da Tabela",
-					"tableRemove": "Remover Tabela", "tableCellBackground": "Fundo da Célula", "tableEditProperties": "Editar Propriedades da Tabela",
-					"styles": "Estilos", "insertColumnLeft": "Inserir Coluna à Esquerda", "insertColumnRight": "Inserir Coluna à Direita", "deleteColumn": "Apagar Coluna",
-					"insertRowBefore": "Inserir Linha Antes", "insertRowAfter": "Inserir Linha Depois", "deleteRow": "Apagar Linha", "tableEditHeader": "Editar Tabela",
-					"TableHeadingText": "Cabeçalho", "TableColText": "Col", "imageInsertLinkHeader": "Inserir Link", "editImageHeader": "Editar Imagem",
-					"alignmentsDropDownLeft": "Alinhar à Esquerda", "alignmentsDropDownCenter": "Centralizar", "alignmentsDropDownRight": "Alinhar à Direita", "alignmentsDropDownJustify": "Justificar",
-					"imageDisplayDropDownInline": "Inline", "imageDisplayDropDownBreak": "Break", "tableInsertRowDropDownBefore": "Inserir linha antes", "tableInsertRowDropDownAfter": "Inserir linha depois",
-					"tableInsertRowDropDownDelete": "Apagar linha", "tableInsertColumnDropDownLeft": "Inserir coluna à esquerda", "tableInsertColumnDropDownRight": "Inserir coluna à direita",
-					"tableInsertColumnDropDownDelete": "Apagar Coluna", "tableVerticalAlignDropDownTop": "Alinhar no Topo", "tableVerticalAlignDropDownMiddle": "Alinhar no Meio", "tableVerticalAlignDropDownBottom": "Alinhar no Fundo",
-					"tableStylesDropDownDashedBorder": "Bordas Pontilhadas", "tableStylesDropDownAlternateRows": "Linhas Alternadas", "pasteFormat": "Colar Formato",
-					"pasteFormatContent": "Escolha a ação de formatação", "plainText": "Texto Simples", "cleanFormat": "Limpar", "keepFormat": "Manter",
-					"formatsDropDownParagraph": "Parágrafo", "formatsDropDownCode": "Código", "formatsDropDownQuotation": "Citação", "formatsDropDownHeading1": "Cabeçalho 1",
-					"formatsDropDownHeading2": "Cabeçalho 2", "formatsDropDownHeading3": "Cabeçalho 3", "formatsDropDownHeading4": "Cabeçalho 4",
-					"fontNameSegoeUI": "SegoeUI", "fontNameArial": "Arial", "fontNameGeorgia": "Georgia", "fontNameImpact": "Impact", "fontNameTahoma": "Tahoma", "fontNameTimesNewRoman": "Times New Roman", "fontNameVerdana": "Verdana"
-				}
-			}
-		});
-	</script>
+
 
 	<script>
 		// --------- Apagar Autuação ----------
@@ -1277,7 +1209,13 @@
 		$('#modalTransformaPenalidade')
 			.on('shown.bs.modal', function (event) {
 				try {
-					defaultRTE?.refreshUI();
+					var rteEl = $("#rte");
+					if (!rteEl.data("kendoEditor")) {
+						rteEl.kendoEditor({
+							tools: ["bold","italic","underline","strikethrough","separator","justifyLeft","justifyCenter","justifyRight","justifyFull","separator","insertUnorderedList","insertOrderedList","separator","indent","outdent","separator","createLink","unlink","separator","fontName","fontSize","separator","foreColor","backColor","separator","cleanFormatting","separator","viewHtml"],
+							resizable: { content: true, toolbar: false }
+						});
+					}
 
 					const multaId = $('#txtId').val();
 
@@ -1300,8 +1238,8 @@
 									numInfracao: data.numInfracao,
 									observacao: data.observacao
 								};
-								const rte = document.getElementById('rte').ej2_instances[0];
-								rte.value = observacao || "";
+								var kendoEditor = $("#rte").data("kendoEditor");
+								if (kendoEditor) kendoEditor.value(observacao || "");
 								$("#h3Titulo").html(`<i class="fa-duotone fa-money-bill-transfer me-2"></i>Transformar em Penalidade a Autuação nº ${numInfracao} de ${nomeMotorista}`);
 							}
 							catch (error) {
@@ -1321,8 +1259,8 @@
 			})
 			.on("hide.bs.modal", function () {
 				try {
-					const rte = document.getElementById('rte').ej2_instances[0];
-					rte.value = "";
+					var kendoEditor = $("#rte").data("kendoEditor");
+					if (kendoEditor) kendoEditor.value("");
 					$("#txtDataVencimento").val("");
 					$("#txtValorPenalidade").val("");
 					$("#txtEdoc").val("");
@@ -1375,7 +1313,7 @@
 				btnText.text('Transformando...');
 				btn.prop('disabled', true);
 
-				const rte = document.getElementById('rte').ej2_instances[0];
+				var kendoEditor = $("#rte").data("kendoEditor");
 				const valorBr = $('#txtValorPenalidade').val().replaceAll(".", "");
 
 				$.ajax({
@@ -1387,7 +1325,7 @@
 						MultaId: multaId,
 						DataVencimento: $('#txtDataVencimento').val(),
 						ValorAteVencimento: valorBr,
-						Observacao: rte.value,
+						Observacao: kendoEditor ? kendoEditor.value() : "",
 						PenalidadePDF: $('#txtPenalidadePDF').val(),
 						ProcessoEDoc: $('#txtEdoc').val()
 					},

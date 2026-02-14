@@ -116,7 +116,6 @@
 var ManutencaoId = "";
 var dataTableOcorrencias;
 var dataTablePendencias;
-var defaultRTE;
 var ImagemSelecionada = "semimagem.jpg";
 var dataTableItens;
 // Variável global para controlar a linha selecionada
@@ -1488,18 +1487,6 @@ $("#btnFechar").click(function (e)
     }
 });
 
-function onCreate()
-{
-    try
-    {
-        defaultRTE = this;
-    }
-    catch (error)
-    {
-        TratamentoErroComLinha("manutencao.js", "onCreate", error);
-    }
-}
-
 
 // 2) Seu código do modal (com limpeza segura do Kendo Upload)
 $("#modalManutencao")
@@ -1507,7 +1494,13 @@ $("#modalManutencao")
     {
         try
         {
-            defaultRTE.refreshUI();
+            // [KENDO] Inicializar Kendo Editor no modal se ainda não existe
+            if (!$("#rteManutencao").data("kendoEditor")) {
+                $("#rteManutencao").kendoEditor({
+                    tools: ["bold","italic","underline","strikethrough","separator","justifyLeft","justifyCenter","justifyRight","justifyFull","separator","insertUnorderedList","insertOrderedList","separator","indent","outdent","separator","createLink","unlink","separator","fontName","fontSize","separator","foreColor","backColor","separator","cleanFormatting","separator","viewHtml"],
+                    resizable: { content: true, toolbar: false }
+                });
+            }
             document.getElementById("txtData").value = moment(Date()).format("YYYY-MM-DD");
 
             // Exibe "Sem Imagem"
@@ -1525,8 +1518,8 @@ $("#modalManutencao")
             document.getElementById("txtData").value = "";
             document.getElementById("txtResumo").value = "";
 
-            var descricao = document.getElementById("rteManutencao").ej2_instances[0];
-            descricao.value = "";
+            var editorManut = $("#rteManutencao").data("kendoEditor");
+            if (editorManut) editorManut.value("");
 
             var motorista = $("#lstMotorista").data("kendoComboBox");
             if (motorista) motorista.value("");
@@ -1605,7 +1598,7 @@ $("#btnInsereItem").click(function (e)
             return;
         }
 
-        var Descricao = document.getElementById("rteManutencao").ej2_instances[0];
+        var editorManut = $("#rteManutencao").data("kendoEditor");
         var Motorista = $("#lstMotorista").data("kendoComboBox");
 
         // Verifica se tem foto (incluindo semimagem.jpg como "sem foto")
@@ -1664,7 +1657,7 @@ $("#btnInsereItem").click(function (e)
                 numFicha: "N/A",
                 dataItem: DataItem,
                 nomeMotorista: Motorista.text,
-                resumo: `<div class='text-center'><a aria-label='&#9881; (${removeHTML(Descricao.value)})' data-microtip-position='top' role='tooltip' data-microtip-size='medium' style='cursor:pointer;'>${Resumo}</a></div>`,
+                resumo: `<div class='text-center'><a aria-label='&#9881; (${removeHTML(editorManut ? editorManut.value() : "")})' data-microtip-position='top' role='tooltip' data-microtip-size='medium' style='cursor:pointer;'>${Resumo}</a></div>`,
                 itemManutencaoId: `<button type="button"
                                             class="btn btn-sm btn-delete js-remover-item"
                                             style="background: linear-gradient(135deg, #dc3545, #c82333); 
@@ -1687,7 +1680,7 @@ $("#btnInsereItem").click(function (e)
         
                                     ${botaoFoto}`,
                 itemManutencaoId: "",
-                descricao: removeHTML(Descricao.value),
+                descricao: removeHTML(editorManut ? editorManut.value() : ""),
                 resumo: Resumo,
                 motoristaId: Motorista ? Motorista.value() : "",
                 imagemOcorrencia: ImagemOcorrencia,

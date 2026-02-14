@@ -534,10 +534,10 @@ function limparModal()
         imagemOcorrenciaAlterada = false;
         novaImagemOcorrencia = "";
 
-        const rteDesc = document.getElementById("rteOcorrencias")?.ej2_instances?.[0];
-        const rteSol = document.getElementById("rteSolucao")?.ej2_instances?.[0];
-        if (rteDesc) rteDesc.value = "";
-        if (rteSol) rteSol.value = "";
+        var editorOc = $("#rteOcorrencias").data("kendoEditor");
+        var editorSol = $("#rteSolucao").data("kendoEditor");
+        if (editorOc) editorOc.value("");
+        if (editorSol) editorSol.value("");
 
         exibirPreviewImagem("");
     }
@@ -612,11 +612,11 @@ async function carregarOcorrencia(id)
             $("#txtImagemOcorrenciaAtual").val(oc.imagemOcorrencia || "");
             $("#chkStatusOcorrencia").val(oc.statusOcorrencia || "Aberta");
 
-            const rteDesc = document.getElementById("rteOcorrencias")?.ej2_instances?.[0];
-            const rteSol = document.getElementById("rteSolucao")?.ej2_instances?.[0];
+            var editorOc = $("#rteOcorrencias").data("kendoEditor");
+            var editorSol = $("#rteSolucao").data("kendoEditor");
 
-            if (rteDesc) rteDesc.value = oc.descricaoOcorrencia || "";
-            if (rteSol) rteSol.value = oc.solucaoOcorrencia || "";
+            if (editorOc) editorOc.value(oc.descricaoOcorrencia || "");
+            if (editorSol) editorSol.value(oc.solucaoOcorrencia || "");
 
             exibirPreviewImagem(oc.imagemOcorrencia || "");
 
@@ -894,8 +894,8 @@ $(document).ready(function ()
                 }
 
                 // Pega a solução do RTE
-                const rteSol = document.getElementById("rteSolucao")?.ej2_instances?.[0];
-                const solucaoAtual = rteSol?.value || "";
+                var editorSol = $("#rteSolucao").data("kendoEditor");
+                const solucaoAtual = editorSol ? editorSol.value() : "";
 
                 await processarBaixaComValidacao(id, solucaoAtual, fecharModalOcorrencia);
             }
@@ -922,8 +922,8 @@ $(document).ready(function ()
                     return;
                 }
 
-                const rteDesc = document.getElementById("rteOcorrencias")?.ej2_instances?.[0];
-                const rteSol = document.getElementById("rteSolucao")?.ej2_instances?.[0];
+                var editorOc = $("#rteOcorrencias").data("kendoEditor");
+                var editorSol = $("#rteSolucao").data("kendoEditor");
 
                 let imagemFinal = $("#txtImagemOcorrenciaAtual").val() || "";
                 if (imagemOcorrenciaAlterada)
@@ -934,8 +934,8 @@ $(document).ready(function ()
                 const payload = {
                     OcorrenciaViagemId: $("#txtId").val(),
                     ResumoOcorrencia: resumo,
-                    DescricaoOcorrencia: rteDesc?.value || "",
-                    SolucaoOcorrencia: rteSol?.value || "",
+                    DescricaoOcorrencia: editorOc ? editorOc.value() : "",
+                    SolucaoOcorrencia: editorSol ? editorSol.value() : "",
                     StatusOcorrencia: $("#chkStatusOcorrencia").val() || "Aberta",
                     ImagemOcorrencia: imagemFinal
                 };
@@ -1012,13 +1012,23 @@ $(document).ready(function ()
             }
         });
 
-        // Refresh UI dos RTEs ao abrir modal
+        // [KENDO] Inicializar Kendo Editors ao abrir modal
         $("#modalOcorrencia").on("shown.bs.modal", function ()
         {
             try
             {
-                document.getElementById("rteOcorrencias")?.ej2_instances?.[0]?.refreshUI();
-                document.getElementById("rteSolucao")?.ej2_instances?.[0]?.refreshUI();
+                if (!$("#rteOcorrencias").data("kendoEditor")) {
+                    $("#rteOcorrencias").kendoEditor({
+                        tools: ["bold","italic","underline","strikethrough","separator","justifyLeft","justifyCenter","justifyRight","justifyFull","separator","insertUnorderedList","insertOrderedList","separator","indent","outdent","separator","createLink","unlink","separator","fontName","fontSize","separator","foreColor","backColor","separator","cleanFormatting","separator","viewHtml"],
+                        resizable: { content: true, toolbar: false }
+                    });
+                }
+                if (!$("#rteSolucao").data("kendoEditor")) {
+                    $("#rteSolucao").kendoEditor({
+                        tools: ["bold","italic","underline","strikethrough","separator","justifyLeft","justifyCenter","justifyRight","justifyFull","separator","insertUnorderedList","insertOrderedList","separator","indent","outdent","separator","createLink","unlink","separator","fontName","fontSize","separator","foreColor","backColor","separator","cleanFormatting","separator","viewHtml"],
+                        resizable: { content: true, toolbar: false }
+                    });
+                }
             }
             catch (_) { }
         });

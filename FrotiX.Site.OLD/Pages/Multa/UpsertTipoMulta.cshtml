@@ -102,9 +102,7 @@
                             <div class="col-12">
                                 <div class="form-group">
                                     <label class="form-label fw-bold">Descrição da Multa</label>
-                                    <ejs-richtexteditor ejs-for="@Model.TipoMultaObj.Descricao" id="rte" toolbarClick="toolbarClick" locale="pt-BR" height="200px">
-                                        <e-richtexteditor-insertimagesettings saveUrl="api/Viagem/SaveImage" path="./DadosEditaveis/ImagensViagens/"></e-richtexteditor-insertimagesettings>
-                                    </ejs-richtexteditor>
+                                    <textarea id="rte" name="TipoMultaObj.Descricao" style="width: 100%; height: 200px;">@(Model.TipoMultaObj?.Descricao ?? "")</textarea>
                                     <div id="errorMessage">
                                         <span class="text-danger" asp-validation-for="@Model.TipoMultaObj.Descricao"></span>
                                     </div>
@@ -146,25 +144,13 @@
         });
 
         function toolbarClick(e) {
-            try {
-                if (e.item.id == "rte_toolbar_Image") {
-                    var element = document.getElementById('rte_upload');
-                    if (element && element.ej2_instances && element.ej2_instances[0]) {
-                        element.ej2_instances[0].uploading = function upload(args) {
-                            try {
-                                var tokenInput = document.getElementsByName('__RequestVerificationToken')[0];
-                                if (tokenInput) {
-                                    args.currentRequest.setRequestHeader('XSRF-TOKEN', tokenInput.value);
-                                }
-                            } catch (error) {
-                                Alerta.TratamentoErroComLinha("UpsertTipoMulta.cshtml", "uploading", error);
-                            }
-                        };
-                    }
-                }
-            } catch (error) {
-                Alerta.TratamentoErroComLinha("UpsertTipoMulta.cshtml", "toolbarClick", error);
-            }
+            // [KENDO] Função mantida como stub vazio - não é mais necessária com Kendo Editor
         }
+
+        // [KENDO] Inicialização do Kendo Editor para descrição do tipo de multa
+        $("#rte").kendoEditor({
+            tools: ["bold","italic","underline","strikethrough","separator","justifyLeft","justifyCenter","justifyRight","justifyFull","separator","insertUnorderedList","insertOrderedList","separator","indent","outdent","separator","createLink","unlink","separator","fontName","fontSize","separator","foreColor","backColor","separator","cleanFormatting","separator","viewHtml"],
+            resizable: { content: true, toolbar: false }
+        });
     </script>
 }
