@@ -388,50 +388,91 @@
         cssClass: 'nav-menu-tree',
         expandOn: 'None', // Expande apenas pela seta, não pelo clique no item
         nodeClicked: function(args) {
-            // Previne navegação padrão do link - controlamos manualmente
-            if (args.event) {
-                args.event.preventDefault();
-            }
+            try {
+                // ✅ NÃO PREVINE navegação aqui - só vamos prevenir se for seta ou grupo
+                // Se for link de página, DEVE navegar normalmente
 
-            // IMPORTANTE: Verifica se nodeData existe antes de acessar suas propriedades
-            if (!args.nodeData) {
-                console.warn('TreeView.nodeClicked: args.nodeData está undefined');
-                return;
-            }
+                // ✅ CORREÇÃO CRÍTICA: Extrai dados do nó de forma ROBUSTA
+                // Syncfusion pode passar dados em args.nodeData (versão antiga) OU precisar buscar via API (versão nova)
+                var nodeData = args.nodeData;
+                var nodeId = null;
 
-            // Verifica se clicou na seta de expansão
-            var clickedElement = args.event ? args.event.target : null;
-            if (clickedElement &&
-                (clickedElement.classList.contains('e-icons') ||
-                 clickedElement.classList.contains('e-icon-expandable') ||
-                 clickedElement.classList.contains('e-icon-collapsible'))) {
-                // Se clicou na seta, expande/colapsa
-                if (args.node && args.node.classList.contains('e-node-collapsed')) {
-                    treeObj.expandAll([args.nodeData.id]);
-                } else {
-                    treeObj.collapseAll([args.nodeData.id]);
-                }
-                return;
-            }
-
-            // Se o item tem filhos (é um grupo), apenas expande/colapsa - NUNCA navega
-            if (args.nodeData.hasChild) {
-                if (args.node && args.node.classList.contains('e-node-collapsed')) {
-                    treeObj.expandAll([args.nodeData.id]);
-                } else {
-                    treeObj.collapseAll([args.nodeData.id]);
-                }
-                return;
-            }
-
-            // Se não tem filhos, navega para o link (se existir)
-            if (args.node) {
-                var link = args.node.querySelector('.nav-link');
-                if (link) {
-                    var href = link.getAttribute('href');
-                    if (href && href !== 'javascript:void(0);') {
-                        window.location.href = href;
+                // Se args.nodeData não existe, busca via args.node (elemento DOM)
+                if (!nodeData && args.node) {
+                    // Extrai ID do nó via atributo data-uid do Syncfusion
+                    nodeId = args.node.getAttribute('data-uid');
+                    if (nodeId && treeObj && typeof treeObj.getNode === 'function') {
+                        // Tenta buscar via API getNode()
+                        nodeData = treeObj.getNode(nodeId);
                     }
+                }
+
+                // ✅ FALLBACK: Se ainda não tem dados, extrai direto do DOM
+                if (!nodeData && args.node) {
+                    var childrenContainer = args.node.querySelector(':scope > .e-ul');
+                    var hasChildren = childrenContainer !== null && childrenContainer.children.length > 0;
+
+                    nodeData = {
+                        id: nodeId || args.node.getAttribute('data-uid'),
+                        hasChild: hasChildren
+                    };
+                }
+
+                // Se AINDA não tem dados, não pode continuar
+                if (!nodeData) {
+                    console.warn('[TreeView.nodeClicked] Não foi possível obter dados do nó. args:', args);
+                    return;
+                }
+
+                // Verifica se clicou na seta de expansão (ícone)
+                var clickedElement = args.event ? args.event.target : null;
+                if (clickedElement &&
+                    (clickedElement.classList.contains('e-icons') ||
+                     clickedElement.classList.contains('e-icon-expandable') ||
+                     clickedElement.classList.contains('e-icon-collapsible'))) {
+                    // ✅ PREVINE navegação (é clique na seta, não no link)
+                    if (args.event) args.event.preventDefault();
+
+                    // Se clicou na seta, apenas expande/colapsa
+                    if (args.node && args.node.classList.contains('e-node-collapsed')) {
+                        if (nodeData.id) treeObj.expandAll([nodeData.id]);
+                    } else {
+                        if (nodeData.id) treeObj.collapseAll([nodeData.id]);
+                    }
+                    return;
+                }
+
+                // ✅ Se o item TEM FILHOS (é um GRUPO), apenas expande/colapsa - NUNCA navega
+                if (nodeData.hasChild) {
+                    // ✅ PREVINE navegação (é grupo, não link)
+                    if (args.event) args.event.preventDefault();
+
+                    if (args.node && args.node.classList.contains('e-node-collapsed')) {
+                        if (nodeData.id) treeObj.expandAll([nodeData.id]);
+                    } else {
+                        if (nodeData.id) treeObj.collapseAll([nodeData.id]);
+                    }
+                    return;
+                }
+
+                // ✅ Se NÃO TEM FILHOS (é uma PÁGINA), o link vai navegar AUTOMATICAMENTE
+                // Não fazemos preventDefault(), então o clique no <a href> vai funcionar normalmente
+                if (args.node) {
+                    var link = args.node.querySelector('.nav-link');
+                    if (link) {
+                        var href = link.getAttribute('href');
+                        if (href && href !== 'javascript:void(0);' && href.trim() !== '') {
+                            console.log('✅ [TreeView] Link clicado, navegando para:', href);
+                            // O browser vai navegar automaticamente porque NÃO chamamos preventDefault()
+                        } else {
+                            console.warn('[TreeView] Link sem href válido:', href);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('[TreeView.nodeClicked] ERRO CRÍTICO:', error);
+                if (typeof Alerta !== 'undefined' && typeof Alerta.TratamentoErroComLinha === 'function') {
+                    Alerta.TratamentoErroComLinha('TreeView.cshtml', 'nodeClicked', error);
                 }
             }
         }

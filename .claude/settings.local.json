@@ -7,7 +7,10 @@
       "Bash(NUGET_PACKAGES=\"$HOME/.nuget/packages\" dotnet build:*)",
       "Bash(code:*)",
       "Bash(git status:*)",
-      "Bash(cmd /c \"for /D %d in \\(\"\"d:\\\\FrotiX\\\\Solucao FrotiX 2026\\\\Kendo.Mvc.Examples\\\\Views\\\\*\"\"\\) do @\\(echo === %~nxd === & for %f in \\(\"\"%d\\\\*.cshtml\"\"\\) do @echo   %~nxf & echo.\\)\")"
+      "Bash(cmd /c \"for /D %d in \\(\"\"d:\\\\FrotiX\\\\Solucao FrotiX 2026\\\\Kendo.Mvc.Examples\\\\Views\\\\*\"\"\\) do @\\(echo === %~nxd === & for %f in \\(\"\"%d\\\\*.cshtml\"\"\\) do @echo   %~nxf & echo.\\)\")",
+      "Bash(Get-Service -Name 'MSSQL*')",
+      "Bash(Select-Object Name, Status, DisplayName)",
+      "Bash(Format-Table -AutoSize)"
     ]
   }
 }

@@ -1,0 +1,70 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Shared/_ShortcutMessenger.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Partial view do modal de chat/messenger deslizante direita (modal-dialog-right)
+ *                   com perfil de usuário (Tracey Chang - IT Director), dropdown menu e tabs (_TabMsgr).
+ * 📥 ENTRADAS     : Settings.Features.ChatInterface (flag booleano), trigger para abrir
+ *                   .js-modal-messenger (provavelmente botão no header com data-bs-toggle="modal"),
+ *                   Settings.Theme.IconPrefix, cliques no dropdown menu (3 opções)
+ * 📤 SAÍDAS       : Bootstrap modal (.modal.js-modal-messenger) sliding direita, header com gradiente
+ *                   (bg-trans-gradient), perfil Tracey Chang (avatar /img/demo/avatars/avatar-d.png,
+ *                   nome + título IT Director, dropdown com 3 ações: Send Email/Create Appointment/Block User),
+ *                   botão fechar (X canto superior direito), body com _TabMsgr partial (tabs de chat)
+ * 🔗 CHAMADA POR  : Pages/Shared/_Layout.cshtml (provavelmente antes </body>), conditional rendering
+ *                   @if (Settings.Features.ChatInterface), botão trigger no header/shortcut menu
+ * 🔄 CHAMA        : Shared/_TabMsgr.cshtml (tabs de chat - mensagens, contatos, histórico?), Bootstrap
+ *                   modal JavaScript (.modal()), dropdown toggle (data-bs-toggle="dropdown"),
+ *                   Settings.Theme.IconPrefix (fa-solid, fa-duotone), CSS classes (modal-dialog-right,
+ *                   modal-backdrop-transparent, bg-trans-gradient, profile-image, info-card-text,
+ *                   dropdown-menu dropdown-item, position-absolute pos-top pos-right)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages (Partial Views), SmartSettings injection (@Settings),
+ *                   Bootstrap 5 (modal, modal-dialog, data-dismiss="modal", dropdown-menu, dropdown-item),
+ *                   Shared/_TabMsgr.cshtml (conteúdo das tabs), Font Awesome (fa-angle-down, fa-times),
+ *                   CSS classes custom (modal-dialog-right, modal-backdrop-transparent, bg-trans-gradient,
+ *                   rounded-circle profile-image bg-image, info-card-text, text-truncate-lg text-truncate-md,
+ *                   opacity-80, pos-top pos-right), avatar image /img/demo/avatars/avatar-d.png
+ * 📝 OBSERVAÇÕES  : 34 linhas. Modal chat/messenger SLIDING DIREITA (modal-dialog-right customização
+ *                   SmartAdmin). Renderização condicional Settings.Features.ChatInterface = true.
+ *                   Perfil hardcoded: Tracey Chang (IT Director) - dados DEMO do SmartAdmin (não FrotiX).
+ *                   Avatar circular (rounded-circle) com background-image inline style. Dropdown 3 ações:
+ *                   Send Email, Create Appointment, Block User (links # placeholder). Header gradient
+ *                   (bg-trans-gradient) com flex layout. Nome Tracey Chang com fa-angle-down dropdown
+ *                   indicator. Título "IT Director" opacity-80. Botão fechar position-absolute top-right.
+ *                   Modal body p-0 h-100 d-flex (sem padding, altura 100%, flex container para _TabMsgr).
+ *                   _TabMsgr partial provavelmente contém tabs Bootstrap (Mensagens/Contatos/Histórico).
+ *                   Para FrotiX: substituir profile data com dados reais do usuário logado via @User.
+ **************************************************************************************** *@
+@if (Settings.Features.ChatInterface)
+{
+<div class="modal fade js-modal-messenger modal-backdrop-transparent" tabindex="-1" role="dialog" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-right">
+	  <div class="modal-content h-100">
+		 <div class="dropdown-header bg-trans-gradient d-flex align-items-center w-100">
+			<div class="d-flex flex-row align-items-center mt-1 mb-1 color-white">
+				<span class="mr-2">
+					<span class="rounded-circle profile-image d-block" style="background-image:url('/img/demo/avatars/avatar-d.png'); background-size: cover;"></span>
+				</span>
+				<div class="info-card-text">
+					<a href="javascript:void(0);" class="fs-lg text-truncate text-truncate-lg text-white" data-bs-toggle="dropdown" aria-expanded="false">
+						Tracey Chang 
+						<i class="@(Settings.Theme.IconPrefix) fa-angle-down d-inline-block ml-1 text-white fs-md"></i>
+					</a>
+					<div class="dropdown-menu">
+						<a class="dropdown-item" href="#">Send Email</a>
+						<a class="dropdown-item" href="#">Create Appointment</a>
+						<a class="dropdown-item" href="#">Block User</a>
+					</div>
+					<span class="text-truncate text-truncate-md opacity-80">IT Director</span>
+				</div>
+			</div>
+			<button type="button" class="close text-white position-absolute pos-top pos-right p-2 m-1 mr-2" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true"><i class="@(Settings.Theme.IconPrefix) fa-times"></i></span>
+			</button>
+		 </div>
+		 <div class="modal-body p-0 h-100 d-flex">
+			<partial name="_TabMsgr"/>
+		 </div>
+	  </div>
+   </div>
+</div>
+}

@@ -1,0 +1,114 @@
+﻿[21:52:20.498] [INFO] LogService inicializado | Arquivo: LogService.cs | Método: Constructor
+[21:52:20.517] [INFO] Sistema de log de erros inicializado | Arquivo: Program.cs | Método: ConfigureGlobalExceptionHandlers
+[21:53:12.707] [INFO] FrotiX Web inicializado com sucesso | Arquivo: Startup.cs | Método: Configure
+[22:09:57.634] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /.well-known/appspecific/com.chrome.devtools.json
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[22:10:02.579] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /js/popper.js.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[22:10:08.729] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /css/vendors.bundle.css.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[22:10:08.729] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /css/app.bundle.css.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[22:25:32.756] [HTTP-ERROR] 🌐 Status: 400
+  📍 Path: /api/reports/clients/keepAlive/be8dc155fb3
+  🔧 Method: POST
+  💬 Message: Bad Request - Requisição inválida
+  👤 Usuário: p_7661
+
+[22:30:44.920] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /.well-known/appspecific/com.chrome.devtools.json
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[22:30:46.445] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /js/popper.js.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[22:30:47.347] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /css/vendors.bundle.css.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[22:30:47.388] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /css/app.bundle.css.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[22:32:18.849] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /.well-known/appspecific/com.chrome.devtools.json
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[22:32:19.309] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /css/vendors.bundle.css.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[22:32:19.370] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /js/popper.js.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[22:32:19.317] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /css/app.bundle.css.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[23:22:19.151] [INFO] LogService inicializado | Arquivo: LogService.cs | Método: Constructor
+[23:22:19.182] [INFO] Sistema de log de erros inicializado | Arquivo: Program.cs | Método: ConfigureGlobalExceptionHandlers
+[23:22:57.816] [INFO] FrotiX Web inicializado com sucesso | Arquivo: Startup.cs | Método: Configure
+[23:32:37.932] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /.well-known/appspecific/com.chrome.devtools.json
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[23:32:40.443] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /js/popper.js.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[23:32:49.901] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /css/vendors.bundle.css.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[23:32:50.019] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /css/app.bundle.css.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[23:41:20.641] [INFO] LogService inicializado | Arquivo: LogService.cs | Método: Constructor
+[23:41:20.882] [INFO] Sistema de log de erros inicializado | Arquivo: Program.cs | Método: ConfigureGlobalExceptionHandlers
+[23:42:07.509] [INFO] FrotiX Web inicializado com sucesso | Arquivo: Startup.cs | Método: Configure
+[23:52:35.531] [INFO] LogService inicializado | Arquivo: LogService.cs | Método: Constructor
+[23:52:35.631] [INFO] Sistema de log de erros inicializado | Arquivo: Program.cs | Método: ConfigureGlobalExceptionHandlers
+[23:53:33.701] [INFO] FrotiX Web inicializado com sucesso | Arquivo: Startup.cs | Método: Configure

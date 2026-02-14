@@ -1,0 +1,327 @@
+﻿[00:01:19.685] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\wwwroot\js\agendamento\components\validacao.js | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+      --- End of stack trace from previous location ---
+      at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+
+[00:02:04.619] [WARN] [FrotiX.Services.LogErrosAlertService] 🚨 Alerta de Log enviado: CRITICOS_NAO_RESOLVIDOS - 10 erros críticos aguardando resolução | Arquivo: LogErrosAlertService.cs | Método: ASP.NET Core
+[00:02:42.809] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\wwwroot\js\agendamento\components\dialogs.js | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+      --- End of stack trace from previous location ---
+      at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+
+[00:05:40.386] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\wwwroot\js\agendamento\components\controls-init.js | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+      --- End of stack trace from previous location ---
+      at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+
+[00:07:34.612] [WARN] [FrotiX.Services.LogErrosAlertService] 🚨 Alerta de Log enviado: CRITICOS_NAO_RESOLVIDOS - 10 erros críticos aguardando resolução | Arquivo: LogErrosAlertService.cs | Método: ASP.NET Core
+[00:08:30.873] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\wwwroot\js\agendamento\components\event-handlers.js | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+      --- End of stack trace from previous location ---
+      at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+
+[00:11:39.327] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\wwwroot\js\agendamento\components\exibe-viagem.js | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+      --- End of stack trace from previous location ---
+      at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+
+[00:13:04.615] [WARN] [FrotiX.Services.LogErrosAlertService] 🚨 Alerta de Log enviado: CRITICOS_NAO_RESOLVIDOS - 10 erros críticos aguardando resolução | Arquivo: LogErrosAlertService.cs | Método: ASP.NET Core
+[00:13:24.147] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\wwwroot\js\agendamento\utils\formatters.js | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+      --- End of stack trace from previous location ---
+      at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+
+[00:14:48.480] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\wwwroot\js\agendamento\services\viagem.service.js | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+      --- End of stack trace from previous location ---
+      at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+
+[00:17:21.525] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\wwwroot\js\agendamento\core\ajax-helper.js | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+      --- End of stack trace from previous location ---
+      at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+
+[00:18:34.617] [WARN] [FrotiX.Services.LogErrosAlertService] 🚨 Alerta de Log enviado: CRITICOS_NAO_RESOLVIDOS - 10 erros críticos aguardando resolução | Arquivo: LogErrosAlertService.cs | Método: ASP.NET Core
+[00:20:39.697] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\wwwroot\js\agendamento\services\evento.service.js | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+      --- End of stack trace from previous location ---
+      at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+
+[00:24:04.655] [WARN] [FrotiX.Services.LogErrosAlertService] 🚨 Alerta de Log enviado: CRITICOS_NAO_RESOLVIDOS - 10 erros críticos aguardando resolução | Arquivo: LogErrosAlertService.cs | Método: ASP.NET Core
+[00:24:13.000] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\wwwroot\js\agendamento\services\requisitante.service.js | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+      --- End of stack trace from previous location ---
+      at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+
+[00:26:34.198] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\wwwroot\js\agendamento\components\modal-config.js | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+      --- End of stack trace from previous location ---
+      at Dapper.SqlMapper.ExecuteImplAsync(IDbConnection cnn, CommandDefinition command, Object param) in /_/Dapper/SqlMapper.Async.cs:line 662
+
+[00:29:35.107] [INFO] LogService v3.0 inicializado - Gravação em Banco de Dados ativada | Arquivo: LogService.cs | Método: Constructor
+[00:29:35.712] [INFO] LogService v3.0 inicializado - Gravação em Banco de Dados ativada | Arquivo: LogService.cs | Método: Constructor
+[00:29:38.197] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.456] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'LitrosTotal' on entity type 'EstatisticaAbastecimentoCategoria'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.461] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'ValorTotal' on entity type 'EstatisticaAbastecimentoCategoria'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.461] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'LitrosTotal' on entity type 'EstatisticaAbastecimentoCombustivel'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.501] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'MediaValorLitro' on entity type 'EstatisticaAbastecimentoCombustivel'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.506] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'ValorTotal' on entity type 'EstatisticaAbastecimentoCombustivel'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.571] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'LitrosTotal' on entity type 'EstatisticaAbastecimentoMensal'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.576] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'ValorTotal' on entity type 'EstatisticaAbastecimentoMensal'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.620] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'LitrosTotal' on entity type 'EstatisticaAbastecimentoTipoVeiculo'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.662] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'ValorTotal' on entity type 'EstatisticaAbastecimentoTipoVeiculo'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.666] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'LitrosTotal' on entity type 'EstatisticaAbastecimentoVeiculo'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.718] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'ValorTotal' on entity type 'EstatisticaAbastecimentoVeiculo'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.759] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'LitrosTotal' on entity type 'EstatisticaAbastecimentoVeiculoMensal'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.765] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'ValorTotal' on entity type 'EstatisticaAbastecimentoVeiculoMensal'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.770] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'HorasTotais' on entity type 'EstatisticaGeralMensal'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.799] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'KmTotal' on entity type 'EstatisticaGeralMensal'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.805] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'ValorTotalMultas' on entity type 'EstatisticaGeralMensal'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.807] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'KmTotal' on entity type 'EstatisticaMotoristasMensal'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.844] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'LitrosTotais' on entity type 'EstatisticaMotoristasMensal'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.903] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'ValorTotalAbastecimentos' on entity type 'EstatisticaMotoristasMensal'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.908] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'ValorTotalMultas' on entity type 'EstatisticaMotoristasMensal'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.913] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'KmTotal' on entity type 'EvolucaoViagensDiaria'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.947] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'ValorTotal' on entity type 'HeatmapAbastecimentoMensal'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:38.976] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'ValorPrincipal' on entity type 'RankingMotoristasMensal'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:39.010] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'ValorSecundario' on entity type 'RankingMotoristasMensal'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:39.044] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'ValorTerciario' on entity type 'RankingMotoristasMensal'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:39.080] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'CustoCombustivel' on entity type 'ViagemEstatistica'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:39.084] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'CustoLavador' on entity type 'ViagemEstatistica'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:39.111] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'CustoMedioPorViagem' on entity type 'ViagemEstatistica'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:39.117] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'CustoMotorista' on entity type 'ViagemEstatistica'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:39.122] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'CustoOperador' on entity type 'ViagemEstatistica'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:39.124] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'CustoTotal' on entity type 'ViagemEstatistica'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:39.166] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'CustoVeiculo' on entity type 'ViagemEstatistica'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:39.205] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'QuilometragemMedia' on entity type 'ViagemEstatistica'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:39.209] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'QuilometragemTotal' on entity type 'ViagemEstatistica'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:39.240] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'ConsumoGeral' on entity type 'ViewAbastecimentos'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:39.243] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'ValorGlosa' on entity type 'ViewManutencao'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:39.251] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'ConsumoGeral' on entity type 'ViewMediaConsumo'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:39.255] [WARN] [Microsoft.EntityFrameworkCore.Model.Validation] No store type was specified for the decimal property 'Consumo' on entity type 'ViewVeiculos'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'. | Arquivo: Validation.cs | Método: ASP.NET Core
+[00:29:56.002] [WARN] [FrotiX.Services.LogErrosAlertService] 🚨 Alerta de Log enviado: CRITICOS_NAO_RESOLVIDOS - 10 erros críticos aguardando resolução | Arquivo: LogErrosAlertService.cs | Método: ASP.NET Core
+[00:29:57.333] [WARN] [Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: 'br'. Consider disabling response compression. | Arquivo: BrowserRefreshMiddleware.cs | Método: ASP.NET Core
+[00:30:13.920] [WARN] [Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: 'br'. Consider disabling response compression. | Arquivo: BrowserRefreshMiddleware.cs | Método: ASP.NET Core
+[00:30:29.103] [WARN] [Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: 'br'. Consider disabling response compression. | Arquivo: BrowserRefreshMiddleware.cs | Método: ASP.NET Core
+[00:30:59.699] [WARN] [Microsoft.AspNetCore.Watch.BrowserRefresh.BrowserRefreshMiddleware] Unable to configure browser refresh script injection on the response. This may have been caused by the response's Content-Encoding: 'br'. Consider disabling response compression. | Arquivo: BrowserRefreshMiddleware.cs | Método: ASP.NET Core
+[00:33:09.562] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\wwwroot\js\agendamento\components\evento.js | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+
+[00:33:20.845] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\Pages\Viagens\Upsert.cshtml | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+
+[00:33:44.107] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\Pages\Viagens\Upsert.cshtml | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+
+[00:34:17.794] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\Pages\Viagens\Upsert.cshtml | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+
+[00:35:14.328] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\wwwroot\js\agendamento\utils\calendario-config.js | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+
+[00:35:21.154] [WARN] [FrotiX.Services.LogErrosAlertService] 🚨 Alerta de Log enviado: CRITICOS_NAO_RESOLVIDOS - 10 erros críticos aguardando resolução | Arquivo: LogErrosAlertService.cs | Método: ASP.NET Core
+[00:36:54.264] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\wwwroot\js\agendamento\utils\kendo-editor-helper.js | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+
+[00:40:53.382] [WARN] [FrotiX.Services.LogErrosAlertService] 🚨 Alerta de Log enviado: CRITICOS_NAO_RESOLVIDOS - 10 erros críticos aguardando resolução | Arquivo: LogErrosAlertService.cs | Método: ASP.NET Core
+[00:43:23.110] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\Pages\Viagens\Upsert.cshtml | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+
+[00:43:44.095] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\Pages\Viagens\Upsert.cshtml | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+
+[00:43:55.128] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\Pages\Viagens\Upsert.cshtml | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+
+[00:44:03.170] [ERROR] [FrotiX.Services.DocGenerator.Services.FileTrackingService] Erro ao detectar mudanças no arquivo: C:\FrotiX\Solucao FrotiX 2026\FrotiX.Site\Pages\Viagens\Upsert.cshtml | Arquivo: FileTrackingService.cs | Método: ASP.NET Core
+  📚 StackTrace:
+      at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+      at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+      at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+      at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+      at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+      at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+      at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+
+[00:46:21.072] [WARN] [FrotiX.Services.LogErrosAlertService] 🚨 Alerta de Log enviado: CRITICOS_NAO_RESOLVIDOS - 10 erros críticos aguardando resolução | Arquivo: LogErrosAlertService.cs | Método: ASP.NET Core

@@ -12,8 +12,10 @@
  */
 
 using FrotiX.Repository.IRepository;
+using FrotiX.Helpers;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
+using System.Linq;
 
 namespace FrotiX.Pages.Agenda
 {
@@ -49,6 +51,31 @@ namespace FrotiX.Pages.Agenda
         {
             try
             {
+                // Inicializar dados para os controles da página
+                ViewData["dataCombustivel"] = new Helpers.ListaNivelCombustivel(_unitOfWork).NivelCombustivelList();
+                ViewData["dataMotorista"] = new Helpers.ListaMotorista(_unitOfWork).MotoristaList();
+                ViewData["dataVeiculo"] = new Helpers.ListaVeiculos(_unitOfWork).VeiculosList();
+                ViewData["dataSetor"] = new Helpers.ListaSetores(_unitOfWork).SetoresList();
+                ViewData["dataRequisitante"] = new Helpers.ListaRequisitante(_unitOfWork).RequisitantesList();
+                ViewData["dataFinalidade"] = new Helpers.ListaFinalidade(_unitOfWork).FinalidadesList();
+                ViewData["dataEvento"] = new Helpers.ListaEvento(_unitOfWork).EventosList();
+                ViewData["dataSetorEvento"] = new Helpers.ListaSetoresEvento(_unitOfWork).SetoresEventoList();
+                ViewData["dataPeriodo"] = new Helpers.ListaPeriodos().PeriodosList();
+                ViewData["dataRecorrente"] = new Helpers.ListaRecorrente().RecorrenteList();
+
+                var listaOrigem = _unitOfWork.Viagem.GetAllReduced(selector: v => v.Origem)
+                    .Where(o => o != null)
+                    .Distinct()
+                    .OrderBy(o => o)
+                    .ToList();
+                ViewData["ListaOrigem"] = listaOrigem;
+
+                var listaDestino = _unitOfWork.Viagem.GetAllReduced(selector: v => v.Destino)
+                    .Where(d => d != null)
+                    .Distinct()
+                    .OrderBy(d => d)
+                    .ToList();
+                ViewData["ListaDestino"] = listaDestino;
             }
             catch (Exception error)
             {

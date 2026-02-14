@@ -199,7 +199,13 @@ namespace FrotiX
 
                 // ⭐ Controllers com Newtonsoft configurado corretamente
                 services.AddControllers()
-                    .AddNewtonsoftJson();
+                    .AddNewtonsoftJson(options =>
+                    {
+                        // Ignora referências circulares (ex: Viagem -> Motorista -> Viagem)
+                        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                        // Ignora propriedades nulas para reduzir tamanho do JSON
+                        options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                    });
 
                 // ⭐ SWAGGER - Configuração (apenas APIs)
                 services.AddEndpointsApiExplorer();

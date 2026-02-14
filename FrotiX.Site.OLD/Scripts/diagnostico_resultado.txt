@@ -1,0 +1,24 @@
+════════════════════════════════════════════════════════════════════════════════
+🔍 DIAGNÓSTICO COMPLETO DO BANCO DE DADOS
+════════════════════════════════════════════════════════════════════════════════
+ 
+📊 INFORMAÇÕES DE CONEXÃO:
+   - Servidor: WIN-25V94UU1HG9
+   - Banco conectado: Frotix
+   - Usuário: VIVOBOOK\Administrator
+   - Session ID: 55
+ 
+📁 BANCOS DE DADOS DISPONÍVEIS:
+ 
+Banco de Dados                                                                                                                                            
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+      CineTrackDb                                                                                                                                         
+   👉 Frotix (CONECTADO AGORA)                                                                                                                          
+ 
+📊 TABELAS NO BANCO ATUAL (Frotix):
+   Total de tabelas: 84
+ 
+🔍 VERIFICANDO TABELAS ESPECÍFICAS:
+ 
+Msg 468, Level 16, State 9, Server Vivobook, Line 77
+Cannot resolve the collation conflict between "Latin1_General_CI_AS" and "SQL_Latin1_General_CP1_CI_AS" in the equal to operation.

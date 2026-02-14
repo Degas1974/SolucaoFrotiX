@@ -1773,50 +1773,39 @@ namespace FrotiX.Controllers
                 .OrderBy(d => d.Name)
                 .ToList();
 
+            // ✅ LISTA PLANA: Percorre todos os módulos e adiciona páginas diretamente (sem hierarquia)
             foreach (var moduleDir in moduleDirs)
             {
                 var moduleName = moduleDir.Name;
-                var moduleId = $"module_{moduleName}";
 
                 var pageFiles = moduleDir.GetFiles("*.cshtml", SearchOption.TopDirectoryOnly)
                     .Where(f => !f.Name.StartsWith("_"))
                     .OrderBy(f => f.Name)
                     .ToList();
 
-                if (!pageFiles.Any())
-                    continue;
-
-                var children = pageFiles.Select(pageFile =>
+                foreach (var pageFile in pageFiles)
                 {
                     var pageName = Path.GetFileNameWithoutExtension(pageFile.Name);
                     var pageId = $"page_{moduleName}_{pageName}";
-                    var paginaRef = $"{moduleName.ToLower()}_{pageName.ToLower()}.html";
-                    var moduloAmigavel = GetFriendlyModuleName(moduleName);
 
-                    return new
+                    // ✅ URL no formato ASP.NET Core Razor Pages: /Modulo/Pagina
+                    var paginaRef = $"/{moduleName}/{pageName}";
+
+                    // ✅ DISPLAY mostra caminho completo: Pages\Modulo\Pagina.cshtml
+                    var displayPath = $"Pages\\{moduleName}\\{pageFile.Name}";
+
+                    result.Add(new
                     {
                         id = pageId,
-                        text = pageName,              // ✅ NOME ORIGINAL DO ARQUIVO (Index, Upsert, etc)
-                        displayText = $"({moduloAmigavel}) {pageName}",  // ✅ DISPLAY: (Veículos) Index
-                        paginaRef = paginaRef,
+                        text = displayPath,           // ✅ Caminho completo: Pages\Viagens\Upsert.cshtml
+                        paginaRef = paginaRef,       // ✅ URL: /Viagens/Upsert
                         pageName = pageName,
-                        moduleName = moduleName,
-                        parentId = moduleId
-                    };
-                }).ToList<object>();
-
-                result.Add(new
-                {
-                    id = moduleId,
-                    text = GetFriendlyModuleName(moduleName),
-                    isCategory = true,
-                    hasChild = children.Count > 0,
-                    expanded = false,
-                    child = children
-                });
+                        moduleName = moduleName
+                    });
+                }
             }
 
-            return result;
+            return result.OrderBy(p => ((dynamic)p).text).ToList();
         }
 
         private string GetFriendlyPageName(string pageName)

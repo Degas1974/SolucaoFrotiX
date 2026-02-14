@@ -1505,7 +1505,36 @@ namespace FrotiX.Controllers
         {
             try
             {
+                _logger.LogInformation($"[RecuperaViagem] Buscando viagem com ID: {Id}");
+
+                // Validação de ID
+                if (Id == Guid.Empty)
+                {
+                    _logger.LogWarning("[RecuperaViagem] ID vazio recebido");
+                    return BadRequest(new
+                    {
+                        success = false ,
+                        message = "ID da viagem é obrigatório"
+                    });
+                }
+
+                // Buscar viagem no banco
                 var viagemObj = _unitOfWork.Viagem.GetFirstOrDefault(v => v.ViagemId == Id);
+
+                // Validar se a viagem foi encontrada
+                if (viagemObj == null)
+                {
+                    _logger.LogWarning($"[RecuperaViagem] Viagem não encontrada com ID: {Id}");
+                    return NotFound(new
+                    {
+                        success = false ,
+                        message = $"Viagem com ID {Id} não foi encontrada" ,
+                        viagemId = Id
+                    });
+                }
+
+                _logger.LogInformation($"[RecuperaViagem] Viagem encontrada: {viagemObj.ViagemId} - Status: {viagemObj.Status}");
+
                 return Ok(new
                 {
                     data = viagemObj
@@ -1513,6 +1542,7 @@ namespace FrotiX.Controllers
             }
             catch (Exception error)
             {
+                _logger.LogError(error , $"[RecuperaViagem] Erro ao recuperar viagem ID: {Id}");
                 Alerta.TratamentoErroComLinha("AgendaController.cs" , "RecuperaViagem" , error);
                 return StatusCode(
                     500 ,
@@ -1522,6 +1552,7 @@ namespace FrotiX.Controllers
                         error = error.Message ,
                         stackTrace = error.StackTrace ,
                         innerException = error.InnerException?.Message ,
+                        viagemId = Id
                     }
                 );
             }

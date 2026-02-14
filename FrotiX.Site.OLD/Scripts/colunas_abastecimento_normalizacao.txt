@@ -1,0 +1,9 @@
+COLUMN_NAME                                                                                                                      DATA_TYPE                                                                                                                        IS_NULLABLE
+-------------------------------------------------------------------------------------------------------------------------------- -------------------------------------------------------------------------------------------------------------------------------- -----------
+KmRodadoNormalizado                                                                                                              int                                                                                                                              YES        
+LitrosNormalizado                                                                                                                float                                                                                                                            YES        
+ConsumoCalculado                                                                                                                 decimal                                                                                                                          YES        
+ConsumoNormalizado                                                                                                               decimal                                                                                                                          YES        
+EhOutlier                                                                                                                        bit                                                                                                                              YES        
+
+(5 rows affected)

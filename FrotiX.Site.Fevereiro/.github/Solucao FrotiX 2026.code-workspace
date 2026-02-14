@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		}
+	],
+	"settings": {
+		"genieai.enableConversationHistory": true,
+		"workbench.view.alwaysShowHeaderActions": true,
+		"workbench.editor.enablePreview": false,
+		"workbench.editor.closeEmptyGroups": false,
+		"workbench.editor.showTabs": "multiple",
+		"workbench.editor.tabSizing": "fixed",
+		"workbench.editor.pinnedTabSizing": "normal",
+		"workbench.activityBar.iconClickBehavior": "toggle",
+		"continue.enableTabAutocomplete": true,
+		"github.copilot.enable": {
+			"*": true
+		},
+		"workbench.editor.tabActionCloseVisibility": false,
+		"terminal.integrated.hideOnStartup": "always"
+	}
+}

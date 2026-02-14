@@ -1,0 +1,34 @@
+Changed database context to 'Frotix'.
+════════════════════════════════════════════════════════════════════════════════
+🔧 CRIANDO TABELA: AnosDisponiveisAbastecimento
+════════════════════════════════════════════════════════════════════════════════
+ 
+⏰ Início: 2026-02-13 21:24:50
+ 
+🔧 Criando tabela: AnosDisponiveisAbastecimento...
+ 
+✅ Tabela criada: AnosDisponiveisAbastecimento
+ 
+✅ Índice criado: IX_AnosDisponiveisAbastecimento_UltimaData
+ 
+🔍 Validando criação...
+ 
+   📊 Colunas criadas: 5/5
+   ✅ Estrutura validada com sucesso!
+ 
+════════════════════════════════════════════════════════════════════════════════
+✅ CRIAÇÃO CONCLUÍDA COM SUCESSO!
+════════════════════════════════════════════════════════════════════════════════
+ 
+📋 Tabela criada:
+   ✅ dbo.AnosDisponiveisAbastecimento (5 colunas)
+   ✅ PK: PK_AnosDisponiveisAbastecimento
+   ✅ IX: IX_AnosDisponiveisAbastecimento_UltimaData
+ 
+📋 Próximos passos:
+   1. Executar validação das 9 tabelas
+   2. Corrigir modelos C# conforme AUDITORIA_BANCO_REAL_VS_MODELOS.md
+ 
+⏰ Fim: 2026-02-13 21:24:50
+ 
+════════════════════════════════════════════════════════════════════════════════

@@ -85,7 +85,8 @@
 @* ============================================
    FUNÇÕES DO SERVIDOR (FORA DE BLOCOS @{})
    ============================================ *@
-@functions {
+@* REMOVIDO: OnGet() agora está no code-behind Index.cshtml.cs *@
+@* @functions {
     public void OnGet()
     {
         FrotiX.Pages.Agenda.IndexModel.Initialize(_unitOfWork);
@@ -114,7 +115,7 @@
         .ToList();
         ViewData["ListaDestino"] = listaDestino;
     }
-}
+} *@
 
 @* ============================================
    CONFIGURAÇÕES DE MODAL E BOTÕES

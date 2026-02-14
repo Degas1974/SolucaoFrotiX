@@ -1,0 +1,45 @@
+﻿@*****************************************************************************************
+ * ⚡ ARQUIVO: RegisterConfirmation.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de confirmação de registro com instruções para validar email.
+ *
+ * 📥 ENTRADAS     : Model.DisplayConfirmAccountLink, Model.EmailConfirmationUrl.
+ *
+ * 📤 SAÍDAS       : HTML com link de confirmação ou mensagem para verificar email.
+ *
+ * 🔗 CHAMADA POR  : RegisterConfirmationModel.OnGetAsync().
+ *
+ * 🔄 CHAMA        : Nenhum (apenas renderização de conteúdo).
+ *
+ * 📦 DEPENDÊNCIAS : Razor Pages.
+ *
+ * 📝 OBSERVAÇÕES  : Exibe link direto quando IEmailSender não está configurado.
+ *****************************************************************************************@
+
+@page
+@model RegisterConfirmationModel
+@{
+    ViewData["Title"] = "Register confirmation";
+}
+
+@* [DOC] Título da página *@
+<h1>@ViewData["Title"]</h1>
+
+@* [DOC] Bloco condicional: exibe link direto quando envio de email não está configurado *@
+@{
+    if (@Model.DisplayConfirmAccountLink)
+    {
+@* [DOC] Link direto de confirmação para ambiente sem IEmailSender *@
+<p>
+    This app does not currently have a real email sender registered, see <a href="https://aka.ms/aspaccountconf">these docs</a> for how to configure a real email sender.
+    Normally this would be emailed: <a id="confirm-link" href="@Model.EmailConfirmationUrl">Click here to confirm your account</a>
+</p>
+    }
+    else
+    {
+@* [DOC] Mensagem padrão para verificar a caixa de email *@
+<p>
+        Please check your email to confirm your account.
+</p>
+    }
+}

@@ -1,0 +1,116 @@
+@* ****************************************************************************************
+ * ⚡ ARQUIVO: Pages/Page/Locked.cshtml
+ * --------------------------------------------------------------------------------------
+ * 🎯 OBJETIVO     : Página de screen lock (tela bloqueada) exigindo senha para desbloquear,
+ *                   mostra avatar/nome/email usuário com input password + botão unlock (fa-key).
+ * 📥 ENTRADAS     : @page route /Page/Locked, @model LockedModel (code-behind), Settings (App, AppName,
+ *                   Theme.User, Theme.Email, IconPrefix), input password, clique botão #button-addon5 unlock,
+ *                   submit form #js-login (jQuery validation), ViewBag.CopyrightInverse
+ * 📤 SAÍDAS       : Página full-height auth layout com header brand-gradient (logo + "Create Account"),
+ *                   hero centered com avatar-admin-lg.png, h3 Settings.Theme.User + email, input password
+ *                   lg com btn-verde fa-key append, link "Not @User?" para /page/login-alt, footer copyright,
+ *                   background pattern-1.svg, jQuery validation was-validated, FA Brands CSS
+ * 🔗 CHAMADA POR  : Auto-lock após inatividade (idle timeout?), botão "Lock Screen" menu, route /Page/Locked,
+ *                   LockedModel.OnGet() (code-behind)
+ * 🔄 CHAMA        : LockedModel (code-behind), Settings (SmartSettings - App, AppName, Theme.User/Email/IconPrefix),
+ *                   /page/register (Create Account link header), /page/login-alt ("Not @User?" link),
+ *                   ~/img/logo.png, ~/img/demo/avatars/avatar-admin-lg.png (avatar grande), ~/img/svg/pattern-1.svg
+ *                   (background), ~/css/fa-brands.css (override duotone?), ViewBag.CopyrightInverse (Html.Raw),
+ *                   jQuery #js-login form validation, form.checkValidity() HTML5, form action condicional
+ *                   Handlebars (SYNTAX ERROR! {{#if app-flavor-subscript}} - Handlebars em Razor!)
+ * 📦 DEPENDÊNCIAS : ASP.NET Core Razor Pages, LockedModel (code-behind), SmartSettings injection (@Settings),
+ *                   Bootstrap 5 (container, input-group-lg, btn btn-verde shadow-0, form validation),
+ *                   Font Awesome Brands (fa-brands.css), jQuery (validation script #js-login-btn click),
+ *                   HTML5 form validation (checkValidity(), was-validated class), CSS classes custom (auth,
+ *                   bg-brand-gradient, page-logo width-mobile-auto press-scale-down, opacity-50 opacity-90,
+ *                   position-absolute pos-bottom pos-left pos-right)
+ * 📝 OBSERVAÇÕES  : 72 linhas. Página SCREEN LOCK template SmartAdmin - não customizado FrotiX. ViewData:
+ *                   - Title: "Login" (ERRADO! deve ser "Locked" ou "Screen Lock")
+ *                   - PageName: "page_locked"
+ *                   Layout auth (page-wrapper auth, page-inner bg-brand-gradient, page-content-wrapper bg-transparent).
+ *                   Header height-10 com logo + link "Create Account" (/page/register). Hero centered
+ *                   py-4 py-lg-5 my-lg-5 text-white com avatar-admin-lg.png circular (img-responsive rounded-circle
+ *                   img-thumbnail). Form #js-login action condicional **SYNTAX ERROR linha 29**: form
+ *                   {{#if app-flavor-subscript}} (Handlebars syntax em Razor - não funciona!).
+ *                   h3 Settings.Theme.User + small Settings.Theme.Email, p "Enter password to unlock screen".
+ *                   Input-group-lg: input password + append btn-verde shadow-0 (fa-key ícone). Link
+ *                   "Not @Settings.Theme.User ?" text-white opacity-90 para /page/login-alt. Footer
+ *                   position-absolute pos-bottom com ViewBag.CopyrightInverse (Html.Raw). Background
+ *                   pattern-1.svg no-repeat center bottom fixed background-size cover.
+ *                   @section ScriptsBlock: jQuery validation #js-login-btn click (prevent default se
+ *                   checkValidity false, adiciona class was-validated, comentário "Perform ajax submit").
+ *                   Para produção: corrigir Handlebars syntax, implementar unlock AJAX real, usar avatar
+ *                   usuário dinâmico, validar sessão backend.
+ **************************************************************************************** *@
+@page
+@model LockedModel
+@{ 
+	ViewData["Title"] = "Login";
+	ViewData["PageName"] = "page_locked";
+}
+@section HeadBlock {
+<link rel="stylesheet" media="screen, print" href="~/css/fa-brands.css">
+}
+<div class="page-wrapper auth">
+	<div class="page-inner bg-brand-gradient">
+		<div class="page-content-wrapper bg-transparent m-0">
+			<div class="height-10 w-100 shadow-lg px-4 bg-brand-gradient">
+				<div class="d-flex align-items-center container p-0">
+					<div class="page-logo width-mobile-auto m-0 align-items-center justify-content-center p-0 bg-transparent bg-img-none shadow-0 height-9 border-0">
+						<a href="javascript:void(0)" class="page-logo-link press-scale-down d-flex align-items-center">
+						<img src="~/img/logo.png" alt="@Settings.App WebApp" aria-roledescription="logo">
+						<span class="page-logo-text mr-1">@Settings.AppName</span>
+						</a>
+					</div>
+					<a href="/page/register" class="btn-link text-white ml-auto">
+						Create Account
+					</a>
+				</div>
+			</div>
+			<div class="d-flex flex-1" style="background: url(/img/svg/pattern-1.svg) no-repeat center bottom fixed; background-size: cover;">
+				<div class="container py-4 py-lg-5 my-lg-5 px-4 px-sm-0 text-white d-flex align-items-center justify-content-center">
+					<form id="js-login" role="form" class="text-center text-white mb-5 pb-5" {{#if app-flavor-subscript}} action="intel_introduction.html" } else { } action="intel_analytics_dashboard.html">
+						<div class="py-3">
+							<img src="~/img/demo/avatars/avatar-admin-lg.png" class="img-responsive rounded-circle img-thumbnail" alt="thumbnail">
+						</div>
+						<div class="form-group">
+							<h3>
+								@(Settings.Theme.User)
+								<small>
+									@(Settings.Theme.Email)
+								</small>
+							</h3>
+							<p class="text-white opacity-50">Enter password to unlock screen</p>
+							<div class="input-group input-group-lg">
+								<input type="text" class="form-control" placeholder="Password">
+								<div class="input-group-append">
+									<button class="btn btn-verde shadow-0" type="button" id="button-addon5"><i class="@(Settings.Theme.IconPrefix) fa-key"></i></button>
+								</div>
+							</div>
+						</div>
+						<div class="text-center">
+							<a href="/page/login-alt" class="text-white opacity-90">Not @(Settings.Theme.User) ?</a>
+						</div>
+					</form>
+					<div class="position-absolute pos-bottom pos-left pos-right p-3 text-center text-white">
+						@Html.Raw(ViewBag.CopyrightInverse)
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+@section ScriptsBlock {
+<script>
+	$("#js-login-btn").click(function(event) {
+		// Fetch form to apply custom Bootstrap validation
+		var form = $("#js-login")
+		if (form[0].checkValidity() === false) {
+			event.preventDefault()
+			event.stopPropagation()
+		}
+		form.addClass('was-validated');
+		// Perform ajax submit here...
+	});
+</script>
+}

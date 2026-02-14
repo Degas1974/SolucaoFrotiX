@@ -1,0 +1,60 @@
+﻿[00:03:11.850] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /.well-known/appspecific/com.chrome.devtools.json
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[00:03:17.973] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /js/popper.js.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[00:03:36.766] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /css/app.bundle.css.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[00:03:36.803] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /css/vendors.bundle.css.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[00:09:24.649] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /css/app.bundle.css.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[00:09:24.664] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /css/vendors.bundle.css.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[00:09:24.976] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /.well-known/appspecific/com.chrome.devtools.json
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[00:09:28.503] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /css/app.bundle.css.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[00:09:28.540] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /css/vendors.bundle.css.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+
+[00:10:12.424] [HTTP-ERROR] 🌐 Status: 404
+  📍 Path: /js/popper.js.map
+  🔧 Method: GET
+  💬 Message: Not Found - Página não encontrada
+  👤 Usuário: p_7661
+

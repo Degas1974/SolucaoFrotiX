@@ -13,7 +13,7 @@
     <UserSecretsId>aspnet-SmartAdmin.WebUI-E383D1D3-A583-4134-97C9-6DFEB2F1657F</UserSecretsId>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <Nullable>disable</Nullable>
-    <NoWarn>$(NoWarn);TKL003;TKL004;TKL101;CS8625;CS8765;CS8767;CS0108;CS0109;ASPDEPR006;CS8632;CA1416;NETSDK1206</NoWarn>
+    <NoWarn>$(NoWarn);TKL003;TKL004;TKL101;TKL102;CS8625;CS8765;CS8767;CS0108;CS0109;ASPDEPR006;CS8632;CA1416;NETSDK1206</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <DisableImplicitStaticWebAssets>true</DisableImplicitStaticWebAssets>
@@ -1070,12 +1070,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Telerik.Reporting" Version="19.1.25.521" />
-    <PackageReference Include="Telerik.Reporting.Services.AspNetCore" Version="19.1.25.521" />
-    <PackageReference Include="Telerik.Reporting.Services.HttpClient" Version="19.1.25.521" />
+    <PackageReference Include="Telerik.Reporting" Version="18.1.24.514" />
+    <PackageReference Include="Telerik.Reporting.Services.AspNetCore" Version="18.1.24.514" />
+    <PackageReference Include="Telerik.Reporting.Services.HttpClient" Version="18.1.24.514" />
     <PackageReference Include="Telerik.UI.for.AspNet.Core" Version="2025.2.520" />
     <PackageReference Include="Telerik.Web.PDF" Version="2025.2.520" />
-    <PackageReference Include="Telerik.WebReportDesigner.Services" Version="19.1.25.521" />
+    <PackageReference Include="Telerik.WebReportDesigner.Services" Version="18.1.24.514" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="wwwroot\js\ej2\ej2.d.ts" />

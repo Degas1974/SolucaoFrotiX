@@ -1,0 +1,12 @@
+TABLE_NAME                                                                                                                      
+--------------------------------------------------------------------------------------------------------------------------------
+Abastecimento                                                                                                                   
+AbastecimentoPendente                                                                                                           
+AlertasFrotiX                                                                                                                   
+AlertasUsuario                                                                                                                  
+AspNetUsers                                                                                                                     
+AtaRegistroPrecos                                                                                                               
+Combustivel                                                                                                                     
+Contrato                                                                                                                        
+
+(8 rows affected)

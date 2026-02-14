@@ -979,7 +979,31 @@
                             <div class="form-group">
                                 <label for="ddlIcone">Selecione o Ícone (FontAwesome 7 Pro)<span class="required-asterisk">*</span></label>
 
-                                <input id="ddlIcone" style="width: 100%;" />
+                                <!-- Container flex: Caixa de preview + Dropdown -->
+                                <div style="display: flex; align-items: stretch; gap: 10px;">
+                                    <!-- Caixa quadrada de preview do ícone -->
+                                    <div id="iconePreviewBox"
+                                         style="min-width: 38px;
+                                                width: 38px;
+                                                height: 38px;
+                                                border: 1px solid #ced4da;
+                                                border-radius: 4px;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                background-color: #f8f9fa;
+                                                transition: all 0.2s ease;">
+                                        <i id="iconePreview"
+                                           class="fa-duotone fa-icons"
+                                           style="font-size: 20px;
+                                                  --fa-primary-color: #ff6b35;
+                                                  --fa-secondary-color: #6c757d;
+                                                  opacity: 0.3;"></i>
+                                    </div>
+
+                                    <!-- Dropdown de seleção de ícones -->
+                                    <input id="ddlIcone" style="flex: 1;" />
+                                </div>
 
                                 <!-- Campo bloqueado exibindo a classe CSS completa do ícone selecionado -->
                                 <small class="form-text text-muted mt-1">Classe CSS:</small>
@@ -1044,6 +1068,7 @@
 </div>
 
 @section ScriptsBlock {
+<script src="~/js/utils/kendo-dropdowntree-filtro-keywords.js" asp-append-version="true"></script>
 <script>
     var treeData = [];
     var treeObj = null;
@@ -3003,60 +3028,53 @@
                         if (iconEncontrado) {
                             ddlIcone.value([iconEncontrado.id]);
                             console.log('✅ DropDownTree de ícone atualizado para:', iconEncontrado.id);
+
+                            // ✅ Atualiza preview do ícone
+                            atualizarPreviewIcone(iconEncontrado.id);
                         } else {
                             console.warn('Ícone não encontrado no dataSource. Tentando:', iconClassNormalizado, 'ou', iconClass);
+
+                            // ✅ Atualiza preview mesmo se não encontrou no dataSource
+                            atualizarPreviewIcone(iconClass);
                         }
                     }
                 }, 500);
             }
 
-            // ========== ATUALIZA DROPDOWNTREE DE PÁGINA ==========
-            // Busca pela paginaRef (URL) ao invés de tentar reconstruir o ID
+            // ========== ATUALIZA DROPDOWNLIST DE PÁGINA (LISTA PLANA) ==========
             var href = selectedItem.href || '';
             console.log('URL do item (href):', href);
 
-            if (href && href.endsWith('.html')) {
-                var ddlPagina = $('#ddlPagina').data('kendoDropDownTree');
+            if (href && href.trim() !== '') {
+                var ddlPagina = $('#ddlPagina').data('kendoDropDownList');
                 if (ddlPagina) {
 
-                    // Busca o item pela paginaRef no dataSource
+                    // ✅ Busca na lista plana pela paginaRef
                     var pageId = null;
                     var dataSource = window._gestaoPaginaData || [];
                     if (dataSource.length > 0) {
                         console.log('Buscando página com paginaRef:', href);
 
-                        // Itera todas as categorias (módulos)
+                        // Busca diretamente na lista plana
                         for (var i = 0; i < dataSource.length; i++) {
-                            var category = dataSource[i];
-                            if (category.child && category.child.length > 0) {
-                                // Busca nos filhos (páginas)
-                                for (var j = 0; j < category.child.length; j++) {
-                                    var page = category.child[j];
-                                    if (page.paginaRef === href) {
-                                        pageId = page.id;
-                                        console.log('✅ Página encontrada! ID:', pageId, '| Módulo:', category.text, '| Página:', page.text);
-                                        break;
-                                    }
-                                }
+                            if (dataSource[i].paginaRef === href) {
+                                pageId = dataSource[i].id;
+                                console.log('✅ Página encontrada! ID:', pageId, '| Caminho:', dataSource[i].text);
+                                break;
                             }
-                            if (pageId) break;
                         }
                     }
 
                     if (pageId) {
-                        // Limpa seleção anterior
-                        ddlPagina.value([]);
-                        // Define novo valor
-                        setTimeout(function() {
-                            ddlPagina.value([pageId]);
-                            console.log('✅ DropDownTree de página atualizado para:', pageId);
-                        }, 100);
+                        // Define valor no DropDownList
+                        ddlPagina.value(pageId);
+                        console.log('✅ DropDownList de página atualizado para:', pageId);
                     } else {
-                        console.warn('⚠️ Página não encontrada no DropDownTree para href:', href);
+                        console.warn('⚠️ Página não encontrada no DropDownList para href:', href);
                     }
                 }
             } else {
-                console.log('URL não está no formato esperado ou está vazia');
+                console.log('URL vazia - não atualiza dropdown');
             }
 
             // ========== ATUALIZA PARENT ID (campo oculto) ==========
@@ -3157,7 +3175,7 @@
         }
     }
 
-    // Carrega ícones FontAwesome do endpoint
+    // Carrega ícones FontAwesome do endpoint com filtro por keywords
     function carregarIconesFontAwesome() {
         try {
             fetch('/api/Navigation/GetIconesFontAwesomeHierarquico')
@@ -3168,46 +3186,62 @@
                         // [DADOS] Armazena dados globalmente para buscas sem depender do widget
                         window._gestaoIconeData = result.data;
 
-                        // [UI] Destroy widget existente e re-inicializa com dados + templates
-                        var existente = $('#ddlIcone').data('kendoDropDownTree');
-                        if (existente) existente.destroy();
+                        // [UI] Cria DropDownTree com filtro customizado por keywords usando helper
+                        criarDropDownTreeComFiltroKeywords({
+                            elementId: 'ddlIcone',
+                            dados: result.data,
+                            placeholder: 'Busque por nome ou palavra-chave (ex: halloween, morte, crânio)...',
+                            height: 450,
+                            filterDelay: 250,
 
-                        $('#ddlIcone').kendoDropDownTree({
-                            dataSource: result.data,
-                            dataTextField: 'text',
-                            dataValueField: 'id',
-                            placeholder: 'Busque ou selecione um ícone...',
-                            filter: 'contains',
-                            height: 400,
+                            // Template para cada item na lista (com ícone duotone)
                             template: function(data) {
                                 var item = data.item || data;
+
+                                // Se for categoria (pai), exibe em negrito sem ícone
                                 if (item.isCategory) {
-                                    return '<div style="font-weight: 600; padding: 4px 0; color: #3D5771;">' + item.text + '</div>';
+                                    return '<div style="font-weight: 600; padding: 6px 0; color: #3D5771; font-size: 14px;">' +
+                                           '<i class="fa-duotone fa-folder-open" style="margin-right: 8px; --fa-primary-color: #ff6b35; --fa-secondary-color: #6c757d;"></i>' +
+                                           item.text +
+                                           '</div>';
                                 }
+
+                                // Se for ícone (filho), exibe com ícone FontAwesome duotone
                                 var iconCls = item.id || '';
                                 if (iconCls && !iconCls.includes('fa-duotone')) {
                                     iconCls = iconCls.replace(/fa-(regular|solid|light)/g, 'fa-duotone');
                                 }
-                                return '<div style="display: flex; align-items: center; gap: 8px;">' +
-                                       '<i class="' + iconCls + '" style="font-size: 16px; width: 20px; --fa-primary-color: #ff6b35; --fa-secondary-color: #6c757d;"></i>' +
-                                       '<span style="color: #5f6b7a;">' + item.text + '</span>' +
+
+                                return '<div style="display: flex; align-items: center; gap: 10px; padding: 4px 0;">' +
+                                       '<i class="' + iconCls + '" style="font-size: 18px; min-width: 24px; --fa-primary-color: #ff6b35; --fa-secondary-color: #6c757d;"></i>' +
+                                       '<span style="color: #495057; font-size: 14px;">' + item.text + '</span>' +
                                        '</div>';
                             },
+
+                            // Template para o valor selecionado (campo)
                             valueTemplate: function(data) {
                                 var item = data.item || data;
                                 if (!item || item.isCategory) return '';
+
                                 var iconCls = item.id || '';
                                 if (iconCls && !iconCls.includes('fa-duotone')) {
                                     iconCls = iconCls.replace(/fa-(regular|solid|light)/g, 'fa-duotone');
                                 }
+
                                 return '<div style="display: flex; align-items: center; gap: 8px;">' +
-                                       '<i class="' + iconCls + '" style="font-size: 14px; width: 18px; --fa-primary-color: #ff6b35; --fa-secondary-color: #6c757d;"></i>' +
+                                       '<i class="' + iconCls + '" style="font-size: 16px; min-width: 20px; --fa-primary-color: #ff6b35; --fa-secondary-color: #6c757d;"></i>' +
                                        '<span style="color: #5f6b7a;">' + item.text + '</span>' +
                                        '</div>';
                             },
-                            change: onIconeChange
+
+                            // Evento ao mudar valor
+                            onChange: onIconeChange,
+
+                            // Evento ao selecionar item
+                            onSelect: onIconeSelect
                         });
-                        console.log('DropDownTree de ícones populado com', result.data.length, 'categorias');
+
+                        console.log('✅ DropDownTree de ícones criado com filtro por keywords -', result.data.length, 'categoria(s)');
                     }
                 })
                 .catch(erro => {
@@ -3219,19 +3253,32 @@
     }
 
     // ✅ EVENTO SELECT: Dispara AO CLICAR no ícone (não precisa clicar fora)
-    function onIconeSelect(args) {
+    function onIconeSelect(e) {
         try {
             console.log('=== onIconeSelect disparado (AO CLICAR) ===');
-            console.log('args.nodeData:', args.nodeData);
+            console.log('e.node:', e.node);
 
-            if (!args.nodeData || args.nodeData.isCategory) {
+            // Obter dados do item do node selecionado
+            var dropdowntree = $('#ddlIcone').data('kendoDropDownTree');
+            if (!dropdowntree) {
+                console.error('❌ Widget DropDownTree não encontrado');
+                return;
+            }
+
+            var treeview = dropdowntree.treeview;
+            var dataItem = treeview.dataItem(e.node);
+
+            console.log('dataItem:', dataItem);
+
+            // Se for categoria, não faz nada
+            if (!dataItem || dataItem.isCategory) {
                 console.log('Categoria clicada - não atualiza campo');
                 return;
             }
 
-            // No evento SELECT, os dados vêm em args.nodeData
-            var iconClass = args.nodeData.id;      // "fa-duotone fa-bat"
-            var iconLabel = args.nodeData.text;    // "Bastão"
+            // Atualiza campo de texto com a classe CSS do ícone
+            var iconClass = dataItem.id;      // "fa-duotone fa-bat"
+            var iconLabel = dataItem.text;    // "Bastão"
 
             var txtIconClass = document.getElementById('txtIconClass');
             if (txtIconClass) {
@@ -3240,64 +3287,130 @@
             } else {
                 console.error('❌ Elemento txtIconClass não encontrado!');
             }
+
+            // ✅ Atualiza caixa de preview do ícone
+            atualizarPreviewIcone(iconClass);
         } catch (erro) {
             Alerta.TratamentoErroComLinha("GestaoRecursosNavegacao.cshtml", "onIconeSelect", erro);
         }
     }
 
     // ✅ EVENTO CHANGE: Backup para quando setado programaticamente
-    function onIconeChange(args) {
+    function onIconeChange(e) {
         try {
             console.log('=== onIconeChange disparado ===');
-            console.log('args completo:', args);
-            console.log('args.itemData:', args.itemData);
-            console.log('args.value:', args.value);
+            console.log('e.sender.value():', e.sender.value());
 
-            // Quando setado programaticamente, itemData vem undefined
-            // Preciso buscar o item no dataSource
-            var itemData = args.itemData;
-
-            if (!itemData && args.value && args.value.length > 0) {
-                console.log('itemData undefined - buscando no dataSource...');
-                var iconeData = window._gestaoIconeData || [];
-                if (iconeData.length > 0) {
-                    var iconId = args.value[0];
-                    console.log('Buscando iconId:', iconId);
-
-                    itemData = findIconById(iconId);
-                    if (itemData) {
-                        console.log('✅ Ícone encontrado no dataSource:', itemData);
-                    }
-
-                    // Se não encontrou, pode ser que seja a própria classe
-                    if (!itemData) {
-                        console.log('❌ Ícone não encontrado no dataSource - usando iconId diretamente');
-                        itemData = { id: iconId, text: iconId, isCategory: false };
-                    }
-                }
-            }
-
-            // Se não há dados ou é uma categoria, limpa o campo
-            if (!itemData || itemData.isCategory) {
-                document.getElementById('txtIconClass').value = '';
-                console.log('Categoria selecionada ou campo limpo');
+            var dropdowntree = $('#ddlIcone').data('kendoDropDownTree');
+            if (!dropdowntree) {
+                console.error('❌ Widget DropDownTree não encontrado');
                 return;
             }
 
-            // Apenas ícones válidos (não categorias)
+            var valorSelecionado = dropdowntree.value();
+            console.log('Valor selecionado:', valorSelecionado);
+
+            // Se não há valor, limpa o campo e o preview
+            if (!valorSelecionado || valorSelecionado.length === 0) {
+                document.getElementById('txtIconClass').value = '';
+                limparPreviewIcone();
+                console.log('Campo limpo - nenhum ícone selecionado');
+                return;
+            }
+
+            // Busca o item nos dados globais
+            var iconId = Array.isArray(valorSelecionado) ? valorSelecionado[0] : valorSelecionado;
+            var itemData = buscarItemPorId(window._gestaoIconeData || [], iconId);
+
+            if (!itemData) {
+                console.log('❌ Ícone não encontrado - usando ID diretamente');
+                itemData = { id: iconId, text: iconId, isCategory: false };
+            }
+
+            // Se for categoria, limpa o campo e o preview
+            if (itemData.isCategory) {
+                document.getElementById('txtIconClass').value = '';
+                limparPreviewIcone();
+                console.log('Categoria selecionada - não atualiza campo');
+                return;
+            }
+
+            // Atualiza campo de texto bloqueado com a classe CSS
             var iconClass = itemData.id;      // "fa-duotone fa-bat"
             var iconLabel = itemData.text;    // "Bastão"
 
-            // Atualiza campo de texto bloqueado com a classe CSS
             var txtIconClass = document.getElementById('txtIconClass');
             if (txtIconClass) {
                 txtIconClass.value = iconClass;
-                console.log('✅ Classe CSS atualizada:', iconClass, '| Label:', iconLabel);
+                console.log('✅ Classe CSS atualizada via CHANGE:', iconClass, '| Label:', iconLabel);
             } else {
                 console.error('❌ Elemento txtIconClass não encontrado!');
             }
+
+            // ✅ Atualiza caixa de preview do ícone
+            atualizarPreviewIcone(iconClass);
         } catch (erro) {
             Alerta.TratamentoErroComLinha("GestaoRecursosNavegacao.cshtml", "onIconeChange", erro);
+        }
+    }
+
+    // ✅ Atualiza a caixa de preview do ícone selecionado
+    function atualizarPreviewIcone(iconClass) {
+        try {
+            if (!iconClass) {
+                limparPreviewIcone();
+                return;
+            }
+
+            // Garante que o ícone é duotone
+            var iconCls = iconClass;
+            if (iconCls && !iconCls.includes('fa-duotone')) {
+                iconCls = iconCls.replace(/fa-(regular|solid|light)/g, 'fa-duotone');
+            }
+
+            // Atualiza o ícone no preview
+            var iconePreview = document.getElementById('iconePreview');
+            var iconePreviewBox = document.getElementById('iconePreviewBox');
+
+            if (iconePreview && iconePreviewBox) {
+                // Atualiza classes do ícone
+                iconePreview.className = iconCls;
+                iconePreview.style.opacity = '1';
+                iconePreview.style.fontSize = '20px';
+
+                // Atualiza estilo da caixa (borda com cor primária)
+                iconePreviewBox.style.borderColor = '#ff6b35';
+                iconePreviewBox.style.backgroundColor = '#fff';
+
+                console.log('✅ Preview do ícone atualizado:', iconCls);
+            } else {
+                console.error('❌ Elementos de preview não encontrados');
+            }
+        } catch (erro) {
+            Alerta.TratamentoErroComLinha("GestaoRecursosNavegacao.cshtml", "atualizarPreviewIcone", erro);
+        }
+    }
+
+    // ✅ Limpa a caixa de preview do ícone
+    function limparPreviewIcone() {
+        try {
+            var iconePreview = document.getElementById('iconePreview');
+            var iconePreviewBox = document.getElementById('iconePreviewBox');
+
+            if (iconePreview && iconePreviewBox) {
+                // Volta ao ícone padrão (fa-icons) com opacidade baixa
+                iconePreview.className = 'fa-duotone fa-icons';
+                iconePreview.style.opacity = '0.3';
+                iconePreview.style.fontSize = '20px';
+
+                // Volta ao estilo padrão da caixa
+                iconePreviewBox.style.borderColor = '#ced4da';
+                iconePreviewBox.style.backgroundColor = '#f8f9fa';
+
+                console.log('✅ Preview do ícone limpo');
+            }
+        } catch (erro) {
+            Alerta.TratamentoErroComLinha("GestaoRecursosNavegacao.cshtml", "limparPreviewIcone", erro);
         }
     }
 
@@ -3312,11 +3425,14 @@
                         // [DADOS] Armazena dados globalmente para buscas sem depender do widget
                         window._gestaoPaginaData = result.data;
 
-                        // [UI] Destroy widget existente e re-inicializa com dados + templates
-                        var existente = $('#ddlPagina').data('kendoDropDownTree');
-                        if (existente) existente.destroy();
+                        // ✅ CORRIGIDO: Lista PLANA - usa DropDownList ao invés de DropDownTree
+                        var existenteTree = $('#ddlPagina').data('kendoDropDownTree');
+                        if (existenteTree) existenteTree.destroy();
 
-                        $('#ddlPagina').kendoDropDownTree({
+                        var existenteList = $('#ddlPagina').data('kendoDropDownList');
+                        if (existenteList) existenteList.destroy();
+
+                        $('#ddlPagina').kendoDropDownList({
                             dataSource: result.data,
                             dataTextField: 'text',
                             dataValueField: 'id',
@@ -3324,27 +3440,20 @@
                             filter: 'contains',
                             height: 400,
                             template: function(data) {
-                                var item = data.item || data;
-                                if (item.isCategory) {
-                                    return '<div style="font-weight: 600; padding: 4px 0; color: #3D5771;">' + item.text + '</div>';
-                                }
                                 return '<div style="display: flex; align-items: center; gap: 8px;">' +
-                                       '<i class="fa-duotone fa-file-lines" style="font-size: 16px; width: 20px; --fa-primary-color: #ff6b35; --fa-secondary-color: #6c757d;"></i>' +
-                                       '<span>' + item.text + '</span>' +
+                                       '<i class="fa-duotone fa-file-lines" style="font-size: 14px; width: 18px; --fa-primary-color: #ff6b35; --fa-secondary-color: #6c757d;"></i>' +
+                                       '<span style="font-family: Consolas, monospace; font-size: 12px;">' + data.text + '</span>' +
                                        '</div>';
                             },
                             valueTemplate: function(data) {
-                                var item = data.item || data;
-                                if (!item || item.isCategory) return '';
-                                var displayText = item.displayText || item.text;
                                 return '<div style="display: flex; align-items: center; gap: 8px;">' +
                                        '<i class="fa-duotone fa-file-lines" style="font-size: 14px; width: 18px; --fa-primary-color: #ff6b35; --fa-secondary-color: #6c757d;"></i>' +
-                                       '<span>' + displayText + '</span>' +
+                                       '<span style="font-family: Consolas, monospace; font-size: 12px;">' + data.text + '</span>' +
                                        '</div>';
                             },
                             change: onPaginaChange
                         });
-                        console.log('DropDownTree de páginas populado com', result.data.length, 'módulos');
+                        console.log('DropDownList de páginas populado com', result.data.length, 'páginas');
                     }
                 })
                 .catch(erro => {
@@ -3389,52 +3498,37 @@
         }
     }
 
-    // ✅ EVENTO CHANGE: Backup para quando setado programaticamente
+    // ✅ EVENTO CHANGE: Atualiza URL quando página é selecionada (LISTA PLANA)
     function onPaginaChange(args) {
         try {
             console.log('=== onPaginaChange disparado ===');
             console.log('args completo:', args);
-            console.log('args.itemData:', args.itemData);
-            console.log('args.value:', args.value);
 
-            // Quando setado programaticamente, itemData vem undefined
-            // Preciso buscar o item no dataSource
-            var itemData = args.itemData;
+            // ✅ SIMPLIFICADO: Lista plana - dados vêm direto no sender.dataItem()
+            var widget = $('#ddlPagina').data('kendoDropDownList');
+            var itemData = widget ? widget.dataItem() : null;
 
-            if (!itemData && args.value && args.value.length > 0) {
-                console.log('itemData undefined - buscando no dataSource...');
-                var paginaData = window._gestaoPaginaData || [];
-                if (paginaData.length > 0) {
-                    var pageId = args.value[0];
-                    console.log('Buscando pageId:', pageId);
-
-                    // Busca em todas as categorias
-                    var dataSource = paginaData;
-                    for (var i = 0; i < dataSource.length; i++) {
-                        var category = dataSource[i];
-                        if (category.child && category.child.length > 0) {
-                            for (var j = 0; j < category.child.length; j++) {
-                                if (category.child[j].id === pageId) {
-                                    itemData = category.child[j];
-                                    console.log('✅ Item encontrado no dataSource:', itemData);
-                                    break;
-                                }
-                            }
-                        }
-                        if (itemData) break;
-                    }
-                }
+            // Se não conseguiu via widget, tenta via args
+            if (!itemData && args.sender) {
+                itemData = args.sender.dataItem();
             }
 
-            // Se não há dados ou é uma categoria, não faz nada
-            if (!itemData || itemData.isCategory) {
-                console.log('Categoria selecionada ou campo limpo - não gera URL');
+            // Fallback: busca no dataSource global
+            if (!itemData && args.sender && args.sender.value()) {
+                var pageId = args.sender.value();
+                var paginaData = window._gestaoPaginaData || [];
+                itemData = paginaData.find(function(p) { return p.id === pageId; });
+            }
+
+            if (!itemData) {
+                console.warn('Nenhum item selecionado');
                 return;
             }
 
-            // Obtém a URL gerada (formato: modulo_pagina.html)
+            // ✅ Obtém a URL no formato: /Modulo/Pagina
             var paginaRef = itemData.paginaRef;
             console.log('paginaRef extraída:', paginaRef);
+            console.log('Caminho completo:', itemData.text);
 
             var txtHref = document.getElementById('txtHref');
             if (txtHref) {
@@ -4291,10 +4385,13 @@
                 ddlIconeKendo.value([]);
             }
 
-            // Limpa DropDownTree de páginas (Kendo DDT API)
-            var ddlPaginaKendo = $('#ddlPagina').data('kendoDropDownTree');
+            // Limpa preview do ícone
+            limparPreviewIcone();
+
+            // ✅ Limpa DropDownList de páginas (lista plana)
+            var ddlPaginaKendo = $('#ddlPagina').data('kendoDropDownList');
             if (ddlPaginaKendo) {
-                ddlPaginaKendo.value([]);
+                ddlPaginaKendo.value('');
             }
 
             // ✅ Limpa campo oculto parentId (dropdown foi removido)

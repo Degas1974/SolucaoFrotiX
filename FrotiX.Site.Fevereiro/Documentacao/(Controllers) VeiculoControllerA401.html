@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>VeiculoController | FrotiX</title>
+  <style>
+    :root {
+      --vinho: #722F37; --vinho-light: #8B3A44;
+      --azul: #325d88; --azul-light: #3d6f9e;
+      --terracota: #A97B6E; --terracota-light: #C08B7E;
+      --verde: #557570; --verde-light: #6A8A85;
+      --cinza: #f5f7fb; --card: #ffffff; --texto: #1f1f1f;
+      --shadow: 0 20px 45px -18px rgba(0,0,0,.35);
+      --radius: 14px; --header-bg: #b66a3d; --code-bg: #33465c;
+    }
+    @page { size: A4; margin: 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: "Segoe UI","Inter",system-ui,-apple-system,sans-serif;
+      background: radial-gradient(circle at 12% 20%, rgba(50,93,136,.08), transparent 26%), radial-gradient(circle at 90% 10%, rgba(114,47,55,.10), transparent 30%), var(--cinza);
+      color: var(--texto); padding: 22px; display: flex; justify-content: center;
+    }
+    .page { width: 210mm; max-width: 100%; }
+    .hero {
+      background: var(--header-bg); color: #fff; padding: 22px 24px;
+      border-radius: var(--radius); box-shadow: 0 0 0 1px #000, 0 0 0 4px #fff, var(--shadow);
+      display: flex; align-items: center; gap: 16px;
+    }
+    .hero img { width: 50px; height: 50px; filter: drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+    h1 { margin: 0; font-size: 26px; letter-spacing: 0.2px; }
+    .subtitle { margin: 6px 0 0; font-size: 13px; opacity: 0.92; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 18px; }
+    .card {
+      background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 16px 18px; border: 1px solid rgba(0,0,0,0.05);
+    }
+    .section-title { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; font-size: 15px; font-weight: 800; color: var(--vinho); }
+    .icon { width: 18px; height: 18px; vertical-align: middle; filter: drop-shadow(0 2px 4px rgba(0,0,0,.15)); }
+    ul { margin: 6px 0 0 18px; padding: 0; }
+    li { margin-bottom: 6px; }
+    code {
+      background: var(--code-bg); color: #e9edf5; padding: 10px 12px;
+      border-radius: 10px; display: block; white-space: pre-wrap; font-size: 12px; line-height: 1.45;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+  </style>
+</head>
+
+  
+  <body>
+  <svg style="display:none" aria-hidden="true" focusable="false">
+  
+</svg>
+  <div class="page">
+    <header class="hero">
+      <svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-car-side"></use></svg>
+      <div>
+        <h1>VeiculoController</h1>
+        <p class="subtitle">CRUD, contratos e valores de veículos • Última atualização: 08/01/2026 • Versão 2.0</p>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-info"></use></svg>Visão geral</div>
+        <p>Gere veiculos, status e vínculos com contratos/atas. Usa <code>ViewVeiculos</code> para listar dados enxutos e protege exclusão se houver dependências (contratos, viagens).</p>
+        <ul>
+          <li>Consulta valores mensais de itens de ata/contrato.</li>
+          <li>Toggle de status com mensagem contextual.</li>
+          <li>Relacionamentos mantidos em <code>VeiculoContrato</code>.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-route"></use></svg>Endpoints</div>
+        <ul>
+          <li><strong>GET /api/Veiculo</strong> – lista de <code>ViewVeiculos</code> (Index).</li>
+          <li><strong>POST /api/Veiculo/Delete</strong> – valida contratos/viagens antes de remover.</li>
+          <li><strong>GET /api/Veiculo/UpdateStatusVeiculo</strong> – ativa/inativa e retorna mensagem.</li>
+          <li><strong>GET /api/Veiculo/VeiculoContratos</strong> – veículos de um contrato.</li>
+          <li><strong>GET /api/Veiculo/VeiculoContratosGlosa</strong> – elegíveis para glosa.</li>
+          <li><strong>POST /api/Veiculo/DeleteContrato</strong> – desassocia veiculo do contrato.</li>
+          <li><strong>GET /api/Veiculo/SelecionaValorMensalAta</strong> / <strong>SelecionaValorMensalContrato</strong> – valores unitários.</li>
+        </ul>
+        <code>
+GET /api/Veiculo<br>
+→ { "data": [{ "placa": "ABC-1234", "marcaModelo": "Ford/Fiesta", "sigla": "UNI01", "status": true, ... }] }
+        </code>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-link"></use></svg>Interconexões</div>
+        <ul>
+          <li>Páginas: <code>Pages/Veiculo/Index.cshtml</code>; contratos/atas utilizam endpoints de valor.</li>
+          <li>Repos: <code>_unitOfWork.ViewVeiculos</code>, <code>Veiculo</code>, <code>VeiculoContrato</code>, <code>Viagem</code>, <code>ItemVeiculoAta</code>, <code>ItemVeiculoContrato</code>.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="section-title"><svg class="icon" aria-hidden="true" focusable="false"><use href="#fa-bug"></use></svg>Cuidados</div>
+        <ul>
+          <li>Bloquear exclusão se houver contrato/viagem; retornar mensagem amigável.</li>
+          <li>Valores de itens: garantir GUID correto (ata vs contrato).</li>
+          <li>Status toggle deve refletir na view imediatamente (DataTable refresh).</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+
+

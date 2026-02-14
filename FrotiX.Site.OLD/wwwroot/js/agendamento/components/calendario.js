@@ -566,6 +566,17 @@ window.InitializeCalendar = function (URL)
                         {
                             try
                             {
+                                // ✅ Validar se response.data existe
+                                if (!response || !response.data)
+                                {
+                                    console.error("[calendario.js] Resposta inválida do servidor:", response);
+                                    Alerta.Erro(
+                                        "Erro ao Carregar Viagem",
+                                        "A viagem não foi encontrada ou não pôde ser carregada."
+                                    );
+                                    return;
+                                }
+
                                 window.AppState.update({
                                     'viagem.id': response.data.viagemId,
                                     'viagem.idAJAX': response.data.viagemId,
