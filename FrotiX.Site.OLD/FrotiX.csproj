@@ -1073,9 +1073,7 @@
     <PackageReference Include="Telerik.Reporting" Version="18.1.24.514" />
     <PackageReference Include="Telerik.Reporting.Services.AspNetCore" Version="18.1.24.514" />
     <PackageReference Include="Telerik.Reporting.Services.HttpClient" Version="18.1.24.514" />
-    <PackageReference Include="Telerik.UI.for.AspNet.Core" Version="2025.2.520" />
-    <PackageReference Include="Telerik.Web.PDF" Version="2025.2.520" />
-    <PackageReference Include="Telerik.WebReportDesigner.Services" Version="18.1.24.514" />
+    <PackageReference Include="Telerik.UI.for.AspNet.Core" Version="2025.4.1321" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="wwwroot\js\ej2\ej2.d.ts" />

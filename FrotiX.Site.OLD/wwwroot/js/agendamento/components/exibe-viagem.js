@@ -878,22 +878,48 @@ function exibirViagemExistente(objViagem)
         }
 
         // 5. Motorista
+        console.log("🔍 DEBUG Motorista:");
+        console.log("   motoristaId:", objViagem.motoristaId);
+        console.log("   nomeMotorista:", objViagem.nomeMotorista);
+
         if (objViagem.motoristaId)
         {
             const motoristaCombo = $("#lstMotorista").data("kendoComboBox");
             if (motoristaCombo)
             {
+                // Definir o valor (ID)
                 motoristaCombo.value(objViagem.motoristaId);
+
+                // Se temos o nome, definir também o texto para garantir exibição
+                if (objViagem.nomeMotorista)
+                {
+                    motoristaCombo.text(objViagem.nomeMotorista);
+                }
+
+                console.log("✅ Motorista carregado (Kendo ComboBox):", objViagem.motoristaId);
             }
         }
 
         // 6. Veí­culo
+        console.log("🔍 DEBUG Veículo:");
+        console.log("   veiculoId:", objViagem.veiculoId);
+        console.log("   placa:", objViagem.placa);
+
         if (objViagem.veiculoId)
         {
             const veiculoCombo = $("#lstVeiculo").data("kendoComboBox");
             if (veiculoCombo)
             {
+                // Definir o valor (ID)
                 veiculoCombo.value(objViagem.veiculoId);
+
+                // Se temos placa, definir o texto
+                if (objViagem.placa)
+                {
+                    veiculoCombo.text(objViagem.placa);
+                }
+
+                console.log("✅ Veículo carregado (Kendo ComboBox):", objViagem.veiculoId);
             }
         }
 
@@ -955,12 +981,15 @@ function exibirViagemExistente(objViagem)
         {
             // CORRIGIDO: usar setorSolicitanteId ao invés de setorRequisitanteId
             const setorId = objViagem.setorSolicitanteId || objViagem.setorRequisitanteId || objViagem.setorId;
-            let setorNome = objViagem.setorSolicitante || objViagem.nomeSetorRequisitante || objViagem.setorRequisitanteNome || objViagem.setorNome || objViagem.nomeSetor || null;
+            // ✅ CORREÇÃO: Incluir os novos campos da API (setorSolicitante, setorSolicitanteNome)
+            let setorNome = objViagem.setorSolicitante || objViagem.setorSolicitanteNome || objViagem.nomeSetorRequisitante || objViagem.setorRequisitanteNome || objViagem.setorNome || objViagem.nomeSetor || null;
 
             console.log("🔍 DEBUG Setor Requisitante:");
             console.log("   setorSolicitanteId:", objViagem.setorSolicitanteId);
+            console.log("   setorSolicitante (nome da API):", objViagem.setorSolicitante);
+            console.log("   setorSolicitanteNome (nome da API):", objViagem.setorSolicitanteNome);
             console.log("   setorId:", setorId);
-            console.log("   setorNome (do objeto):", setorNome);
+            console.log("   setorNome (final):", setorNome);
 
             if (setorId)
             {
@@ -1022,10 +1051,12 @@ function exibirViagemExistente(objViagem)
         // 8. Requisitante
         // IMPORTANTE: C# usa RequisitanteId (PascalCase), JavaScript pode receber como requisitanteId ou RequisitanteId
         const requisitanteId = objViagem.requisitanteId || objViagem.RequisitanteId;
+        const requisitanteNome = objViagem.requisitante;
 
         console.log("🔍 DEBUG EXIBIÇÃO - Requisitante:");
         console.log("  - objViagem.requisitanteId:", objViagem.requisitanteId);
         console.log("  - objViagem.RequisitanteId:", objViagem.RequisitanteId);
+        console.log("  - objViagem.requisitante (nome):", requisitanteNome);
         console.log("  - requisitanteId final:", requisitanteId);
 
         if (requisitanteId)
@@ -1036,11 +1067,19 @@ function exibirViagemExistente(objViagem)
 
             if (kendoComboBox)
             {
-                console.log("  - Tentando preencher com:", requisitanteId);
+                console.log("  - Tentando preencher com ID:", requisitanteId);
 
                 // Delay para garantir que o controle está pronto
                 setTimeout(() => {
+                    // Definir o valor (ID)
                     kendoComboBox.value(requisitanteId);
+
+                    // Se temos o nome, definir também o texto para garantir exibição
+                    if (requisitanteNome)
+                    {
+                        kendoComboBox.text(requisitanteNome);
+                    }
+
                     kendoComboBox.trigger("change");
 
                     const valorAtual = kendoComboBox.value();

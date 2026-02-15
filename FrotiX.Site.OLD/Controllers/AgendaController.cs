@@ -1620,10 +1620,80 @@ namespace FrotiX.Controllers
                     });
                 }
 
-                // Buscar viagem no banco - SEM tracking e SEM includes para evitar ciclos
+                // ✅ CORREÇÃO: Buscar viagem com INCLUDES para carregar dados relacionados
                 var viagemObj = _context.Viagem
                     .AsNoTracking()
+                    .Include(v => v.Motorista)
+                    .Include(v => v.Veiculo)
+                    .Include(v => v.Requisitante)
+                    .Include(v => v.SetorSolicitante)
+                    .Include(v => v.Evento)
                     .Where(v => v.ViagemId == Id)
+                    .Select(v => new
+                    {
+                        // Campos da viagem
+                        v.ViagemId,
+                        v.DataInicial,
+                        v.DataFinal,
+                        v.HoraInicio,
+                        v.HoraFim,
+                        v.Status,
+                        v.StatusAgendamento,
+                        v.Finalidade,
+                        v.Origem,
+                        v.Destino,
+                        v.Descricao,
+                        v.RamalRequisitante,
+                        v.RecorrenciaViagemId,
+                        v.Recorrente,
+                        v.FoiAgendamento,
+                        v.NoFichaVistoria,
+                        v.KmAtual,
+                        v.KmInicial,
+                        v.KmFinal,
+                        v.KmRodado,
+                        v.CombustivelInicial,
+                        v.CombustivelFinal,
+                        v.DataCriacao,
+                        v.UsuarioIdCriacao,
+                        v.UsuarioIdAgendamento,
+                        v.UsuarioIdCancelamento,
+                        v.UsuarioIdFinalizacao,
+                        v.DataAgendamento,
+                        v.DataCancelamento,
+                        v.DataFinalizacao,
+                        v.NomeEvento,
+
+                        // Campos de recorrência
+                        v.Intervalo,
+                        v.DiaMesRecorrencia,
+                        v.DataFinalRecorrencia,
+                        v.Monday,
+                        v.Tuesday,
+                        v.Wednesday,
+                        v.Thursday,
+                        v.Friday,
+                        v.Saturday,
+                        v.Sunday,
+
+                        // IDs
+                        v.MotoristaId,
+                        v.VeiculoId,
+                        v.RequisitanteId,
+                        v.SetorSolicitanteId,
+                        v.EventoId,
+
+                        // Campos relacionados - NOMES das entidades
+                        NomeMotorista = v.Motorista != null ? v.Motorista.Nome : null,
+                        Placa = v.Veiculo != null ? v.Veiculo.Placa : null,
+                        Requisitante = v.Requisitante != null ? v.Requisitante.Nome : null,
+                        SetorSolicitante = v.SetorSolicitante != null ? v.SetorSolicitante.Nome : null,
+                        SetorSolicitanteNome = v.SetorSolicitante != null ? v.SetorSolicitante.Nome : null,
+
+                        // Campos de texto formatados para o frontend
+                        HoraInicialTexto = v.HoraInicio != null ? v.HoraInicio.Value.ToString("HH:mm") : null,
+                        HoraFinalTexto = v.HoraFim != null ? v.HoraFim.Value.ToString("HH:mm") : null,
+                    })
                     .FirstOrDefault();
 
                 // Validar se a viagem foi encontrada
